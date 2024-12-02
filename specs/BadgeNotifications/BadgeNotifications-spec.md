@@ -21,8 +21,9 @@ This Badge notification functionality is missing in WinAppSDK, which not only bl
 WhatsApp to move to WinAppSDK but also stops them from availing new features and goodness that we
 are building in WinAppSDK. The scope of this document is to fill that gap and provide badge
 notification capability in WinAppSDK as well.
-> Note: This provids a subset of functionality present in WindowsSdk, but all that is necessary
-to post and clear a badge notification
+
+> Note: This provids a subset of functionality present in WindowsSdk, but all that is necessary to
+> post and clear a badge notification
 
 # Description
 
@@ -33,17 +34,22 @@ to make badge notifications work in WindowsAppSdk.
 
 For more details see:
 
--   [Badge Notification WinRT APIs](https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/badges)
+-   [Badge Notification WinRT APIs](https://learn.microsoft.com/windows/apps/design/shell/tiles-and-notifications/badges)
     Defines all the API constructs that we have for Badge Notifications in WinRT today.
 
 # Compatibility
-### Supported Platforms
-This API is exclusively available for packaged apps. It is not supported for web apps or other 
-types of applications.
-### Notification Type
-The badge notifications are local to the device. No remote server interaction is required or 
-supported for updating the badge count.
 
+## Supported Apps
+
+This API requires package identity to match notifications to applications. See
+[an overview of package identity](https://learn.microsoft.com/windows/apps/desktop/modernize/package-identity-overview)
+for how to deploy your application as a package, or assign identity to your existing application
+during its install time.
+
+## Notification Type
+
+The badge notifications are local to the device. No remote server interaction is required or
+supported for updating the badge count.
 
 # Examples
 
@@ -109,13 +115,13 @@ and also to remove the badge when it is no longer needed.
 
 ## BadgeNotificationManager Methods
 
-| Name             | Description                                                                                                                                                                                                                   | Parameters                                 | Returns |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------- |
-| SetBadgeAsCount  | Updates the badge on the app's tile to display a numeric value. This method is used to reflect a new status or count.                                                                                                         | UInt32 `notificationCount`                 | void    |
-| SetBadgeAsCount  | Updates the badge on the app's tile to display a numeric value, with an expiration time after which the badge should be cleared.                                                                                              | UInt32 `notificationCount`, Windows.Foundation.DateTime `expiration` | void    |
-| SetBadgeAsGlyph  | Updates the badge on the app's tile to display a glyph. This method is used to reflect a new status represented by a glyph.                                                                                                   | BadgeNotificationGlyph `glyphValue`        | void    |
-| SetBadgeAsGlyph  | Updates the badge on the app's tile to display a glyph, with an expiration time after which the badge should be cleared.                                                                                                      | BadgeNotificationGlyph `glyphValue`, Windows.Foundation.DateTime `expiration` | void    |
-| ClearBadge       | Removes the badge notifications for the app from the action center. This method is useful for clearing any badge notifications when they are no longer relevant or when the app wants to reset its badge status.              |                                              | void    |
+| Name            | Description                                                                                                                                                                                                      | Parameters                                                                    | Returns |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------- |
+| SetBadgeAsCount | Updates the badge on the app's tile to display a numeric value. This method is used to reflect a new status or count.                                                                                            | UInt32 `notificationCount`                                                    | void    |
+| SetBadgeAsCount | Updates the badge on the app's tile to display a numeric value, with an expiration time after which the badge should be cleared.                                                                                 | UInt32 `notificationCount`, Windows.Foundation.DateTime `expiration`          | void    |
+| SetBadgeAsGlyph | Updates the badge on the app's tile to display a glyph. This method is used to reflect a new status represented by a glyph.                                                                                      | BadgeNotificationGlyph `glyphValue`                                           | void    |
+| SetBadgeAsGlyph | Updates the badge on the app's tile to display a glyph, with an expiration time after which the badge should be cleared.                                                                                         | BadgeNotificationGlyph `glyphValue`, Windows.Foundation.DateTime `expiration` | void    |
+| ClearBadge      | Removes the badge notifications for the app from the action center. This method is useful for clearing any badge notifications when they are no longer relevant or when the app wants to reset its badge status. |                                                                               | void    |
 
 > Note: For Numeric badge if the count is greater then 99 it will be reported as "99+"
 
