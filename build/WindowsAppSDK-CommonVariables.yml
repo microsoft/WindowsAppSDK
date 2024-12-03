@@ -20,7 +20,7 @@ variables:
   # Native compiler version override for win undock. The two values below are for Ge, defined in:
   # https://dev.azure.com/microsoft/OS/_git/UndockedES?path=/Pipelines/Config/CompilerToolsSettings.json
   compilerOverridePackageName: "DevDiv.rel.LKG17.VCTools"
-  compilerOverridePackageVersion: "19.40.3381110000+DevDivGIT.CI20240625.01-DEFFC96F5DFBC335B83BD493D79973042E2EE96C"
+  compilerOverridePackageVersion: "19.40.3381510000+DevDivGIT.CI20240912.03-F958482FD706647060A7AFF72D2CB611DF967BE2"
   # Use the following corresponding version string instead of the above when calling nuget install directly.
   compilerOverrideNupkgVersion: "19.40.33811100"
 
