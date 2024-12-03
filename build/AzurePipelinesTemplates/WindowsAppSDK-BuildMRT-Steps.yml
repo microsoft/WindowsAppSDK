@@ -21,6 +21,8 @@ steps:
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore\mrt
+    includeUCRT: true
+    ucrtFeedPat: $(System.AccessToken)
 
 - task: PowerShell@2
   name: BuildBinaries

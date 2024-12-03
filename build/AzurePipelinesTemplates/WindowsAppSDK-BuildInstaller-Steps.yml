@@ -202,6 +202,8 @@ steps:
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev
+    includeUCRT: true
+    ucrtFeedPat: $(System.AccessToken)
 
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
