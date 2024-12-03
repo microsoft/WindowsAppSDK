@@ -149,7 +149,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     bool AddPackageOptions::IsExpectedDigestsSupported()
     {
         // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
-        return WindowsVersion::IsWindows11_22H2OrGreater();
+        static bool isSupported{ winrt::Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent("Windows.Foundation.UniversalApiContract", 15);
+        return isSupported;
     }
     winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> AddPackageOptions::ExpectedDigests()
     {
@@ -158,7 +159,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     bool AddPackageOptions::IsLimitToExistingPackagesSupported()
     {
         // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
-        return WindowsVersion::IsWindows11_22H2OrGreater();
+        static bool isSupported{ winrt::Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent("Windows.Foundation.UniversalApiContract", 15);
+        return isSupported;
     }
     bool AddPackageOptions::LimitToExistingPackages()
     {

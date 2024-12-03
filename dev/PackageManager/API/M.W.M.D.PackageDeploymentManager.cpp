@@ -3147,8 +3147,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         activityId = winrt::guid{};
 
         // PackageManager.ProvisionPackageForAllUsersAsync(String, PackageAllUserProvisioningOptions) requires Windows >= 10.0.22000.0 (aka Win11 21H2)
-        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation;
-        if (WindowsVersion::IsWindows11_21H2OrGreater())
+        static bool isProvisionPackageForAllUsersAsyncWithOptionsSupported{ winrt::Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent("Windows.Foundation.UniversalApiContract", 14);
+        if (isProvisionPackageForAllUsersAsyncWithOptionsSupported)
         {
             deploymentOperation = m_packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName, options);
         }

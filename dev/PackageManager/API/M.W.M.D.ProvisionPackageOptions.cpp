@@ -13,7 +13,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     bool ProvisionPackageOptions::IsOptionalPackageFamilyNamesSupported()
     {
         // Requires Windows >= 10.0.22000.0 (aka Win11 21H2)
-        return WindowsVersion::IsWindows11_21H2OrGreater();
+        static bool isSupported{ winrt::Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent("Windows.Foundation.UniversalApiContract", 14);
+        return isSupported;
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> ProvisionPackageOptions::OptionalPackageFamilyNames()
     {
@@ -26,7 +27,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     bool ProvisionPackageOptions::IsProjectionOrderPackageFamilyNamesSupported()
     {
         // Requires Windows >= 10.0.22000.0 (aka Win11 21H2)
-        return WindowsVersion::IsWindows11_21H2OrGreater();
+        static bool isSupported{ winrt::Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent("Windows.Foundation.UniversalApiContract", 14);
+        return isSupported;
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> ProvisionPackageOptions::ProjectionOrderPackageFamilyNames()
     {
