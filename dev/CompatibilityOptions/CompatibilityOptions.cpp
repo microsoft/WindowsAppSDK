@@ -42,12 +42,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         // Add the set of disabled changes
+        std::vector<UINT32> disabledChanges;
         for (auto changeId : m_disabledChanges)
         {
             // TODO: Telemetry!  Log the changeId that was disabled.
             // Currently only UINT32 is used internally for the changeId, so cast down to that.
-            config.disabledChanges.push_back(static_cast<UINT32>(changeId));
+            disabledChanges.push_back(static_cast<UINT32>(changeId));
         }
+        config.disabledChanges = disabledChanges.data();
+        config.disabledChangesCount = static_cast<UINT32>(disabledChanges.size());
 
         HRESULT hr = WinAppSdk::Containment::SetConfiguration(&config);
         if (FAILED(hr))

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include "AssemblyInfo.h"
 
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -13,7 +14,10 @@ namespace Test::ContainmentTests
     public:
         BEGIN_TEST_CLASS(ContainmentTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"Containment-AppxManifest.xml")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own containment
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
@@ -30,24 +34,50 @@ namespace Test::ContainmentTests
             return true;
         }
 
+        TEST_METHOD_SETUP(MethodInit)
+        {
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            return true;
+        }
+
+        TEST_METHOD_CLEANUP(MethodUninit)
+        {
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            return true;
+        }
+
         TEST_METHOD(CanSetCompatibilityOptions)
         {
             WEX::Logging::Log::Comment(WEX::Common::String(L"Starting CanSetCompatibilityOptions..."));
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::CompatibilityOptions options;
-            WEX::Logging::Log::Comment(WEX::Common::String(L"   created CompatibilityOptions..."));
-            options.PatchMode1({ 1, 7, 3 });
+            WEX::Logging::Log::Comment(WEX::Common::String(L"   Created CompatibilityOptions..."));
+            options.PatchMode1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 3 });
             options.Apply();
-            //VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
+            WEX::Logging::Log::Comment(WEX::Common::String(L"   Applied CompatibilityOptions..."));
+
             try
             {
+                WEX::Logging::Log::Comment(WEX::Common::String(L"   Applying CompatibilityOptions with different patch mode..."));
                 winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::CompatibilityOptions options2;
-                options2.PatchMode1({ 1, 7, 6 });
+                options2.PatchMode1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 6 });
                 options2.Apply();
                 VERIFY_FAIL(L"Success is not expected when setting a different configuration");
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND), e.code());
+                VERIFY_ARE_EQUAL(E_ACCESSDENIED, e.code());
+            }
+
+            try
+            {
+                WEX::Logging::Log::Comment(WEX::Common::String(L"   Applying CompatibilityOptions with no patch mode..."));
+                winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::CompatibilityOptions options3;
+                options3.Apply();
+                VERIFY_FAIL(L"Success is not expected when setting a different configuration");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_ACCESSDENIED, e.code());
             }
         }
 
