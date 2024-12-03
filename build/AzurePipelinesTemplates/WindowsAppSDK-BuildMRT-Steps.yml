@@ -23,6 +23,7 @@ steps:
     slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore\mrt
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
 
 - task: PowerShell@2
   name: BuildBinaries

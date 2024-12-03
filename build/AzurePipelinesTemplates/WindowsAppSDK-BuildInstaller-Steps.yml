@@ -204,6 +204,7 @@ steps:
     slnDirectory: $(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
 
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
