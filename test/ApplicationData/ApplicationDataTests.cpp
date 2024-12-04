@@ -8,7 +8,6 @@
 namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
-namespace TD = ::Test::Diagnostics;
 
 static const winrt::hstring null_hstring;
 
@@ -28,10 +27,9 @@ namespace Test::ApplicationData::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
-            ::TD::DumpExecutionContext();
             if (!::WindowsVersion::IsWindows11_21H2OrGreater())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ApplicationData requires Win11 >= 21H2 (SV1). Skipping tests");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires Win11 >= 21H2 (SV1). Skipping tests");
                 return true;
             }
 
@@ -239,23 +237,15 @@ namespace Test::ApplicationData::Tests
         TEST_METHOD(MachineFolderAndPath_Main_NotSupported)
         {
             winrt::hstring packageFamilyName{ Main_PackageFamilyName };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A1: %ls", packageFamilyName.c_str()));
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A2: %ls", packageFamilyName.c_str()));
             VERIFY_IS_NOT_NULL(applicationData);
 
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A3: %ls", packageFamilyName.c_str()));
             VERIFY_IS_FALSE(applicationData.IsMachinePathSupported());
 
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A4: %ls", packageFamilyName.c_str()));
             const auto machineFolder{ applicationData.MachineFolder() };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A5: %ls", packageFamilyName.c_str()));
             VERIFY_IS_NULL(machineFolder);
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A6: %ls", packageFamilyName.c_str()));
             const auto machinePath{ applicationData.MachinePath() };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A7: %ls", packageFamilyName.c_str()));
             VERIFY_ARE_EQUAL(machinePath, null_hstring);
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A8: %ls", packageFamilyName.c_str()));
         }
 
         TEST_METHOD(MachineFolderAndPath_Framework_NotSupported)
