@@ -266,6 +266,7 @@ steps:
 
 - ${{ if ne(parameters.IsOneBranch, 'true') }}:
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'
       artifactName: '$(ob_artifactBaseName)'
