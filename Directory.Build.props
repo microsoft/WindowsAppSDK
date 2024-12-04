@@ -23,6 +23,7 @@
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
     <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
     <UseInternalMSUniCrtPackage>true</UseInternalMSUniCrtPackage>
+    <UndockedSettingsLoaded>true</UndockedSettingsLoaded>    
   </PropertyGroup>
   <PropertyGroup>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
