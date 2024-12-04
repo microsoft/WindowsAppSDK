@@ -72,7 +72,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: tools\DevCheck\DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
+    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2

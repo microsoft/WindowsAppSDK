@@ -119,14 +119,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup:
             {
-                BOOL isSupported{};
-                const HRESULT hr{ PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup", &isSupported) };
-                if (hr == E_NOTIMPL)
-                {
-                    return false;
-                }
-                THROW_IF_FAILED_MSG(hr, "PackageUriScheme_ms_uup");
-                return !!isSupported;
+                //TODO Feature lookup
+                // Relies on PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup") exist in Microsoft.FrameworkUdk and enabled
+                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
             {

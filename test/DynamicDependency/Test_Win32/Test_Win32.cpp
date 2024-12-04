@@ -95,7 +95,6 @@ void Test::DynamicDependency::Test_Win32::Create_Delete()
     wil::unique_process_heap_string packageDependencyId;
     VERIFY_ARE_EQUAL(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
 
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddDeletePackageDependency(%s)...", packageDependencyId.get()));
     MddDeletePackageDependency(packageDependencyId.get());
 
     VerifyPackageGraphRevisionId(1);
@@ -137,7 +136,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency_Win11NotResolved(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
     VerifyPackageGraphRevisionId(1);
 
     // -- Add
@@ -181,18 +180,16 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
 
     // -- Remove
 
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddRemovePackageDependency(%p)...", packageDependencyContext_FrameworkMathAdd));
     MddRemovePackageDependency(packageDependencyContext_FrameworkMathAdd);
 
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency_Win11NotResolved(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
     VerifyPackageGraphRevisionId(3);
 
     // -- Delete
 
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddDeletePackageDependency(%s)...", packageDependencyId_FrameworkMathAdd.get()));
     MddDeletePackageDependency(packageDependencyId_FrameworkMathAdd.get());
 
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
@@ -232,9 +229,7 @@ void Test::DynamicDependency::Test_Win32::GetIdForPackageDependencyContext()
     VERIFY_ARE_EQUAL(S_OK, MddGetIdForPackageDependencyContext(packageDependencyContext_FrameworkMathAdd, wil::out_param(id)));
     VERIFY_ARE_EQUAL(std::wstring(packageDependencyId_FrameworkMathAdd.get()), std::wstring(id.get()));
 
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddRemovePackageDependency(%p)...", packageDependencyContext_FrameworkMathAdd));
     MddRemovePackageDependency(packageDependencyContext_FrameworkMathAdd);
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddDeletePackageDependency(%s)...", packageDependencyId_FrameworkMathAdd.get()));
     MddDeletePackageDependency(packageDependencyId_FrameworkMathAdd.get());
 }
 
@@ -289,34 +284,6 @@ void Test::DynamicDependency::Test_Win32::VerifyPackageDependency(
     const std::wstring& expectedPackageFullName)
 {
     VerifyPackageDependency(packageDependencyId, expectedHR, expectedPackageFullName.c_str());
-}
-
-void Test::DynamicDependency::Test_Win32::VerifyPackageDependency_Win11NotResolved(
-    PCWSTR packageDependencyId,
-    const HRESULT expectedHR,
-    PCWSTR expectedPackageFullName)
-{
-    // Expected PackageFullName will be NULL if it's not resolved yet
-    // This can occur in the OS DynamicDependency API depending on order
-    // of operations and options. This differs from WinAppSDK DynamicDependency
-    // API in some cases. Tests use this method instad of VerifyPackageDependency()
-    // to handle this "expect NULL if we're using the OS API".
-    if (MddCore::Win11::IsSupported())
-    {
-        VerifyPackageDependency(packageDependencyId, expectedHR, nullptr);
-    }
-    else
-    {
-        VerifyPackageDependency(packageDependencyId, expectedHR, expectedPackageFullName);
-    }
-}
-
-void Test::DynamicDependency::Test_Win32::VerifyPackageDependency_Win11NotResolved(
-    PCWSTR packageDependencyId,
-    const HRESULT expectedHR,
-    const std::wstring& expectedPackageFullName)
-{
-    VerifyPackageDependency_Win11NotResolved(packageDependencyId, expectedHR, expectedPackageFullName.c_str());
 }
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path)

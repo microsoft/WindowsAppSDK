@@ -289,8 +289,7 @@ namespace Test::DynamicDependency
             const PACKAGE_VERSION c_minVersion3{};
             VERIFY_ARE_EQUAL(c_minVersion3.Version, c_minVersion1.Version);
             VERIFY_ARE_NOT_EQUAL(c_minVersion3.Version, c_minVersion2.Version);
-            const HRESULT hr{ MddBootstrapInitialize(c_Version_MajorMinor3, L"NoSuchShortVersionTagActuallUsedByAnyPackageAndEvenIfTherIsThePackageFamilyNameWouldBeTooLong", c_minVersion3) };
-            VERIFY_IS_TRUE((hr == STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED) || (hr == E_INVALIDARG), WEX::Common::String().Format(L"HRESULT:0x%08X"));
+            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor3, L"NoSuchShortVersionTagActuallUsedByAnyPackageAndEvenIfTherIsThePackageFamilyNameWouldBeTooLong", c_minVersion3));
             VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor3, L"Zathras", c_minVersion3));
 
             // Incompatible criteria. Verify Initialize+Shutdown brought us
