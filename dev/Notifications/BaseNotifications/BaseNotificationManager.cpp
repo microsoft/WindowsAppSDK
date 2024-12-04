@@ -9,7 +9,7 @@
 #include "NotificationProperties.h"
 #include "NotificationTransientProperties.h"
 #include <frameworkudk/toastnotifications.h>
-//#include <frameworkudk/wnpnotifications.h>
+#include <frameworkudk/wnpnotifications.h>
 #include <FrameworkUdk/toastnotificationsrt.h>
 
 using namespace Microsoft::Windows::AppNotifications::Helpers;
@@ -46,6 +46,6 @@ namespace Microsoft::Windows::BaseNotifications {
             co_return;
         }*/
 
-        //THROW_IF_FAILED(WnpNotifications_RemoveAllNotificationsForAppOfType(m_appId.c_str(), notificationType));
+        THROW_IF_FAILED(WnpNotifications_RemoveAllNotificationsForAppOfType(m_appId.c_str(), notificationType));
     }
 }
