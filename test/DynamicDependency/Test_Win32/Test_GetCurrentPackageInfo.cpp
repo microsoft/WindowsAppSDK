@@ -153,14 +153,12 @@ namespace Test::DynamicDependency
             VerifyGetCurrentPackageInfo123(PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC, HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), 1, 1, HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), 1, 1);
 
             // Verify GetCurrentPackageInfo for GenerationId
-            VerifyGenerationId(1);
+            VerifyGenerationId(1, S_OK);
 
             // -- Remove
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddRemovePackageDependency(%p)...", packageDependencyContext_FrameworkMathAdd));
             MddRemovePackageDependency(packageDependencyContext_FrameworkMathAdd);
 
             // -- Delete
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddDeletePackageDependency(%s)...", packageDependencyId_FrameworkMathAdd.get()));
             MddDeletePackageDependency(packageDependencyId_FrameworkMathAdd.get());
         }
 
@@ -233,7 +231,8 @@ namespace Test::DynamicDependency
         }
 
         void VerifyGenerationId(
-            const UINT32 expectedGenerationId)
+            const UINT32 expectedGenerationId,
+            const HRESULT expectedHR = HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE))
         {
             if (!IsGetCurrentPackageInfo3Supported())
             {
@@ -244,21 +243,12 @@ namespace Test::DynamicDependency
             UINT32 bufferSize{ static_cast<UINT32>(sizeof(generationId)) };
             const auto hr{ m_getCurrentPackageInfo3(0, PackageInfoType_PackageInfoGeneration, &bufferSize, &generationId, nullptr) };
             auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Get...GenerationId: hr:0x%X id:%u\n"
-                                                                           L"          Expected: hr:0x%X or 0x0 id:%u",
-                                                                           hr, generationId,
-                                                                           HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), expectedGenerationId) };
+                                                                           L"          Expected: hr:0x%X id:%u",
+                                                                           hr, generationId, expectedHR, expectedGenerationId) };
             VERIFY_IS_TRUE(true, message.get());
             OutputDebugStringW(message.get());
+            VERIFY_ARE_EQUAL(expectedHR, hr);
             VERIFY_ARE_EQUAL(expectedGenerationId, generationId);
-            if (expectedGenerationId == 0)
-            {
-                VERIFY_IS_TRUE((hr == S_OK) || (hr == HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE)),
-                               WEX::Common::String().Format(L"hr: 0x%08X expected: 0x0 or 0x%08X", hr, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE)));
-            }
-            else
-            {
-                VERIFY_ARE_EQUAL(S_OK, hr);
-            }
 
             const auto actualGenerationId{ MddGetGenerationId() };
             VERIFY_ARE_EQUAL(expectedGenerationId, actualGenerationId);
