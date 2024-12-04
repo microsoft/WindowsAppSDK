@@ -89,7 +89,6 @@ void Test::DynamicDependency::Test_WinRT::Create_Delete()
     const winrt::Windows::ApplicationModel::PackageVersion minVersion{};
     auto packageDependency{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion) };
 
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageDependencyId(%s).Delete()...", packageDependency.Id().c_str()));
     packageDependency.Delete();
 
     VerifyGenerationId(1);
@@ -194,18 +193,16 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
 
     // -- Remove
 
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageDependencyContext(%llu).Remove()...", packageDependencyContext_FrameworkMathAdd.ContextId().Id));
     packageDependencyContext_FrameworkMathAdd.Remove();
 
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency_Win11NotResolved(packageDependencyId_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);
     VerifyGenerationId(3);
 
     // -- Delete
 
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageDependencyId(%s).Delete()...", packageDependency_FrameworkMathAdd.Id().c_str()));
     packageDependency_FrameworkMathAdd.Delete();
 
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
@@ -338,64 +335,6 @@ void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency(
     const winrt::hstring& expectedPackageFullName)
 {
     VerifyPackageDependency(packageDependency.Id().c_str(), expectedHR, expectedPackageFullName.c_str());
-}
-
-void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency_Win11NotResolved(
-    PCWSTR packageDependencyId,
-    const HRESULT expectedHR,
-    PCWSTR expectedPackageFullName)
-{
-    // Expected PackageFullName will be NULL if it's not resolved yet
-    // This can occur in the OS DynamicDependency API depending on order
-    // of operations and options. This differs from WinAppSDK DynamicDependency
-    // API in some cases. Tests use this method instad of VerifyPackageDependency()
-    // to handle this "expect NULL if we're using the OS API".
-    if (MddCore::Win11::IsSupported())
-    {
-        VerifyPackageDependency(packageDependencyId, expectedHR, nullptr);
-    }
-    else
-    {
-        VerifyPackageDependency(packageDependencyId, expectedHR, expectedPackageFullName);
-    }
-}
-
-void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency_Win11NotResolved(
-    PCWSTR packageDependencyId,
-    const HRESULT expectedHR,
-    const std::wstring& expectedPackageFullName)
-{
-    VerifyPackageDependency_Win11NotResolved(packageDependencyId, expectedHR, expectedPackageFullName.c_str());
-}
-
-void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency_Win11NotResolved(
-    const winrt::hstring& packageDependencyId,
-    const HRESULT expectedHR)
-{
-    VerifyPackageDependency_Win11NotResolved(packageDependencyId.c_str(), expectedHR);
-}
-
-void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency_Win11NotResolved(
-    const winrt::hstring& packageDependencyId,
-    const HRESULT expectedHR,
-    const winrt::hstring& expectedPackageFullName)
-{
-    VerifyPackageDependency_Win11NotResolved(packageDependencyId.c_str(), expectedHR, expectedPackageFullName.c_str());
-}
-
-void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency_Win11NotResolved(
-    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency& packageDependency,
-    const HRESULT expectedHR)
-{
-    VerifyPackageDependency_Win11NotResolved(packageDependency.Id().c_str(), expectedHR);
-}
-
-void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency_Win11NotResolved(
-    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency& packageDependency,
-    const HRESULT expectedHR,
-    const winrt::hstring& expectedPackageFullName)
-{
-    VerifyPackageDependency_Win11NotResolved(packageDependency.Id().c_str(), expectedHR, expectedPackageFullName.c_str());
 }
 
 void Test::DynamicDependency::Test_WinRT::VerifyPathEnvironmentVariable(PCWSTR path)

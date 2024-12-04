@@ -9,8 +9,6 @@
 #include <activation.h>
 #include <VersionHelpers.h>
 
-#include <IsWindowsVersion.h>
-
 #include "urfw.h"
 
 #include "catalog.h"
@@ -60,18 +58,18 @@ static decltype(RoGetActivationFactory)* TrueRoGetActivationFactory = RoGetActiv
 static decltype(RoGetMetaDataFile)* TrueRoGetMetaDataFile = RoGetMetaDataFile;
 static decltype(RoResolveNamespace)* TrueRoResolveNamespace = RoResolveNamespace;
 
-static bool g_apisAreDetoured{};
-
 enum class ActivationLocation
 {
     CurrentApartment,
     CrossApartmentMTA
 };
 
-VOID CALLBACK EnsureMTAInitializedCallBack(
+VOID CALLBACK EnsureMTAInitializedCallBack
+(
     PTP_CALLBACK_INSTANCE /*instance*/,
     PVOID                 /*parameter*/,
-    PTP_WORK              /*work*/)
+    PTP_WORK              /*work*/
+)
 {
     Microsoft::WRL::ComPtr<IComThreadingInfo> spThreadingInfo;
     CoGetObjectContext(IID_PPV_ARGS(&spThreadingInfo));
@@ -407,34 +405,10 @@ HRESULT ExtRoLoadCatalog()
 
 HRESULT UrfwInitialize() noexcept
 {
-#if defined(TODO_URFW_DELEGATE_TO_OS_19H1PLUS)
-    // Windows' Reg-Free WinRT first appeared in Windows 10 Version 1903, May 2019 Update (aka 19H1)
-    // https://blogs.windows.com/windowsdeveloper/2019/04/30/enhancing-non-packaged-desktop-apps-using-windows-runtime-components/
-    // Delegate to the OS' implementation when available
-    if (WindowsVersion::IsWindows10_19H1OrGreater())
-    {
-        return S_OK;
-    }
-#elif defined(TODO_SEEME_PRODUCT_TARGET)
-    // Delegate to the OS' implementation on >= Windows 11 24H1
-    if (WindowsVersion::IsWindows11_22H2OrGreater())
-    {
-        return S_OK;
-    }
-#else
-    // Delegate to the OS' implementation on >= Windows 11 24H1
-    if (WindowsVersion::IsWindows11_24H1OrGreater())
-    {
-        return S_OK;
-    }
-#endif
-
-    // OS Reg-Free WinRT isn't available so let's do it ourselves...
     DetourAttach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
     DetourAttach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
     DetourAttach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);
     DetourAttach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
-    g_apisAreDetoured = true;
     try
     {
         RETURN_IF_FAILED(ExtRoLoadCatalog());
@@ -448,14 +422,10 @@ HRESULT UrfwInitialize() noexcept
 
 void UrfwShutdown() noexcept
 {
-    if (g_apisAreDetoured)
-    {
-        DetourDetach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
-        DetourDetach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
-        DetourDetach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);
-        DetourDetach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
-        g_apisAreDetoured = false;
-    }
+    DetourDetach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
+    DetourDetach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
+    DetourDetach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);
+    DetourDetach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
 }
 
 extern "C" void WINAPI winrtact_Initialize()
