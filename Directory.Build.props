@@ -3,7 +3,7 @@
 <!-- This is a special MSBuild file that is parsed before everything else when MSBuild detects it in our directory structure.
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
      to ensure that all of our build output files end up in the same location. -->
-<Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project InitialTargets="DirectoryBuildPropsInfo" TreatAsLocalProperty="Platform" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="eng\Version.Dependencies.props" />
   <!-- Due to import ordering inconsistencies between different project types, we import this file from multiple places. -->
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
@@ -24,7 +24,7 @@
     <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
     <UseInternalMSUniCrtPackage>true</UseInternalMSUniCrtPackage>
     <UndockedSettingsLoaded>true</UndockedSettingsLoaded>
-    <Platform Condition="'$(Platform)'=='Win32'">win32</Platform>
+    <Platform Condition="'$(Platform)'=='x86'">Win32</Platform>
   </PropertyGroup>
   <PropertyGroup>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
