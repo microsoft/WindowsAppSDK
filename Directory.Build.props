@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE-CODE in the project root for license information. -->
 <!-- This is a special MSBuild file that is parsed before everything else when MSBuild detects it in our directory structure.
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
@@ -23,7 +23,8 @@
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
     <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
     <UseInternalMSUniCrtPackage>true</UseInternalMSUniCrtPackage>
-    <UndockedSettingsLoaded>true</UndockedSettingsLoaded>    
+    <UndockedSettingsLoaded>true</UndockedSettingsLoaded>
+    <Platform Condition="'$(Platform)'=='Win32'">win32</Platform>
   </PropertyGroup>
   <PropertyGroup>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
