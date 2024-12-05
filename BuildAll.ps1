@@ -116,7 +116,7 @@ Try {
     # the code this way allows minimally diveraging the flow while supporting building the target both via this script and the VSBuild/MSBuild task.
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
     {
-        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\WindowsAppRuntime.restore.$platformToRun.$configurationToRun.binlog"
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\WindowsAppRuntime.restore.binlog"
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
 
         if ($lastexitcode -ne 0)
