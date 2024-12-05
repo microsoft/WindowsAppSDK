@@ -4,13 +4,13 @@
 #pragma once
 
 #include <frameworkUdk/ToastNotificationsRT.h>
-#include "BaseNotification.h"
+#include "BadgeNotification.h"
 
 struct NotificationTransientProperties : winrt::implements<NotificationTransientProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties>
 {
     NotificationTransientProperties(winrt::Microsoft::Windows::AppNotifications::AppNotification const& toastNotification) noexcept;
 
-    NotificationTransientProperties(Microsoft::Windows::BaseNotifications::BaseNotification const& baseNotification) noexcept;
+    NotificationTransientProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification const& badgeNotification) noexcept;
 
     STDMETHOD(get_OfflineCacheCount)(_Out_ unsigned long long* offlineCacheCount) noexcept;
 

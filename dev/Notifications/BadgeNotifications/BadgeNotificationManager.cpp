@@ -5,8 +5,12 @@
 #include "BadgeNotificationManager.h"
 #include "Microsoft.Windows.BadgeNotifications.BadgeNotificationManager.g.cpp"
 #include "externs.h"
+#include "AppNotificationUtility.h"
+#include "NotificationProperties.h"
+#include "NotificationTransientProperties.h"
 #include <frameworkudk/toastnotifications.h>
 #include <FrameworkUdk/toastnotificationsrt.h>
+#include <frameworkudk/wnpnotifications.h>
 #include <Microsoft.RoApi.h>
 #include "BadgeNotification.h"
 #include "BadgeNotificationTelemetry.h"
@@ -29,14 +33,13 @@ namespace ToastABI
     using namespace ::ABI::Windows::Foundation::Collections;
 }
 
-namespace BaseNotifications
-{
-    using namespace ::Microsoft::Windows::BaseNotifications;
-}
+using namespace Microsoft::Windows::AppNotifications::Helpers;
+using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
+
 
 namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 {
-    BadgeNotificationManager::BadgeNotificationManager() : BaseNotifications::BaseNotificationManager() {}
+    BadgeNotificationManager::BadgeNotificationManager() : m_processName(GetCurrentProcessPath()), m_appId(RetrieveNotificationAppId()) {}
 
     winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationManager BadgeNotificationManager::Current()
     {
@@ -84,6 +87,9 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
         PCWSTR glyphValueString;
         GetBadgeNotificationGlyphToString(glyphValue, &glyphValueString);
+
+        THROW_HR_IF_MSG(E_INVALIDARG, glyphValueString == NULL, "Invalid Glyph value");
+
         SetBadge(glyphValueString, nullptr);
         return;
     }
@@ -94,6 +100,9 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
         PCWSTR glyphValueString;
         GetBadgeNotificationGlyphToString(glyphValue, &glyphValueString);
+
+        THROW_HR_IF_MSG(E_INVALIDARG, glyphValueString == NULL, "Invalid Glyph value");
+
         SetBadge(glyphValueString, &expiration);
         return;
     }
@@ -106,7 +115,7 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
             g_telemetryHelper,
             m_appId) };
 
-        BaseNotifications::BaseNotificationManager::RemoveAllNotification(ToastABI::NotificationType::NotificationType_Badge);
+        THROW_IF_FAILED(WnpNotifications_RemoveAllNotificationsForAppOfType(m_appId.c_str(), ToastABI::NotificationType::NotificationType_Badge));
 
         logTelemetry.Stop();
 
@@ -115,7 +124,7 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
     void BadgeNotificationManager::GetBadgeNotificationGlyphToString(_In_ winrt::BadgeNotificationGlyph glyphValue, _Out_ PCWSTR* glyphString)
     {
-        static const std::unordered_map<winrt::BadgeNotificationGlyph, PCWSTR> enumMapping = {
+        constexpr static std::pair<winrt::BadgeNotificationGlyph, PCWSTR> enumMapping[] = {
             {winrt::BadgeNotificationGlyph::None, L"none"},
             {winrt::BadgeNotificationGlyph::Activity, L"activity"},
             {winrt::BadgeNotificationGlyph::Alarm, L"alarm"},
@@ -131,26 +140,50 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
             {winrt::BadgeNotificationGlyph::Unavailable, L"unavailable"}
         };
 
-        *glyphString = enumMapping.at(glyphValue);
+        auto it = std::find_if(std::begin(enumMapping), std::end(enumMapping), [&](const auto& item)
+        {
+            return item.first == glyphValue;
+        });
+
+        if (it != std::end(enumMapping))
+        {
+            *glyphString = it->second;
+        }
+        else
+        {
+            *glyphString = nullptr;
+        }
+
         return;
     }
 
     void BadgeNotificationManager::SetBadge(_In_ const std::wstring& value, _In_opt_ const winrt::Windows::Foundation::DateTime* expiration)
     {
         auto xmlResult = wil::str_printf<std::wstring>(L"<badge value='%ls'/>", value.c_str());
-        ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
+        ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotification(xmlResult.c_str());
 
         auto logTelemetry{ BadgeNotificationTelemetry::SetBadge::Start(
             g_telemetryHelper,
             m_appId,
-            badgeNotifications.Payload().c_str()) };
+            badgeNotification.Payload().c_str()) };
 
         if (expiration != nullptr)
         {
-            badgeNotifications.Expiration(*expiration);
+            badgeNotification.Expiration(*expiration);
         }
 
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);
+        THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, badgeNotification.Id() != 0);
+
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties = winrt::make_self<NotificationProperties>(badgeNotification);
+
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties = winrt::make_self<NotificationTransientProperties>(badgeNotification);
+
+        DWORD notificationId = 0;
+        THROW_IF_FAILED(ToastNotifications_PostToast(m_appId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId));
+
+        THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
+
+        badgeNotification.Id(notificationId);
 
         logTelemetry.Stop();
     }

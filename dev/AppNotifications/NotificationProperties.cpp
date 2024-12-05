@@ -62,31 +62,26 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
     m_notificationType = ToastABI::NotificationType::NotificationType_Toast;
 }
 
-NotificationProperties::NotificationProperties(Microsoft::Windows::BaseNotifications::BaseNotification const& baseNotification)
+NotificationProperties::NotificationProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification const& badgeNotification)
 {
     // Extract payload and convert it from XML to a byte array
-    auto payloadAsSimpleString = Helpers::WideStringToUtf8String(baseNotification.Payload());
+    auto payloadAsSimpleString = Helpers::WideStringToUtf8String(badgeNotification.Payload());
 
     m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
     THROW_IF_NULL_ALLOC(m_payload.get());
     CopyMemory(m_payload.data(), payloadAsSimpleString.c_str(), payloadAsSimpleString.size());
 
-    m_notificationId = baseNotification.Id();
+    m_notificationId = badgeNotification.Id();
 
-    m_tag = baseNotification.Tag();
-    m_group = baseNotification.Group();
+    m_tag = badgeNotification.Tag();
+    m_group = badgeNotification.Group();
 
-    m_expiry = winrt::clock::to_file_time(baseNotification.Expiration());
+    m_expiry = winrt::clock::to_file_time(badgeNotification.Expiration());
     m_arrivalTime = winrt::clock::to_file_time(winrt::clock::now());
 
-    m_expiresOnReboot = baseNotification.ExpiresOnReboot();
+    m_expiresOnReboot = badgeNotification.ExpiresOnReboot();
 
-    if (baseNotification.Progress() != nullptr)
-    {
-        m_toastProgressData = winrt::make_self<NotificationProgressData>(baseNotification.Progress());
-    }
-
-    m_notificationType = baseNotification.NotificationType();
+    m_notificationType = badgeNotification.NotificationType();
 }
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationId(_Out_ unsigned int* notificationId) noexcept
