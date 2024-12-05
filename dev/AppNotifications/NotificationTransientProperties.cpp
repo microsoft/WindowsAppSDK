@@ -28,7 +28,7 @@ NotificationTransientProperties::NotificationTransientProperties(winrt::AppNotif
     }
 }
 
-NotificationTransientProperties::NotificationTransientProperties(_In_ Microsoft::Windows::BadgeNotifications::BadgeNotification const& badgeNotification) noexcept
+NotificationTransientProperties::NotificationTransientProperties(_In_ Microsoft::Windows::BadgeNotifications::BadgeNotification &badgeNotification) noexcept
 {
     m_suppressPopup = badgeNotification.SuppressDisplay();
 
