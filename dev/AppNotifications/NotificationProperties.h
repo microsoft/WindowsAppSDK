@@ -11,7 +11,7 @@ struct NotificationProperties : winrt::implements<NotificationProperties, ::ABI:
 {
     NotificationProperties(winrt::Microsoft::Windows::AppNotifications::AppNotification const& toastNotification);
 
-    NotificationProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification const& badgeNotification);
+    NotificationProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification &badgeNotification);
 
     STDMETHOD(get_NotificationId)(_Out_ unsigned int* notificationId) noexcept;
 

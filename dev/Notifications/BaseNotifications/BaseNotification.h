@@ -14,22 +14,22 @@ namespace Microsoft::Windows::BaseNotifications {
         BaseNotification() = default;
 
         BaseNotification(winrt::hstring const& payload);
-        winrt::hstring Tag() const noexcept;
+        winrt::hstring Tag();
         void Tag(winrt::hstring const& value);
-        winrt::hstring Group() const noexcept;
+        winrt::hstring Group();
         void Group(winrt::hstring const& value);
-        uint32_t Id() const noexcept;
+        uint32_t Id();
         void Id(uint32_t id);
-        winrt::hstring Payload() const noexcept;
-        winrt::Windows::Foundation::DateTime Expiration() const noexcept;
+        winrt::hstring Payload() ;
+        winrt::Windows::Foundation::DateTime Expiration();
         void Expiration(winrt::Windows::Foundation::DateTime const& value);
-        bool ExpiresOnReboot() const noexcept;
+        bool ExpiresOnReboot();
         void ExpiresOnReboot(bool value);
-        winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority Priority() const noexcept;
+        winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority Priority();
         void Priority(winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority const& value);
-        bool SuppressDisplay() const noexcept;
+        bool SuppressDisplay();
         void SuppressDisplay(bool value);
-        ::ABI::Microsoft::Internal::ToastNotifications::NotificationType NotificationType() const noexcept;
+        ::ABI::Microsoft::Internal::ToastNotifications::NotificationType NotificationType() ;
         void NotificationType(::ABI::Microsoft::Internal::ToastNotifications::NotificationType value);
 
     protected:

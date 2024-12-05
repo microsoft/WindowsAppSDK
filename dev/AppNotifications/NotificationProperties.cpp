@@ -62,7 +62,7 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
     m_notificationType = ToastABI::NotificationType::NotificationType_Toast;
 }
 
-NotificationProperties::NotificationProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification const& badgeNotification)
+NotificationProperties::NotificationProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification &badgeNotification)
 {
     // Extract payload and convert it from XML to a byte array
     auto payloadAsSimpleString = Helpers::WideStringToUtf8String(badgeNotification.Payload());
