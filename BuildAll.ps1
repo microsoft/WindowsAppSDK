@@ -116,19 +116,21 @@ Try {
     # the code this way allows minimally diveraging the flow while supporting building the target both via this script and the VSBuild/MSBuild task.
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
     {
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\WindowsAppRuntime.restore.$platformToRun.$configurationToRun.binlog"
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: restore WindowsAppRuntime.sln FAILED."
+            write-host "ERROR: nuget.exe restore WindowsAppRuntime.sln FAILED."
             exit 1
         }
 
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\Microsoft.WindowsAppRuntime.Bootstrap.Net.restore.binlog"
         & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
+            write-host "ERROR: nuget.exe restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
             exit 1
         }
 
@@ -171,7 +173,7 @@ Try {
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
                 {
-                    write-host "ERROR: msbuild.exe /restore WindowsAppRuntime.sln FAILED."
+                    write-host "ERROR: msbuild.exe WindowsAppRuntime.sln FAILED."
                     exit 1
                 }
             }
@@ -184,43 +186,48 @@ Try {
         #------------------
 
         #Restore packages from mrt.
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\MrtCore.restore.binlog"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: restore MrtCore.sln FAILED."
+            write-host "ERROR: nuget.exe restore MrtCore.sln FAILED."
             exit 1
         }
 
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\Microsoft.Windows.ApplicationModel.Resources.restore.binlog"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: restore Microsoft.Windows.ApplicationModel.Resources\src\packages.config FAILED."
+            write-host "ERROR: nuget.exe restore Microsoft.Windows.ApplicationModel.Resources\src\packages.config FAILED."
             exit 1
         }
 
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\mrmex.restore.binlog"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: restore mrm\mrmex\packages.config FAILED."
+            write-host "ERROR: nuget.exe restore mrm\mrmex\packages.config FAILED."
             exit 1
         }
 
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\mrmmin.restore.binlog"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: restore mrmmin\packages.config FAILED."
+            write-host "ERROR: nuget.exe restore mrmmin\packages.config FAILED."
             exit 1
         }
 
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/bl:BuildOutput\mrm_unittests.restore.binlog"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: restore unittests\packages.config FAILED."
+            write-host "ERROR: nuget.exe restore unittests\packages.config FAILED."
             exit 1
         }
 
@@ -251,7 +258,7 @@ Try {
 
                     if ($lastexitcode -ne 0)
                     {
-                        write-host "ERROR: Building '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+                        write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
                         exit 1
                     }
                 }
@@ -263,11 +270,11 @@ Try {
         #------------------
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
-        # build AnyCPU
+        # build and restore AnyCPU
         & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: msbuild restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
+            write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
             exit 1
         }
     }
