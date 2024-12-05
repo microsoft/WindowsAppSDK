@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <initguid.h>
-
 #include <wil/result.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
