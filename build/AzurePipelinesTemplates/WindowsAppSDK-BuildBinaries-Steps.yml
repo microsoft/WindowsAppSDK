@@ -133,12 +133,14 @@ steps:
 # so the CopyFiles below are to move all the vPack files to the right locations
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
+  condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
+  condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\packages'
     TargetFolder: '$(ob_outputDirectory)\packages'
