@@ -28,11 +28,11 @@ NotificationTransientProperties::NotificationTransientProperties(winrt::AppNotif
     }
 }
 
-NotificationTransientProperties::NotificationTransientProperties(_In_ Microsoft::Windows::BaseNotifications::BaseNotification const& baseNotification) noexcept
+NotificationTransientProperties::NotificationTransientProperties(_In_ Microsoft::Windows::BadgeNotifications::BadgeNotification const& badgeNotification) noexcept
 {
-    m_suppressPopup = baseNotification.SuppressDisplay();
+    m_suppressPopup = badgeNotification.SuppressDisplay();
 
-    if (baseNotification.Priority() == winrt::AppNotificationPriority::High)
+    if (badgeNotification.Priority() == winrt::AppNotificationPriority::High)
     {
         m_toastNotificationPriority = ToastABI::ToastNotificationPriority::ToastNotificationPriority_High;
     }

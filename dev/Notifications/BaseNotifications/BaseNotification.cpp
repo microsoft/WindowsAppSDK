@@ -46,16 +46,6 @@ namespace Microsoft::Windows::BaseNotifications {
         return m_payload;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData BaseNotification::Progress() const noexcept
-    {
-        return m_progressData;
-    }
-
-    void BaseNotification::Progress(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const& progressData)
-    {
-        m_progressData = progressData;
-    }
-
     winrt::Windows::Foundation::DateTime BaseNotification::Expiration() const noexcept
     {
         return m_expirationTime;

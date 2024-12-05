@@ -21,8 +21,6 @@ namespace Microsoft::Windows::BaseNotifications {
         uint32_t Id() const noexcept;
         void Id(uint32_t id);
         winrt::hstring Payload() const noexcept;
-        winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData Progress() const noexcept;
-        void Progress(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const& value);
         winrt::Windows::Foundation::DateTime Expiration() const noexcept;
         void Expiration(winrt::Windows::Foundation::DateTime const& value);
         bool ExpiresOnReboot() const noexcept;
@@ -39,7 +37,6 @@ namespace Microsoft::Windows::BaseNotifications {
         winrt::hstring m_group{};
         uint32_t m_notificationId{ 0 };
         winrt::hstring m_payload{};
-        winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData m_progressData{ nullptr };
         winrt::Windows::Foundation::DateTime m_expirationTime{};
         bool m_expiresOnReboot{ false };
         winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority m_priority

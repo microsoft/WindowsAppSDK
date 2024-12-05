@@ -4,11 +4,10 @@
 #pragma once
 #include "Microsoft.Windows.BadgeNotifications.BadgeNotificationManager.g.h"
 #include "externs.h"
-#include "BaseNotificationManager.h"
 
 namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 {
-    struct BadgeNotificationManager : BadgeNotificationManagerT<BadgeNotificationManager>, public ::Microsoft::Windows::BaseNotifications::BaseNotificationManager
+    struct BadgeNotificationManager : BadgeNotificationManagerT<BadgeNotificationManager>
     {
         BadgeNotificationManager();
 
@@ -25,6 +24,9 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     private:
         void GetBadgeNotificationGlyphToString(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, _Out_ PCWSTR* glyphString);
         void SetBadge(_In_ const std::wstring& value, _In_opt_ const winrt::Windows::Foundation::DateTime* expiration);
+        wil::srwlock m_lock;
+        std::wstring m_processName;
+        std::wstring m_appId;
     };
 
     struct BadgeNotificationManagerFactory : winrt::implements<BadgeNotificationManagerFactory, IClassFactory>
