@@ -134,12 +134,6 @@ steps:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
-- task: CopyFiles@2
-  displayName: MoveToOutputDirectory
-  inputs:
-    SourceFolder: '$(build.SourcesDirectory)\packages'
-    TargetFolder: '$(ob_outputDirectory)\packages'
-
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
     inputs:
