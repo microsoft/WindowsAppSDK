@@ -34,7 +34,12 @@
 
 * [Build your first app with Windows App SDK](https://learn.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)
 * [Developer documentation](https://aka.ms/windowsappsdkdocs)
-* [Samples](https://github.com/microsoft/WindowsAppSDK-Samples)
+* [Samples & resources](https://learn.microsoft.com/windows/apps/get-started/samples)
+  * [Windows App SDK samples](https://github.com/microsoft/WindowsAppSDK-Samples)
+  * [WinUI 3 Gallery](https://github.com/microsoft/WinUI-Gallery)
+  * [AI Dev Gallery (Preview)](https://github.com/microsoft/ai-dev-gallery)
+  * [Windows Community Toolkit](https://github.com/CommunityToolkit/Windows)
+  * [Template Studio](https://github.com/microsoft/TemplateStudio)
 * [FAQ](docs/faq.md)
 * [Contribution guide](docs/contributor-guide.md)
 * [Roadmap](./docs/roadmap.md)
