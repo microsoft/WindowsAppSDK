@@ -21,6 +21,9 @@ steps:
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore\mrt
+    includeUCRT: true
+    ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
 
 - task: PowerShell@2
   name: BuildBinaries
@@ -88,6 +91,7 @@ steps:
 
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'
       artifactName: '$(ob_artifactBaseName)'

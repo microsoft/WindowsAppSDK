@@ -6,6 +6,11 @@
 #include "install.h"
 #include "resource.h"
 
+#ifndef GUID_NULL
+struct __declspec(uuid("00000000-0000-0000-0000-000000000000")) GUID_NULL;
+#define GUID_NULL __uuidof(struct GUID_NULL)
+#endif
+
 using namespace winrt;
 
 using namespace WindowsAppRuntimeInstaller::Console;
