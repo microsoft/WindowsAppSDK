@@ -55,6 +55,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Management.Deployment.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Media.Capture.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Storage.Pickers.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Security.Authentication.OAuth.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
@@ -126,6 +127,8 @@ PublishFile $FullBuildOutput\Microsoft.Windows.Management.Deployment.Projection\
 PublishFile $FullBuildOutput\Microsoft.Windows.Management.Deployment.Projection\Microsoft.Windows.Management.Deployment.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.Media.Capture.Projection\Microsoft.Windows.Media.Capture.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.Media.Capture.Projection\Microsoft.Windows.Media.Capture.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Pickers.Projection\Microsoft.Windows.Storage.Pickers.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Pickers.Projection\Microsoft.Windows.Storage.Pickers.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
@@ -202,6 +205,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Management.Deployment.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Media.Capture.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Storage.Pickers.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Security.Authentication.OAuth.winmd $NugetDir\lib\uap10.0
