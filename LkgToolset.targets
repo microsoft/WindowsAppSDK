@@ -7,8 +7,9 @@
   <PropertyGroup Condition="'$(Platform)'=='x86'">
     <WorkaroundLkgWin32>true</WorkaroundLkgWin32>
     <Platform>Win32</Platform>
+    <MsUCRT_x86_targets>$([MSBuild]::NormalizePath('$(_UCRTX86Root)', '..\build\MsUCRT.x86.targets'))</MsUCRT_x86_targets>
   </PropertyGroup>
-  <Import Project="custom.targets" Condition="Exists('custom.targets') and '$(WorkaroundLkgWin32)'=='true'" />
+  <Import Project="$(MsUCRT_x86_targets)" Condition="Exists('$(MsUCRT_x86_targets)')" />
   <PropertyGroup Condition="'$(WorkaroundLkgWin32)'=='true'">
     <Platform>x86</Platform>
   </PropertyGroup>
