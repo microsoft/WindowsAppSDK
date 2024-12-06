@@ -63,12 +63,15 @@ steps:
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)
+    includeUCRT: true
+    ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
 
 - task: PowerShell@2
-  name: BuildBinaries
+  name: BuildFoundation
   inputs:
     filePath: 'BuildAll.ps1'
-    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildFoundation"
 
 - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
@@ -130,18 +133,21 @@ steps:
 # so the CopyFiles below are to move all the vPack files to the right locations
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
+  condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
+  condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\packages'
     TargetFolder: '$(ob_outputDirectory)\packages'
 
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'
       artifactName: '$(ob_artifactBaseName)'
