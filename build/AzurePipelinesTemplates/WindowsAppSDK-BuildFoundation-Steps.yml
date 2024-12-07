@@ -132,11 +132,18 @@ steps:
 # Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
 # so the CopyFiles below are to move all the vPack files to the right locations
 - task: CopyFiles@2
-  displayName: MoveToOutputDirectory
+  displayName: Stage BuildOutput for publish
   condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
+
+- task: CopyFiles@2
+  displayName: Stage redist files for publish
+  condition: always()
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\redist'
+    TargetFolder: '$(ob_outputDirectory)\redist'
 
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
