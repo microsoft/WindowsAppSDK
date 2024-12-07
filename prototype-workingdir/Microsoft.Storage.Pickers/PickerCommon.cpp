@@ -96,7 +96,7 @@ namespace PickerCommon {
 	using namespace winrt;
 
 	void ConfigureDialogCommon(
-		winrt::com_ptr<IFileOpenDialog> dialog,
+		winrt::com_ptr<IFileDialog> dialog,
 		winrt::hstring commitButtonText,
 		winrt::hstring settingIdentifierId,
 		winrt::Microsoft::Storage::Pickers::PickerLocationId pickerLocationId

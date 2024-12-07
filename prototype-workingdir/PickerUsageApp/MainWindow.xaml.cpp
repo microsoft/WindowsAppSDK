@@ -15,8 +15,6 @@ using namespace Microsoft::UI::Xaml;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-
-
 namespace winrt::PickerUsageApp::implementation
 {
     Windows::Storage::Pickers::PickerViewMode Convert(Microsoft::Storage::Pickers::PickerViewMode viewMode)
@@ -177,8 +175,6 @@ namespace winrt::PickerUsageApp::implementation
             co_return L"Folder Picker does not support multi selection";
         }
         co_return L"no selection";
-
-        throw hresult_not_implemented();
     }
 
     Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFileSDKClick(IInspectable const&, RoutedEventArgs const&)
