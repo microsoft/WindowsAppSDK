@@ -145,6 +145,14 @@ steps:
     SourceFolder: '$(build.SourcesDirectory)\redist'
     TargetFolder: '$(ob_outputDirectory)\redist'
 
+- task: CopyFiles@2
+  displayName: Stage TAEF files for publish
+  condition: always()
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\packages'
+    Contents: Microsoft.Taef.*\**
+    TargetFolder: '$(ob_outputDirectory)\redist'
+
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
     condition: always()
