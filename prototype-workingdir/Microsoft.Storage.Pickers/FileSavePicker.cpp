@@ -73,38 +73,30 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
         m_suggestedFileName = value;
     }
 
-    struct FileSavePickerParameters {
-        HWND HWnd;
-        winrt::hstring CommitButtonText;
-        winrt::hstring SettingsIdentifierId;
-        PickerLocationId PickerLocationId;
 
-        void ConfigureDialog(winrt::com_ptr<IFileSaveDialog> dialog)
-        {
-            PickerCommon::ConfigureDialogCommon(dialog, CommitButtonText, SettingsIdentifierId, PickerLocationId);
-        }
-    };
+    void FileSavePicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
+    {
+        parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
+        parameters.CommitButtonText = m_commitButtonText;
+        parameters.SettingsIdentifierId = m_SettingsIdentifier;
+        parameters.PickerLocationId = m_PickerLocationId;
+        parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeChoices.GetView());
+    }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileSavePicker::PickSaveFileAsync()
     {
-        FileSavePickerParameters parameters{};
+        PickerCommon::PickerParameters parameters{};
+        CaptureParameters(parameters);
 
         co_await winrt::resume_background();
-		auto cancellationToken = co_await winrt::get_cancellation_token();
-		if (cancellationToken())
-		{
-			co_return nullptr;
-		}
+        auto cancellationToken = co_await winrt::get_cancellation_token();
+        if (cancellationToken())
+        {
+            co_return nullptr;
+        }
 
         auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CONTEXT_ALL);
-
         parameters.ConfigureDialog(dialog);
-
-        // TODO: set filter typse
-        COMDLG_FILTERSPEC save_filter[1];
-        save_filter[0].pszName = L"All files";
-        save_filter[0].pszSpec = L"*.*";
-        check_hresult(dialog->SetFileTypes(1, save_filter));
 
         {
             auto hr = dialog->Show(parameters.HWnd);
@@ -117,7 +109,7 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
 
-        auto& file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
+        auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
         if (cancellationToken())
         {
             co_return nullptr;

@@ -48,7 +48,7 @@ namespace winrt::PickerUsageApp::implementation
 
 
         // using this template approach helps us ensure use same logic on compatible user facing API
-        template<typename TPicker, typename TPickerLocationId> void SetPickerOptions(TPicker picker)
+        template<typename TPicker, typename TPickerLocationId> void SetCommonPickerOptions(TPicker picker)
         {
             if (m_isUseCustomLabel)
             {
@@ -81,7 +81,7 @@ namespace winrt::PickerUsageApp::implementation
 
         template<typename TPicker, typename TPickerLocationId> void SetOpenPickerOptions(TPicker picker)
         {
-            SetPickerOptions<TPicker, TPickerLocationId>(picker);
+            SetCommonPickerOptions<TPicker, TPickerLocationId>(picker);
             switch (m_FilterTypeIndex)
             {
             case 1:
@@ -97,6 +97,12 @@ namespace winrt::PickerUsageApp::implementation
                 picker.FileTypeFilter().Append(L"*");
                 break;
             }
+        }
+
+        template<typename TPicker, typename TPickerLocationId> void SetSavePickerOptions(TPicker picker)
+        {
+            SetCommonPickerOptions<TPicker, TPickerLocationId>(picker);
+            picker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<hstring>({ L".txt" }));
         }
     };
 }

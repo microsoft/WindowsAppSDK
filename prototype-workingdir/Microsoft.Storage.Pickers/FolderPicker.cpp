@@ -47,40 +47,20 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 	winrt::Windows::Foundation::Collections::IVector<hstring> FolderPicker::FileTypeFilter()
 	{
 		return m_fileTypeFilter;
-
 	}
 
-	struct FolderPickerParameters {
-		winrt::hstring CommitButtonText;
-		winrt::hstring SettingsIdentifierId;
-		PickerLocationId PickerLocationId;
-		std::vector<winrt::hstring> FileTypeFilterData{};
-		std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
-		HWND HWnd;
-
-		void ConfigureDialog(winrt::com_ptr<IFileOpenDialog> dialog) {
-			PickerCommon::ConfigureDialogCommon(dialog, CommitButtonText, SettingsIdentifierId, PickerLocationId);
-			check_hresult(dialog->SetFileTypes(FileTypeFilterPara.size(), FileTypeFilterPara.data()));
-		}
-	};
-
-	void FolderPicker::CaptureParameters(FolderPickerParameters& parameters) {
+	void FolderPicker::CaptureParameters(PickerCommon::PickerParameters& parameters) {
+		parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
 		parameters.CommitButtonText = m_commitButtonText;
 		parameters.SettingsIdentifierId = m_SettingsIdentifier;
 		parameters.PickerLocationId = m_PickerLocationId;
-		for (size_t i = 0; i < m_fileTypeFilter.Size(); i++)
-		{
-			parameters.FileTypeFilterData.push_back(m_fileTypeFilter.GetAt(i));
-			parameters.FileTypeFilterPara.push_back({ L"", parameters.FileTypeFilterData[i].c_str() });
-		}
-		parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
+        parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
 	}
 
 
 	winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> FolderPicker::PickSingleFolderAsync()
 	{
-		FolderPickerParameters parameters{};
-
+		PickerCommon::PickerParameters parameters{};
 		CaptureParameters(parameters);
 
 		co_await winrt::resume_background();
@@ -90,9 +70,6 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 		{
 			co_return nullptr;
 		}
-
-		// TODO: should we initialize COM?
-		// wil::com_initialize_ex initializeCom{ COINIT_APARTMENTTHREADED };
 
 		auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
 
@@ -108,7 +85,7 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 		winrt::com_ptr<IShellItem> shellItem{};
 		check_hresult(dialog->GetResult(shellItem.put()));
 
-		auto& folder = co_await PickerCommon::CreateStorageFolderFromShellItem(shellItem);
+		auto folder = co_await PickerCommon::CreateStorageFolderFromShellItem(shellItem);
 		if (cancellationToken())
 		{
 			co_return nullptr;

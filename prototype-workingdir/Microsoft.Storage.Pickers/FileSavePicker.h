@@ -1,5 +1,6 @@
 #pragma once
 #include "FileSavePicker.g.h"
+#include "PickerCommon.h"
 
 namespace winrt::Microsoft::Storage::Pickers::implementation
 {
@@ -33,7 +34,7 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 		hstring m_suggestedFileName{};
 		winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ winrt::single_threaded_map<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>() };
 
-		void CaptureParameters(FileSavePickerParameters& parameters);
+		void CaptureParameters(PickerCommon::PickerParameters& parameters);
 	};
 }
 namespace winrt::Microsoft::Storage::Pickers::factory_implementation

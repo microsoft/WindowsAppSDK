@@ -130,10 +130,9 @@ namespace winrt::PickerUsageApp::implementation
         check_hresult(windowNative->get_WindowHandle(&hWnd));
 
         winrt::Windows::Storage::Pickers::FileSavePicker picker{};
-        picker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<hstring>({ L".txt" }));
 
         picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
-        SetPickerOptions<winrt::Windows::Storage::Pickers::FileSavePicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
+        SetSavePickerOptions<winrt::Windows::Storage::Pickers::FileSavePicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
 
         if (!m_MultipleSelect)
         {
@@ -210,7 +209,7 @@ namespace winrt::PickerUsageApp::implementation
         auto id = AppWindow().Id();
         winrt::Microsoft::Storage::Pickers::FileSavePicker picker{ id };
 
-        SetPickerOptions<winrt::Microsoft::Storage::Pickers::FileSavePicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
+        SetSavePickerOptions<winrt::Microsoft::Storage::Pickers::FileSavePicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
         if (!m_MultipleSelect)
         {
             auto& file = co_await picker.PickSaveFileAsync();

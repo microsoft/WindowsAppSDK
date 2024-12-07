@@ -1,10 +1,9 @@
 #pragma once
 #include "FolderPicker.g.h"
+#include "PickerCommon.h"
 
 namespace winrt::Microsoft::Storage::Pickers::implementation
 {
-	struct FolderPickerParameters;
-
 	struct FolderPicker : FolderPickerT<FolderPicker>
 	{
 		FolderPicker(winrt::Microsoft::UI::WindowId const& windowId);
@@ -29,7 +28,7 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
 		winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
 
-		void CaptureParameters(FolderPickerParameters& parameters);
+		void CaptureParameters(PickerCommon::PickerParameters& parameters);
 	};
 }
 namespace winrt::Microsoft::Storage::Pickers::factory_implementation
