@@ -5,6 +5,16 @@
 
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
+    enum CompatibilityChange
+    {
+        None = 0, // do not use this value
+
+        // Add real changes here:
+
+        // 1.7.1
+        // ...
+    };
+
     [contractversion(1)]
     apicontract CompatibilityContract {};
 
@@ -33,7 +43,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsAppRuntimeVersion PatchMode2 { get; set; };
 
         /// An optional list of specific servicing changes to disable.
-        IVector<UInt64> DisabledChanges{ get; };
+        IVector<CompatibilityChange> DisabledChanges{ get; };
 
         /// Apply the compatibility options to the runtime.
         void Apply();

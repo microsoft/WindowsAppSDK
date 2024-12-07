@@ -5,13 +5,11 @@
 #include "CompatibilityOptions.h"
 #include "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.CompatibilityOptions.g.cpp"
 #include "AssemblyInfo.h"
-
-#define DEFINE_WinAppSDKRuntimeConfiguration
 #include <FrameworkUdk/Containment.h>
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    winrt::Windows::Foundation::Collections::IVector<uint64_t> CompatibilityOptions::DisabledChanges()
+    winrt::Windows::Foundation::Collections::IVector<CompatibilityChange> CompatibilityOptions::DisabledChanges()
     {
         return m_disabledChanges;
     }
@@ -46,7 +44,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         for (auto changeId : m_disabledChanges)
         {
             // TODO: Telemetry!  Log the changeId that was disabled.
-            // Currently only UINT32 is used internally for the changeId, so cast down to that.
+            // UINT32 is used internally for the changeId, so cast from the enum's Int32 to that.
             disabledChanges.push_back(static_cast<UINT32>(changeId));
         }
         config.disabledChanges = disabledChanges.data();
@@ -55,9 +53,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         HRESULT hr = WinAppSdk::Containment::SetConfiguration(&config);
         if (FAILED(hr))
         {
-            if (hr == E_ACCESSDENIED)
+            if (hr == E_ILLEGAL_STATE_CHANGE)
             {
-                throw winrt::hresult_access_denied(L"Configuration already set or locked.");
+                throw winrt::hresult_illegal_state_change(L"Configuration already set or locked.");
             }
             winrt::throw_hresult(hr);
         }

@@ -4,8 +4,13 @@
 #include "pch.h"
 #include "AssemblyInfo.h"
 
+#include <FrameworkUdk/Containment.h>
+#include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
+
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
+
+namespace WAR = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime;
 
 namespace Test::ContainmentTests
 {
@@ -65,7 +70,7 @@ namespace Test::ContainmentTests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_ACCESSDENIED, e.code());
+                VERIFY_ARE_EQUAL(E_ILLEGAL_STATE_CHANGE, e.code());
             }
 
             try
@@ -77,7 +82,7 @@ namespace Test::ContainmentTests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_ACCESSDENIED, e.code());
+                VERIFY_ARE_EQUAL(E_ILLEGAL_STATE_CHANGE, e.code());
             }
         }
 
@@ -95,7 +100,25 @@ namespace Test::ContainmentTests
             options2.Apply();
         }
 
-        // TODO: Test setting DisabledChanges.
-        // TODO: Can IsChangeEnabled be directly called to test patch mode check and DisabledChanges?
+        TEST_METHOD(VerifyDisabledChanges)
+        {
+            winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::CompatibilityOptions options;
+            options.PatchMode1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 3 });
+            options.DisabledChanges().Append((WAR::CompatibilityChange)12345);
+            options.DisabledChanges().Append((WAR::CompatibilityChange)23456);
+            options.DisabledChanges().Append((WAR::CompatibilityChange)34567);
+            options.DisabledChanges().Append(WAR::CompatibilityChange::None); // just to confirm compilation using a real enum value
+            options.Apply();
+
+            WEX::Logging::Log::Comment(WEX::Common::String(L"CompatibilityOptions with DisabledChanges applied."));
+
+            // Verify that the specified DisabledChanges are disabled.
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<12345, WinAppSDK_Security>()));
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<23456, WinAppSDK_Security>()));
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<34567, WinAppSDK_Security>()));
+
+            // A different value not in DisabledChanges should remain enabled.
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999, WinAppSDK_Security>()));
+        }
     };
 }
