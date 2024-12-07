@@ -1069,7 +1069,7 @@ function Install-TAEFService
     $cpu = Get-CpuArchitecture
     $taef_version = Get-TAEFPackageVersion
     $taef = "Microsoft.Taef.$($taef_version)"
-    $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
+    $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
         Write-Host "Install TAEF service...Not Found ($path)"
