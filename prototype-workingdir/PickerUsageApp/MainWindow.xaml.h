@@ -18,6 +18,9 @@ namespace winrt::PickerUsageApp::implementation
         winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFileSDKClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
         winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFileUWPClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
 
+        winrt::Windows::Foundation::IAsyncOperation<hstring> SaveFileUWPClick();
+        winrt::Windows::Foundation::IAsyncOperation<hstring> SaveFileSDKClick();
+
         winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFolderSDKClick();
         winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFolderUWPClick();
 
@@ -63,6 +66,22 @@ namespace winrt::PickerUsageApp::implementation
                 picker.SettingsIdentifier({});
                 break;
             }
+            switch (m_PickerLocationIdIndex)
+            {
+            case 1:
+                picker.SuggestedStartLocation(TPickerLocationId::DocumentsLibrary);
+                break;
+            case 2:
+                picker.SuggestedStartLocation(TPickerLocationId::Desktop);
+                break;
+            default:
+                break;
+            }
+        }
+
+        template<typename TPicker, typename TPickerLocationId> void SetOpenPickerOptions(TPicker picker)
+        {
+            SetPickerOptions<TPicker, TPickerLocationId>(picker);
             switch (m_FilterTypeIndex)
             {
             case 1:
@@ -78,21 +97,7 @@ namespace winrt::PickerUsageApp::implementation
                 picker.FileTypeFilter().Append(L"*");
                 break;
             }
-            switch (m_PickerLocationIdIndex)
-            {
-            case 1:
-                picker.SuggestedStartLocation(TPickerLocationId::DocumentsLibrary);
-                break;
-            case 2:
-                picker.SuggestedStartLocation(TPickerLocationId::Desktop);
-                break;
-            default:
-                break;
-            }
-
-
         }
-
     };
 }
 

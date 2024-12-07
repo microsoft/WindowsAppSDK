@@ -43,6 +43,9 @@ namespace winrt::PickerUsageApp::implementation
             case 0:
                 message = co_await  OpenFileSDKClick(sender, args);
                 break;
+            case 1:
+                message = co_await  SaveFileSDKClick();
+                break;
             case 2:
                 message = co_await  OpenFolderSDKClick();
                 break;
@@ -68,6 +71,9 @@ namespace winrt::PickerUsageApp::implementation
             {
             case 0:
                 message = co_await OpenFileUWPClick(sender, args);
+                break;
+            case 1:
+                message = co_await SaveFileUWPClick();
                 break;
             case 2:
                 message = co_await OpenFolderUWPClick();
@@ -95,7 +101,7 @@ namespace winrt::PickerUsageApp::implementation
         winrt::Windows::Storage::Pickers::FileOpenPicker picker{};
 
         picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
-        SetPickerOptions<winrt::Windows::Storage::Pickers::FileOpenPicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
+        SetOpenPickerOptions<winrt::Windows::Storage::Pickers::FileOpenPicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
         picker.ViewMode(Convert(m_ViewMode));
 
         if (!m_MultipleSelect)
@@ -119,6 +125,33 @@ namespace winrt::PickerUsageApp::implementation
         co_return L"no selection";
     }
 
+    Windows::Foundation::IAsyncOperation<hstring> MainWindow::SaveFileUWPClick()
+    {
+        auto windowNative = this->m_inner.as<IWindowNative>();
+        HWND hWnd = nullptr;
+        check_hresult(windowNative->get_WindowHandle(&hWnd));
+
+        winrt::Windows::Storage::Pickers::FileSavePicker picker{};
+        picker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<hstring>({ L".txt" }));
+
+        picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
+        SetPickerOptions<winrt::Windows::Storage::Pickers::FileSavePicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
+
+        if (!m_MultipleSelect)
+        {
+            auto& file = co_await picker.PickSaveFileAsync();
+            if (file != nullptr)
+            {
+                co_return file.Path();
+            }
+        }
+        else
+        {
+            co_return L"File Save Picker does not support multi selection";
+        }
+        co_return L"no selection";
+    }
+
     winrt::Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFolderUWPClick()
     {
         auto windowNative = this->m_inner.as<IWindowNative>();
@@ -128,7 +161,7 @@ namespace winrt::PickerUsageApp::implementation
         winrt::Windows::Storage::Pickers::FolderPicker picker{};
 
         picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
-        SetPickerOptions<winrt::Windows::Storage::Pickers::FolderPicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
+        SetOpenPickerOptions<winrt::Windows::Storage::Pickers::FolderPicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
         picker.ViewMode(Convert(m_ViewMode));
 
         if (!m_MultipleSelect)
@@ -141,7 +174,7 @@ namespace winrt::PickerUsageApp::implementation
         }
         else
         {
-            co_return L"Folder multi selection is not support";
+            co_return L"Folder Picker does not support multi selection";
         }
         co_return L"no selection";
 
@@ -153,8 +186,7 @@ namespace winrt::PickerUsageApp::implementation
         auto id = AppWindow().Id();
         winrt::Microsoft::Storage::Pickers::FileOpenPicker picker{ id };
 
-        SetPickerOptions<winrt::Microsoft::Storage::Pickers::FileOpenPicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
-        //SetPickerOptions(picker);
+        SetOpenPickerOptions<winrt::Microsoft::Storage::Pickers::FileOpenPicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
         picker.ViewMode(m_ViewMode);
         if (!m_MultipleSelect)
         {
@@ -177,12 +209,33 @@ namespace winrt::PickerUsageApp::implementation
         co_return L"no selection";
     }
 
+    Windows::Foundation::IAsyncOperation<hstring> MainWindow::SaveFileSDKClick()
+    {
+        auto id = AppWindow().Id();
+        winrt::Microsoft::Storage::Pickers::FileSavePicker picker{ id };
+
+        SetPickerOptions<winrt::Microsoft::Storage::Pickers::FileSavePicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
+        if (!m_MultipleSelect)
+        {
+            auto& file = co_await picker.PickSaveFileAsync();
+            if (file != nullptr)
+            {
+                co_return file.Path();
+            }
+        }
+        else
+        {
+            co_return L"FileSavePicker does not support multi selection";
+        }
+        co_return L"no selection";
+    }
+
     winrt::Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFolderSDKClick()
     {
         auto id = AppWindow().Id();
         winrt::Microsoft::Storage::Pickers::FolderPicker picker{ id };
 
-        SetPickerOptions<winrt::Microsoft::Storage::Pickers::FolderPicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
+        SetOpenPickerOptions<winrt::Microsoft::Storage::Pickers::FolderPicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
         picker.ViewMode(m_ViewMode);
         if (!m_MultipleSelect)
         {
@@ -239,8 +292,6 @@ void winrt::PickerUsageApp::implementation::MainWindow::ViewModeSelectionChanged
     default:
         break;
     }
-
-
 }
 
 
@@ -274,5 +325,3 @@ void winrt::PickerUsageApp::implementation::MainWindow::PickerTypeChanged(winrt:
 {
     m_PickerTypeIndex = sender.as<Microsoft::UI::Xaml::Controls::RadioButtons>().SelectedIndex();
 }
-
-
