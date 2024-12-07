@@ -73,14 +73,14 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            $(Build.SourcesDirectory)\packages\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
+            $(Build.SourcesDirectory)\redist\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
 
   - task: powerShell@2
     displayName: 'Install VCLibs.Desktop'
     inputs:
       targetType: 'inline'
       script: |
-            $package = "$(Build.SourcesDirectory)\packages\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.Desktop.appx"
+            $package = "$(Build.SourcesDirectory)\redist\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.Desktop.appx"
             Add-AppxPackage $package -ErrorAction SilentlyContinue
 
   - task: powerShell@2
@@ -88,7 +88,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            $(Build.SourcesDirectory)\packages\vc_redist.${{ parameters.buildPlatform }}.exe /quiet /install /norestart
+            $(Build.SourcesDirectory)\redist\vc_redist.${{ parameters.buildPlatform }}.exe /quiet /install /norestart
 
   - task: powershell@2
     displayName: 'Run TE.Service'
