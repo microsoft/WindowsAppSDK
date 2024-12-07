@@ -5,6 +5,9 @@
 #include <shobjidl_core.h>
 #include "winrt/Microsoft.Storage.Pickers.h"
 #include <KnownFolders.h>
+#include <winrt/Windows.Security.Cryptography.h>
+#include <winrt/Windows.Security.Cryptography.Core.h>
+#include <winrt/Windows.Storage.Streams.h>
 
 namespace {
     bool IsHStringNullOrEmpty(winrt::hstring value)
@@ -13,35 +16,28 @@ namespace {
         return value.empty();
     }
 
-    // TODO: rewrite use WinRT APIs https://learn.microsoft.com/en-us/uwp/api/windows.security.cryptography.core.hashalgorithmprovider?view=winrt-26100
     GUID HashHStringToGuid(winrt::hstring const& input)
     {
-        // Convert the hstring to bytes (UTF-16LE encoding)
-        const BYTE* data = reinterpret_cast<const BYTE*>(input.data());
-        DWORD dataSize = static_cast<DWORD>(input.size() * sizeof(wchar_t));
+        auto algorithmProvider = winrt::Windows::Security::Cryptography::Core::HashAlgorithmProvider::OpenAlgorithm(winrt::Windows::Security::Cryptography::Core::HashAlgorithmNames::Md5());
 
-        // Acquire a cryptographic provider context
-        wil::unique_hcryptprov cryptProv;
-        THROW_IF_WIN32_BOOL_FALSE(CryptAcquireContextW(&cryptProv, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT));
+        auto buffer = winrt::Windows::Security::Cryptography::CryptographicBuffer::ConvertStringToBinary(input, winrt::Windows::Security::Cryptography::BinaryStringEncoding::Utf16LE);
 
-        // Create an MD5 hash object
-        wil::unique_hcrypthash hash;
-        THROW_IF_WIN32_BOOL_FALSE(CryptCreateHash(cryptProv.get(), CALG_MD5, 0, 0, &hash));
+        auto hash = algorithmProvider.HashData(buffer);
 
-        // Hash the data
-        THROW_IF_WIN32_BOOL_FALSE(CryptHashData(hash.get(), data, dataSize, 0));
+        if (hash.Length() != 16)
+        {
+            throw winrt::hresult_error(E_FAIL, L"Invalid hash length");
+        }
 
-        // Get the hash value
-        BYTE hashValue[16]; // MD5 hash is 16 bytes
-        DWORD hashSize = sizeof(hashValue);
-        THROW_IF_WIN32_BOOL_FALSE(CryptGetHashParam(hash.get(), HP_HASHVAL, hashValue, &hashSize, 0));
+        winrt::com_array<uint8_t> resultBuffer{};
+        winrt::Windows::Security::Cryptography::CryptographicBuffer::CopyToByteArray(hash, resultBuffer);
+        GUID guid = *(reinterpret_cast<GUID*>(resultBuffer.data()));
 
-        // Copy the hash into a GUID
-        GUID guid;
-        memcpy(&guid, hashValue, sizeof(GUID));
+        // TODO: verify bit pattern code from copilot is correct to fit spec
+        // Adjust the GUID to conform to version 3 UUID (MD5-based)
+        guid.Data3 = (guid.Data3 & 0x0FFF) | 0x3000; // Set the version to 3
+        guid.Data4[0] = (guid.Data4[0] & 0x3F) | 0x80; // Set variant to RFC 4122
 
-        // TODO: Need to modify genreated bit patterns to fit GUID specification
-        // like need to specify some bits to make it a valid GUID (maybe v3 or v5)
         return guid;
     }
 
