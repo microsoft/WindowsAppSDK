@@ -9,8 +9,15 @@
     mc:Ignorable="d"
     Title="PickerUsageApp">
     <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <RadioButtons SelectedIndex="0" SelectionChanged="PickerTypeChanged" Header="Picker">
+                <RadioButton Content="File Open"></RadioButton>
+                <RadioButton Content="File Save"></RadioButton>
+                <RadioButton Content="Folder"></RadioButton>
+            </RadioButtons>
+        </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock HorizontalAlignment="Center">Multi Selection</TextBlock>
+            <TextBlock VerticalAlignment="Center">Multi Selection</TextBlock>
             <ToggleSwitch Toggled="MultiSelectToggled"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -46,8 +53,8 @@
             </RadioButtons>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button Click="OpenFileSDKClick">Open File (SDK)</Button>
-            <Button Click="OpenFileUWPClick">Open File (UWP)</Button>
+            <Button Click="SDKClick">Run SDK Picker</Button>
+            <Button Click="UWPClick">Run UWP Picker</Button>
             <TextBlock x:Name="counterBlock"></TextBlock>
         </StackPanel>
         <Button Click="UIFronzenTestClick">UI Fronzen Test</Button>
