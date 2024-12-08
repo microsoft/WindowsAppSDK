@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="PickerUsageApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PickerUsageApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="PickerUsageApp">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <RadioButtons SelectedIndex="0" SelectionChanged="PickerTypeChanged" Header="Picker">
+                <RadioButton Content="File Open"></RadioButton>
+                <RadioButton Content="File Save"></RadioButton>
+                <RadioButton Content="Folder"></RadioButton>
+            </RadioButtons>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock VerticalAlignment="Center">Multi Selection</TextBlock>
+            <ToggleSwitch Toggled="MultiSelectToggled"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock VerticalAlignment="Center" >CommitButtonText</TextBlock>
+            <ToggleButton x:Name="useCustomLabelToggle" Click="toggleCustomLableClick">Enable</ToggleButton>
+            <TextBox x:Name="customLabelBox" Visibility="Collapsed"></TextBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <RadioButtons SelectedIndex="0" SelectionChanged="FilterTypeSelectionChanged" Header="Filter Type Preset">
+                <RadioButton Content="All"></RadioButton>
+                <RadioButton Content="Images"></RadioButton>
+                <RadioButton Content="Images and Json"></RadioButton>
+            </RadioButtons>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <RadioButtons SelectedIndex="0" SelectionChanged="SettingsIdentifierChanged" Header="SettingsIdentifier">
+                <RadioButton Content="Unspecified"></RadioButton>
+                <RadioButton Content="Identifier1"></RadioButton>
+                <RadioButton Content="Identifier2"></RadioButton>
+            </RadioButtons>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <RadioButtons SelectedIndex="0" SelectionChanged="PickerLocationIdChanged" Header="PickerLocationId">
+                <RadioButton Content="Unspecified"></RadioButton>
+                <RadioButton Content="Documents"></RadioButton>
+                <RadioButton Content="Desktop"></RadioButton>
+            </RadioButtons>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <RadioButtons SelectedIndex="0" SelectionChanged="ViewModeSelectionChanged" Header="ViewMode">
+                <RadioButton Content="List"></RadioButton>
+                <RadioButton Content="Thumbnail"></RadioButton>
+            </RadioButtons>
+        </StackPanel>
+        <!--<TextBlock>!!! WARN !!! Save picker will overwrite Context in selected file with test data</TextBlock>-->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Click="SDKClick">Run SDK Picker</Button>
+            <Button Click="UWPClick">Run UWP Picker</Button>
+            <TextBlock x:Name="counterBlock"></TextBlock>
+        </StackPanel>
+        <Button Click="UIFronzenTestClick">UI Fronzen Test</Button>
+        <TextBlock x:Name="labelBlock"></TextBlock>
+    </StackPanel>
+</Window>
