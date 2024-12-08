@@ -4,8 +4,8 @@ This folder contains prototype implementations for adding types in `Storage.Pick
 
 ## Current State
 
-- Basic implementation of most core functionalities was added.
-- A basic demo app for testing and comparing purpose was added.
+- Basic implementation of most core functionalities was added in `Microsoft.Storage.Pickers/`.
+- A basic demo app for testing and comparing purpose was added in `PickerUsageApp/`.
 
 ### Next steps
 - Additional argument validation needs to be added.
