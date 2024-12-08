@@ -81,12 +81,16 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
         parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeChoices.GetView());
+
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileSavePicker::PickSaveFileAsync()
     {
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
+        auto defaultFileExtension = m_defaultFileExtension;
+        auto suggestedSaveFile = m_suggestedSaveFile;
+        auto suggestedFileName = m_suggestedFileName;
 
         co_await winrt::resume_background();
         auto cancellationToken = co_await winrt::get_cancellation_token();
@@ -97,6 +101,21 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CONTEXT_ALL);
         parameters.ConfigureDialog(dialog);
+
+        if (!PickerCommon::IsHStringNullOrEmpty(defaultFileExtension))
+        {
+            check_hresult(dialog->SetDefaultExtension(defaultFileExtension.c_str()));
+        }
+        if (!PickerCommon::IsHStringNullOrEmpty(suggestedFileName))
+        {
+            check_hresult(dialog->SetFileName(suggestedFileName.c_str()));
+        }
+        if (suggestedSaveFile != nullptr)
+        {
+            winrt::com_ptr<IShellItem> shellItem;
+            check_hresult(SHCreateItemFromParsingName(suggestedSaveFile.Path().c_str(), nullptr, IID_PPV_ARGS(shellItem.put())));
+            check_hresult(dialog->SetSaveAsItem(shellItem.get()));
+        }
 
         {
             auto hr = dialog->Show(parameters.HWnd);

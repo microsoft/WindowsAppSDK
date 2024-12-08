@@ -5,11 +5,6 @@
 #include <KnownFolders.h>
 
 namespace {
-    bool IsHStringNullOrEmpty(winrt::hstring value)
-    {
-        // TODO: proper handling of null string reference?
-        return value.empty();
-    }
 
     GUID HashHStringToGuid(winrt::hstring const& input)
     {
@@ -120,6 +115,13 @@ namespace {
 namespace PickerCommon {
 
     using namespace winrt;
+
+    bool IsHStringNullOrEmpty(winrt::hstring value)
+    {
+        // TODO: proper handling of null string reference?
+        return value.empty();
+    }
+
 
     // TODO: better way to convert ShellItem a StorageFile without relying on path?.
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CreateStorageFileFromShellItem(winrt::com_ptr<IShellItem> shellItem)

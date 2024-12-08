@@ -11,6 +11,9 @@ namespace PickerCommon {
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
 
+    // TODO: remove this if we know proper and null safe empty test for string
+    bool IsHStringNullOrEmpty(winrt::hstring value);
+
     struct PickerParameters {
         HWND HWnd;
         winrt::hstring CommitButtonText;
