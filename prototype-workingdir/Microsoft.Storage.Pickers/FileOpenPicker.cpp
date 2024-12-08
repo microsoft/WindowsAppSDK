@@ -16,27 +16,27 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
     winrt::Microsoft::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
     {
-        return m_ViewMode;
+        return m_viewMode;
     }
     void FileOpenPicker::ViewMode(winrt::Microsoft::Storage::Pickers::PickerViewMode const& value)
     {
-        m_ViewMode = value;
+        m_viewMode = value;
     }
     hstring FileOpenPicker::SettingsIdentifier()
     {
-        return m_SettingsIdentifier;
+        return m_settingsIdentifier;
     }
     void FileOpenPicker::SettingsIdentifier(hstring const& value)
     {
-        m_SettingsIdentifier = value;
+        m_settingsIdentifier = value;
     }
     winrt::Microsoft::Storage::Pickers::PickerLocationId FileOpenPicker::SuggestedStartLocation()
     {
-        return m_PickerLocationId;
+        return m_suggestedStartLocation;
     }
     void FileOpenPicker::SuggestedStartLocation(winrt::Microsoft::Storage::Pickers::PickerLocationId const& value)
     {
-        m_PickerLocationId = value;
+        m_suggestedStartLocation = value;
     }
     winrt::hstring FileOpenPicker::CommitButtonText()
     {
@@ -55,8 +55,8 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.SettingsIdentifierId = m_SettingsIdentifier;
-        parameters.PickerLocationId = m_PickerLocationId;
+        parameters.SettingsIdentifierId = m_settingsIdentifier;
+        parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
     }
 
@@ -81,21 +81,22 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
         parameters.ConfigureDialog(dialog);
 
-        auto hr = dialog->Show(parameters.HWnd);
-        if (FAILED(hr) || cancellationToken())
         {
-            co_return nullptr;
+            auto hr = dialog->Show(parameters.HWnd);
+            if (FAILED(hr) || cancellationToken())
+            {
+                co_return nullptr;
+            }
         }
 
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
-
         auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
+
         if (cancellationToken())
         {
             co_return nullptr;
         }
-
         co_return file;
     }
 
@@ -121,10 +122,12 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
         check_hresult(dialog->SetOptions(FOS_ALLOWMULTISELECT));
 
-        auto hr = dialog->Show(parameters.HWnd);
-        if (FAILED(hr) || cancellationToken())
         {
-            co_return results.GetView();
+            auto hr = dialog->Show(parameters.HWnd);
+            if (FAILED(hr) || cancellationToken())
+            {
+                co_return results.GetView();
+            }
         }
 
         winrt::com_ptr<IShellItemArray> shellItems{};
@@ -146,7 +149,6 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
             results.Clear();
             co_return results.GetView();
         }
-
         co_return results.GetView();
     }
 }

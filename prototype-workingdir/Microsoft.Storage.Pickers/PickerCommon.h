@@ -4,8 +4,6 @@
 #include "ShObjIdl.h"
 #include "winrt/Microsoft.Storage.Pickers.h"
 
-#pragma once
-
 namespace PickerCommon {
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CreateStorageFileFromShellItem(winrt::com_ptr<IShellItem> shellItem);
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> CreateStorageFolderFromShellItem(winrt::com_ptr<IShellItem> shellItem);

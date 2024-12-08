@@ -2,12 +2,7 @@
 #include "PickerCommon.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
-#include <shobjidl_core.h>
-#include "winrt/Microsoft.Storage.Pickers.h"
 #include <KnownFolders.h>
-#include <winrt/Windows.Security.Cryptography.h>
-#include <winrt/Windows.Security.Cryptography.Core.h>
-#include <winrt/Windows.Storage.Streams.h>
 
 namespace {
     bool IsHStringNullOrEmpty(winrt::hstring value)
@@ -80,9 +75,9 @@ namespace {
         }
 
         auto knownFolderManager = winrt::create_instance<IKnownFolderManager>(CLSID_KnownFolderManager);
-        winrt::com_ptr<IKnownFolder> knownFolder;
+        winrt::com_ptr<IKnownFolder> knownFolder{};
         winrt::check_hresult(knownFolderManager->GetFolder(knownFolderId, knownFolder.put()));
-        winrt::com_ptr<IShellItem> defaultFolder;
+        winrt::com_ptr<IShellItem> defaultFolder{};
         winrt::check_hresult(knownFolder->GetShellItem(0, IID_PPV_ARGS(defaultFolder.put())));
         return defaultFolder;
     }
@@ -191,13 +186,13 @@ namespace PickerCommon {
             check_hresult(dialog->SetClientGuid(guid));
         }
 
-
         auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
         if (defaultFolder != nullptr)
         {
             check_hresult(dialog->SetFolder(defaultFolder.get()));
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
         }
-        check_hresult(dialog->SetFileTypes(static_cast<UINT>(FileTypeFilterPara.size()), FileTypeFilterPara.data()));
+
+        check_hresult(dialog->SetFileTypes(FileTypeFilterPara.size(), FileTypeFilterPara.data()));
     }
 }

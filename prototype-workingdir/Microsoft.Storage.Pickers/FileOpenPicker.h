@@ -10,10 +10,13 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
         winrt::Microsoft::Storage::Pickers::PickerViewMode ViewMode();
         void ViewMode(winrt::Microsoft::Storage::Pickers::PickerViewMode const& value);
+
         hstring SettingsIdentifier();
         void SettingsIdentifier(hstring const& value);
+
         winrt::Microsoft::Storage::Pickers::PickerLocationId SuggestedStartLocation();
         void SuggestedStartLocation(winrt::Microsoft::Storage::Pickers::PickerLocationId const& value);
+
         winrt::hstring CommitButtonText();
         void CommitButtonText(winrt::hstring const& value);
 
@@ -24,12 +27,10 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
     private:
         winrt::Microsoft::UI::WindowId m_windowId{};
-        winrt::hstring m_SettingsIdentifier{};
-        PickerLocationId m_PickerLocationId{ PickerLocationId::Unspecified };
+        PickerViewMode m_viewMode{ PickerViewMode::List };
+        winrt::hstring m_settingsIdentifier{};
+        PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         winrt::hstring m_commitButtonText{};
-
-        PickerViewMode m_ViewMode{ PickerViewMode::List };
-
         winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);

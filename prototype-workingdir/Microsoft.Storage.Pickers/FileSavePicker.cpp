@@ -22,19 +22,19 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
     }
     hstring FileSavePicker::SettingsIdentifier()
     {
-        return m_SettingsIdentifier;
+        return m_settingsIdentifier;
     }
     void FileSavePicker::SettingsIdentifier(hstring const& value)
     {
-        m_SettingsIdentifier = value;
+        m_settingsIdentifier = value;
     }
     winrt::Microsoft::Storage::Pickers::PickerLocationId FileSavePicker::SuggestedStartLocation()
     {
-        return m_PickerLocationId;
+        return m_suggestedStartLocation;
     }
     void FileSavePicker::SuggestedStartLocation(winrt::Microsoft::Storage::Pickers::PickerLocationId const& value)
     {
-        m_PickerLocationId = value;
+        m_suggestedStartLocation = value;
     }
     hstring FileSavePicker::CommitButtonText()
     {
@@ -78,8 +78,8 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.SettingsIdentifierId = m_SettingsIdentifier;
-        parameters.PickerLocationId = m_PickerLocationId;
+        parameters.SettingsIdentifierId = m_settingsIdentifier;
+        parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeChoices.GetView());
     }
 
@@ -108,13 +108,12 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
-
         auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
+
         if (cancellationToken())
         {
             co_return nullptr;
         }
-
         co_return file;
     }
 }
