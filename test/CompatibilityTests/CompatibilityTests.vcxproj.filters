@@ -21,7 +21,7 @@
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ContainmentTests.cpp">
+    <ClCompile Include="CompatibilityTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -34,6 +34,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Containment-AppxManifest.xml" />
+    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Compatibility-AppxManifest.xml" />
   </ItemGroup>
 </Project>

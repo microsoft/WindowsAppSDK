@@ -144,6 +144,6 @@
   <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.DeploymentManager.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
 
-  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.ContainmentSetter.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.CompatibilitySetter.targets" />
 
 </Project>

@@ -12,17 +12,17 @@ namespace TP = ::Test::Packages;
 
 namespace WAR = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime;
 
-namespace Test::ContainmentTests
+namespace Test::CompatibilityTests
 {
-    class ContainmentTests
+    class CompatibilityTests
     {
     public:
-        BEGIN_TEST_CLASS(ContainmentTests)
+        BEGIN_TEST_CLASS(CompatibilityTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"Containment-AppxManifest.xml")
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own containment
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"Compatibility-AppxManifest.xml")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own Compatibility
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)

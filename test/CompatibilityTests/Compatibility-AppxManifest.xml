@@ -9,12 +9,12 @@
   IgnorableNamespaces="uap uap5 com rescap">
 
   <Identity
-    Name="WindowsAppRuntime.Test.Containment"
+    Name="WindowsAppRuntime.Test.Compatibility"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>WindowsAppRuntime.Test.Containment for tests</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.Compatibility for tests</DisplayName>
     <PublisherDisplayName>Windows App SDK</PublisherDisplayName>
     <Logo>taef.png</Logo>
   </Properties>
@@ -36,10 +36,10 @@
       Executable="Te.ProcessHost.uap.exe"
       EntryPoint="ProcessHostApplication">
       <uap:VisualElements
-        DisplayName="WindowsAppRuntime.Test.Containment"
+        DisplayName="WindowsAppRuntime.Test.Compatibility"
         Square150x150Logo="taef.png"
         Square44x44Logo="taef.png"
-        Description="WindowsAppRuntime.Test.Containment test App"
+        Description="WindowsAppRuntime.Test.Compatibility test App"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="taef.png"/>
         <uap:SplashScreen Image="taef.png" uap5:Optional="true"/>
