@@ -91,7 +91,7 @@ namespace Test::CompatibilityTests
             WEX::Logging::Log::Comment(WEX::Common::String(L"Setting CompatibilityOptions with no matching patch mode"));
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::CompatibilityOptions options;
             options.PatchMode1({ 0, 8, 3 });
-            options.PatchMode1({ 1, 1, 4 });
+            options.PatchMode2({ 1, 1, 4 });
             options.Apply();
 
             // Set a CompatibilityOptions with no patch mode, which should be allowed since neither
