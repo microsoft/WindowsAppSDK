@@ -2,6 +2,8 @@
 
 This folder contains prototype implementations for adding types in `Storage.Pickers` to the Windows App SDK. It is currently under development and **not** ready for review or production use.
 
+NOTE: a develop certificate maybe required to run the demo app, if you encounter deployment issues, please add a new certificate to the PickerUsageApp project.
+
 ## Current State
 
 - Basic implementation of most core functionalities was added in `Microsoft.Storage.Pickers/`.
