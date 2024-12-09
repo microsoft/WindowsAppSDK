@@ -8,8 +8,6 @@ namespace Microsoft.Windows.Storage.Pickers
     {
         FileOpenPicker();
 
-        String MyString;
-
         Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
     };
 }

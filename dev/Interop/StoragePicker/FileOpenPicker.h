@@ -8,12 +8,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     struct FileOpenPicker : FileOpenPickerT<FileOpenPicker>
     {
         FileOpenPicker() = default;
-
-        hstring MyString();
-        void MyString(hstring const& value);
-
-        int32_t MyProperty();
-        void MyProperty(int32_t value);
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> PickSingleFileAsync();
     };
 }

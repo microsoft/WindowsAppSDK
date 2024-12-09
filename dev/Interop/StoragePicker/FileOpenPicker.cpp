@@ -11,27 +11,11 @@
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
-	void FileOpenPicker::MyProperty(int32_t value)
-	{
-		throw hresult_not_implemented();
-	}
-
-    hstring FileOpenPicker::MyString()
-    {
-        throw hresult_not_implemented();
-    }
-    void FileOpenPicker::MyString(hstring const& value)
-    {
-        throw hresult_not_implemented();
-    }
-
 	winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileOpenPicker::PickSingleFileAsync()
 	{
 		winrt::apartment_context ui_thread;
 
 		co_await winrt::resume_background();
-
-        MyString();
 
 		// Handle cancellation.
 		auto cancellationToken = co_await winrt::get_cancellation_token();
