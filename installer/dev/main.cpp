@@ -87,7 +87,7 @@ int wmain(int argc, wchar_t *argv[])
         else if ((arg == L"-?") || (arg == L"--help"))
         {
             DisplayHelp();
-            return 1;
+            return 0;
         }
         else if ((arg == L"--info"))
         {
