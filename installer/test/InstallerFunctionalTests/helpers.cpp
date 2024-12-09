@@ -118,6 +118,10 @@ namespace WindowsAppRuntimeInstallerTests
 
     std::filesystem::path GetModulePath(HMODULE hmodule)
     {
+        if (hmodule == NULL)
+        {
+            hmodule = GetModuleHandle(L"InstallerFunctionalTests.dll");
+        }
         auto path{ GetModuleFileName(hmodule) };
         return path.remove_filename();
     }
@@ -134,12 +138,12 @@ namespace WindowsAppRuntimeInstallerTests
 
         // TAEF runs as a package under the installer, so we have to go way up the parent root in order to
         // get to the common project root and then get to the build output.
-        return path.parent_path().parent_path().parent_path().parent_path().parent_path().parent_path().parent_path();
+        return path.parent_path().parent_path();
     }
 
     std::filesystem::path GetInstallerPath()
     {
         auto path{ GetCommonRootPath() };
-        return path /= INSTALLER_EXE_PATH;
+        return path += INSTALLER_EXE_PATH;
     }
 }
