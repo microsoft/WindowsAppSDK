@@ -15,7 +15,7 @@
     <Platform>Win32</Platform>
     <CustomProps>$([MSBuild]::GetPathOfFileAbove('custom.props', '$(MSBuildThisFileDirectory)'))</CustomProps>
   </PropertyGroup>
-  <Import Project="$(CustomProps)" Condition="Exists('$(CustomProps)') and '$(WorkaroundLkgWin32)'=='true'" />  <Import Project="custom.props" Condition="Exists('custom.props') and '$(WorkaroundLkgWin32)'=='true'" />
+  <Import Project="$(CustomProps)" Condition="Exists('$(CustomProps)') and '$(WorkaroundLkgWin32)'=='true'" />
   <PropertyGroup Condition="'$(WorkaroundLkgWin32)'=='true'">
     <Platform>x86</Platform>
   </PropertyGroup>
