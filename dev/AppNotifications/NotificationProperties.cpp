@@ -94,7 +94,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Payload(_Out_ unsig
     THROW_IF_NULL_ALLOC(tempPayload.get());
     CopyMemory(tempPayload.data(), payloadAsSimpleString.c_str(), tempPayloadSize);
 
-    *payloadSize = static_cast<unsigned int>(tempPayloadSize);
+    *payloadSize = static_cast<unsigned int>(tempPayload.size());
     *payload = tempPayload.release();
 
     return S_OK;
@@ -105,7 +105,16 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_PayloadSize(_Out_ u
 {
     auto lock{ m_lock.lock_shared() };
 
-    *payloadSize = static_cast<unsigned int>(m_payload.size());
+    auto payloadAsSimpleString = Helpers::WideStringToPayloadUtf8String(m_payloadHstring);
+
+    size_t tempPayloadSize = payloadAsSimpleString.size();
+
+    auto tempPayload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(tempPayloadSize)), tempPayloadSize);
+    THROW_IF_NULL_ALLOC(tempPayload.get());
+    CopyMemory(tempPayload.data(), payloadAsSimpleString.c_str(), tempPayloadSize);
+
+    *payloadSize = static_cast<unsigned int>(tempPayload.size());
+
     return S_OK;
 }
 
