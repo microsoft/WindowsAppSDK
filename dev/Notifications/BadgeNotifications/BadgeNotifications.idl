@@ -34,16 +34,16 @@ namespace Microsoft.Windows.BadgeNotifications
         // Gets a Default instance of a BadgeNotificationManager
         static BadgeNotificationManager Current{ get; };
 
-        // Updates the badge on the app's tile to display a numeric value.
+        // Updates the badge on the app's icon on taskbar to display a numeric value.
         void SetBadgeAsCount(UInt32 notificationCount);
 
-        // Updates the badge on the app's tile to display a numeric value with an expiration time.
+        // Updates the badge on the app's icon on taskbar to display a numeric value with an expiration time.
         void SetBadgeAsCount(UInt32 notificationCount, Windows.Foundation.DateTime expiration);
 
-        // Updates the badge on the app's tile to display a glyph.
+        // Updates the badge on the app's icon on taskbar to display a glyph.
         void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue);
 
-        // Updates the badge on the app's tile to display a glyph with an expiration time.
+        // Updates the badge on the app's icon on taskbar to display a glyph with an expiration time.
         void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue, Windows.Foundation.DateTime expiration);
 
         // Removes the Badge Notifications for the App from Action Center

@@ -24,7 +24,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
     void BaseNotification::Tag(winrt::hstring const& tag)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
         m_tag = tag;
     }
 
@@ -36,7 +36,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
     void BaseNotification::Group(winrt::hstring const& group)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
         m_group = group;
     }
 
@@ -60,7 +60,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
     void BaseNotification::Expiration(winrt::Windows::Foundation::DateTime const& expirationTime)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
         m_expirationTime = expirationTime;
     }
 
@@ -72,7 +72,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
     void BaseNotification::ExpiresOnReboot(bool expiresOnReboot)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
         m_expiresOnReboot = expiresOnReboot;
     }
 
@@ -84,7 +84,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
     void BaseNotification::Priority(winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority const& priority)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
         m_priority = priority;
     }
 
@@ -96,7 +96,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
     void BaseNotification::SuppressDisplay(bool suppressDisplay)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
         m_suppressDisplay = suppressDisplay;
     }
 
@@ -114,7 +114,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
     void BaseNotification::NotificationType(::ABI::Microsoft::Internal::ToastNotifications::NotificationType value)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
         m_notificationType = value;
     }
 }

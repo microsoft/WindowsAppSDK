@@ -22,9 +22,8 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
         void ClearBadge();
 
     private:
-        void GetBadgeNotificationGlyphToString(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, _Out_ PCWSTR* glyphString);
+        std::wstring GetBadgeNotificationGlyphToString(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue);
         void SetBadge(_In_ const std::wstring& value, _In_opt_ const winrt::Windows::Foundation::DateTime* expiration);
-        wil::srwlock m_lock;
         std::wstring m_processName;
         std::wstring m_appId;
     };

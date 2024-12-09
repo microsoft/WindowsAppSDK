@@ -85,10 +85,9 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
 
-        PCWSTR glyphValueString;
-        GetBadgeNotificationGlyphToString(glyphValue, &glyphValueString);
+        std::wstring glyphValueString = GetBadgeNotificationGlyphToString(glyphValue);
 
-        THROW_HR_IF_MSG(E_INVALIDARG, glyphValueString == NULL, "Invalid Glyph value");
+        THROW_HR_IF_MSG(E_INVALIDARG, glyphValueString.empty(), "Invalid Glyph value");
 
         SetBadge(glyphValueString, nullptr);
         return;
@@ -98,10 +97,9 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
 
-        PCWSTR glyphValueString;
-        GetBadgeNotificationGlyphToString(glyphValue, &glyphValueString);
+        std::wstring glyphValueString = GetBadgeNotificationGlyphToString(glyphValue);
 
-        THROW_HR_IF_MSG(E_INVALIDARG, glyphValueString == NULL, "Invalid Glyph value");
+        THROW_HR_IF_MSG(E_INVALIDARG, glyphValueString.empty(), "Invalid Glyph value");
 
         SetBadge(glyphValueString, &expiration);
         return;
@@ -122,7 +120,7 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
         return;
     }
 
-    void BadgeNotificationManager::GetBadgeNotificationGlyphToString(_In_ winrt::BadgeNotificationGlyph glyphValue, _Out_ PCWSTR* glyphString)
+    std::wstring BadgeNotificationManager::GetBadgeNotificationGlyphToString(_In_ winrt::BadgeNotificationGlyph glyphValue)
     {
         constexpr static std::pair<winrt::BadgeNotificationGlyph, PCWSTR> enumMapping[] = {
             {winrt::BadgeNotificationGlyph::None, L"none"},
@@ -147,14 +145,12 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
         if (it != std::end(enumMapping))
         {
-            *glyphString = it->second;
+            return std::wstring(it->second); // Return the string directly
         }
         else
         {
-            *glyphString = nullptr;
+            return std::wstring(); // Return an empty string if not found
         }
-
-        return;
     }
 
     void BadgeNotificationManager::SetBadge(_In_ const std::wstring& value, _In_opt_ const winrt::Windows::Foundation::DateTime* expiration)
