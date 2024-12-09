@@ -570,7 +570,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CompatibilityOptions", "dev
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CompatibilityOptions", "CompatibilityOptions", "{35972D8A-F47E-4875-A341-E8C25DB7A098}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CompatibilityTests", "test\CompatibilityTests\CompatibilityTests.vcxproj", "{040BB64B-012E-4E4F-BB02-E85EF46D3475}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CompatibilityTests", "test\Compatibility\CompatibilityTests\CompatibilityTests.vcxproj", "{040BB64B-012E-4E4F-BB02-E85EF46D3475}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
 	EndProjectSection

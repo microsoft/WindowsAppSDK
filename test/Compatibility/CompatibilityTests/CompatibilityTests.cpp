@@ -22,7 +22,7 @@ namespace Test::CompatibilityTests
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
             TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"Compatibility-AppxManifest.xml")
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own Compatibility
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own CompatibilityOptions
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
