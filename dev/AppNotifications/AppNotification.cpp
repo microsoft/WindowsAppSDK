@@ -4,54 +4,26 @@
 #include "pch.h"
 #include "AppNotification.h"
 #include "Microsoft.Windows.AppNotifications.AppNotification.g.cpp"
+#include <frameworkUdk/ToastNotificationsRT.h>
 
 using namespace winrt::Windows::Data::Xml::Dom;
+using namespace Microsoft::Windows::BaseNotifications;
+
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
+}
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
-    AppNotification::AppNotification(hstring const& payload)
+    AppNotification::AppNotification() : BaseNotification()
     {
-        XmlDocument xmlDocument{};
-
-        // We call LoadXml to verify the payload is xml
-        xmlDocument.LoadXml(payload);
-        m_payload = payload;
+        BaseNotification::NotificationType(ToastABI::NotificationType::NotificationType_Toast);
     }
 
-    hstring AppNotification::Tag()
+    AppNotification::AppNotification(hstring const& payload) : BaseNotification(payload)
     {
-        auto lock{ m_lock.lock_shared() };
-        return m_tag;
-    }
-
-    void AppNotification::Tag(hstring const& tag)
-    {
-        auto lock{ m_lock.lock_exclusive() };
-        m_tag = tag;
-    }
-
-    hstring AppNotification::Group()
-    {
-        auto lock{ m_lock.lock_shared() };
-        return m_group;
-    }
-
-    void AppNotification::Group(hstring const& group)
-    {
-        auto lock{ m_lock.lock_exclusive() };
-        m_group = group;
-    }
-
-    uint32_t AppNotification::Id()
-    {
-        auto lock{ m_lock.lock_shared() };
-        return m_notificationId;
-    }
-
-    hstring AppNotification::Payload()
-    {
-        auto lock{ m_lock.lock_shared() };
-        return m_payload;
+        BaseNotification::NotificationType(ToastABI::NotificationType::NotificationType_Toast);
     }
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData AppNotification::Progress()
@@ -64,54 +36,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         auto lock{ m_lock.lock_exclusive() };
         m_progressData = progressData;
-    }
-
-    winrt::Windows::Foundation::DateTime AppNotification::Expiration()
-    {
-        auto lock{ m_lock.lock_shared() };
-        return m_expirationTime;
-    }
-
-    void AppNotification::Expiration(winrt::Windows::Foundation::DateTime const& expirationTime)
-    {
-        auto lock{ m_lock.lock_exclusive() };
-        m_expirationTime = expirationTime;
-    }
-
-    bool AppNotification::ExpiresOnReboot()
-    {
-        auto lock{ m_lock.lock_shared() };
-        return m_expiresOnReboot;
-    }
-
-    void AppNotification::ExpiresOnReboot(bool expiresOnReboot)
-    {
-        auto lock{ m_lock.lock_exclusive() };
-        m_expiresOnReboot = expiresOnReboot;
-    }
-
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority AppNotification::Priority()
-    {
-        auto lock{ m_lock.lock_shared() };
-        return m_priority;
-    }
-
-    void AppNotification::Priority(winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority const& priority)
-    {
-        auto lock{ m_lock.lock_exclusive() };
-        m_priority = priority;
-    }
-
-    bool AppNotification::SuppressDisplay()
-    {
-        auto lock{ m_lock.lock_shared() };
-        return m_suppressDisplay;
-    }
-
-    void AppNotification::SuppressDisplay(bool suppressDisplay)
-    {
-        auto lock{ m_lock.lock_exclusive() };
-        m_suppressDisplay = suppressDisplay;
     }
 
     void AppNotification::SetNotificationId(uint32_t id)
