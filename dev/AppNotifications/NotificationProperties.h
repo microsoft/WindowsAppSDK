@@ -44,7 +44,7 @@ private:
 
     unsigned long m_notificationId = 0;
 
-    winrt::hstring m_payloadHstring;
+    wil::unique_cotaskmem_array_ptr<byte> m_payload;
 
     std::wstring m_tag;
     std::wstring m_group;

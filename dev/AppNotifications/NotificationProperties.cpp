@@ -28,7 +28,12 @@ namespace Helpers
 
 NotificationProperties::NotificationProperties(winrt::AppNotification const& toastNotification)
 {
-    m_payloadHstring = toastNotification.Payload();
+    // Extract payload and convert it from XML to a byte array
+    auto payloadAsSimpleString = Helpers::WideStringToPayloadUtf8String(toastNotification.Payload());
+
+    m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
+    THROW_IF_NULL_ALLOC(m_payload.get());
+    CopyMemory(m_payload.data(), payloadAsSimpleString.c_str(), payloadAsSimpleString.size());
 
     m_notificationId = toastNotification.Id();
 
@@ -59,7 +64,12 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
 
 NotificationProperties::NotificationProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification &badgeNotification)
 {
-    m_payloadHstring = badgeNotification.Payload();
+    // Extract payload and convert it from XML to a byte array
+    auto payloadAsSimpleString = Helpers::WideStringToPayloadUtf8String(badgeNotification.Payload());
+
+    m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
+    THROW_IF_NULL_ALLOC(m_payload.get());
+    CopyMemory(m_payload.data(), payloadAsSimpleString.c_str(), payloadAsSimpleString.size());
 
     m_notificationId = badgeNotification.Id();
 
@@ -86,17 +96,13 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Payload(_Out_ unsig
 {
     auto lock{ m_lock.lock_shared() };
 
-    auto payloadAsSimpleString = Helpers::WideStringToPayloadUtf8String(m_payloadHstring);
-
-    size_t tempPayloadSize = payloadAsSimpleString.size();
+    size_t tempPayloadSize = m_payload.size();
 
     auto tempPayload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(tempPayloadSize)), tempPayloadSize);
-    THROW_IF_NULL_ALLOC(tempPayload.get());
-    CopyMemory(tempPayload.data(), payloadAsSimpleString.c_str(), tempPayloadSize);
+    CopyMemory(tempPayload.data(), m_payload.get(), tempPayloadSize);
 
-    *payloadSize = static_cast<unsigned int>(tempPayload.size());
+    *payloadSize = static_cast<unsigned int>(tempPayloadSize);
     *payload = tempPayload.release();
-
     return S_OK;
 }
 CATCH_RETURN()
@@ -105,16 +111,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_PayloadSize(_Out_ u
 {
     auto lock{ m_lock.lock_shared() };
 
-    auto payloadAsSimpleString = Helpers::WideStringToPayloadUtf8String(m_payloadHstring);
-
-    size_t tempPayloadSize = payloadAsSimpleString.size();
-
-    auto tempPayload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(tempPayloadSize)), tempPayloadSize);
-    THROW_IF_NULL_ALLOC(tempPayload.get());
-    CopyMemory(tempPayload.data(), payloadAsSimpleString.c_str(), tempPayloadSize);
-
-    *payloadSize = static_cast<unsigned int>(tempPayload.size());
-
+    *payloadSize = static_cast<unsigned int>(m_payload.size());
     return S_OK;
 }
 
