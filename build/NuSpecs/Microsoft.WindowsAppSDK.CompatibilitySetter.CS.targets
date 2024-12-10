@@ -41,17 +41,17 @@ $(WinAppSDKCompatibilityDisabledChangesLines)
         }
     }
 }
-</WinAppSDKCompatibilitySetterFileLines>
-        </PropertyGroup>
+      </WinAppSDKCompatibilitySetterFileLines>
+    </PropertyGroup>
 
-        <WriteLinesToFile
-            File="$(WinAppSDKCompatibilitySetterFile)" Lines="$(WinAppSDKCompatibilitySetterFileLines)"
-            Overwrite="true"
-            WriteOnlyWhenDifferent="true" />
+    <WriteLinesToFile
+        File="$(WinAppSDKCompatibilitySetterFile)" Lines="$(WinAppSDKCompatibilitySetterFileLines)"
+        Overwrite="true"
+        WriteOnlyWhenDifferent="true" />
 
-        <ItemGroup>    
-            <Compile Include="$(WinAppSDKCompatibilitySetterFile)" />    
-        </ItemGroup>
-    </Target>
+    <ItemGroup>    
+        <Compile Include="$(WinAppSDKCompatibilitySetterFile)" />    
+    </ItemGroup>
+  </Target>
 
 </Project>

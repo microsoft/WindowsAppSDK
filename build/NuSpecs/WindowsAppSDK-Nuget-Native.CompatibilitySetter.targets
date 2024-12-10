@@ -52,21 +52,20 @@ $(WinAppSDKCompatibilityDisabledChangesLines)
     }%3B
     static AutoInitialize g_autoInitialize%3B
 }
-</WinAppSDKCompatibilitySetterFileLines>
-        </PropertyGroup>
-        <WriteLinesToFile
-            File="$(WinAppSDKCompatibilitySetterFile)" Lines="$(WinAppSDKCompatibilitySetterFileLines)"
-            Overwrite="true"
-            WriteOnlyWhenDifferent="true" />
-      <ItemGroup>
-        <ClCompile Include="$(WinAppSDKCompatibilitySetterFile)">
-          <!--
-          <CompilerIteration>WinAppSDKGenerated</CompilerIteration>
-          -->
-          <PrecompiledHeader>NotUsing</PrecompiledHeader>
-        </ClCompile>
-      </ItemGroup>
-    </Target>
+      </WinAppSDKCompatibilitySetterFileLines>
+    </PropertyGroup>
+
+    <WriteLinesToFile
+        File="$(WinAppSDKCompatibilitySetterFile)" Lines="$(WinAppSDKCompatibilitySetterFileLines)"
+        Overwrite="true"
+        WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <ClCompile Include="$(WinAppSDKCompatibilitySetterFile)">
+        <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      </ClCompile>
+    </ItemGroup>
+  </Target>
 
   <PropertyGroup>
     <BeforeClCompileTargets>
