@@ -9,6 +9,13 @@ steps:
   inputs:
     version: 6.0.414
 
+- powershell: |
+    # Pre-create nuget cache "packages" folder lowercase for binskim compat
+    if (-not(Test-Path -Path  $(Build.SourcesDirectory)\packages))
+    {
+        New-Item -Path  $(Build.SourcesDirectory)\packages -ItemType Directory -Force
+    }
+
   # Extract the build revision number from Build.BuildNumber. This is needed to pass to build-nupkg.
   # This relies on the format of the pipeline name being of the format: $(date:yyMM).$(date:dd)$(rev:rrr)
   # We can't use those variables here (they only work in the *name* of the top level Yaml), so
