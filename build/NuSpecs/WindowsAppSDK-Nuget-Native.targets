@@ -135,6 +135,14 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.Pickers.winmd"
+       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.Pickers.winmd')">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
   <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.BootstrapCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.Bootstrap.targets" Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'"/>
 

@@ -111,6 +111,9 @@
 
         <!-- CameraCaptureUI -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Media.Capture.CameraCaptureUI" ThreadingModel="both" />
+
+        <!-- StoragePickers -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileOpenPicker" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub">

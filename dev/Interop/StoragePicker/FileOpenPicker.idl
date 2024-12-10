@@ -1,0 +1,13 @@
+namespace Microsoft.Windows.Storage.Pickers
+{
+    [contractversion(1)]
+    apicontract FileOpenPickerContract {};
+
+    [contract(FileOpenPickerContract, 1)]
+    runtimeclass FileOpenPicker
+    {
+        FileOpenPicker();
+
+        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
+    };
+}
