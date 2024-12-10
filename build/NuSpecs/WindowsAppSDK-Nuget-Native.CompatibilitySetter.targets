@@ -30,7 +30,7 @@
 
 using namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime%3B
 
-namespace WindowsAppRuntime::Compatibility::Configuration
+namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Compatibility
 {
     struct AutoInitialize
     {

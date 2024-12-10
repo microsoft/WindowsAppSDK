@@ -32,4 +32,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_WindowsAppRuntime.h" />
   </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cs" />
+  </ItemGroup>
 </Project>

@@ -48,4 +48,21 @@
     <DefineConstants>$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
+  </PropertyGroup>
+
+  <!-- AUTOINITIALIZER CONTENT: Mostly copied from Microsoft.WindowsAppSDK.AutoInitializer.CS.targets -->
+  <PropertyGroup>
+    <DefineConstants Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP</DefineConstants>
+    <DefineConstants Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER</DefineConstants>
+    <DefineConstants Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT</DefineConstants>
+    <DefineConstants Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(RepoRoot)\dev\common\WindowsAppRuntimeAutoInitializer.cs"/>
+  </ItemGroup>
+  <!-- END: AUTOINITIALIZER CONTENT -->
+  
 </Project>

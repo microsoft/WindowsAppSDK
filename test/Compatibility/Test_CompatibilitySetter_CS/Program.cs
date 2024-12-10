@@ -7,6 +7,9 @@ class Program
 {
     static void Main(string[] args)
     {
+        // Note: This test app currently only tests that the compatibility properties set in
+        // the project file generates the ConfigureCompatibility() function and compiles successfully.
+        Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Compatibility.AutoInitialize.ConfigureCompatibility();
         Console.WriteLine("hello world");
         Environment.Exit(0);
     }
