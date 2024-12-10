@@ -27,6 +27,7 @@ namespace Test::PackageManager::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            ::TD::DumpExecutionContext();
             if (!::WindowsVersion::IsWindows10_20H1OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
@@ -36,10 +37,15 @@ namespace Test::PackageManager::Tests
             TD::DumpExecutionContext();
 
             RemovePackage_Blue();
+WEX::Logging::Log::Comment(L"S2");
             RemovePackage_Green();
+WEX::Logging::Log::Comment(L"S3");
             RemovePackage_Redder();
+WEX::Logging::Log::Comment(L"S4");
             RemovePackage_Red();
+WEX::Logging::Log::Comment(L"S5");
             ::TB::Setup();
+WEX::Logging::Log::Comment(L"S6");
             return true;
         }
 
@@ -69,7 +75,7 @@ namespace Test::PackageManager::Tests
             }
         }
 
-        TEST_METHOD(IsPackageReady_NoSuchPackage_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_NoSuchPackage_No)
         {
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -78,7 +84,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(c_packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_NotInstalled_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_NotInstalled_No)
         {
             RemovePackage_Red();
 
@@ -89,7 +95,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_Registered_Yes)
+        TEST_METHOD(IsPackageReady_PackageFullName_Registered_Yes)
         {
             AddPackage_Red();
 
@@ -100,7 +106,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_OlderRegistered_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_OlderRegistered_No)
         {
             AddPackage_Red();
 
@@ -111,7 +117,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_NewerRegistered_Yes)
+        TEST_METHOD(IsPackageReady_PackageFullName_NewerRegistered_Yes)
         {
             AddPackage_Redder();
 
@@ -124,86 +130,148 @@ namespace Test::PackageManager::Tests
             RemovePackage_Redder();
         }
 
-        TEST_METHOD(IsPackageSetReady_InvalidParameter)
+        TEST_METHOD(IsPackageReady_PackageFamilyName_InvalidParameter)
         {
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             try
             {
-                winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-                packageDeploymentManager.IsPackageSetReady(packageSet);
+                PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
+                packageDeploymentManager.IsPackageReady(c_packageFamilyName);
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
             {
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
+        }
+
+        TEST_METHOD(IsPackageSetReady_InvalidParameter)
+        {
+WEX::Logging::Log::Comment(L"P1");
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             try
             {
+WEX::Logging::Log::Comment(L"P2");
                 winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-                PCWSTR c_packageSetId{ L"Does.Not.Exist" };
-                packageSet.Id(c_packageSetId);
-
+WEX::Logging::Log::Comment(L"P3");
                 packageDeploymentManager.IsPackageSetReady(packageSet);
+WEX::Logging::Log::Comment(L"P4");
                 VERIFY_FAIL(L"Success is not expected");
+WEX::Logging::Log::Comment(L"P5");
             }
             catch (winrt::hresult_error& e)
             {
+WEX::Logging::Log::Comment(L"P6");
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
+WEX::Logging::Log::Comment(L"P10");
             try
             {
+WEX::Logging::Log::Comment(L"P11");
                 winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+WEX::Logging::Log::Comment(L"P12");
+                PCWSTR c_packageSetId{ L"Does.Not.Exist" };
+WEX::Logging::Log::Comment(L"P13");
+                packageSet.Id(c_packageSetId);
+WEX::Logging::Log::Comment(L"P14");
+
+                packageDeploymentManager.IsPackageSetReady(packageSet);
+WEX::Logging::Log::Comment(L"P15");
+                VERIFY_FAIL(L"Success is not expected");
+WEX::Logging::Log::Comment(L"P16");
+            }
+            catch (winrt::hresult_error& e)
+            {
+WEX::Logging::Log::Comment(L"P17");
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+WEX::Logging::Log::Comment(L"P18");
+            }
+
+WEX::Logging::Log::Comment(L"20");
+            try
+            {
+WEX::Logging::Log::Comment(L"21");
+                winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+WEX::Logging::Log::Comment(L"22");
                 PCWSTR c_packageSetId{ L"Does.Not.Exist" };
                 packageSet.Id(c_packageSetId);
+WEX::Logging::Log::Comment(L"23");
                 winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
                 packageSet.Items().Append(packageSetItem);
 
+WEX::Logging::Log::Comment(L"24");
                 packageDeploymentManager.IsPackageSetReady(packageSet);
+WEX::Logging::Log::Comment(L"25");
                 VERIFY_FAIL(L"Success is not expected");
+WEX::Logging::Log::Comment(L"26");
             }
             catch (winrt::hresult_error& e)
             {
+WEX::Logging::Log::Comment(L"27");
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+WEX::Logging::Log::Comment(L"28");
             }
 
+WEX::Logging::Log::Comment(L"30");
             try
             {
+WEX::Logging::Log::Comment(L"31");
                 winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+WEX::Logging::Log::Comment(L"32");
                 PCWSTR c_packageSetId{ L"Does.Not.Exist" };
                 packageSet.Id(c_packageSetId);
+WEX::Logging::Log::Comment(L"33");
                 winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
+WEX::Logging::Log::Comment(L"34");
                 PCWSTR c_packageFamilyName{ L"Not a valid Package Family Name" };
                 packageSetItem.PackageFamilyName(c_packageFamilyName);
+WEX::Logging::Log::Comment(L"35");
                 packageSet.Items().Append(packageSetItem);
 
+WEX::Logging::Log::Comment(L"36");
                 packageDeploymentManager.IsPackageSetReady(packageSet);
+WEX::Logging::Log::Comment(L"37");
                 VERIFY_FAIL(L"Success is not expected");
+WEX::Logging::Log::Comment(L"38");
             }
             catch (winrt::hresult_error& e)
             {
+WEX::Logging::Log::Comment(L"39");
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
+WEX::Logging::Log::Comment(L"40");
             try
             {
+WEX::Logging::Log::Comment(L"41");
                 winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+WEX::Logging::Log::Comment(L"42");
                 PCWSTR c_packageSetId{ L"Does.Not.Exist" };
                 packageSet.Id(c_packageSetId);
+WEX::Logging::Log::Comment(L"43");
                 winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
+WEX::Logging::Log::Comment(L"44");
                 PCWSTR c_packageUriAsString{ L"https://doesnotexist.com/assemble.msix" };
                 winrt::Windows::Foundation::Uri packageUri{ c_packageUriAsString };
+WEX::Logging::Log::Comment(L"45");
                 packageSetItem.PackageUri(packageUri);
+WEX::Logging::Log::Comment(L"46");
                 packageSet.Items().Append(packageSetItem);
 
+WEX::Logging::Log::Comment(L"47");
                 packageDeploymentManager.IsPackageSetReady(packageSet);
+WEX::Logging::Log::Comment(L"48");
                 VERIFY_FAIL(L"Success is not expected");
+WEX::Logging::Log::Comment(L"49");
             }
             catch (winrt::hresult_error& e)
             {
+WEX::Logging::Log::Comment(L"4A");
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+WEX::Logging::Log::Comment(L"4B");
             }
         }
 
@@ -389,6 +457,47 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(green);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+    };
+
+    class PackageDeploymentManagerTests_IsReady_Elevated : PackageDeploymentManagerTests_Base
+    {
+    public:
+        BEGIN_TEST_CLASS(PackageDeploymentManagerTests_IsReady_Elevated)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassSetup)
+        {
+            ::TD::DumpExecutionContext();
+            if (!::WindowsVersion::IsWindows10_20H1OrGreater())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
+                return true;
+            }
+WEX::Logging::Log::Comment(L"S1");
+            RemovePackage_Blue();
+WEX::Logging::Log::Comment(L"S2");
+            RemovePackage_Green();
+WEX::Logging::Log::Comment(L"S3");
+            RemovePackage_Redder();
+WEX::Logging::Log::Comment(L"S4");
+            RemovePackage_Red();
+WEX::Logging::Log::Comment(L"S5");
+            ::TB::Setup();
+WEX::Logging::Log::Comment(L"S6");
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassCleanup)
+        {
+            RemovePackage_Blue();
+            RemovePackage_Green();
+            RemovePackage_Redder();
+            RemovePackage_Red();
+            ::TB::Cleanup();
+            return true;
         }
 
         TEST_METHOD(IsPackageSetReady_N_No_NotAllPackageStatusOK)
