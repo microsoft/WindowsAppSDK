@@ -63,7 +63,7 @@ extends:
       binskim:
         enabled: true
         break: true
-        analyzeTargetGlob: "-:f|**\packages\**\*.dll"
+        analyzeTargetGlob: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe
       prefast:
         ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
           enabled: true
