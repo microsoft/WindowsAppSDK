@@ -1,13 +1,16 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
 
 #include <frameworkUdk/ToastNotificationsRT.h>
+#include "BadgeNotification.h"
 
 struct NotificationTransientProperties : winrt::implements<NotificationTransientProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties>
 {
     NotificationTransientProperties(winrt::Microsoft::Windows::AppNotifications::AppNotification const& toastNotification) noexcept;
+
+    NotificationTransientProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification &badgeNotification) noexcept;
 
     STDMETHOD(get_OfflineCacheCount)(_Out_ unsigned long long* offlineCacheCount) noexcept;
 
