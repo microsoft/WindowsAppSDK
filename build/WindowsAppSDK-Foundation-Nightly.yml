@@ -86,6 +86,7 @@ extends:
       binskim:
         enabled: true
         break: true
+        analyzeTargetGlob: "-:f|**\packages\**\*.dll"
       prefast:
         ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
           enabled: true
