@@ -126,7 +126,6 @@ stages:
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
-      ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\dev\MRTCore\.gdn\mrt.gdnsuppress # This value is set on the job cdpx_engine, it will override the global gdnsuppress for this job
       ob_sdl_suppression_suppressionSet: default
       ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       ${{ if parameters.runStaticAnalysis }}:
