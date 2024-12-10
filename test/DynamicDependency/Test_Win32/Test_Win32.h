@@ -57,6 +57,16 @@ namespace Test::DynamicDependency
             const HRESULT expectedHR,
             const std::wstring& expectedPackageFullName);
 
+        static void VerifyPackageDependency_Win11NotResolved(
+            PCWSTR packageDependencyId,
+            const HRESULT expectedHR,
+            PCWSTR expectedPackageFullName = nullptr);
+
+        static void VerifyPackageDependency_Win11NotResolved(
+            PCWSTR packageDependencyId,
+            const HRESULT expectedHR,
+            const std::wstring& expectedPackageFullName);
+
         static void VerifyPathEnvironmentVariable(PCWSTR path);
 
         static void VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path);

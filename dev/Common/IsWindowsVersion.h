@@ -33,29 +33,34 @@ inline bool IsExportPresent(
 
 inline bool IsWindows10_19H1OrGreater()
 {
-    // GetPackageInfo2() added to kernelbase.dll in NTDDI_WIN10_19H1 (aka 19H1)
+    // GetPackageInfo2() added to kernelbase.dll in 19H1 (aka NTDDI_WIN10_19H1)
     return IsExportPresent(L"kernelbase.dll", "GetPackageInfo2");
 }
 
 inline bool IsWindows10_20H1OrGreater()
 {
-    // GetPackageInfo3() added to kernelbase.dll in NTDDI_WIN10_VB (aka 20H1)
+    // GetPackageInfo3() added to kernelbase.dll in 20H1 (aka NTDDI_WIN10_VB)
     return IsExportPresent(L"kernelbase.dll", "GetPackageInfo3");
 }
 inline bool IsWindows11_21H2OrGreater()
 {
-    // GetMachineTypeAttributes() added to kernelbase.dll in NTDDI_WIN10_CO (aka Windows 11 21H2)
+    // GetMachineTypeAttributes() added to kernelbase.dll in Windows 11 21H2 (aka NTDDI_WIN10_CO)
     return IsExportPresent(L"kernelbase.dll", "GetMachineTypeAttributes");
 }
 inline bool IsWindows11_22H2OrGreater()
 {
-    // GetPackageGraphRevisionId() added to kernelbase.dll in NTDDI_WIN10_NI (aka Windows 11 22H2)
+    // GetPackageGraphRevisionId() added to kernelbase.dll in Windows 11 22H2 (aka NTDDI_WIN10_NI)
     return IsExportPresent(L"kernelbase.dll", "GetPackageGraphRevisionId");
 }
-inline bool IsWindows11_23H1OrGreater()
+inline bool IsWindows11_24H1OrGreater()
 {
-    // TryCreatePackageDependency2() added to  in NTDDI_WIN10_GE (aka Windows 11 23H1)
+    // TryCreatePackageDependency2() added to  in Windows 11 24H1 (aka NTDDI_WIN11_GE)
     return IsExportPresent(L"kernelbase.dll", "TryCreatePackageDependency2");
+}
+inline bool IsWindows11_24H2OrGreater()
+{
+    // MsixIsPackageFeatureSupported() added to  in Windows 11 24H2 (aka NTDDI_WIN11_GE)
+    return IsExportPresent(L"appxdeploymentclient.dll", "MsixIsPackageFeatureSupported");
 }
 }
 
