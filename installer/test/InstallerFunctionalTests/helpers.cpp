@@ -144,6 +144,6 @@ namespace WindowsAppRuntimeInstallerTests
     std::filesystem::path GetInstallerPath()
     {
         auto path{ GetCommonRootPath() };
-        return path += INSTALLER_EXE_PATH;
+        return path /= INSTALLER_EXE_PATH;
     }
 }

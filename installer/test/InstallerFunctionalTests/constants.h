@@ -21,7 +21,7 @@
 
 #define INSTALLER_DIR L"WindowsAppRuntimeInstall"
 #define INSTALLER_FILENAME L"WindowsAppRuntimeInstall-" ARCH L".exe"
-#define INSTALLER_EXE_PATH L"\\" INSTALLER_DIR L"\\" INSTALLER_FILENAME
+#define INSTALLER_EXE_PATH INSTALLER_DIR L"\\" INSTALLER_FILENAME
 
 namespace WindowsAppRuntimeInstallerTests
 {
