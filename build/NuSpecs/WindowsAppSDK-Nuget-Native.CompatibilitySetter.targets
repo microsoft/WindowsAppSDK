@@ -2,6 +2,10 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <PropertyGroup Condition="'$(WindowsAppSDKRuntimePatchMode)' != '' or '$(WindowsAppSDKRuntimePatchMode2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
+      <WindowsAppSdkCompatibilityInitialize>true</WindowsAppSdkCompatibilityInitialize>
+  </PropertyGroup>
+
   <Target Name="WinAppSDKCompatibilitySetterTarget" BeforeTargets="ClCompile"
           Condition="'$(WindowsAppSDKRuntimePatchMode)' != '' or '$(WindowsAppSDKRuntimePatchMode2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
     <PropertyGroup>
@@ -32,16 +36,10 @@ using namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime%3
 
 namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Compatibility
 {
-    struct AutoInitialize
+    namespace AutoInitialize
     {
-        AutoInitialize()
-        {
-            Initialize()%3B
-        }
-        
-        ~AutoInitialize() = default%3B
-
-        static void Initialize()
+        // Called by WindowsAppRuntimeAutoInitializer.cpp
+        void Initialize()
         {
             CompatibilityOptions compatibilityOptions%3B
 $(WinAppSDKCompatibilityPatchMode1Lines)
@@ -50,7 +48,6 @@ $(WinAppSDKCompatibilityDisabledChangesLines)
             compatibilityOptions.Apply()%3B
         }
     }%3B
-    static AutoInitialize g_autoInitialize%3B
 }
       </WinAppSDKCompatibilitySetterFileLines>
     </PropertyGroup>

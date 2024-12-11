@@ -147,8 +147,21 @@
   <Target Name="VerifyCompatibilitySetterFile" AfterTargets="ClCompile">
     <!-- Make sure the setter file was generated. -->
     <Error Condition="!Exists('$(GeneratedFilesDir)\WinAppSDKCompatibilitySetter.cpp')" Text="Missing file: $(GeneratedFilesDir)\WinAppSDKCompatibilitySetter.cpp" />
+    <Error Condition="'$(WindowsAppSdkCompatibilityInitialize)' != 'true'" Text="WindowsAppSdkCompatibilityInitialize is incorrectly not set to true" />
   </Target>
   <!-- END: MAIN TEST CONTENT -->
+
+  <!-- AUTOINITIALIZER CONTENT: Mostly copied from WindowsAppSDK-Nuget-Native.AutoInitializer.targets -->
+    <ItemGroup>
+      <ClCompile Include="$(RepoRoot)\dev\common\WindowsAppRuntimeAutoInitializer.cpp">
+        <PrecompiledHeader>NotUsing</PrecompiledHeader>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      </ClCompile>
+    </ItemGroup>
+  <!-- END: AUTOINITIALIZER CONTENT -->
 
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />

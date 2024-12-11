@@ -104,6 +104,23 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
+  </PropertyGroup>
+
+  <!-- AUTOINITIALIZER CONTENT: Mostly copied from WindowsAppSDK-Nuget-Native.AutoInitializer.targets -->
+    <ItemGroup>
+      <ClCompile Include="$(RepoRoot)\dev\common\WindowsAppRuntimeAutoInitializer.cpp">
+        <PrecompiledHeader>NotUsing</PrecompiledHeader>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      </ClCompile>
+    </ItemGroup>
+  <!-- END: AUTOINITIALIZER CONTENT -->
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>

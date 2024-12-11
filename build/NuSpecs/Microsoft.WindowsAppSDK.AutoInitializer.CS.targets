@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <Target Name="WinAppRuntimeAutoInitializer">
-    <ItemGroup>    
-        <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppRuntimeAutoInitializer.cs" />    
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppRuntimeAutoInitializer.cs" />
     </ItemGroup>
   </Target>
 

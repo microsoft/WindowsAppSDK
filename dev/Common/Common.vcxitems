@@ -34,5 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cs" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cpp" />
   </ItemGroup>
 </Project>
