@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 #include "Microsoft.Windows.Storage.Pickers.FileOpenPicker.g.h"
+#include "TelemetryHelper.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -9,8 +10,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         FileOpenPicker() = default;
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> PickSingleFileAsync();
+
+    private:
+        TelemetryHelper m_telemetryHelper;
     };
 }
+
 namespace winrt::Microsoft::Windows::Storage::Pickers::factory_implementation
 {
     struct FileOpenPicker : FileOpenPickerT<FileOpenPicker, implementation::FileOpenPicker>

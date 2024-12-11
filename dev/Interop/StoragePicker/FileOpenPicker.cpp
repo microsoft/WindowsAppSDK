@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "FileOpenPicker.h"
 #include "Microsoft.Windows.Storage.Pickers.FileOpenPicker.g.cpp"
+#include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h> 
 #include <wil/cppwinrt.h>
@@ -13,6 +14,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
 	winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileOpenPicker::PickSingleFileAsync()
 	{
+        bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
+        PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
+		auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
+
 		winrt::apartment_context ui_thread;
 
 		co_await winrt::resume_background();
