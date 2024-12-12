@@ -1,0 +1,68 @@
+namespace Microsoft.Storage.Pickers
+{
+	enum PickerViewMode
+	{
+		List,
+		Thumbnail,
+	};
+
+	enum PickerLocationId
+	{
+		DocumentsLibrary,
+		ComputerFolder,
+		Desktop,
+		Downloads,
+		HomeGroup,
+		MusicLibrary,
+		PicturesLibrary,
+		VideosLibrary,
+		Objects3D,
+		Unspecified,
+	};
+
+
+	[default_interface]
+	runtimeclass FileOpenPicker
+	{
+		FileOpenPicker(Microsoft.UI.WindowId windowId);
+
+		Microsoft.Storage.Pickers.PickerViewMode ViewMode;
+		String SettingsIdentifier;
+		Microsoft.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+		String CommitButtonText;
+		Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
+
+		[remote_sync] Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
+		[remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.StorageFile> > PickMultipleFilesAsync();
+	}
+
+	[default_interface]
+    runtimeclass FileSavePicker
+	{
+		FileSavePicker(Microsoft.UI.WindowId windowId);
+
+		String SettingsIdentifier;
+		Microsoft.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+		String CommitButtonText;
+		Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
+		String DefaultFileExtension;
+		Windows.Storage.StorageFile SuggestedSaveFile;
+		String SuggestedFileName;
+
+		[remote_sync] Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSaveFileAsync();
+	}
+
+	[default_interface]
+	runtimeclass FolderPicker
+	{
+		FolderPicker(Microsoft.UI.WindowId windowId);
+
+		Microsoft.Storage.Pickers.PickerViewMode ViewMode;
+		String SettingsIdentifier;
+		Microsoft.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+		String CommitButtonText;
+		Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
+
+		[remote_sync] Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFolder> PickSingleFolderAsync();
+	}
+}
