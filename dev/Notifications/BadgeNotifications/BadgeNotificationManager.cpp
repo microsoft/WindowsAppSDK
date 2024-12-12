@@ -69,7 +69,14 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
 
+        auto logTelemetry{ BadgeNotificationTelemetry::SetBadgeAsCount::Start(
+            g_telemetryHelper,
+            m_appId) };
+
         SetBadge(std::to_wstring(notificationCount), nullptr);
+
+        logTelemetry.Stop();
+
         return;
     }
 
@@ -77,7 +84,14 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
 
+        auto logTelemetry{ BadgeNotificationTelemetry::SetBadgeAsCountWithExpiration::Start(
+            g_telemetryHelper,
+            m_appId) };
+
         SetBadge(std::to_wstring(notificationCount), &expiration);
+
+        logTelemetry.Stop();
+
         return;
     }
 
@@ -85,11 +99,18 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
 
+        auto logTelemetry{ BadgeNotificationTelemetry::SetBadgeAsGlyph::Start(
+            g_telemetryHelper,
+            m_appId) };
+
         std::wstring glyphValueString = GetBadgeNotificationGlyphToString(glyphValue);
 
         THROW_HR_IF_MSG(E_INVALIDARG, glyphValueString.empty(), "Invalid Glyph value");
 
         SetBadge(glyphValueString, nullptr);
+
+        logTelemetry.Stop();
+
         return;
     }
 
@@ -97,11 +118,18 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
 
+        auto logTelemetry{ BadgeNotificationTelemetry::SetBadgeAsGlyphWithExpiration::Start(
+            g_telemetryHelper,
+            m_appId) };
+
         std::wstring glyphValueString = GetBadgeNotificationGlyphToString(glyphValue);
 
         THROW_HR_IF_MSG(E_INVALIDARG, glyphValueString.empty(), "Invalid Glyph value");
 
         SetBadge(glyphValueString, &expiration);
+
+        logTelemetry.Stop();
+
         return;
     }
 
@@ -158,11 +186,6 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
         auto xmlResult = wil::str_printf<std::wstring>(L"<badge value='%ls'/>", value.c_str());
         ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotification(xmlResult.c_str());
 
-        auto logTelemetry{ BadgeNotificationTelemetry::SetBadge::Start(
-            g_telemetryHelper,
-            m_appId,
-            badgeNotification.Payload().c_str()) };
-
         if (expiration != nullptr)
         {
             badgeNotification.Expiration(*expiration);
@@ -180,7 +203,6 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
         THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
 
         badgeNotification.Id(notificationId);
-
-        logTelemetry.Stop();
+        return;
     }
 }
