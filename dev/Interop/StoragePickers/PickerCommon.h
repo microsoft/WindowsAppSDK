@@ -2,7 +2,7 @@
 #pragma once
 #include "pch.h"
 #include "ShObjIdl.h"
-#include "winrt/Microsoft.Storage.Pickers.h"
+#include "winrt/Microsoft.Windows.Storage.Pickers.h"
 
 namespace PickerCommon {
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CreateStorageFileFromShellItem(winrt::com_ptr<IShellItem> shellItem);
@@ -18,7 +18,7 @@ namespace PickerCommon {
         HWND HWnd;
         winrt::hstring CommitButtonText;
         winrt::hstring SettingsIdentifierId;
-        winrt::Microsoft::Storage::Pickers::PickerLocationId PickerLocationId;
+        winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId PickerLocationId;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
 

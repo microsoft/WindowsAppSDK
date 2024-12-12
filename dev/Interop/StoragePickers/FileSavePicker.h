@@ -2,7 +2,7 @@
 #include "FileSavePicker.g.h"
 #include "PickerCommon.h"
 
-namespace winrt::Microsoft::Storage::Pickers::implementation
+namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
 	struct FileSavePickerParameters;
 
@@ -13,8 +13,8 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 		hstring SettingsIdentifier();
 		void SettingsIdentifier(hstring const& value);
 
-		winrt::Microsoft::Storage::Pickers::PickerLocationId SuggestedStartLocation();
-		void SuggestedStartLocation(winrt::Microsoft::Storage::Pickers::PickerLocationId const& value);
+		winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation();
+		void SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
 
 		hstring CommitButtonText();
 		void CommitButtonText(hstring const& value);
@@ -45,7 +45,7 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 		void CaptureParameters(PickerCommon::PickerParameters& parameters);
 	};
 }
-namespace winrt::Microsoft::Storage::Pickers::factory_implementation
+namespace winrt::Microsoft::Windows::Storage::Pickers::factory_implementation
 {
 	struct FileSavePicker : FileSavePickerT<FileSavePicker, implementation::FileSavePicker>
 	{

@@ -1,24 +1,25 @@
 #include "pch.h"
 #include "FileOpenPicker.h"
 #include "FileOpenPicker.g.cpp"
+#include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
 
-namespace winrt::Microsoft::Storage::Pickers::implementation
+namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
     FileOpenPicker::FileOpenPicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
     }
 
-    winrt::Microsoft::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
+    winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
     {
         return m_viewMode;
     }
-    void FileOpenPicker::ViewMode(winrt::Microsoft::Storage::Pickers::PickerViewMode const& value)
+    void FileOpenPicker::ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
     {
         m_viewMode = value;
     }
@@ -30,11 +31,11 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
     {
         m_settingsIdentifier = value;
     }
-    winrt::Microsoft::Storage::Pickers::PickerLocationId FileOpenPicker::SuggestedStartLocation()
+    winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileOpenPicker::SuggestedStartLocation()
     {
         return m_suggestedStartLocation;
     }
-    void FileOpenPicker::SuggestedStartLocation(winrt::Microsoft::Storage::Pickers::PickerLocationId const& value)
+    void FileOpenPicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
         m_suggestedStartLocation = value;
     }
@@ -62,6 +63,10 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileOpenPicker::PickSingleFileAsync()
     {
+        bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
+        PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
+		auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
+
         PickerCommon::PickerParameters parameters{};
 
         CaptureParameters(parameters);

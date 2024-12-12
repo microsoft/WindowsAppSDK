@@ -33,36 +33,36 @@ namespace {
 
     // TODO: use better winrt implementations?
     // Challenge: currently winrt based Storage.KnownFolder APIs does not provide all location id we need
-    winrt::com_ptr<IShellItem> GetKnownFolderFromId(winrt::Microsoft::Storage::Pickers::PickerLocationId pickerLocationId)
+    winrt::com_ptr<IShellItem> GetKnownFolderFromId(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId)
     {
         KNOWNFOLDERID knownFolderId;
         switch (pickerLocationId)
         {
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::DocumentsLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary:
             knownFolderId = FOLDERID_Documents;
             break;
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::ComputerFolder:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::ComputerFolder:
             knownFolderId = FOLDERID_ComputerFolder;
             break;
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::Desktop:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Desktop:
             knownFolderId = FOLDERID_Desktop;
             break;
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::Downloads:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads:
             knownFolderId = FOLDERID_Downloads;
             break;
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::HomeGroup:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::HomeGroup:
             knownFolderId = FOLDERID_HomeGroup;
             break;
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::MusicLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary:
             knownFolderId = FOLDERID_MusicLibrary;
             break;
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::PicturesLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::PicturesLibrary:
             knownFolderId = FOLDERID_PicturesLibrary;
             break;
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::VideosLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::VideosLibrary:
             knownFolderId = FOLDERID_VideosLibrary;
             break;
-        case winrt::Microsoft::Storage::Pickers::PickerLocationId::Objects3D:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Objects3D:
             knownFolderId = FOLDERID_Objects3D;
             break;
         default:
