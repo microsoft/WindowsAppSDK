@@ -27,7 +27,7 @@ steps:
     IsOneBranch: ${{ parameters.IsOneBranch }}
 
 - task: PowerShell@2
-  name: BuildBinaries
+  name: BuildFoundation
   inputs:
     filePath: 'BuildAll.ps1'
     arguments: -AzureBuildStep "BuildAnyCPU"

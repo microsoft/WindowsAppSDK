@@ -92,7 +92,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             throw;
         }
     }
-    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
+    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& /*publisher*/, hstring const& /*product*/)
     {
         // TODO implement GetForUnpackaged
         throw hresult_not_implemented();

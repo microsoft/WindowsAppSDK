@@ -315,7 +315,8 @@ namespace WindowsAppRuntimeInstaller
         {
             if (isPackageInstalledAndIsPackageStatusOK)
             {
-                // If currently installed Package (either same or higher version than the version from the installer) is in good state, do nothing and return.
+                // If currently installed Package (either same or higher version than the version from the installer) is in good state, clear the package higher version and return.
+                installActivityContext.SetExistingPackageIfHigherVersion(L"");  
                 return;
             }
         }
@@ -353,6 +354,9 @@ namespace WindowsAppRuntimeInstaller
 
             // Re-register higher version of the package that is already installed.
            hrDeploymentResult = RegisterPackage(installActivityContext, installActivityContext.GetExistingPackageIfHigherVersion().c_str(), forceDeployment);
+
+           // Clear the package higher version after it has been re-registered 
+           installActivityContext.SetExistingPackageIfHigherVersion(L"");
         }
         else
         {

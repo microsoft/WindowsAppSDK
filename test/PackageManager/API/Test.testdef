@@ -1,9 +1,93 @@
 ﻿{
     "Tests": [
         {
-            "Description": "PackageManagerTests tests for feature PackageManager (arm64 not currently enabled)",
+            "Description": "Add PackageManagerTests tests for feature PackageManager (arm64 not currently enabled)",
             "Filename": "PackageManagerTests.dll",
-            "Parameters": "",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests::*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.Add* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Add*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.Deprovision* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Deprovision*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.EnsureReady* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_EnsureReady*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.IsPackageRegistrationPending* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_IsPackageRegistrationPending*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.IsReady::* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_IsReady::*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.IsReadyOrNewerAvailable* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_IsReadyOrNewerAvailable*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.Provision* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Provision*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.Register* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Register*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.Remove* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Remove*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.Repair* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Repair*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.Reset* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Reset*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.Stage* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Stage*",
             "Architectures": ["x86", "x64"],
             "Status": "Enabled"
         }

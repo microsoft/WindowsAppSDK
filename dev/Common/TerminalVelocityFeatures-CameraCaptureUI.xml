@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<features xmlns="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd">
+
+  <!-- Copyright (c) Microsoft Corporation. All rights reserved.
+     Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
+  <!-- See docs/Coding-Guidelines/TerminalVelocity.md for more info.  -->
+
+  <!-- Enabled variants -->
+  <feature>
+    <name>Feature_CameraCaptureUI</name>
+    <description>CameraCaptureUI for the WindowsAppRuntime</description>
+    <state>AlwaysEnabled</state>
+    <alwaysDisabledChannelTokens>
+      <channelToken>Preview</channelToken>
+      <channelToken>Stable</channelToken>
+    </alwaysDisabledChannelTokens>
+  </feature>
+</features>
