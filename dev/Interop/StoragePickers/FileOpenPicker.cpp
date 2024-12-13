@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "FileOpenPicker.h"
-#include "FileOpenPicker.g.cpp"
+#include "Microsoft.Windows.Storage.Pickers.FileOpenPicker.g.cpp"
 #include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>

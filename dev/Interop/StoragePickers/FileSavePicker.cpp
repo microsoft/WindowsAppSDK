@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "FileSavePicker.h"
-#include "FileSavePicker.g.cpp"
+#include "Microsoft.Windows.Storage.Pickers.FileSavePicker.g.cpp"
 #include <windows.h>
 #include <shobjidl.h>
 #include <shobjidl_core.h>
@@ -8,7 +8,6 @@
 #include <wil/cppwinrt.h>
 #include <wil/com.h>
 #include <wil/resource.h>
-#include <Microsoft.Ui.Xaml.Window.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include "PickerCommon.h"

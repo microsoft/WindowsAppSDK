@@ -1,5 +1,5 @@
 #pragma once
-#include "FolderPicker.g.h"
+#include "Microsoft.Windows.Storage.Pickers.FolderPicker.g.h"
 #include "PickerCommon.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation

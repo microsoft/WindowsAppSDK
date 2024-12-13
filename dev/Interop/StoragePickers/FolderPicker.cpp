@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "FolderPicker.h"
-#include "FolderPicker.g.cpp"
+#include "Microsoft.Windows.Storage.Pickers.FolderPicker.g.cpp"
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
