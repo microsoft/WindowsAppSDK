@@ -5,9 +5,10 @@
 
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
+    /// The set of servicing changes that can be disabled.
     enum CompatibilityChange
     {
-        None = 0, // do not use this value
+        None = 0, /// do not use this value
 
         // Add real changes here:
 
@@ -18,6 +19,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     [contractversion(1)]
     apicontract CompatibilityContract {};
 
+    /// Represents a version of the Windows App Runtime.
     [contract(CompatibilityContract, 1), feature(Feature_CompatibilityOptions)]
     struct WindowsAppRuntimeVersion
     {
@@ -29,7 +31,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     /// This object is used by the app to configure any desired compatibility options
     /// for Windows App Runtime behavior of changes added in servicing updates. This
     /// object is only used to set the runtime behavior and can't be used to query the
-    /// applied settings.
+    /// applied options.
     // TODO: Get agreement and add a generic Feature_Experimental
     [contract(CompatibilityContract, 1), feature(Feature_CompatibilityOptions)]
     runtimeclass CompatibilityOptions
