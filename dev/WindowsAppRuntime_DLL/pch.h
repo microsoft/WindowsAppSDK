@@ -14,7 +14,6 @@
 #include <xmllite.h>
 #include <sddl.h>
 
-
 #include <string>
 #include <string_view>
 #include <thread>
