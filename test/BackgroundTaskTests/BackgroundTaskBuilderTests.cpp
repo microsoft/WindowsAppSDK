@@ -2,8 +2,9 @@
 
 #include <winrt/Windows.Foundation.h>
 #include <TerminalVelocityFeatures-BackgroundTask.h>
+#include <winrt\windows.storage.h>
 #include <winrt\windows.applicationmodel.background.h>
-#include "winrt\Microsoft.Windows.ApplicationModel.Background.h"
+#include <winrt\Microsoft.Windows.ApplicationModel.Background.h>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -26,7 +27,7 @@ namespace BackgroundTaskTests
             TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"BackgroundTaskBuilder-AppxManifest.xml")
             END_TEST_CLASS()
 
-            TEST_CLASS_SETUP(ClassInit)
+        TEST_CLASS_SETUP(ClassInit)
         {
             ::Test::Bootstrap::SetupPackages();
             return true;
@@ -50,7 +51,7 @@ namespace BackgroundTaskTests
             return true;
         }
 
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(TestBackgroundTaskRegistration)
 		{
             if (!::Microsoft::Windows::ApplicationModel::Background::Feature_BackgroundTask::IsEnabled())
             {
@@ -58,12 +59,28 @@ namespace BackgroundTaskTests
                 return;
             }
             winrt::Microsoft::Windows::ApplicationModel::Background::BackgroundTaskBuilder builder;
-            builder.SetTrigger(TimeTrigger(15, false));
-            builder.SetTaskEntryPointClsid(winrt::guid{ 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } });
+            auto trigger = SystemTrigger(SystemTriggerType::TimeZoneChange, false);
+            builder.SetTrigger(trigger);
+            winrt::guid clsId{ 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
+            builder.SetTaskEntryPointClsid(clsId);
             builder.AddCondition(SystemCondition(SystemConditionType::InternetAvailable));
             builder.Name(L"TestName");
-            //auto task = builder.Register();
-            //VERIFY_IS_NOT_NULL(task);
+            BackgroundTaskRegistration taskReg = builder.Register();
+            // Verifying that BackgroundTask Registration is successful
+            VERIFY_IS_NOT_NULL(taskReg);
+            VERIFY_ARE_EQUAL(taskReg.Name(), L"TestName");
+            VERIFY_IS_TRUE(taskReg.AllTasks().Size() > 0);
+
+            winrt::hstring lookupStr = winrt::to_hstring(taskReg.TaskId());
+            ApplicationDataContainer localSettings = ApplicationData::Current().LocalSettings();
+            auto values = localSettings.Values();
+            auto lookupobj = values.Lookup(lookupStr);
+            winrt::guid comClsId = winrt::unbox_value<winrt::guid>(lookupobj);
+
+            // Verifying that the CLSID is stored in the local settings
+            VERIFY_IS_NOT_NULL(lookupobj);
+            VERIFY_IS_TRUE(clsId == comClsId);
+            taskReg.Unregister(true);
 		}
 	};
 }
