@@ -89,7 +89,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadDotNetRuntimeInstaller.ps1'
-    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\redist"
 
 - task: PowerShell@2
   displayName: 'Download vcredist installer'
@@ -97,7 +97,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCRedistInstaller.ps1'
-    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\redist"
 
 - task: PowerShell@2
   displayName: 'Download desktop bridge CRT'
@@ -105,7 +105,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCLibsDesktop.ps1'
-    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\redist"
 
 - task: powershell@2
   displayName: 'Create DynamicDependencies TerminalVelocity features'

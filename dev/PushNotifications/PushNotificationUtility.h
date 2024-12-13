@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     inline constexpr std::wstring_view c_argumentCommandString = L"Arguments";
     inline constexpr std::wstring_view c_executableCommandString = L"Executable";
 
-    inline std::string WideStringToUtf8String(_In_ winrt::hstring const& utf16string)
+    inline std::string WideStringToPayloadUtf8String(_In_ winrt::hstring const& utf16string)
     {
         int size = WideCharToMultiByte(
             CP_UTF8,
