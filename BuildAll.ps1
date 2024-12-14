@@ -77,12 +77,25 @@ write-host "VCToolsInstallDir: $VCToolsInstallDir"
 $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 write-host "msBuildPath: $msBuildPath"
 
-
 # Generate overrides
 # Make sure override directory exists.
 if(-not (test-path "$buildOverridePath"))
 {
     new-item -path "$buildOverridePath" -itemtype "directory"
+}
+
+function NugetRestore([string] $Label, [string] $Target)
+{
+    if ($AzureBuildStep -ne "all")
+    {
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/binaryLogger:BuildOutput\binlogs\$Label.restore.$Platform.$Configuration.binlog /p:Platform=$Platform /p:Configuration=$Configuration"
+    }
+    & .\.nuget\nuget.exe restore $Target -configfile NuGet.config
+    if ($lastexitcode -ne 0)
+    {
+        write-host "ERROR: nuget.exe restore $Label FAILED."
+        exit 1
+    }
 }
 
 Try {
@@ -109,34 +122,23 @@ Try {
         # If $AzureBuildStep is not "all", that means we are in the pipeline
         $WindowsAppSDKBuildPipeline = 1
     }
-    # PreFastSetup is specifically for use when preparing for PREFast scans. It triggers the same actions below as BuildBinaries or BuildMRT, except
+    # PreFastSetup is specifically for use when preparing for PREFast scans. It triggers the same actions below as BuildFoundation or BuildMRT, except
     # PreFastSetup stops short of calling msBuild.exe to build the target, which the Guardian:PREFast task does _not_ support, so the caller of this
     # script needs to resort to calling the MSBuild/VSBuild task later to build the target, which the Guardian:PREFast task does support. Structuring
     # the code this way allows minimally diveraging the flow while supporting building the target both via this script and the VSBuild/MSBuild task.
-    if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
+    if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildFoundation") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
     {
-        & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore WindowsAppRuntime.sln FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
-            exit 1
-        }
+        NugetRestore "WindowsAppRuntime" "WindowsAppRuntime.sln"
+        NugetRestore "Microsoft.WindowsAppRuntime.Bootstrap.Net" "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
 
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
-        if (($srcPath -ne $null)){
+        if (($srcPath -ne $null))
+        {
             $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
-            if (($destinationPaths -ne $null)) {
+            if (($destinationPaths -ne $null)) 
+            {
                 foreach ($destPath in $destinationPaths) {
                 Write-Host 'SourcePath:' $srcPath.FullName
                 Write-Host 'DestinationPath:' $destPath.FullName
@@ -152,7 +154,7 @@ Try {
         }
     }
     # PreFastSetup intentionally skips the call to MSBuild.exe below.
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries"))
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildFoundation"))
     {
         foreach($configurationToRun in $configuration.Split(","))
         {
@@ -162,7 +164,7 @@ Try {
                 & $msBuildPath /restore `
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun,Platform=$platformToRun `
-                                /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
+                                /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
                                 /p:WindowsAppSDKCleanIntermediateFiles=true `
@@ -170,7 +172,7 @@ Try {
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
                 {
-                    write-host "ERROR: msbuild.exe /restore WindowsAppRuntime.sln FAILED."
+                    write-host "ERROR: msbuild.exe WindowsAppRuntime.sln FAILED."
                     exit 1
                 }
             }
@@ -183,45 +185,11 @@ Try {
         #------------------
 
         #Restore packages from mrt.
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore MrtCore.sln FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore Microsoft.Windows.ApplicationModel.Resources\src\packages.config FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore mrm\mrmex\packages.config FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore mrmmin\packages.config FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore unittests\packages.config FAILED."
-            exit 1
-        }
+        NugetRestore "MrtCore" "$MRTSourcesDirectory\mrt\MrtCore.sln"
+        NugetRestore "Microsoft.Windows.ApplicationModel.Resources" "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config"
+        NugetRestore "mrmex" "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config"
+        NugetRestore "mrmmin" "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config"
+        NugetRestore "unittests" "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config"
 
         # Init mrtcore
         foreach($platformToRun in $platform.Split(","))
@@ -246,11 +214,11 @@ Try {
                     & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
                                     /p:Configuration=$configurationToRun,Platform=$platformToRun `
                                     /p:PGOBuildMode=$PGOBuildMode `
-                                    /binaryLogger:"BuildOutput/mrtcore.$platformToRun.$configurationToRun.binlog"
+                                    /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationToRun.binlog"
 
                     if ($lastexitcode -ne 0)
                     {
-                        write-host "ERROR: Building '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+                        write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
                         exit 1
                     }
                 }
@@ -262,11 +230,11 @@ Try {
         #------------------
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
-        # build AnyCPU
+        # build and restore AnyCPU
         & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: msbuild restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
+            write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
             exit 1
         }
     }
@@ -417,12 +385,6 @@ Try {
             exit 1
         }
     }
-    # if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMock"))
-    # {
-    #     $transportPackagepath = (Join-Path $OutputDirectory "Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion.nupkg")
-    #     . eng\common\Scripts\buildMockWinAppSdkPackage.ps1 -TransportPackageName "Foundation" -TransportPackagePath $transportPackagepath -RepoRoot $env:Build_SourcesDirectory -Output $OutputDirectory -Platform $Platform -Configuration $Configuration -TransportPackageVersion $PackageVersion -CleanOutput
-    # }
-
     $files = Get-ChildItem $OutputDirectory -File -Filter "*.nupkg"
     foreach ($file in $files)
     {

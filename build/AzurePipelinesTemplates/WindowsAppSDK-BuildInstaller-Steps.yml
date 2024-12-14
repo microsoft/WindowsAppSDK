@@ -202,6 +202,9 @@ steps:
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev
+    includeUCRT: true
+    ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
 
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
@@ -262,6 +265,7 @@ steps:
 
 - ${{ if ne(parameters.IsOneBranch, 'true') }}:
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'
       artifactName: '$(ob_artifactBaseName)'
