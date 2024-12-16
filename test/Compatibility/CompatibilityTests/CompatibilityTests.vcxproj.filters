@@ -33,7 +33,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Compatibility-AppxManifest.xml" />
-  </ItemGroup>
 </Project>

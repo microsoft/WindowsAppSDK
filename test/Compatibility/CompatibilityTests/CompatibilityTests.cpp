@@ -18,36 +18,37 @@ namespace Test::CompatibilityTests
     {
     public:
         BEGIN_TEST_CLASS(CompatibilityTests)
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::Setup()
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
-            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"Compatibility-AppxManifest.xml")
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own CompatibilityOptions
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
         {
-            //::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Framework);
-            //::Test::Bootstrap::SetupBootstrap();
-            ::Test::Bootstrap::Setup();
+            ::Test::Bootstrap::SetupPackages();
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
-            ::Test::Bootstrap::Cleanup();
+            ::Test::Bootstrap::CleanupPackages();
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+
+            // The test method setup and execution is on a different thread than the class setup.
+            // Initialize the framework for the test thread.
+            ::Test::Bootstrap::SetupBootstrap();
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            ::Test::Bootstrap::CleanupBootstrap();
             return true;
         }
 
