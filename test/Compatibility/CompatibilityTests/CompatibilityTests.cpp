@@ -101,6 +101,23 @@ namespace Test::CompatibilityTests
             options2.Apply();
         }
 
+        TEST_METHOD(VerifyConflictingPatchModeBehavior)
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String(L"Setting CompatibilityOptions with conflicting patch modes"));
+            winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::CompatibilityOptions options;
+            options.PatchMode1({ 1, 7, 3 });
+            options.PatchMode2({ 1, 7, 6 }); // Conflicting patch mode for 1.7.x! Apply should fail.
+            try
+            {
+                options.Apply();
+                VERIFY_FAIL(L"Success is not expected when setting a conflicting configuration");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code());
+            }
+        }
+
         TEST_METHOD(VerifyDisabledChanges)
         {
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::CompatibilityOptions options;

@@ -10,7 +10,7 @@
         '$(WindowsAppSdkDeploymentManagerInitialize)' == 'true' or
         '$(WindowsAppSdkCompatibilityInitialize)' == 'true')">
     <!-- Any of the individual initialize steps will require the core auto initializer -->
-    <WindowsAppSdkAutoInitializeNeeded>true</WindowsAppSdkAutoInitializeNeeded>
+    <WindowsAppSdkAutoInitialize Condition="'$(WindowsAppSdkAutoInitialize)'==''">true</WindowsAppSdkAutoInitialize>
   </PropertyGroup>
 
 </Project>

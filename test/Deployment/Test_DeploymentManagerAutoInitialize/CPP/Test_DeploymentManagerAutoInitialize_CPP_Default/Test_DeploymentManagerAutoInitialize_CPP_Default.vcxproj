@@ -108,18 +108,7 @@
   <PropertyGroup>
     <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
   </PropertyGroup>
-
-  <!-- AUTOINITIALIZER CONTENT: Mostly copied from WindowsAppSDK-Nuget-Native.AutoInitializer.targets -->
-    <ItemGroup>
-      <ClCompile Include="$(RepoRoot)\dev\common\WindowsAppRuntimeAutoInitializer.cpp">
-        <PrecompiledHeader>NotUsing</PrecompiledHeader>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      </ClCompile>
-    </ItemGroup>
-  <!-- END: AUTOINITIALIZER CONTENT -->
+  <Import Project="$(RepoRoot)\test\test.autoinitializer.Native.targets" />
 
   <ItemGroup>
     <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime">

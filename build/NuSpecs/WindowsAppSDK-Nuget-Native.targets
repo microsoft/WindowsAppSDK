@@ -155,6 +155,6 @@
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.CompatibilitySetter.targets" />
 
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.AutoInitializer.targets" Condition="'$(WindowsAppSdkAutoInitializeNeeded)' == 'true'"/>
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.AutoInitializer.targets" Condition="'$(WindowsAppSdkAutoInitialize)' == 'true'"/>
 
 </Project>

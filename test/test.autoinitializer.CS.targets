@@ -2,6 +2,8 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!-- TEST AUTOINITIALIZER: Copied from Microsoft.WindowsAppSDK.AutoInitializer.CS.targets with different WindowsAppRuntimeAutoInitializer file path. -->
+
   <PropertyGroup>
       <DefineConstants Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP</DefineConstants>
       <DefineConstants Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER</DefineConstants>
@@ -11,7 +13,7 @@
 
   <Target Name="WindowsAppRuntimeAutoInitializer">
     <ItemGroup>
-        <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppRuntimeAutoInitializer.cs" />
+      <Compile Include="$(RepoRoot)\dev\common\WindowsAppRuntimeAutoInitializer.cs"/>
     </ItemGroup>
   </Target>
 
