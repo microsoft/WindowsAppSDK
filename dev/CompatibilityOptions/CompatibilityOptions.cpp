@@ -13,6 +13,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         return m_disabledChanges;
     }
+
     void CompatibilityOptions::Apply()
     {
         WinAppSdk::Containment::WinAppSDKRuntimeConfiguration config;

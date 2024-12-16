@@ -47,7 +47,7 @@ $(WinAppSDKCompatibilityPatchMode2Lines)
 $(WinAppSDKCompatibilityDisabledChangesLines)
             compatibilityOptions.Apply()%3B
         }
-    }%3B
+    }
 }
       </WinAppSDKCompatibilitySetterFileLines>
     </PropertyGroup>

@@ -87,7 +87,7 @@ Now you're ready to load `WindowsAppRuntime.sln` and start development!
 
 Some tips:
 
-* If VS starts in a configuration of ``Any CPU``, switch to a specific architecture like `x64`
+* If VS starts in a configuration of `Any CPU`, switch to a specific architecture like `x64`
   to succeessfully build.
 * Build everything in VS via the Build menu's `Build Solution` or `Rebuild Solution`
 * Right-click on individual projects in Solution Explorer to only build select projects.

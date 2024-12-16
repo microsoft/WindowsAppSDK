@@ -139,7 +139,7 @@ Write-Verbose "Writing $assemblyInfoVerPath..."
 [System.IO.File]::WriteAllLines($assemblyInfoVerPath, $assemblyInfoVer, $utf8NoBomEncoding)
 
 # Generating AssemblyInfo.h override
-$assemblyInfoCs = @"
+$assemblyInfoH = @"
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
@@ -152,8 +152,8 @@ $assemblyInfoCs = @"
 #endif
 "@
 
-Write-Verbose $assemblyInfoCs
-$assemblyInfoCsPath = "$scriptFullPath/AssemblyInfo.h"
-Write-Verbose "Writing $assemblyInfoCsPath..."
-[System.IO.File]::WriteAllLines($assemblyInfoCsPath, $assemblyInfoCs, $utf8NoBomEncoding)
+Write-Verbose $assemblyInfoH
+$assemblyInfoHPath = "$scriptFullPath/AssemblyInfo.h"
+Write-Verbose "Writing $assemblyInfoHPath..."
+[System.IO.File]::WriteAllLines($assemblyInfoHPath, $assemblyInfoH, $utf8NoBomEncoding)
 

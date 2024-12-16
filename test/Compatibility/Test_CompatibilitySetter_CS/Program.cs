@@ -7,10 +7,10 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Note: This test app currently only tests that the compatibility properties set in
+        // Note: This test app currently only tests that the compatibility properties specified in
         // the project file generates the ConfigureCompatibility() function and compiles successfully.
         Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Compatibility.AutoInitialize.ConfigureCompatibility();
-        // App using the <WindowsAppSDKRuntimePatchMode*> or <WindowsAppSDKDisabledChanges> project properties should
+        // Apps using the <WindowsAppSDKRuntimePatchMode*> or <WindowsAppSDKDisabledChanges> project properties should
         // NOT directly call the above function. This test calls it just to verify that the function is generated.
 
         Console.WriteLine("hello world");

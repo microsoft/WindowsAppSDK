@@ -11,10 +11,10 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Compatibility
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
-    // Note: This test app currently only tests that the compatibility properties set in
-    // the project file generates the ConfigureCompatibility() function and compiles successfully.
+    // Note: This test app currently only tests that the compatibility properties specified in
+    // the project file generates the Initialize() function and compiles successfully.
     Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Compatibility::AutoInitialize::Initialize();
-    // App using the <WindowsAppSDKRuntimePatchMode*> or <WindowsAppSDKDisabledChanges> project properties should
+    // Apps using the <WindowsAppSDKRuntimePatchMode*> or <WindowsAppSDKDisabledChanges> project properties should
     // NOT directly call the above function. This test calls it just to verify that the function is generated.
     
     return 0;

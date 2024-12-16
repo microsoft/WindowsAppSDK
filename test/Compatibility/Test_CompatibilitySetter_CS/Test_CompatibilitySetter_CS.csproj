@@ -16,6 +16,8 @@
   <PropertyGroup>
     <WindowsAppSDKRuntimePatchMode>1.7.3</WindowsAppSDKRuntimePatchMode>
     <WindowsAppSDKRuntimePatchMode2>1.8.2</WindowsAppSDKRuntimePatchMode2>
+    <!-- Specify multiple DisabledChanges, comma-separated. "None" is the only enum value
+         which always exists, so use that one a couple times plus a cast of a random int. -->
     <WindowsAppSDKDisabledChanges>None, None, (CompatibilityChange)23456, None</WindowsAppSDKDisabledChanges>
   </PropertyGroup>
 

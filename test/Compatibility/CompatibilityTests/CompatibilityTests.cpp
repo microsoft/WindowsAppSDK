@@ -18,7 +18,7 @@ namespace Test::CompatibilityTests
     {
     public:
         BEGIN_TEST_CLASS(CompatibilityTests)
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::Setup()
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::SetupPackages()
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own CompatibilityOptions
         END_TEST_CLASS()
