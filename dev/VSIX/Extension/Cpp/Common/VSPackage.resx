@@ -190,10 +190,10 @@
     <value>A project template for creating a WinUI 3 app along with a MSIX package for side-loading or distribution via the Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Windows Runtime Component</value>
+    <value>Windows Runtime Component (C++/WinRT)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimental] Windows Runtime Component</value>
+    <value>[Experimental] Windows Runtime Component (C++/WinRT)</value>
   </data>
   <data name="1035" xml:space="preserve">
     <value>A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both desktop and Universal Windows Platform (UWP) apps, based on WinUI 3.</value>
