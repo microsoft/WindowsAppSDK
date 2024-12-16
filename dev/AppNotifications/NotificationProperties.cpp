@@ -29,7 +29,7 @@ namespace Helpers
 NotificationProperties::NotificationProperties(winrt::AppNotification const& toastNotification)
 {
     // Extract payload and convert it from XML to a byte array
-    auto payloadAsSimpleString = Helpers::WideStringToUtf8String(toastNotification.Payload());
+    auto payloadAsSimpleString = Helpers::WideStringToPayloadUtf8String(toastNotification.Payload());
 
     m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
     THROW_IF_NULL_ALLOC(m_payload.get());
@@ -57,6 +57,31 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
             m_toastConferencingConfig = winrt::make_self<NotificationConferencingConfig>(config);
         }
     }
+
+
+    m_notificationType = ToastABI::NotificationType::NotificationType_Toast;
+}
+
+NotificationProperties::NotificationProperties(Microsoft::Windows::BadgeNotifications::BadgeNotification &badgeNotification)
+{
+    // Extract payload and convert it from XML to a byte array
+    auto payloadAsSimpleString = Helpers::WideStringToPayloadUtf8String(badgeNotification.Payload());
+
+    m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
+    THROW_IF_NULL_ALLOC(m_payload.get());
+    CopyMemory(m_payload.data(), payloadAsSimpleString.c_str(), payloadAsSimpleString.size());
+
+    m_notificationId = badgeNotification.Id();
+
+    m_tag = badgeNotification.Tag();
+    m_group = badgeNotification.Group();
+
+    m_expiry = winrt::clock::to_file_time(badgeNotification.Expiration());
+    m_arrivalTime = winrt::clock::to_file_time(winrt::clock::now());
+
+    m_expiresOnReboot = badgeNotification.ExpiresOnReboot();
+
+    m_notificationType = badgeNotification.NotificationType();
 }
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationId(_Out_ unsigned int* notificationId) noexcept
@@ -162,5 +187,13 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastConferencingCo
 {
     auto lock{ m_lock.lock_shared() };
     m_toastConferencingConfig.copy_to(conferencingConfig);
+    return S_OK;
+}
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationType(_Out_ ToastABI::NotificationType* notificationType) noexcept
+{
+    auto lock{ m_lock.lock_shared() };
+    *notificationType = m_notificationType;
+
     return S_OK;
 }

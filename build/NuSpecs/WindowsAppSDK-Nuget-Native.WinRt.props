@@ -78,6 +78,9 @@
     <Reference Include="Microsoft.Windows.Storage.Pickers.winmd"
       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.Pickers.winmd')">
       <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.BadgeNotifications.winmd"
+      Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.BadgeNotifications.winmd')">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.BadgeNotifications.winmd</HintPath>
       <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
