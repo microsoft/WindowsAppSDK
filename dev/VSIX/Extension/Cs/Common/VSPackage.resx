@@ -172,10 +172,10 @@
     <value>A blank user control (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Class Library</value>
+    <value>WinUI Class Library</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimental] Class Library</value>
+    <value>[Experimental] WinUI Class Library</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>A project for creating a managed class library (.dll) (WinUI 3).</value>
