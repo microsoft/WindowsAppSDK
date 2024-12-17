@@ -566,7 +566,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IXP", "IXP", "{7B323048-439
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IXP.TransportPackage.PackageReference", "eng\PackageReference\IXP\IXP.TransportPackage.PackageReference.csproj", "{A949149D-29CA-4AA7-B1ED-0E571B4AD9BB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notifications", "Notifications", "{43FE6980-3E16-4EF9-A3DE-29B402FB4FAB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BaseNotifications", "BaseNotifications", "{586EA218-74C8-420B-B47E-0B307AA4B82D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BadgeNotifications", "BadgeNotifications", "{50205ED9-0E08-4878-B124-9AC0EBA138D6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BadgeNotifications", "dev\Notifications\BadgeNotifications\BadgeNotifications.vcxitems", "{85D111C7-B720-4E19-A56D-03C87B953983}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseNotifications", "dev\Notifications\BaseNotifications\BaseNotifications.vcxitems", "{2BD7A1BB-D3D8-484F-9180-409D781DCCF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.BadgeNotifications.Projection", "dev\Projections\CS\Microsoft.Windows.BadgeNotifications.Projection\Microsoft.Windows.BadgeNotifications.Projection.csproj", "{A243A58D-ABD7-4520-8C71-F492247B7B92}"
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.Storage.Pickers.Projection", "dev\Projections\CS\Microsoft.Windows.Storage.Pickers.Projection\Microsoft.Windows.Storage.Pickers.Projection.csproj", "{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StoragePickers", "dev\Interop\StoragePickers\StoragePickers.vcxitems", "{A39E7B2F-5F67-47DD-8443-531D095CA7F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2004,6 +2017,22 @@ Global
 		{A949149D-29CA-4AA7-B1ED-0E571B4AD9BB}.Release|x64.Build.0 = Release|x64
 		{A949149D-29CA-4AA7-B1ED-0E571B4AD9BB}.Release|x86.ActiveCfg = Release|x86
 		{A949149D-29CA-4AA7-B1ED-0E571B4AD9BB}.Release|x86.Build.0 = Release|x86
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Debug|x64.Build.0 = Debug|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Debug|x86.Build.0 = Debug|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Release|ARM64.Build.0 = Release|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Release|x64.ActiveCfg = Release|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Release|x64.Build.0 = Release|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Release|x86.ActiveCfg = Release|Any CPU
+		{A243A58D-ABD7-4520-8C71-F492247B7B92}.Release|x86.Build.0 = Release|Any CPU
 		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|Any CPU.Build.0 = Debug|x64
 		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|ARM64.ActiveCfg = Debug|arm64
@@ -2199,7 +2228,14 @@ Global
 		{D5958784-4518-44F1-A518-80514B380ED5} = {E24C263A-DE3E-4844-BA50-842DA5AD7A49}
 		{7B323048-439F-47E9-A3D4-7342C5ADE2A5} = {5C88AE1D-AC20-4A41-9299-1EEA15B80724}
 		{A949149D-29CA-4AA7-B1ED-0E571B4AD9BB} = {7B323048-439F-47E9-A3D4-7342C5ADE2A5}
+		{43FE6980-3E16-4EF9-A3DE-29B402FB4FAB} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{586EA218-74C8-420B-B47E-0B307AA4B82D} = {43FE6980-3E16-4EF9-A3DE-29B402FB4FAB}
+		{50205ED9-0E08-4878-B124-9AC0EBA138D6} = {43FE6980-3E16-4EF9-A3DE-29B402FB4FAB}
+		{85D111C7-B720-4E19-A56D-03C87B953983} = {50205ED9-0E08-4878-B124-9AC0EBA138D6}
+		{2BD7A1BB-D3D8-484F-9180-409D781DCCF9} = {586EA218-74C8-420B-B47E-0B307AA4B82D}
+		{A243A58D-ABD7-4520-8C71-F492247B7B92} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{A39E7B2F-5F67-47DD-8443-531D095CA7F3} = {3B706C5C-55E0-4B76-BF59-89E20FE46795}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -2207,6 +2243,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
 		dev\PushNotifications\PushNotifications.vcxitems*{103c0c23-7ba8-4d44-a63c-83488e2e3a81}*SharedItemsImports = 9
+		dev\Notifications\BaseNotifications\BaseNotifications.vcxitems*{2bd7a1bb-d3d8-484f-9180-409d781dccf9}*SharedItemsImports = 9
 		dev\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems*{2f3fad1b-d3df-4866-a3a3-c2c777d55638}*SharedItemsImports = 9
 		dev\OAuth\OAuth.vcxitems*{3e7fd510-8b66-40e7-a80b-780cb8972f83}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{412d023e-8635-4ad2-a0ea-e19e08d36915}*SharedItemsImports = 4
@@ -2217,11 +2254,13 @@ Global
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
 		dev\ApplicationData\ApplicationData.vcxitems*{7cf52890-56fa-47e2-84fb-68ee274324b6}*SharedItemsImports = 9
 		dev\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems*{858fa9a9-f822-4b98-84a1-fe44e2c00a5d}*SharedItemsImports = 9
+		dev\Notifications\BadgeNotifications\BadgeNotifications.vcxitems*{85d111c7-b720-4e19-a56d-03c87b953983}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
 		dev\PackageManager\API\PackageManager.vcxitems*{8a9a0c85-65a8-4bca-a49e-45fc4fdbc7d2}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
 		dev\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems*{95409d1e-843f-4316-8d8e-471b3e203f94}*SharedItemsImports = 9
+		dev\Interop\StoragePickers\StoragePickers.vcxitems*{a39e7b2f-5f67-47dd-8443-531d095ca7f3}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\ApplicationData\ApplicationData.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
