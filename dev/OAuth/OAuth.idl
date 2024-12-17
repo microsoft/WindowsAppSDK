@@ -31,21 +31,6 @@ namespace Microsoft.Security.Authentication.OAuth
     {
         // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
         // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
-        // call to 'CompleteAuthRequest'. This performs authorization of response_type="token".
-        static Windows.Foundation.IAsyncOperation<AuthRequestResult> RequestAuthAsync(
-            Microsoft.UI.WindowId parentWindowId,
-            Windows.Foundation.Uri completeAuthEndpoint,
-            Windows.Foundation.Uri redirectUri);
-
-        // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
-        // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
-        // call to 'CompleteAuthRequest'.This performs authorization of response_type="token".
-        static Windows.Foundation.IAsyncOperation<AuthRequestResult> RequestAuthAsync(
-            Microsoft.UI.WindowId parentWindowId,
-            Windows.Foundation.Uri completeAuthEndpoint);
-
-        // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
-        // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
         // call to 'CompleteAuthRequest'.
         static Windows.Foundation.IAsyncOperation<AuthRequestResult> RequestAuthWithParamsAsync(
             Microsoft.UI.WindowId parentWindowId,
@@ -98,16 +83,8 @@ namespace Microsoft.Security.Authentication.OAuth
         // parameters as well as a redirect URI, which is frequently specified.
         static AuthRequestParams CreateForAuthorizationCodeRequest(String clientId, Windows.Foundation.Uri redirectUri);
 
-        // Helper method to create for an implicit grant request ("token" response type) with required parameters, per
-        // RFC 6749 section 4.2.1.
-        static AuthRequestParams CreateForImplicitRequest(String clientId);
-        // Helper method to create for an implicit grant request ("token" response type) with required parameters as
-        // well as a redirect URI, which is frequently specified.
-        static AuthRequestParams CreateForImplicitRequest(String clientId, Windows.Foundation.Uri redirectUri);
-
         // Specifies the required "response_type" parameter of the authorization request. This property is initialized
-        // by the creation function used ("code" for 'CreateForAuthorizationCodeRequest' and "token" for
-        // 'CreateForImplicitRequest').
+        // by the creation function used ("code" for 'CreateForAuthorizationCodeRequest').
         //
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.1 and 4.2.1
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1
@@ -280,10 +257,6 @@ namespace Microsoft.Security.Authentication.OAuth
         // initialized with the required parameters extracted from the authorization response, per RFC 6749 section
         // 4.1.3.
         static TokenRequestParams CreateForAuthorizationCodeRequest(AuthResponse authResponse);
-
-        // Helper method to create for a resource owner password credentials grant request ("password" grant type),
-        // initialized with the required parameters, per RFC 6749 section 4.3.2.
-        static TokenRequestParams CreateForResourceOwnerPasswordCredentials(String username, String password);
 
         // Helper method to create for a client credentials grant request ("client_credentials" grant type), initialized
         // with the required parameters, per RFC 6749 section 4.4.2.
