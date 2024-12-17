@@ -568,6 +568,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IXP.TransportPackage.Packag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.Storage.Pickers.Projection", "dev\Projections\CS\Microsoft.Windows.Storage.Pickers.Projection\Microsoft.Windows.Storage.Pickers.Projection.csproj", "{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StoragePickers", "dev\Interop\StoragePickers\StoragePickers.vcxitems", "{A39E7B2F-5F67-47DD-8443-531D095CA7F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2200,6 +2202,7 @@ Global
 		{7B323048-439F-47E9-A3D4-7342C5ADE2A5} = {5C88AE1D-AC20-4A41-9299-1EEA15B80724}
 		{A949149D-29CA-4AA7-B1ED-0E571B4AD9BB} = {7B323048-439F-47E9-A3D4-7342C5ADE2A5}
 		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{A39E7B2F-5F67-47DD-8443-531D095CA7F3} = {3B706C5C-55E0-4B76-BF59-89E20FE46795}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -2222,6 +2225,7 @@ Global
 		dev\PackageManager\API\PackageManager.vcxitems*{8a9a0c85-65a8-4bca-a49e-45fc4fdbc7d2}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
 		dev\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems*{95409d1e-843f-4316-8d8e-471b3e203f94}*SharedItemsImports = 9
+		dev\Interop\StoragePickers\StoragePickers.vcxitems*{a39e7b2f-5f67-47dd-8443-531d095ca7f3}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\ApplicationData\ApplicationData.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
