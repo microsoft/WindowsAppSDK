@@ -1,10 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 import "..\AppLifecycle\AppLifecycle.idl";
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace Microsoft.Windows.AppNotifications
 {
-    [contractversion(3)]
+    [contractversion(4)]
     apicontract AppNotificationsContract {}
 
     // Event args for the Notification Activation
@@ -111,6 +112,30 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets or sets whether a Notification's pop-up UI is displayed on the user's screen.
         Boolean SuppressDisplay;
+
+        // Gets or sets the Notification Conferencing Config
+        [contract(AppNotificationsContract, 4), feature(Feature_CallingPreviewSupport)]
+        AppNotificationConferencingConfig ConferencingConfig;
+    }
+
+    // The Notification Conferencing Config
+    [contract(AppNotificationsContract, 4), feature(Feature_CallingPreviewSupport)]
+    runtimeclass AppNotificationConferencingConfig
+    {
+        // Initializes a new Instance of AppNotificationConferencingConfig
+        AppNotificationConferencingConfig();
+
+        // Checks if Video or Audio Calling is supported
+        static Boolean IsCallingPreviewSupported();
+
+        // Gets or sets the Video Device Id
+        String VideoDeviceId;
+
+        // Gets or sets the Microphone Device Id
+        String AudioInputDeviceId;
+
+        // Gets or sets the Speaker Device Id
+        String AudioOutputDeviceId;
     }
 
     // The manager class which encompasses all App Notification API Functionality

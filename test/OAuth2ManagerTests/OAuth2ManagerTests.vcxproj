@@ -107,7 +107,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;"D:\WindowsAppSDKInternal\WindowsAppSDK\dev\Detours"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,6 +125,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,13 +148,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>
-        ..\..\dev\Detours;
-        ..\..\dev\Common;
-        $(OutDir)\..\WindowsAppRuntime_DLL;
-        $(OutDir)\..\WindowsAppRuntime_BootstrapDLL;
-        %(AdditionalIncludeDirectories)
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,11 +163,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -186,11 +181,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -204,11 +199,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -243,12 +238,12 @@
   <PropertyGroup>
     <VCLibsDebugConfigName Condition="'$(Configuration)' == 'Debug'">.Debug</VCLibsDebugConfigName>
     <TestPkgDebugConfigName Condition="'$(Configuration)' == 'Debug'">_Debug</TestPkgDebugConfigName>
-    <TestPkgOutputPath>$(AppxPackageDir)\OAuthTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
-    <TestPkgOutputFile>D:\WindowsAppSDKInternal\WindowsAppSDK\BuildOutput\Debug\x86\AppxPackages\OAuthTestAppPackage_1.0.0.0_x86_Debug_Test\OAuthTestAppPackage_1.0.0.0_x86_Debug.msix</TestPkgOutputFile>
+    <TestPkgOutputPath>$(AppxPackageDir)\..\..\AppxPackages\OAuthTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
+    <TestPkgOutputFile>$(TestPkgOutputPath)\OAuthTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msix</TestPkgOutputFile>
   </PropertyGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" DestinationFolders="$(TargetDir)" DestinationFileName="OAuthTestAppPackage.msix" TreatOutputAsContent="true" />
-    <CopyFileToFolders Include="D:\WindowsAppSDKInternal\WindowsAppSDK\BuildOutput\Debug\x86\AppxPackages\OAuthTestAppPackage_1.0.0.0_x86_Debug_Test\Dependencies\x86\Microsoft.VCLibs.x86.Debug.14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Security.Authentication.OAuth">

@@ -1,4 +1,5 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 #include <memory>
 #include <string>
@@ -14,6 +15,7 @@
 #include <WexTestClass.h>
 #include <WinSock2.h>
 
+#include <TerminalVelocityFeatures-OAuth.h>
 #include <winrt/Microsoft.Security.Authentication.OAuth.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Security.Cryptography.h>
@@ -268,12 +270,22 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(Protocol_AuthorizationCode_BasicEndToEnd)
         {
+            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
+                return;
+            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_CODE REDIRECT_TYPE_PROTOCOL;
             DoBasicEndToEndAuthCodeTest(client_id, protocol_redirect_uri);
         }
 
         TEST_METHOD(AuthorizationCodeWithClientAuth)
         {
+            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
+                return;
+            }
             // NOTE: This is testing client auth, which is a token request only thing, hence only using a single redirection type
             static constexpr std::wstring_view client_id = GRANT_TYPE_CODE REDIRECT_TYPE_LOCALHOST AUTH_TYPE_HEADER;
             auto requestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(client_id, Uri{ localhost_redirect_uri });
@@ -291,16 +303,13 @@ namespace OAuth2ManagerTests
             VERIFY_ARE_EQUAL(token, tokenResponse.AccessToken());
         }
 
-        TEST_METHOD(UserCredentialsTokenRequest)
-        {
-            static constexpr std::wstring_view client_id = GRANT_TYPE_PASSWORD AUTH_TYPE_HEADER;
-            auto tokenParams = TokenRequestParams::CreateForResourceOwnerPasswordCredentials(L"username", L"password");
-            auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
-            RequestTokenAndWaitForSuccessfulResponse(tokenParams, auth);
-        }
-
         TEST_METHOD(ClientCredentialsTokenRequest)
         {
+            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
+                return;
+            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_CLIENT AUTH_TYPE_HEADER;
             auto tokenParams = TokenRequestParams::CreateForClientCredentials();
             auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
@@ -309,6 +318,11 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(RefreshTokenRequest)
         {
+            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
+                return;
+            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_REFRESH AUTH_TYPE_HEADER;
             auto tokenParams = TokenRequestParams::CreateForRefreshToken(refresh_token_old);
             auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
@@ -317,6 +331,11 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(ExtensionTokenRequest)
         {
+            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
+                return;
+            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_EXTENSION AUTH_TYPE_HEADER;
             auto tokenParams = TokenRequestParams::CreateForExtension(Uri{ extension_grant_uri });
             auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
@@ -325,8 +344,13 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(TokenRequestErrorResponse)
         {
-            static constexpr std::wstring_view client_id = GRANT_TYPE_PASSWORD TOKEN_ERROR_RESPONSE;
-            auto tokenParams = TokenRequestParams::CreateForResourceOwnerPasswordCredentials(L"username", L"password");
+            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
+                return;
+            }
+            static constexpr std::wstring_view client_id = GRANT_TYPE_CLIENT TOKEN_ERROR_RESPONSE;
+            auto tokenParams = TokenRequestParams::CreateForClientCredentials();
             auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
             auto tokenAsyncOp = OAuth2Manager::RequestTokenAsync(Uri{ m_serverUrlBase + L"token" }, tokenParams, auth);
             WaitWithTimeout(tokenAsyncOp, AsyncStatus::Completed);
@@ -349,8 +373,14 @@ namespace OAuth2ManagerTests
             VERIFY_ARE_EQUAL(JsonValueType::String, jsonValue.ValueType());
             VERIFY_ARE_EQUAL(additional_param_value, jsonValue.GetString());
         }
+
         TEST_METHOD(AdditionalParams)
         {
+            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
+                return;
+            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_CODE REDIRECT_TYPE_LOCALHOST ADDITIONAL_PARAMS;
             auto requestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(client_id, Uri{ localhost_redirect_uri });
             auto additionalRequestParams = requestParams.AdditionalParams();
@@ -372,6 +402,11 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(CompleteInvalidState)
         {
+            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
+                return;
+            }
             VERIFY_IS_FALSE(OAuth2Manager::CompleteAuthRequest(Uri{ L"unknown-protocol:" })); // No query parameters at all
             VERIFY_IS_FALSE(OAuth2Manager::CompleteAuthRequest(Uri{ L"http://127.0.0.1/oauth?code=abc123" })); // Missing state
             VERIFY_IS_FALSE(OAuth2Manager::CompleteAuthRequest(Uri{ L"oauthtestapp:oauth?code=abc&state=invalid" }));
@@ -420,7 +455,6 @@ namespace OAuth2ManagerTests
                 winrt::hstring codeChallenge;
                 winrt::hstring codeChallengeMethod;
                 winrt::hstring additionalParam;
-                winrt::hstring foo;
                 for (auto&& entry : Uri(fileStr).QueryParsed())
                 {
                     auto name = entry.Name();
@@ -456,10 +490,6 @@ namespace OAuth2ManagerTests
                     else if (name == additional_param_key)
                     {
                         additionalParam = value;
-                    }
-                    else if (name == L"foo")
-                    {
-                        foo = value;
                     }
                     else
                     {
@@ -569,20 +599,6 @@ namespace OAuth2ManagerTests
                 {
                     assignInvalidRequestError(L"Expected a 'scope' parameter, but none provided");
                 }
-                else if (expectedScopeType == L"single")
-                {
-                    if (scope != single_scope)
-                    {
-                        assignMismatchedArgsError(L"scope", single_scope, scope);
-                    }
-                }
-                else if (expectedScopeType == L"multiple")
-                {
-                    if (scope != multiple_scope)
-                    {
-                        assignMismatchedArgsError(L"scope", multiple_scope, scope);
-                    }
-                }
 
                 if (expectAdditionalParams)
                 {
@@ -634,29 +650,6 @@ namespace OAuth2ManagerTests
                     uri_builder builder{ redirectUri };
                     builder.add(L"code", code);
                     builder.add(L"state", state);
-                    responseUri = builder.get();
-                }
-                else if (responseType == L"token")
-                {
-                    if (!codeChallengeMethod.empty())
-                    {
-                        assignInvalidRequestError(L"Use of PKCE is not valid for implicit requests");
-                    }
-
-                    uri_builder builder{ redirectUri, false };
-                    builder.add(L"state", state);
-                    builder.add(L"access_token", token);
-                    builder.add(L"token_type", L"Bearer");
-                    builder.add(L"expires_in", L"3600");
-                    if (scope.empty())
-                    {
-                        builder.add(L"scope", L"all");
-                    }
-                    else
-                    {
-                        builder.add(L"scope", scope);
-                    }
-
                     responseUri = builder.get();
                 }
                 else
@@ -844,8 +837,6 @@ namespace OAuth2ManagerTests
             Uri redirectUri{ nullptr };
             winrt::hstring clientId;
             winrt::hstring codeVerifier;
-            winrt::hstring username;
-            winrt::hstring password;
             winrt::hstring scope;
             winrt::hstring refreshToken;
             winrt::hstring additionalParam;
@@ -872,14 +863,6 @@ namespace OAuth2ManagerTests
                 else if (name == L"code_verifier")
                 {
                     codeVerifier = value;
-                }
-                else if (name == L"username")
-                {
-                    username = value;
-                }
-                else if (name == L"password")
-                {
-                    password = value;
                 }
                 else if (name == L"scope")
                 {
@@ -1055,8 +1038,6 @@ namespace OAuth2ManagerTests
                     assignInvalidRequestError(L"Expected a 'redirect_uri', but none provided");
                 }
 
-                checkUnexpectedArg(L"username", username);
-                checkUnexpectedArg(L"password", password);
                 checkUnexpectedArg(L"scope", scope); // Only expected during auth request
                 checkUnexpectedArg(L"refresh_token", refreshToken);
 
@@ -1138,34 +1119,6 @@ namespace OAuth2ManagerTests
                     }
                 }
             }
-            else if (grantType == L"password")
-            {
-                if (expectedGrantType != L"password")
-                {
-                    assignMismatchedArgsError(L"grant_type", expectedGrantType, grantType);
-                }
-                else if (username.empty())
-                {
-                    assignMismatchedArgsError(L"username", L"username", L"<empty>");
-                }
-                else if (username != L"username")
-                {
-                    assignMismatchedArgsError(L"username", L"username", username);
-                }
-                else if (password.empty())
-                {
-                    assignMismatchedArgsError(L"password", L"password", L"<empty>");
-                }
-                else if (password != L"password")
-                {
-                    assignMismatchedArgsError(L"password", L"password", password);
-                }
-
-                checkUnexpectedArg(L"code", code);
-                checkUnexpectedArg(L"code_verifier", codeVerifier);
-                checkUnexpectedArg(L"refresh_token", refreshToken);
-
-            }
             else if (grantType == L"client_credentials")
             {
                 if (expectedGrantType != L"client")
@@ -1175,8 +1128,6 @@ namespace OAuth2ManagerTests
 
                 checkUnexpectedArg(L"code", code);
                 checkUnexpectedArg(L"code_verifier", codeVerifier);
-                checkUnexpectedArg(L"username", username);
-                checkUnexpectedArg(L"password", password);
                 checkUnexpectedArg(L"refresh_token", refreshToken);
             }
             else if (grantType == L"refresh_token")
@@ -1192,8 +1143,6 @@ namespace OAuth2ManagerTests
 
                 checkUnexpectedArg(L"code", code);
                 checkUnexpectedArg(L"code_verifier", codeVerifier);
-                checkUnexpectedArg(L"username", username);
-                checkUnexpectedArg(L"password", password);
             }
             else if (grantType == extension_grant_uri)
             {
@@ -1204,8 +1153,6 @@ namespace OAuth2ManagerTests
 
                 checkUnexpectedArg(L"code", code);
                 checkUnexpectedArg(L"code_verifier", codeVerifier);
-                checkUnexpectedArg(L"username", username);
-                checkUnexpectedArg(L"password", password);
                 checkUnexpectedArg(L"refresh_token", refreshToken);
             }
             else

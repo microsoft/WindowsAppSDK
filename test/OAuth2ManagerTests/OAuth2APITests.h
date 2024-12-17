@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
 #include <cassert>
@@ -8,7 +10,6 @@
 // Specifying grant type is required
 #define GRANT_TYPE_CODE L"grant=code"
 #define GRANT_TYPE_TOKEN L"grant=token"
-#define GRANT_TYPE_PASSWORD L"grant=password"
 #define GRANT_TYPE_CLIENT L"grant=client"
 #define GRANT_TYPE_REFRESH L"grant=refresh"
 #define GRANT_TYPE_EXTENSION L"grant=extension"
@@ -35,9 +36,6 @@ inline constexpr std::wstring_view additional_param_key = L"use=key&name=foo";
 inline constexpr std::wstring_view additional_param_value = L"use=value&name=bar";
 
 inline constexpr std::wstring_view extension_grant_uri = L"oauth:test:extension";
-
-inline constexpr std::wstring_view single_scope = L"foo=bar?";
-inline constexpr std::wstring_view multiple_scope = L"foo=bar? &\"foobar\"";
 
 inline constexpr std::wstring_view token = L"tacos=yummy&location=\"my tummy\"";
 inline constexpr std::wstring_view json_escaped_token = L"tacos=yummy&location=\\\"my tummy\\\"";

@@ -99,7 +99,7 @@
 #>
 
 Param(
-    [String]$CertPassword=$null,
+    [SecureString]$CertPassword=$null,
 
     [String]$CertPasswordFile=$null,
 
@@ -771,10 +771,9 @@ function Repair-DevTestPfx
 
     # -CertPassword <password> is a required parameter for this work
     $password = ''
-    $password_plaintext = $null
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
-        $password_plaintext = $CertPassword
+        $password = $CertPassword
     }
     elseif (-not [string]::IsNullOrEmpty($CertPasswordFile))
     {
@@ -790,18 +789,29 @@ function Repair-DevTestPfx
     {
         $password = Get-Content -Path $pwd_file -Encoding utf8
     }
-    if ([string]::IsNullOrEmpty($password_plaintext) -And ($NoInteractive -eq $false))
+    elseif ([string]::IsNullOrEmpty($password) -And ($NoInteractive -eq $false))
     {
-        $password_plaintext = Read-Host -Prompt 'Creating test certificate. Please enter a password'
+        $password = Read-Host -Prompt 'Creating test certificate. Please enter a password' -AsSecureString
     }
-    if ([string]::IsNullOrEmpty($password_plaintext))
+    else
     {
-        Write-Host "Test certificate .pfx...password parameter (-CertPassword | -CertPasswordFile | -CertPasswordUser) or prompting required"
-        $global:issues++
-        return $false
+        $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@'
+        $passwordLength = 20
+        $password = New-Object -TypeName System.Security.SecureString
+        # Generate random characters and append to SecureString
+        for ($i = 0; $i -lt $passwordLength; $i++)
+        {
+            $randomChar = $charSet[(Get-Random -Maximum $charSet.Length)]
+            $password.AppendChar($randomChar)
+        }
     }
-    $password = ConvertTo-SecureString -String $password_plaintext -Force -AsPlainText
-    Set-Content -Path $pwd_file -Value $password_plaintext -Force
+
+    # Convert back to plaintext. This is not secure but this cert is only use for development purposes.
+    # Do not use for production purposes.
+    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password)
+    $passwordPlainText = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
+    Set-Content -Path $pwd_file -Value $passwordPlainText -Force
 
     # Prepare to record the pfx for the certificate
     $user = Get-UserPath
@@ -1059,7 +1069,7 @@ function Install-TAEFService
     $cpu = Get-CpuArchitecture
     $taef_version = Get-TAEFPackageVersion
     $taef = "Microsoft.Taef.$($taef_version)"
-    $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
+    $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
         Write-Host "Install TAEF service...Not Found ($path)"
@@ -1639,6 +1649,7 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     if ($test -eq 'NotFound')
     {
         $test = Install-TAEFService
+        $test = Start-TAEFService
     }
     elseif ($test -eq 'NotRunning-OlderVersion')
     {

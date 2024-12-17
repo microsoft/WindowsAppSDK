@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -376,7 +376,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Build the actions string and fill m_useButtonStyle
         std::wstring actions{ GetActions() };
 
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
+        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
             m_timeStamp.c_str(),
             GetDuration().c_str(),
             GetScenario().c_str(),
@@ -384,6 +384,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             GetButtonStyle().c_str(),
             GetText().c_str(),
             m_attributionText.c_str(),
+            GetCameraPreview().c_str(),
             GetImages().c_str(),
             GetProgressBars().c_str(),
             m_audio.c_str(),
@@ -398,5 +399,20 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         logTelemetry.Stop();
 
         return appNotification;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddCameraPreview()
+    {
+        THROW_HR_IF(E_NOTIMPL, !AppNotificationConferencingConfig::IsCallingPreviewSupported());
+
+        THROW_HR_IF_MSG(E_INVALIDARG, m_useCameraPreview, "CameraPreview element is already added, only one is allowed");
+
+        m_useCameraPreview = true;
+        return *this;
+    }
+
+    std::wstring AppNotificationBuilder::GetCameraPreview()
+    {
+        return m_useCameraPreview ? L"<cameraPreview/>" : L"";
     }
 }
