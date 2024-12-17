@@ -13,6 +13,11 @@
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
 
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" />
+
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializer.CS.targets" Condition="'$(WindowsAppSdkAutoInitialize)' == 'true'"/>
+  
   <ItemGroup>
     <Compile Condition="'$(WindowsAppSdkIncludeVersionInfo)'=='true'" Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
   </ItemGroup>

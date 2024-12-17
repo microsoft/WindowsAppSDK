@@ -83,10 +83,12 @@ harmless if your configuration is current with no changes needed.
 
 # Tada!
 
-Now you're ready to load `WindowsAppSDK.sln` and start development!
+Now you're ready to load `WindowsAppRuntime.sln` and start development!
 
 Some tips:
 
+* If VS starts in a configuration of `Any CPU`, switch to a specific architecture like `x64`
+  to successfully build.
 * Build everything in VS via the Build menu's `Build Solution` or `Rebuild Solution`
 * Right-click on individual projects in Solution Explorer to only build select projects.
   Dependencies and Build Order should be defined to build prerequisites (if necessary) for the

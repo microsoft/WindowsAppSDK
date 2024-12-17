@@ -28,7 +28,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
 {
     class AutoInitialize
     {
-        [global::System.Runtime.CompilerServices.ModuleInitializer]
+        // Called by WindowsAppRuntimeAutoInitializer.cs
         internal static void AccessWindowsAppSDK()
         {
             uint majorMinorVersion = global::Microsoft.WindowsAppSDK.Release.MajorMinor;
