@@ -134,9 +134,7 @@ namespace Microsoft.Security.Authentication.OAuth
         String CodeChallenge{ get; set; };
 
         // Specifies the optional "code_challenge_method" parameter of the authorization request. For authorization code
-        // requests, this value defaults to 'S256'. For implicit requests, this value defaults to 'None' and cannot be
-        // changed.
-        //
+        // requests, this value defaults to 'S256'.
         // Defined by RFC 7636: Proof Key for Code Exchange by OAuth Public Clients, section 4.3
         //      https://www.rfc-editor.org/rfc/rfc7636#section-4.3
         CodeChallengeMethodKind CodeChallengeMethod { get; set; };
@@ -163,30 +161,22 @@ namespace Microsoft.Security.Authentication.OAuth
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2
         String Code { get; };
 
-        // From the "access_token" parameter of the authorization response. Set only if the request was an implicit
-        // request.
-        //
+        // From the "access_token" parameter of the authorization response.
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
         String AccessToken { get; };
 
-        // From the "token_type" parameter of the authorization response. Set only if the request was an implicit
-        // request.
-        //
+        // From the "token_type" parameter of the authorization response.
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
         String TokenType { get; };
 
-        // From the "expires_in" parameter of the authorization response. An optional parameter that may be set only if
-        // the request was an implicit request.
-        //
+        // From the "expires_in" parameter of the authorization response.
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
         String ExpiresIn { get; }; // TODO: DateTime?
 
-        // From the "scope" parameter of the authorization response. An optional parameter that may be set only if the
-        // request was an implicit request.
-        //
+        // From the "scope" parameter of the authorization response.
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
         String Scope { get; };
