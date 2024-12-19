@@ -6,10 +6,13 @@
       <WindowsAppSdkCompatibilityInitialize>true</WindowsAppSdkCompatibilityInitialize>
   </PropertyGroup>
 
-  <Target Name="WindowsAppSdkCompatibilitySetterTarget" BeforeTargets="XamlPreCompile;CoreCompile"
+  <Target Name="WindowsAppSdkCompatibilitySetterTarget" BeforeTargets="CoreCompile"
           Condition="'$(WindowsAppSDKRuntimePatchMode)' != '' or '$(WindowsAppSDKRuntimePatchMode2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
     <PropertyGroup>
-      <WindowsAppSDKCompatibilitySetterFile>$(GeneratedFilesDir)WindowsAppSDKCompatibilitySetter.cs</WindowsAppSDKCompatibilitySetterFile>
+      <WindowsAppSDKGeneratedFilesDir Condition="'$(WindowsAppSDKGeneratedFilesDir)' == '' and '$(GeneratedFilesDir)' != ''">$(GeneratedFilesDir)\WindowsAppSDK\</WindowsAppSDKGeneratedFilesDir>
+      <WindowsAppSDKGeneratedFilesDir Condition="'$(WindowsAppSDKGeneratedFilesDir)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Generated Files', 'WindowsAppSDK'))</WindowsAppSDKGeneratedFilesDir>
+        
+      <WindowsAppSDKCompatibilitySetterFile>$(WindowsAppSDKGeneratedFilesDir)WindowsAppSDKCompatibilitySetter.cs</WindowsAppSDKCompatibilitySetterFile>
       <WindowsAppSDKCompatibilityPatchMode1Lines Condition="'$(WindowsAppSDKRuntimePatchMode)' != ''">
             compatibilityOptions.PatchMode1 = new WindowsAppRuntimeVersion($(WindowsAppSDKRuntimePatchMode.Replace(".", ",")))%3B
       </WindowsAppSDKCompatibilityPatchMode1Lines>

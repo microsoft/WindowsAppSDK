@@ -11,7 +11,8 @@
       <DefineConstants Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY</DefineConstants>
   </PropertyGroup>
 
-  <Target Name="WindowsAppRuntimeAutoInitializer">
+  <!-- "BeforeCompile" is used here to ensure this happens at the same time as possible codegen from WindowsAppSdkCompatibilitySetterTarget -->
+  <Target Name="WindowsAppRuntimeAutoInitializer" BeforeTargets="BeforeCompile">
     <ItemGroup>
       <Compile Include="$(RepoRoot)\dev\common\WindowsAppRuntimeAutoInitializer.cs"/>
     </ItemGroup>

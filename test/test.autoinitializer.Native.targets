@@ -16,4 +16,10 @@
     </ItemGroup>
   </Target>
 
+  <PropertyGroup>
+    <BeforeClCompileTargets>
+        $(BeforeClCompileTargets); WindowsAppRuntimeAutoInitializer;
+    </BeforeClCompileTargets>
+  </PropertyGroup>
+
 </Project>

@@ -4,7 +4,7 @@
 
   <Target Name="WindowsAppRuntimeAutoInitializer">
     <ItemGroup>
-      <ClCompile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppRuntimeAutoInitializer.cpp">
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
         <PreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
         <PreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -13,5 +13,11 @@
       </ClCompile>
     </ItemGroup>
   </Target>
+
+  <PropertyGroup>
+    <BeforeClCompileTargets>
+        $(BeforeClCompileTargets); WindowsAppRuntimeAutoInitializer;
+    </BeforeClCompileTargets>
+  </PropertyGroup>
 
 </Project>
