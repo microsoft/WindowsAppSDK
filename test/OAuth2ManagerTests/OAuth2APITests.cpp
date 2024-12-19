@@ -101,13 +101,13 @@ namespace OAuth2ManagerTests
             ULONG err = 0;
             for (std::uint16_t i = 0; i < 500; ++i)
             {
-                wchar_t buffer[18 + 5 + 1];
+                wchar_t buffer[18 + 5 + 1]; // 18 for base URL, 5 for port number, 1 for null terminator
                 std::swprintf(buffer, std::size(buffer), L"http://127.0.0.1:%d/", m_serverPort);
 
                 err = ::HttpAddUrlToUrlGroup(m_urlGroup, buffer, 0, 0);
                 if (err == NO_ERROR)
                 {
-                    m_serverUrlBase = buffer;
+                    m_serverUrlBase = std::wstring(buffer); // Copy the buffer to a std::wstring to avoid dangling pointer
                     break;
                 }
 
@@ -1187,7 +1187,6 @@ namespace OAuth2ManagerTests
             response.StatusCode = 200;
             response.pReason = "OK";
             response.ReasonLength = 2;
-
             auto& contentTypeHeader = response.Headers.KnownHeaders[HttpHeaderContentType];
             contentTypeHeader.pRawValue = "application/json; charset=UTF-8";
             contentTypeHeader.RawValueLength = static_cast<USHORT>(::strlen(contentTypeHeader.pRawValue));

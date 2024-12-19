@@ -6,7 +6,7 @@
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
 #include <winrt/Microsoft.Security.Authentication.OAuth.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
-#include <fstream> 
+
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Security::Authentication::OAuth;
 using namespace winrt::Windows::ApplicationModel::Activation;
@@ -29,7 +29,7 @@ int main()
         else
         {
             std::printf("WARNING: Application was launched with something other than protocol activation!\n");
-        };
+        }
     }
     catch (const std::exception& ex)
     {
