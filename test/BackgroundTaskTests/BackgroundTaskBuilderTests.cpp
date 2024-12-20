@@ -3,7 +3,6 @@
 
 #include "pch.h"
 
-#include <winrt/Windows.Foundation.h>
 #include <TerminalVelocityFeatures-BackgroundTask.h>
 #include <winrt\windows.storage.h>
 #include <winrt\windows.applicationmodel.background.h>
@@ -30,25 +29,25 @@ namespace BackgroundTaskTests
             TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"BackgroundTaskBuilder-AppxManifest.xml")
             END_TEST_CLASS()
 
-        TEST_CLASS_SETUP(ClassInit)
+        TEST_CLASS_SETUP(BackgroundTaskBuilderTestsClassInit)
         {
             ::Test::Bootstrap::SetupPackages();
             return true;
         }
 
-        TEST_CLASS_CLEANUP(ClassUninit)
+        TEST_CLASS_CLEANUP(BackgroundTaskBuilderTestsClassUninit)
         {
             ::Test::Bootstrap::CleanupPackages();
             return true;
         }
 
-        TEST_METHOD_SETUP(MethodInit)
+        TEST_METHOD_SETUP(BackgroundTaskBuilderTestsMethodInit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             return true;
         }
 
-        TEST_METHOD_CLEANUP(MethodUninit)
+        TEST_METHOD_CLEANUP(BackgroundTaskBuilderTestsMethodUninit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             return true;
