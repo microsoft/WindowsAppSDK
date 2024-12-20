@@ -24,7 +24,7 @@
   <Import Project="$(RepoRoot)\build\NuSpecs\Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" />
   <Target Name="VerifyCompatibilitySetterFile" AfterTargets="CoreCompile">
     <!-- Make sure the setter file was generated. -->
-    <Error Condition="!Exists('$(GeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cs')" Text="Missing file: $(GeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cs" />
+    <Error Condition="!Exists('$(WindowsAppSDKGeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cs')" Text="Missing file: $(WindowsAppSDKGeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cs" />
     <Error Condition="'$(WindowsAppSdkCompatibilityInitialize)' != 'true'" Text="WindowsAppSdkCompatibilityInitialize is incorrectly not set to true" />
   </Target>
   <Import Project="$(RepoRoot)\test\test.autoinitializer.CS.targets" />
