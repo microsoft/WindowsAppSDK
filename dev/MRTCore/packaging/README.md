@@ -1,2 +1,3 @@
-MrtCore.targets generates PRIs in unpackaged app projects and unpackaged library projects.
-MrtCore.targets consists of some of the targets from the in-box file Microsoft.AppxPackage.Targets, with a few modified slightly.
+All .props/.targets files here have been moved to https://www.nuget.org/packages/Microsoft.Windows.SDK.BuildTools.MSIX.
+
+Only some .props for native projects are left here, as they depend on 'mrm.dll', which is part of WindowsAppSDK.
