@@ -13,58 +13,6 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Security::Cryptography;
 
-AuthRequestAsyncOperation::AuthRequestAsyncOperation(winrt::hstring& state)
-{
-    try
-    {
-        if (state.empty())
-        {
-            while (true)
-            {
-                state = random_base64urlencoded_string(32);
-                if (try_create_pipe(state))
-                {
-                    break;
-                }
-
-                // 'FILE_FLAG_FIRST_PIPE_INSTANCE' is documented as failing with 'ERROR_ACCESS_DENIED' if a pipe
-                // with the same name has already been created.
-                if (auto err = ::GetLastError(); err != ERROR_ACCESS_DENIED)
-                {
-                    throw winrt::hresult_error(HRESULT_FROM_WIN32(err),
-                        L"Generation of a unique state value unexpectedly failed");
-                }
-            }
-        }
-        else if (!try_create_pipe(state))
-        {
-            auto err = ::GetLastError();
-            auto msg =
-                (err == ERROR_ACCESS_DENIED) ? L"Provided state value is not unique" : L"Failed to create named pipe";
-            throw winrt::hresult_error(HRESULT_FROM_WIN32(err), msg);
-        }
-
-        m_overlapped.hEvent = ::CreateEventW(nullptr, true, false, nullptr);
-        if (!m_overlapped.hEvent)
-        {
-            throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to create an event");
-        }
-
-        m_ptp.reset(::CreateThreadpoolWait(async_callback, this, nullptr)); // Use reset() to initialize
-        if (!m_ptp)
-        {
-            throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to create threadpool wait");
-        }
-        connect_to_new_client();
-    }
-    catch (...)
-    {
-        // Throwing in a constructor will cause the destructor not to run...
-        destroy();
-        throw;
-    }
-}
-
 AuthRequestAsyncOperation::AuthRequestAsyncOperation(implementation::AuthRequestParams* params) :
     m_params(params->get_strong())
 {

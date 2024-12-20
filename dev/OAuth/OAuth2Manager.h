@@ -21,10 +21,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
 
     struct OAuth2Manager : OAuth2ManagerT<OAuth2Manager, implementation::OAuth2Manager, winrt::static_lifetime>
     {
-        foundation::IAsyncOperation<oauth::AuthRequestResult> RequestAuthAsync(
-            winrt::Microsoft::UI::WindowId const& parentWindowId, const foundation::Uri& completeAuthEndpoint, const foundation::Uri& redirectUri);
-        foundation::IAsyncOperation<oauth::AuthRequestResult> RequestAuthAsync(
-            winrt::Microsoft::UI::WindowId const& parentWindowId, const foundation::Uri& completeAuthEndpoint);
         foundation::IAsyncOperation<oauth::AuthRequestResult> RequestAuthWithParamsAsync(
             winrt::Microsoft::UI::WindowId const& parentWindowId, const foundation::Uri& authEndpoint, const oauth::AuthRequestParams& params);
         bool CompleteAuthRequest(const foundation::Uri& responseUri);
@@ -41,7 +37,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
     private:
         AuthRequestState try_remove(AuthRequestAsyncOperation* op);
 
-        std::wstring create_implicit_url(const foundation::Uri& completeAuthEndpoint, const winrt::hstring& state, const foundation::Uri& redirectUri);
         void execute_shell(winrt::Microsoft::UI::WindowId const& parentWindowId, const std::wstring& url);
         std::shared_mutex m_mutex;
         TelemetryHelper m_telemetryHelper;
@@ -53,22 +48,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
 {
     struct OAuth2Manager
     {
-        static foundation::IAsyncOperation<oauth::AuthRequestResult> RequestAuthAsync(
-            winrt::Microsoft::UI::WindowId const& parentWindowId,
-            foundation::Uri completeAuthEndpoint, foundation::Uri redirectUri)
-        {
-            return winrt::make_self<factory_implementation::OAuth2Manager>()->RequestAuthAsync(parentWindowId,
-                completeAuthEndpoint,
-                redirectUri);
-        }
-
-        static foundation::IAsyncOperation<oauth::AuthRequestResult> RequestAuthAsync(
-            winrt::Microsoft::UI::WindowId const& parentWindowId,
-            foundation::Uri completeAuthEndpoint)
-        {
-            return winrt::make_self<factory_implementation::OAuth2Manager>()->RequestAuthAsync(parentWindowId,
-                completeAuthEndpoint);
-        }
 
         static foundation::IAsyncOperation<oauth::AuthRequestResult> RequestAuthWithParamsAsync(
             winrt::Microsoft::UI::WindowId const& parentWindowId,
