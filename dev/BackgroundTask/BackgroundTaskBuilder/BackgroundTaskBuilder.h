@@ -29,6 +29,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
         void Name(winrt::hstring Name);
         winrt::hstring Name() { return m_name; }
 
+        void TaskGroup(winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistrationGroup TaskGroup);
+        winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistrationGroup TaskGroup();
+
         winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Register();
         winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Register(winrt::hstring taskName);
 
