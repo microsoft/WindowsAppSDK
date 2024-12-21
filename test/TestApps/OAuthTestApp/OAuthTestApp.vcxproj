@@ -10,7 +10,7 @@
     <ProjectGuid>{4caa3052-7fae-4c5b-a1cb-02d7f910c991}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>OAuthTestApp</RootNamespace>
-    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.26100.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
