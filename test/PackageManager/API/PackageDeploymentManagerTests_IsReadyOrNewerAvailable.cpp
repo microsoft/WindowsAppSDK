@@ -52,7 +52,7 @@ namespace Test::PackageManager::Tests
             return true;
         }
 
-        TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFullName_InvalidParameter)
+        TEST_METHOD(IsPackageReadyOrNewerAvailable_InvalidParameter)
         {
             if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
@@ -184,8 +184,8 @@ namespace Test::PackageManager::Tests
 
             try
             {
-                PCWSTR packageFamilyName{ L"Not a valid Package Family Name" };
-                packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFamilyName);
+                PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
+                packageDeploymentManager.IsPackageReadyOrNewerAvailable(c_packageFamilyName);
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
