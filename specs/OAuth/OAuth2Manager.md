@@ -4,7 +4,9 @@ OAuth2Manager API
 This is the spec for proposal: [Issue #441](https://github.com/microsoft/WindowsAppSDK/issues/441)
 
 This spec details the API of a new `OAuth2Manager` in WinAppSDK,
-enabling desktop applications such as WinUI3 to seamlessly perform OAuth functionality across diverse Windows platforms.
+enabling desktop applications such as WinUI3 to seamlessly perform OAuth functionality across diverse Windows platforms. 
+OAuth2Manager API intentionally does not provide API for the implicit request & resource owner password credential because of the security concerns that follow it. It is recommended to use the 
+authorization code grant type using Proof Key for Code Exchange (PKCE).
 
 
 
