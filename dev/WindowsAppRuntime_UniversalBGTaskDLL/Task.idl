@@ -1,10 +1,12 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-
-
 namespace Microsoft.Windows.ApplicationModel.Background.UniversalBGTask
 {
+    [contractversion(1)]
+    apicontract UniversalBGTaskContract{};
+
+    [contract(UniversalBGTaskContract, 1)]
     [default_interface]
     runtimeclass Task : Windows.ApplicationModel.Background.IBackgroundTask
     {
