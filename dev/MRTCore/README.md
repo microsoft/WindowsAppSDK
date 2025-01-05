@@ -23,5 +23,5 @@ Open Visual Studio with `MrtCore.sln` and build the solution.
 The source code consists of three parts:
 - [The core runtime](mrt/mrm)
   - [PRI builder](mrt/mrm/include/mrm/build)
-- [Pure-C API](mrt/Core/src/MRM.h) over the core runtime
-- [WinRT API](mrt/Microsoft.Windows.ApplicationModel.Resources) wrapping the pure-C API
+- [Flat-C API](mrt/Core/src/MRM.h) over the core runtime
+- [WinRT API](mrt/Microsoft.Windows.ApplicationModel.Resources) wrapping the flat-C API
