@@ -1,6 +1,11 @@
 <h1 align="center">MRT Core from Windows App SDK</h1>
 
-**MRT Core** (formaly, Core MRT or MRT) was born from the need for [Windows App SDK](https://aka.ms/windowsappsdk) applications to use MRT (Modern Resource Technology), introduced to Windows 8 and evolved as the modern resource management system since then. MRT Core provides support to build resources to Package Resource Index (PRI) files, and load resources from PRI files. The API is exposed to the namespace [Microsoft.Windows.ApplicationModel.Resources](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applicationmodel.resources).
+**MRT Core** (formaly, Core MRT) is implemented as a part of [Windows App SDK](https://aka.ms/windowsappsdk) so that develoers can utilize MRT (Modern Resource Technology), which was introduced to Windows 8 as a part of UWP and evolved as the modern resource management system. MRT Core provides support to build resources to Package Resource Index (PRI) files and load resources from PRI files.
+
+## Accessibility
+
+- WASDK 1.0 onwards: [Microsoft.Windows.ApplicationModel.Resources](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applicationmodel.resources)
+- Prior to WASDK 1.0: [Microsoft.ApplicationModel.Resources](https://learn.microsoft.com/ja-jp/windows/windows-app-sdk/api/winrt/microsoft.applicationmodel.resources?view=windows-app-sdk-0.8)
 
 ## Getting started with MRT Core
 
