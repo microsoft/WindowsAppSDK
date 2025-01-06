@@ -34,6 +34,28 @@
          in the same manifest with the same ActivatableClassId (regardless in same
          or different <Extension>s).
       -->
+    <!-- Background Task -->
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Background.BackgroundTaskBuilder" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthRequestParams" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.ClientAuthentication" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.OAuth2Manager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthResponse" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthFailure" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthRequestResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenRequestParams" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenResponse" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenFailure" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenRequestResult" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
@@ -147,6 +169,12 @@
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.CompatibilityOptions" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub">

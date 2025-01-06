@@ -15,8 +15,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         TokenRequestParams(const winrt::hstring& grantType);
 
         static oauth::TokenRequestParams CreateForAuthorizationCodeRequest(const oauth::AuthResponse& authResponse);
-        static oauth::TokenRequestParams CreateForResourceOwnerPasswordCredentials(const winrt::hstring& username,
-            const winrt::hstring& password);
         static oauth::TokenRequestParams CreateForClientCredentials();
         static oauth::TokenRequestParams CreateForExtension(const foundation::Uri& extensionUri);
         static oauth::TokenRequestParams CreateForRefreshToken(const winrt::hstring& refreshToken);

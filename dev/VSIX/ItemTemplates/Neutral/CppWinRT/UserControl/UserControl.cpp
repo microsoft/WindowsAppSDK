@@ -21,9 +21,4 @@ namespace winrt::$rootnamespace$::implementation
     {
         throw hresult_not_implemented();
     }
-
-    void $safeitemname$::myButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        myButton().Content(box_value(L"Clicked"));
-    }
 }

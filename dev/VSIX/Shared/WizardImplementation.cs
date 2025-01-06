@@ -15,8 +15,7 @@ using System.Threading.Tasks;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
-
-    public class NuGetPackageInstaller : IWizard
+    public partial class NuGetPackageInstaller : IWizard
     {
         internal static Guid SolutionVCProjectGuid = new Guid("8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942");
         private Project _project;
@@ -44,6 +43,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
             }
         }        
+
         public void ProjectFinishedGenerating(Project project)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -62,6 +62,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
             }
         }
+
         private async Task InstallNuGetPackagesAsync()
         {
             await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
@@ -117,13 +118,16 @@ namespace WindowsAppSDK.TemplateUtilities
         public void BeforeOpeningFile(ProjectItem _)
         {
         }        
+
         public void ProjectItemFinishedGenerating(ProjectItem _)
         {
         }        
+
         public void RunFinished()
         {
 
         }
+
         private void SaveAllProjects()
         {
             ThreadHelper.ThrowIfNotOnUIThread("SaveAllProjects must be called on the UI thread.");
@@ -140,6 +144,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
             }
         }
+
         private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
         {
             // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
@@ -152,6 +157,7 @@ namespace WindowsAppSDK.TemplateUtilities
             var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
             _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
         }
+
         private void LogError(string message)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -165,6 +171,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
             });
         }
+        
         public bool ShouldAddProjectItem(string _)
         {
             return true;
