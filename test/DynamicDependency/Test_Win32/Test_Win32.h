@@ -35,6 +35,7 @@ namespace Test::DynamicDependency
         TEST_METHOD(Create_RegistryLifetime_NoExist);
         TEST_METHOD(Create_DoNotVerifyDependencyResolution);
 
+        TEST_METHOD(Create_Add_Architectures_Explicit_NoMatch);
         TEST_METHOD(Create_Add_Architectures_Explicit);
         TEST_METHOD(Create_Add_Architectures_Current);
 
@@ -320,6 +321,10 @@ namespace Test::DynamicDependency
             Create_DoNotVerifyDependencyResolution();
         }
 
+        TEST_METHOD(Create_Add_Architectures_Explicit_Elevated_NoMatch)
+        {
+            Create_Add_Architectures_Explicit_NoMatch();
+        }
         TEST_METHOD(Create_Add_Architectures_Explicit_Elevated)
         {
             Create_Add_Architectures_Explicit();
