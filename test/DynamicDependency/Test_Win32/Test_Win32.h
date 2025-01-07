@@ -152,6 +152,13 @@ namespace Test::DynamicDependency
             PCWSTR lifetimeArtifact = nullptr,
             MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
 
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
+            const HRESULT expectedHR,
+            const MddPackageDependencyProcessorArchitectures architectures,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
+
         wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
             MddCreatePackageDependencyOptions options);
 
