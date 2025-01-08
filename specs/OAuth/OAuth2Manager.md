@@ -4,7 +4,9 @@ OAuth2Manager API
 This is the spec for proposal: [Issue #441](https://github.com/microsoft/WindowsAppSDK/issues/441)
 
 This spec details the API of a new `OAuth2Manager` in WinAppSDK,
-enabling desktop applications such as WinUI3 to seamlessly perform OAuth functionality across diverse Windows platforms.
+enabling desktop applications such as WinUI3 to seamlessly perform OAuth functionality across diverse Windows platforms. 
+OAuth2Manager API intentionally does not provide API for the implicit request & resource owner password credential because of the security concerns that follow it. It is recommended to use the 
+authorization code grant type using Proof Key for Code Exchange (PKCE).
 
 
 
@@ -38,47 +40,6 @@ and OAuth 2.0 for Native Apps [RFC 8252](https://tools.ietf.org/html/rfc8252).
 # Conceptual pages
 
  ## Perform OAuth 2.0 (c++)
-
- Performing an Implicit Request with redirect URI(grant type/'response_type' = "token")
-
- ```c++
- // Get the WindowId for the application window
- Microsoft::UI::WindowId parentWindowId = this->AppWindow().Id();
-
-AuthRequestResult authRequestResult = co_await OAuth2Manager::RequestAuthAsync(parentWindowId,
-    Uri(L"https://my.server.com/oauth/authorize?client_id=<client ID>&scope=<Scope>"), Uri(L"my-app:/oauth-callback/"));
-if (AuthResponse authResponse = authRequestResult.Response())
-{
-    //To obtain the access token 
-    authResponse.AccessToken();
-}
-else
-{
-    AuthFailure authFailure = authRequestResult.Failure();
-    NotifyFailure(authFailure.Error(), authFailure.ErrorDescription());
-}
-```
-
-Performing an Implicit Request without redirect URI(grant type/'response_type' = "token")
-
- ```c++
- // Get the WindowId for the application window
- Microsoft::UI::WindowId parentWindowId = this->AppWindow().Id();
-
-AuthRequestResult authRequestResult = co_await OAuth2Manager::RequestAuthAsync(parentWindowId,
-    Uri(L"https://my.server.com/oauth/authorize?client_id=<client ID>&scope=<Scope>"));
-if (AuthResponse authResponse = authRequestResult.Response())
-{
-    //To obtain the access token 
-    authResponse.AccessToken();
-}
-else
-{
-    AuthFailure authFailure = authRequestResult.Failure();
-    NotifyFailure(authFailure.Error(), authFailure.ErrorDescription());
-}
-```
-
 
  Performing an Authorization Code Request (grant type/'response_type' = "code")
 
@@ -190,37 +151,6 @@ else
 }
 ```
 
-Performing an Implicit Request for a token (grant type/'response_type' = "token")
-
- ```c++
- // Get the WindowId for the application window
-Microsoft::UI::WindowId parentWindowId = this->AppWindow().Id();
-
-AuthRequestParams authRequestParams = AuthRequestParams::CreateForImplicitRequest(L"my_client_id",
-    Uri(L"my-app:/oauth-callback/"));
-authRequestParams.Scope(L"user:email user:birthday");
-
-AuthRequestResult authRequestResult = co_await OAuth2Manager::RequestAuthWithParamsAsync(parentWindowId, 
-    Uri(L"https://my.server.com/oauth/authorize"), authRequestParams);
-if (AuthResponse authResponse = authRequestResult.Response())
-{
-    //To obtain the access token
-    String accessToken = tokenResponse.AccessToken();
-
-    String tokenType = tokenResponse.TokenType();
-
-    // Use the access token for resources
-    DoRequestWithToken(accessToken, tokenType);
-}
-else
-{
-    AuthFailure authFailure = authRequestResult.Failure();
-    NotifyFailure(authFailure.Error(), authFailure.ErrorDescription());
-}
-```
-
-> Note: The authorization server MUST NOT issue a refresh token for implicit request.
-
 Completing an Authorization Request from a Protocol Activation
 
 ```c++
@@ -255,8 +185,6 @@ complete an authorization request, and request an access token for a user throug
 
 | Name | Description | Parameters | Returns |
 |-|-|-|-| 
-| RequestAuthAsync(Microsoft.UI.WindowId, Windows.Foundation.Uri, Windows.Foundation.Uri) | Initiates an authorization request in the user's default browser. This performs an access token request of implicit grant type. | Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint` , Windows.Foundation.Uri `redirectUri` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
-| RequestAuthAsync(Microsoft.UI.WindowId, Windows.Foundation.Uri) | Initiates an authorization request in the user's default browser. This performs an access token request of implicit grant type. | Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
 | RequestAuthWithParamsAsync(Microsoft.UI.WindowId, Windows.Foundation.Uri, AuthRequestParams) | Intiates auth request for a user in the user's default browser through a client.| Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint`  , AuthRequestParams `params` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
 | CompleteAuthRequest(Windows.Foundation.Uri) | Completes an auth request through a redirect URI. | Windows.Foundation.Uri `responseUri` | Boolean |
 | RequestTokenAsync(Windows.Foundation.Uri, TokenRequestParams) | Initiates an access token request. | Windows.Foundation.Uri `tokenEndPoint` , TokenRequestParams `params` | Windows.Foundation.IAsyncOperation< TokenRequestResult > |
@@ -322,8 +250,6 @@ response_type is described in section 3.1.1 of [RFC 6749](https://www.rfc-editor
 |-|-|-|-|
 | CreateForAuthorizationCodeRequest(String) | Helper method to create for an authorization code grant request ("code" response type) with required parameters. | String `clientId` | AuthRequestParams |
 | CreateForAuthorizationCodeRequest(String, Windows.Foundation.Uri) | Helper method to create for an authorization code grant request ("code" response type) with required parameters. | String `clientId` , Windows.Foundation.Uri `redirectUri` | AuthRequestParams |
-| CreateForImplicitRequest(String) | Helper method to create for an implicit grant request ("token" response type) with required parameters. | String `clientId` | AuthRequestParams |
-| CreateForImplicitRequest(String, Windows.Foundation.Uri) | Helper method to create for an implicit grant request ("token" response type) with required parameters. | String `clientId` , Windows.Foundation.Uri `redirectUri` | AuthRequestParams |
 
 ## AuthRequestParams Properties
 
@@ -400,7 +326,6 @@ It's a class that provides methods to create a token request parameter object. T
 | Name | Description | Parameters | Returns |
 |-|-|-|-|
 | CreateForAuthorizationCodeRequest(AuthResponse) | Helper method to create for an authorization code grant request ("authorization_code" grant type) with required parameters extracted from the authorization response. | AuthResponse `authResponse` | TokenRequestParams |
-| CreateForResourceOwnerPasswordCredentials(String, String) | Helper method to create for a resource owner password credentials grant request ("password" grant type) with required parameters. | String `username` , String `password` | TokenRequestParams |
 | CreateForClientCredentials() | Helper method to create for a client credentials grant request ("client_credentials" grant type) with required parameters. | None | TokenRequestParams |
 | CreateForExtension(Windows.Foundation.Uri) | Helper method to create for an extension grant request, using the provided URI for the grant type. | Windows.Foundation.Uri `extensionUri` | TokenRequestParams |
 | CreateForRefreshToken(String) | Helper method to create for an access token refresh request ("refresh_token" grant type) with required parameters. | String `refreshToken` | TokenRequestParams |
@@ -505,18 +430,6 @@ namespace Microsoft.Security.Authentication.OAuth
     [contract(OAuthContract, 1)]
     static runtimeclass OAuth2Manager
     {
-        // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
-        // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
-        // call to 'CompleteAuthRequest'. This performs authorization of response_type="token".
-        static Windows.Foundation.IAsyncOperation<AuthRequestResult> RequestAuthAsync(Microsoft.UI.WindowId parentWindowId,
-            Windows.Foundation.Uri completeAuthEndpoint,
-            Windows.Foundation.Uri redirectUri);
-
-        // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
-        // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
-        // call to 'CompleteAuthRequest'.This performs authorization of response_type="token".
-        static Windows.Foundation.IAsyncOperation<AuthRequestResult> RequestAuthAsync(Microsoft.UI.WindowId parentWindowId,
-            Windows.Foundation.Uri completeAuthEndpoint);
 
         // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
         // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
@@ -572,17 +485,8 @@ namespace Microsoft.Security.Authentication.OAuth
         // parameters as well as a redirect URI, which is frequently specified.
         static AuthRequestParams CreateForAuthorizationCodeRequest(String clientId, Windows.Foundation.Uri redirectUri);
 
-        // Helper method to create for an implicit grant request ("token" response type) with required parameters, per
-        // RFC 6749 section 4.2.1.
-        static AuthRequestParams CreateForImplicitRequest(String clientId);
-
-        // Helper method to create for an implicit grant request ("token" response type) with required parameters as
-        // well as a redirect URI, which is frequently specified.
-        static AuthRequestParams CreateForImplicitRequest(String clientId, Windows.Foundation.Uri redirectUri);
-
         // Specifies the required "response_type" parameter of the authorization request. This property is initialized
-        // by the creation function used ("code" for 'CreateForAuthorizationCodeRequest' and "token" for
-        // 'CreateForImplicitRequest').
+        // by the creation function used ("code" for 'CreateForAuthorizationCodeRequest').
         //
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.1 and 4.2.1
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1
@@ -632,9 +536,7 @@ namespace Microsoft.Security.Authentication.OAuth
         String CodeChallenge { get; set; };
 
         // Specifies the optional "code_challenge_method" parameter of the authorization request. For authorization code
-        // requests, this value defaults to 'S256'. For implicit requests, this value defaults to 'None' and cannot be
-        // changed.
-        //
+        // requests, this value defaults to 'S256'.
         // Defined by RFC 7636: Proof Key for Code Exchange by OAuth Public Clients, section 4.3
         //      https://www.rfc-editor.org/rfc/rfc7636#section-4.3
         CodeChallengeMethodKind CodeChallengeMethod { get; set; };
@@ -661,30 +563,22 @@ namespace Microsoft.Security.Authentication.OAuth
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2
         String Code { get; };
 
-        // From the "access_token" parameter of the authorization response. Set only if the request was an implicit
-        // request.
-        //
+        // From the "access_token" parameter of the authorization response. 
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
         String AccessToken { get; };
 
-        // From the "token_type" parameter of the authorization response. Set only if the request was an implicit
-        // request.
-        //
+        // From the "token_type" parameter of the authorization response.
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
         String TokenType { get; };
 
-        // From the "expires_in" parameter of the authorization response. An optional parameter that may be set only if
-        // the request was an implicit request.
-        //
+        // From the "expires_in" parameter of the authorization response.
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
         String ExpiresIn { get; }; // TODO: DateTime?
 
-        // From the "scope" parameter of the authorization response. An optional parameter that may be set only if the
-        // request was an implicit request.
-        //
+        // From the "scope" parameter of the authorization response.
         // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
         //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
         String Scope { get; };
@@ -755,10 +649,6 @@ namespace Microsoft.Security.Authentication.OAuth
         // initialized with the required parameters extracted from the authorization response, per RFC 6749 section
         // 4.1.3.
         static TokenRequestParams CreateForAuthorizationCodeRequest(AuthResponse authResponse);
-
-        // Helper method to create for a resource owner password credentials grant request ("password" grant type),
-        // initialized with the required parameters, per RFC 6749 section 4.3.2.
-        static TokenRequestParams CreateForResourceOwnerPasswordCredentials(String username, String password);
 
         // Helper method to create for a client credentials grant request ("client_credentials" grant type), initialized
         // with the required parameters, per RFC 6749 section 4.4.2.
