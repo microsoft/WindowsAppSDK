@@ -153,6 +153,11 @@ namespace PickerCommon {
         {
             result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
         }
+
+        if (result.size() == 0)
+        {
+            result.push_back({ L"All Files", L"*.*" });
+        }
         return result;
     }
 
@@ -171,6 +176,11 @@ namespace PickerCommon {
         for (size_t i = 0; i < filters.Size(); i++)
         {
             result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
+        }
+
+        if (result.size() == 0)
+        {
+            result.push_back({ L"All Files", L"*.*" });
         }
         return result;
     }
