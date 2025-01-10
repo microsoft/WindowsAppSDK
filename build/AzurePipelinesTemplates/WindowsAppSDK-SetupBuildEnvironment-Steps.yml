@@ -59,14 +59,6 @@ steps:
     arguments: >
       -SdkVersion "10.1.17763"
 
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: powershell@2
-    inputs:
-      targetType: filePath
-      filePath: build\scripts\Install-WindowsSdkISO.ps1
-      arguments: 18362
-    displayName: 'Install Insider SDK (18362)'
-
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
