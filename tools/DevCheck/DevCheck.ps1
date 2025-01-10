@@ -795,11 +795,11 @@ function Repair-DevTestPfx
     }
     else
     {
-        $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%)'
+        $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@'
         $passwordLength = 20
         $password = New-Object -TypeName System.Security.SecureString
         # Generate random characters and append to SecureString
-        for ($i = 0; $i -lt $passwordLength; $i++) 
+        for ($i = 0; $i -lt $passwordLength; $i++)
         {
             $randomChar = $charSet[(Get-Random -Maximum $charSet.Length)]
             $password.AppendChar($randomChar)
@@ -1069,7 +1069,7 @@ function Install-TAEFService
     $cpu = Get-CpuArchitecture
     $taef_version = Get-TAEFPackageVersion
     $taef = "Microsoft.Taef.$($taef_version)"
-    $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
+    $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
         Write-Host "Install TAEF service...Not Found ($path)"
@@ -1649,6 +1649,7 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     if ($test -eq 'NotFound')
     {
         $test = Install-TAEFService
+        $test = Start-TAEFService
     }
     elseif ($test -eq 'NotRunning-OlderVersion')
     {

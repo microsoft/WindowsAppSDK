@@ -14,8 +14,6 @@ namespace winrt::$safeprojectname$::implementation
 
         int32_t MyProperty();
         void MyProperty(int32_t value);
-
-        void myButton_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
     };
 }
 

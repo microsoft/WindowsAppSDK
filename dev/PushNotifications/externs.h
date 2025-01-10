@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -10,6 +10,7 @@
 
 inline const winrt::hstring STORED_PUSH_MANAGER_KEY = L"StoredPushManagerKey";
 inline const winrt::hstring STORED_APPNOTIFICATION_MANAGER_KEY = L"StoredAppNotificationManagerKey";
+inline const winrt::hstring STORED_BADGENOTIFICATION_MANAGER_KEY = L"StoredBadgeNotificationManagerKey";
 inline const DWORD c_receiveArgsTimeoutInMSec{ 2000 };
 
 inline NotificationTelemetryHelper g_telemetryHelper{};

@@ -2,6 +2,7 @@
 ; Licensed under the MIT License. See LICENSE in the project root for license information.
 
 EXPORTS
+    DetourFinishHelperProcess                               @1 NONAME
     DllCanUnloadNow = WINRT_CanUnloadNow                    PRIVATE
     DllGetActivationFactory = WINRT_GetActivationFactory    PRIVATE
     DllGetClassObject                                       PRIVATE

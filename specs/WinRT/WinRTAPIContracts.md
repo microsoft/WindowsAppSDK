@@ -106,6 +106,7 @@ The list of all contracts defined across Windows App SDK
 | AppLifecycle       | windowsappsdk | AppLifecycleContract            | Microsoft.Windows.AppLifecycle                       |         |
 | AppNotifications   | windowsappsdk | AppNotificationsContract        | Microsoft.Windows.AppNotifications                   |         |
 | BackgroundTask     | windowsappsdk | BackgroundTaskContract          | Microsoft.Windows.ApplicationModel.Background        |         |
+| CameraCaptureUI    | windowsappsdk | CameraCaptureUIContract         | Microsoft.Windows.Media.Capture                      |         |
 | Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |         |
 | DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |         |
 | EnvironmentManager | windowsappsdk | EnvironmentManagerContract      | Microsoft.Windows.System                             |         |
