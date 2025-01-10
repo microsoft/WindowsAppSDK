@@ -27,4 +27,9 @@
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WindowsAppRunTime_UniversalBGTask.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
 </Project>

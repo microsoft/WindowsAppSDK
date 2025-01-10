@@ -48,4 +48,9 @@
     <DefineConstants>$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
+  </PropertyGroup>
+  <Import Project="$(RepoRoot)\test\test.autoinitializer.CS.targets" />
+  
 </Project>

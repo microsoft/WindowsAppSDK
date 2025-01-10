@@ -24,6 +24,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTransientProperties.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationProgressData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ShellLocalization.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationConferencingConfig.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationConferencingConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationActivatedEventArgs.cpp" />
@@ -35,6 +37,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NotificationTransientProperties.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NotificationProgressData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ShellLocalization.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationConferencingConfig.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NotificationConferencingConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)AppNotifications.idl" />
