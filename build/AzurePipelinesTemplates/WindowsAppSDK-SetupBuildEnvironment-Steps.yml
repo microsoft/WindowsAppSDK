@@ -49,6 +49,8 @@ steps:
   inputs:
     nuGetServiceConnections: 'WindowsES'
 
+- script: choco install windows-sdk-10.1 --version=10.1.18362.1
+
 - task: PowerShell@2
   displayName: 'Add Windows SDK 10.1.17763'
   env:
