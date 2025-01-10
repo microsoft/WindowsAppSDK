@@ -6,9 +6,14 @@
 
 #include <FrameworkUdk/Containment.h>
 #include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
+#include "winrt\Microsoft.Windows.Storage.Pickers.h"
 
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
+
+using namespace WEX::Common;
+using namespace WEX::Logging;
+using namespace WEX::TestExecution;
 
 namespace WAR = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime;
 
@@ -27,6 +32,46 @@ namespace Test::CompatibilityTests
         {
             ::Test::Bootstrap::SetupPackages();
             return true;
+        }
+        TEST_METHOD(FileSavePicker_ShouldCreateNewFile)
+        {
+            try
+            {
+                auto parentWindow = ::GetForegroundWindow();
+                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                //{
+                //    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
+                //}
+                winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker savePicker(windowId);
+                //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+                savePicker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+                savePicker.SuggestedFileName(L"test.txt");
+                // Act
+                auto fileOperation = savePicker.PickSaveFileAsync();
+                auto file = fileOperation.get();
+
+                // Assert
+                if (file != nullptr)
+                {
+                    Log::Comment(L"File save was successful.");
+                    VERIFY_IS_TRUE(file.Name().c_str() != nullptr);
+                }
+                else
+                {
+                    Log::Error(L"Photo capture failed or was canceled.");
+                    VERIFY_FAIL(L"File save returned null.");
+                }
+            }
+            catch (const winrt::hresult_error& ex)
+            {
+                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
+                VERIFY_FAIL(L"Exception occurred during photo capture.");
+            }
+            catch (const std::exception& ex)
+            {
+                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
+                VERIFY_FAIL(L"Standard exception occurred during photo capture.");
+            }
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
