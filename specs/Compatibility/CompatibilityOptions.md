@@ -58,8 +58,14 @@ void ApplyCompatibilityOptions()
 }
 ```
 
-Note that CompatibilityOptions must be applied early in the process before any other Windows App
+CompatibilityOptions must be applied early in the process before any other Windows App
 SDK APIs are called, or right after initializing the Windows App Runtime.
+
+`PatchMode1` and `PatchMode2` are simply two fields to set relevant patch modes. These needn't
+match any specific version of the Windows App Runtime nor be in a specific order, so it is valid
+to set `PatchMode1` to 1.8.2 and `PatchMode2` to 1.7.3, for example. And, in the above example,
+when updating the app to 1.9, you may choose to simply update `PatchMode1` to 1.9.3 and leave
+`PatchMode2` as 1.8.2.
 
 ### Specifying CompatibilityOptions in the app's project file
 
@@ -83,8 +89,8 @@ values to disable.
 
 If no `PatchMode1` or `PatchMode2` is specified, or if neither value matches the major.minor
 version of the runtime being used, then the runtime will use the latest patch version. In other
-words, the runtime will run with all servicing changes enabled, which is the same behavior as
-Windows App SDK 1.6 and earlier.
+words, the runtime will run with all servicing changes enabled (just like how Windows App SDK
+worked before this API existed).
 
 ## CompatibilityOptions.PatchMode1
 
@@ -157,7 +163,7 @@ added in servicing releases.
 
 Apply the set compatibility options to the runtime.
 
-Note that CompatibilityOptions must be applied early in the process before any other Windows App
+CompatibilityOptions must be applied early in the process before any other Windows App
 SDK APIs are called, or right after initializing the Windows App Runtime. The options must be set
 early before the configuration is locked for the lifetime of the process. Since the Windows App
 Runtime needs to run with a consistent configuration, it will lock the configuration when it needs
