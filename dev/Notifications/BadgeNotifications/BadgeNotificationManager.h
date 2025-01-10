@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
     private:
         void SetBadgeAsCount(_In_ uint32_t notificationCount, _In_ winrt::Windows::Foundation::DateTime expiration);
-        void SetBadgeAsGlyph(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, _In_ winrt::Windows::Foundation::DateTime expiration)
+        void SetBadgeAsGlyph(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, _In_ winrt::Windows::Foundation::DateTime expiration);
         std::wstring GetBadgeNotificationGlyphToString(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue);
         void SetBadge(_In_ const std::wstring& value, _In_opt_ const winrt::Windows::Foundation::DateTime* expiration);
         std::wstring m_processName;
