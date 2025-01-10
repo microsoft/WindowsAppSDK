@@ -191,6 +191,17 @@ namespace Test::DynamicDependency
             wil::unique_process_heap_string& packageFullName);
 
         MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
+            HRESULT expectedHR,
+            PCWSTR packageDependencyId,
+            wil::unique_process_heap_string& packageFullName);
+
+        MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
+            PCWSTR packageDependencyId,
+            const INT32 rank,
+            wil::unique_process_heap_string& packageFullName);
+
+        MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
+            HRESULT expectedHR,
             PCWSTR packageDependencyId,
             const INT32 rank,
             wil::unique_process_heap_string& packageFullName);

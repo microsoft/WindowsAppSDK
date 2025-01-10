@@ -7,6 +7,7 @@
 #include <MsixDynamicDependency.h>
 
 #include <IsWindowsVersion.h>
+#include <AppModel.Identity.h>
 
 namespace MddCore::Win11
 {
