@@ -51,8 +51,6 @@ steps:
 
 - script: choco install windows-sdk-10.1 --version=10.1.18362.1
 
-- script: choco install windows-sdk-10.1 --version=10.1.17763
-
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
