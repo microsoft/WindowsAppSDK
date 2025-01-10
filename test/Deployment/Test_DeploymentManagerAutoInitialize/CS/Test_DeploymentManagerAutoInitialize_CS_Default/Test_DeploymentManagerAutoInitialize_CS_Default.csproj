@@ -28,4 +28,9 @@
     </ItemGroup>
   </Target>
 
+  <PropertyGroup>
+    <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
+  </PropertyGroup>
+  <Import Project="$(RepoRoot)\test\test.autoinitializer.CS.targets" />
+
 </Project>

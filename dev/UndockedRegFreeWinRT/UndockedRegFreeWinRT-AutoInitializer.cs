@@ -20,7 +20,7 @@ namespace Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS
 
     class AutoInitialize
     {
-        [global::System.Runtime.CompilerServices.ModuleInitializer]
+        // Called by WindowsAppRuntimeAutoInitializer.cs
         internal static void AccessWindowsAppSDK()
         {
             // Set base directory env var for PublishSingleFile support (referenced by SxS redirection)

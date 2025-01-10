@@ -63,12 +63,15 @@ steps:
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)
+    includeUCRT: true
+    ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
 
 - task: PowerShell@2
-  name: BuildBinaries
+  name: BuildFoundation
   inputs:
     filePath: 'BuildAll.ps1'
-    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildFoundation"
 
 - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
@@ -129,19 +132,30 @@ steps:
 # Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
 # so the CopyFiles below are to move all the vPack files to the right locations
 - task: CopyFiles@2
-  displayName: MoveToOutputDirectory
+  displayName: Stage BuildOutput for publish
+  condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
 - task: CopyFiles@2
-  displayName: MoveToOutputDirectory
+  displayName: Stage redist files for publish
+  condition: always()
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\redist'
+    TargetFolder: '$(ob_outputDirectory)\redist'
+
+- task: CopyFiles@2
+  displayName: Stage TAEF files for publish
+  condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\packages'
-    TargetFolder: '$(ob_outputDirectory)\packages'
+    Contents: Microsoft.Taef.*\**
+    TargetFolder: '$(ob_outputDirectory)\redist'
 
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'
       artifactName: '$(ob_artifactBaseName)'

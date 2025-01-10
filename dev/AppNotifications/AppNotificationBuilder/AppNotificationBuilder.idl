@@ -1,11 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import "..\AppNotifications\AppNotifications.idl";
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace Microsoft.Windows.AppNotifications.Builder
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract AppNotificationBuilderContract {}
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -29,6 +30,14 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Default,
         Success,
         Critical,
+    };
+
+    [contract(AppNotificationBuilderContract, 2), feature(Feature_CallingPreviewSupport)]
+    enum AppNotificationButtonSettingStyle
+    {
+        None,
+        VideoCallConfig,
+        AudioCallConfig,
     };
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -69,6 +78,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Launches the URI passed into the button when activated.
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
+
+        // Sets the setting type for the button.
+        [contract(AppNotificationBuilderContract, 2), feature(Feature_CallingPreviewSupport)]
+        AppNotificationButton SetSettingStyle(AppNotificationButtonSettingStyle value);
     };
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -242,5 +255,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // AppNotification properties
         AppNotificationBuilder SetTag(String value);
         AppNotificationBuilder SetGroup(String group);
+
+        // Adds a camera preview to the AppNotification
+        [contract(AppNotificationBuilderContract, 2), feature(Feature_CallingPreviewSupport)]
+        AppNotificationBuilder AddCameraPreview();
     };
 }

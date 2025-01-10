@@ -26,7 +26,7 @@ stages:
         targetType: filePath
         filePath: tools\VerifyCopyrightHeaders.ps1
 
-  - job: BuildBinaries
+  - job: BuildFoundation
     pool:
       ${{ if parameters.IsOneBranch }}:
         type: windows
@@ -63,13 +63,13 @@ stages:
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\APIScanTarget'
       ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
     steps:
-    - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
+    - template: WindowsAppSDK-BuildFoundation-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
-  - job: BuildBinaries_release_anycpu
+  - job: BuildFoundation_release_anycpu
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
     pool:
@@ -90,7 +90,7 @@ stages:
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU'
       ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU;SRV*https://symweb.azurefd.net'
     steps:
-    - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
+    - template: WindowsAppSDK-BuildFoundation-AnyCPU-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
@@ -126,7 +126,6 @@ stages:
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
-      ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\dev\MRTCore\.gdn\mrt.gdnsuppress # This value is set on the job cdpx_engine, it will override the global gdnsuppress for this job
       ob_sdl_suppression_suppressionSet: default
       ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       ${{ if parameters.runStaticAnalysis }}:
