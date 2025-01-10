@@ -84,20 +84,6 @@ private void clearBadge()
 }
 ```
 
-## To set an expiration time in a badge (c++)
-
-```c++
-private void updateBadgeGlyph()
-{
-   winrt::BadgeNotificationGlyph badgeNotificationGlyph = winrt::BadgeNotificationGlyph::Alert
-
-   DateTime expirationTime = clock::now() + std::chrono::hours(24);
-
-   winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Current();
-   manager.SetBadgeAsGlyph(badgeNotificationGlyph, expirationTime);
-}
-```
-
 # API Description
 
 ## BadgeNotificationManager class
@@ -118,9 +104,7 @@ and also to remove the badge when it is no longer needed.
 | Name            | Description                                                                                                                                                                                                      | Parameters                                                                    | Returns |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------- |
 | SetBadgeAsCount | Updates the badge on the app's tile to display a numeric value. This method is used to reflect a new status or count.                                                                                            | UInt32 `notificationCount`                                                    | void    |
-| SetBadgeAsCount | Updates the badge on the app's tile to display a numeric value, with an expiration time after which the badge should be cleared.                                                                                 | UInt32 `notificationCount`, Windows.Foundation.DateTime `expiration`          | void    |
 | SetBadgeAsGlyph | Updates the badge on the app's tile to display a glyph. This method is used to reflect a new status represented by a glyph.                                                                                      | BadgeNotificationGlyph `glyphValue`                                           | void    |
-| SetBadgeAsGlyph | Updates the badge on the app's tile to display a glyph, with an expiration time after which the badge should be cleared.                                                                                         | BadgeNotificationGlyph `glyphValue`, Windows.Foundation.DateTime `expiration` | void    |
 | ClearBadge      | Removes the badge notifications for the app from the action center. This method is useful for clearing any badge notifications when they are no longer relevant or when the app wants to reset its badge status. |                                                                               | void    |
 
 > Note: For Numeric badge if the count is greater then 99 it will be reported as "99+"
@@ -188,16 +172,10 @@ namespace Microsoft.Windows.BadgeNotifications
         // Updates the badge on the app's icon on taskbar to display a numeric value.
         void SetBadgeAsCount(UInt32 notificationCount);
 
-        // Updates the badge on the app's icon on taskbar to display a numeric value with an expiration time.
-        void SetBadgeAsCount(UInt32 notificationCount, Windows.Foundation.DateTime expiration);
-
         // Updates the badge on the app's icon on taskbar to display a glyph.
         void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue);
 
-        // Updates the badge on the app's icon on taskbar to display a glyph with an expiration time.
-        void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue, Windows.Foundation.DateTime expiration);
-
-        // Removes the Badge Notifications for the App from Action Center
+        // Removes the Badge Notifications for the App from taskbar.
         void ClearBadge();
     }
 }

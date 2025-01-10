@@ -14,14 +14,14 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
         static winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationManager Current();
 
         void SetBadgeAsCount(_In_ uint32_t notificationCount);
-        void SetBadgeAsCount(_In_ uint32_t notificationCount, _In_ winrt::Windows::Foundation::DateTime expiration);
 
         void SetBadgeAsGlyph(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue);
-        void SetBadgeAsGlyph(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, _In_ winrt::Windows::Foundation::DateTime expiration);
 
         void ClearBadge();
 
     private:
+        void SetBadgeAsCount(_In_ uint32_t notificationCount, _In_ winrt::Windows::Foundation::DateTime expiration);
+        void SetBadgeAsGlyph(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, _In_ winrt::Windows::Foundation::DateTime expiration)
         std::wstring GetBadgeNotificationGlyphToString(_In_ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue);
         void SetBadge(_In_ const std::wstring& value, _In_opt_ const winrt::Windows::Foundation::DateTime* expiration);
         std::wstring m_processName;
