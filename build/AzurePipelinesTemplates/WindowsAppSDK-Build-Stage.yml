@@ -76,9 +76,7 @@ stages:
       ${{ if parameters.IsOneBranch }}:
         type: windows
       ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+        vmImage: 'windows-2022'
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
