@@ -37,14 +37,8 @@ namespace Microsoft.Windows.BadgeNotifications
         // Updates the badge on the app's icon on taskbar to display a numeric value.
         void SetBadgeAsCount(UInt32 notificationCount);
 
-        // Updates the badge on the app's icon on taskbar to display a numeric value with an expiration time.
-        void SetBadgeAsCount(UInt32 notificationCount, Windows.Foundation.DateTime expiration);
-
         // Updates the badge on the app's icon on taskbar to display a glyph.
         void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue);
-
-        // Updates the badge on the app's icon on taskbar to display a glyph with an expiration time.
-        void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue, Windows.Foundation.DateTime expiration);
 
         // Removes the Badge Notifications for the App from Action Center
         void ClearBadge();
