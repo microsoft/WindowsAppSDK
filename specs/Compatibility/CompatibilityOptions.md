@@ -53,7 +53,7 @@ void ApplyCompatibilityOptions()
     var compatibilityOptions = new CompatibilityOptions();
     compatibilityOptions.PatchMode1 = new WindowsAppRuntimeVersion(1,7,3);
     compatibilityOptions.PatchMode2 = new WindowsAppRuntimeVersion(1,8,2);
-    compatibilityOptions.DisabledChanges.Add(CompatibilityChange.HypotheticalChange);
+    compatibilityOptions.DisabledChanges.Add(CompatibilityChange.SampleApiCrashFix);
     compatibilityOptions.Apply();
 }
 ```
@@ -78,7 +78,7 @@ version and disabled changes in the project file (such as `.csproj` or `.vcxproj
   <PropertyGroup>
     <WindowsAppSDKRuntimePatchMode>1.7.3</WindowsAppSDKRuntimePatchMode>
     <WindowsAppSDKRuntimePatchMode2>1.8.2</WindowsAppSDKRuntimePatchMode2>
-    <WindowsAppSDKDisabledChanges>HypotheticalChange, OtherHypotheticalChange</WindowsAppSDKDisabledChanges>
+    <WindowsAppSDKDisabledChanges>SampleApiCrashFix, OtherSampleApiCrashFix</WindowsAppSDKDisabledChanges>
   </PropertyGroup>
 ```
 
@@ -140,7 +140,7 @@ change by adding it to the `DisabledChanges` list before calling `Apply`, or by 
 your app's project file:
 ```xml
   <PropertyGroup>
-    <WindowsAppSDKDisabledChanges>HypotheticalChange, OtherHypotheticalChange</WindowsAppSDKDisabledChanges>
+    <WindowsAppSDKDisabledChanges>SampleApiCrashFix, OtherSampleApiCrashFix</WindowsAppSDKDisabledChanges>
   </PropertyGroup>
 ```
 
@@ -188,8 +188,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         // Add real changes here:
 
         // 1.7.1
-        // HypotheticalChange,
-        // OtherHypotheticalChange,
+        // SampleApiCrashFix,
+        // OtherSampleApiCrashFix,
         // ...
     };
 
