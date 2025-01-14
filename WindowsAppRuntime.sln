@@ -582,6 +582,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseNotifications", "dev\Notifications\BaseNotifications\BaseNotifications.vcxitems", "{2BD7A1BB-D3D8-484F-9180-409D781DCCF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.BadgeNotifications.Projection", "dev\Projections\CS\Microsoft.Windows.BadgeNotifications.Projection\Microsoft.Windows.BadgeNotifications.Projection.csproj", "{A243A58D-ABD7-4520-8C71-F492247B7B92}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CompatibilityOptions", "dev\CompatibilityOptions\CompatibilityOptions.vcxitems", "{1F7B9E9F-9987-490B-9E6E-093C7F63FEC4}"
 EndProject
