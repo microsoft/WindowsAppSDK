@@ -12,6 +12,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
+#include "winrt/Microsoft.Windows.Storage.Pickers.h"
 
 #include <WexTestClass.h>
 

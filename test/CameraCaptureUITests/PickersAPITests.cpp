@@ -7,7 +7,8 @@
 #include <mutex>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Foundation.h>
-
+#include "winrt\Microsoft.Windows.Media.Capture.h"
+#include <TerminalVelocityFeatures-CameraCaptureUI.h>
 
 using namespace std::chrono_literals;
 using namespace WEX::Common;
@@ -54,6 +55,52 @@ namespace CameraCaptureUITests
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             return true;
+        }
+
+        // The unit tests will be updated,first test might is there for testing purpose locally.
+        // Focusing solely on functional tests for now. 
+        TEST_METHOD(CapturePhoto_ShouldReturnFile_Desktop)
+        {
+            if (!::Microsoft::Windows::Media::Capture::Feature_CameraCaptureUI::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"CameraCaptureUI API Features are not enabled.");
+                return;
+            }
+            try
+            {
+                auto parentWindow = ::GetForegroundWindow();
+                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
+                return;
+                // Configure Photo Settings
+                cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Png);
+                cameraUI.PhotoSettings().AllowCropping(false);
+                // Act
+                auto photoOperation = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Photo);
+                auto photo = photoOperation.get();
+
+                // Assert
+                if (photo != nullptr)
+                {
+                    Log::Comment(L"Photo capture was successful.");
+                    VERIFY_IS_TRUE(photo.Name().c_str() != nullptr);
+                }
+                else
+                {
+                    Log::Error(L"Photo capture failed or was canceled.");
+                    VERIFY_FAIL(L"Photo capture returned null.");
+                }
+            }
+            catch (const winrt::hresult_error& ex)
+            {
+                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
+                VERIFY_FAIL(L"Exception occurred during photo capture.");
+            }
+            catch (const std::exception& ex)
+            {
+                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
+                VERIFY_FAIL(L"Standard exception occurred during photo capture.");
+            }
         }
 
         TEST_METHOD(FileSavePicker_ShouldCreateNewFile)
