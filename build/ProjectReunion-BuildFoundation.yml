@@ -2,6 +2,11 @@
 # Prior to 1.4, this file was used to build official release builds. This role has been moved to WindowsAppSDK-Foundation-Release.yml
 trigger: none
 
+parameters: # parameters are shown up in ADO UI in a build queue time
+- name: PublishToFeed
+  type: boolean
+  default: false
+
 resources:
   repositories:
     - repository: WindowsAppSDKConfig
@@ -29,6 +34,6 @@ stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
   parameters:
     SignOutput: false
-    PublishPackage: false
+    PublishPackage: ${{ parameters.PublishToFeed }}
     IsOneBranch: false
     BuildMockWindowsAppSDK: false
