@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <Target Name="GenerateBootstrapCpp" BeforeTargets="ClCompile">
+    <Target Name="GenerateBootstrapCpp">
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapAutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -14,5 +14,11 @@
             </ClCompile>
         </ItemGroup>
     </Target>
+
+    <PropertyGroup>
+        <BeforeClCompileTargets>
+            $(BeforeClCompileTargets); GenerateBootstrapCpp;
+        </BeforeClCompileTargets>
+    </PropertyGroup>
 
 </Project>

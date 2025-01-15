@@ -12,9 +12,10 @@ STDAPI WindowsAppRuntime_EnsureIsLoaded();
 
 namespace Microsoft::Windows::Foundation::UndockedRegFreeWinRT
 {
-    struct AutoInitialize
+    namespace AutoInitialize
     {
-        AutoInitialize()
+        // Called by WindowsAppRuntimeAutoInitializer.cpp
+        void Initialize()
         {
             // Load the Windows App SDK runtime DLL. The only reason this could fail
             // is if the loading application using WinAppSDK/SelfContained has a
@@ -38,5 +39,4 @@ namespace Microsoft::Windows::Foundation::UndockedRegFreeWinRT
 #endif
         }
     };
-    static AutoInitialize g_autoInitialize;
 }

@@ -115,6 +115,9 @@
         <!-- BadgeNotifications -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.BadgeNotifications.BadgeNotificationManager" ThreadingModel="both" />
 
+        <!-- CompatibilityOptions -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.CompatibilityOptions" ThreadingModel="both" />
+
         <!-- StoragePickers -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileOpenPicker" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileSavePicker" ThreadingModel="both" />

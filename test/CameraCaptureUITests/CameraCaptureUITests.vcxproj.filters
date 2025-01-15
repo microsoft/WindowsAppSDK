@@ -23,6 +23,10 @@
     <ClCompile Include="APITests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PickersAPITests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

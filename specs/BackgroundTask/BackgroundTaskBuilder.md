@@ -105,6 +105,7 @@ namespace Microsoft.Windows.ApplicationModel.Background
             );
 
         String Name{ set; get; };
+        Windows.ApplicationModel.Background.BackgroundTaskRegistrationGroup TaskGroup { set; get; };
 
         Windows.ApplicationModel.Background.BackgroundTaskRegistration Register(
             );
