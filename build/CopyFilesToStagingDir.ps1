@@ -216,6 +216,10 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd $NugetDir\lib\uap10.0
 #
+# Common Auto-Initializer Files
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeAutoInitializer.cpp $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeAutoInitializer.cs $NugetDir\include
+#
 # Bootstrap Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs $NugetDir\include

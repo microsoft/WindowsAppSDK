@@ -160,4 +160,9 @@
   <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.DeploymentManager.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
 
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.CompatibilitySetter.targets" />
+
+  <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.AutoInitializer.targets" Condition="'$(WindowsAppSdkAutoInitialize)' == 'true'"/>
+
 </Project>

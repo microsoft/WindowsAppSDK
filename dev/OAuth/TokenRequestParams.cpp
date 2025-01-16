@@ -45,16 +45,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         return *result;
     }
 
-    oauth::TokenRequestParams TokenRequestParams::CreateForResourceOwnerPasswordCredentials(
-        const winrt::hstring& username, const winrt::hstring& password)
-    {
-        auto result = winrt::make_self<TokenRequestParams>(L"password");
-        result->m_username = username;
-        result->m_password = password;
-
-        return *result;
-    }
-
     oauth::TokenRequestParams TokenRequestParams::CreateForClientCredentials()
     {
         return winrt::make<TokenRequestParams>(L"client_credentials");
