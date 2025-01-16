@@ -11,14 +11,12 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
-#include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
+#include "winrt/Microsoft.Windows.Storage.Pickers.h"
 
 #include <WexTestClass.h>
 
 #include <WindowsAppRuntime.Test.AppModel.h>
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
-
-#include <TerminalVelocityFeatures-CompatibilityOptions.h>
 
 #endif //PCH_H
