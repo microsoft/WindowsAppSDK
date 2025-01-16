@@ -34,6 +34,7 @@
     <ProjectGuid>{85C86306-46D1-4563-8303-0A79DF923586}</ProjectGuid>
     <RootNamespace>StoragePickersTests</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>StoragePickersTests</ProjectName>
   </PropertyGroup>
   <PropertyGroup>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
