@@ -2,6 +2,8 @@ REM execute this script from the root directory of WindowAppSDK repository
 
 @echo off
 
+copy "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.1.1.1.1.nupkg" "..\WindowsAppSDKAggregator\localpackages\Microsoft.WindowsAppSDK.Foundation.TransportPackage.1.1.1.1.nupkg"
+
 REM if exist, delete "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.1.1.1.1.zip"
 if exist "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.1.1.1.1.zip" (
     del "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.1.1.1.1.zip"
