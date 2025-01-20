@@ -578,7 +578,7 @@ void SendVideoCallNotification()
     .AddCameraPreview()                                                              /*NEW API*/
     .AddButton(AppNotificationButton() 
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Setting.png)")) 
-        .SetSettingType(AppNotificationSettingType::VideoCall))                      /*NEW API*/
+        .SetSettingType(AppNotificationButtonSettingStyle::VideoCallConfig))                      /*NEW API*/
     .AddButton(AppNotificationButton() 
         .AddArgument(L"action", L"acceptCall") 
         .AddArgument(L"threadId", L"92187") 
@@ -595,15 +595,15 @@ void SendVideoCallNotification()
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Message.png)"))) 
     .BuildNotification();
 
-    if(winrt::AppNotificationDevicesData::IsVideoOrAudioCallingSupported()) /*NEW API*/
+    if(winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) /*NEW API*/
     {     
        // Assign Devices Data values for the video call notification
-       winrt::AppNotificationDevicesData devicesData;                       /*NEW API*/
+       winrt::AppNotificationConferencingConfig conferencingConfig;                       /*NEW API*/
 
-       devicesData.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");                            /*NEW API*/
-       devicesData.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");      /*NEW API*/
-       devicesData.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");     /*NEW API*/
-       notification.DevicesData(devicesData); /*NEW API*/
+       conferencingConfig.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");                            /*NEW API*/
+       conferencingConfig.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");      /*NEW API*/
+       conferencingConfig.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");     /*NEW API*/
+       notification.ConferencingConfig(conferencingConfig); /*NEW API*/
     } 
 
     winrt::AppNotificationManager::Default().Show(notification);  
@@ -652,15 +652,15 @@ void SendVideoCallNotification()
 
     winrt::AppNotification notification(payload);  
 
-    if(winrt::AppNotificationDevicesData::IsVideoOrAudioCallingSupported()) /*NEW API*/
+    if(winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) /*NEW API*/
     {     
        // Assign Devices Data values for the video call notification  
-       winrt::AppNotificationDevicesData devicesData;                       /*NEW API*/
-       devicesData.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");  /*NEW API*/
-       devicesData.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  /*NEW API*/
-       devicesData.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  /*NEW API*/
+       winrt::AppNotificationConferencingConfig conferencingConfig;                       /*NEW API*/
+       conferencingConfig.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");  /*NEW API*/
+       conferencingConfig.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  /*NEW API*/
+       conferencingConfig.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  /*NEW API*/
 
-       notification.DevicesData(devicesData); /*NEW API*/
+       notification.ConferencingConfig(conferencingConfig); /*NEW API*/
     } 
 
      winrt::AppNotificationManager::Default().Show(notification);  
@@ -766,17 +766,17 @@ namespace Microsoft.Windows.AppNotifications
         Boolean SuppressDisplay;
 
         // Gets or sets the Notification Device Data
-        AppNotificationDevicesData DevicesData;
+        AppNotificationConferencingConfig conferencingConfig;
     }
 
     // The Notification Device Data
-    runtimeclass AppNotificationDevicesData
+    runtimeclass AppNotificationConferencingConfig
     {
         // Initializes a new Instance of NotificationDevicesData
-        AppNotificationDevicesData();
+        AppNotificationConferencingConfig();
 
         // Checks if Video or Audio Calling is supported
-        static Boolean IsVideoOrAudioCallingSupported();
+        static Boolean IsCallingPreviewSupported();
 
         // Gets or sets the Video Device Id
         String VideoDeviceId;
@@ -893,7 +893,7 @@ namespace Microsoft.Windows.AppNotifications
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
 
         // Sets the setting type for the button.
-        AppNotificationButton SetSettingType(AppNotificationButtonSettingType value);
+        AppNotificationButton SetSettingStyle(AppNotificationButtonSettingStyle value);
     };
 
     runtimeclass AppNotificationBuilder
