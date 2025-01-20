@@ -493,7 +493,7 @@ std::wstring GetFrameworkPackageFamilyName(
     PCWSTR packageVersionTag{ !versionTag ? L"" : versionTag };
     PCWSTR packageVersionTagDelimiter{ (packageVersionTag[0] == L'\0') ? L"" : L"-"};
 
-    const std::wstring packageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+    const std::wstring packageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
                                                       namePrefix, majorVersion, minorVersion,
                                                       packageVersionTagDelimiter, packageVersionTag) };
     THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
