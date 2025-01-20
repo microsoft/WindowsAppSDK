@@ -366,9 +366,10 @@ A screenshot of a Audio and video call
 
 ![Notification Progress](Enhanced_ux_video_call_Notifications.png)
 
-#### Screenshot 1: Displays an example of Audio Call with new element as the setting button on click of that buttons it should show devices list for Audio Input and Output Devices. 
-
-#### Screenshot 2 and 3: Displays an example of Audio Call with 2 new elements - Camera Preview and Setting Button. Setting button click shows devices list for Audio Input and Output Devices. 
+#### Screenshot 1 
+Displays an example of Audio Call with new element as the setting button on click of that buttons it should show devices list for Audio Input and Output Devices. 
+#### Screenshot 2 and 3
+Displays an example of Audio Call with 2 new elements - Camera Preview and Setting Button. Setting button click shows devices list for Audio Input and Output Devices. 
 
 > Note
 >  - If the camera device is changed, then the camera preview element should also display the selected device preview. 
