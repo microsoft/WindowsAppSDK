@@ -371,12 +371,11 @@ A screenshot of a Audio and video call
 #### Screenshot 2 and 3: Displays an example of Audio Call with 2 new elements - Camera Preview and Setting Button. Setting button click shows devices list for Audio Input and Output Devices. 
 
 > Note
-
-  - If the camera device is changed, then the camera preview element should also display the selected device preview. 
-  - The camera preview would be displayed locally on the user machine and camera feed data on notification toast is not sent to app/caller.
-  - The preview will shown only after verifying camera access permissions for both the app and notifications.
+>  - If the camera device is changed, then the camera preview element should also display the selected device preview. 
+>  - The camera preview would be displayed locally on the user machine and camera feed data on notification toast is not sent to app/caller.
+>  - The preview will shown only after verifying camera access permissions for both the app and notifications.
   
-### Sample Code using notification builder
+### Sample Code using notification builder (C++)
 ```cpp
 void SendVideoCallNotification()  
 {  
@@ -419,7 +418,7 @@ void SendVideoCallNotification()
     winrt::AppNotificationManager::Default().Show(notification);  
 }
 ```
-### Sample Code using payload xml
+### Sample Code using payload xml (C++)
 ```cpp
 // Send video call notification  
 void SendVideoCallNotification()  
@@ -476,7 +475,8 @@ void SendVideoCallNotification()
      winrt::AppNotificationManager::Default().Show(notification);  
 } 
 ```
-Example of Invoke Callback Existing API with additional User Inputs key-values (Contoso Calling App will get the selected device ids from User B from below invoke API on any button clicked accept/ decline/ message):
+### Sample code for getting user selection on the Application code (C++)
+ - Contoso Calling App will get the selected device ids from User B from below invoke API on any button clicked accept/ decline/ message
 ```cpp
 //Example playload
 //<toast >
