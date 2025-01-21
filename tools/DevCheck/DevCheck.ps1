@@ -1257,46 +1257,52 @@ function Test-PackagesConfig
     Write-Verbose "Scanning $filename"
     $xml = [xml](Get-Content $filename -EA:Stop)
     $changed = $false
-    ForEach ($package in $xml.packages.package)
-    {
-        $name = $package.id
-        $version = $package.version
 
-        if (-not($versions.Contains($name)))
+    $packageCount = $xml.SelectNodes("//*[local-name()='package']").Count
+    if ($packageCount -gt 0)
+    {
+        ForEach ($package in $xml.packages.package)
         {
-            Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
-        }
-        elseif ($version -ne $versions[$name])
-        {
-            if ($SyncDependencies -eq $true)
+            $name = $package.id
+            $version = $package.version
+
+            if (-not($versions.Contains($name)))
             {
-                Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
-                $package.version = $versions[$name]
-                $changed = $true
+                Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
+                $global:issues++
+            }
+            elseif ($version -ne $versions[$name])
+            {
+                if ($SyncDependencies -eq $true)
+                {
+                    Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
+                    $package.version = $versions[$name]
+                    $changed = $true
+                }
+                else
+                {
+                    $expected = $versions[$name]
+                    Write-Host "ERROR: Unknown version $name=$version (not $expected) in $filename. Run DevCheck -SyncDepedencies to update" -ForegroundColor Red -BackgroundColor Black
+                    $global:issues++
+                }
+            }
+
+            if (-not($package.HasAttribute("targetFramework")))
+            {
+                Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
+                $global:issues++
             }
             else
             {
-                Write-Host "ERROR: Unknown version $name=$version in $filename" -ForegroundColor Red -BackgroundColor Black
-                $global:issues++
+                $targetFramework = $package.targetFramework
+                if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
+                {
+                    Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
+                    $global:issues++
+                }
             }
-        }
 
-        if (-not($package.HasAttribute("targetFramework")))
-        {
-            Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
         }
-        else
-        {
-            $targetFramework = $package.targetFramework
-            if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
-            {
-                Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
-                $global:issues++
-            }
-        }
-
     }
 
     if ($changed -eq $true)
