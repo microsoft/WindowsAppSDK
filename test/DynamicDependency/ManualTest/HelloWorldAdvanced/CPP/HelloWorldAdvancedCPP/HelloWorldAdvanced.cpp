@@ -7,8 +7,6 @@
 
 #include <MddBootstrap.h>
 
-#define WINDOWSAPPSDK_VERSION_TAG_W L""
-
 int Help()
 {
     std::cout << "Usage: HelloWorldAdvancedCPP.exe [options] <majorminor> [<tag> [<minversion>]]\n"
@@ -126,7 +124,7 @@ int wmain(int argc, wchar_t* argv[])
         return Help();
     }
 
-    PCWSTR versionTag{ WINDOWSAPPSDK_VERSION_TAG_W };
+    PCWSTR versionTag{ L"" };
     if (argn < argc)
     {
         arg = argv[argn++];

@@ -1,90 +1,88 @@
-﻿# Windows App SDK - Calling all Windows developers!
+<p align="center">
+  <a href="https://aka.ms/winappsdk">
+    <img src="./docs/images/header.png" alt="Windows App SDK Banner" />
+  </a>
+</p>
 
-*Previously known as Project Reunion*.
+<h1 align="center">Windows App SDK</h1>
 
-| Delight users with modern UI | Access new platform features | Backwards compatible |
-|:--:|:--:|:--:|
-| <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/><br>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/><br>Localization + power status + more<br> | <img src="https://docs.microsoft.com/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/><br>Down to Windows 10 1809 |
+<h3 align="center">
+  <a href="https://learn.microsoft.com/windows/apps/windows-app-sdk">About</a>
+  <span> · </span>
+  <a href="https://learn.microsoft.com/windows/apps/desktop">Documentation</a>
+  <span> · </span>
+  <a href="https://learn.microsoft.com/windows/apps/windows-app-sdk/release-channels">Release notes</a>
+  <span> · </span>
+  <a href="https://github.com/microsoft/WindowsAppSDK-Samples">Samples</a>
+</h3>
 
-...and more, **without having to rewrite your app!**
+<p align="center">
+  <a style="text-decoration:none" href="https://www.nuget.org/packages/Microsoft.WindowsAppSDK">
+    <img src="https://img.shields.io/nuget/v/Microsoft.WindowsAppSDK" alt="WindowsAppSDK NuGet" /></a>
+</p>
 
-* Use your current installer *(no requirement to use MSIX, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features)!)*
-* Additive platform APIs *(only add what you need, leave the rest of your app as-is)*
-* Works with Win32, WPF, WinForms, and more apps
+[Windows App SDK](https://aka.ms/winappsdk) (formerly Project Reunion) is a set of libraries, frameworks, components, and tools that you can use in your apps to access powerful Windows platform functionality from all kinds of apps on many versions of Windows. The Windows App SDK combines the powers of Win32 native applications alongside modern API usage techniques, so your apps light up everywhere your users are.
 
-Plus, **create beautiful, modern apps for Windows 11 that are backwards compatible** to Windows 10 October 2018 Update (build 17763 / version 1809)!
+- **WinUI 3 support:** [WinUI](https://aka.ms/winui) embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
+- **Access modern features:** [Modern resource tooling](https://github.com/microsoft/WindowsAppSDK/issues/11), [modern lifecycle helpers](https://github.com/microsoft/WindowsAppSDK/issues/9), [startup tasks](https://github.com/microsoft/WindowsAppSDK/issues/10), and more without having to rewrite your app.
+- **Backwards compatibility:** Down to Windows 10 1809 (build 17763). There may be some API that are dependent on new OS features
+(like new Action Center functionality), however we will do our best to ensure this is the exception and not the norm, and provide reasonable fallbacks when possible.
+- **Wide platform support:** Win32, WPF, WinForms, and more.
+- **Use your current installer:** no requirement to use MSIX, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features).
 
-### Version support
+## 📋 Getting started with Windows App SDK
 
-The Windows App SDK aims to work on supported versions of Windows.
-Right now we support down to build 17763 (version 1809/October 2018 Update) of Windows 10.
-Wherever possible, we'll use techniques like '_polyfills_'
-and custom implementations to do the
-heavy lifting for you and make sure your app works across Windows versions and devices.
-In the future, there may be a couple APIs that are dependent on new OS features
-(like new Action Center functionality),
-however we will do our best to ensure
-this is the exception and not the norm, and provide reasonable fallbacks when possible.
+* [Build your first app with Windows App SDK](https://learn.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)
+* [Developer documentation](https://aka.ms/windowsappsdkdocs)
+* [Samples & resources](https://learn.microsoft.com/windows/apps/get-started/samples)
+  * [Windows App SDK samples](https://github.com/microsoft/WindowsAppSDK-Samples)
+  * [WinUI 3 Gallery](https://github.com/microsoft/WinUI-Gallery)
+  * [AI Dev Gallery (Preview)](https://github.com/microsoft/ai-dev-gallery)
+  * [Windows Community Toolkit](https://github.com/CommunityToolkit/Windows)
+  * [Template Studio](https://github.com/microsoft/TemplateStudio)
+* [FAQ](docs/faq.md)
+* [Contribution guide](docs/contributor-guide.md)
+* [Roadmap](./docs/roadmap.md)
+* Windows App SDK family repositories
+  * [WinUI](https://github.com/microsoft/microsoft-ui-xaml)
+  * [C++/WinRT](https://github.com/microsoft/CppWinRT) and [C#/WinRT](https://github.com/microsoft/CsWinRT)
+  * [MSIX packaging](https://github.com/microsoft/msix-packaging)
 
+## 👨‍💻 Join in and stay connected
 
-### Helpful links
+Interested in WinUI and Windows App SDK? Come join us on the quarterly [WinUI Community Calls](https://www.youtube.com/playlist?list=PLI_J2v67C23ZqsolUDaHoFkF1GKvGrttB).
+You can find and tag us on X using [#WindowsAppSDK](https://twitter.com/search?q=%23WindowsAppSDK).
 
-* [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
-More on what the project is and how we're approaching the work.
-* [Video on Windows App SDK](https://techcommunity.microsoft.com/t5/video-hub/enterprise-development-futures-project-reunion/m-p/2177278) - Learn about the Windows App SDK in a 22 minute video!
-* [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
-* [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
-* [Developer docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
-* [Samples](https://github.com/microsoft/WindowsAppSDK-Samples) - Discover Windows App SDK samples to assist in learning how to use the latest features!
+## 🖼️ WinUI 3 Gallery
 
-### Contributing
+Make sure to also check out the [WinUI 3 Gallery](https://aka.ms/winui-gallery), our interactive sample experience showing everything you can do with WinUI and Windows App SDK.
 
-[![Bugs](https://img.shields.io/github/issues/microsoft/windowsappsdk/bug)](https://github.com/microsoft/WindowsAppSDK/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+<p align="center"><img src="./docs/images/winui-gallery.png" alt="WinUI 3 Gallery" width="400"/></p>
 
-_We want to hear from you!_
+<p align="center">
+  <a style="text-decoration:none" href="https://apps.microsoft.com/detail/9NGHP3DX8HDX?launch=true&mode=full">
+    <picture>
+      <source media="(prefers-color-scheme: light)" srcset="https://get.microsoft.com/images/en-us%20dark.svg" width="200" />
+      <img src="https://get.microsoft.com/images/en-us%20light.svg" width="200" />
+  </picture></a>
+</p>
 
-File a [new issue!](https://github.com/microsoft/WindowsAppSDK/issues/new/choose) Tell us what problem you're
-trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app. Bonus
-points if there's a gist or existing repo we can look at with you.
+## 📢 Contributing
 
-
-1. **[Ask a question](https://github.com/microsoft/WindowsAppSDK/discussions/categories/q-a)**<br>
-    Also, have a look at our [frequently asked questions](docs/faq.md) page which we will update periodically.
-
-2. **[Start a discussion](https://github.com/microsoft/WindowsAppSDK/discussions)**<br>
-   Discussions can be about any topics or ideas related to the Windows App SDK. For example,
-   you might start a Discussion issue to see if others are interested in a cool new idea
-   you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
-
-3. **[Code contributions](docs/contributor-guide.md)**<br>
-   More information regarding [contributing and developer guidelines here](docs/contributor-guide.md).
+- **[File a new issue](https://github.com/microsoft/WindowsAppSDK/issues/new/choose):** Tell us what problem you're trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app. Bonus points if there's a gist or existing repo we can look at with you.
+- **[Ask a question](https://github.com/microsoft/WindowsAppSDK/discussions/categories/q-a):** Also, have a look at our [FAQ on WinAppSDK](docs/faq.md) page, which we will update periodically.
+- **[Start a discussion](https://github.com/microsoft/WindowsAppSDK/discussions):** Let's start a Discussion issue to see if others are interested in a cool new idea you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
+- **[Code contributions](docs/contributor-guide.md):** See our [contributing guidelines](docs/contributor-guide.md).
 
 ## Data collection
 
-The software may collect information about you and your use of the software and send it
-to Microsoft. Microsoft may use this information to provide services and improve our
-products and services. You may turn off the telemetry as described in the repository.
-There are also some features in the software that may enable you and Microsoft to collect
-data from users of your applications. If you use these features, you must comply with
-applicable law, including providing appropriate notices to users of your applications
-together with a copy of Microsoft's privacy statement. Our privacy statement is located
-at https://go.microsoft.com/fwlink/?LinkID=824704. You can learn more about data collection
-and use in the help documentation and our privacy statement. Your use of the software
-operates as your consent to these practices.
+This project collects usage data and sends it to Microsoft to help improve our products and services. Note, however, that no data collection is performed when using your private builds.
 
-## Legal notices
+Privacy information can be found at https://privacy.microsoft.com
 
-Microsoft and any contributors grant you a license to the Microsoft documentation and other content
-in this repository under the [Creative Commons Attribution 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/legalcode),
-see the [LICENSE](LICENSE) file, and grant you a license to any code in the repository under the [MIT License](https://opensource.org/licenses/MIT), see the
-[LICENSE-CODE](LICENSE-CODE) file.
+## Code of Conduct
 
-Microsoft, Windows, Microsoft Azure and/or other Microsoft products and services referenced in the documentation
-may be either trademarks or registered trademarks of Microsoft in the United States and/or other countries.
-The licenses for this project do not grant you rights to use any Microsoft names, logos, or trademarks.
-Microsoft's general trademark guidelines can be found at http://go.microsoft.com/fwlink/?LinkID=254653.
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct).
 
-Privacy information can be found at https://privacy.microsoft.com/
-
-Microsoft and any contributors reserve all other rights, whether under their respective copyrights, patents,
-or trademarks, whether by implication, estoppel or otherwise.
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
