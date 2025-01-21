@@ -3,7 +3,7 @@ App-configurable compatibility options
 
 # Background
 
-_This spec adds a CompatibilityOptions class to control behavior of servicing changes._
+_This spec adds a RuntimeCompatibilityOptions class to control behavior of servicing changes._
 
 Apps using Windows App SDK have two choices today: use Windows App SDK as an
 automatically-updating framework package or use Windows App SDK in self-contained mode with no
@@ -21,16 +21,16 @@ compatibility problem in a servicing release will still be able to move forward 
 disabling problematic changes. Even apps using self-contained can update to a new package with
 confidence that app-configurable compatibility will ensure a successful update.
 
-A new `CompatibilityOptions` class has APIs to control the behavior of servicing changes.
+A new `RuntimeCompatibilityOptions` class has APIs to control the behavior of servicing changes.
 There are also properties which can be set in the app's project file to automatically use the new
 APIs with the specified values.
 
 # API Pages
 
-## CompatibilityOptions class
+## RuntimeCompatibilityOptions class
 
 Configures which changes in Windows App SDK servicing releases are enabled. By default, all
-changes are enabled, but `CompatibilityOptions` can be used to lock the runtime behavior to a
+changes are enabled, but `RuntimeCompatibilityOptions` can be used to lock the runtime behavior to a
 specified patch version or to disable specific changes:
 
 1. **Choose the patch version:** You can specify which servicing patch version's behavior you
@@ -44,21 +44,21 @@ specified patch version or to disable specific changes:
    version in use.) Disabling a change is a temporary measure which gives time for a fix to be
    released in a future Windows App SDK update or for you to implement an update in your app.
 
-Here's an example of using `CompatibilityOptions` to specify a patch version and disable a
+Here's an example of using `RuntimeCompatibilityOptions` to specify a patch version and disable a
 specific change:
 
 ```c#
-void ApplyCompatibilityOptions() 
+void ApplyRuntimeCompatibilityOptions() 
 {
-    var compatibilityOptions = new CompatibilityOptions();
+    var compatibilityOptions = new RuntimeCompatibilityOptions();
     compatibilityOptions.PatchMode1 = new WindowsAppRuntimeVersion(1,7,3);
     compatibilityOptions.PatchMode2 = new WindowsAppRuntimeVersion(1,8,2);
-    compatibilityOptions.DisabledChanges.Add(CompatibilityChange.SampleApiCrashFix);
+    compatibilityOptions.DisabledChanges.Add(RuntimeCompatibilityChange.SampleApiCrashFix);
     compatibilityOptions.Apply();
 }
 ```
 
-CompatibilityOptions must be applied early in the process before any other Windows App
+RuntimeCompatibilityOptions must be applied early in the process before any other Windows App
 SDK APIs are called, or right after initializing the Windows App Runtime.
 
 `PatchMode1` and `PatchMode2` are simply two fields to set relevant patch modes. These needn't
@@ -67,10 +67,10 @@ to set `PatchMode1` to 1.8.2 and `PatchMode2` to 1.7.3, for example. And, in the
 when updating the app to 1.9, you may choose to simply update `PatchMode1` to 1.9.3 and leave
 `PatchMode2` as 1.8.2.
 
-### Specifying CompatibilityOptions in the app's project file
+### Specifying RuntimeCompatibilityOptions in the app's project file
 
 You can also specify the patch version and disabled changes in the app's project file instead of
-directly calling the CompatibilityOptions APIs. This approach has the advantage of ensuring the
+directly calling the RuntimeCompatibilityOptions APIs. This approach has the advantage of ensuring the
 options are applied early at the proper timing. Here's an example of how to specify the patch
 version and disabled changes in the project file (such as `.csproj` or `.vcxproj`):
 
@@ -82,7 +82,7 @@ version and disabled changes in the project file (such as `.csproj` or `.vcxproj
   </PropertyGroup>
 ```
 
-The `WindowsAppSDKDisabledChanges` property is a comma-separated list of `CompatibilityChange`
+The `WindowsAppSDKDisabledChanges` property is a comma-separated list of `RuntimeCompatibilityChange`
 values to disable.
 
 ### Behavior with no PatchMode specified
@@ -92,7 +92,7 @@ version of the runtime being used, then the runtime will use the latest patch ve
 words, the runtime will run with all servicing changes enabled (just like how Windows App SDK
 worked before this API existed).
 
-## CompatibilityOptions.PatchMode1
+## RuntimeCompatibilityOptions.PatchMode1
 
 Optional patch mode to use if the runtime version matches the major.minor version. If the runtime
 version does not match the specified major.minor version, this value is ignored.
@@ -109,7 +109,7 @@ like this:
 If your app is not in the process of transitioning to a new version of the Windows App SDK, you
 should only set this one patch mode.
 
-## CompatibilityOptions.PatchMode2
+## RuntimeCompatibilityOptions.PatchMode2
 
 Optional patch mode to use if the runtime version matches the major.minor version. If the runtime
 version does not match the specified major.minor version, this value is ignored.
@@ -131,7 +131,7 @@ like this:
   </PropertyGroup>
 ```
 
-## CompatibilityOptions.DisabledChanges
+## RuntimeCompatibilityOptions.DisabledChanges
 
 Optional list of specific servicing changes to disable.
 
@@ -159,11 +159,11 @@ intentional behavior change. Also, new stable releases, such as 1.8.0, start wit
 available to disable -- this capability only applies to disabling targeted servicing changes
 added in servicing releases.
 
-## CompatibilityOptions.Apply
+## RuntimeCompatibilityOptions.Apply
 
 Apply the set compatibility options to the runtime.
 
-CompatibilityOptions must be applied early in the process before any other Windows App
+RuntimeCompatibilityOptions must be applied early in the process before any other Windows App
 SDK APIs are called, or right after initializing the Windows App Runtime. The options must be set
 early before the configuration is locked for the lifetime of the process. Since the Windows App
 Runtime needs to run with a consistent configuration, it will lock the configuration when it needs
@@ -181,7 +181,7 @@ App Runtime earlier and is reinitializing for additional use.
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     /// The set of servicing changes that can be disabled.
-    enum CompatibilityChange
+    enum RuntimeCompatibilityChange
     {
         None = 0, /// do not use this value
 
@@ -205,9 +205,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     /// for Windows App Runtime behavior of changes added in servicing updates. This
     /// object is only used to set the runtime behavior and can't be used to query the
     /// applied options.
-    runtimeclass CompatibilityOptions
+    runtimeclass RuntimeCompatibilityOptions
     {
-        CompatibilityOptions();
+        RuntimeCompatibilityOptions();
 
         /// An optional patch mode to use if the runtime version matches the major.minor version.
         WindowsAppRuntimeVersion PatchMode1 { get; set; };
@@ -216,7 +216,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsAppRuntimeVersion PatchMode2 { get; set; };
 
         /// An optional list of specific servicing changes to disable.
-        IVector<CompatibilityChange> DisabledChanges{ get; };
+        IVector<RuntimeCompatibilityChange> DisabledChanges{ get; };
 
         /// Apply the compatibility options to the runtime.
         void Apply();
