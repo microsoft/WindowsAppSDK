@@ -1,0 +1,33 @@
+stages:
+- stage: StaticValidationTest
+  dependsOn: Build
+  condition: not(failed())
+  jobs:
+  - job: StaticValidationTest
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
+    timeoutInMinutes: 120
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Foundation'
+      inputs:
+        source: specific
+        runVersion: specific
+        project: $(System.TeamProjectId)
+        pipeline: $(_useBuildOutputFromPipeline)
+        pipelineId: $(_useBuildOutputFromBuildId)
+        artifactName: "FoundationBinaries_"
+        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Foundation'
+      inputs:
+        source: specific
+        runVersion: specific
+        project: $(System.TeamProjectId)
+        pipeline: $(_useBuildOutputFromPipeline)
+        pipelineId: $(_useBuildOutputFromBuildId)
+        artifactName: "MrtBinaries_"
+        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
