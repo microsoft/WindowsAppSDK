@@ -99,7 +99,7 @@ stages:
           }
 
           $testargs = "--packagepath=`"$path`" --buildtype=$buildtype --logfilepath=`"$log`" --windowssdkbindir=`"$WindowsSdkBinDir`" $checksigning"
-          $cmd = "`"$(Build.SourcesDirectory)\BuildOutput\PackageInspectionTes\PackageInspectionTest.exe`" $testargs"
+          $cmd = "`"$(Build.SourcesDirectory)\BuildOutput\PackageInspectionTest\PackageInspectionTest.exe`" $testargs"
           Write-Host $cmd
           cmd /c $cmd
 
