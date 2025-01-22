@@ -135,45 +135,45 @@ namespace PackageInspection
                 ValidationTestCommon.LogLine("");
             }
 
-            // bool signError = false;
-            // bool isNotDeterministic = false;
-            // // Unpack MSIXs
-            // string[] curMSIX = Directory.GetFiles(options.PackagePath, "*.msix", SearchOption.AllDirectories);
-            // foreach (string file in curMSIX)
-            // {
-            //     ValidationTestCommon.LogLine("Unpacking " + file);
-            //     string outPath = Path.GetDirectoryName(file) + "\\" + Path.GetFileNameWithoutExtension(file);
-            //     if (!ValidationTestCommon.AppxUnpack(options.AppxTool, file, outPath))
-            //     {
-            //         Console.Error.WriteLine("Fail to unpack MSIX: " + file);
-            //     }
-            // }
+            bool signError = false;
+            bool isNotDeterministic = false;
+            // Unpack MSIXs
+            string[] curMSIX = Directory.GetFiles(options.PackagePath, "*.msix", SearchOption.AllDirectories);
+            foreach (string file in curMSIX)
+            {
+                ValidationTestCommon.LogLine("Unpacking " + file);
+                string outPath = Path.GetDirectoryName(file) + "\\" + Path.GetFileNameWithoutExtension(file);
+                if (!ValidationTestCommon.AppxUnpack(options.AppxTool, file, outPath))
+                {
+                    Console.Error.WriteLine("Fail to unpack MSIX: " + file);
+                }
+            }
 
-            // winmds = Directory.GetFiles(options.PackagePath, "*.winmd", SearchOption.AllDirectories);
-            // foreach (string file in winmds)
-            // {
-            //     ValidationTestCommon.LogLine(file);
-            //     signError |= CheckDigitalSignature(options.SignTool, file);
-            //     ValidationTestCommon.LogLine("");
-            // }
+            winmds = Directory.GetFiles(options.PackagePath, "*.winmd", SearchOption.AllDirectories);
+            foreach (string file in winmds)
+            {
+                ValidationTestCommon.LogLine(file);
+                signError |= CheckDigitalSignature(options.SignTool, file);
+                ValidationTestCommon.LogLine("");
+            }
 
-            // dlls = Directory.GetFiles(options.PackagePath, "*.dll", SearchOption.AllDirectories);
-            // foreach (string file in dlls)
-            // {
-            //     ValidationTestCommon.LogLine(file);
-            //     signError |= CheckDigitalSignature(options.SignTool, file);
-            //     isNotDeterministic |= !CheckDeterministicProperty(file);
-            //     ValidationTestCommon.LogLine("");
-            // }
+            dlls = Directory.GetFiles(options.PackagePath, "*.dll", SearchOption.AllDirectories);
+            foreach (string file in dlls)
+            {
+                ValidationTestCommon.LogLine(file);
+                signError |= CheckDigitalSignature(options.SignTool, file);
+                isNotDeterministic |= !CheckDeterministicProperty(file);
+                ValidationTestCommon.LogLine("");
+            }
 
-            // string[] exes = Directory.GetFiles(options.PackagePath, "*.exe", SearchOption.AllDirectories);
-            // foreach (string file in exes)
-            // {
-            //     ValidationTestCommon.LogLine(file);
-            //     signError |= CheckDigitalSignature(options.SignTool, file);
-            //     isNotDeterministic |= !CheckDeterministicProperty(file);
-            //     ValidationTestCommon.LogLine("");
-            // }
+            string[] exes = Directory.GetFiles(options.PackagePath, "*.exe", SearchOption.AllDirectories);
+            foreach (string file in exes)
+            {
+                ValidationTestCommon.LogLine(file);
+                signError |= CheckDigitalSignature(options.SignTool, file);
+                isNotDeterministic |= !CheckDeterministicProperty(file);
+                ValidationTestCommon.LogLine("");
+            }
 
             foreach (var validation in CertValidations)
             {

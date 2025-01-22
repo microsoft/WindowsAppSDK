@@ -73,7 +73,7 @@ stages:
         msbuildArgs: /t:restore /p:FoundationVersion="$(FoundationVersion)" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages"
 
     - script: |
-        dir /s $(Build.SourcesDirectory)\localpackages
+        dir /s $(Build.SourcesDirectory)\Packages
 
     - task: PowerShell@2
       displayName: 'Run PackageInspectionTests'
@@ -84,7 +84,7 @@ stages:
           $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
           $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\10.0.22000.0\x86"
 
-          $path = "$(Build.SourcesDirectory)\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(FoundationVersion)"
+          $path = "$(Build.SourcesDirectory)\Packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(FoundationVersion)"
           $buildtype = 'stable'
           $log = "$(Build.ArtifactStagingDirectory)\PackageInspectionResults.txt"
           $checksigning = ""
