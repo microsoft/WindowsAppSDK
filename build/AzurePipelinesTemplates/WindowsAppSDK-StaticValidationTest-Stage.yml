@@ -55,7 +55,7 @@ stages:
           if ($files.Count -eq 1)
           {
               Write-Host "file:" $files.FullName
-              $version = (($files.FullName -Split "Microsoft.WindowsAppSDK.")[1] -Split ".nupkg")[0]
+              $version = (($files.FullName -Split "Microsoft.WindowsAppSDK.Foundation.TransportPackage.")[1] -Split ".nupkg")[0]
               Write-Host "|$version|"
               Write-Host "##vso[task.setvariable variable=FoundationVersion]$version"
           }
