@@ -72,6 +72,11 @@ stages:
         solution: $(Build.SourcesDirectory)\test\StaticValidationTests\PackageInspectionTest.csproj
         msbuildArgs: /t:restore /p:FoundationVersion="$(FoundationVersion)" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages"
 
+    - task: VSBuild@1
+      displayName: 'Build PackageInspectionTest.sln'
+      inputs:
+        solution: $(Build.SourcesDirectory)\test\StaticValidationTests\PackageInspectionTest.csproj
+
     - script: |
         dir /s $(Build.SourcesDirectory)\Packages
 
