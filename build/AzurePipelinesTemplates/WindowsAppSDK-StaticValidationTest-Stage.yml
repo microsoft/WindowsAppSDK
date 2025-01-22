@@ -15,6 +15,14 @@ stages:
       name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
     timeoutInMinutes: 120
     steps:
+    - task: powershell@2
+      displayName: 'DevCheck: Setup/Verify development environment'
+      inputs:
+        targetType: filePath
+        filePath: tools\DevCheck\DevCheck.ps1
+        arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
+        workingDirectory: '$(Build.SourcesDirectory)'
+
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation'
       inputs:
