@@ -26,50 +26,50 @@ stages:
         artifactName: "TransportPackage"
         targetPath: $(System.ArtifactsDirectory)
 
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: '$(System.ArtifactsDirectory)\NugetPackages'
-      targetFolder: $(Build.SourcesDirectory)\localpackages
-        
-  - task: VSBuild@1
-    displayName: 'Build PackageInspectionTest.sln'
-    inputs:
-      solution: $(Build.SourcesDirectory)\test\StaticValidationTests\PackageInspectionTest.csproj
-      msbuildArgs: /t:restore /p:FoundationVersion="$(version)" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages"
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.ArtifactsDirectory)\NugetPackages'
+        targetFolder: $(Build.SourcesDirectory)\localpackages
+          
+    - task: VSBuild@1
+      displayName: 'Build PackageInspectionTest.sln'
+      inputs:
+        solution: $(Build.SourcesDirectory)\test\StaticValidationTests\PackageInspectionTest.csproj
+        msbuildArgs: /t:restore /p:FoundationVersion="$(version)" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages"
 
-  - task: PowerShell@2
-    displayName: 'Run PackageInspectionTests'
-    inputs:
-      targetType: 'inline'
-      ignoreLASTEXITCODE: true
-      script: |
-        $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
-        $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\$(WindowsSDKVersion)\x86"
+    - task: PowerShell@2
+      displayName: 'Run PackageInspectionTests'
+      inputs:
+        targetType: 'inline'
+        ignoreLASTEXITCODE: true
+        script: |
+          $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
+          $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\$(WindowsSDKVersion)\x86"
 
-        $path = "$(Build.SourcesDirectory)\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(version)"
-        $buildtype = '${{ parameters.BuildType }}'
-        $log = "$(Build.ArtifactStagingDirectory)\PackageInspectionResults.txt"
-        $checksigning = ""
-        if ('${{ parameters.SignOutput }}' -eq 'true')
-        {
-          $checksigning = "--checksigning"
-        }
-
-        $testargs = "--packagepath=`"$path`" --buildtype=$buildtype --logfilepath=`"$log`" --windowssdkbindir=`"$WindowsSdkBinDir`" $checksigning"
-        $cmd = "`"$(Build.SourcesDirectory)\BuildOutput\Debug\AnyCPU\PackageInspectionTest\PackageInspectionTest.exe`" $testargs"
-        Write-Host $cmd
-        cmd /c $cmd
-
-        Write-Host "results " $LASTEXITCODE
-        if ($LASTEXITCODE -ne 0)
-        {
-          # Only fail if we are not on the main branch
-          if ('$(Build.SourceBranch)' -eq 'refs/heads/main')
+          $path = "$(Build.SourcesDirectory)\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(version)"
+          $buildtype = '${{ parameters.BuildType }}'
+          $log = "$(Build.ArtifactStagingDirectory)\PackageInspectionResults.txt"
+          $checksigning = ""
+          if ('${{ parameters.SignOutput }}' -eq 'true')
           {
-            Write-Host "##vso[task.complete result=SucceededWithIssues;]DONE"
+            $checksigning = "--checksigning"
           }
-          else
+
+          $testargs = "--packagepath=`"$path`" --buildtype=$buildtype --logfilepath=`"$log`" --windowssdkbindir=`"$WindowsSdkBinDir`" $checksigning"
+          $cmd = "`"$(Build.SourcesDirectory)\BuildOutput\Debug\AnyCPU\PackageInspectionTest\PackageInspectionTest.exe`" $testargs"
+          Write-Host $cmd
+          cmd /c $cmd
+
+          Write-Host "results " $LASTEXITCODE
+          if ($LASTEXITCODE -ne 0)
           {
-            Write-Host "##vso[task.complete result=Failed;]DONE"
+            # Only fail if we are not on the main branch
+            if ('$(Build.SourceBranch)' -eq 'refs/heads/main')
+            {
+              Write-Host "##vso[task.complete result=SucceededWithIssues;]DONE"
+            }
+            else
+            {
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
           }
-        }
