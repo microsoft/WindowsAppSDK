@@ -57,52 +57,7 @@ namespace PackageInspection
         private const string EXPERIMENTAL_ATTRIBUTE_NAME = "Windows.Foundation.Metadata.ExperimentalAttribute";
         private const string RootCertificate = "Microsoft Root Certificate";
 
-        // We expect the output from signtool verify /v microsoft.internal.frameworkudk.dll to look something like this:
-        //
-        // Signature Index: 0 (Primary Signature)
-        // Hash of file (sha256): 518CE126CA3515C1BC224B7FE4FD91B8B5A8439C7D635185257CA8D1FB1653DC
-
-        // Signing Certificate Chain:
-        //     Issued to: Microsoft Root Certificate Authority 2010
-        //     Issued by: Microsoft Root Certificate Authority 2010
-        //     Expires:   Sat Jun 23 14:04:01 2035
-        //     SHA1 hash: 3B1EFD3A66EA28B16697394703A72CA340A05BD5
-
-        //         Issued to: Microsoft Windows Production PCA 2011
-        //         Issued by: Microsoft Root Certificate Authority 2010
-        //         Expires:   Mon Oct 19 10:51:42 2026
-        //         SHA1 hash: 580A6F4CC4E4B669B9EBDC1B2B3E087B80D0678D
-
-        //             Issued to: Microsoft Windows
-        //             Issued by: Microsoft Windows Production PCA 2011
-        //             Expires:   Thu Nov 14 11:20:08 2024
-        //             SHA1 hash: 71F53A26BB1625E466727183409A30D03D7923DF
-
-        // The signature is timestamped: Tue Feb 27 10:55:18 2024
-        // Timestamp Verified by:
-        //     Issued to: Microsoft Root Certificate Authority 2010
-        //     Issued by: Microsoft Root Certificate Authority 2010
-        //     Expires:   Sat Jun 23 14:04:01 2035
-        //     SHA1 hash: 3B1EFD3A66EA28B16697394703A72CA340A05BD5
-
-        //         Issued to: Microsoft Time-Stamp PCA 2010
-        //         Issued by: Microsoft Root Certificate Authority 2010
-        //         Expires:   Mon Sep 30 10:32:25 2030
-        //         SHA1 hash: 36056A5662DCADECF82CC14C8B80EC5E0BCC59A6
-
-        //             Issued to: Microsoft Time-Stamp Service
-        //             Issued by: Microsoft Time-Stamp PCA 2010
-        //             Expires:   Fri Jan 10 11:07:09 2025
-        //             SHA1 hash: 3623471965DB35A0CFC67CA20DB10E7224A31610
-
-        // To validate that, declare our expectations in this data structure:
-        private static CertValidation[] CertValidations = new CertValidation[] { 
-            new CertValidation { 
-                File = "Microsoft.Internal.FrameworkUdk.dll",
-                IssuedToName = "Microsoft Windows",
-                ExtraSignToolFlags = ""
-                }
-            };
+        private static CertValidation[] CertValidations = new CertValidation[] {};
 
         static int Main(string[] args)
 
