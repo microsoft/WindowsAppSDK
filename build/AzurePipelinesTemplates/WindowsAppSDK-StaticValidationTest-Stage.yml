@@ -90,7 +90,7 @@ stages:
           $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\10.0.22000.0\x86"
 
           $path = "$(Build.SourcesDirectory)\Packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(FoundationVersion)"
-          $buildtype = 'stable'
+          $buildtype = '$(channel)'
           $log = "$(Build.ArtifactStagingDirectory)\PackageInspectionResults.txt"
           $checksigning = ""
           if ('${{ parameters.SignOutput }}' -eq 'true')

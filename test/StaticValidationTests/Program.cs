@@ -99,7 +99,8 @@ namespace PackageInspection
         private static CertValidation[] CertValidations = new CertValidation[] { 
             new CertValidation { 
                 File = "Microsoft.Internal.FrameworkUdk.dll",
-                IssuedToName = "Microsoft Windows"
+                IssuedToName = "Microsoft Windows",
+                ExtraSignToolFlags = ""
                 }
             };
 
