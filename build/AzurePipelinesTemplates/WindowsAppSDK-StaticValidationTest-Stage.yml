@@ -28,7 +28,9 @@ stages:
 
     - task: CopyFiles@2
       inputs:
-        SourceFolder: '$(System.ArtifactsDirectory)\NugetPackages'
+        SourceFolder: '$(System.ArtifactsDirectory)'
+        Contents: | 
+          **/*.nupkg
         targetFolder: $(Build.SourcesDirectory)\localpackages
           
     - task: VSBuild@1
