@@ -152,13 +152,13 @@ namespace PackageInspection
 
             if (found && !buildType.Equals("experimental"))
             {
-                Console.Error.WriteLine("ERROR: Experimental Attribute Was Found");
+                Console.Error.WriteLine("ERROR: Experimental Attribute(s) Found");
                 Environment.ExitCode = 1;
             }
 
             if (signError && options.CheckSigning)
             {
-                Console.Error.WriteLine("ERROR: Signing errors found");
+                Console.Error.WriteLine("ERROR: Signing Errors Found");
                 Environment.ExitCode = 1;
             }
 
