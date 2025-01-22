@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using System;
 using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Reflection.Metadata;
