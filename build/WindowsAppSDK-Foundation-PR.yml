@@ -89,7 +89,8 @@ extends:
     # - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
-
+      parameters:
+        SignOutput: false
     # - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
     #   parameters:
     #     SignOutput: false
