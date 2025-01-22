@@ -66,14 +66,14 @@ stages:
               Write-Host "##vso[task.complete result=Failed;]DONE"
           }
 
-    - script: |
-        dir /s $(Build.SourcesDirectory)\localpackages
-
     - task: VSBuild@1
       displayName: 'Build PackageInspectionTest.sln'
       inputs:
         solution: $(Build.SourcesDirectory)\test\StaticValidationTests\PackageInspectionTest.csproj
         msbuildArgs: /t:restore /p:FoundationVersion="$(FoundationVersion)" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages"
+
+    - script: |
+        dir /s $(Build.SourcesDirectory)\localpackages
 
     - task: PowerShell@2
       displayName: 'Run PackageInspectionTests'
