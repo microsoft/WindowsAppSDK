@@ -18,7 +18,7 @@ stages:
         project: $(System.TeamProjectId)
         pipeline: $(_useBuildOutputFromPipeline)
         pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_"
+        artifactName: "FoundationBinaries_*"
         targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
     - task: DownloadPipelineArtifact@2
