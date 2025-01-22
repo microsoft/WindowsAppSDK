@@ -43,12 +43,37 @@ stages:
         Contents: | 
           **/*.nupkg
         targetFolder: $(Build.SourcesDirectory)\localpackages
-          
+
+    - task: PowerShell@2
+      name: ExtractWindowsAppSDKVersion
+      displayName: Extract WindowsAppSDKVersion
+      inputs:
+        targetType: 'inline'
+        script: |
+          $files = Get-ChildItem "$(Build.SourcesDirectory)\localpackages" -Filter "*Microsoft.WindowsAppSDK.Foundation.TransportPackage*.nupkg"
+          Write-Host $files.Count
+          if ($files.Count -eq 1)
+          {
+              Write-Host "file:" $files.FullName
+              $version = (($files.FullName -Split "Microsoft.WindowsAppSDK.")[1] -Split ".nupkg")[0]
+              Write-Host "|$version|"
+              Write-Host "##vso[task.setvariable variable=FoundationVersion]$version"
+          }
+          else
+          {
+              Write-Host "Error: Found more than one Foundation TransportPackage Found"
+              Write-Host "Please make sure only one package is present"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+          }
+
+    - script: |
+        dir /s $(Build.SourcesDirectory)\localpackages
+
     - task: VSBuild@1
       displayName: 'Build PackageInspectionTest.sln'
       inputs:
         solution: $(Build.SourcesDirectory)\test\StaticValidationTests\PackageInspectionTest.csproj
-        msbuildArgs: /t:restore /p:FoundationVersion="$(version)" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages"
+        msbuildArgs: /t:restore /p:FoundationVersion="$(FoundationVersion)" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages"
 
     - task: PowerShell@2
       displayName: 'Run PackageInspectionTests'
@@ -59,7 +84,7 @@ stages:
           $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
           $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\$(WindowsSDKVersion)\x86"
 
-          $path = "$(Build.SourcesDirectory)\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(version)"
+          $path = "$(Build.SourcesDirectory)\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(FoundationVersion)"
           $buildtype = 'stable'
           $log = "$(Build.ArtifactStagingDirectory)\PackageInspectionResults.txt"
           $checksigning = ""
