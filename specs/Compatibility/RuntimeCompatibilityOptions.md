@@ -31,28 +31,28 @@ APIs with the specified values.
 
 Configures which changes in Windows App SDK servicing releases are enabled. By default, all
 changes are enabled, but `RuntimeCompatibilityOptions` can be used to lock the runtime behavior to a
-specified patch version or to disable specific changes:
+specified patch level or to disable specific changes:
 
-1. **Choose the patch version:** You can specify which servicing patch version's behavior you
-   want to use. For example, your app can specify that it wants the 1.7.2 version behavior, which
-   will have Windows App SDK run in that mode even if 1.7.3 or later is installed. This capability
+1. **Choose the patch level:** You can specify which servicing release's behavior you want to use.
+   For example, your app can specify that it wants the 1.7.2 patch level behavior, which will have
+   Windows App SDK run in that patch level even if 1.7.3 or later is installed. This capability
    allows you to control when your app gets new fixes or behavior changes, even when not using
    self-contained mode.
 2. **Temporarily disable specific changes:** If your app encounters a problem with a specific
    change in a servicing update, you can disable just that change while still benefiting from the
    other changes or features in that update. (All changes are enabled by default for the patch
-   version in use.) Disabling a change is a temporary measure which gives time for a fix to be
+   level in use.) Disabling a change is a temporary measure which gives time for a fix to be
    released in a future Windows App SDK update or for you to implement an update in your app.
 
-Here's an example of using `RuntimeCompatibilityOptions` to specify a patch version and disable a
+Here's an example of using `RuntimeCompatibilityOptions` to specify a patch level and disable a
 specific change:
 
 ```c#
 void ApplyRuntimeCompatibilityOptions() 
 {
     var compatibilityOptions = new RuntimeCompatibilityOptions();
-    compatibilityOptions.PatchMode1 = new WindowsAppRuntimeVersion(1,7,3);
-    compatibilityOptions.PatchMode2 = new WindowsAppRuntimeVersion(1,8,2);
+    compatibilityOptions.PatchLevel1 = new WindowsAppRuntimeVersion(1,7,3);
+    compatibilityOptions.PatchLevel2 = new WindowsAppRuntimeVersion(1,8,2);
     compatibilityOptions.DisabledChanges.Add(RuntimeCompatibilityChange.SampleApiCrashFix);
     compatibilityOptions.Apply();
 }
@@ -61,23 +61,23 @@ void ApplyRuntimeCompatibilityOptions()
 RuntimeCompatibilityOptions must be applied early in the process before any other Windows App
 SDK APIs are called, or right after initializing the Windows App Runtime.
 
-`PatchMode1` and `PatchMode2` are simply two fields to set relevant patch modes. These needn't
+`PatchLevel1` and `PatchLevel2` are simply two fields to set relevant patch levels. These needn't
 match any specific version of the Windows App Runtime nor be in a specific order, so it is valid
-to set `PatchMode1` to 1.8.2 and `PatchMode2` to 1.7.3, for example. And, in the above example,
-when updating the app to 1.9, you may choose to simply update `PatchMode1` to 1.9.3 and leave
-`PatchMode2` as 1.8.2.
+to set `PatchLevel1` to 1.8.2 and `PatchLevel2` to 1.7.3, for example. And, in the above example,
+when updating the app to 1.9, you may choose to simply update `PatchLevel1` to 1.9.3 and leave
+`PatchLevel2` as 1.8.2.
 
 ### Specifying RuntimeCompatibilityOptions in the app's project file
 
-You can also specify the patch version and disabled changes in the app's project file instead of
+You can also specify the patch level and disabled changes in the app's project file instead of
 directly calling the RuntimeCompatibilityOptions APIs. This approach has the advantage of ensuring the
 options are applied early at the proper timing. Here's an example of how to specify the patch
-version and disabled changes in the project file (such as `.csproj` or `.vcxproj`):
+level and disabled changes in the project file (such as `.csproj` or `.vcxproj`):
 
 ```xml
   <PropertyGroup>
-    <WindowsAppSDKRuntimePatchMode>1.7.3</WindowsAppSDKRuntimePatchMode>
-    <WindowsAppSDKRuntimePatchMode2>1.8.2</WindowsAppSDKRuntimePatchMode2>
+    <WindowsAppSDKRuntimePatchLevel>1.7.3</WindowsAppSDKRuntimePatchLevel>
+    <WindowsAppSDKRuntimePatchLevel2>1.8.2</WindowsAppSDKRuntimePatchLevel2>
     <WindowsAppSDKDisabledChanges>SampleApiCrashFix, OtherSampleApiCrashFix</WindowsAppSDKDisabledChanges>
   </PropertyGroup>
 ```
@@ -85,49 +85,49 @@ version and disabled changes in the project file (such as `.csproj` or `.vcxproj
 The `WindowsAppSDKDisabledChanges` property is a comma-separated list of `RuntimeCompatibilityChange`
 values to disable.
 
-### Behavior with no PatchMode specified
+### Behavior with no PatchLevel specified
 
-If no `PatchMode1` or `PatchMode2` is specified, or if neither value matches the major.minor
-version of the runtime being used, then the runtime will use the latest patch version. In other
+If no `PatchLevel1` or `PatchLevel2` is specified, or if neither value matches the major.minor
+version of the runtime being used, then the runtime will use the latest patch level. In other
 words, the runtime will run with all servicing changes enabled (just like how Windows App SDK
 worked before this API existed).
 
-## RuntimeCompatibilityOptions.PatchMode1
+## RuntimeCompatibilityOptions.PatchLevel1
 
-Optional patch mode to use if the runtime version matches the major.minor version. If the runtime
+Optional patch level to use if the runtime version matches the major.minor version. If the runtime
 version does not match the specified major.minor version, this value is ignored.
 
-Instead of directly using this API, this patch mode could be specified in the app's project file,
+Instead of directly using this API, this patch level could be specified in the app's project file,
 like this:
 
 ```xml
   <PropertyGroup>
-    <WindowsAppSDKRuntimePatchMode>1.7.3</WindowsAppSDKRuntimePatchMode>
+    <WindowsAppSDKRuntimePatchLevel>1.7.3</WindowsAppSDKRuntimePatchLevel>
   </PropertyGroup>
 ```
 
 If your app is not in the process of transitioning to a new version of the Windows App SDK, you
-should only set this one patch mode.
+may only set this one patch level.
 
-## RuntimeCompatibilityOptions.PatchMode2
+## RuntimeCompatibilityOptions.PatchLevel2
 
-Optional patch mode to use if the runtime version matches the major.minor version. If the runtime
+Optional patch level to use if the runtime version matches the major.minor version. If the runtime
 version does not match the specified major.minor version, this value is ignored.
 
-This property enables setting a second patch mode to help apps transitioning to a new version of
-the Windows App SDK. This is a convenience to allow the patch modes for both the old and new
+This property enables setting a second patch level to help apps transitioning to a new version of
+the Windows App SDK. This is a convenience to allow the patch levels for both the old and new
 version to be specified during the transition. Apps not in the process of transitioning should
-only set the one patch mode they want to use.
+only set the one patch level they want to use.
 
-Setting both patch modes for the same major.minor version, such as 1.7.3 and 1.7.4, is not allowed
+Setting both patch levels for the same major.minor version, such as 1.7.3 and 1.7.4, is not allowed
 and will generate an error during `Apply()`.
 
-Instead of directly using this API, this patch mode could be specified in the app's project file,
+Instead of directly using this API, this patch level could be specified in the app's project file,
 like this:
 
 ```xml
   <PropertyGroup>
-    <WindowsAppSDKRuntimePatchMode2>1.8.2</WindowsAppSDKRuntimePatchMode2>
+    <WindowsAppSDKRuntimePatchLevel2>1.8.2</WindowsAppSDKRuntimePatchLevel2>
   </PropertyGroup>
 ```
 
@@ -209,11 +209,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     {
         RuntimeCompatibilityOptions();
 
-        /// An optional patch mode to use if the runtime version matches the major.minor version.
-        WindowsAppRuntimeVersion PatchMode1 { get; set; };
+        /// An optional patch level to use if the runtime version matches the major.minor version.
+        WindowsAppRuntimeVersion PatchLevel1 { get; set; };
 
-        /// An optional patch mode to use if the runtime version matches the major.minor version.
-        WindowsAppRuntimeVersion PatchMode2 { get; set; };
+        /// An optional patch level to use if the runtime version matches the major.minor version.
+        WindowsAppRuntimeVersion PatchLevel2 { get; set; };
 
         /// An optional list of specific servicing changes to disable.
         IVector<RuntimeCompatibilityChange> DisabledChanges{ get; };
