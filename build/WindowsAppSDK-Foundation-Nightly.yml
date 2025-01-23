@@ -116,6 +116,10 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
 
+    - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
