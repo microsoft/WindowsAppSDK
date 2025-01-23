@@ -57,15 +57,15 @@ namespace Test::CompatibilityTests
             WEX::Logging::Log::Comment(WEX::Common::String(L"Starting CanSetRuntimeCompatibilityOptions..."));
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
             WEX::Logging::Log::Comment(WEX::Common::String(L"   Created RuntimeCompatibilityOptions..."));
-            options.PatchMode1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 3 });
+            options.PatchLevel1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 3 });
             options.Apply();
             WEX::Logging::Log::Comment(WEX::Common::String(L"   Applied RuntimeCompatibilityOptions..."));
 
             try
             {
-                WEX::Logging::Log::Comment(WEX::Common::String(L"   Applying RuntimeCompatibilityOptions with different patch mode..."));
+                WEX::Logging::Log::Comment(WEX::Common::String(L"   Applying RuntimeCompatibilityOptions with different patch level..."));
                 winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options2;
-                options2.PatchMode1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 6 });
+                options2.PatchLevel1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 6 });
                 options2.Apply();
                 VERIFY_FAIL(L"Success is not expected when setting a different configuration");
             }
@@ -76,7 +76,7 @@ namespace Test::CompatibilityTests
 
             try
             {
-                WEX::Logging::Log::Comment(WEX::Common::String(L"   Applying RuntimeCompatibilityOptions with no patch mode..."));
+                WEX::Logging::Log::Comment(WEX::Common::String(L"   Applying RuntimeCompatibilityOptions with no patch level..."));
                 winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options3;
                 options3.Apply();
                 VERIFY_FAIL(L"Success is not expected when setting a different configuration");
@@ -87,26 +87,26 @@ namespace Test::CompatibilityTests
             }
         }
 
-        TEST_METHOD(VerifyNoMatchingPatchModeBehavior)
+        TEST_METHOD(VerifyNoMatchingPatchLevelBehavior)
         {
-            WEX::Logging::Log::Comment(WEX::Common::String(L"Setting RuntimeCompatibilityOptions with no matching patch mode"));
+            WEX::Logging::Log::Comment(WEX::Common::String(L"Setting RuntimeCompatibilityOptions with no matching patch level"));
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
-            options.PatchMode1({ 0, 8, 3 });
-            options.PatchMode2({ 1, 1, 4 });
+            options.PatchLevel1({ 0, 8, 3 });
+            options.PatchLevel2({ 1, 1, 4 });
             options.Apply();
 
-            // Set a RuntimeCompatibilityOptions with no patch mode, which should be allowed since neither
-            // set a patch mode matching the runtime version.
+            // Set a RuntimeCompatibilityOptions with no patch level, which should be allowed since neither
+            // set a patch level matching the runtime version.
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options2;
             options2.Apply();
         }
 
-        TEST_METHOD(VerifyConflictingPatchModeBehavior)
+        TEST_METHOD(VerifyConflictingPatchLevelBehavior)
         {
-            WEX::Logging::Log::Comment(WEX::Common::String(L"Setting RuntimeCompatibilityOptions with conflicting patch modes"));
+            WEX::Logging::Log::Comment(WEX::Common::String(L"Setting RuntimeCompatibilityOptions with conflicting patch levels"));
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
-            options.PatchMode1({ 1, 7, 3 });
-            options.PatchMode2({ 1, 7, 6 }); // Conflicting patch mode for 1.7.x! Apply should fail.
+            options.PatchLevel1({ 1, 7, 3 });
+            options.PatchLevel2({ 1, 7, 6 }); // Conflicting patch level for 1.7.x! Apply should fail.
             try
             {
                 options.Apply();
@@ -121,7 +121,7 @@ namespace Test::CompatibilityTests
         TEST_METHOD(VerifyDisabledChanges)
         {
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
-            options.PatchMode1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 3 });
+            options.PatchLevel1({ WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR, 3 });
             options.DisabledChanges().Append((WAR::RuntimeCompatibilityChange)12345);
             options.DisabledChanges().Append((WAR::RuntimeCompatibilityChange)23456);
             options.DisabledChanges().Append((WAR::RuntimeCompatibilityChange)34567);

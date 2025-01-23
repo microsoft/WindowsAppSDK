@@ -2,23 +2,23 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup Condition="'$(WindowsAppSDKRuntimePatchMode)' != '' or '$(WindowsAppSDKRuntimePatchMode2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
+  <PropertyGroup Condition="'$(WindowsAppSDKRuntimePatchLevel)' != '' or '$(WindowsAppSDKRuntimePatchLevel2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
       <WindowsAppSdkCompatibilityInitialize>true</WindowsAppSdkCompatibilityInitialize>
   </PropertyGroup>
 
   <Target Name="WindowsAppSdkCompatibilitySetterTarget" BeforeTargets="CoreCompile"
-          Condition="'$(WindowsAppSDKRuntimePatchMode)' != '' or '$(WindowsAppSDKRuntimePatchMode2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
+          Condition="'$(WindowsAppSDKRuntimePatchLevel)' != '' or '$(WindowsAppSDKRuntimePatchLevel2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
     <PropertyGroup>
       <WindowsAppSDKGeneratedFilesDir Condition="'$(WindowsAppSDKGeneratedFilesDir)' == '' and '$(GeneratedFilesDir)' != ''">$(GeneratedFilesDir)\WindowsAppSDK\</WindowsAppSDKGeneratedFilesDir>
       <WindowsAppSDKGeneratedFilesDir Condition="'$(WindowsAppSDKGeneratedFilesDir)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Generated Files', 'WindowsAppSDK'))</WindowsAppSDKGeneratedFilesDir>
         
       <WindowsAppSDKCompatibilitySetterFile>$(WindowsAppSDKGeneratedFilesDir)WindowsAppSDKCompatibilitySetter.cs</WindowsAppSDKCompatibilitySetterFile>
-      <WindowsAppSDKCompatibilityPatchMode1Lines Condition="'$(WindowsAppSDKRuntimePatchMode)' != ''">
-            compatibilityOptions.PatchMode1 = new WindowsAppRuntimeVersion($(WindowsAppSDKRuntimePatchMode.Replace(".", ",")))%3B
-      </WindowsAppSDKCompatibilityPatchMode1Lines>
-      <WindowsAppSDKCompatibilityPatchMode2Lines Condition="'$(WindowsAppSDKRuntimePatchMode2)' != ''">
-            compatibilityOptions.PatchMode2 = new WindowsAppRuntimeVersion($(WindowsAppSDKRuntimePatchMode2.Replace(".", ",")))%3B
-      </WindowsAppSDKCompatibilityPatchMode2Lines>
+      <WindowsAppSDKCompatibilityPatchLevel1Lines Condition="'$(WindowsAppSDKRuntimePatchLevel)' != ''">
+            compatibilityOptions.PatchLevel1 = new WindowsAppRuntimeVersion($(WindowsAppSDKRuntimePatchLevel.Replace(".", ",")))%3B
+      </WindowsAppSDKCompatibilityPatchLevel1Lines>
+      <WindowsAppSDKCompatibilityPatchLevel2Lines Condition="'$(WindowsAppSDKRuntimePatchLevel2)' != ''">
+            compatibilityOptions.PatchLevel2 = new WindowsAppRuntimeVersion($(WindowsAppSDKRuntimePatchLevel2.Replace(".", ",")))%3B
+      </WindowsAppSDKCompatibilityPatchLevel2Lines>
 
       <WindowsAppSDKCompatibilityDisabledChangesNoSpaces Condition="'$(WindowsAppSDKDisabledChanges)' != ''">$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKDisabledChanges), "\s+", ""))</WindowsAppSDKCompatibilityDisabledChangesNoSpaces>
       <WindowsAppSDKCompatibilityDisabledChangesLines Condition="'$(WindowsAppSDKCompatibilityDisabledChangesNoSpaces)' != ''">
@@ -41,8 +41,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Compatibility
         internal static void ConfigureRuntimeCompatibility()
         {
             var compatibilityOptions = new RuntimeCompatibilityOptions()%3B
-$(WindowsAppSDKCompatibilityPatchMode1Lines)
-$(WindowsAppSDKCompatibilityPatchMode2Lines)
+$(WindowsAppSDKCompatibilityPatchLevel1Lines)
+$(WindowsAppSDKCompatibilityPatchLevel2Lines)
 $(WindowsAppSDKCompatibilityDisabledChangesLines)
             compatibilityOptions.Apply()%3B
         }

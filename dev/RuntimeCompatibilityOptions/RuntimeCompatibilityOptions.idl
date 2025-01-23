@@ -38,11 +38,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     {
         RuntimeCompatibilityOptions();
 
-        /// An optional patch mode to use if the runtime version matches the major.minor version.
-        WindowsAppRuntimeVersion PatchMode1 { get; set; };
+        /// An optional patch level to use if the runtime version matches the major.minor version.
+        WindowsAppRuntimeVersion PatchLevel1 { get; set; };
 
-        /// An optional patch mode to use if the runtime version matches the major.minor version.
-        WindowsAppRuntimeVersion PatchMode2 { get; set; };
+        /// An optional patch level to use if the runtime version matches the major.minor version.
+        WindowsAppRuntimeVersion PatchLevel2 { get; set; };
 
         /// An optional list of specific servicing changes to disable.
         IVector<RuntimeCompatibilityChange> DisabledChanges{ get; };

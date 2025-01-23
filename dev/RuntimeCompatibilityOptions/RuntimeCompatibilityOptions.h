@@ -11,17 +11,17 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         RuntimeCompatibilityOptions() = default;
 
-        WindowsAppRuntimeVersion PatchMode1() { return m_patchMode1; }
-        void PatchMode1(WindowsAppRuntimeVersion const& value) { m_patchMode1 = value; }
-        WindowsAppRuntimeVersion PatchMode2() { return m_patchMode2; }
-        void PatchMode2(WindowsAppRuntimeVersion const& value) { m_patchMode2 = value; }
+        WindowsAppRuntimeVersion PatchLevel1() { return m_patchLevel1; }
+        void PatchLevel1(WindowsAppRuntimeVersion const& value) { m_patchLevel1 = value; }
+        WindowsAppRuntimeVersion PatchLevel2() { return m_patchLevel2; }
+        void PatchLevel2(WindowsAppRuntimeVersion const& value) { m_patchLevel2 = value; }
         winrt::Windows::Foundation::Collections::IVector<RuntimeCompatibilityChange> DisabledChanges();
 
         void Apply();
 
     private:
-        WindowsAppRuntimeVersion m_patchMode1{ 0, 0, 0 };
-        WindowsAppRuntimeVersion m_patchMode2{ 0, 0, 0 };
+        WindowsAppRuntimeVersion m_patchLevel1{ 0, 0, 0 };
+        WindowsAppRuntimeVersion m_patchLevel2{ 0, 0, 0 };
         winrt::Windows::Foundation::Collections::IVector<RuntimeCompatibilityChange> m_disabledChanges{ winrt::single_threaded_vector<RuntimeCompatibilityChange>() };
     };
 }

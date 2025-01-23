@@ -2,20 +2,20 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup Condition="'$(WindowsAppSDKRuntimePatchMode)' != '' or '$(WindowsAppSDKRuntimePatchMode2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
+  <PropertyGroup Condition="'$(WindowsAppSDKRuntimePatchLevel)' != '' or '$(WindowsAppSDKRuntimePatchLevel2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
       <WindowsAppSdkCompatibilityInitialize>true</WindowsAppSdkCompatibilityInitialize>
   </PropertyGroup>
 
   <Target Name="WindowsAppSDKCompatibilitySetterTarget" BeforeTargets="ClCompile"
-          Condition="'$(WindowsAppSDKRuntimePatchMode)' != '' or '$(WindowsAppSDKRuntimePatchMode2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
+          Condition="'$(WindowsAppSDKRuntimePatchLevel)' != '' or '$(WindowsAppSDKRuntimePatchLevel2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
     <PropertyGroup>
       <WindowsAppSDKCompatibilitySetterFile>$(GeneratedFilesDir)WindowsAppSDKCompatibilitySetter.cpp</WindowsAppSDKCompatibilitySetterFile>
-      <WindowsAppSDKCompatibilityPatchMode1Lines Condition="'$(WindowsAppSDKRuntimePatchMode)' != ''">
-            compatibilityOptions.PatchMode1({$(WindowsAppSDKRuntimePatchMode.Replace(".", ","))})%3B
-      </WindowsAppSDKCompatibilityPatchMode1Lines>
-      <WindowsAppSDKCompatibilityPatchMode2Lines Condition="'$(WindowsAppSDKRuntimePatchMode2)' != ''">
-            compatibilityOptions.PatchMode2({$(WindowsAppSDKRuntimePatchMode2.Replace(".", ","))})%3B
-      </WindowsAppSDKCompatibilityPatchMode2Lines>
+      <WindowsAppSDKCompatibilityPatchLevel1Lines Condition="'$(WindowsAppSDKRuntimePatchLevel)' != ''">
+            compatibilityOptions.PatchLevel1({$(WindowsAppSDKRuntimePatchLevel.Replace(".", ","))})%3B
+      </WindowsAppSDKCompatibilityPatchLevel1Lines>
+      <WindowsAppSDKCompatibilityPatchLevel2Lines Condition="'$(WindowsAppSDKRuntimePatchLevel2)' != ''">
+            compatibilityOptions.PatchLevel2({$(WindowsAppSDKRuntimePatchLevel2.Replace(".", ","))})%3B
+      </WindowsAppSDKCompatibilityPatchLevel2Lines>
       <WindowsAppSDKCompatibilityDisabledChangesNoSpaces Condition="'$(WindowsAppSDKDisabledChanges)' != ''">$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKDisabledChanges), "\s+", ""))</WindowsAppSDKCompatibilityDisabledChangesNoSpaces>
       <WindowsAppSDKCompatibilityDisabledChangesLines Condition="'$(WindowsAppSDKCompatibilityDisabledChangesNoSpaces)' != ''">
             RuntimeCompatibilityChange disabledChangesArray[] = { RuntimeCompatibilityChange::$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKCompatibilityDisabledChangesNoSpaces), ",([A-Za-z])", ", RuntimeCompatibilityChange::$1")) }%3B
@@ -42,8 +42,8 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Compatibility
         void Initialize()
         {
             RuntimeCompatibilityOptions compatibilityOptions%3B
-$(WindowsAppSDKCompatibilityPatchMode1Lines)
-$(WindowsAppSDKCompatibilityPatchMode2Lines)
+$(WindowsAppSDKCompatibilityPatchLevel1Lines)
+$(WindowsAppSDKCompatibilityPatchLevel2Lines)
 $(WindowsAppSDKCompatibilityDisabledChangesLines)
             compatibilityOptions.Apply()%3B
         }

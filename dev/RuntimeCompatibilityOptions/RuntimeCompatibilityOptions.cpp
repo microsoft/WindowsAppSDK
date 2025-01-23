@@ -18,26 +18,26 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         WinAppSdk::Containment::WinAppSDKRuntimeConfiguration config;
 
-        // If both patch modes are set to the same major.minor version, error out if the patch versions are different.
-        if (m_patchMode1.Major == m_patchMode2.Major && m_patchMode1.Minor == m_patchMode2.Minor &&
-            m_patchMode1.Major != 0)
+        // If both patch levels are set to the same major.minor version, error out if the patch versions are different.
+        if (m_patchLevel1.Major == m_patchLevel2.Major && m_patchLevel1.Minor == m_patchLevel2.Minor &&
+            m_patchLevel1.Major != 0)
         {
-            if (m_patchMode1.Patch != m_patchMode2.Patch)
+            if (m_patchLevel1.Patch != m_patchLevel2.Patch)
             {
-                throw hresult_invalid_argument(L"Patch modes should target different Major.Minor versions or match Patch version.");
+                throw hresult_invalid_argument(L"Patch levels should target different Major.Minor versions or match Patch version.");
             }
         }
 
-        // Apply the patch mode which applies to the major.minor version, if any.
-        if (m_patchMode1.Major == WINDOWSAPPSDK_RELEASE_MAJOR && m_patchMode1.Minor == WINDOWSAPPSDK_RELEASE_MINOR)
+        // Apply the patch level which applies to the major.minor version, if any.
+        if (m_patchLevel1.Major == WINDOWSAPPSDK_RELEASE_MAJOR && m_patchLevel1.Minor == WINDOWSAPPSDK_RELEASE_MINOR)
         {
-            // Apply patch mode 1
-            config.patchVersion = (WinAppSDKPatchVersion)WinAppSDKPatchVersionFromValues(m_patchMode1.Major, m_patchMode1.Minor, m_patchMode1.Patch);
+            // Apply patch level 1
+            config.patchVersion = (WinAppSDKPatchVersion)WinAppSDKPatchVersionFromValues(m_patchLevel1.Major, m_patchLevel1.Minor, m_patchLevel1.Patch);
         }
-        else if (m_patchMode2.Major == WINDOWSAPPSDK_RELEASE_MAJOR && m_patchMode2.Minor == WINDOWSAPPSDK_RELEASE_MINOR)
+        else if (m_patchLevel2.Major == WINDOWSAPPSDK_RELEASE_MAJOR && m_patchLevel2.Minor == WINDOWSAPPSDK_RELEASE_MINOR)
         {
-            // Apply patch mode 2
-            config.patchVersion = (WinAppSDKPatchVersion)WinAppSDKPatchVersionFromValues(m_patchMode2.Major, m_patchMode2.Minor, m_patchMode2.Patch);
+            // Apply patch level 2
+            config.patchVersion = (WinAppSDKPatchVersion)WinAppSDKPatchVersionFromValues(m_patchLevel2.Major, m_patchLevel2.Minor, m_patchLevel2.Patch);
         }
 
         // Add the set of disabled changes
