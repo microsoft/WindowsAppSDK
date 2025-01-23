@@ -5,7 +5,7 @@ parameters:
   
 stages:
 - stage: StaticValidationTest
-  dependsOn: Build
+  dependsOn: Pack
   condition: not(failed())
   jobs:
   - job: StaticValidationTest
