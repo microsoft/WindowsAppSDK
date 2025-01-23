@@ -107,46 +107,52 @@ namespace PackageInspection
                     Console.Error.WriteLine("Fail to unpack MSIX: " + file);
                 }
             }
-
-            winmds = Directory.GetFiles(options.PackagePath, "*.winmd", SearchOption.AllDirectories);
-            foreach (string file in winmds)
+            if (options.CheckSigning)
             {
-                ValidationTestCommon.LogLine(file);
-                signError |= CheckDigitalSignature(options.SignTool, file);
-                ValidationTestCommon.LogLine("");
-            }
-
-            dlls = Directory.GetFiles(options.PackagePath, "*.dll", SearchOption.AllDirectories);
-            foreach (string file in dlls)
-            {
-                ValidationTestCommon.LogLine(file);
-                signError |= CheckDigitalSignature(options.SignTool, file);
-                isNotDeterministic |= !CheckDeterministicProperty(file);
-                ValidationTestCommon.LogLine("");
-            }
-
-            string[] exes = Directory.GetFiles(options.PackagePath, "*.exe", SearchOption.AllDirectories);
-            foreach (string file in exes)
-            {
-                ValidationTestCommon.LogLine(file);
-                signError |= CheckDigitalSignature(options.SignTool, file);
-                isNotDeterministic |= !CheckDeterministicProperty(file);
-                ValidationTestCommon.LogLine("");
-            }
-
-            foreach (var validation in CertValidations)
-            {
-                if (validation.ValidationCount == 3) // 3 times because we are checking for amd64, x86 and arm64.
+                winmds = Directory.GetFiles(options.PackagePath, "*.winmd", SearchOption.AllDirectories);
+                foreach (string file in winmds)
                 {
-                    ValidationTestCommon.LogLine($"Verified that extra cert validations for {validation.File} were processed.");
+                    ValidationTestCommon.LogLine(file);
+                    signError |= CheckDigitalSignature(options.SignTool, file);
+                    ValidationTestCommon.LogLine("");
                 }
-                else
+
+                dlls = Directory.GetFiles(options.PackagePath, "*.dll", SearchOption.AllDirectories);
+                foreach (string file in dlls)
                 {
-                    ValidationTestCommon.LogLine($"ERROR: {validation.File} was validated {validation.ValidationCount} time, this is unexpected.");
+                    ValidationTestCommon.LogLine(file);
+                    signError |= CheckDigitalSignature(options.SignTool, file);
+                    isNotDeterministic |= !CheckDeterministicProperty(file);
+                    ValidationTestCommon.LogLine("");
+                }
+
+                string[] exes = Directory.GetFiles(options.PackagePath, "*.exe", SearchOption.AllDirectories);
+                foreach (string file in exes)
+                {
+                    ValidationTestCommon.LogLine(file);
+                    signError |= CheckDigitalSignature(options.SignTool, file);
+                    isNotDeterministic |= !CheckDeterministicProperty(file);
+                    ValidationTestCommon.LogLine("");
+                }
+
+                foreach (var validation in CertValidations)
+                {
+                    if (validation.ValidationCount == 3) // 3 times because we are checking for amd64, x86 and arm64.
+                    {
+                        ValidationTestCommon.LogLine($"Verified that extra cert validations for {validation.File} were processed.");
+                    }
+                    else
+                    {
+                        ValidationTestCommon.LogLine($"ERROR: {validation.File} was validated {validation.ValidationCount} time, this is unexpected.");
+                        Environment.ExitCode = 1;
+                    }
+                }
+                if (signError)
+                {
+                    Console.Error.WriteLine("ERROR: Signing Errors Found");
                     Environment.ExitCode = 1;
                 }
             }
-
             if (isNotDeterministic && options.CheckDeterministic)
             {
                 Console.Error.WriteLine("ERROR: Non-derministic exe or dll was Found: Please see https://www.osgwiki.com/wiki/Deterministic_Compilation");
@@ -158,13 +164,6 @@ namespace PackageInspection
                 Console.Error.WriteLine("ERROR: Experimental Attribute(s) Found");
                 Environment.ExitCode = 1;
             }
-
-            if (signError && options.CheckSigning)
-            {
-                Console.Error.WriteLine("ERROR: Signing Errors Found");
-                Environment.ExitCode = 1;
-            }
-
             return Environment.ExitCode;
         }
 
