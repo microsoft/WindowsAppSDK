@@ -450,13 +450,13 @@ void FirstTimeInitialization(
             uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
             PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
 
-            const std::wstring frameworkPackageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+            const std::wstring frameworkPackageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
                                                                        g_test_frameworkPackageNamePrefix,
                                                                        majorVersion, minorVersion,
                                                                        packagVersionTagDelimiter, packageVersionTag) };
             FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, frameworkPackageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", frameworkPackageFamilyName.c_str());
 
-            const std::wstring mainPackageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+            const std::wstring mainPackageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
                                                                   g_test_mainPackageNamePrefix,
                                                                   majorVersion, minorVersion,
                                                                   packagVersionTagDelimiter, packageVersionTag) };
