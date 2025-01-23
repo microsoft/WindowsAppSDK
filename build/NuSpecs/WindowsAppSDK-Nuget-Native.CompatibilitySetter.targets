@@ -18,7 +18,7 @@
       </WindowsAppSDKCompatibilityPatchMode2Lines>
       <WindowsAppSDKCompatibilityDisabledChangesNoSpaces Condition="'$(WindowsAppSDKDisabledChanges)' != ''">$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKDisabledChanges), "\s+", ""))</WindowsAppSDKCompatibilityDisabledChangesNoSpaces>
       <WindowsAppSDKCompatibilityDisabledChangesLines Condition="'$(WindowsAppSDKCompatibilityDisabledChangesNoSpaces)' != ''">
-            CompatibilityChange disabledChangesArray[] = { CompatibilityChange::$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKCompatibilityDisabledChangesNoSpaces), ",([A-Za-z])", ", CompatibilityChange::$1")) }%3B
+            RuntimeCompatibilityChange disabledChangesArray[] = { RuntimeCompatibilityChange::$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKCompatibilityDisabledChangesNoSpaces), ",([A-Za-z])", ", RuntimeCompatibilityChange::$1")) }%3B
             for (auto changeId : disabledChangesArray)
             {
                 compatibilityOptions.DisabledChanges().Append(changeId)%3B
@@ -41,7 +41,7 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Compatibility
         // Called by WindowsAppRuntimeAutoInitializer.cpp
         void Initialize()
         {
-            CompatibilityOptions compatibilityOptions%3B
+            RuntimeCompatibilityOptions compatibilityOptions%3B
 $(WindowsAppSDKCompatibilityPatchMode1Lines)
 $(WindowsAppSDKCompatibilityPatchMode2Lines)
 $(WindowsAppSDKCompatibilityDisabledChangesLines)

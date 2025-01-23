@@ -2,19 +2,19 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "CompatibilityOptions.h"
-#include "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.CompatibilityOptions.g.cpp"
+#include "RuntimeCompatibilityOptions.h"
+#include "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions.g.cpp"
 #include "AssemblyInfo.h"
 #include <FrameworkUdk/Containment.h>
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    winrt::Windows::Foundation::Collections::IVector<CompatibilityChange> CompatibilityOptions::DisabledChanges()
+    winrt::Windows::Foundation::Collections::IVector<RuntimeCompatibilityChange> RuntimeCompatibilityOptions::DisabledChanges()
     {
         return m_disabledChanges;
     }
 
-    void CompatibilityOptions::Apply()
+    void RuntimeCompatibilityOptions::Apply()
     {
         WinAppSdk::Containment::WinAppSDKRuntimeConfiguration config;
 

@@ -22,7 +22,7 @@
 
       <WindowsAppSDKCompatibilityDisabledChangesNoSpaces Condition="'$(WindowsAppSDKDisabledChanges)' != ''">$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKDisabledChanges), "\s+", ""))</WindowsAppSDKCompatibilityDisabledChangesNoSpaces>
       <WindowsAppSDKCompatibilityDisabledChangesLines Condition="'$(WindowsAppSDKCompatibilityDisabledChangesNoSpaces)' != ''">
-            var disabledChangesArray = new CompatibilityChange[] { CompatibilityChange.$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKCompatibilityDisabledChangesNoSpaces), ",([A-Za-z])", ", CompatibilityChange.$1")) }%3B
+            var disabledChangesArray = new RuntimeCompatibilityChange[] { RuntimeCompatibilityChange.$([System.Text.RegularExpressions.Regex]::Replace($(WindowsAppSDKCompatibilityDisabledChangesNoSpaces), ",([A-Za-z])", ", RuntimeCompatibilityChange.$1")) }%3B
             foreach (var changeId in disabledChangesArray)
             {
                 compatibilityOptions.DisabledChanges.Add(changeId)%3B
@@ -38,9 +38,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Compatibility
     class AutoInitialize
     {
         // Called by WindowsAppRuntimeAutoInitializer.cs
-        internal static void ConfigureCompatibility()
+        internal static void ConfigureRuntimeCompatibility()
         {
-            var compatibilityOptions = new CompatibilityOptions()%3B
+            var compatibilityOptions = new RuntimeCompatibilityOptions()%3B
 $(WindowsAppSDKCompatibilityPatchMode1Lines)
 $(WindowsAppSDKCompatibilityPatchMode2Lines)
 $(WindowsAppSDKCompatibilityDisabledChangesLines)
