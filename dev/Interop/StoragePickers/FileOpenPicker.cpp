@@ -84,6 +84,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
 
+        parameters.CommitButtonText = L"Test Text Ok";
         parameters.ConfigureDialog(dialog);
 
         {

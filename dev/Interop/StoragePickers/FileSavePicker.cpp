@@ -10,6 +10,7 @@
 #include <wil/resource.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.ApplicationModel.Resources.h>
 #include "PickerCommon.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
@@ -86,6 +87,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileSavePicker::PickSaveFileAsync()
     {
         PickerCommon::PickerParameters parameters{};
+        auto resLoader = winrt::Windows::ApplicationModel::Resources::ResourceLoader::ResourceLoader();
+        auto text = resLoader.GetString(L"Test/HelloWorld");
+        parameters.CommitButtonText = L"Test Text Save Ok";
         CaptureParameters(parameters);
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedSaveFile = m_suggestedSaveFile;

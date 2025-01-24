@@ -57,6 +57,40 @@ namespace Test::StoragePickersTests
             ::Test::Bootstrap::CleanupBootstrap();
             return true;
         }
+        TEST_METHOD(FileOpenPicker_ShouldOpenFile)
+        {
+            try
+            {
+                auto parentWindow = ::GetForegroundWindow();
+                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker openPicker(windowId);
+                //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+                openPicker.FileTypeFilter().Append(L"*");
+                // Act
+                auto fileOperation = openPicker.PickSingleFileAsync();
+                auto file = fileOperation.get();
+
+                // Assert
+                if (file != nullptr)
+                {
+                    Log::Comment(L"File open was successful.");
+                }
+                else
+                {
+                    Log::Error(L"File open failed or was canceled.");
+                }
+            }
+            catch (const winrt::hresult_error& ex)
+            {
+                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
+                VERIFY_FAIL(L"Exception occurred during open file.");
+            }
+            catch (const std::exception& ex)
+            {
+                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
+                VERIFY_FAIL(L"Standard exception occurred during open file.");
+            }
+        }
 
         TEST_METHOD(FileSavePicker_ShouldCreateNewFile)
         {
@@ -67,7 +101,8 @@ namespace Test::StoragePickersTests
                 winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker savePicker(windowId);
                 //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
                 savePicker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
-                savePicker.SuggestedFileName(L"test.txt");
+                //savePicker.SuggestedFileName(L"test.txt");
+                savePicker.SuggestedFileName(L"我的文件.txt");
                 // Act
                 auto fileOperation = savePicker.PickSaveFileAsync();
                 auto file = fileOperation.get();
@@ -79,18 +114,18 @@ namespace Test::StoragePickersTests
                 }
                 else
                 {
-                    Log::Error(L"Photo capture failed or was canceled.");
+                    Log::Error(L"File save failed or was canceled.");
                 }
             }
             catch (const winrt::hresult_error& ex)
             {
                 Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
-                VERIFY_FAIL(L"Exception occurred during photo capture.");
+                VERIFY_FAIL(L"Exception occurred during file save.");
             }
             catch (const std::exception& ex)
             {
                 Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
-                VERIFY_FAIL(L"Standard exception occurred during photo capture.");
+                VERIFY_FAIL(L"Standard exception occurred during file save.");
             }
         }
     };
