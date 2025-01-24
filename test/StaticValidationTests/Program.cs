@@ -155,7 +155,7 @@ namespace PackageInspection
             }
             if (isNotDeterministic && options.CheckDeterministic)
             {
-                Console.Error.WriteLine("ERROR: Non-derministic exe or dll was Found: Please see https://www.osgwiki.com/wiki/Deterministic_Compilation");
+                Console.Error.WriteLine("ERROR: Non-deterministic exe or dll was Found: Please see https://www.osgwiki.com/wiki/Deterministic_Compilation");
                 Environment.ExitCode = 1;
             }
 
