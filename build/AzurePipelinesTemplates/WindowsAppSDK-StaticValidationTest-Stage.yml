@@ -1,0 +1,118 @@
+parameters:
+- name: "SignOutput"
+  type: boolean
+  default: false
+  
+stages:
+- stage: StaticValidationTest
+  dependsOn: Pack
+  condition: not(failed())
+  jobs:
+  - job: StaticValidationTest
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
+    timeoutInMinutes: 120
+    steps:
+    - task: NuGetToolInstaller@1
+    - task: NuGetAuthenticate@1
+
+    - task: powershell@2
+      displayName: 'DevCheck: Setup/Verify development environment'
+      inputs:
+        targetType: filePath
+        filePath: tools\DevCheck\DevCheck.ps1
+        arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
+        workingDirectory: '$(Build.SourcesDirectory)'
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Foundation'
+      inputs:
+        source: specific
+        runVersion: specific
+        project: $(System.TeamProjectId)
+        pipeline: $(_useBuildOutputFromPipeline)
+        pipelineId: $(_useBuildOutputFromBuildId)
+        artifactName: "TransportPackage"
+        targetPath: $(System.ArtifactsDirectory)
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.ArtifactsDirectory)'
+        Contents: | 
+          **/*.nupkg
+        targetFolder: $(Build.SourcesDirectory)\localpackages
+
+    - task: PowerShell@2
+      name: ExtractWindowsAppSDKVersion
+      displayName: Extract WindowsAppSDKVersion
+      inputs:
+        targetType: 'inline'
+        script: |
+          $files = Get-ChildItem "$(Build.SourcesDirectory)\localpackages" -Filter "*Microsoft.WindowsAppSDK.Foundation.TransportPackage*.nupkg"
+          Write-Host $files.Count
+          if ($files.Count -eq 1)
+          {
+              Write-Host "file:" $files.FullName
+              $version = (($files.FullName -Split "Microsoft.WindowsAppSDK.Foundation.TransportPackage.")[1] -Split ".nupkg")[0]
+              Write-Host "|$version|"
+              Write-Host "##vso[task.setvariable variable=FoundationVersion]$version"
+          }
+          else
+          {
+              Write-Host "Error: Found more than one Foundation TransportPackage Found"
+              Write-Host "Please make sure only one package is present"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+          }
+
+    - task: VSBuild@1
+      displayName: 'Restore PackageInspectionTest.sln'
+      inputs:
+        solution: $(Build.SourcesDirectory)\test\StaticValidationTests\PackageInspectionTest.csproj
+        msbuildArgs: /t:restore /p:FoundationVersion="$(FoundationVersion)" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages"
+
+    - task: VSBuild@1
+      displayName: 'Build PackageInspectionTest.sln'
+      inputs:
+        solution: $(Build.SourcesDirectory)\test\StaticValidationTests\PackageInspectionTest.csproj
+
+    - script: |
+        dir /s $(Build.SourcesDirectory)\Packages
+
+    - task: PowerShell@2
+      displayName: 'Run PackageInspectionTests'
+      inputs:
+        targetType: 'inline'
+        ignoreLASTEXITCODE: true
+        script: |
+          $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
+          $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\10.0.22000.0\x86"
+
+          $path = "$(Build.SourcesDirectory)\Packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(FoundationVersion)"
+          $buildtype = '$(channel)'
+          $log = "$(Build.ArtifactStagingDirectory)\PackageInspectionResults.txt"
+          $checksigning = ""
+          if ('${{ parameters.SignOutput }}' -eq 'true')
+          {
+            $checksigning = "--checksigning"
+          }
+
+          $testargs = "--packagepath=`"$path`" --buildtype=$buildtype --logfilepath=`"$log`" --windowssdkbindir=`"$WindowsSdkBinDir`" $checksigning"
+          $cmd = "`"$(Build.SourcesDirectory)\BuildOutput\PackageInspectionTest\PackageInspectionTest.exe`" $testargs"
+          Write-Host $cmd
+          cmd /c $cmd
+
+          Write-Host "results " $LASTEXITCODE
+          if ($LASTEXITCODE -ne 0)
+          {
+            # Only fail if we are not on the main branch
+            if ('$(Build.SourceBranch)' -eq 'refs/heads/main')
+            {
+              Write-Host "##vso[task.complete result=SucceededWithIssues;]DONE"
+            }
+            else
+            {
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+          }

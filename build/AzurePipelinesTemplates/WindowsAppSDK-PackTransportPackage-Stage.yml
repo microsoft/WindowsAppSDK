@@ -18,7 +18,8 @@ parameters:
 stages:
 - stage: Pack
   dependsOn: Build
-  condition: not(failed())
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
   jobs:
   - job: NugetPackage
     pool:
