@@ -18,8 +18,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
     AuthRequestParams::AuthRequestParams(const winrt::hstring& responseType, const winrt::hstring& clientId) :
         m_responseType(responseType),
         m_clientId(clientId)
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
+    {  
     }
 
     AuthRequestParams::AuthRequestParams(const winrt::hstring& responseType, const winrt::hstring& clientId,
@@ -27,8 +26,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         m_responseType(responseType),
         m_clientId(clientId),
         m_redirectUri(redirectUri)
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
+    { 
     }
 
     oauth::AuthRequestParams AuthRequestParams::CreateForAuthorizationCodeRequest(const winrt::hstring& clientId)
