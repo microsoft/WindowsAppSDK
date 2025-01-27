@@ -124,11 +124,23 @@ namespace PickerCommon {
 
 
     // TODO: better way to convert ShellItem a StorageFile without relying on path?.
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CreateStorageFileFromShellItem(winrt::com_ptr<IShellItem> shellItem)
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CreateStorageFileFromShellItem(winrt::com_ptr<IShellItem> shellItem, bool createFile)
     {
         wil::unique_cotaskmem_string filePath;
         check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
-        co_return co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(filePath.get());
+        auto pathStr = filePath.get();
+
+        if (createFile)
+        {
+            HANDLE hFile = CreateFile(pathStr, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+            if (hFile == INVALID_HANDLE_VALUE)
+            {
+                co_return nullptr;
+            }
+            CloseHandle(hFile);
+        }
+
+        co_return co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(pathStr);
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> CreateStorageFolderFromShellItem(winrt::com_ptr<IShellItem> shellItem)

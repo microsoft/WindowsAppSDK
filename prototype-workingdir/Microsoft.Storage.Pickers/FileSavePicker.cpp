@@ -106,10 +106,12 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
         {
             check_hresult(dialog->SetDefaultExtension(defaultFileExtension.c_str()));
         }
+
         if (!PickerCommon::IsHStringNullOrEmpty(suggestedFileName))
         {
             check_hresult(dialog->SetFileName(suggestedFileName.c_str()));
         }
+
         if (suggestedSaveFile != nullptr)
         {
             winrt::com_ptr<IShellItem> shellItem;
@@ -127,7 +129,10 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
-        auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
+
+        // TODO: Manually append the default extension if not present
+
+        auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem, true);
 
         if (cancellationToken())
         {
