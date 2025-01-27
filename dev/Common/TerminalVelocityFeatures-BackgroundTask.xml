@@ -12,9 +12,5 @@
         <name>Feature_BackgroundTask</name>
         <description>Supports BackgroundTask executions for WinAppSDK apps</description>
         <state>AlwaysEnabled</state>
-        <alwaysDisabledChannelTokens>
-            <channelToken>Preview</channelToken>
-            <channelToken>Stable</channelToken>
-        </alwaysDisabledChannelTokens>
     </feature>
 </features>
