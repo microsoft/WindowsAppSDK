@@ -163,7 +163,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Storage.Pickers\Microsoft.Storage.Pickers.vcxproj">
+    <ProjectReference Include="..\Microsoft.Windows.Storage.Pickers\Microsoft.Windows.Storage.Pickers.vcxproj">
       <Project>{349e64cf-cb0c-4202-b1b5-7f543cc6e886}</Project>
     </ProjectReference>
   </ItemGroup>

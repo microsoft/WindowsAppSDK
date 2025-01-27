@@ -6,7 +6,7 @@ NOTE: a develop certificate maybe required to run the demo app, if you encounter
 
 ## Current State
 
-- Basic implementation of most core functionalities was added in `Microsoft.Storage.Pickers/`.
+- Basic implementation of most core functionalities was added in `Microsoft.Windows.Storage.Pickers/`.
 - A basic demo app for testing and comparing purpose was added in `PickerUsageApp/`.
 
 ### Next steps
