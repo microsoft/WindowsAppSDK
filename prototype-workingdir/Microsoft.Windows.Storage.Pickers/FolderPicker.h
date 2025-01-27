@@ -2,20 +2,20 @@
 #include "FolderPicker.g.h"
 #include "PickerCommon.h"
 
-namespace winrt::Microsoft::Storage::Pickers::implementation
+namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
 	struct FolderPicker : FolderPickerT<FolderPicker>
 	{
 		FolderPicker(winrt::Microsoft::UI::WindowId const& windowId);
 
-		winrt::Microsoft::Storage::Pickers::PickerViewMode ViewMode();
-		void ViewMode(winrt::Microsoft::Storage::Pickers::PickerViewMode const& value);
+		winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode ViewMode();
+		void ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value);
 
 		hstring SettingsIdentifier();
 		void SettingsIdentifier(hstring const& value);
 
-		winrt::Microsoft::Storage::Pickers::PickerLocationId SuggestedStartLocation();
-		void SuggestedStartLocation(winrt::Microsoft::Storage::Pickers::PickerLocationId const& value);
+		winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation();
+		void SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
 
 		hstring CommitButtonText();
 		void CommitButtonText(hstring const& value);
@@ -37,7 +37,7 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
 		void CaptureParameters(PickerCommon::PickerParameters& parameters);
 	};
 }
-namespace winrt::Microsoft::Storage::Pickers::factory_implementation
+namespace winrt::Microsoft::Windows::Storage::Pickers::factory_implementation
 {
 	struct FolderPicker : FolderPickerT<FolderPicker, implementation::FolderPicker>
 	{

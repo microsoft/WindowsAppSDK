@@ -17,13 +17,13 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::PickerUsageApp::implementation
 {
-    Windows::Storage::Pickers::PickerViewMode Convert(Microsoft::Storage::Pickers::PickerViewMode viewMode)
+    Windows::Storage::Pickers::PickerViewMode Convert(Microsoft::Windows::Storage::Pickers::PickerViewMode viewMode)
     {
         switch (viewMode)
         {
-        case winrt::Microsoft::Storage::Pickers::PickerViewMode::List:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List:
             return Windows::Storage::Pickers::PickerViewMode::List;
-        case winrt::Microsoft::Storage::Pickers::PickerViewMode::Thumbnail:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail:
             return Windows::Storage::Pickers::PickerViewMode::Thumbnail;
         default:
             return Windows::Storage::Pickers::PickerViewMode::List;
@@ -179,9 +179,9 @@ namespace winrt::PickerUsageApp::implementation
     Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFileSDKClick(IInspectable const&, RoutedEventArgs const&)
     {
         auto id = AppWindow().Id();
-        winrt::Microsoft::Storage::Pickers::FileOpenPicker picker{ id };
+        winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ id };
 
-        SetOpenPickerOptions<winrt::Microsoft::Storage::Pickers::FileOpenPicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
+        SetOpenPickerOptions<winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId>(picker);
         picker.ViewMode(m_ViewMode);
         if (!m_MultipleSelect)
         {
@@ -207,9 +207,9 @@ namespace winrt::PickerUsageApp::implementation
     Windows::Foundation::IAsyncOperation<hstring> MainWindow::SaveFileSDKClick()
     {
         auto id = AppWindow().Id();
-        winrt::Microsoft::Storage::Pickers::FileSavePicker picker{ id };
+        winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker{ id };
 
-        SetSavePickerOptions<winrt::Microsoft::Storage::Pickers::FileSavePicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
+        SetSavePickerOptions<winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId>(picker);
         if (!m_MultipleSelect)
         {
             auto& file = co_await picker.PickSaveFileAsync();
@@ -228,9 +228,9 @@ namespace winrt::PickerUsageApp::implementation
     winrt::Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFolderSDKClick()
     {
         auto id = AppWindow().Id();
-        winrt::Microsoft::Storage::Pickers::FolderPicker picker{ id };
+        winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker{ id };
 
-        SetOpenPickerOptions<winrt::Microsoft::Storage::Pickers::FolderPicker, winrt::Microsoft::Storage::Pickers::PickerLocationId>(picker);
+        SetOpenPickerOptions<winrt::Microsoft::Windows::Storage::Pickers::FolderPicker, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId>(picker);
         picker.ViewMode(m_ViewMode);
         if (!m_MultipleSelect)
         {
@@ -279,10 +279,10 @@ void winrt::PickerUsageApp::implementation::MainWindow::ViewModeSelectionChanged
     switch (selectedIndex)
     {
     case 0:
-        m_ViewMode = Microsoft::Storage::Pickers::PickerViewMode::List;
+        m_ViewMode = Microsoft::Windows::Storage::Pickers::PickerViewMode::List;
         break;
     case 1:
-        m_ViewMode = Microsoft::Storage::Pickers::PickerViewMode::Thumbnail;
+        m_ViewMode = Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail;
         break;
     default:
         break;

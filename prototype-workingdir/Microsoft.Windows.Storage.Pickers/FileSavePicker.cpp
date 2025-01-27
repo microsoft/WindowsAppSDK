@@ -13,7 +13,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include "PickerCommon.h"
 
-namespace winrt::Microsoft::Storage::Pickers::implementation
+namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
 
     FileSavePicker::FileSavePicker(winrt::Microsoft::UI::WindowId const& windowId)
@@ -28,11 +28,11 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
     {
         m_settingsIdentifier = value;
     }
-    winrt::Microsoft::Storage::Pickers::PickerLocationId FileSavePicker::SuggestedStartLocation()
+    winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileSavePicker::SuggestedStartLocation()
     {
         return m_suggestedStartLocation;
     }
-    void FileSavePicker::SuggestedStartLocation(winrt::Microsoft::Storage::Pickers::PickerLocationId const& value)
+    void FileSavePicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
         m_suggestedStartLocation = value;
     }

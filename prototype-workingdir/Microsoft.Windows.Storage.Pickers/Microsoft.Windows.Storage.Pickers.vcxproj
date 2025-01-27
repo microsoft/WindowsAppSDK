@@ -8,8 +8,8 @@
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
     <MinimalCoreWin>true</MinimalCoreWin>
     <ProjectGuid>{349e64cf-cb0c-4202-b1b5-7f543cc6e886}</ProjectGuid>
-    <ProjectName>Microsoft.Storage.Pickers</ProjectName>
-    <RootNamespace>Microsoft.Storage.Pickers</RootNamespace>
+    <ProjectName>Microsoft.Windows.Storage.Pickers</ProjectName>
+    <RootNamespace>Microsoft.Windows.Storage.Pickers</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
     <AppContainerApplication>false</AppContainerApplication>
@@ -86,7 +86,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <ModuleDefinitionFile>Microsoft_Storage_Pickers.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>Microsoft_Windows_Storage_Pickers.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -125,7 +125,7 @@
     <ClCompile Include="PickerCommon.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft_Storage_Pickers.def" />
+    <None Include="Microsoft_Windows_Storage_Pickers.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

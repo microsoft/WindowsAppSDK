@@ -7,18 +7,18 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
 
-namespace winrt::Microsoft::Storage::Pickers::implementation
+namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
     FileOpenPicker::FileOpenPicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
     }
 
-    winrt::Microsoft::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
+    winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
     {
         return m_viewMode;
     }
-    void FileOpenPicker::ViewMode(winrt::Microsoft::Storage::Pickers::PickerViewMode const& value)
+    void FileOpenPicker::ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
     {
         m_viewMode = value;
     }
@@ -30,11 +30,11 @@ namespace winrt::Microsoft::Storage::Pickers::implementation
     {
         m_settingsIdentifier = value;
     }
-    winrt::Microsoft::Storage::Pickers::PickerLocationId FileOpenPicker::SuggestedStartLocation()
+    winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileOpenPicker::SuggestedStartLocation()
     {
         return m_suggestedStartLocation;
     }
-    void FileOpenPicker::SuggestedStartLocation(winrt::Microsoft::Storage::Pickers::PickerLocationId const& value)
+    void FileOpenPicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
         m_suggestedStartLocation = value;
     }

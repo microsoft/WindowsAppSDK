@@ -28,7 +28,7 @@
     <Midl Include="Pickers.idl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft_Storage_Pickers.def" />
+    <None Include="Microsoft_Windows_Storage_Pickers.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

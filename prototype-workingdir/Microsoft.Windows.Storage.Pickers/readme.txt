@@ -1,5 +1,5 @@
 ========================================================================
-    Microsoft.Storage.Pickers Project Overview
+    Microsoft.Windows.Storage.Pickers Project Overview
 ========================================================================
 
 This project demonstrates how to get started authoring Windows Runtime

@@ -1,4 +1,4 @@
-namespace Microsoft.Storage.Pickers
+namespace Microsoft.Windows.Storage.Pickers
 {
 	enum PickerViewMode
 	{
@@ -26,9 +26,9 @@ namespace Microsoft.Storage.Pickers
 	{
 		FileOpenPicker(Microsoft.UI.WindowId windowId);
 
-		Microsoft.Storage.Pickers.PickerViewMode ViewMode;
+		Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
 		String SettingsIdentifier;
-		Microsoft.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+		Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
 		String CommitButtonText;
 		Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
 
@@ -42,7 +42,7 @@ namespace Microsoft.Storage.Pickers
 		FileSavePicker(Microsoft.UI.WindowId windowId);
 
 		String SettingsIdentifier;
-		Microsoft.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+		Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
 		String CommitButtonText;
 		Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
 		String DefaultFileExtension;
@@ -57,9 +57,9 @@ namespace Microsoft.Storage.Pickers
 	{
 		FolderPicker(Microsoft.UI.WindowId windowId);
 
-		Microsoft.Storage.Pickers.PickerViewMode ViewMode;
+		Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
 		String SettingsIdentifier;
-		Microsoft.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+		Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
 		String CommitButtonText;
 		Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
 

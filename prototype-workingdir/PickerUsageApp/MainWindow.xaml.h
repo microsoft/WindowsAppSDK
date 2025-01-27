@@ -39,7 +39,7 @@ namespace winrt::PickerUsageApp::implementation
 
     private:
         bool m_isUseCustomLabel{ false };
-        winrt::Microsoft::Storage::Pickers::PickerViewMode m_ViewMode{ Microsoft::Storage::Pickers::PickerViewMode::List };
+        winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode m_ViewMode{ Microsoft::Windows::Storage::Pickers::PickerViewMode::List };
         int m_FilterTypeIndex{ 0 };
         int m_SettingsIdentifierIndex{ 0 };
         int m_PickerLocationIdIndex{ 0 };
