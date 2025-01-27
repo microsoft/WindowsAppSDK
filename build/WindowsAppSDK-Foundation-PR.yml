@@ -20,6 +20,9 @@ name: $(version)
 trigger: none
 
 parameters: # parameters are shown up in ADO UI in a build queue time
+- name: PublishToFeed
+  type: boolean
+  default: false
 - name: runStaticAnalysis
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
@@ -89,7 +92,7 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
         SignOutput: false
-        PublishPackage: false
+        PublishPackage: ${{ parameters.PublishToFeed }}
         
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:
