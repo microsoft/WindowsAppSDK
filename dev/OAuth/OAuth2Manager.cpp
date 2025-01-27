@@ -28,8 +28,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         const Uri& authEndpoint,
         const oauth::AuthRequestParams& params)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
-
 
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
@@ -63,7 +61,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
 
     bool OAuth2Manager::CompleteAuthRequest(const Uri& responseUri)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
 
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
@@ -172,7 +169,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
     IAsyncOperation<oauth::TokenRequestResult> OAuth2Manager::RequestTokenAsync(Uri tokenEndpoint,
         oauth::TokenRequestParams params, oauth::ClientAuthentication clientAuth)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
 
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
