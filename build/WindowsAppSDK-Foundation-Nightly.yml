@@ -109,12 +109,16 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
-    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:

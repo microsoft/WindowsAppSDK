@@ -16,7 +16,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
 {
     TokenRequestParams::TokenRequestParams(const winrt::hstring& grantType) : m_grantType(grantType)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
     }
 
     oauth::TokenRequestParams TokenRequestParams::CreateForAuthorizationCodeRequest(
