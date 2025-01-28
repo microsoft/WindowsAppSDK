@@ -28,6 +28,7 @@ jobs:
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
     system.debug: true
+    AZURE_PIPELINES_DEDUP_PARALLELISM: 16
   steps:
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:
