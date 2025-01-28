@@ -58,7 +58,7 @@ namespace CameraCaptureUITests
         // The unit tests will be updated,first test might is there for testing purpose locally.
         // Focusing solely on functional tests for now.
         
-        // <<-- Commenting out this test as it is an E2E scenario test that requires UI automation for pipeline execution.-->
+        // Commenting out this test as it is an E2E scenario test that requires UI automation for pipeline execution.
         /*
         TEST_METHOD(CapturePhoto_ShouldReturnFile)
         {
