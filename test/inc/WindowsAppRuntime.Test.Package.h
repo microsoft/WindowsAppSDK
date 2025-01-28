@@ -21,7 +21,7 @@
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
 
-#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Framework-4.1"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Framework.4.1"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.DDLM"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.Main-4.1"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Singleton"
@@ -227,6 +227,18 @@ inline bool IsPackageAvailable(PCWSTR packageFullName)
     // NOTE: To check if a package is staged and not registered to the current user:
     //              bool isStaged = IsPackageAvailable(p) && !IsPackageRegistered(p)
     return IsPackageRegistered(packageFullName) || IsPackageStaged(packageFullName);
+}
+
+inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)
+{
+    auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
+    return package.Status();
+}
+
+inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(PCWSTR packageFullName)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    return GetPackageStatus(packageManager, packageFullName);
 }
 
 inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)

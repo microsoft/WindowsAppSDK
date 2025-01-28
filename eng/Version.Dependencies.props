@@ -25,5 +25,6 @@
     <MicrosoftWindowsAppSDKProtobufVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.WindowsAppSDK.Protobuf"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKProtobufVersion>
     <MicrosoftWindowsCppWinRTVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Windows.CppWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCppWinRTVersion>
     <MicrosoftWindowsImplementationLibraryVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Windows.ImplementationLibrary"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsImplementationLibraryVersion>
+    <MicrosoftWindowsSDKBuildToolsVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Windows.SDK.BuildTools"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsSDKBuildToolsVersion>
   </PropertyGroup>
 </Project>

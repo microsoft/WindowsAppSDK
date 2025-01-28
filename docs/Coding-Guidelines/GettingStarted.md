@@ -18,8 +18,8 @@ or via the browser:
 
 **NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
 
-2. Windows 11 SDK 10.0.26100.0 (24H2)
-   a. Browse to https://go.microsoft.com/fwlink/?linkid=2272610
+2. Windows 11 SDK 10.0.26100.2454 (24H2)
+   a. Browse to https://go.microsoft.com/fwlink/?linkid=2300556
    b. Save the offered download `winsdksetup.exe`
    c. Run winsdksetup.exe
 

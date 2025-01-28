@@ -35,6 +35,7 @@ namespace Test::DynamicDependency
         TEST_METHOD(Create_RegistryLifetime_NoExist);
         TEST_METHOD(Create_DoNotVerifyDependencyResolution);
 
+        TEST_METHOD(Create_Add_Architectures_Explicit_NoMatch);
         TEST_METHOD(Create_Add_Architectures_Explicit);
         TEST_METHOD(Create_Add_Architectures_Current);
 
@@ -53,6 +54,16 @@ namespace Test::DynamicDependency
             PCWSTR expectedPackageFullName = nullptr);
 
         static void VerifyPackageDependency(
+            PCWSTR packageDependencyId,
+            const HRESULT expectedHR,
+            const std::wstring& expectedPackageFullName);
+
+        static void VerifyPackageDependency_Win11NotResolved(
+            PCWSTR packageDependencyId,
+            const HRESULT expectedHR,
+            PCWSTR expectedPackageFullName = nullptr);
+
+        static void VerifyPackageDependency_Win11NotResolved(
             PCWSTR packageDependencyId,
             const HRESULT expectedHR,
             const std::wstring& expectedPackageFullName);
@@ -141,6 +152,13 @@ namespace Test::DynamicDependency
             PCWSTR lifetimeArtifact = nullptr,
             MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
 
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
+            const HRESULT expectedHR,
+            const MddPackageDependencyProcessorArchitectures architectures,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
+
         wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
             MddCreatePackageDependencyOptions options);
 
@@ -173,6 +191,17 @@ namespace Test::DynamicDependency
             wil::unique_process_heap_string& packageFullName);
 
         MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
+            HRESULT expectedHR,
+            PCWSTR packageDependencyId,
+            wil::unique_process_heap_string& packageFullName);
+
+        MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
+            PCWSTR packageDependencyId,
+            const INT32 rank,
+            wil::unique_process_heap_string& packageFullName);
+
+        MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
+            HRESULT expectedHR,
             PCWSTR packageDependencyId,
             const INT32 rank,
             wil::unique_process_heap_string& packageFullName);
@@ -310,6 +339,10 @@ namespace Test::DynamicDependency
             Create_DoNotVerifyDependencyResolution();
         }
 
+        TEST_METHOD(Create_Add_Architectures_Explicit_Elevated_NoMatch)
+        {
+            Create_Add_Architectures_Explicit_NoMatch();
+        }
         TEST_METHOD(Create_Add_Architectures_Explicit_Elevated)
         {
             Create_Add_Architectures_Explicit();
