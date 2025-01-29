@@ -27,6 +27,7 @@ jobs:
   timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+    AZURE_PIPELINES_DEDUP_PARALLELISM: 16
   steps:
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:
