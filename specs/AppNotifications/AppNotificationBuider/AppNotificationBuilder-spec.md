@@ -1032,6 +1032,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Critical,
     };
 
+    enum AppNotificationButtonSettingType
+    {
+        none,
+        VideoCall,
+        AudioCall,
+    };
+
     runtimeclass AppNotificationButton
     {
         AppNotificationButton();
@@ -1065,6 +1072,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Launches the URI passed into the button when activated.
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
+
+        // Sets the setting type for the button.
+        AppNotificationButton SetSettingStyle(AppNotificationButtonSettingStyle value);
 
     };
 
@@ -1222,6 +1232,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // AppNotification properties
         AppNotificationBuilder SetTag(String value);
         AppNotificationBuilder SetGroup(String group);
+
+        // Adds a camera preview to the AppNotification
+        AppNotificationBuilder AddCameraPreview();
     };
 }
 ```
