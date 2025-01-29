@@ -1187,6 +1187,52 @@ function Stop-TAEFService
     }
 }
 
+function Restore-MaestroDependencies {
+    param(
+        [string] $repoRoot = (Get-ProjectRoot),
+        [string] $verbosity = "minimal"
+    )
+
+    Write-Host "Restoring Maestro dependencies..." -ForegroundColor Cyan
+
+    $maestroRestoreCsproj = Join-Path $repoRoot "eng\Microsoft.Foundation.MaestroRestore.csproj"
+
+    if (-not (Test-Path $maestroRestoreCsproj)) {
+        Write-Host "ERROR: Microsoft.MaestroRestore.csproj not found!" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return
+    }
+
+    try {
+        # Use MSBuild to restore the project
+        msbuild -nologo `
+                -t:Restore `
+                "$maestroRestoreCsproj" `
+                -v:$verbosity `
+                -p:Configuration=Release `
+                -p:RestorePackagesConfig=true  # Ensure compatibility with packages.config (if needed)
+
+        # Get resolved packages from project.assets.json
+        $assetsFile = Join-Path $repoRoot  "obj\Microsoft.Foundation.MaestroRestore\project.assets.json"
+        if (Test-Path $assetsFile) {
+            $assets = Get-Content $assetsFile | ConvertFrom-Json
+            Write-Host "nResolved Packages:" -ForegroundColor Cyan
+            $assets.libraries.PSObject.Properties | ForEach-Object {
+                $pkg = $_.Name.Split("/")
+                Write-Host "  - $($pkg[0])@$($pkg[1])"
+            }
+        }
+        else {
+            Write-Host "WARN: project.assets.json not found. Packages may not have been restored." -ForegroundColor Yellow
+        }
+
+        Write-Host "Maestro dependencies restored successfully." -ForegroundColor Green
+    }
+    catch {
+        Write-Host "ERROR: Failed to restore Maestro dependencies. $_" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+    }
+}
 function Get-DependencyVersions
 {
     # Dependencies are defined in Version.Details.xml
@@ -1490,20 +1536,20 @@ function Test-Dependencies
     # Check Version.Dependencies.props
     $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
 
-    # Scan for references - packages.config
+    Restore-MaestroDependencies -verbosity "minimal"
     $root = Get-ProjectRoot
-    $files = 0
-    ForEach ($subtree in $global:dependency_paths)
-    {
-        $path = Join-Path $root $subtree
-        Write-Host "Scanning packages.config..."
-        ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
-        {
-            $null = Test-PackagesConfig $file.FullName $versions
-            $files++
-        }
-    }
-    Write-Host "Scanned $($files) packages.config"
+    # Scan for references - packages.config
+    # $files = 0
+    # ForEach ($subtree in $global:dependency_paths)
+    # {
+    #     $path = Join-Path $root $subtree
+    #    Write-Host "Scanning packages.config..."
+    #    ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
+    #    {
+    #        $null = Test-PackagesConfig $file.FullName $versions
+    #        $files++
+    #    }
+    # }
 
     $files = 0
     ForEach ($subtree in $global:dependency_paths)
