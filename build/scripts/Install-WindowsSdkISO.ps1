@@ -262,8 +262,18 @@ if ($InstallWindowsSDK)
 {
     # Static(ish) link for Windows SDK
     # Note: there is a delay from Windows SDK announcements to availability via the static link
-    $uri = "https://software-download.microsoft.com/download/sg/Windows_InsiderPreview_SDK_en-us_$($buildNumber)_1.iso";
-
+    $uri = ""
+    if ($buildNumber -eq "18362")
+    {
+        $uri = "https://go.microsoft.com/fwlink/?linkid=2083448"
+    }
+    else 
+    {
+        Write-Host
+        Write-Host "Only version 18362 is available"
+        Write-Host
+        Exit 1
+    }
     if ($env:TEMP -eq $null)
     {
         $env:TEMP = Join-Path $env:SystemDrive 'temp'
