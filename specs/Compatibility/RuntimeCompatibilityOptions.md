@@ -76,7 +76,7 @@ level and disabled changes in the project file (such as `.csproj` or `.vcxproj`)
 
 ```xml
   <PropertyGroup>
-    <WindowsAppSDKRuntimePatchLevel>1.7.3</WindowsAppSDKRuntimePatchLevel>
+    <WindowsAppSDKRuntimePatchLevel1>1.7.3</WindowsAppSDKRuntimePatchLevel1>
     <WindowsAppSDKRuntimePatchLevel2>1.8.2</WindowsAppSDKRuntimePatchLevel2>
     <WindowsAppSDKDisabledChanges>SampleApiCrashFix, OtherSampleApiCrashFix</WindowsAppSDKDisabledChanges>
   </PropertyGroup>
@@ -102,7 +102,7 @@ like this:
 
 ```xml
   <PropertyGroup>
-    <WindowsAppSDKRuntimePatchLevel>1.7.3</WindowsAppSDKRuntimePatchLevel>
+    <WindowsAppSDKRuntimePatchLevel1>1.7.3</WindowsAppSDKRuntimePatchLevel1>
   </PropertyGroup>
 ```
 
@@ -165,10 +165,10 @@ Apply the set compatibility options to the runtime.
 
 RuntimeCompatibilityOptions must be applied early in the process before any other Windows App
 SDK APIs are called, or right after initializing the Windows App Runtime. The options must be set
-early before the configuration is locked for the lifetime of the process. Since the Windows App
-Runtime needs to run with a consistent configuration, it will lock the configuration when it needs
-to ensure the configuration will no longer change. Calling `Apply` will also lock the
-configuration.
+early, before the Windows App Runtime automatically locks the configuration for the lifetime of the
+process. Since the Windows App Runtime needs to run with a consistent configuration, it will lock
+the configuration when it needs to ensure the configuration will no longer change. Calling `Apply`
+will also lock the configuration.
 
 If the configuration has already been locked, calling `Apply` will throw an `E_ILLEGAL_STATE_CHANGE`
 exception if the options differ from the locked configuration. It is okay to call `Apply` multiple
