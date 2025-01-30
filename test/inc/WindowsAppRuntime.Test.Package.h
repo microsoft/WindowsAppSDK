@@ -94,8 +94,8 @@ namespace DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore-" WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore-" WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 namespace WindowsAppRuntimeMain = DynamicDependencyDataStore;
 
