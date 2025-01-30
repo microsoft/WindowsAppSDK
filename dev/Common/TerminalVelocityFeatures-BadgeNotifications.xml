@@ -14,10 +14,6 @@
     <name>Feature_BadgeNotifications</name>
     <description>Enables Local Badge sourced Notifications for packaged apps on the device</description>
     <state>AlwaysEnabled</state>
-    <alwaysDisabledChannelTokens>
-      <channelToken>Preview</channelToken>
-      <channelToken>Stable</channelToken>
-    </alwaysDisabledChannelTokens>
   </feature>
 </features>
 
