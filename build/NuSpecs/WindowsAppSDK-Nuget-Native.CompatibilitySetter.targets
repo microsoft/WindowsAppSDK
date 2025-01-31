@@ -2,16 +2,16 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup Condition="'$(WindowsAppSDKRuntimePatchLevel)' != '' or '$(WindowsAppSDKRuntimePatchLevel2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
+  <PropertyGroup Condition="'$(WindowsAppSDKRuntimePatchLevel1)' != '' or '$(WindowsAppSDKRuntimePatchLevel2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
       <WindowsAppSdkCompatibilityInitialize>true</WindowsAppSdkCompatibilityInitialize>
   </PropertyGroup>
 
   <Target Name="WindowsAppSDKCompatibilitySetterTarget" BeforeTargets="ClCompile"
-          Condition="'$(WindowsAppSDKRuntimePatchLevel)' != '' or '$(WindowsAppSDKRuntimePatchLevel2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
+          Condition="'$(WindowsAppSDKRuntimePatchLevel1)' != '' or '$(WindowsAppSDKRuntimePatchLevel2)' != '' or '$(WindowsAppSDKDisabledChanges)' != ''">
     <PropertyGroup>
       <WindowsAppSDKCompatibilitySetterFile>$(GeneratedFilesDir)WindowsAppSDKCompatibilitySetter.cpp</WindowsAppSDKCompatibilitySetterFile>
-      <WindowsAppSDKCompatibilityPatchLevel1Lines Condition="'$(WindowsAppSDKRuntimePatchLevel)' != ''">
-            compatibilityOptions.PatchLevel1({$(WindowsAppSDKRuntimePatchLevel.Replace(".", ","))})%3B
+      <WindowsAppSDKCompatibilityPatchLevel1Lines Condition="'$(WindowsAppSDKRuntimePatchLevel1)' != ''">
+            compatibilityOptions.PatchLevel1({$(WindowsAppSDKRuntimePatchLevel1.Replace(".", ","))})%3B
       </WindowsAppSDKCompatibilityPatchLevel1Lines>
       <WindowsAppSDKCompatibilityPatchLevel2Lines Condition="'$(WindowsAppSDKRuntimePatchLevel2)' != ''">
             compatibilityOptions.PatchLevel2({$(WindowsAppSDKRuntimePatchLevel2.Replace(".", ","))})%3B

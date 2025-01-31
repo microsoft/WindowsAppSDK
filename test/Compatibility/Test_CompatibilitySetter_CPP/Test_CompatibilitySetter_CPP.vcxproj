@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- MAIN TEST CONTENT: PART 1 -->
   <PropertyGroup>
-    <WindowsAppSDKRuntimePatchLevel>1.7.3</WindowsAppSDKRuntimePatchLevel>
+    <WindowsAppSDKRuntimePatchLevel1>1.7.3</WindowsAppSDKRuntimePatchLevel1>
     <WindowsAppSDKRuntimePatchLevel2>1.8.2</WindowsAppSDKRuntimePatchLevel2>
     <!-- Specify multiple DisabledChanges, comma-separated. "None" is the only enum value
          which always exists, so use that one a couple times plus a cast of a random int. -->
