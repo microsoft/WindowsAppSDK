@@ -188,14 +188,6 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
-  displayName: 'Create CompatibilityOptions TerminalVelocity features'
-  inputs:
-    targetType: filePath
-    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CompatibilityOptions.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CompatibilityOptions.h
-    workingDirectory: '$(Build.SourcesDirectory)'
-
-- task: powershell@2
   name: UpdateTraceloggingConfig
   inputs:
     targetType: 'inline'
