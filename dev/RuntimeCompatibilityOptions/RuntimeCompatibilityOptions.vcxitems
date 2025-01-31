@@ -14,10 +14,10 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)CompatibilityOptions.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)RuntimeCompatibilityOptions.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)CompatibilityOptions.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)RuntimeCompatibilityOptions.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RepoRoot)\build\VersionInfo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(RepoRoot)\build\VersionInfo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(RepoRoot)\build\VersionInfo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -27,6 +27,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)CompatibilityOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RuntimeCompatibilityOptions.h" />
   </ItemGroup>
 </Project>
