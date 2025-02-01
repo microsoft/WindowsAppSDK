@@ -27,7 +27,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Common
 
             // Compatibility happens just after initializing WindowsAppRuntime
 #if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY
-            Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Compatibility.AutoInitialize.ConfigureCompatibility();
+            Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Compatibility.AutoInitialize.ConfigureRuntimeCompatibility();
 #endif
         }
     }
