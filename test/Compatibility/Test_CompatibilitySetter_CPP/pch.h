@@ -19,6 +19,4 @@
 //#include <WindowsAppRuntime.Test.Package.h>
 //#include <WindowsAppRuntime.Test.Bootstrap.h>
 
-#include <TerminalVelocityFeatures-CompatibilityOptions.h>
-
 #endif //PCH_H
