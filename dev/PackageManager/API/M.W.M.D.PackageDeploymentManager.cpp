@@ -58,12 +58,34 @@ static PackageManagement_ArchitectureType ToArchitectureType(const winrt::Window
     }
 }
 
+static constexpr PackageManagement_ArchitectureType GetPackageManagementArchitectureTypesCompatibleWithCallerArchitecture()
+{
+#if defined(_M_ARM)
+    return PackageManagement_ArchitectureType_Arm | PackageManagement_ArchitectureType_Neutral;
+#elif defined(_M_ARM64)
+    return PackageManagement_ArchitectureType_Arm64 | PackageManagement_ArchitectureType_Neutral;
+#elif defined(_M_IX86)
+    return PackageManagement_ArchitectureType_X86 | PackageManagement_ArchitectureType_Neutral;
+#elif defined(_M_X64)
+    return PackageManagement_ArchitectureType_X64 | PackageManagement_ArchitectureType_Neutral;
+#else
+#   error "Unknown processor architecture"
+#endif
+}
+
 namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency
 {
     DEFINE_ENUM_FLAG_OPERATORS(PackageDependencyProcessorArchitectures)
 }
 static PackageManagement_ArchitectureType ToArchitectureType(const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures processorArchitectureFilter)
 {
+    // Workaround bug in Windows https://task.ms/54835001 not handling processor architecture filter = None as "architcture(s) supported by the calling code"
+    // TODO: Use IsPackageDeploymentFeatureSupported(IsPackageReadyOrNewerAvailable_ProcessorArchitectureFilter_None) when available
+    if (processorArchitectureFilter == winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::None)
+    {
+        return GetPackageManagementArchitectureTypesCompatibleWithCallerArchitecture();
+    }
+
     auto architectureType{ PackageManagement_ArchitectureType_None };
     if (WI_IsFlagSet(processorArchitectureFilter, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral))
     {
@@ -119,9 +141,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup:
             {
-                //TODO Feature lookup
-                // Relies on PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup") exist in Microsoft.FrameworkUdk and enabled
-                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
+                BOOL isSupported{};
+                const HRESULT hr{ PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup", &isSupported) };
+                if (hr == E_NOTIMPL)
+                {
+                    return false;
+                }
+                THROW_IF_FAILED_MSG(hr, "PackageUriScheme_ms_uup");
+                return !!isSupported;
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
             {
