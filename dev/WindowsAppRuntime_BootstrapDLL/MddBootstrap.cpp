@@ -450,13 +450,13 @@ void FirstTimeInitialization(
             uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
             PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
 
-            const std::wstring frameworkPackageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+            const std::wstring frameworkPackageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
                                                                        g_test_frameworkPackageNamePrefix,
                                                                        majorVersion, minorVersion,
                                                                        packagVersionTagDelimiter, packageVersionTag) };
             FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, frameworkPackageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", frameworkPackageFamilyName.c_str());
 
-            const std::wstring mainPackageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+            const std::wstring mainPackageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
                                                                   g_test_mainPackageNamePrefix,
                                                                   majorVersion, minorVersion,
                                                                   packagVersionTagDelimiter, packageVersionTag) };
@@ -493,7 +493,7 @@ std::wstring GetFrameworkPackageFamilyName(
     PCWSTR packageVersionTag{ !versionTag ? L"" : versionTag };
     PCWSTR packageVersionTagDelimiter{ (packageVersionTag[0] == L'\0') ? L"" : L"-"};
 
-    const std::wstring packageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+    const std::wstring packageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
                                                       namePrefix, majorVersion, minorVersion,
                                                       packageVersionTagDelimiter, packageVersionTag) };
     THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
@@ -840,9 +840,9 @@ void FindDDLMViaEnumeration(
     // We need to look for DDLM packages in the package family for release <major>.<minor> and <versiontag>
     // But we have no single (simple) enumeration to match that so our logic's more involved compared
     // to FindDDLMViaAppExtension():
-    // 1. Look for Framework packages with Name="microsoft.winappruntime.ddlm.<minorversion>*[-shorttag]"
+    // 1. Look for Framework packages with Name="microsoft.winappruntime.ddlm-<minorversion>*[-shorttag]"
     // 1a. Enumerate all Framework packages registered to the user
-    // 1b. Only consider packages whose Name starts with "microsoft.winappruntime.ddlm.<minorversion>."
+    // 1b. Only consider packages whose Name starts with "microsoft.winappruntime.ddlm-<minorversion>."
     // 1c. If versiontag is specified, Only consider packages whose Name ends with [-shorttag]
     // 1d. Only consider packages whose PublisherID = "8wekyb3d8bbwe"
     // 2. Check if the package is in the <majorversion>.<minorversion> release
@@ -859,7 +859,7 @@ void FindDDLMViaEnumeration(
     }
     else
     {
-        packageNamePrefix = L"microsoft.winappruntime.ddlm.";
+        packageNamePrefix = L"microsoft.winappruntime.ddlm-";
     }
     const auto packageNamePrefixLength{ wcslen(packageNamePrefix) };
 
