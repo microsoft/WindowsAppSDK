@@ -207,4 +207,16 @@
   <data name="1039" xml:space="preserve">
     <value>A project for creating a C++/WinRT unit test app for WinUI using MSTest.</value>
   </data>
+  <data name="1040" xml:space="preserve">
+    <value>WinUI Blank App</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>A project for creating an empty WinUI app.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>Windows Application Packaging Project for WinUI</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>A project template that creates MSIX packages containing WinUI applications for side-loading or distribution via the Microsoft Store.</value>
+  </data>
 </root>
