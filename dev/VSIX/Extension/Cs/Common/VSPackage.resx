@@ -124,7 +124,7 @@
     <value>[Experimental] Blank Window</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>A blank window (WinUI 3).</value>
+    <value>A blank window (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
     <value>Blank Page</value>
@@ -133,7 +133,7 @@
     <value>[Experimental] Blank Page</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>A blank page (WinUI 3).</value>
+    <value>A blank page (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
     <value>Resource Dictionary</value>
@@ -142,7 +142,7 @@
     <value>[Experimental] Resource Dictionary</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>An empty, keyed collection of XAML resources (WinUI 3).</value>
+    <value>An empty, keyed collection of XAML resources (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Resources File (.resw)</value>
@@ -151,7 +151,7 @@
     <value>[Experimental] Resources File (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>A file for storing string and conditional resources (WinUI 3).</value>
+    <value>A file for storing string and conditional resources (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Templated Control</value>
@@ -160,7 +160,7 @@
     <value>[Experimental] Templated Control</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>A blank custom control with the appropriate default styling (WinUI 3).</value>
+    <value>A blank custom control with the appropriate default styling (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>User Control</value>
@@ -169,7 +169,7 @@
     <value>[Experimental] User Control</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>A blank user control (WinUI 3).</value>
+    <value>A blank user control (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
     <value>WinUI Class Library</value>
@@ -178,7 +178,7 @@
     <value>[Experimental] WinUI Class Library</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>A project for creating a managed class library (.dll) (WinUI 3).</value>
+    <value>A project for creating a managed class library (.dll) (WinUI).</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>WinUI Blank App (Packaged with Windows Application Packaging Project)</value>
@@ -187,7 +187,7 @@
     <value>[Experimental] WinUI Blank App (Packaged with Windows Application Packaging Project)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>A project template for creating a WinUI 3 app. A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store.</value>
+    <value>A project template for creating a WinUI app. A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
     <value>WinUI Blank App (Packaged)</value>
@@ -196,7 +196,7 @@
     <value>[Experimental] WinUI Blank App (Packaged)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>A project template for creating a WinUI 3 app along with a MSIX package for side-loading or distribution via the Microsoft Store.</value>
+    <value>A project template for creating a WinUI app along with a MSIX package for side-loading or distribution via the Microsoft Store.</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>WinUI Unit Test App</value>
@@ -205,6 +205,6 @@
     <value>[Experimental] WinUI Unit Test App</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>A project to create a C# unit test app for WinUI 3 using MSTest.</value>
+    <value>A project to create a C# unit test app for WinUI using MSTest.</value>
   </data>
 </root>

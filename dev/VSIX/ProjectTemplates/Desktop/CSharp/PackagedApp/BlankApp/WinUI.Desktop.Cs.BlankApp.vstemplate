@@ -3,7 +3,7 @@
   <TemplateData>
     <Hidden>true</Hidden>
     <Name>WinUI Blank App</Name>
-    <Description>A project for creating an empty WinUI 3 app.</Description>
+    <Description>A project for creating an empty WinUI app.</Description>
     <Icon>WinUI.Desktop.Cs.BlankApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.BlankApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
