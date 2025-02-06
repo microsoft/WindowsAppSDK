@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "OAuth2Manager API Tests",
+            "Filename": "OAuth2ManagerTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64"],
+            "Status": "Enabled"
+        }
+    ]
+}
