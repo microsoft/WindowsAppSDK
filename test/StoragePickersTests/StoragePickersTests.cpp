@@ -1,0 +1,97 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include "pch.h"
+#include "AssemblyInfo.h"
+
+#include <FrameworkUdk/Containment.h>
+#include <winrt/Microsoft.Windows.Storage.Pickers.h>
+#include <TerminalVelocityFeatures-StoragePickers.h>
+
+namespace TB = ::Test::Bootstrap;
+namespace TP = ::Test::Packages;
+
+using namespace WEX::Common;
+using namespace WEX::Logging;
+using namespace WEX::TestExecution;
+
+namespace Test::StoragePickersTests
+{
+    class StoragePickersTests
+    {
+    public:
+        BEGIN_TEST_CLASS(StoragePickersTests)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::SetupPackages()
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"UAP")
+            //TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own CompatibilityOptions
+            END_TEST_CLASS()
+
+            TEST_CLASS_SETUP(ClassSetup)
+        {
+            ::Test::Bootstrap::SetupPackages();
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassCleanup)
+        {
+            ::Test::Bootstrap::CleanupPackages();
+            return true;
+        }
+
+        TEST_METHOD_SETUP(MethodInit)
+        {
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+
+            // The test method setup and execution is on a different thread than the class setup.
+            // Initialize the framework for the test thread.
+            ::Test::Bootstrap::SetupBootstrap();
+            return true;
+        }
+
+        TEST_METHOD_CLEANUP(MethodUninit)
+        {
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            ::Test::Bootstrap::CleanupBootstrap();
+            return true;
+        }
+
+        TEST_METHOD(FileSavePicker_ShouldCreateNewFile)
+        {
+            try
+            {
+                auto parentWindow = ::GetForegroundWindow();
+                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker savePicker(windowId);
+                //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+                savePicker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+                savePicker.SuggestedFileName(L"test.txt");
+                // Act
+                auto fileOperation = savePicker.PickSaveFileAsync();
+                auto file = fileOperation.get();
+
+                // Assert
+                if (file != nullptr)
+                {
+                    Log::Comment(L"File save was successful.");
+                }
+                else
+                {
+                    Log::Error(L"Photo capture failed or was canceled.");
+                }
+            }
+            catch (const winrt::hresult_error& ex)
+            {
+                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
+                VERIFY_FAIL(L"Exception occurred during photo capture.");
+            }
+            catch (const std::exception& ex)
+            {
+                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
+                VERIFY_FAIL(L"Standard exception occurred during photo capture.");
+            }
+        }
+    };
+}

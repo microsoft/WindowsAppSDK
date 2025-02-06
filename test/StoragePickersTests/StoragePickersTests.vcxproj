@@ -31,9 +31,10 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{040bb64b-012e-4e4f-bb02-e85ef46d3475}</ProjectGuid>
-    <RootNamespace>CompatibilityTests</RootNamespace>
+    <ProjectGuid>{85C86306-46D1-4563-8303-0A79DF923586}</ProjectGuid>
+    <RootNamespace>StoragePickersTests</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>StoragePickersTests</ProjectName>
   </PropertyGroup>
   <PropertyGroup>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -106,7 +107,7 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="CompatibilityTests.cpp">
+    <ClCompile Include="StoragePickersTests.cpp">
       <AdditionalIncludeDirectories>$(RepoRoot)\build\VersionInfo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemGroup>
@@ -117,8 +118,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.Storage.Pickers">
+      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
@@ -133,11 +134,11 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
   </ImportGroup>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="CompatibilityTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
