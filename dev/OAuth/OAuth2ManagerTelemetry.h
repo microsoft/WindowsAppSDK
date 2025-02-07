@@ -11,11 +11,11 @@ class OAuth2ManagerTelemetry : public wil::TraceLoggingProvider
     //{27d8ee3f-d704-45d6-b66c-1dad95795ce5}
 public:
 
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(RequestAuthWithParamsAsyncTriggered, PDT_ProductAndServicePerformance,
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM3(RequestAuthWithParamsAsyncTriggered, PDT_ProductAndServicePerformance,
         bool, IsAppPackaged, PCWSTR, AppName, PCWSTR, ResponseType);
 
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM2(CompleteAuthRequestTriggered, PDT_ProductAndServiceUsage,
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM2(CompleteAuthRequestTriggered, PDT_ProductAndServiceUsage,
         bool, IsAppPackaged, PCWSTR, AppName);
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM4(RequestTokenAsyncTriggered, PDT_ProductAndServiceUsage,
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM4(RequestTokenAsyncTriggered, PDT_ProductAndServiceUsage,
         bool, IsAppPackaged, PCWSTR, AppName, PCWSTR, GrantType, bool, IsClientAuthPassed);
 };
