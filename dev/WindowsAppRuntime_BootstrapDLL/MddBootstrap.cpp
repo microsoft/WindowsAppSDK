@@ -840,9 +840,9 @@ void FindDDLMViaEnumeration(
     // We need to look for DDLM packages in the package family for release <major>.<minor> and <versiontag>
     // But we have no single (simple) enumeration to match that so our logic's more involved compared
     // to FindDDLMViaAppExtension():
-    // 1. Look for Framework packages with Name="microsoft.winappruntime.ddlm-<minorversion>*[-shorttag]"
+    // 1. Look for Framework packages with Name="microsoft.winappruntime.ddlm.<minorversion>*[-shorttag]"
     // 1a. Enumerate all Framework packages registered to the user
-    // 1b. Only consider packages whose Name starts with "microsoft.winappruntime.ddlm-<minorversion>."
+    // 1b. Only consider packages whose Name starts with "microsoft.winappruntime.ddlm.<minorversion>."
     // 1c. If versiontag is specified, Only consider packages whose Name ends with [-shorttag]
     // 1d. Only consider packages whose PublisherID = "8wekyb3d8bbwe"
     // 2. Check if the package is in the <majorversion>.<minorversion> release
@@ -859,7 +859,7 @@ void FindDDLMViaEnumeration(
     }
     else
     {
-        packageNamePrefix = L"microsoft.winappruntime.ddlm-";
+        packageNamePrefix = L"microsoft.winappruntime.ddlm.";
     }
     const auto packageNamePrefixLength{ wcslen(packageNamePrefix) };
 

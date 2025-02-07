@@ -10,7 +10,7 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="WindowsAppRuntime.Test.DDLM.GC-1.0.0.0-x64"
+    Name="WindowsAppRuntime.Test.DDLM.GC.1.0.0.0-x64"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.0.0.0"
     ProcessorArchitecture="x64" />

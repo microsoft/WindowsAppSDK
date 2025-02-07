@@ -37,7 +37,7 @@ body:
       options:
         - "Windows App SDK 1.6.3: 1.6.250108002"
         - "Windows App SDK 1.6 Preview 2: 1.6.240821007-preview2"
-        - "Windows App SDK 1.7 Experimental 2: 1.7.250109001-experimental2"
+        - "Windows App SDK 1.7 Experimental 3: 1.7.250127003-experimental3"
   - type: dropdown
     attributes:
       label: Packaging type

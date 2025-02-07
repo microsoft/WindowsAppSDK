@@ -73,7 +73,7 @@ namespace DynamicDependencyLifetimeManagerGC
     constexpr PCWSTR c_PackagePublisherId = TEST_PACKAGE_DDLM_PUBLISHERID;
 }
 
-#define TEST_PACKAGE_DDLMGC1000_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L"-1.0.0.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
+#define TEST_PACKAGE_DDLMGC1000_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L".1.0.0.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
 namespace DynamicDependencyLifetimeManagerGC1000
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManagerGC1000";
@@ -99,7 +99,7 @@ namespace DynamicDependencyLifetimeManagerGC1000
     constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
-#define TEST_PACKAGE_DDLMGC1010_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L"-1.0.1.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
+#define TEST_PACKAGE_DDLMGC1010_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L".1.0.1.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
 namespace DynamicDependencyLifetimeManagerGC1010
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManagerGC1010";
