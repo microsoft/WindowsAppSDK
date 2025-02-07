@@ -148,6 +148,14 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
+  displayName: 'Create CallingPreviewSupport TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.CallingPreviewSupport -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CallingPreviewSupport.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
   displayName: 'Create PushNotifications TerminalVelocity features'
   inputs:
     targetType: filePath
