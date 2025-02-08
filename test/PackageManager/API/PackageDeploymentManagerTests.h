@@ -122,7 +122,7 @@ namespace Test::PackageManager::Tests
     protected:
         winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(PCWSTR packageFullName)
         {
-            return TPMT::GetPackageStatus(m_packageManager, packageFullName);
+            return TP::GetPackageStatus(m_packageManager, packageFullName);
         }
 
         void SetPackageStatus(PCWSTR packageFullName, winrt::Windows::Management::Deployment::PackageStatus status)
