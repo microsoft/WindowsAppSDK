@@ -101,10 +101,6 @@
 Param(
     [SecureString]$CertPassword=$null,
 
-    [String]$CertPasswordFile=$null,
-
-    [String]$CertPasswordUser=$true,
-
     [Switch]$CheckAll=$false,
 
     [Switch]$CheckTAEFService=$false,
@@ -770,27 +766,18 @@ function Repair-DevTestPfx
     $user = Get-UserPath
     $pwd_file = Join-Path $user 'winappsdk.certificate.test.pwd'
 
+    if (Test-Path -Path $pwd_file -PathType Leaf)
+    {
+        Write-Warning "WARNING: A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
+    }
+
     # -CertPassword <password> is a required parameter for this work
     $password = ''
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
         $password = $CertPassword
     }
-    elseif (-not [string]::IsNullOrEmpty($CertPasswordFile))
-    {
-        if (-not(Test-Path -Path $CertPasswordFile -PathType Leaf))
-        {
-            Write-Host "Test certificate file $CertPasswordFile...Not Found"
-            $global:issues++
-            return $false
-        }
-        $password = Get-Content -Path $CertPasswordFile -Encoding utf8
-    }
-    elseif (($CertPasswordUser -eq $true) -and (Test-Path -Path $pwd_file -PathType Leaf))
-    {
-        $password = Get-Content -Path $pwd_file -Encoding utf8
-    }
-    elseif ([string]::IsNullOrEmpty($password) -And ($NoInteractive -eq $false))
+    elseif ($NoInteractive -eq $false)
     {
         $password = Read-Host -Prompt 'Creating test certificate. Please enter a password' -AsSecureString
     }
