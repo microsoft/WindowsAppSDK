@@ -222,10 +222,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(EnsurePackageSetReadyAsync_1_Staged_Success)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
