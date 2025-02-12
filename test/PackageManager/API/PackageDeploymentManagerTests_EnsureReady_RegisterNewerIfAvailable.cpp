@@ -222,10 +222,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(EnsurePackageSetReadyAsync_1_Staged_Success)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -450,10 +446,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(EnsurePackageSetReadyAsync_N_RegisteredAndNotInstalledAndStaged_Success)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
             AddPackage_Red();
             RemovePackage_Green();
             StagePackage_Blue();
@@ -477,6 +469,83 @@ namespace Test::PackageManager::Tests
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(EnsurePackageSetReadyAsync_1_RegisteredNewerStaged_Success)
+        {
+            RemovePackage_Redder();
+            AddPackage_Red();
+            StagePackage_Redder();
+
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
+            options.RegisterNewerIfAvailable(true);
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+#ifndef TODO_55967280_EnsurePackageSetReadyAsync_doesnt_register_newer_package_if_lower_version_is_currently_registered
+            WEX::Logging::Log::Comment(L"Bug https://task.ms/55967171 Ensure*() doesn't account for package status");
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
+#else
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(IsPackageRegistered_Redder());
+#endif
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(EnsurePackageSetReadyAsync_N_RegisteredAndNewerStaged_Success)
+        {
+            RemovePackage_Redder();
+            AddPackage_Red();
+            StagePackage_Redder();
+            AddPackage_Green();
+
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
+            VERIFY_IS_TRUE(IsPackageRegistered_Green());
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(green);
+
+            winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
+            options.RegisterNewerIfAvailable(true);
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+#ifndef TODO_55967280_EnsurePackageSetReadyAsync_doesnt_register_newer_package_if_lower_version_is_currently_registered
+            WEX::Logging::Log::Comment(L"Bug https://task.ms/55967280 RegisterNewerIfAvailable(true) isn't honored");
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
+#else
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(IsPackageRegistered_Redder());
+#endif
+            VERIFY_IS_TRUE(IsPackageRegistered_Green());
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
         }
     };
 
@@ -595,90 +664,5 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
 #endif
         }
-
-        TEST_METHOD(EnsurePackageSetReadyAsync_1_RegisteredNewerStaged_Success)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
-            RemovePackage_Redder();
-            AddPackage_Red();
-            StagePackage_Redder();
-
-            VERIFY_IS_TRUE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-
-            winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            options.RegisterNewerIfAvailable(true);
-            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
-
-#ifndef TODO_55967280_EnsurePackageSetReadyAsync_doesnt_register_newer_package_if_lower_version_is_currently_registered
-            WEX::Logging::Log::Comment(L"Bug https://task.ms/55967171 Ensure*() doesn't account for package status");
-            VERIFY_IS_TRUE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
-#else
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-            VERIFY_IS_TRUE(IsPackageRegistered_Redder());
-#endif
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-
-            RemovePackage_Redder();
-        }
-
-        TEST_METHOD(EnsurePackageSetReadyAsync_N_RegisteredAndNewerStaged_Success)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
-            RemovePackage_Redder();
-            AddPackage_Red();
-            StagePackage_Redder();
-            AddPackage_Green();
-
-            VERIFY_IS_TRUE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
-            VERIFY_IS_TRUE(IsPackageRegistered_Green());
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
-            packageSet.Items().Append(green);
-
-            winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            options.RegisterNewerIfAvailable(true);
-            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
-
-#ifndef TODO_55967280_EnsurePackageSetReadyAsync_doesnt_register_newer_package_if_lower_version_is_currently_registered
-            WEX::Logging::Log::Comment(L"Bug https://task.ms/55967280 RegisterNewerIfAvailable(true) isn't honored");
-            VERIFY_IS_TRUE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
-#else
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-            VERIFY_IS_TRUE(IsPackageRegistered_Redder());
-#endif
-            VERIFY_IS_TRUE(IsPackageRegistered_Green());
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-
-            RemovePackage_Redder();
-        }
-     };
+    };
 }
