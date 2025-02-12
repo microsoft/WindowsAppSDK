@@ -21,11 +21,11 @@
     <PublisherDisplayName>Windows APP SDK</PublisherDisplayName>
     <Logo>taef.png</Logo>
   </Properties>
-
-  <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.0.0" MaxVersionTested="12.0.0.0" />
-    <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework.4.1" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
-  </Dependencies>
+  
+    <Dependencies>
+        <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.0.0" MaxVersionTested="12.0.0.0" />
+        <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework.4.1" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    </Dependencies>
 
   <Resources>
     <Resource Language="en-us" />
