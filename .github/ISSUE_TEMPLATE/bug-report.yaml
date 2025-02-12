@@ -36,7 +36,7 @@ body:
       description: Specify the version of Windows App SDK (or Project Reunion) you're using.
       options:
         - "Windows App SDK 1.6.3: 1.6.250108002"
-        - "Windows App SDK 1.6 Preview 2: 1.6.240821007-preview2"
+        - "Windows App SDK 1.7 Preview 1: 1.7.250208002-preview1"
         - "Windows App SDK 1.7 Experimental 3: 1.7.250127003-experimental3"
   - type: dropdown
     attributes:
