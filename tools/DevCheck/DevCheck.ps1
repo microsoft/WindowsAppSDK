@@ -771,7 +771,6 @@ function Repair-DevTestPfx
         Write-Warning "WARNING: A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
     }
 
-    # -CertPassword <password> is a required parameter for this work
     $password = ''
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
