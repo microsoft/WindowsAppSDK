@@ -27,7 +27,7 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="1.8.0-CI-26107.1736.250128-1007.0">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.8.0-CI-26107.1739.250207-1313.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>55259e40bc0c2ca980d46ec303929b031b796e2f</Sha>
     </Dependency>
@@ -35,7 +35,7 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>f52676312ebf1d66ef59731feb4fad29a713a897</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.8.0-CI-26107.1736.250128-1007.0">
+    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.8.0-CI-26107.1739.250207-1313.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>55259e40bc0c2ca980d46ec303929b031b796e2f</Sha>
     </Dependency>
