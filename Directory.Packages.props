@@ -18,9 +18,11 @@
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <PackageVersion Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118" />
+    <PackageVersion Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.10" />
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="$(WindowsAppSDKVersion)" Condition=" '$(WindowsAppSDKVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(CppWinRTVersion)" Condition=" '$(CppWinRTVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(WindowsSDKBuildToolsVersion)" Condition=" '$(WindowsSDKBuildToolsVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(WILVersion)" Condition=" '$(WILVersion)' != '' " />
+    <PackageVersion Include="Microsoft.FrameworkUdk" version="[$(MicrosoftFrameworkUdkPackageVersion)]" Condition=" '$(MicrosoftFrameworkUdkPackageVersion)' != '' " />
   </ItemGroup>
 </Project>
