@@ -60,7 +60,7 @@ Make sure to also check out the [WinUI 3 Gallery](https://aka.ms/winui-gallery),
 <p align="center"><img src="./docs/images/winui-gallery.png" alt="WinUI 3 Gallery" width="400"/></p>
 
 <p align="center">
-  <a style="text-decoration:none" href="https://apps.microsoft.com/detail/9NGHP3DX8HDX?launch=true&mode=full">
+  <a style="text-decoration:none" href="https://apps.microsoft.com/detail/9p3jfpwwdzrc?launch=true&mode=full">
     <picture>
       <source media="(prefers-color-scheme: light)" srcset="https://get.microsoft.com/images/en-us%20dark.svg" width="200" />
       <img src="https://get.microsoft.com/images/en-us%20light.svg" width="200" />
