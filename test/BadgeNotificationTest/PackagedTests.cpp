@@ -18,7 +18,6 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::BadgeNotifications;
-//using namespace AppNotifications::Test;
 
 void PackagedTests::VerifyBadgeNotificationManagerCurrent()
 {
