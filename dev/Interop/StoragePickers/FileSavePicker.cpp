@@ -90,6 +90,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedSaveFile = m_suggestedSaveFile;
         auto suggestedFileName = m_suggestedFileName;
+        auto fileTypeChoices = m_fileTypeChoices;
 
         co_await winrt::resume_background();
         auto cancellationToken = co_await winrt::get_cancellation_token();
@@ -129,14 +130,40 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
 
-        // TODO: Manually append the default extension if not present
+        // Get the file path from the dialog
+        wil::unique_cotaskmem_string filePath;
+        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
+        winrt::hstring pathStr(filePath.get());
 
-        auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem, true);
+        wil::unique_cotaskmem_string fileName;
+        check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, &fileName));
+        std::wstring fileNameStr(fileName.get());
+
+        // Check if the file name has an extension
+        if (fileNameStr.find_last_of(L".") == std::wstring::npos)
+        {
+            // If the user defined file name doesn't have an extension,
+            //     automatically use the first extension from the first category in fileTypeChoices.
+            auto firstCategory = fileTypeChoices.First().Current();
+            auto firstExtension = firstCategory.Value().GetAt(0);
+            pathStr = pathStr + firstExtension;
+        }
+
+        // Create a file. If the file already exists, will prompt to let user select cancele or override.
+        HANDLE hFile = CreateFile(pathStr.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        if (hFile == INVALID_HANDLE_VALUE)
+        {
+            co_return nullptr;
+        }
+        CloseHandle(hFile);
+
+        auto file = co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(pathStr);
 
         if (cancellationToken())
         {
             co_return nullptr;
         }
+
         co_return file;
     }
 }
