@@ -1,5 +1,5 @@
 name: Bug report
-description: File a bug report
+description: File a bug report.
 title: "Bug title"
 labels: []
 body:
@@ -25,11 +25,11 @@ body:
   - type: textarea
     attributes:
       label: Expected behavior
-      description: Please provide a description of what you expected to happen
+      description: Please provide a description of what you expected to happen.
   - type: textarea
     attributes:
       label: Screenshots
-      description: If applicable, add screenshots here to help explain your problem
+      description: If applicable, add screenshots here to help explain your problem.
   - type: dropdown
     attributes:
       label: NuGet package version
@@ -78,4 +78,4 @@ body:
   - type: textarea
     attributes:
       label: Additional context
-      description: Enter any other applicable info here
+      description: Enter any other applicable info here.
