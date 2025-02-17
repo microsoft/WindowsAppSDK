@@ -202,7 +202,6 @@ namespace PickerCommon {
         auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
         if (defaultFolder != nullptr)
         {
-            check_hresult(dialog->SetFolder(defaultFolder.get()));
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
         }
 
