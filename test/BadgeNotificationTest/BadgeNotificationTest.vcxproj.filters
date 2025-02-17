@@ -40,7 +40,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="AppNotificationTests.rc">
+    <ResourceCompile Include="BadgeNotificationTests.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
