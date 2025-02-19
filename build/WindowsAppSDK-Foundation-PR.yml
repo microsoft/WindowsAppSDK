@@ -46,8 +46,13 @@ extends:
   parameters:
     featureFlags:
       EnableCDPxPAT: false
+
     platform:
       name: 'windows_undocked' # windows undocked
+
+    featureFlags:
+      WindowsHostVersion:
+        Network: KS3
 
     cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
       enabled: false
