@@ -43,10 +43,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
 
     ///Checks if the calling preview feature is supported on the current OS version
-    ///TO DO - This method needs implementation on framework UDK, for now it always returns false
     bool AppNotificationConferencingConfig::IsCallingPreviewSupported()
     {
-        return false;
+        return WindowsVersion::IsWindows11_22H2OrGreater();
     }
 }
 
@@ -57,7 +56,7 @@ namespace winrt::Microsoft::Windows::AppNotifications
 {
     bool AppNotificationConferencingConfig::IsCallingPreviewSupported()
     {
-        return false;
+        return WindowsVersion::IsWindows11_22H2OrGreater();
     }
 }
 #endif
