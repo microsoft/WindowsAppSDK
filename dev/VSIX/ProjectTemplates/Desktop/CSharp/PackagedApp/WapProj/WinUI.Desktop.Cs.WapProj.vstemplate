@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
     <Hidden>true</Hidden>
-    <Name>Windows Application Packaging Project for WinUI 3</Name>
-    <Description>A project that creates MSIX packages containing WinUI 3 in Desktop applications for side-loading or distribution via the Microsoft Store</Description>
+    <Name ID="1042" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1043" Package="FIXME-PACKAGEGUID" />
     <Icon>WapProjTemplate.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Desktop.Cs.WapProj</TemplateID>
