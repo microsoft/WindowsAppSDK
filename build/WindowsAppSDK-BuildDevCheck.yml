@@ -23,7 +23,7 @@ extends:
       name: 'windows_undocked' # windows undocked
     featureFlags:
       WindowsHostVersion:
-        Network: KS3
+        Network: R1
 
     stages:
     - stage: PackageDevCheck

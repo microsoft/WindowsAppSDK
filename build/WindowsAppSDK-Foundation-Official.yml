@@ -56,7 +56,7 @@ extends:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
-        Network: KS3
+        Network: R1
 
     platform:
       name: 'windows_undocked' # windows undocked
