@@ -72,7 +72,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: tools\DevCheck\DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
+    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2
@@ -145,6 +145,14 @@ steps:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
     arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.AppNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create CallingPreviewSupport TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.CallingPreviewSupport -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CallingPreviewSupport.h
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2

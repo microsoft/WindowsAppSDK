@@ -95,12 +95,24 @@ steps:
     inputs:
       SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
       TargetFolder: '$(build.SourcesDirectory)\APIScanTarget'
+      # Excluding from APIScan:
+      # - arm/arm64 binaries because APIScan does not support them currently.
+      # - TAEF binaries: te.*, wex.*.
+      # - HelloWorldAdvancedC* - These are test binaries w/o the word "test" in their file paths. We currently depririoritize APIScan for test binaries.
       contents: |
         **
         !**\*test*\**
         !**\*packages*\**
         !**\*Demoapp*\**
         !**\*Demopackage\**
+        !**\HelloWorldAdvancedC*\**        
+        !**\arm\**        
+        !**\arm64\**     
+        !**\te.*exe
+        !**\te.*dll
+        !**\wex.*exe
+        !**\wex.*dll
+        !**\wttlog.dll
         !**\*.json
         !**\*.msix
         !**\*.png
