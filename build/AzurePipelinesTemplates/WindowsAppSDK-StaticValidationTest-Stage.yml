@@ -15,7 +15,6 @@ stages:
       name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
     timeoutInMinutes: 120
     steps:
-    - task: NuGetToolInstaller@1
     - task: NuGetAuthenticate@1
 
     - task: powershell@2
