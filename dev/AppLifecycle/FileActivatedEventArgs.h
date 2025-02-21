@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #pragma once
 
@@ -47,6 +47,24 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
+            // Standard serialize has a query of the form: "?ContractId=Windows.File&Verb=<verb>&File=<file_path>"
+            // If the query has the exact same format, then we can deserialize it with simple string operations,
+            // as QueryParsed() can cause issues when file path contains unicode characters or specical characters like &.
+            std::wstring serializedQueryHeader = L"?" + std::wstring(c_contractIdKeyName) + L"=" + std::wstring(c_fileContractId) + L"&Verb=";
+            int headerLen = (int)wcslen(serializedQueryHeader.c_str());
+            if (CompareStringOrdinal(uri.Query().c_str(), headerLen, serializedQueryHeader.c_str(), -1, TRUE) == CSTR_EQUAL)
+            {
+                int queryLen = (int)wcslen(uri.Query().c_str());
+                const std::wstring query = uri.Query().c_str();
+                int verbEnd = query.find(L"&", headerLen);
+                auto verb = winrt::to_hstring(query.substr(headerLen, verbEnd - headerLen).c_str());
+
+                int filePos = query.find(L"&File=");
+                auto file = winrt::to_hstring(query.substr(filePos + 6, queryLen - filePos - 6).c_str());
+
+                return make<FileActivatedEventArgs>(verb, file);
+            }
+
             auto query = uri.QueryParsed();
             auto verb = query.GetFirstValueByName(L"Verb");
             auto file = query.GetFirstValueByName(L"File");
