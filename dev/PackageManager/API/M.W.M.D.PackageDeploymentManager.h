@@ -290,6 +290,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::AddPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const;
         winrt::Windows::Management::Deployment::DeploymentOptions ToDeploymentOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
         winrt::Windows::Management::Deployment::PackageAllUserProvisioningOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions const& options) const;
+        winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions ToRegisterOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const;
         static double PercentageToProgress(uint32_t percentage, const double progressMaxPerItem);
         static bool IsUriEndsWith(winrt::Windows::Foundation::Uri const& packageUri, PCWSTR target);
         static winrt::Windows::Foundation::Uri GetEffectivePackageUri(
