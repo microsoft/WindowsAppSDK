@@ -14,8 +14,8 @@ Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Picke
 
 # Definition
 
-```midl
-enum class PickerViewMode
+```C#
+enum PickerViewMode
 {
     List = 0,
     Thumbnail = 1,

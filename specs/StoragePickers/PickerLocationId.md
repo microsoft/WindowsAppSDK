@@ -22,7 +22,7 @@ Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Picke
 
 # Definition
 
-```midl
+```C#
 enum PickerLocationId
 {
     DocumentsLibrary = 0,

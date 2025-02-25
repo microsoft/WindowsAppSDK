@@ -15,12 +15,12 @@ Supports specifying the initial location, extension filters, and text on commit 
 
 ### Attributes
 
-| **Attribute**            | **Type**                                                | **Description**                                                          |
-|--------------------------|---------------------------------------------------------|--------------------------------------------------------------------------|
-| `ViewMode`               | [Microsoft::Windows::Storage::Pickers::PickerViewMode](./PickerViewMode.md)  | Gets or sets the view mode that the file picker is using to present items. |
-| `SuggestedStartLocation` | [Microsoft::Windows::Storage::Pickers::PickerLocationId](./PickerLocationId.md)| Gets or sets the initial location where the file picker looks for files. |
-| `CommitButtonText`       | `winrt::hstring`                                        | Gets or sets the text displayed on the commit button of the file picker. |
-| `FileTypeFilter`         | `Windows::Foundation::Collections::IVector<hstring>`    | Gets the collection of file types that the file picker displays.         |
+| **Attribute**            | **Type**           | **Description**                                                          |
+|--------------------------|--------------------|--------------------------------------------------------------------------|
+| `CommitButtonText`       | `string`           | Gets or sets the text displayed on the commit button of the file picker. |
+| `FileTypeFilter`         | `IList<string>`    | Gets the collection of file types that the file picker displays.         |
+| `SuggestedStartLocation` | [Microsoft.Windows.Storage.Pickers.PickerLocationId](./PickerLocationId.md)| Gets or sets the initial location where the file picker looks for files.  |
+| `ViewMode`               | [Microsoft.Windows.Storage.Pickers.PickerViewMode](./PickerViewMode.md)    | Gets or sets the view mode that the file picker is using to present items.|
 
 ### Examples
 C#
@@ -68,10 +68,8 @@ openPicker.FileTypeFilter().Append(L".docx");
 
 Displays a UI element that allows user to choose and open one file.
 
-### Definition
-```C++
-winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> PickSingleFileAsync();
-```
+Returns the picked file.
+
 Return null if the file dialog was cancelled or closed without selection.
 
 ### Examples
@@ -119,11 +117,9 @@ else
 
 Displays a UI element that allows user to choose and open multiple files.
 
-### Definition
-```C++
-winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile>> PickMultipleFilesAsync();
-```
-Return an empty list (Count = 0) if the file dialog's cancelled or closed.
+Returns a collection of picked files.
+
+Return an empty list (Count = 0) if the file dialog's cancelled or closed without selection.
 
 ### Examples
 
