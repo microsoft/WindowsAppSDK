@@ -25,31 +25,33 @@ Supports specifying the initial location and text on commit button.
 
 C#
 
-```csharp
+```C#
 using Microsoft.Windows.Storage.Pickers;
 
 var folderPicker = new FolderPicker(this.AppWindow.Id)
 {
-    // (Optional) specify the initial location. If not specified, use system default:
+    // (Optional) specify the initial location.
+    //     If not specified, using PickerLocationId.Unspecified by default.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
 
-    // (Optional) specify the text displayed on commit button. If not specified, use system default:
+    // (Optional) specify the text displayed on commit button. If not specified, use system default.
     CommitButtonText = "Select Folder",
 };
 ```
 
 C++
 
-```cpp
+```C++
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker folderPicker(AppWindow().Id());
 
-// (Optional) specify the initial location. If not specified, use system default:
+// (Optional) specify the initial location.
+//     If not specified, using PickerLocationId.Unspecified by default.
 folderPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
-// (Optional) specify the text displayed on commit button. If not specified, use system default:
+// (Optional) specify the text displayed on commit button. If not specified, use system default.
 folderPicker.CommitButtonText(L"Select Folder");
 ```
 
@@ -58,16 +60,16 @@ folderPicker.CommitButtonText(L"Select Folder");
 Displays a UI element that allows the user to choose a folder.
 
 ### Definition
-```cpp
+```C++
 winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> PickSingleFolderAsync();
 ```
-Return null if the file dialog was cancelled or closed without selection.
+Returns null if the file dialog was cancelled or closed without selection.
 
 ### Examples
 
 C#
 
-```csharp
+```C#
 using Microsoft.Windows.Storage.Pickers;
 
 var folderPicker = new FolderPicker(this.AppWindow.Id);
@@ -83,15 +85,15 @@ else
 ```
 
 C++
-```cpp
+```C++
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker folderPicker(AppWindow().Id());
-auto& folder = co_await folderPicker.PickSingleFolderAsync();
-if (folder != nullptr)
+auto& folder{ co_await folderPicker.PickSingleFolderAsync() };
+if (folder)
 {
-    auto path = folder.Path();
+    auto path{ folder.Path() };
 }
 else
 {

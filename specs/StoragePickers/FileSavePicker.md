@@ -26,18 +26,19 @@ Represents a UI element that lets the user choose a file to save.
 ### Examples
 C#
 
-```csharp
+```C#
 using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id)
 {
-    // (Optional) specify the initial location. If not specified, use system default:
+    // (Optional) specify the initial location.
+    //     If not specified, using PickerLocationId.Unspecified by default.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
     
-    // (Optional) specify the default file name. If not specified, use system default:
+    // (Optional) specify the default file name. If not specified, use system default.
     SuggestedFileName = "My Document",
 
-    // (Optional) specify the text displayed on commit button. If not specified, use system default:
+    // (Optional) specify the text displayed on commit button. If not specified, use system default.
     CommitButtonText = "Save Document",
 
     // (Optional) categorized extensions types. If not specified, use system default: All Files (*.*)
@@ -53,16 +54,17 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
 
 C++
 
-```cpp
+```C++
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
 
-// (Optional) specify the initial location. If not specified, use system default:
+// (Optional) specify the initial location.
+//     If not specified, using PickerLocationId.Unspecified by defaultl
 savePicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
-// (Optional) specify the default file name. If not specified, use system default:
+// (Optional) specify the default file name. If not specified, use system default.
 savePicker.SuggestedFileName(L"NewDocument");
 
 // (Optional) categorized extensions types. If not specified, use system default: All Files (*.*)
@@ -78,7 +80,7 @@ savePicker.DefaultFileExtension(L".txt");
 Displays a UI element that allows the user to configure the file path to save.
 
 ### Definition
-```cpp
+```C++
 winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> PickSaveFileAsync();
 ```
 Return null if the file dialog was cancelled or closed without selection.
@@ -87,7 +89,7 @@ Return null if the file dialog was cancelled or closed without selection.
 
 C#
 
-```csharp
+```C#
 using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id);
@@ -104,15 +106,15 @@ else
 
 C++
 
-```cpp
+```C++
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
 #include <fstream>
 #include <string>
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
-StorageFile file& = co_await savePicker.PickSaveFileAsync();
-if (file != nullptr)
+auto& file{ co_await savePicker.PickSaveFileAsync() };
+if (file)
 {
     std::ofstream outFile(file.Path().c_str());
     outFile << "Hello world.";
