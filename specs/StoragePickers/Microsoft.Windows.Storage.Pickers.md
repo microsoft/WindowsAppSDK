@@ -14,6 +14,8 @@ It is designed for desktop apps and uses a `WindowId` property to link the picke
 
 # Conceptual pages
 
+# API
+
 ## Classes
 
 Note: Developers should specify a window id to associate the picker with an owner window before 
@@ -30,4 +32,70 @@ showing UI.
 | **Enum** | **Description** |
 |----------|-----------------|
 |[PickerLocationId](PickerLocationId.md)| Identifies the storage location that the file picker presents to the user. |
-|[PickerViewMode](PickerViewMode.md)    | Indicates the view mode that the file picker is using to present items.     |
+|[PickerViewMode](PickerViewMode.md)    | Indicates the view mode that the file picker is using to present items.    |
+
+## Definition
+
+```C#
+namespace Microsoft.Windows.Storage.Pickers
+{
+    enum PickerViewMode
+    {
+        List = 0,
+        Thumbnail = 1,
+    }
+
+    enum PickerLocationId
+    {
+        DocumentsLibrary = 0,
+        ComputerFolder = 1,
+        Desktop = 2,
+        Downloads = 3,
+        HomeGroup = 4,
+        MusicLibrary = 5,
+        PicturesLibrary = 6,
+        VideosLibrary = 7,
+        Objects3D = 8,
+        Unspecified = 9,
+    }
+
+    runtimeclass FileOpenPicker
+    {
+        FileOpenPicker(Microsoft.UI.WindowId windowId);
+
+        string CommitButtonText;
+        IList<string> FileTypeFilter;
+        PickerLocationId SuggestedStartLocation;
+        PickerViewMode ViewMode;
+
+        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
+        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.StorageFile>> PickMultipleFilesAsync();
+    }
+
+    runtimeclass FileSavePicker
+    {
+        FileSavePicker(Microsoft.UI.WindowId windowId);
+
+        string CommitButtonText;
+        string DefaultFileExtension;
+        IDictionary<string, IList<string>> FileTypeChoices;
+        string SuggestedFileName;
+        Windows.Storage.StorageFile SuggestedSaveFile;
+        PickerLocationId SuggestedStartLocation;
+
+        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSaveFileAsync()
+    }
+
+    runtimeclass FolderPicker
+    {
+        FolderPicker(Microsoft.UI.WindowId windowId);
+
+        string CommitButtonText;
+        IList<string> FileTypeFilter;
+        PickerLocationId SuggestedStartLocation;
+        PickerViewMode ViewMode;
+
+        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFolder> PickSingleFolderAsync();
+    }
+}
+```

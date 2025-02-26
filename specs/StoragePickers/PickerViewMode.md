@@ -14,10 +14,10 @@ Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Picke
 
 # Definition
 
-```cpp
-enum class PickerViewMode : int32_t
+```C#
+enum PickerViewMode
 {
     List = 0,
     Thumbnail = 1,
-};
+}
 ```
