@@ -47,27 +47,46 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
-            // Standard serialize has a query of the form: "?ContractId=Windows.File&Verb=<verb>&File=<file_path>"
-            // If the query has the exact same format, then we can deserialize it with simple string operations,
-            // as QueryParsed() can cause issues when file path contains unicode characters or specical characters like &.
-            std::wstring serializedQueryHeader = L"?" + std::wstring(c_contractIdKeyName) + L"=" + std::wstring(c_fileContractId) + L"&Verb=";
-            int headerLen = (int)wcslen(serializedQueryHeader.c_str());
-            if (CompareStringOrdinal(uri.Query().c_str(), headerLen, serializedQueryHeader.c_str(), -1, TRUE) == CSTR_EQUAL)
+            auto parsedQuery = uri.QueryParsed();
+            if (parsedQuery.Size() == 3)
             {
-                int queryLen = (int)wcslen(uri.Query().c_str());
-                const std::wstring query = uri.Query().c_str();
-                int verbEnd = query.find(L"&", headerLen);
-                auto verb = winrt::to_hstring(query.substr(headerLen, verbEnd - headerLen).c_str());
-
-                int filePos = query.find(L"&File=");
-                auto file = winrt::to_hstring(query.substr(filePos + 6, queryLen - filePos - 6).c_str());
-
+                auto verb = parsedQuery.GetFirstValueByName(L"Verb");
+                auto file = parsedQuery.GetFirstValueByName(L"File");
                 return make<FileActivatedEventArgs>(verb, file);
             }
 
-            auto query = uri.QueryParsed();
-            auto verb = query.GetFirstValueByName(L"Verb");
-            auto file = query.GetFirstValueByName(L"File");
+            // parsed query may have a size of 0 when uri contains unicode characters, or more than 3 when file contains "&"
+            // In such cases, manually parse the query with string functions
+
+            const std::wstring query = uri.Query().c_str();
+            auto queryLength = query.length();
+
+            auto verbBegin = query.find(L"&Verb=");
+            if (verbBegin == std::wstring::npos)
+            {
+                throw winrt::hresult_invalid_argument();
+            }
+            verbBegin += 6; // Length of "&Verb="
+
+            auto verbEnd = query.find(L"&", verbBegin);
+            if (verbEnd == std::wstring::npos)
+            {
+                verbEnd = queryLength;
+            }
+
+            auto fileBegin = query.find(L"&File=");
+            if (fileBegin == std::wstring::npos)
+            {
+                throw winrt::hresult_invalid_argument();
+            }
+            fileBegin += 6; // Length of "&File="
+
+            // File path may contain '&' character, so fileEnd can only be assumed to be the end of the query or start of Verb
+            auto fileEnd = verbBegin > fileBegin ? verbBegin : queryLength;
+
+            auto verb = winrt::to_hstring(query.substr(verbBegin, verbEnd - verbBegin).c_str());
+            auto file = winrt::to_hstring(query.substr(fileBegin, fileEnd - fileBegin).c_str());
+
             return make<FileActivatedEventArgs>(verb, file);
         }
 

@@ -37,17 +37,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     inline std::tuple<ExtendedActivationKind, winrt::Windows::Foundation::IInspectable> DecodeActivatedEventArgs(winrt::Windows::Foundation::Uri const& uri)
     {
-        // If the Uri strictly follows uri format from GenerateEncodedLaunchUri, first query parameter is ContractId
-        // This is to avoid calling uri.QueryParsed() as it can cause issues when uri contains unicode characters or special characters like &.
-        for (const auto& extension : c_extensionMap)
-        {
-            std::wstring contractIdQuery = L"?" + std::wstring(c_contractIdKeyName) + L"=" + std::wstring(extension.contractId);
-            if (CompareStringOrdinal(uri.Query().c_str(), (int)wcslen(contractIdQuery.c_str()), contractIdQuery.c_str(), -1, TRUE) == CSTR_EQUAL)
-            {
-                return { extension.kind, extension.factory(uri) };
-            }
-        }
-
         for (auto const& pair : uri.QueryParsed())
         {
             if (CompareStringOrdinal(pair.Name().c_str(), -1, c_contractIdKeyName, -1, TRUE) == CSTR_EQUAL)
@@ -61,6 +50,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     }
                 }
             }
+        }
+
+        // QueryParsed() function would return empty when it's a file contract with unicode characters in file path
+        // Thus following additional check for file contract is needed
+        auto fileContractUri = GenerateEncodedLaunchUri(L"App", c_fileContractId);
+        if (CompareStringOrdinal(uri.AbsoluteUri().c_str(), fileContractUri.length(), fileContractUri.c_str(), -1, TRUE) == CSTR_EQUAL)
+        {
+            return { ExtendedActivationKind::File, FileActivatedEventArgs::Deserialize(uri) };
         }
 
         return { ExtendedActivationKind::Protocol, nullptr };
