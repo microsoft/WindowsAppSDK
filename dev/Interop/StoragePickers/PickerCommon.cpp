@@ -72,7 +72,7 @@ namespace {
         auto knownFolderManager = winrt::create_instance<IKnownFolderManager>(CLSID_KnownFolderManager);
 
         winrt::com_ptr<IKnownFolder> knownFolder{};
-        HRESULT hr = knownFolderManager->GetFolder(knownFolderId, knownFolder.put());
+        winrt::hresult hr = knownFolderManager->GetFolder(knownFolderId, knownFolder.put());
         if (!knownFolder)
         {
             if (pickerLocationId == winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary)
