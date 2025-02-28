@@ -70,10 +70,29 @@ namespace {
         }
 
         auto knownFolderManager = winrt::create_instance<IKnownFolderManager>(CLSID_KnownFolderManager);
+
         winrt::com_ptr<IKnownFolder> knownFolder{};
-        winrt::check_hresult(knownFolderManager->GetFolder(knownFolderId, knownFolder.put()));
+        winrt::hresult hr = knownFolderManager->GetFolder(knownFolderId, knownFolder.put());
+        if (!knownFolder)
+        {
+            if (pickerLocationId == winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary)
+            {
+                return nullptr;
+            }
+            else
+            {
+                // if the folder is not found, fallback to the Documents Library. This behavior is consistent with that of Windows.Storage.Pickers
+                return GetKnownFolderFromId(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+            }
+        }
+
         winrt::com_ptr<IShellItem> defaultFolder{};
-        winrt::check_hresult(knownFolder->GetShellItem(0, IID_PPV_ARGS(defaultFolder.put())));
+        hr = knownFolder->GetShellItem(0, IID_PPV_ARGS(defaultFolder.put()));
+        if (FAILED(hr))
+        {
+            return nullptr;
+        }
+
         return defaultFolder;
     }
 
