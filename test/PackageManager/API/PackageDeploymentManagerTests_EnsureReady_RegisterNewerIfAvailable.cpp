@@ -494,14 +494,8 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-#ifndef TODO_55967280_EnsurePackageSetReadyAsync_doesnt_register_newer_package_if_lower_version_is_currently_registered
-            WEX::Logging::Log::Comment(L"Bug https://task.ms/55967171 Ensure*() doesn't account for package status");
-            VERIFY_IS_TRUE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
-#else
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
             VERIFY_IS_TRUE(IsPackageRegistered_Redder());
-#endif
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
             RemovePackage_Redder();
@@ -534,14 +528,8 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-#ifndef TODO_55967280_EnsurePackageSetReadyAsync_doesnt_register_newer_package_if_lower_version_is_currently_registered
-            WEX::Logging::Log::Comment(L"Bug https://task.ms/55967280 RegisterNewerIfAvailable(true) isn't honored");
-            VERIFY_IS_TRUE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(IsPackageRegistered_Redder());
-#else
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
             VERIFY_IS_TRUE(IsPackageRegistered_Redder());
-#endif
             VERIFY_IS_TRUE(IsPackageRegistered_Green());
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
@@ -620,7 +608,7 @@ namespace Test::PackageManager::Tests
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
             VERIFY_IS_TRUE(IsPackageRegistered_Red());
-#ifndef TODO_55967280_EnsurePackageSetReadyAsync_doesnt_register_newer_package_if_lower_version_is_currently_registered
+#ifndef TODO_55967171_IsPackageReady_OrNewerAvailable_doesnt_account_for_packagestatus
             WEX::Logging::Log::Comment(L"Bug https://task.ms/55967171 Ensure*() doesn't account for package status");
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 #else
@@ -655,7 +643,7 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-#ifndef TODO_55967280_EnsurePackageSetReadyAsync_doesnt_register_newer_package_if_lower_version_is_currently_registered
+#ifndef TODO_55967171_EnsurePackageSetReadyAsync_doesnt_account_for_package_status
             WEX::Logging::Log::Comment(L"Bug https://task.ms/55967171 Ensure*() doesn't account for package status");
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
