@@ -104,7 +104,6 @@
     <Import Project="..\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems"/>
     <Import Project="..\Notifications\BadgeNotifications\BadgeNotifications.vcxitems" Label="BadgeNotifications" />
     <Import Project="..\Notifications\BaseNotifications\BaseNotifications.vcxitems" Label="BaseNotifications" />
-    <Import Project="..\CompatibilityOptions\CompatibilityOptions.vcxitems" Label="Shared" />
     <Import Project="..\RuntimeCompatibilityOptions\RuntimeCompatibilityOptions.vcxitems" Label="Shared" />
     <Import Project="..\Interop\StoragePickers\StoragePickers.vcxitems" />
   </ImportGroup>

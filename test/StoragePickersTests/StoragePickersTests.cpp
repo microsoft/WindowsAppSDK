@@ -65,6 +65,8 @@ namespace Test::StoragePickersTests
                 winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
                 winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker openPicker(windowId);
                 //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+                auto text = L"中文测试.txt";
+                openPicker.CommitButtonText(text);
                 openPicker.FileTypeFilter().Append(L"*");
                 // Act
                 auto fileOperation = openPicker.PickSingleFileAsync();
