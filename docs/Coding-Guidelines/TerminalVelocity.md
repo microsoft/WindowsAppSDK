@@ -82,7 +82,7 @@ Run the TerminalVelocity generator to create a header file for your feature defi
 For example:
 
 ```
-tools\TerminalVelocity\Generate-TerminalVelocityFeatures.cmd -Path dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Namespace Microsoft.Windows.DeploymentAPI -Output dev\common\TerminalVelocityFeatures-DeploymentAPI.h
+tools\TerminalVelocity\Generate-TerminalVelocityFeatures.cmd -Channel Experimental -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Path dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Output dev\common
 ```
 
 Generate-TerminalVelocityFeatures.cmd runs the generator. The following parameters are supported:
@@ -91,7 +91,9 @@ Generate-TerminalVelocityFeatures.cmd runs the generator. The following paramete
 * **-Channel &lt;channel&gt;** -- channel being built. Allowed values: [`Experimental`, `Preview`, `Stable`, `WindowsInbox`]. Optional, default=`Experimental`.
 * **-Language &lt;language&gt;** -- language for generated code. Allowed values: [`C++`, `C#`]. Optional, default=`C++`.
 * **-Namespace &lt;namespace&gt;** -- namespace for generated symbols. The parameter can specify multiple namespaces delimited by `.` or `::` (the generator emits the right syntax for the target language regardless of the parameter's notation). Optional.
-* **-Output &lt;filename&gt;** -- file to write the generated output. Optional, default=stdout.
+* **-Output &lt;filename&gt;** -- file to write the generated output. Optional, default=stdout. If `filename` is a directory the filename is generated from the input filename (-Path) in the specified directory.
+
+WARNING: As a matter of policy output files MUST have the same base name as the input file (-Path).
 
 For help run
 
@@ -109,7 +111,7 @@ Add a build task to run the TerminalVelocity with the build's properties. For ex
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppSDK -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppSDK -Output $(Build.SourcesDirectory)\dev\common
       workingDirectory: '$(Build.SourcesDirectory)'
 ```
 

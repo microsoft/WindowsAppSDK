@@ -14,8 +14,7 @@
 #                                                                                                                                   #
 #####################################################################################################################################
 
-# Add this for VPack versioning when using Package ES Setup task
-# name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+name: $(version)
 
 # https://aka.ms/obpipelines/triggers
 trigger: none
@@ -46,7 +45,10 @@ extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     featureFlags:
-      EnableCDPxPAT: false
+      EnableCDPxPAT: false      
+      WindowsHostVersion:
+        Network: R1
+
     platform:
       name: 'windows_undocked' # windows undocked
 
@@ -87,10 +89,13 @@ extends:
         SignOutput: false
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
-    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
         SignOutput: false
         PublishPackage: false
         
+    - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
+      parameters:
+        SignOutput: false
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
