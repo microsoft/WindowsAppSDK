@@ -48,15 +48,15 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto parsedQuery = uri.QueryParsed();
+
+            // By design parsed query should have a size of 3 (ContractId, Verb, File), in which case result from QueryParsed() can be used directly.
+            // However, it may have a size of 0 when uri contains unicode characters, or more than 3 when file path contains "&", which requires manual parsing with string functions.
             if (parsedQuery.Size() == 3)
             {
                 auto verb = parsedQuery.GetFirstValueByName(L"Verb");
                 auto file = parsedQuery.GetFirstValueByName(L"File");
                 return make<FileActivatedEventArgs>(verb, file);
             }
-
-            // parsed query may have a size of 0 when uri contains unicode characters, or more than 3 when file contains "&"
-            // In such cases, manually parse the query with string functions
 
             const std::wstring query = uri.Query().c_str();
             auto queryLength = query.length();
