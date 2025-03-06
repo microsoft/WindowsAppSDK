@@ -29,6 +29,8 @@ stages:
       # foundationRepoPath should be empty because we are not doing multiple checkouts hence
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       foundationRepoPath: ""
+      localCompilerOverridePackageName: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
+      localCompilerOverridePackageVersion: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
     condition: ne(variables.LatestOfficialBuildID, '')
     steps:
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
