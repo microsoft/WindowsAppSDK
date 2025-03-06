@@ -1,7 +1,15 @@
 # see https://docs.microsoft.com/azure/devops/pipelines/process/phases for info on yaml ADO jobs
 name: $(version)
 
+resources:
+  repositories:
+    - repository: WindowsAppSDKAggregator
+      type: git
+      name: ProjectReunion/WindowsAppSDKAggregator
+      ref: ${{ variables['Build.SourceBranch'] }}
+
 variables:
+- template: build/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKAggregator
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildOutputDir
