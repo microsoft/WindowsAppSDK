@@ -66,6 +66,8 @@ stages:
         ob_sdl_apiscan_enabled: false
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\APIScanTarget'
       ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
+      localCompilerOverridePackageName: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
+      localCompilerOverridePackageVersion: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]      
     steps:
     - template: WindowsAppSDK-BuildFoundation-Steps.yml@self
       parameters:
