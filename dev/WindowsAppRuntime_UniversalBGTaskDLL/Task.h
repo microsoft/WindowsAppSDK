@@ -12,6 +12,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::UniversalBGTa
         Task() = default;
 
         void Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance taskInstance);
+        winrt::com_ptr<winrt::Windows::ApplicationModel::Background::IBackgroundTask> m_bgTask = nullptr;
     };
 }
 
