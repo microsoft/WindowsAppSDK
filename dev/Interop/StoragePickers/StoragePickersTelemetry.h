@@ -7,8 +7,8 @@
 
 DECLARE_TRACELOGGING_CLASS(StoragePickersTelemetryProvider,
     "Microsoft.WindowsAppSDK.StoragePickersTelemetry",
-    // {3be0d45f-3a9d-46be-a1cf-b08465473cc4}
-    (0x3be0d45f, 0x3a9d, 0x46be, 0xa1, 0xcf, 0xb0, 0x84, 0x65, 0x47, 0x3c, 0xc4));
+    // {6ddc5826-bf0a-522e-cc84-0e70eda439ed}
+    (0x6ddc5826,0xbf0a,0x522e,0xcc,0x84,0x0e,0x70,0xed,0xa4,0x39,0xed));
 
 class StoragePickersTelemetry : public wil::TraceLoggingProvider
 {
