@@ -13,7 +13,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::UniversalBGTa
 
         void Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance taskInstance);
     private:
-        winrt::com_ptr<winrt::Windows::ApplicationModel::Background::IBackgroundTask> m_bgTask = nullptr;
+        winrt::Windows::ApplicationModel::Background::IBackgroundTask m_bgTask = nullptr;
     };
 }
 
