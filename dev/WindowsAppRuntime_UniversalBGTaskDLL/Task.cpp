@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::UniversalBGTa
         auto lookupobj = values.Lookup(lookupStr);
         winrt::guid comClsId = winrt::unbox_value<winrt::guid>(lookupobj);
 
-        THROW_IF_FAILED(CoCreateInstance(comClsId, nullptr, CLSCTX_LOCAL_SERVER, IID_IBackgroundTask, reinterpret_cast<void**>(m_bgTask.put())));
+        THROW_IF_FAILED(CoCreateInstance(comClsId, nullptr, CLSCTX_LOCAL_SERVER, IID_IBackgroundTask, reinterpret_cast<void**>(&m_bgTask)));
         m_bgTask.Run(taskInstance);
     }
 }
