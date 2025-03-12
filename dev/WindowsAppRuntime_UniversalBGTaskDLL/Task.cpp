@@ -6,6 +6,7 @@
 #if __has_include("Task.g.cpp")
 #include "Task.g.cpp"
 #endif
+#include <wil/result_macros.h>
 
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Background;
@@ -22,8 +23,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::UniversalBGTa
         auto lookupobj = values.Lookup(lookupStr);
         winrt::guid comClsId = winrt::unbox_value<winrt::guid>(lookupobj);
 
-        winrt::Windows::ApplicationModel::Background::IBackgroundTask bgTask = nullptr;
-        winrt::hresult hr = CoCreateInstance(comClsId, nullptr, CLSCTX_LOCAL_SERVER, IID_IBackgroundTask, reinterpret_cast<void**>(&bgTask));
-        bgTask.Run(taskInstance);
+        THROW_IF_FAILED(CoCreateInstance(comClsId, nullptr, CLSCTX_LOCAL_SERVER, IID_IBackgroundTask, reinterpret_cast<void**>(&m_bgTask)));
+        m_bgTask.Run(taskInstance);
     }
 }
