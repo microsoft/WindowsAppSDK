@@ -59,6 +59,22 @@ namespace Microsoft.Windows.Storage.Pickers
         Unspecified = 9,
     }
 
+    runtimeclass PickFileResult {
+        PickFileResult(string path);
+
+        string Path { get; }
+
+        IAsyncOperation<Windows.Storage.StorageFile> ToStorageFileAsync();
+    }
+
+    runtimeclass PickFolderResult {
+        PickFolderResult(string path);
+
+        string Path { get; }
+
+        IAsyncOperation<Windows.Storage.StorageFile> ToStorageFolderAsync();
+    }
+
     runtimeclass FileOpenPicker
     {
         FileOpenPicker(Microsoft.UI.WindowId windowId);
@@ -68,8 +84,8 @@ namespace Microsoft.Windows.Storage.Pickers
         PickerLocationId SuggestedStartLocation;
         PickerViewMode ViewMode;
 
-        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
-        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.StorageFile>> PickMultipleFilesAsync();
+        Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
+        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult>> PickMultipleFilesAsync();
     }
 
     runtimeclass FileSavePicker
@@ -80,10 +96,9 @@ namespace Microsoft.Windows.Storage.Pickers
         string DefaultFileExtension;
         IDictionary<string, IList<string>> FileTypeChoices;
         string SuggestedFileName;
-        Windows.Storage.StorageFile SuggestedSaveFile;
         PickerLocationId SuggestedStartLocation;
 
-        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSaveFileAsync()
+        Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync()
     }
 
     runtimeclass FolderPicker
@@ -95,7 +110,7 @@ namespace Microsoft.Windows.Storage.Pickers
         PickerLocationId SuggestedStartLocation;
         PickerViewMode ViewMode;
 
-        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFolder> PickSingleFolderAsync();
+        Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
     }
 }
 ```

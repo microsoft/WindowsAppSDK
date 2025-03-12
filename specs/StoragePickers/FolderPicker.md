@@ -60,7 +60,7 @@ folderPicker.CommitButtonText(L"Select Folder");
 
 Displays a UI element that allows the user to choose a folder.
 
-Returns the picked folder.
+Returns a light weight object that has the path of the picked folder.
 
 Returns null if the file dialog was cancelled or closed without selection.
 
@@ -72,10 +72,10 @@ C#
 using Microsoft.Windows.Storage.Pickers;
 
 var folderPicker = new FolderPicker(this.AppWindow.Id);
-var folder = await folderPicker.PickSingleFolderAsync();
-if (folder is not null)
+var result = await folderPicker.PickSingleFolderAsync();
+if (result is not null)
 {
-    var path = folder.Path;
+    var path = result.Path;
 }
 else
 {
@@ -89,13 +89,17 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker folderPicker(AppWindow().Id());
-auto& folder{ co_await folderPicker.PickSingleFolderAsync() };
-if (folder)
+auto& result{ co_await folderPicker.PickSingleFolderAsync() };
+if (result)
 {
-    auto path{ folder.Path() };
+    auto path{ result.Path() };
 }
 else
 {
     // error handling.
 }
 ```
+
+# See Also
+
+[PickFolderResult](./PickFolderResult.md)

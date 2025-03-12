@@ -19,7 +19,6 @@ Represents a UI element that lets the user choose a file to save.
 | `DefaultFileExtension`     | `string`           | Gets or sets the file extension tailing the suggested file name in the file name input box on launching the dialog. |
 | `FileTypeChoices`          | `IDictionary<string, IList<string>>` | The file extensions categorized by purpose. |
 | `SuggestedFileName`        | `string`           | Gets or sets the file name displayed in the file name input box on launching the dialog. |
-| `SuggestedSaveFile`        | `Windows.Storage.StorageFile`        | Gets or sets the suggested file to save. |
 | `SuggestedStartLocation`   | [Microsoft.Windows.Storage.Pickers.PickerLocationId](./PickerLocationId.md)| Gets or sets the initial location where the file picker looks for files. |
 
 
@@ -79,7 +78,7 @@ savePicker.DefaultFileExtension(L".txt");
 
 Displays a UI element that allows the user to configure the file path to save.
 
-Returns the saved file.
+Returns a light weight object that has the path of the saved file.
 
 Returns null if the file dialog was cancelled or closed without saved file.
 
@@ -91,10 +90,10 @@ C#
 using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id);
-var file = await savePicker.PickSaveFileAsync();
-if (file is not null)
+var result = await savePicker.PickSaveFileAsync();
+if (result is not null)
 {
-    System.IO.File.WriteAllText(file.Path, "Hello world.");
+    System.IO.File.WriteAllText(result.Path, "Hello world.");
 }
 else
 {
@@ -111,10 +110,10 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
-auto& file{ co_await savePicker.PickSaveFileAsync() };
-if (file)
+auto& result{ co_await savePicker.PickSaveFileAsync() };
+if (result)
 {
-    std::ofstream outFile(file.Path().c_str());
+    std::ofstream outFile(result.Path().c_str());
     outFile << "Hello world.";
     outFile.close();
 }
@@ -123,3 +122,7 @@ else
     // error handling.
 }
 ```
+
+# See Also
+
+[PickFileResult](./PickFileResult.md)

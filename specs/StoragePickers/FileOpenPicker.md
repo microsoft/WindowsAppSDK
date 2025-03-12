@@ -68,7 +68,7 @@ openPicker.FileTypeFilter().Append(L".docx");
 
 Displays a UI element that allows user to choose and open one file.
 
-Returns the picked file.
+Returns a light weight object that has the path of the picked file.
 
 Return null if the file dialog was cancelled or closed without selection.
 
@@ -81,10 +81,10 @@ using Microsoft.Windows.Storage.Pickers;
 
 var openPicker = new FileOpenPicker(this.AppWindow.Id);
 
-var file = await openPicker.PickSingleFileAsync();
-if (file is not null)
+var result = await openPicker.PickSingleFileAsync();
+if (result is not null)
 {
-    var content = System.IO.File.ReadAllText(file.Path);
+    var content = System.IO.File.ReadAllText(result.Path);
 }
 else
 {
@@ -100,10 +100,10 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileOpenPicker openPicker(AppWindow().Id());
-auto& file{ co_await openPicker.PickSingleFileAsync() };
-if (file)
+auto& result{ co_await openPicker.PickSingleFileAsync() };
+if (result)
 {
-    std::ifstream fileReader(file.Path().c_str());
+    std::ifstream fileReader(result.Path().c_str());
     std::string text((std::istreambuf_iterator<char>(fileReader)), std::istreambuf_iterator<char>());
     winrt::hstring hText = winrt::to_hstring(text);
 }
@@ -117,7 +117,7 @@ else
 
 Displays a UI element that allows user to choose and open multiple files.
 
-Returns a collection of picked files.
+Returns a collection of light weight objects that has the path of picked files.
 
 Return an empty list (Count = 0) if the file dialog's cancelled or closed without selection.
 
@@ -130,10 +130,10 @@ using Microsoft.Windows.Storage.Pickers;
 
 var openPicker = new FileOpenPicker(this.AppWindow.Id);
 
-var files = await openPicker.PickMultipleFilesAsync();
-if (files is not null)
+var results = await openPicker.PickMultipleFilesAsync();
+if (results.Count > 0)
 {
-    var pickedFilePaths = files.Select(f => f.Path);
+    var pickedFilePaths = results.Select(f => f.Path);
     foreach (var path in pickedFilePaths)
     {
         var content = System.IO.File.ReadAllText(path);
@@ -153,12 +153,12 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileOpenPicker openPicker(AppWindow().Id());
-auto& files{ co_await openPicker.PickMultipleFilesAsync() };
-if (files.Size() > 0)
+auto& results{ co_await openPicker.PickMultipleFilesAsync() };
+if (results.Size() > 0)
 {
-    for (auto const& file : files)
+    for (auto const& result : results)
     {
-        std::ifstream fileReader(file.Path().c_str());
+        std::ifstream fileReader(result.Path().c_str());
         std::string text((std::istreambuf_iterator<char>(fileReader)), std::istreambuf_iterator<char>());
         winrt::hstring hText = winrt::to_hstring(text);
     }
@@ -168,3 +168,7 @@ else
     // error handling.
 }
 ```
+
+# See Also
+
+[PickFileResult](./PickFileResult.md)

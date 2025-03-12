@@ -105,6 +105,6 @@ The `Unspecified` value represents an unspecified location.
 When this value is used, the file picker will use the system default location, which may vary 
 depending on the user's configuration and the context in which the picker is used.
 
-When the `SuggestedStartLocation` was not specified in [FileOpenPicker](./FileOpenFolder.md), 
+When the `SuggestedStartLocation` was not specified in [FileOpenPicker](./FileOpenPicker.md), 
 [FileSavePicker](./FileSavePicker.md), or [FolderPicker](./FolderPicker.md), 
 the default value is `PickerLocationId.Unspecified`.
