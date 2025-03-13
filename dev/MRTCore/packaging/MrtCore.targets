@@ -4,7 +4,7 @@
   <!-- We want MRT Core to NOT be used in WAP or UWP projects. Instead, we want the in-box PRI generation tooling to be used. -->
   <PropertyGroup>
     <EnableCoreMrtTooling Condition="'$(EnableCoreMrtTooling)'=='' and '$(WindowsAppContainer)'!='true' and '$(MSBuildProjectExtension)' != '.wapproj'">true</EnableCoreMrtTooling>
-    <!-- If MSBuildRuntimeType is Core then we are using dotnet build where ExpandPriContent is not available so -->
+    <!-- If MSBuildRuntimeType is Core then we are using dotnet build because it will fail since ExpandPriContent is not available in the dotnet enviroment -->
     <EnableCoreMrtTooling Condition="'$(MSBuildRuntimeType)'=='Core'">false</EnableCoreMrtTooling>
   </PropertyGroup>
 
