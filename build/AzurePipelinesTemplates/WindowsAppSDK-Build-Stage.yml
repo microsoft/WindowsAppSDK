@@ -173,7 +173,7 @@ stages:
       - name: ob_artifactBaseName
         value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
-        ${{ if parameters.runStaticAnalysis }}
+        ${{ if parameters.runStaticAnalysis }}:
           value: true
         ${{ else }}:
           value: false
