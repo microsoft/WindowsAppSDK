@@ -6,6 +6,8 @@
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
+#include <winrt/Windows.ApplicationModel.Resources.h>
+#include <winrt/Windows.ApplicationModel.Resources.Core.h>
 #include "PickerCommon.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
@@ -63,9 +65,36 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileOpenPicker::PickSingleFileAsync()
     {
+        {
+            auto path = L"D:\\winappsdk_filedialog_examples\\x64\\Debug\\LocalizationTest\\resources.pri";
+            auto priFile = co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(path);
+            auto manager = winrt::Windows::ApplicationModel::Resources::Core::ResourceManager::Current();
+            manager.LoadPriFiles({ priFile });
+            auto context = winrt::Windows::ApplicationModel::Resources::Core::ResourceContext::GetForViewIndependentUse().Clone();
+            winrt::hstring resourceName{ L"Resources/Click/HelloWorld" };
+            winrt::hstring text;
+            winrt::hstring keys = L"";
+            for (auto map : manager.AllResourceMaps())
+            {
+                auto mName = map.Key();
+                for (auto item : map.Value())
+                {
+                    auto v = item.Value();
+                    auto k = item.Key();
+                    keys = keys + L"\n" + mName + L":" + k;
+                }
+                if (mName == L"5ff74bdd-f98c-4d39-907d-c3eb559f09b8")
+                {
+
+                    text = map.Value().GetValue(resourceName, context).ValueAsString();
+                }
+            }
+            CommitButtonText(text);
+        }
+
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
-		auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
+        auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
 
         PickerCommon::PickerParameters parameters{};
 
@@ -84,7 +113,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
 
-        parameters.CommitButtonText = L"Test Text Ok";
         parameters.ConfigureDialog(dialog);
 
         {

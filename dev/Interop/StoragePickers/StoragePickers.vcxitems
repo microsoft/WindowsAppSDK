@@ -40,4 +40,8 @@
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)Microsoft.Windows.Storage.Pickers.idl" />
   </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="$(MSBuildThisFileDirectory)Localization\en-US\Resources.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Localization\zh-CN\Resources.resw" />
+  </ItemGroup>
 </Project>

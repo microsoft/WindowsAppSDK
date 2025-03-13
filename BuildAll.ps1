@@ -362,6 +362,8 @@ Try {
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
+        Copy-Item -Path "D:\winappsdk_filedialog_examples\x64\Debug\LocalizationTest\resources.pri" -Destination $nuSpecsPath
+
         $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec"
         Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -Destination $nuspecPath
 
@@ -372,6 +374,7 @@ Try {
 
         # Make the foundation transport package.
         nuget pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+
 
         if ($lastexitcode -ne 0)
         {
