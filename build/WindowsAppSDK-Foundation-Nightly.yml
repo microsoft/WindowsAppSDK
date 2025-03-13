@@ -34,6 +34,19 @@ parameters:
   type: boolean
   default: true
 
+variables:
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+# If we pass ${{ variables['Build.SourceBranch'] }} directly to ref: below, then in a PR validation pipeline run scenario,
+# there will be an error parsing the resources->repositories->repository->WindowsAppSDKAggregatorSourceBranch because 
+# the branch Build.SourceBranch does not exist on the Agg repo. Avoid hitting that error by redirecting to the Main branch.
+- name: mySourceBranch
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    value: refs/heads/main
+  ${{ else }}:
+    value: ${{ variables['Build.SourceBranch'] }}
+
 resources:
   repositories:
     - repository: templates
@@ -44,16 +57,16 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
-    - repository: WindowsAppSDKAggregator
+    # Depending on the settings of this pipeline run, we will use exactly one of the following two definitions for the Agg repo.
+    # Either we reference the Main branch, or the same branch as the branch that this pipeline is currently being run against.
+    - repository: WindowsAppSDKAggregatorSourceBranch
       type: git
       name: ProjectReunion/WindowsAppSDKAggregator
-      ref: ${{ variables['Build.SourceBranch'] }}
-      
-variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
-- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-- template: build/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKAggregator
+      ref: ${{ variables['mySourceBranch'] }}
+    - repository: WindowsAppSDKAggregatorMainBranch
+      type: git
+      name: ProjectReunion/WindowsAppSDKAggregator
+      ref: refs/heads/main
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
