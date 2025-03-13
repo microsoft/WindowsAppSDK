@@ -229,6 +229,18 @@ inline bool IsPackageAvailable(PCWSTR packageFullName)
     return IsPackageRegistered(packageFullName) || IsPackageStaged(packageFullName);
 }
 
+inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)
+{
+    auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
+    return package.Status();
+}
+
+inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(PCWSTR packageFullName)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    return GetPackageStatus(packageManager, packageFullName);
+}
+
 inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
 {
     // Build the target package's .msix filename. It's under the Solution's $(OutDir)
