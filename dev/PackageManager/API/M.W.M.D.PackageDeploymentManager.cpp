@@ -1929,23 +1929,46 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
-        bool isReady{};
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus{};
         if (options.RegisterNewerIfAvailable())
         {
             // Our caller already verified PackageDeploymentFeature::IsPackageReadyOrNewerAvailable is supported so no need to check again
-            isReady = (IsReadyOrNewerAvailable(packageSetItem) == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready);
+            readyOrNewerStatus = IsReadyOrNewerAvailable(packageSetItem);
         }
         else
         {
-            isReady = IsReady(packageSetItem);
+            const bool isReady{ IsReady(packageSetItem) };
+            readyOrNewerStatus = isReady ?
+                winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready :
+                winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
         }
-        if (isReady)
+        if (readyOrNewerStatus == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready)
         {
             return S_OK;
         }
 
-        winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
+        // If the package family's known but a newer version's available on the machine than currently registered
+        // to the user we need to register the family to ensure the newer package is used.
+        //
+        // PackageManager.AddPackage.*Async() SHOULD do that but it doesn't. If the user has foo-v2 registered and foo-v3 is staged
+        // on the machine Add(foo-v2) is a NOOP. This does NOT reigster foo-v3 for the user. That'll require an OS change,
+        // 'cause, backwards compatibility (e.g. Register(foo-v2, options.VersionSupercedence=true)).
+        //
+        // https://task.ms/55967280 tracks this workaround registering the package family.
+        // https://task.ms/56383047 tracks enhancing PackageManager.AddPackage*Async() to support options.VersionSupercedence=true
+        // https://task.ms/56385363 tracks revising this code back to PackageManager.AddPackageByUriAsync() once it supports VersionSupercedence=true (https://task.ms/56383047)
+        if (readyOrNewerStatus == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable)
+        {
+            // We know there's a package registered to the user >=MinVersion AND there's a newer package than that available on the machine (staged, registered to other users, etc)
+            // IOW we want VersionSupercedence behavior and only RegisterPackageByPackageFamilyName() respects VersionSupercedence so let's do it...
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions registerOptions{ ToRegisterOptions(options) };
+            RETURN_IF_FAILED(RegisterPackageByPackageFamilyName(packageSetItem.PackageFamilyName(), registerOptions,
+                packageDeploymentProgress, progress, progressMaxPerPackageSetItem, extendedError, errorText, activityId));
+            return S_OK;
+        }
+
         const auto progressBefore{ packageDeploymentProgress.Progress };
+        winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
         auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
         deploymentOperation.Progress([&](winrt::Windows::Foundation::IAsyncOperationWithProgress<
                                             winrt::Windows::Management::Deployment::DeploymentResult,
@@ -3391,7 +3414,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (options.IsExpectedDigestsSupported())
         {
             const auto expectedDigests{ options.ExpectedDigests() };
-            if (expectedDigests)
+            if (expectedDigests.Size() > 0)
             {
                 auto toExpectedDigests{ toOptions.ExpectedDigests() };
                 for (const auto expectedDigest : expectedDigests)
@@ -3446,7 +3469,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (options.IsExpectedDigestsSupported())
         {
             const auto expectedDigests{ options.ExpectedDigests() };
-            if (expectedDigests)
+            if (expectedDigests.Size() > 0)
             {
                 auto toExpectedDigests{ toOptions.ExpectedDigests() };
                 for (const auto expectedDigest : expectedDigests)
@@ -3490,7 +3513,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (options.IsExpectedDigestsSupported())
         {
             const auto expectedDigests{ options.ExpectedDigests() };
-            if (expectedDigests)
+            if (expectedDigests.Size() > 0)
             {
                 auto toExpectedDigests{ toOptions.ExpectedDigests() };
                 for (const auto expectedDigest : expectedDigests)
@@ -3572,6 +3595,61 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             toOptions.ProjectionOrderPackageFamilyNames().Append(projectionOrderPackageFamilyName);
         }
+        return toOptions;
+    }
+
+    winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions PackageDeploymentManager::ToRegisterOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const
+    {
+        winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions toOptions;
+        const auto addOptions{ options.AddPackageOptions() };
+
+        // RegisterPackageOptions has no TargetVolume -- no need (the packge is already staged however it's staged on the machine)
+        for (const auto uri : addOptions.DependencyPackageUris())
+        {
+            toOptions.DependencyPackageUris().Append(uri);
+        }
+        for (const auto packageFamilyName : addOptions.OptionalPackageFamilyNames())
+        {
+            toOptions.OptionalPackageFamilyNames().Append(packageFamilyName);
+        }
+        // RegisterPackageOptions has no OptionalPackageUris -- warn if any as we won't (can't) use them
+        for (const auto uri : addOptions.OptionalPackageUris())
+        {
+            const auto uriAsString{ uri.ToString() };
+            (void) LOG_HR_MSG(MDD_E_WINDOWSAPPRUNTIME_PACKAGEMANAGER_WARNING_OPTION_IGNORED, "OptionalPackageUri: %ls", uriAsString.c_str());
+        }
+        // RegisterPackageOptions has no RelatedPackageUris -- warn if any as we won't (can't) use them
+        for (const auto uri : addOptions.RelatedPackageUris())
+        {
+            const auto uriAsString{ uri.ToString() };
+            (void) LOG_HR_MSG(MDD_E_WINDOWSAPPRUNTIME_PACKAGEMANAGER_WARNING_OPTION_IGNORED, "RelatedPackageUri: %ls", uriAsString.c_str());
+        }
+        const auto externalLocationUri{ addOptions.ExternalLocationUri() };
+        if (externalLocationUri)
+        {
+            toOptions.ExternalLocationUri(externalLocationUri);
+        }
+        // RegisterPackageOptions has no StubPackageOption -- no need (the packge is already staged however it's staged on the machine)
+        toOptions.AllowUnsigned(addOptions.AllowUnsigned());
+        toOptions.DeveloperMode(addOptions.DeveloperMode());
+        toOptions.ForceAppShutdown(addOptions.ForceAppShutdown());
+        toOptions.ForceTargetAppShutdown(addOptions.ForceTargetAppShutdown());
+        toOptions.ForceUpdateFromAnyVersion(addOptions.ForceUpdateFromAnyVersion());
+        toOptions.InstallAllResources(addOptions.InstallAllResources());
+        // RegisterPackageOptions has no RequiredContentGroupOnly -- no need (the packge is already staged however it's staged on the machine)
+        // RegisterPackageOptions has no RetainFilesOnFailure -- no need (the packge is already staged however it's staged on the machine)
+        toOptions.StageInPlace(addOptions.StageInPlace());
+        toOptions.DeferRegistrationWhenPackagesAreInUse(addOptions.DeferRegistrationWhenPackagesAreInUse());
+        const auto expectedDigests{ addOptions.ExpectedDigests() };
+        if (expectedDigests)
+        {
+            auto toExpectedDigests{ addOptions.ExpectedDigests() };
+            for (const auto expectedDigest : expectedDigests)
+            {
+                toExpectedDigests.Insert(expectedDigest.Key(), expectedDigest.Value());
+            }
+        }
+        // RegisterPackageOptions has no LimitToExistingPackages -- no need (the packge is already staged however it's staged on the machine)
         return toOptions;
     }
 
