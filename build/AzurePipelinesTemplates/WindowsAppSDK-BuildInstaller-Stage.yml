@@ -40,7 +40,7 @@ stages:
         # In the uncommon case that the developer means to target the corresponding private branch on the
         # Agg repo, change WindowsAppSDKAggregatorMainBranch to WindowsAppSDKAggregatorSourceBranch below.
         - template: build/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKAggregatorMainBranch
-      - ${{ elseif and(startsWith(variables['Build.SourceBranch'], 'refs/heads/release'), not(or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.0'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.1'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.2'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.3'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.4'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.5'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.6'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.7')))) }}:    
+      - ${{ elseif and(startsWith(variables['Build.SourceBranch'], 'refs/heads/release'), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/release-1.7'))) }}:    
         # If this pipeline run is targetting a servicing branch which is new enough (1.8+), then we expect
         # the file WindowsAppSDK-Global-LKGVersions.yml to exists on the Agg repo in the corresponding 
         # branch, so target the corresponding branch on the Agg repo.
