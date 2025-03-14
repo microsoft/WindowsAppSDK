@@ -11,6 +11,7 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include "PickerCommon.h"
+#include "PickFileResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -83,8 +84,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileSavePicker::PickSaveFileAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
     {
+        //    throw winrt::hresult_not_implemented();
+        //}
+        //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileSavePicker::PickSaveFileAsyncLegacy()
+        //{
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
         auto defaultFileExtension = m_defaultFileExtension;
@@ -157,13 +162,14 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         }
         CloseHandle(hFile);
 
-        auto file = co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(pathStr);
+        //auto file = co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(pathStr);
 
         if (cancellationToken())
         {
             co_return nullptr;
         }
 
-        co_return file;
+        //co_return file;
+        co_return make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(pathStr);
     }
 }

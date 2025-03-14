@@ -15,9 +15,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)PickerCommon.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PickFileResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PickFolderResult.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)PickerCommon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PickFileResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PickFolderResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StoragePickersTelemetry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)FileOpenPicker.cpp" />

@@ -20,8 +20,9 @@ namespace Microsoft.Windows.Storage.Pickers
         Unspecified,
     };
 
-    runtimeclass PickFileResult {
-        String Path { get;}
+    runtimeclass PickFileResult
+    {
+        String Path { get; };
     }
 
     runtimeclass FileOpenPicker
@@ -35,7 +36,7 @@ namespace Microsoft.Windows.Storage.Pickers
         Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
-        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult>> PickMultipleFilesAsync();
+        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult> > PickMultipleFilesAsync();
     }
 
     runtimeclass FileSavePicker
@@ -53,8 +54,9 @@ namespace Microsoft.Windows.Storage.Pickers
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }
 
-    runtimeclass PickFolderResult {
-        String Path { get;}
+    runtimeclass PickFolderResult
+    {
+        String Path { get; };
     }
 
     runtimeclass FolderPicker

@@ -151,6 +151,14 @@ namespace PickerCommon {
         co_return co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(pathStr);
     }
 
+    winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem)
+    {
+        wil::unique_cotaskmem_string filePath;
+        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
+        throw hresult_not_implemented();
+    }
+
+
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> CreateStorageFolderFromShellItem(winrt::com_ptr<IShellItem> shellItem)
     {
         wil::unique_cotaskmem_string filePath;
@@ -158,6 +166,7 @@ namespace PickerCommon {
         co_return co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath.get());
     }
 
+ 
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
         std::vector<COMDLG_FILTERSPEC> result(filters.Size());

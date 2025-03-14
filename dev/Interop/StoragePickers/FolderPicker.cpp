@@ -5,6 +5,7 @@
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
+#include "PickFolderResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -59,8 +60,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> FolderPicker::PickSingleFolderAsync()
+    //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
     {
+        //    throw winrt::hresult_not_implemented();
+        //}
+        //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> FolderPicker::PickSingleFolderAsyncLegacy()
+        //{
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
@@ -87,12 +93,14 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
-        auto folder = co_await PickerCommon::CreateStorageFolderFromShellItem(shellItem);
+        //auto folder = co_await PickerCommon::CreateStorageFolderFromShellItem(shellItem);
+        auto path = PickerCommon::GetPathFromShellItem(shellItem);
 
         if (cancellationToken())
         {
             co_return nullptr;
         }
-        co_return folder;
+        //co_return folder;
+        co_return make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFolderResult>(path);
     }
 }

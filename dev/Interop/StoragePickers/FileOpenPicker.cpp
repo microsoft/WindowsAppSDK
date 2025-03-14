@@ -7,6 +7,7 @@
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
+#include "PickFileResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -61,11 +62,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileOpenPicker::PickSingleFileAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
+        //    throw winrt::hresult_not_implemented();
+        //}
+        //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileOpenPicker::PickSingleFileAsyncLegacy()
+        //{
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
-		auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
+        auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
 
         PickerCommon::PickerParameters parameters{};
 
@@ -78,9 +83,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         {
             co_return nullptr;
         }
-
-        // TODO: should we initialize COM?
-        // wil::com_initialize_ex initializeCom{ COINIT_APARTMENTTHREADED };
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
 
@@ -96,24 +98,29 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
-        auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
+        //auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
+        auto path = PickerCommon::GetPathFromShellItem(shellItem);
 
         if (cancellationToken())
         {
             co_return nullptr;
         }
-        co_return file;
+        co_return make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path);
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile>> FileOpenPicker::PickMultipleFilesAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> > FileOpenPicker::PickMultipleFilesAsync()
     {
+        //throw winrt::hresult_not_implemented();
+    //}
+    //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile>> FileOpenPicker::PickMultipleFilesAsyncLegacy()
+    //{
         PickerCommon::PickerParameters parameters{};
 
         CaptureParameters(parameters);
 
         co_await winrt::resume_background();
 
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Storage::StorageFile> results{ winrt::single_threaded_vector<winrt::Windows::Storage::StorageFile>() };
+        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> results{ winrt::single_threaded_vector<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult>() };
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
@@ -145,8 +152,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         for (DWORD i = 0; i < itemCount; i++)
         {
             check_hresult(shellItems->GetItemAt(i, shellItem.put()));
-            auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
-            results.Append(file);
+            //auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
+            //results.Append(file);
+            auto path = PickerCommon::GetPathFromShellItem(shellItem);
+            results.Append(make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path));
         }
 
         if (cancellationToken())
