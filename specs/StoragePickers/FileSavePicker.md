@@ -9,18 +9,27 @@ Represents a UI element that lets the user choose a file to save.
 
 # API Pages
 
+## Definition
+
+```C#
+runtimeclass FileSavePicker
+{
+    FileSavePicker(Microsoft.UI.WindowId windowId);
+
+    string CommitButtonText;
+
+    string SettingsIdentifier;
+    string DefaultFileExtension;
+    string SuggestedFileName;
+    IMap<string, IVector<string>> FileTypeChoices{ get; };
+
+    PickerLocationId SuggestedStartLocation;
+
+    Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync()
+}
+```
+
 ## Constructor
-
-### Attributes
-
-| **Attribute**              | **Type**           | **Description**   |
-|----------------------------|--------------------|-------------------|
-| `CommitButtonText`         | `string`           | Gets or sets the text displayed on the commit button of the file picker. |
-| `DefaultFileExtension`     | `string`           | Gets or sets the file extension tailing the suggested file name in the file name input box on launching the dialog. |
-| `FileTypeChoices`          | `IDictionary<string, IList<string>>` | The file extensions categorized by purpose. |
-| `SuggestedFileName`        | `string`           | Gets or sets the file name displayed in the file name input box on launching the dialog. |
-| `SuggestedStartLocation`   | [Microsoft.Windows.Storage.Pickers.PickerLocationId](./PickerLocationId.md)| Gets or sets the initial location where the file picker looks for files. |
-
 
 ### Examples
 C#

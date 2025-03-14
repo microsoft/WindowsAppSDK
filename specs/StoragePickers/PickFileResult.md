@@ -6,47 +6,25 @@ PickFileResult Class
 Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Pickers.md)
 
 Represents the result of a file picking operation. This is a lightweight class that contains a 
-string attribute representing the file path. Its class object can be converted to a 
-`Windows.Storage.StorageFile` object.
+string attribute representing the file path.
 
 # API Pages
 
-## Constructor
+## Definition
 
-### Attributes
-
-| **Attribute** | **Type** | **Description** |
-|---------------|----------|-----------------|
-| `Path`        | `string` | Gets the path of the picked file. |
-
-### Examples
-C#
-
-```csharp
-using Microsoft.Windows.Storage.Pickers;
-
-var result = new PickFileResult("C:\\example\\file.txt");
+```C#
+runtimeclass PickFileResult {
+    string Path { get; }
+}
 ```
 
-C++
+# Backward compatability
 
-```cpp
-#include <winrt/Microsoft.Windows.Storage.Pickers.h>
-using namespace winrt::Microsoft::Windows::Storage::Pickers;
+A PickFileResult object can be converted to `Windows.Storage.StorageFile` object via 
+[Windows.Storage.StorageFile.GetFileFromPathAsync](https://learn.microsoft.com/en-us/uwp/api/windows.storage.storagefile.getfilefrompathasync)
+by the file path.
 
-PickFileResult result(L"C:\\example\\file.txt");
-```
-
-## PickFileResult.ToStorageFileAsync
-
-Converts the picked file to a `Windows.Storage.StorageFile` object.
-
-This conversion aims to facilitate a smooth transition for developers already using 
-`Windows.Storage.StorageFile` in their business logic.
-
-Returns a lightweight object that has the path of the picked file.
-
-### Examples
+## Examples
 
 C#
 
@@ -58,8 +36,8 @@ var result = await picker.PickSingleFileAsync();
 if (result != null)
 {
     // Perform this conversion if you have business logic that uses StorageFile
-    var storageFile = await result.ToStorageFileAsync();
-    // Your business logic
+    var storageFile = await Windows.Storage.StorageFile.GetFileFromPathAsync(result.Path)
+    // Continue your business logic with storageFile
 }
 else
 {
@@ -78,8 +56,8 @@ auto& result{ co_await openPicker.PickSingleFileAsync() };
 if (result)
 {
     // Perform this conversion if you have business logic that uses StorageFile
-    auto storageFile = co_await result.ToStorageFileAsync();
-    // Your business logic
+    auto& storageFile{ co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(result.Path) }
+    // Continue your business logic with storageFile
 }
 else
 {

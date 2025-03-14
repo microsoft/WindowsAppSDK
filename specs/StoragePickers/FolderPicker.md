@@ -11,16 +11,25 @@ Supports specifying the initial location and text on commit button.
 
 # API Pages
 
+## Definition
+
+```C#
+runtimeclass FolderPicker
+{
+    FolderPicker(Microsoft.UI.WindowId windowId);
+
+    string CommitButtonText;
+    IVector<string> FileTypeFilter{ get; };
+
+    PickerLocationId SuggestedStartLocation;
+    PickerViewMode ViewMode;
+    string SettingsIdentifier;
+
+    Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
+}
+```
+
 ## Constructor
-
-### Attributes
-
-| **Attribute**           | **Type**           | **Description**   |
-|-------------------------|--------------------|-------------------|
-| `FileTypeFilter`        | `IList<string>`    | Avoid using this attribute! The folder picker only displays folders, so this attribute has no effect. It is retained for backward compatibility.  |
-| `ViewMode`              | [Microsoft.Windows.Storage.Pickers.PickerViewMode](./PickerViewMode.md)    | Gets or sets the view mode that the file picker is using to present items.         |
-| `SuggestedStartLocation`| [Microsoft.Windows.Storage.Pickers.PickerLocationId](./PickerLocationId.md)| Gets or sets the initial location where the file picker looks for files.           |
-| `CommitButtonText`      | `string`                       | Gets or sets the text displayed on the commit button of the file picker.                                                   |
 
 ### Examples
 

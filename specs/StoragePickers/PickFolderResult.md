@@ -6,48 +6,26 @@ PickFolderResult Class
 Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Pickers.md)
 
 Represents the result of a folder picking operation. This is a lightweight class that contains a 
-string attribute representing the folder path. Its class object can be converted to a 
-`Windows.Storage.StorageFolder` object.
+string attribute representing the folder path.
 
 # API Pages
 
-## Constructor
-
-### Attributes
-
-| **Attribute** | **Type** | **Description** |
-|---------------|----------|-----------------|
-| `Path`        | `string` | Gets the path of the picked folder. |
-
-### Examples
-C#
+## Definition
 
 ```C#
-using Microsoft.Windows.Storage.Pickers;
-
-var result = new PickFolderResult("C:\\example\\folder");
+runtimeclass PickFolderResult {
+    string Path { get; }
+}
 ```
 
-C++
+# Backward Compatibility
 
-```C++
-#include <winrt/Microsoft.Windows.Storage.Pickers.h>
-#include <iostream>
-using namespace winrt::Microsoft::Windows::Storage::Pickers;
+A PickFolderResult object can be converted to `Windows.Storage.StorageFolder` object via 
+[Windows.Storage.StorageFolder.GetFolderFromPathAsync](https://learn.microsoft.com/en-us/uwp/api/windows.storage.storagefolder.getfolderfrompathasync)
+by the folder path.
 
-PickFolderResult result(L"C:\\example\\folder");
-```
 
-## PickFolderResult.ToStorageFolderAsync
-
-Converts the picked folder to a `Windows.Storage.StorageFolder` object.
-
-This conversion aims to facilitate a smooth transition for projects already using 
-`Windows.Storage.StorageFolder` in their business logic.
-
-Returns a lightweight object that has the path of the picked folder.
-
-### Examples
+## Examples
 
 C#
 
@@ -55,12 +33,12 @@ C#
 using Microsoft.Windows.Storage.Pickers;
 
 var picker = new FolderPicker();
-var result = await picker.PickSingleFolderAsync();
+var result = await picker.PickFolderAsync();
 if (result != null)
 {
     // Perform this conversion if you have business logic that uses StorageFolder
-    var storageFolder = await result.ToStorageFolderAsync();
-    // Your business logic
+    var storageFolder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(result.Path)
+    // Continue your business logic with storageFolder
 }
 else
 {
@@ -75,12 +53,12 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker picker;
-auto& result{ co_await picker.PickSingleFolderAsync() };
+auto& result{ co_await openPicker.PickSingleFolderAsync() };
 if (result)
 {
     // Perform this conversion if you have business logic that uses StorageFolder
-    auto storageFolder = co_await result.ToStorageFolderAsync();
-    // Your business logic
+    auto& storageFolder{ co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(result.Path) }
+    // Continue your business logic with storageFolder
 }
 else
 {

@@ -26,6 +26,8 @@ showing UI.
 | [FileOpenPicker](./FileOpenPicker.md)| Displays a UI element that allows user to choose and open files. |
 | [FileSavePicker](./FileSavePicker.md)| Displays a UI element that allows user to save a file.    |
 | [FolderPicker](./FolderPicker.md)    | Displays a UI element that allows user to choose a folder.|
+| [PickFileResult](./PickFileResult.md)| Represents the result of a file picking operation.        |
+| [PickFolderResult](./PickFolderResult.md) | Represents the result of a folder picking operation. |
 
 ## Enums
 
@@ -60,19 +62,11 @@ namespace Microsoft.Windows.Storage.Pickers
     }
 
     runtimeclass PickFileResult {
-        PickFileResult(string path);
-
         string Path { get; }
-
-        IAsyncOperation<Windows.Storage.StorageFile> ToStorageFileAsync();
     }
 
     runtimeclass PickFolderResult {
-        PickFolderResult(string path);
-
         string Path { get; }
-
-        IAsyncOperation<Windows.Storage.StorageFile> ToStorageFolderAsync();
     }
 
     runtimeclass FileOpenPicker
@@ -80,12 +74,13 @@ namespace Microsoft.Windows.Storage.Pickers
         FileOpenPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
-        IList<string> FileTypeFilter;
+        string SettingsIdentifier;
+        IVector<string> FileTypeFilter{ get; };
         PickerLocationId SuggestedStartLocation;
         PickerViewMode ViewMode;
 
         Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
-        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult>> PickMultipleFilesAsync();
+        Windows.Foundation.IAsyncOperation<IVectorView<PickFileResult>> PickMultipleFilesAsync();
     }
 
     runtimeclass FileSavePicker
@@ -93,9 +88,12 @@ namespace Microsoft.Windows.Storage.Pickers
         FileSavePicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+
+        string SettingsIdentifier;
         string DefaultFileExtension;
-        IDictionary<string, IList<string>> FileTypeChoices;
         string SuggestedFileName;
+        IMap<string, IVector<string>> FileTypeChoices{ get; };
+
         PickerLocationId SuggestedStartLocation;
 
         Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync()
@@ -106,9 +104,11 @@ namespace Microsoft.Windows.Storage.Pickers
         FolderPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
-        IList<string> FileTypeFilter;
+        IVector<string> FileTypeFilter{ get; };
+
         PickerLocationId SuggestedStartLocation;
         PickerViewMode ViewMode;
+        string SettingsIdentifier;
 
         Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
     }

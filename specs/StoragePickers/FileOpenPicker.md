@@ -11,16 +11,25 @@ Supports specifying the initial location, extension filters, and text on commit 
 
 # API Pages
 
+## Definition
+
+```C#
+runtimeclass FileOpenPicker
+{
+    FileOpenPicker(Microsoft.UI.WindowId windowId);
+
+    string CommitButtonText;
+    string SettingsIdentifier;
+    IVector<string> FileTypeFilter{ get; };
+    PickerLocationId SuggestedStartLocation;
+    PickerViewMode ViewMode;
+
+    Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
+    Windows.Foundation.IAsyncOperation<IVectorView<PickFileResult>> PickMultipleFilesAsync();
+}
+```
+
 ## Constructor
-
-### Attributes
-
-| **Attribute**            | **Type**           | **Description**                                                          |
-|--------------------------|--------------------|--------------------------------------------------------------------------|
-| `CommitButtonText`       | `string`           | Gets or sets the text displayed on the commit button of the file picker. |
-| `FileTypeFilter`         | `IList<string>`    | Gets the collection of file types that the file picker displays.         |
-| `SuggestedStartLocation` | [Microsoft.Windows.Storage.Pickers.PickerLocationId](./PickerLocationId.md)| Gets or sets the initial location where the file picker looks for files.  |
-| `ViewMode`               | [Microsoft.Windows.Storage.Pickers.PickerViewMode](./PickerViewMode.md)    | Gets or sets the view mode that the file picker is using to present items.|
 
 ### Examples
 C#
