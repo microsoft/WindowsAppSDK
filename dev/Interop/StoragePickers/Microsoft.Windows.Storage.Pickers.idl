@@ -20,6 +20,11 @@ namespace Microsoft.Windows.Storage.Pickers
         Unspecified,
     };
 
+    runtimeclass PickFileResult
+    {
+        String Path { get; };
+    }
+
     runtimeclass FileOpenPicker
     {
         FileOpenPicker(Microsoft.UI.WindowId windowId);
@@ -30,8 +35,8 @@ namespace Microsoft.Windows.Storage.Pickers
         String CommitButtonText;
         Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
 
-        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
-        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.StorageFile> > PickMultipleFilesAsync();
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
+        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult> > PickMultipleFilesAsync();
     }
 
     runtimeclass FileSavePicker
@@ -46,7 +51,12 @@ namespace Microsoft.Windows.Storage.Pickers
         Windows.Storage.StorageFile SuggestedSaveFile;
         String SuggestedFileName;
 
-        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSaveFileAsync();
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
+    }
+
+    runtimeclass PickFolderResult
+    {
+        String Path { get; };
     }
 
     runtimeclass FolderPicker
@@ -59,6 +69,6 @@ namespace Microsoft.Windows.Storage.Pickers
         String CommitButtonText;
         Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
 
-        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFolder> PickSingleFolderAsync();
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
     }
 }
