@@ -58,6 +58,42 @@ namespace Test::StoragePickersTests
             return true;
         }
 
+        TEST_METHOD(FileOpenPicker_ShouldPickFile)
+        {
+            try
+            {
+                auto parentWindow = ::GetForegroundWindow();
+                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ windowId };
+                //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+                picker.FileTypeFilter().Append(L"*");
+                // Act
+                auto fileOperation = picker.PickSingleFileAsync();
+                auto file = fileOperation.get();
+                auto path = file.Path();
+
+                // Assert
+                if (file != nullptr)
+                {
+                    Log::Comment(L"File open was successful");
+                }
+                else
+                {
+                    Log::Error(L"File open canceled.");
+                }
+            }
+            catch (const winrt::hresult_error& ex)
+            {
+                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
+                VERIFY_FAIL(L"Exception occurred during file open picker.");
+            }
+            catch (const std::exception& ex)
+            {
+                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
+                VERIFY_FAIL(L"Standard exception occurred during file open picker.");
+            }
+        }
+
         TEST_METHOD(FileSavePicker_ShouldCreateNewFile)
         {
             try
@@ -71,6 +107,7 @@ namespace Test::StoragePickersTests
                 // Act
                 auto fileOperation = savePicker.PickSaveFileAsync();
                 auto file = fileOperation.get();
+                auto path = file.Path();
 
                 // Assert
                 if (file != nullptr)

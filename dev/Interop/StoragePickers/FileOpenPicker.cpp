@@ -68,6 +68,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         //}
         //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileOpenPicker::PickSingleFileAsyncLegacy()
         //{
+        winrt::apartment_context ui_thread;
+
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
@@ -100,6 +102,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(dialog->GetResult(shellItem.put()));
         //auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
         auto path = PickerCommon::GetPathFromShellItem(shellItem);
+
+        co_await ui_thread;
 
         if (cancellationToken())
         {
@@ -155,7 +159,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             //auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
             //results.Append(file);
             auto path = PickerCommon::GetPathFromShellItem(shellItem);
-            results.Append(make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path));
+            auto result = make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path);
+            results.Append(result);
         }
 
         if (cancellationToken())
