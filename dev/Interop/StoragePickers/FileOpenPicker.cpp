@@ -65,8 +65,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
-        winrt::apartment_context ui_thread;
-
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
@@ -98,8 +96,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
         auto path = PickerCommon::GetPathFromShellItem(shellItem);
-
-        co_await ui_thread;
 
         if (cancellationToken())
         {

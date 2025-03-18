@@ -62,14 +62,4 @@
 #include <windowsappruntime.selfcontained.h>
 #include <windowsappruntime.versioninfo.h>
 
-#include <winrt/Windows.Security.Cryptography.h>
-#include <winrt/Windows.Security.Cryptography.Core.h>
-// #include <winrt/Microsoft.UI.h>   // Don't remove for now.
-#include <winrt/Microsoft.UI.Windowing.h>
-
-
 #define MIDL_NS_PREFIX
-
-// Undefine GetCurrentTime macro to prevent
-// conflict with Storyboard::GetCurrentTime
-#undef GetCurrentTime

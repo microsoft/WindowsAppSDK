@@ -6,6 +6,9 @@
 #include "winrt/base.h"
 #include "winrt/Microsoft.Windows.Storage.Pickers.h"
 #include "TerminalVelocityFeatures-StoragePickers.h"
+#include <winrt/Windows.Security.Cryptography.h>
+#include <winrt/Windows.Security.Cryptography.Core.h>
+#include <winrt/Microsoft.UI.Windowing.h>
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);

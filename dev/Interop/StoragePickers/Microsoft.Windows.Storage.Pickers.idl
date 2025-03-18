@@ -40,7 +40,7 @@ namespace Microsoft.Windows.Storage.Pickers
         String CommitButtonText;
         Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
 
-        Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
         [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult> > PickMultipleFilesAsync();
     }
 
