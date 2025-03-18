@@ -65,7 +65,6 @@ namespace Test::StoragePickersTests
                 auto parentWindow = ::GetForegroundWindow();
                 winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
                 winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ windowId };
-                //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
                 picker.FileTypeFilter().Append(L"*");
                 // Act
                 auto operation = picker.PickSingleFileAsync();
@@ -115,18 +114,18 @@ namespace Test::StoragePickersTests
                 }
                 else
                 {
-                    Log::Error(L"Photo capture failed or was canceled.");
+                    Log::Error(L"File save failed or was canceled.");
                 }
             }
             catch (const winrt::hresult_error& ex)
             {
                 Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
-                VERIFY_FAIL(L"Exception occurred during photo capture.");
+                VERIFY_FAIL(L"Exception occurred during file save picker.");
             }
             catch (const std::exception& ex)
             {
                 Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
-                VERIFY_FAIL(L"Standard exception occurred during photo capture.");
+                VERIFY_FAIL(L"Standard exception occurred during file save picker.");
             }
         }
     };

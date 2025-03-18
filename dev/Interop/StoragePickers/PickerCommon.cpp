@@ -26,7 +26,6 @@ namespace {
         winrt::Windows::Security::Cryptography::CryptographicBuffer::CopyToByteArray(hash, resultBuffer);
         GUID guid = *(reinterpret_cast<GUID*>(resultBuffer.data()));
 
-        // TODO: verify bit pattern code is correct to fit spec
         // Adjust the GUID to conform to version 3 UUID (MD5-based)
         guid.Data3 = (guid.Data3 & 0x0FFF) | 0x3000; // Set the version to 3
         guid.Data4[0] = (guid.Data4[0] & 0x3F) | 0x80; // Set variant to RFC 4122
