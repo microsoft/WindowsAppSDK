@@ -30,7 +30,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 		hstring SuggestedFileName();
 		void SuggestedFileName(hstring const& value);
 
-		//winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> PickSaveFileAsyncLegacy();
         winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> PickSaveFileAsync();
 
 	private:

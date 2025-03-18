@@ -19,6 +19,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     FileSavePicker::FileSavePicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
     hstring FileSavePicker::SettingsIdentifier()
     {
@@ -86,10 +87,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
     {
-        //    throw winrt::hresult_not_implemented();
-        //}
-        //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileSavePicker::PickSaveFileAsyncLegacy()
-        //{
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
         auto defaultFileExtension = m_defaultFileExtension;
@@ -136,12 +133,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(dialog->GetResult(shellItem.put()));
 
         // Get the file path from the dialog
-        wil::unique_cotaskmem_string filePath;
-        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
+        wil::unique_cotaskmem_string filePath{};
+        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
         winrt::hstring pathStr(filePath.get());
 
         wil::unique_cotaskmem_string fileName;
-        check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, &fileName));
+        check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
 
         // Check if the file name has an extension
@@ -155,21 +152,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         }
 
         // Create a file. If the file already exists, will prompt to let user select cancele or override.
-        HANDLE hFile = CreateFile(pathStr.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-        if (hFile == INVALID_HANDLE_VALUE)
-        {
-            co_return nullptr;
-        }
-        CloseHandle(hFile);
-
-        //auto file = co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(pathStr);
+        auto [handle, _] = wil::try_open_or_truncate_existing_file(pathStr.c_str(), GENERIC_WRITE);
 
         if (cancellationToken())
         {
             co_return nullptr;
         }
 
-        //co_return file;
         co_return make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(pathStr);
     }
 }

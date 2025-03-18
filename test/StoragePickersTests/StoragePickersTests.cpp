@@ -68,10 +68,9 @@ namespace Test::StoragePickersTests
                 //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
                 picker.FileTypeFilter().Append(L"*");
                 // Act
-                auto fileOperation = picker.PickSingleFileAsync();
-                auto file = fileOperation.get();
+                auto operation = picker.PickSingleFileAsync();
+                auto file = operation.get();
                 auto path = file.Path();
-
                 // Assert
                 if (file != nullptr)
                 {
