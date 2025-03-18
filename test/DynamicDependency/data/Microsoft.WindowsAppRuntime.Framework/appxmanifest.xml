@@ -6,7 +6,7 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.Framework-4.1"
+    Name="Microsoft.WindowsAppRuntime.Framework.4.1"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
@@ -113,6 +113,12 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.BadgeNotifications.BadgeNotificationManager" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.AddPackageOptions" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.EnsureReadyOptions" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageDeploymentManager" ThreadingModel="both" />
@@ -182,7 +188,7 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.CompatibilityOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub">

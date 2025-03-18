@@ -11,6 +11,10 @@ parameters:
 
 stages:
 - stage: Build
+  # Skip the build job if we are reusing the output of a previous build.
+  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
   dependsOn: []
   jobs:
   - job: VerifyCopyrightHeaders

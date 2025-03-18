@@ -101,10 +101,6 @@
 Param(
     [SecureString]$CertPassword=$null,
 
-    [String]$CertPasswordFile=$null,
-
-    [String]$CertPasswordUser=$true,
-
     [Switch]$CheckAll=$false,
 
     [Switch]$CheckTAEFService=$false,
@@ -576,6 +572,7 @@ function Get-VisualStudio2022InstallPath
     $path = $path -replace [environment]::NewLine, ''
     Write-Verbose "Visual Studio 2022 detected at $path"
     $global:vspath = $path
+    return $path
 }
 
 function Test-VisualStudioComponent
@@ -769,27 +766,17 @@ function Repair-DevTestPfx
     $user = Get-UserPath
     $pwd_file = Join-Path $user 'winappsdk.certificate.test.pwd'
 
-    # -CertPassword <password> is a required parameter for this work
+    if (Test-Path -Path $pwd_file -PathType Leaf)
+    {
+        Write-Warning "WARNING: A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
+    }
+
     $password = ''
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
         $password = $CertPassword
     }
-    elseif (-not [string]::IsNullOrEmpty($CertPasswordFile))
-    {
-        if (-not(Test-Path -Path $CertPasswordFile -PathType Leaf))
-        {
-            Write-Host "Test certificate file $CertPasswordFile...Not Found"
-            $global:issues++
-            return $false
-        }
-        $password = Get-Content -Path $CertPasswordFile -Encoding utf8
-    }
-    elseif (($CertPasswordUser -eq $true) -and (Test-Path -Path $pwd_file -PathType Leaf))
-    {
-        $password = Get-Content -Path $pwd_file -Encoding utf8
-    }
-    elseif ([string]::IsNullOrEmpty($password) -And ($NoInteractive -eq $false))
+    elseif ($NoInteractive -eq $false)
     {
         $password = Read-Host -Prompt 'Creating test certificate. Please enter a password' -AsSecureString
     }
@@ -1007,7 +994,7 @@ function Test-TAEFServiceVersion
     }
     else
     {
-        Write-Verbose "Expected TAEF service is registered ($actual_taef_version)"
+        Write-Host "Expected TAEF service is registered ($actual_taef_version)"
         return 'OK'
     }
 }
@@ -1256,46 +1243,52 @@ function Test-PackagesConfig
     Write-Verbose "Scanning $filename"
     $xml = [xml](Get-Content $filename -EA:Stop)
     $changed = $false
-    ForEach ($package in $xml.packages.package)
-    {
-        $name = $package.id
-        $version = $package.version
 
-        if (-not($versions.Contains($name)))
+    $packageCount = $xml.SelectNodes("//*[local-name()='package']").Count
+    if ($packageCount -gt 0)
+    {
+        ForEach ($package in $xml.packages.package)
         {
-            Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
-        }
-        elseif ($version -ne $versions[$name])
-        {
-            if ($SyncDependencies -eq $true)
+            $name = $package.id
+            $version = $package.version
+
+            if (-not($versions.Contains($name)))
             {
-                Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
-                $package.version = $versions[$name]
-                $changed = $true
+                Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
+                $global:issues++
+            }
+            elseif ($version -ne $versions[$name])
+            {
+                if ($SyncDependencies -eq $true)
+                {
+                    Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
+                    $package.version = $versions[$name]
+                    $changed = $true
+                }
+                else
+                {
+                    $expected = $versions[$name]
+                    Write-Host "ERROR: Unknown version $name=$version (not $expected) in $filename. Run DevCheck -SyncDepedencies to update" -ForegroundColor Red -BackgroundColor Black
+                    $global:issues++
+                }
+            }
+
+            if (-not($package.HasAttribute("targetFramework")))
+            {
+                Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
+                $global:issues++
             }
             else
             {
-                Write-Host "ERROR: Unknown version $name=$version in $filename" -ForegroundColor Red -BackgroundColor Black
-                $global:issues++
+                $targetFramework = $package.targetFramework
+                if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
+                {
+                    Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
+                    $global:issues++
+                }
             }
-        }
 
-        if (-not($package.HasAttribute("targetFramework")))
-        {
-            Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
         }
-        else
-        {
-            $targetFramework = $package.targetFramework
-            if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
-            {
-                Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
-                $global:issues++
-            }
-        }
-
     }
 
     if ($changed -eq $true)
@@ -1599,7 +1592,7 @@ if ($SyncDependencies -eq $true)
 Write-Output "Checking developer environment..."
 
 $cpu = Get-CpuArchitecture
-Write-Verbose("Processor...$cpu")
+Write-Verbose "Processor...$cpu"
 
 $project_root = Get-ProjectRoot
 Write-Output "Windows App SDK location...$project_root"

@@ -35,6 +35,7 @@
 #include <MddBootstrapTest.h>
 
 #include <appmodel_msixdynamicdependency.h>
+#include <MddWin11.h>
 
 #include <WexTestClass.h>
 

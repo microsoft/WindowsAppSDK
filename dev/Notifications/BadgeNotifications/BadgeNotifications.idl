@@ -1,15 +1,13 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <TerminalVelocityFeatures-BadgeNotifications.h>
-
 namespace Microsoft.Windows.BadgeNotifications
 {
     [contractversion(1)]
     apicontract BadgeNotificationsContract {};
 
     // Set of predefined glyphs that can be used to represent various statuses or notifications on an application's badge
-    [contract(BadgeNotificationsContract, 1), feature(Feature_BadgeNotifications)]
+    [contract(BadgeNotificationsContract, 1)]
     enum BadgeNotificationGlyph
     {
         None, // No glyph. A blank tile appears in the badge.
@@ -28,7 +26,7 @@ namespace Microsoft.Windows.BadgeNotifications
     };
 
     // The manager class which encompasses all Badge Notification API Functionality
-    [contract(BadgeNotificationsContract, 1), feature(Feature_BadgeNotifications)]
+    [contract(BadgeNotificationsContract, 1)]
     runtimeclass BadgeNotificationManager
     {
         // Gets a Default instance of a BadgeNotificationManager
@@ -37,14 +35,8 @@ namespace Microsoft.Windows.BadgeNotifications
         // Updates the badge on the app's icon on taskbar to display a numeric value.
         void SetBadgeAsCount(UInt32 notificationCount);
 
-        // Updates the badge on the app's icon on taskbar to display a numeric value with an expiration time.
-        void SetBadgeAsCount(UInt32 notificationCount, Windows.Foundation.DateTime expiration);
-
         // Updates the badge on the app's icon on taskbar to display a glyph.
         void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue);
-
-        // Updates the badge on the app's icon on taskbar to display a glyph with an expiration time.
-        void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue, Windows.Foundation.DateTime expiration);
 
         // Removes the Badge Notifications for the App from Action Center
         void ClearBadge();

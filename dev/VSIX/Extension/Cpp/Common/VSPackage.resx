@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Blank Window (WinUI 3 in Desktop)</value>
+    <value>Blank Window</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Experimental] Blank Window (WinUI 3 in Desktop)</value>
+    <value>[Experimental] Blank Window</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>A blank window for Desktop apps based on the Windows UI Library (WinUI 3).</value>
+    <value>A blank window (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>Blank Page (WinUI 3)</value>
+    <value>Blank Page</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Experimental] Blank Page (WinUI 3)</value>
+    <value>[Experimental] Blank Page</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>A blank page for apps based on the Windows UI Library (WinUI 3).</value>
+    <value>A blank page (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Resource Dictionary (WinUI 3)</value>
+    <value>Resource Dictionary</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Experimental] Resource Dictionary (WinUI 3)</value>
+    <value>[Experimental] Resource Dictionary</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>An empty, keyed collection of XAML resources for apps based on the Windows UI Library (WinUI 3).</value>
+    <value>An empty, keyed collection of XAML resources (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Resources File (.resw)</value>
@@ -151,60 +151,72 @@
     <value>[Experimental] Resources File (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>A file for storing string and conditional resources for apps based on the Windows UI Library (WinUI 3).</value>
+    <value>A file for storing string and conditional resources (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>Custom Control (WinUI 3)</value>
+    <value>Templated Control</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Experimental] Custom Control (WinUI 3)</value>
+    <value>[Experimental] Templated Control</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>A custom control for apps based on the Windows UI Library (WinUI 3).</value>
+    <value>A blank custom control with the appropriate default styling (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>User Control (WinUI 3)</value>
+    <value>User Control</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Experimental] User Control (WinUI 3)</value>
+    <value>[Experimental] User Control</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>A user control for apps based on the Windows UI Library (WinUI 3).</value>
+    <value>A blank user control (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Blank App, Packaged with Windows Application Packaging Project (WinUI 3 in Desktop)</value>
+    <value>WinUI Blank App (Packaged with Windows Application Packaging Project)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimental] Blank App, Packaged with Windows Application Packaging Project (WinUI 3 in Desktop)</value>
+    <value>[Experimental] WinUI Blank App (Packaged with Windows Application Packaging Project)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>A project template for creating a Desktop app based on the Windows UI Library (WinUI 3). A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store.</value>
+    <value>A project template for creating a WinUI app. A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store.</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Blank App, Packaged (WinUI 3 in Desktop)</value>
+    <value>WinUI Blank App (Packaged)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Experimental] Blank App, Packaged (WinUI 3 in Desktop)</value>
+    <value>[Experimental] WinUI Blank App (Packaged)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>A project template for creating a Desktop app based on the Windows UI Library (WinUI 3) along with a MSIX package for side-loading or distribution via the Microsoft Store.</value>
+    <value>A project template for creating a WinUI app along with a MSIX package for side-loading or distribution via the Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Windows Runtime Component (WinUI 3)</value>
+    <value>WinUI Windows Runtime Component</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimental] Windows Runtime Component (WinUI 3)</value>
+    <value>[Experimental] WinUI Windows Runtime Component (C++/WinRT)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both Desktop and Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI 3).</value>
+    <value>A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both desktop and Universal Windows Platform (UWP) apps, based on WinUI.</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Unit Test App (WinUI 3)</value>
+    <value>WinUI Unit Test App</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Experimental] Unit Test App (WinUI 3)</value>
+    <value>[Experimental] WinUI Unit Test App</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>A project for creating a C++/WinRT unit test app for WinUI 3 using MSTest.</value>
+    <value>A project for creating a C++/WinRT unit test app for WinUI using MSTest.</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>WinUI Blank App</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>A project for creating an empty WinUI app.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>Windows Application Packaging Project for WinUI</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>A project template that creates MSIX packages containing WinUI applications for side-loading or distribution via the Microsoft Store.</value>
   </data>
 </root>

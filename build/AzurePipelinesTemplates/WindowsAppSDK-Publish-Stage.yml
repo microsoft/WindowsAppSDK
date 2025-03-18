@@ -9,7 +9,7 @@ stages:
 - stage: Publish
   dependsOn:
   - Test
-  - Pack
+  - StaticValidationTest
   condition: not(failed())
   jobs:
   # Publish

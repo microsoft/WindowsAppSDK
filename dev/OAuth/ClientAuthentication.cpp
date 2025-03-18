@@ -17,13 +17,11 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
 {
     ClientAuthentication::ClientAuthentication()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
     }
 
     ClientAuthentication::ClientAuthentication(const HttpCredentialsHeaderValue& authorization) :
         m_authorization(authorization)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
     }
 
     oauth::ClientAuthentication ClientAuthentication::CreateForBasicAuthorization(const winrt::hstring& clientId,

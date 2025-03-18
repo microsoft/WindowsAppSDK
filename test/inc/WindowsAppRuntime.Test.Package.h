@@ -21,10 +21,10 @@
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
 
-#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Framework-4.1"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.DDLM"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.Main-4.1"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Singleton"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Framework.4.1"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME      L"WindowsAppRuntime.Test.DDLM"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME      L"WindowsAppRuntime.Test.DynDep.DataStore.4.1"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME L"WindowsAppRuntime.Test.Singleton"
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.1.0-Test"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.Main.1.0-Test"
@@ -49,7 +49,7 @@
 #else
 #   error "Unknown processor architecture"
 #endif
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX L"." WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID    WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FAMILYNAME     WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FULLNAME       WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
@@ -94,8 +94,8 @@ namespace DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore-" WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore-" WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 namespace WindowsAppRuntimeMain = DynamicDependencyDataStore;
 
@@ -227,6 +227,18 @@ inline bool IsPackageAvailable(PCWSTR packageFullName)
     // NOTE: To check if a package is staged and not registered to the current user:
     //              bool isStaged = IsPackageAvailable(p) && !IsPackageRegistered(p)
     return IsPackageRegistered(packageFullName) || IsPackageStaged(packageFullName);
+}
+
+inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)
+{
+    auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
+    return package.Status();
+}
+
+inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(PCWSTR packageFullName)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    return GetPackageStatus(packageManager, packageFullName);
 }
 
 inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)

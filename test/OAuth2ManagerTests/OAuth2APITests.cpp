@@ -15,7 +15,6 @@
 #include <WexTestClass.h>
 #include <WinSock2.h>
 
-#include <TerminalVelocityFeatures-OAuth.h>
 #include <winrt/Microsoft.Security.Authentication.OAuth.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Security.Cryptography.h>
@@ -270,22 +269,12 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(Protocol_AuthorizationCode_BasicEndToEnd)
         {
-            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
-                return;
-            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_CODE REDIRECT_TYPE_PROTOCOL;
             DoBasicEndToEndAuthCodeTest(client_id, protocol_redirect_uri);
         }
 
         TEST_METHOD(AuthorizationCodeWithClientAuth)
         {
-            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
-                return;
-            }
             // NOTE: This is testing client auth, which is a token request only thing, hence only using a single redirection type
             static constexpr std::wstring_view client_id = GRANT_TYPE_CODE REDIRECT_TYPE_LOCALHOST AUTH_TYPE_HEADER;
             auto requestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(client_id, Uri{ localhost_redirect_uri });
@@ -305,11 +294,6 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(ClientCredentialsTokenRequest)
         {
-            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
-                return;
-            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_CLIENT AUTH_TYPE_HEADER;
             auto tokenParams = TokenRequestParams::CreateForClientCredentials();
             auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
@@ -318,11 +302,6 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(RefreshTokenRequest)
         {
-            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
-                return;
-            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_REFRESH AUTH_TYPE_HEADER;
             auto tokenParams = TokenRequestParams::CreateForRefreshToken(refresh_token_old);
             auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
@@ -331,11 +310,6 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(ExtensionTokenRequest)
         {
-            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
-                return;
-            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_EXTENSION AUTH_TYPE_HEADER;
             auto tokenParams = TokenRequestParams::CreateForExtension(Uri{ extension_grant_uri });
             auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
@@ -344,11 +318,6 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(TokenRequestErrorResponse)
         {
-            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
-                return;
-            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_CLIENT TOKEN_ERROR_RESPONSE;
             auto tokenParams = TokenRequestParams::CreateForClientCredentials();
             auto auth = ClientAuthentication::CreateForBasicAuthorization(client_id, L"password");
@@ -376,11 +345,6 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(AdditionalParams)
         {
-            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
-                return;
-            }
             static constexpr std::wstring_view client_id = GRANT_TYPE_CODE REDIRECT_TYPE_LOCALHOST ADDITIONAL_PARAMS;
             auto requestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(client_id, Uri{ localhost_redirect_uri });
             auto additionalRequestParams = requestParams.AdditionalParams();
@@ -402,11 +366,6 @@ namespace OAuth2ManagerTests
 
         TEST_METHOD(CompleteInvalidState)
         {
-            if (!::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"OAuth2Manager API Features are not enabled.");
-                return;
-            }
             VERIFY_IS_FALSE(OAuth2Manager::CompleteAuthRequest(Uri{ L"unknown-protocol:" })); // No query parameters at all
             VERIFY_IS_FALSE(OAuth2Manager::CompleteAuthRequest(Uri{ L"http://127.0.0.1/oauth?code=abc123" })); // Missing state
             VERIFY_IS_FALSE(OAuth2Manager::CompleteAuthRequest(Uri{ L"oauthtestapp:oauth?code=abc&state=invalid" }));

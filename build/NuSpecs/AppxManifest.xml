@@ -64,6 +64,7 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationConferencingConfig" ThreadingModel="both" />
 
         <!-- AppNotificationBuilder -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder" ThreadingModel="both" />
@@ -115,13 +116,13 @@
         <!-- BadgeNotifications -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.BadgeNotifications.BadgeNotificationManager" ThreadingModel="both" />
 
-        <!-- CompatibilityOptions -->
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.CompatibilityOptions" ThreadingModel="both" />
-
         <!-- StoragePickers -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileOpenPicker" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileSavePicker" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FolderPicker" ThreadingModel="both" />
+
+        <!-- RuntimeCompatibilityOptions -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub">

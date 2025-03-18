@@ -1,14 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include <TerminalVelocityFeatures-OAuth.h>
-
 namespace Microsoft.Security.Authentication.OAuth
 {
     [contractversion(1)]
     apicontract OAuthContract {};
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass ClientAuthentication
     {
         ClientAuthentication();
@@ -26,7 +24,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Windows.Foundation.Collections.IMap<String, String> AdditionalHeaders { get; };
     }
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     static runtimeclass OAuth2Manager
     {
         // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
@@ -56,7 +54,7 @@ namespace Microsoft.Security.Authentication.OAuth
 
     // Correlates to the 'code_challenge_method' as described by section 4.3 of RFC 7636: Proof Key for Code Exchange by
     // OAuth Public Clients (https://www.rfc-editor.org/rfc/rfc7636.html#section-4.3)
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     enum CodeChallengeMethodKind
     {
         // Suppresses the use of a code verifier. An error will be thrown if a code challenge string is set when this
@@ -68,7 +66,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Plain = 2,
     };
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass AuthRequestParams
     {
         // Construct with required parameters
@@ -143,7 +141,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Windows.Foundation.Collections.IMap<String, String> AdditionalParams { get; };
     }
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass AuthResponse
     {
         // From the "state" parameter of the authorization response. This property will always be set because a state
@@ -185,7 +183,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Windows.Foundation.Collections.IMapView<String, String> AdditionalParams { get; };
     }
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass AuthFailure
     {
         // From the "error" parameter of the error response. The value of this property will map to a well known string
@@ -224,7 +222,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Windows.Foundation.Collections.IMapView<String, String> AdditionalParams { get; };
     }
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass AuthRequestResult
     {
         // The raw URI that was used to complete the request.
@@ -237,7 +235,7 @@ namespace Microsoft.Security.Authentication.OAuth
         AuthFailure Failure { get; };
     }
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass TokenRequestParams
     {
         // Construct with required parameters
@@ -338,7 +336,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Windows.Foundation.Collections.IMap<String, String> AdditionalParams { get; };
     }
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass TokenResponse
     {
         // From the "access_token" parameter of the token response. A required property that should always be set.
@@ -378,7 +376,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Windows.Foundation.Collections.IMapView<String, Windows.Data.Json.IJsonValue> AdditionalParams { get; };
     }
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     enum TokenFailureKind
     {
         // The server responded with an error response as described by RFC 6749 section 5.2. This means that the failure
@@ -394,7 +392,7 @@ namespace Microsoft.Security.Authentication.OAuth
         InvalidResponse = 2,
     };
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass TokenFailure
     {
         // Indicates the type of failure that this object describes, which will indicate which properties might be set.
@@ -428,7 +426,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Windows.Foundation.Collections.IMapView<String, Windows.Data.Json.IJsonValue> AdditionalParams { get; };
     }
 
-    [contract(OAuthContract, 1), feature(Feature_OAuth)]
+    [contract(OAuthContract, 1)]
     runtimeclass TokenRequestResult
     {
         // The raw HTTP response that was used to complete the request

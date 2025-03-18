@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include <TerminalVelocityFeatures-CompatibilityOptions.h>
-
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
+    [contractversion(1)]
+    apicontract RuntimeCompatibilityContract {};
+
     /// The set of servicing changes that can be disabled.
-    enum CompatibilityChange
+    [contract(RuntimeCompatibilityContract, 1)]
+    enum RuntimeCompatibilityChange
     {
         None = 0, /// do not use this value
 
@@ -16,11 +18,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         // ...
     };
 
-    [contractversion(1)]
-    apicontract CompatibilityContract {};
-
     /// Represents a version of the Windows App Runtime.
-    [contract(CompatibilityContract, 1), feature(Feature_CompatibilityOptions)]
+    [contract(RuntimeCompatibilityContract, 1)]
     struct WindowsAppRuntimeVersion
     {
         UInt32 Major;
@@ -32,20 +31,19 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     /// for Windows App Runtime behavior of changes added in servicing updates. This
     /// object is only used to set the runtime behavior and can't be used to query the
     /// applied options.
-    // TODO: Get agreement and add a generic Feature_Experimental
-    [contract(CompatibilityContract, 1), feature(Feature_CompatibilityOptions)]
-    runtimeclass CompatibilityOptions
+    [contract(RuntimeCompatibilityContract, 1)]
+    runtimeclass RuntimeCompatibilityOptions
     {
-        CompatibilityOptions();
+        RuntimeCompatibilityOptions();
 
-        /// An optional patch mode to use if the runtime version matches the major.minor version.
-        WindowsAppRuntimeVersion PatchMode1 { get; set; };
+        /// An optional patch level to use if the runtime version matches the major.minor version.
+        WindowsAppRuntimeVersion PatchLevel1 { get; set; };
 
-        /// An optional patch mode to use if the runtime version matches the major.minor version.
-        WindowsAppRuntimeVersion PatchMode2 { get; set; };
+        /// An optional patch level to use if the runtime version matches the major.minor version.
+        WindowsAppRuntimeVersion PatchLevel2 { get; set; };
 
         /// An optional list of specific servicing changes to disable.
-        IVector<CompatibilityChange> DisabledChanges{ get; };
+        IVector<RuntimeCompatibilityChange> DisabledChanges{ get; };
 
         /// Apply the compatibility options to the runtime.
         void Apply();
