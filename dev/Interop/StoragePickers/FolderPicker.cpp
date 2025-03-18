@@ -12,6 +12,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     FolderPicker::FolderPicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FolderPicker::ViewMode()
     {
@@ -60,13 +61,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
 
-    //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
     {
-        //    throw winrt::hresult_not_implemented();
-        //}
-        //winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> FolderPicker::PickSingleFolderAsyncLegacy()
-        //{
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
@@ -93,14 +89,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
-        //auto folder = co_await PickerCommon::CreateStorageFolderFromShellItem(shellItem);
         auto path = PickerCommon::GetPathFromShellItem(shellItem);
 
         if (cancellationToken())
         {
             co_return nullptr;
         }
-        //co_return folder;
         co_return make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFolderResult>(path);
     }
 }

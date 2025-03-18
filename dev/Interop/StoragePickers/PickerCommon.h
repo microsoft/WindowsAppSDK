@@ -2,19 +2,17 @@
 #pragma once
 #include "pch.h"
 #include "ShObjIdl.h"
+#include "wil/cppwinrt.h"
 #include "winrt/base.h"
 #include "winrt/Microsoft.Windows.Storage.Pickers.h"
+#include "TerminalVelocityFeatures-StoragePickers.h"
 
 namespace PickerCommon {
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CreateStorageFileFromShellItem(winrt::com_ptr<IShellItem> shellItem);
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> CreateStorageFolderFromShellItem(winrt::com_ptr<IShellItem> shellItem);
-
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
 
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
 
-    // TODO: remove this if we know proper and null safe empty test for string
     bool IsHStringNullOrEmpty(winrt::hstring value);
 
     struct PickerParameters {

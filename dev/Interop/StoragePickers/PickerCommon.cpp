@@ -8,22 +8,22 @@ namespace {
 
     GUID HashHStringToGuid(winrt::hstring const& input)
     {
-        auto algorithmProvider = winrt::Windows::Security::Cryptography::Core::HashAlgorithmProvider::OpenAlgorithm(winrt::Windows::Security::Cryptography::Core::HashAlgorithmNames::Md5());
+        auto algorithm = winrt::Windows::Security::Cryptography::Core::HashAlgorithmProvider::OpenAlgorithm(winrt::Windows::Security::Cryptography::Core::HashAlgorithmNames::Md5());
 
         auto buffer = winrt::Windows::Security::Cryptography::CryptographicBuffer::ConvertStringToBinary(input, winrt::Windows::Security::Cryptography::BinaryStringEncoding::Utf16LE);
 
-        auto hash = algorithmProvider.HashData(buffer);
+        auto hash = algorithm.HashData(buffer);
 
-        if (hash.Length() != 16)
+        if (hash.Length() != sizeof(GUID))
         {
             throw winrt::hresult_error(E_FAIL, L"Invalid hash length");
         }
 
-        winrt::com_array<uint8_t> resultBuffer{};
+        winrt::com_array<uint8_t> resultBuffer{ sizeof(GUID) };
         winrt::Windows::Security::Cryptography::CryptographicBuffer::CopyToByteArray(hash, resultBuffer);
         GUID guid = *(reinterpret_cast<GUID*>(resultBuffer.data()));
 
-        // TODO: verify bit pattern code from copilot is correct to fit spec
+        // TODO: verify bit pattern code is correct to fit spec
         // Adjust the GUID to conform to version 3 UUID (MD5-based)
         guid.Data3 = (guid.Data3 & 0x0FFF) | 0x3000; // Set the version to 3
         guid.Data4[0] = (guid.Data4[0] & 0x3F) | 0x80; // Set variant to RFC 4122
@@ -31,8 +31,6 @@ namespace {
         return guid;
     }
 
-    // TODO: use better winrt implementations?
-    // Challenge: currently winrt based Storage.KnownFolder APIs does not provide all location id we need
     winrt::com_ptr<IShellItem> GetKnownFolderFromId(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId)
     {
         KNOWNFOLDERID knownFolderId;
@@ -75,15 +73,11 @@ namespace {
         winrt::hresult hr = knownFolderManager->GetFolder(knownFolderId, knownFolder.put());
         if (!knownFolder)
         {
-            if (pickerLocationId == winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary)
-            {
-                return nullptr;
-            }
-            else
-            {
-                // if the folder is not found, fallback to the Documents Library. This behavior is consistent with that of Windows.Storage.Pickers
-                return GetKnownFolderFromId(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
-            }
+            knownFolderManager->GetFolder(FOLDERID_Documents, knownFolder.put());
+        }
+        if (!knownFolder)
+        {
+            return nullptr;
         }
 
         winrt::com_ptr<IShellItem> defaultFolder{};
@@ -127,7 +121,6 @@ namespace {
         }
         return result;
     }
-
 }
 
 
@@ -137,18 +130,7 @@ namespace PickerCommon {
 
     bool IsHStringNullOrEmpty(winrt::hstring value)
     {
-        // TODO: proper handling of null string reference?
         return value.empty();
-    }
-
-    // TODO: better way to convert ShellItem a StorageFile without relying on path?.
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CreateStorageFileFromShellItem(winrt::com_ptr<IShellItem> shellItem)
-    {
-        wil::unique_cotaskmem_string filePath;
-        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
-        auto pathStr = filePath.get();
-
-        co_return co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(pathStr);
     }
 
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem)
@@ -157,15 +139,6 @@ namespace PickerCommon {
         check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
         return winrt::hstring{ filePath.get() };
     }
-
-
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> CreateStorageFolderFromShellItem(winrt::com_ptr<IShellItem> shellItem)
-    {
-        wil::unique_cotaskmem_string filePath;
-        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
-        co_return co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath.get());
-    }
-
 
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {

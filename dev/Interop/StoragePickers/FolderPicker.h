@@ -22,7 +22,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
 		winrt::Windows::Foundation::Collections::IVector<hstring> FileTypeFilter();
 
-		//winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> PickSingleFolderAsyncLegacy();
         winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> PickSingleFolderAsync();
 
 	private:
