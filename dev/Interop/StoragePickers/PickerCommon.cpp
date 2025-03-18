@@ -19,7 +19,7 @@ namespace {
             throw winrt::hresult_error(E_FAIL, L"Invalid hash length");
         }
 
-        winrt::com_array<uint8_t> resultBuffer{ sizeof(GUID) };
+        winrt::com_array<uint8_t> resultBuffer(sizeof(GUID));
         winrt::Windows::Security::Cryptography::CryptographicBuffer::CopyToByteArray(hash, resultBuffer);
         GUID guid = *(reinterpret_cast<GUID*>(resultBuffer.data()));
 
@@ -136,7 +136,7 @@ namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem)
     {
         wil::unique_cotaskmem_string filePath;
-        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
+        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
         return winrt::hstring{ filePath.get() };
     }
 
@@ -167,7 +167,7 @@ namespace PickerCommon {
     {
         std::vector<COMDLG_FILTERSPEC> result(filters.Size());
         buffer.clear();
-        buffer.reserve(filters.Size() * (size_t)2);
+        buffer.reserve(filters.Size() * 2ull);
 
         for (const auto& filter : filters)
         {
@@ -180,7 +180,7 @@ namespace PickerCommon {
             result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
         }
 
-        if (result.size() == 0)
+        if (result.empty())
         {
             result.push_back({ L"All Files", L"*.*" });
         }
@@ -206,6 +206,6 @@ namespace PickerCommon {
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
         }
 
-        check_hresult(dialog->SetFileTypes(FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+        check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
     }
 }
