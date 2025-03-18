@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "FolderPicker.h"
 #include "Microsoft.Windows.Storage.Pickers.FolderPicker.g.cpp"

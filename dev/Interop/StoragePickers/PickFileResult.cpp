@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "PickFileResult.h"
 #include "Microsoft.Windows.Storage.Pickers.PickFileResult.g.cpp"

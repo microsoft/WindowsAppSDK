@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "FileOpenPicker.h"
 #include "Microsoft.Windows.Storage.Pickers.FileOpenPicker.g.cpp"

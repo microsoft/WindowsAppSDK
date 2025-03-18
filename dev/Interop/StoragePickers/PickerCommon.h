@@ -1,4 +1,6 @@
-// TODO: use better namespace, maybe anonymous namespace?
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #pragma once
 #include "pch.h"
 #include "ShObjIdl.h"
