@@ -105,6 +105,7 @@
     <Import Project="..\Notifications\BadgeNotifications\BadgeNotifications.vcxitems" Label="BadgeNotifications" />
     <Import Project="..\Notifications\BaseNotifications\BaseNotifications.vcxitems" Label="BaseNotifications" />
     <Import Project="..\RuntimeCompatibilityOptions\RuntimeCompatibilityOptions.vcxitems" Label="Shared" />
+    <Import Project="..\Interop\StoragePickers\StoragePickers.vcxitems" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -171,7 +172,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -189,7 +190,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -207,7 +208,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -225,7 +226,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -243,7 +244,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
