@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -29,6 +29,7 @@ namespace Test::AppLifecycle
         std::wstring m_testName;
 
         const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
+        const std::wstring c_testDataFileName_Unicode = L"你好&世界" + c_testFileExtension;
         const std::wstring c_testDataFileName_Packaged = L"testfile" + c_testFileExtension_Packaged;
         const std::wstring c_testPackageFile = g_deploymentDir + L"AppLifecycleTestPackage.msix";
         const std::wstring c_testVCLibsPackageFile = g_deploymentDir + L"VCLibs.appx";
@@ -52,6 +53,7 @@ namespace Test::AppLifecycle
 
             // Write out some test content.
             WriteContentFile(c_testDataFileName);
+            WriteContentFile(c_testDataFileName_Unicode);
             WriteContentFile(c_testDataFileName_Packaged);
 
             return true;
@@ -63,6 +65,7 @@ namespace Test::AppLifecycle
             try
             {
                 DeleteContentFile(c_testDataFileName_Packaged);
+                DeleteContentFile(c_testDataFileName_Unicode);
                 DeleteContentFile(c_testDataFileName);
                 UninstallPackage(c_testPackageFullName);
             }
@@ -116,6 +119,42 @@ namespace Test::AppLifecycle
 
             // Launch the file and wait for the event to fire.
             auto file = OpenDocFile(c_testDataFileName);
+            auto launchResult = Launcher::LaunchFileAsync(file).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            // Wait for the file activation.
+            WaitForEvent(event, m_failed);
+
+            Execute(L"AppLifecycleTestApp.exe", L"/UnregisterFile", g_deploymentDir);
+
+            // Wait for the unregister event.
+            WaitForEvent(event, m_failed);
+        }
+
+        TEST_METHOD(GetActivatedEventArgsForUnicodeNamedFile_Win32)
+        {
+            // Create a named event for communicating with test app.
+            auto event = CreateTestEvent(c_testFilePhaseEventName);
+
+            // Cleanup any leftover data from previous runs i.e. ensure we running with a clean slate
+            try
+            {
+                Execute(L"AppLifecycleTestApp.exe", L"/UnregisterFile", g_deploymentDir);
+                WaitForEvent(event, m_failed);
+            }
+            catch (...)
+            {
+                //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+            }
+
+            // Launch the test app to register for protocol launches.
+            Execute(L"AppLifecycleTestApp.exe", L"/RegisterFile", g_deploymentDir);
+
+            // Wait for the register event.
+            WaitForEvent(event, m_failed);
+
+            // Launch the file and wait for the event to fire.
+            auto file = OpenDocFile(c_testDataFileName_Unicode);
             auto launchResult = Launcher::LaunchFileAsync(file).get();
             VERIFY_IS_TRUE(launchResult);
 
