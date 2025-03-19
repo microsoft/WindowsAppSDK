@@ -199,8 +199,8 @@ steps:
   displayName: 'Setup native compiler version override'
   inputs:
     microsoftDropReadPat: $(System.AccessToken)
-    compilerPackageName: $(compilerOverridePackageName)
-    compilerPackageVersion: $(compilerOverridePackageVersion)
+    compilerPackageName: $(localCompilerOverridePackageName)
+    compilerPackageVersion: $(localCompilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)
