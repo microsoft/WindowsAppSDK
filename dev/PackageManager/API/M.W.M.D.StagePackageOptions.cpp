@@ -121,6 +121,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> StagePackageOptions::ExpectedDigests()
     {
+        if (!m_expectedDigests)
+        {
+            m_expectedDigests = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, hstring>();
+        }
         return m_expectedDigests;
     }
 }
