@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT license.
 
 #pragma once
@@ -135,12 +135,13 @@ public:
                 TraceLoggingWideString(package.c_str(), "Package"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& package, std::int32_t/*winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus*/ readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingWideString(package.c_str(), "Package"));
+                TraceLoggingWideString(package.c_str(), "Package"),
+                TraceLoggingInt32(static_cast<std::int32_t>(readyOrNewerStatus), "ReadyOrNewerStatus"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
@@ -153,12 +154,13 @@ public:
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri, std::int32_t/*winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus*/ readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageReadyByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
+                TraceLoggingWideString(packageUri.c_str(), "PackageUri"),
+                TraceLoggingInt32(static_cast<std::int32_t>(readyOrNewerStatus), "ReadyOrNewerStatus"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
@@ -171,12 +173,13 @@ public:
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId, std::int32_t/*winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus*/ readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageSetReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
+                TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"),
+                TraceLoggingInt32(static_cast<std::int32_t>(readyOrNewerStatus), "ReadyOrNewerStatus"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
