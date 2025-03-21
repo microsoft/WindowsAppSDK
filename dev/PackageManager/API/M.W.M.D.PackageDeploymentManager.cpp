@@ -1930,7 +1930,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         activityId = winrt::guid{};
 
         winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus{};
-        if (options.RegisterNewerIfAvailable())
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_56439870>() && options.RegisterNewerIfAvailable())
         {
             // Our caller already verified PackageDeploymentFeature::IsPackageReadyOrNewerAvailable is supported so no need to check again
             readyOrNewerStatus = IsReadyOrNewerAvailable(packageSetItem);
