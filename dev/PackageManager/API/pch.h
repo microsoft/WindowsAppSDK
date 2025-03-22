@@ -34,5 +34,8 @@
 
 #include "MsixPackageManager.h"
 
+#include <FrameworkUdk/Containment.h>
 #include <FrameworkUdk/PackageManagement.h>
 #include <FrameworkUdk/UupStateRepository.h>
+
+#include "PackageManager.Containment.h"
