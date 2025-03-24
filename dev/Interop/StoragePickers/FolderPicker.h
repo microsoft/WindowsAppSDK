@@ -4,6 +4,7 @@
 #pragma once
 #include "Microsoft.Windows.Storage.Pickers.FolderPicker.g.h"
 #include "PickerCommon.h"
+#include "StoragePickersTelemetryHelper.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -34,8 +35,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 		hstring m_settingsIdentifier{};
 		PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
 		hstring m_commitButtonText{};
+        StoragePickersTelemetryHelper m_telemetryHelper{};
 
-		winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
+        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
 
 		void CaptureParameters(PickerCommon::PickerParameters& parameters);
 	};

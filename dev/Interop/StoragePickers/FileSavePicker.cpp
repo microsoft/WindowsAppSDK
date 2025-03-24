@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "FileSavePicker.h"
 #include "Microsoft.Windows.Storage.Pickers.FileSavePicker.g.cpp"
+#include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>
 #include <shobjidl_core.h>
@@ -90,6 +91,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
     {
+        auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
+
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
         auto defaultFileExtension = m_defaultFileExtension;
@@ -101,6 +104,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
 
@@ -128,6 +132,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr))
             {
+                logTelemetry.Stop(m_telemetryHelper, false);
                 co_return nullptr;
             }
         }
@@ -159,9 +164,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
 
-        co_return make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(pathStr);
+        auto result = make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(pathStr);
+
+        logTelemetry.Stop(m_telemetryHelper, true);
+        co_return result;
     }
 }

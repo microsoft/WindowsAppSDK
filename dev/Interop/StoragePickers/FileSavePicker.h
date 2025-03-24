@@ -4,6 +4,7 @@
 #pragma once
 #include "Microsoft.Windows.Storage.Pickers.FileSavePicker.g.h"
 #include "PickerCommon.h"
+#include "StoragePickersTelemetryHelper.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -44,6 +45,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 		hstring m_defaultFileExtension{};
 		winrt::Windows::Storage::StorageFile m_suggestedSaveFile{ nullptr };
 		hstring m_suggestedFileName{};
+        StoragePickersTelemetryHelper m_telemetryHelper{};
 
 		void CaptureParameters(PickerCommon::PickerParameters& parameters);
 	};

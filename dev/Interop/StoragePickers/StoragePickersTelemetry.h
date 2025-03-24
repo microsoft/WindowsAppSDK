@@ -3,7 +3,7 @@
 
 #pragma once
 #include "..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h"
-#include <TelemetryHelper.h>
+#include <StoragePickersTelemetryHelper.h>
 
 DECLARE_TRACELOGGING_CLASS(StoragePickersTelemetryProvider,
     "Microsoft.WindowsAppSDK.StoragePickersTelemetry",
@@ -15,14 +15,112 @@ class StoragePickersTelemetry : public wil::TraceLoggingProvider
     IMPLEMENT_TELEMETRY_CLASS(StoragePickersTelemetry, StoragePickersTelemetryProvider);
 
 public:
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(StoragePickersOperation, PDT_ProductAndServicePerformance);
-        DEFINE_ACTIVITY_START(bool isAppPackaged, PCWSTR appName) noexcept try
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(FileOpenPickerPickSingleFile, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
         {
             TraceLoggingClassWriteStart(
-                StoragePickersOperation,
+                FileOpenPickerPickSingleFile,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingBool(isAppPackaged, "IsAppPackaged"),
-                TraceLoggingWideString(appName, "AppName"));
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName")
+            );
+        }
+        CATCH_LOG()
+
+        DEFINE_ACTIVITY_STOP(StoragePickersTelemetryHelper& telemetryHelper, bool const resultNotNull) noexcept try
+        {
+            TraceLoggingClassWriteStop(
+                FileOpenPickerPickSingleFile,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(resultNotNull, "resultNotNull"),
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
+
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(FileOpenPickerPickMultipleFile, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                FileOpenPickerPickMultipleFile,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
+
+        DEFINE_ACTIVITY_STOP(StoragePickersTelemetryHelper& telemetryHelper, bool const resultCancelled, bool const resultNotEmpty) noexcept try
+        {
+            TraceLoggingClassWriteStop(
+                FileOpenPickerPickMultipleFile,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(resultCancelled, "resultCancelled"),
+                TraceLoggingBool(resultNotEmpty, "resultNotEmpty"),
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
+
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(FileSavePickerPickSingleFile, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                FileSavePickerPickSingleFile,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
+
+        DEFINE_ACTIVITY_STOP(StoragePickersTelemetryHelper& telemetryHelper, bool const resultNotNull) noexcept try
+        {
+            TraceLoggingClassWriteStop(
+                FileSavePickerPickSingleFile,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(resultNotNull, "resultNotNull"),
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
+
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(FolderPickerPickSingleFolder, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                FolderPickerPickSingleFolder,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
+
+        DEFINE_ACTIVITY_STOP(StoragePickersTelemetryHelper& telemetryHelper, bool const resultNotNull) noexcept try
+        {
+            TraceLoggingClassWriteStop(
+                FolderPickerPickSingleFolder,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(resultNotNull, "resultNotNull"),
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
