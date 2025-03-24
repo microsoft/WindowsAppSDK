@@ -57,6 +57,11 @@ namespace Test::StoragePickersTests
             ::Test::Bootstrap::CleanupBootstrap();
             return true;
         }
+        // The unit tests will be updated,first test might is there for testing purpose locally.
+       // Focusing solely on functional tests for now.
+
+       // Commenting out this test as it is an E2E scenario test that requires UI automation for pipeline execution.
+       /*
 
         TEST_METHOD(FileOpenPicker_ShouldPickFile)
         {
@@ -127,6 +132,80 @@ namespace Test::StoragePickersTests
                 Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
                 VERIFY_FAIL(L"Standard exception occurred during file save picker.");
             }
+        }
+
+       */
+
+
+        TEST_METHOD(VerifyFileOpenPickerOptionsAreReadCorrectly)
+        {
+            auto parentWindow = ::GetForegroundWindow();
+            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List);
+            VERIFY_ARE_EQUAL(picker.ViewMode(), winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List);
+
+            picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail);
+            VERIFY_ARE_EQUAL(picker.ViewMode(), winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail);
+
+            picker.SettingsIdentifier(L"id");
+            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"id");
+
+            picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+            VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+
+            picker.CommitButtonText(L"commit");
+            VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
+
+            picker.FileTypeFilter().Append(L"*");
+            VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
+        }
+
+        TEST_METHOD(VerifyFileSavePickerOptionsAreReadCorrectly)
+        {
+            auto parentWindow = ::GetForegroundWindow();
+            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            picker.SettingsIdentifier(L"id");
+            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"id");
+
+            picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+            VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+
+            picker.CommitButtonText(L"commit");
+            VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
+
+            auto filters = winrt::single_threaded_vector<winrt::hstring>();
+            filters.Append(L"*");
+            picker.FileTypeChoices().Insert(L"All Files", filters );
+            VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"All Files").GetAt(0), L"*");
+        }
+
+        TEST_METHOD(VerifyFolderPickerOptionsAreReadCorrectly)
+        {
+            auto parentWindow = ::GetForegroundWindow();
+            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
+
+            picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List);
+            VERIFY_ARE_EQUAL(picker.ViewMode(), winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List);
+
+            picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail);
+            VERIFY_ARE_EQUAL(picker.ViewMode(), winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail);
+
+            picker.SettingsIdentifier(L"id");
+            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"id");
+
+            picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+            VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+
+            picker.CommitButtonText(L"commit");
+            VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
+
+            picker.FileTypeFilter().Append(L"*");
+            VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
         }
     };
 }
