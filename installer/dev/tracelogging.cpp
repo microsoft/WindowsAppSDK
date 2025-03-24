@@ -58,9 +58,7 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                 WindowsAppRuntimeInstaller_WriteEventWithActivity(
                     "Exception",
                     _GENERIC_PARTB_FIELDS_ENABLED,
-                    TraceLoggingCountedWideString(
-                        installActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"),
+                    WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentResource"),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                     TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA)
                     );
@@ -75,9 +73,7 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                 WindowsAppRuntimeInstaller_WriteEventWithActivity(
                     "FailFast",
                     _GENERIC_PARTB_FIELDS_ENABLED,
-                    TraceLoggingCountedWideString(
-                        installActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"),
+                    WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentResource"),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                     TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
@@ -102,9 +98,7 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                 WindowsAppRuntimeInstaller_WriteEventWithActivity(
                     "FailureReturn",
                     _GENERIC_PARTB_FIELDS_ENABLED,
-                    TraceLoggingCountedWideString(
-                        installActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"),
+                    WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentResource"),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                     TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
