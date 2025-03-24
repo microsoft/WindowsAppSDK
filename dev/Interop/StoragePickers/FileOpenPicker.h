@@ -4,7 +4,7 @@
 #pragma once
 #include "Microsoft.Windows.Storage.Pickers.FileOpenPicker.g.h"
 #include "PickerCommon.h"
-#include "TelemetryHelper.h"
+#include "StoragePickersTelemetryHelper.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -36,7 +36,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         winrt::hstring m_commitButtonText{};
         winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
-        TelemetryHelper m_telemetryHelper;
+        StoragePickersTelemetryHelper m_telemetryHelper{};
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);
     };

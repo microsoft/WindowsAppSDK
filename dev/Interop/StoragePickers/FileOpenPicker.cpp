@@ -68,9 +68,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
-        bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
-        PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
-        auto logCaptureOperation{ StoragePickersTelemetry::StoragePickersOperation::Start(isAppPackaged, appName) };
+        auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
 
@@ -81,6 +79,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
 
@@ -92,6 +91,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr) || cancellationToken())
             {
+                logTelemetry.Stop(m_telemetryHelper, false);
                 co_return nullptr;
             }
         }
@@ -102,13 +102,20 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
-        co_return make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path);
+
+        auto result = make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path);
+
+        logTelemetry.Stop(m_telemetryHelper, true);
+        co_return result;
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> > FileOpenPicker::PickMultipleFilesAsync()
     {
+        auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickMultipleFile::Start(m_telemetryHelper) };
+
         // capture parameters to avoid using get strong referece of picker
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
@@ -120,6 +127,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, true, false);
             co_return results.GetView();
         }
 
@@ -133,6 +141,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr) || cancellationToken())
             {
+                logTelemetry.Stop(m_telemetryHelper, true, false);
                 co_return results.GetView();
             }
         }
@@ -148,14 +157,26 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         {
             check_hresult(shellItems->GetItemAt(i, shellItem.put()));
             auto path = PickerCommon::GetPathFromShellItem(shellItem);
-            auto result = make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path);
+            auto result{ make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path) };
             results.Append(result);
         }
 
+        bool isCancelled = false;
         if (cancellationToken())
         {
             results.Clear();
+            isCancelled = true;
         }
-        co_return results.GetView();
+        auto resultView = results.GetView();
+
+        if (results.Size() > 0)
+        {
+            logTelemetry.Stop(m_telemetryHelper, isCancelled, true);
+        }
+        else
+        {
+            logTelemetry.Stop(m_telemetryHelper, isCancelled, false);
+        }
+        co_return resultView;
     }
 }

@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "FolderPicker.h"
 #include "Microsoft.Windows.Storage.Pickers.FolderPicker.g.cpp"
+#include "StoragePickersTelemetry.h"
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
@@ -66,6 +67,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
     {
+        auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
+
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
@@ -74,6 +77,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
 
@@ -86,6 +90,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr) || cancellationToken())
             {
+                logTelemetry.Stop(m_telemetryHelper, false);
                 co_return nullptr;
             }
         }
@@ -96,8 +101,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
-        co_return make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFolderResult>(path);
+
+        auto result = make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFolderResult>(path);
+
+        logTelemetry.Stop(m_telemetryHelper, true);
+        co_return result;
     }
 }
