@@ -1,45 +1,56 @@
-# Installer Telemetry Flow
+# Installer Insights Flow
 
-This document illustrates how telemetry flows through the Windows App SDK installer — from initialization to structured logging of success, warnings, and failures. It highlights where and how `StopWithResult()` is called, what triggers the WIL failure callback, and how different failure types are handled.
+This document illustrates how insight events flow through the Windows App SDK installer — from
+initialization to structured events of success, warnings, and failures. It highlights where and how
+`StopWithResult()` is called, what triggers the WIL failure callback, and how different failure
+types are handled.
 
 ---
 
-## Summary: How Telemetry Works
+## Summary: How Insights Work
 
 ### Setup
 
-- `main.cpp` initializes telemetry by:
+- `main.cpp` initializes TraceLogging by:
   - Setting a global WIL failure logging callback with `wil::SetResultLoggingCallback()`.
-  - Instantiating the process-wide `InstallActivity::Context`, which tracks current install stage, error metadata, resource ID, and logging state.
+  - Instantiating the process-wide `InstallActivity::Context`, which tracks current install stage,
+    error metadata, resource ID, and logging state.
 
 ### Installer Logic Runs
 
 - The installer calls `Deploy()` → which calls `InstallLicenses()` and `DeployPackages()`.
-- Each of these stages updates the shared `Context` with its current install stage (e.g. `AddPackage`, `ProvisionPackage`, etc.).
-- Errors are reported using WIL macros like `THROW_IF_FAILED`, `LOG_IF_FAILED`, or `RETURN_IF_FAILED`.
+- Each of these stages updates the shared `Context` with its current install stage (e.g.
+  `AddPackage`, `ProvisionPackage`, etc.).
+- Errors are reported using WIL macros like `THROW_IF_FAILED`, `LOG_IF_FAILED`, or
+  `RETURN_IF_FAILED`.
 
-### Telemetry on Failure
+### Insights on Failure
 
-- WIL errors (e.g. HRESULT failures, file/line context) trigger the global `wilResultLoggingCallback()`.
-- The callback logs telemetry via TraceLogging and sometimes logs to Windows Event Log using `ReportEventW()`.
+- WIL errors (e.g. HRESULT failures, file/line context) trigger the global
+  `wilResultLoggingCallback()`.
+- The callback logs events via TraceLogging and sometimes logs to Windows Event Log using
+  `ReportEventW()`.
 - There are different branches depending on severity:
-  - Non-blocking errors (e.g. provisioning or push notification restarts) are logged but don’t halt the install.
-  - Fail-fast or final install errors result in a call to `StopWithResult()` to emit the full telemetry payload.
+  - Non-blocking errors (e.g. provisioning or push notification restarts) are logged but don’t halt
+    the install.
+  - Fail-fast or final install errors result in a call to `StopWithResult()` to emit the full
+    insights payload.
 
 ---
 
-## Telemetry Flow Overview
-This diagram shows when telemetry is logged based on install success or failure and how different failure types are handled.
+## Insights Flow Overview
+This diagram shows when events are logged based on install success or failure and how different
+failure types are handled.
 
 ```mermaid
 flowchart TD
     A[Start in main.cpp]
-    B[SetActivity - Start telemetry]
+    B[SetActivity - Start insights activity]
     C[Register WIL failure callback]
     D["Call Deploy()"]
     E{Failure during install?}
     F["Call StopWithResult(S_OK)"]
-    G[Log success telemetry and Event Log]
+    G[Log success TraceLogging and Event Log]
     H["wilResultLoggingCallback()"]
     I{FailureType}
     J1["Log warning<br/>(e.g. ProvisioningFailed)"]
@@ -50,7 +61,7 @@ flowchart TD
     L{"Deploy() completed?"}
     M[main.cpp reads Context failure]
     N["Call StopWithResult(failure)"]
-    O[Log failure telemetry<br/>and Event Log]
+    O[Log failure insights<br/>and Event Log]
 
     A --> B
     B --> C
@@ -79,9 +90,11 @@ flowchart TD
 ```
 ## `InstallActivity::Context` Overview
 
-The `InstallActivity::Context` is a shared object used across the installer to track telemetry state. It holds info such as the current install stage, package/resource ID, error HRESULTs, and TraceLogging activity ID.
+The `InstallActivity::Context` is a shared object used across the installer to track insights state.
+It holds info such as the current install stage, package/resource ID, error HRESULTs, and
+TraceLogging activity ID.
 
-This diagram shows how it's accessed, updated, and ultimately used to log structured telemetry:
+This diagram shows how it's accessed, updated, and ultimately used to log structured events:
 
 ```mermaid
 flowchart TD
@@ -120,9 +133,8 @@ flowchart TD
     L3 --> L4["Context::GetActivity().StopWithResult(failure)"]
 
     %% Logging Phase
-    subgraph "Telemetry output"
-        L1 --> M1["StopWithResult() logs final telemetry"]
+    subgraph "Event output"
+        L1 --> M1["StopWithResult() logs final TraceLogging event"]
         L4 --> M1
         M1 --> M2["Also logs to Windows Event Log"]
     end
-
