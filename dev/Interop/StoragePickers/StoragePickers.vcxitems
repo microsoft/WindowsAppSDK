@@ -23,6 +23,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PickFileResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PickFolderResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StoragePickersTelemetry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StoragePickersTelemetryHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)FileOpenPicker.cpp" />
