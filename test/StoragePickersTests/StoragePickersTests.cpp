@@ -26,7 +26,6 @@ namespace Test::StoragePickersTests
             //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"UAP")
             //TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
 
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method") // each test sets its own CompatibilityOptions
             END_TEST_CLASS()
 
             TEST_CLASS_SETUP(ClassSetup)
@@ -57,7 +56,7 @@ namespace Test::StoragePickersTests
             ::Test::Bootstrap::CleanupBootstrap();
             return true;
         }
-        // The unit tests will be updated,first test might is there for testing purpose locally.
+       // The unit tests will be updated,first test might is there for testing purpose locally.
        // Focusing solely on functional tests for now.
 
        // Commenting out this test as it is an E2E scenario test that requires UI automation for pipeline execution.
@@ -139,8 +138,7 @@ namespace Test::StoragePickersTests
 
         TEST_METHOD(VerifyFileOpenPickerOptionsAreReadCorrectly)
         {
-            auto parentWindow = ::GetForegroundWindow();
-            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
 
             picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List);
@@ -164,8 +162,7 @@ namespace Test::StoragePickersTests
 
         TEST_METHOD(VerifyFileSavePickerOptionsAreReadCorrectly)
         {
-            auto parentWindow = ::GetForegroundWindow();
-            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
 
             picker.SettingsIdentifier(L"id");
@@ -179,14 +176,14 @@ namespace Test::StoragePickersTests
 
             auto filters = winrt::single_threaded_vector<winrt::hstring>();
             filters.Append(L"*");
-            picker.FileTypeChoices().Insert(L"All Files", filters );
+            picker.FileTypeChoices().Insert(L"All Files", filters);
             VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"All Files").GetAt(0), L"*");
         }
 
         TEST_METHOD(VerifyFolderPickerOptionsAreReadCorrectly)
         {
             auto parentWindow = ::GetForegroundWindow();
-            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
 
             picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List);

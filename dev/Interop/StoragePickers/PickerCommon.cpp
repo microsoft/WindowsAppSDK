@@ -142,12 +142,20 @@ namespace PickerCommon {
         return winrt::hstring{ filePath.get() };
     }
 
+    /// <summary>
+    /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type
+    /// </summary>
+    /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
+    /// <param name="filters">winrt style filters</param>
+    /// <returns>result Coomon Item Dialog style filters, note only raw pointers here,
+    /// they are valid up to lifetime of buffer
+    /// </returns>
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
         std::vector<COMDLG_FILTERSPEC> result(filters.Size());
         buffer.clear();
         buffer.reserve(filters.Size() * (size_t)2);
-        for (auto filter : filters)
+        for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
             buffer.push_back(filter);
@@ -165,11 +173,19 @@ namespace PickerCommon {
         return result;
     }
 
+    /// <summary>
+    /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type
+    /// </summary>
+    /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
+    /// <param name="filters">winrt style filters</param>
+    /// <returns>result Coomon Item Dialog style filters, note only raw pointers here,
+    /// they are valid up to lifetime of buffer
+    /// </returns>
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> filters)
     {
         std::vector<COMDLG_FILTERSPEC> result(filters.Size());
         buffer.clear();
-        buffer.reserve(filters.Size() * 2ull);
+        buffer.reserve(filters.Size() * (size_t)2);
 
         for (const auto& filter : filters)
         {

@@ -21,7 +21,7 @@ namespace PickerCommon {
     bool IsHStringNullOrEmpty(winrt::hstring value);
 
     struct PickerParameters {
-        HWND HWnd;
+        HWND HWnd{};
         winrt::hstring CommitButtonText;
         winrt::hstring SettingsIdentifierId;
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId PickerLocationId;

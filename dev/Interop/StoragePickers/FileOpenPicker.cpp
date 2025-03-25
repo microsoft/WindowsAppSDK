@@ -68,15 +68,19 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime { get_strong() };
+
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
 
         CaptureParameters(parameters);
 
+        auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
 
-        auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
             logTelemetry.Stop(m_telemetryHelper, false);
@@ -114,17 +118,21 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> > FileOpenPicker::PickMultipleFilesAsync()
     {
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime { get_strong() };
+
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickMultipleFile::Start(m_telemetryHelper) };
 
         // capture parameters to avoid using get strong referece of picker
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
+        auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
 
         winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> results{ winrt::single_threaded_vector<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult>() };
 
-        auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
             logTelemetry.Stop(m_telemetryHelper, true, false);

@@ -91,6 +91,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
     {
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime{ get_strong() };
+
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
@@ -100,8 +103,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto suggestedFileName = m_suggestedFileName;
         auto fileTypeChoices = m_fileTypeChoices;
 
-        co_await winrt::resume_background();
         auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
+        co_await winrt::resume_background();
+
         if (cancellationToken())
         {
             logTelemetry.Stop(m_telemetryHelper, false);
@@ -150,16 +155,22 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         std::wstring fileNameStr(fileName.get());
 
         // Check if the file name has an extension
-        if (fileNameStr.find_last_of(L".") == std::wstring::npos)
+        if ((fileNameStr.find_last_of(L".") == std::wstring::npos) && (fileTypeChoices.Size() > 0))
         {
             // If the user defined file name doesn't have an extension,
             //     automatically use the first extension from the first category in fileTypeChoices.
             auto firstCategory = fileTypeChoices.First().Current();
-            auto firstExtension = firstCategory.Value().GetAt(0);
-            pathStr = pathStr + firstExtension;
+            auto value = firstCategory.Value();
+            if (value.Size() > 0)
+            {
+                auto firstExtension = value.GetAt(0);
+                pathStr = pathStr + firstExtension;
+            }
         }
 
-        // Create a file. If the file already exists, will prompt to let user select cancele or override.
+        // Create a file. If the file already exists,
+        // since common item dialog prompts to let user select cancel or override, thus we can safely truncate here.
+        // Due to our design spec to align with UWP pickers, we need ensure existance of picked file.
         auto [handle, _] = wil::try_open_or_truncate_existing_file(pathStr.c_str(), GENERIC_WRITE);
 
         if (cancellationToken())

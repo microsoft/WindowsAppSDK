@@ -67,14 +67,18 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
     {
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime{ get_strong() };
+
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
+        auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
 
-        auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
             logTelemetry.Stop(m_telemetryHelper, false);

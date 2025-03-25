@@ -395,6 +395,3 @@ build/override/
 # WindowsAppSDK specific files
 Microsoft.WinUI.AppX.targets
 !dev/vsix/**/*.pubxml
-
-# TAEF related
-redist/
