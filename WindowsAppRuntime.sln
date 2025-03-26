@@ -678,6 +678,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorldAdvancedCS_NoThro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BadgeNotificationTest", "test\BadgeNotificationTest\BadgeNotificationTest.vcxproj", "{7C8BEED1-7B27-41C5-A22F-9D6B4468F52A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.Storage.Pickers.Projection", "dev\Projections\CS\Microsoft.Windows.Storage.Pickers.Projection\Microsoft.Windows.Storage.Pickers.Projection.csproj", "{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StoragePickers", "dev\Interop\StoragePickers\StoragePickers.vcxitems", "{A39E7B2F-5F67-47DD-8443-531D095CA7F3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StoragePickersTests", "test\StoragePickersTests\StoragePickersTests.vcxproj", "{85C86306-46D1-4563-8303-0A79DF923586}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2348,6 +2354,38 @@ Global
 		{7C8BEED1-7B27-41C5-A22F-9D6B4468F52A}.Release|x64.Build.0 = Release|x64
 		{7C8BEED1-7B27-41C5-A22F-9D6B4468F52A}.Release|x86.ActiveCfg = Release|Win32
 		{7C8BEED1-7B27-41C5-A22F-9D6B4468F52A}.Release|x86.Build.0 = Release|Win32
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|Any CPU.Build.0 = Debug|x64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|ARM64.ActiveCfg = Debug|arm64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|ARM64.Build.0 = Debug|arm64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|x64.ActiveCfg = Debug|x64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|x64.Build.0 = Debug|x64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|x86.ActiveCfg = Debug|x86
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Debug|x86.Build.0 = Debug|x86
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Release|Any CPU.ActiveCfg = Release|x64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Release|Any CPU.Build.0 = Release|x64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Release|ARM64.ActiveCfg = Release|arm64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Release|ARM64.Build.0 = Release|arm64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Release|x64.ActiveCfg = Release|x64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Release|x64.Build.0 = Release|x64
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Release|x86.ActiveCfg = Release|x86
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}.Release|x86.Build.0 = Release|x86
+		{85C86306-46D1-4563-8303-0A79DF923586}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Debug|Any CPU.Build.0 = Debug|x64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Debug|ARM64.Build.0 = Debug|ARM64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Debug|x64.ActiveCfg = Debug|x64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Debug|x64.Build.0 = Debug|x64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Debug|x86.ActiveCfg = Debug|Win32
+		{85C86306-46D1-4563-8303-0A79DF923586}.Debug|x86.Build.0 = Debug|Win32
+		{85C86306-46D1-4563-8303-0A79DF923586}.Release|Any CPU.ActiveCfg = Release|x64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Release|Any CPU.Build.0 = Release|x64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Release|ARM64.ActiveCfg = Release|ARM64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Release|ARM64.Build.0 = Release|ARM64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Release|x64.ActiveCfg = Release|x64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Release|x64.Build.0 = Release|x64
+		{85C86306-46D1-4563-8303-0A79DF923586}.Release|x86.ActiveCfg = Release|Win32
+		{85C86306-46D1-4563-8303-0A79DF923586}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2553,6 +2591,9 @@ Global
 		{9369C7DD-430B-4B52-822A-231AA2791D23} = {63196919-AEA8-4EA8-BFB4-08CE824249A3}
 		{9D26A965-065A-4897-B476-4F15B0F5A19F} = {63196919-AEA8-4EA8-BFB4-08CE824249A3}
 		{7C8BEED1-7B27-41C5-A22F-9D6B4468F52A} = {1FDC307C-2DB7-4B40-8F18-F1057E9E0969}
+		{8E01AA4F-A16A-4E3F-A59F-6D49422B4410} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{A39E7B2F-5F67-47DD-8443-531D095CA7F3} = {3B706C5C-55E0-4B76-BF59-89E20FE46795}
+		{85C86306-46D1-4563-8303-0A79DF923586} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -2579,6 +2620,7 @@ Global
 		dev\PackageManager\API\PackageManager.vcxitems*{8a9a0c85-65a8-4bca-a49e-45fc4fdbc7d2}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
 		dev\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems*{95409d1e-843f-4316-8d8e-471b3e203f94}*SharedItemsImports = 9
+		dev\Interop\StoragePickers\StoragePickers.vcxitems*{a39e7b2f-5f67-47dd-8443-531d095ca7f3}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\ApplicationData\ApplicationData.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
