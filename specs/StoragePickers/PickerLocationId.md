@@ -69,8 +69,7 @@ It is often mapped to `%USERPROFILE%\Downloads`.
 so it is not recommended to use this value.
 
 This enum value is retained now for backward compatibility with the [Windows.Storage.Pickers.PickerLocationId](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.pickerlocationid), 
-it might be removed in futre.
-
+it might be removed in future.
 ## PickerLocationId.MusicLibrary
 The `MusicLibrary` value represents the user's Music library.
 
