@@ -70,7 +70,7 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 FileSavePicker savePicker(AppWindow().Id());
 
 // (Optional) specify the initial location.
-//     If not specified, using PickerLocationId.Unspecified by defaultl
+//     If not specified, using PickerLocationId.Unspecified by default
 savePicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
 // (Optional) specify the default file name. If not specified, use system default.
