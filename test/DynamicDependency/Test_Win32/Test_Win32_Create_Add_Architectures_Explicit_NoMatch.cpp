@@ -70,12 +70,12 @@ void Test::DynamicDependency::Test_Win32::Create_Add_Architectures_Explicit_NoMa
     else
     {
         const HRESULT expectedHR{ HRESULT_FROM_WIN32(ERROR_NOT_FOUND) };
-        wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(expectedHR, architectures) };
+        wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd2{ Mdd_TryCreate_FrameworkMathAdd(expectedHR, architectures) };
 
         VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
         VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
         VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-        VERIFY_IS_NULL(packageDependencyId_FrameworkMathAdd.get(), WEX::Common::String().Format(L"PackageDependencyId=%s Expected=<null>", !packageDependencyId_FrameworkMathAdd ? L"<null>" : packageDependencyId_FrameworkMathAdd.get()));
+        VERIFY_IS_NULL(packageDependencyId_FrameworkMathAdd2.get(), WEX::Common::String().Format(L"PackageDependencyId=%s Expected=<null>", !packageDependencyId_FrameworkMathAdd ? L"<null>" : packageDependencyId_FrameworkMathAdd.get()));
     }
 
     // -- Delete
