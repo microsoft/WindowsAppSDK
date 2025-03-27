@@ -419,13 +419,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (packageSet.Id().empty())
         {
             // Package URI isn't known to the system so it's an add or bust
-            logTelemetry.Stop(packageUri.ToString(), -1/*SEEME*/);
+            logTelemetry.Stop(packageUri.ToString());
             co_return co_await AddPackageByUriAsync(packageUri, options.AddPackageOptions());
         }
         else
         {
             // Package URI is known so process the PackageSet
-            logTelemetry.Stop(packageUri.ToString(), -1/*SEEME*/);
+            logTelemetry.Stop(packageUri.ToString());
             co_return co_await EnsurePackageSetReadyAsync(packageSet, options);
         }
     }
@@ -482,13 +482,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         HRESULT extendedError{};
         winrt::hstring errorText;
         winrt::guid activityId{};
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus{};
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
             const auto packageFamilyName{ packageSetItem.PackageFamilyName() };
             const auto packageUri{ GetEffectivePackageUri(packageSet, packageSetItem) };
             try
             {
-                error = LOG_IF_FAILED_MSG(EnsureReadyAsync(packageUri, packageSetItem, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId),
+                error = LOG_IF_FAILED_MSG(EnsureReadyAsync(packageUri, packageSetItem, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId, readyOrNewerStatus),
                                           "Error:0x%08X (0x%08X) PackageFamilyName:%ls PackageUri:%ls : %ls",
                                           error, extendedError, packageFamilyName.c_str(), packageUri.ToString().c_str(), errorText.c_str());
             }
@@ -506,7 +507,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             progress(packageDeploymentProgress);
         }
 
-        logTelemetry.Stop(packageSet.Id(), -1/*SEEME*/);
+        logTelemetry.Stop(packageSet.Id(), readyOrNewerStatus);
         co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
@@ -1908,13 +1909,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const double progressMaxPerPackageSetItem,
         HRESULT& extendedError,
         winrt::hstring& errorText,
-        winrt::guid& activityId)
+        winrt::guid& activityId,
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus& readyOrNewerStatus)
     {
         extendedError = S_OK;
         errorText.clear();
         activityId = winrt::guid{};
 
-        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus{};
         if (options.RegisterNewerIfAvailable())
         {
             // Our caller already verified PackageDeploymentFeature::IsPackageReadyOrNewerAvailable is supported so no need to check again

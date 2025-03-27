@@ -5,6 +5,8 @@
 
 #include <WindowsAppRuntimeInsights.h>
 
+#include "M.W.M.D.PackageDeploymentManager.h"
+
 DECLARE_TRACELOGGING_CLASS(PackageManagementTelemetryProvider,
     "Microsoft.WindowsAppSDK.Deployment.PackageManagementTelemetry",
     // {90ffebd9-9489-473d-9b38-7658b4826270}
@@ -135,7 +137,7 @@ public:
                 TraceLoggingWideString(package.c_str(), "Package"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& package, std::int32_t/*winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus*/ readyOrNewerStatus) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& package, winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageReadyAsync,
@@ -154,13 +156,12 @@ public:
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri, std::int32_t/*winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus*/ readyOrNewerStatus) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageReadyByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingWideString(packageUri.c_str(), "PackageUri"),
-                TraceLoggingInt32(static_cast<std::int32_t>(readyOrNewerStatus), "ReadyOrNewerStatus"));
+                TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
@@ -173,7 +174,7 @@ public:
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId, std::int32_t/*winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus*/ readyOrNewerStatus) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId, winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageSetReadyAsync,
