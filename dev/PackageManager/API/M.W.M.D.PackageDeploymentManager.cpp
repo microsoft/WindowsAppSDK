@@ -416,7 +416,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         auto logTelemetry{ PackageManagementTelemetry::EnsurePackageReadyByUriAsync::Start(packageUri.ToString()) };
 
-        if (packageSet.Id().empty(), -1/*SEEME*/)
+        if (packageSet.Id().empty())
         {
             // Package URI isn't known to the system so it's an add or bust
             logTelemetry.Stop(packageUri.ToString(), -1/*SEEME*/);
