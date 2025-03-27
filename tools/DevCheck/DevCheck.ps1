@@ -58,6 +58,9 @@
 .PARAMETER RemoveTestCert
     Remove the Test certificate (i.e. undoc CheckTestCert)
 
+.PARAMETER RemoveTaefService
+     Remove the TAEF service
+
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
@@ -126,6 +129,8 @@ Param(
     [Switch]$OnlineVSWhere=$false,
 
     [Switch]$RemoveAll=$false,
+
+    [Switch]$RemoveTAEFService=$false,
 
     [Switch]$RemoveTestCert=$false,
 
@@ -1052,16 +1057,29 @@ function Install-TAEFService
         return
     }
 
+    # TAEF is located in the NuGet on dev machines vs ...root...\redist\... on build machines
     $root = Get-ProjectRoot
     $cpu = Get-CpuArchitecture
     $taef_version = Get-TAEFPackageVersion
     $taef = "Microsoft.Taef.$($taef_version)"
-    $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
-    if (-not(Test-Path -Path $path -PathType Leaf))
+    $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
+    if (Test-Path -Path $path -PathType Leaf)
     {
-        Write-Host "Install TAEF service...Not Found ($path)"
-        $global:issues++
-        return 'TAEFNotFound'
+        Write-Host "TAEF installer found...$path"
+    }
+    else
+    {
+        $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
+        if (Test-Path -Path $path -PathType Leaf)
+        {
+            Write-Host "TAEF installer found...$path"
+        }
+        else
+        {
+            Write-Host "Install TAEF service...Not Found ($path)"
+            $global:issues++
+            return 'TAEFNotFound'
+        }
     }
 
     $args = '/install:TE.Service'
@@ -1576,7 +1594,7 @@ $null = Set-UserSettings
 $null = Get-Settings
 $null = Get-UserSettings
 
-$remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
+$remove_any = ($RemoveAll -eq $true) -or ($RemoveTaefService -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
     ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
@@ -1687,6 +1705,11 @@ if ($StartTAEFService -eq $true)
 if ($StopTAEFService -eq $true)
 {
     $null = Stop-TAEFService
+}
+
+if (($RemoveAll -ne $false) -Or ($RemoveTAEFService -ne $false))
+{
+    $null = Uninstall-TAEFService
 }
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
