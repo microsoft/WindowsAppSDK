@@ -130,13 +130,11 @@ public:
         _eventname_,\
         _activityId_,\
         nullptr,\
-        _WRITE_FAILURE_INFO,\
+        TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
+        TraceLoggingValue(failure.hr, "HResult"),\
+        TraceLoggingValue(failure.pszFile, "File"),\
+        TraceLoggingValue(failure.uLineNumber,"Line"),\
+        TraceLoggingValue(failure.pszModule, "Module"),\
+        TraceLoggingValue(failure.pszMessage,"Message"),\
+        _GENERIC_PARTB_FIELDS_ENABLED,\
         __VA_ARGS__)
-
-#define _WRITE_FAILURE_INFO \
-    TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
-    TraceLoggingValue(failure.hr, "HResult"),\
-    TraceLoggingValue(failure.pszFile, "File"),\
-    TraceLoggingValue(failure.uLineNumber,"Line"),\
-    TraceLoggingValue(failure.pszModule, "Module"),\
-    TraceLoggingValue(failure.pszMessage,"Message")
