@@ -103,6 +103,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageManager.Containment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
