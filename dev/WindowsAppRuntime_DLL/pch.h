@@ -51,6 +51,8 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
 
+#include <FrameworkUdk/Containment.h>
+
 #include <MsixDynamicDependency.h>
 
 #include <appmodel.identity.h>

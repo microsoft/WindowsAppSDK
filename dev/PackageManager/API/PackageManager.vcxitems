@@ -47,6 +47,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixPackageManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageManager.Containment.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)PackageManager.idl">
