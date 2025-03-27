@@ -5,6 +5,8 @@
 
 #include <WindowsAppRuntimeInsights.h>
 
+#include "M.W.M.D.PackageDeploymentManager.h"
+
 DECLARE_TRACELOGGING_CLASS(PackageManagementTelemetryProvider,
     "Microsoft.WindowsAppSDK.Deployment.PackageManagementTelemetry",
     // {90ffebd9-9489-473d-9b38-7658b4826270}
@@ -135,7 +137,7 @@ public:
                 TraceLoggingWideString(package.c_str(), "Package"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& package, winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageReadyAsync,
@@ -171,7 +173,7 @@ public:
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId, winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageSetReadyAsync,
