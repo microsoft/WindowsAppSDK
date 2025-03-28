@@ -23,12 +23,36 @@ stages:
           buildPlatform: 'arm64'
           buildConfiguration: 'Release'
     variables:
-      ob_outputDirectory: '$(REPOROOT)\out'
-      ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
-      ob_artifactBaseName: "Installer$(ob_artifactSuffix)"
+      - name: ob_outputDirectory
+        value: '$(REPOROOT)\out'
+      - name: ob_artifactSuffix
+        value: '_$(buildConfiguration)_$(buildPlatform)'
+      - name: ob_artifactBaseName
+        value: "Installer$(ob_artifactSuffix)"
       # foundationRepoPath should be empty because we are not doing multiple checkouts hence
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
-      foundationRepoPath: ""
+      - name: foundationRepoPath
+        value: ""
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKConfigSourceBranch
+      - name: localCompilerOverridePackageName
+        value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
+      - name: localCompilerOverridePackageVersion
+        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
+      - name: localCompilerOverrideNupkgVersion
+        value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]
     condition: ne(variables.LatestOfficialBuildID, '')
     steps:
+    - script: |
+        echo Build.SourceBranch=$(Build.SourceBranch)
+        echo Build.Reason=$(Build.Reason)
+        echo compilerOverridePackageName=$(compilerOverridePackageName)
+        echo compilerOverridePackageVersion=$(compilerOverridePackageVersion)
+        echo global_CompilerOverridePackageName=$(global_CompilerOverridePackageName)
+        echo global_CompilerOverridePackageVersion=$(global_CompilerOverridePackageVersion)
+        echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
+        echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
+        echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
+        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)      
+        echo mySourceBranch=$(mySourceBranch)       
+        
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
