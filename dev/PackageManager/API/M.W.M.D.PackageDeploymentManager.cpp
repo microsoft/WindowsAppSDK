@@ -458,18 +458,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const double c_progressPercentageStartOfIsReady{ 0.01 };
         packageDeploymentProgress.Progress = c_progressPercentageStartOfIsReady;
         progress(packageDeploymentProgress);
-        bool isReady{};
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus{};
         if (options.RegisterNewerIfAvailable())
         {
             THROW_HR_IF_MSG(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable), "RegisterNewerIfAvailable is not supported on this system");
-            isReady = (IsPackageSetReadyOrNewerAvailable(packageSet) == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready);
+            readyOrNewerStatus = IsPackageSetReadyOrNewerAvailable(packageSet);
         }
         else
         {
-            isReady = IsPackageSetReady(packageSet);
+            readyOrNewerStatus = IsPackageSetReady(packageSet) ?
+                winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready :
+                winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
         }
-        if (isReady)
+        if (readyOrNewerStatus == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready)
         {
+            logTelemetry.Stop(packageSet.Id(), readyOrNewerStatus);
             co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, winrt::guid{});
         }
 
@@ -482,7 +485,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         HRESULT extendedError{};
         winrt::hstring errorText;
         winrt::guid activityId{};
-        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus{};
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
             const auto packageFamilyName{ packageSetItem.PackageFamilyName() };
