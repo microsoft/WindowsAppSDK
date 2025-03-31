@@ -64,7 +64,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             auto verbBegin = query.find(L"&Verb=");
             if (verbBegin == std::wstring::npos)
             {
-                throw winrt::hresult_invalid_argument();
+                throw winrt::hresult_invalid_argument(L"Query of encoded file protocol should contain 'Verb'");
             }
             verbBegin += 6; // Length of "&Verb="
 
@@ -77,7 +77,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             auto fileBegin = query.find(L"&File=");
             if (fileBegin == std::wstring::npos)
             {
-                throw winrt::hresult_invalid_argument();
+                throw winrt::hresult_invalid_argument(L"Query of encoded file protocol should contain 'File'");
             }
             fileBegin += 6; // Length of "&File="
 
