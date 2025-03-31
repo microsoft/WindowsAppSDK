@@ -428,8 +428,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             logTelemetry.Stop(packageUri.ToString());
             co_return co_await EnsurePackageSetReadyAsync(packageSet, options);
         }
-
-        logTelemetry.Stop(packageUri.ToString());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::EnsurePackageSetReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options)
