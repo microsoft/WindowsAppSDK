@@ -8,14 +8,14 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="f244ef6d-774c-4055-b79b-8ae2ccb7acba"
+    Name="b5818aad-9711-4803-b16c-c37cb033c8a4"
     Publisher="CN=xiaomgao"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="f244ef6d-774c-4055-b79b-8ae2ccb7acba" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="b5818aad-9711-4803-b16c-c37cb033c8a4" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>FilePickersAppWithUnpackagedProj (Package)</DisplayName>
+    <DisplayName>StoragePickersTestApp (Package)</DisplayName>
     <PublisherDisplayName>xiaomgao</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
@@ -34,8 +34,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="FilePickersAppWithUnpackagedProj (Package)"
-        Description="FilePickersAppWithUnpackagedProj (Package)"
+        DisplayName="StoragePickersTestApp (Package)"
+        Description="StoragePickersTestApp (Package)"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
