@@ -46,31 +46,29 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
 
+
   <PropertyGroup>
-    <AppxMSBuildToolsPath Condition="'$(AppxMSBuildToolsPath)' == ''">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\AppxPackage\</AppxMSBuildToolsPath>
-    <PriProjTaskAssembly Condition="'$(PriProjTaskAssembly)' == ''">$(AppxMSBuildToolsPath)\Microsoft.Build.Packaging.Pri.Tasks.dll</PriProjTaskAssembly>
-    <AppxMSBuildTaskAssembly Condition="'$(AppxMSBuildTaskAssembly)' == ''">$(AppxMSBuildToolsPath)Microsoft.Build.AppxPackage.dll</AppxMSBuildTaskAssembly>
+    <MsixTaskAssemblyLocation Condition=" '$(MSBuildRuntimeType)' == 'Core' And '$(MsixTaskAssemblyLocation)'==''">$(MSBuildThisFileDirectory)..\tools\net6.0\</MsixTaskAssemblyLocation>
+    <MsixTaskAssemblyLocation Condition="'$(MsixTaskAssemblyLocation)'==''">$(MSBuildThisFileDirectory)..\tools\net472\</MsixTaskAssemblyLocation>
+    <MsixTaskAssembly>$(MsixTaskAssemblyLocation)Microsoft.Windows.SDK.BuildTools.MSIX.dll</MsixTaskAssembly>
+    <MsixTaskAssemblyNamespace>Microsoft.Build.Msix</MsixTaskAssemblyNamespace>
   </PropertyGroup>
 
-  <UsingTask AssemblyFile="$(AppxMSBuildTaskAssembly)" TaskName="Microsoft.Build.AppxPackage.ExpandPayloadDirectories" />
-  <UsingTask AssemblyFile="$(AppxMSBuildTaskAssembly)" TaskName="Microsoft.Build.AppxPackage.GetDefaultResourceLanguage" />
-  <UsingTask AssemblyFile="$(AppxMSBuildTaskAssembly)" TaskName="Microsoft.Build.AppxPackage.GetPackageArchitecture" />
-  <UsingTask AssemblyFile="$(AppxMSBuildTaskAssembly)" TaskName="Microsoft.Build.AppxPackage.GetSdkFileFullPath" />
-  <UsingTask AssemblyFile="$(AppxMSBuildTaskAssembly)" TaskName="Microsoft.Build.AppxPackage.GetSdkPropertyValue" />
-  <UsingTask AssemblyFile="$(AppxMSBuildTaskAssembly)" TaskName="Microsoft.Build.AppxPackage.RemovePayloadDuplicates" />
-  <UsingTask AssemblyFile="$(AppxMSBuildTaskAssembly)" TaskName="Microsoft.Build.AppxPackage.RemoveRedundantXamlFilesFromSdkPayload" />
-  <UsingTask AssemblyFile="$(AppxMSBuildTaskAssembly)" TaskName="Microsoft.Build.AppxPackage.ValidateConfiguration" />
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).Recipe.WinAppSdkExpandPayloadDirectories" />
 
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.ExpandPriContent" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.CreatePriConfigXmlForSplitting" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.CreatePriConfigXmlForMainPackageFileMap" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.CreatePriConfigXmlForFullIndex" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.CreatePriFilesForPortableLibraries" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.GenerateMainPriConfigurationFile" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.GeneratePriConfigurationFiles" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.GenerateProjectPriFile" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.RemoveDuplicatePriFiles" />
-  <UsingTask AssemblyFile="$(PriProjTaskAssembly)" TaskName="Microsoft.Build.Packaging.Pri.Tasks.UpdateMainPackageFileMap" />
+  <!-- Recipe -->
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).Recipe.WinAppSdkRemovePayloadDuplicates" />
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).BundleTasks.WinAppSdkCreatePriFilesForPortableLibraries" />
+
+  <!-- Signing -->
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="Microsoft.Build.Msix.BundleTasks.WinAppSdkValidateConfiguration" />
+  <!-- Pri Tasks -->
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).Pri.WinAppSdkCreatePriConfigXmlForFullIndex" />
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).Pri.WinAppSdkExpandPriContent" />
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).Pri.WinAppSdkGenerateProjectPriFile" />
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).Pri.WinAppSdkGeneratePriConfigurationFiles" />
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).Pri.WinAppSdkRemoveDuplicatePriFiles" />
+  <UsingTask AssemblyFile="$(MsixTaskAssembly)" TaskName="$(MsixTaskAssemblyNamespace).Pri.WinAppSdkGetDefaultResourceLanguage" />
 
   <!-- Adjust AppxPackage to be true Boolean flag. -->
   <PropertyGroup>
@@ -382,7 +380,7 @@
       <MSBuildExtensionsPath64Exists Condition="'$(MSBuildExtensionsPath64)' != ''">true</MSBuildExtensionsPath64Exists>
     </PropertyGroup>
 
-    <GetSdkFileFullPath Condition="'$(AppxGeneratePriEnabled)' == 'true' or '$(AppxGeneratePrisForPortableLibrariesEnabled)' == 'true'"
+    <WinAppSdkGetSdkFileFullPath Condition="'$(AppxGeneratePriEnabled)' == 'true' or '$(AppxGeneratePrisForPortableLibrariesEnabled)' == 'true'"
                         FileName="MakePri.exe"
                         FullFilePath="$(MakePriExeFullPath)"
                         FileArchitecture="$(MakePriArchitecture)"
@@ -397,9 +395,9 @@
                         VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="ActualFullFilePath" PropertyName="MakePriExeFullPath" />
       <Output TaskParameter="ActualFileArchitecture" PropertyName="MakePriArchitecture" />
-    </GetSdkFileFullPath>
+    </WinAppSdkGetSdkFileFullPath>
 
-    <GetSdkFileFullPath Condition="'$(AppxPackage)' == 'true' or '@(BundleMappingFile)' != ''"
+    <WinAppSdkGetSdkFileFullPath Condition="'$(AppxPackage)' == 'true' or '@(BundleMappingFile)' != ''"
                         FileName="MakeAppx.exe"
                         FullFilePath="$(MakeAppxExeFullPath)"
                         FileArchitecture="$(MakeAppxArchitecture)"
@@ -413,9 +411,9 @@
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
                         VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="ActualFullFilePath" PropertyName="MakeAppxExeFullPath" />
-    </GetSdkFileFullPath>
+    </WinAppSdkGetSdkFileFullPath>
 
-    <GetSdkFileFullPath Condition="'$(AppxPackage)' == 'true'"
+    <WinAppSdkGetSdkFileFullPath Condition="'$(AppxPackage)' == 'true'"
                         FileName="signtool.exe"
                         FullFilePath="$(SignAppxPackageExeFullPath)"
                         FileArchitecture="$(SignToolArchitecture)"
@@ -429,14 +427,14 @@
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
                         VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="ActualFullFilePath" PropertyName="SignAppxPackageExeFullPath" />
-    </GetSdkFileFullPath>
+    </WinAppSdkGetSdkFileFullPath>
 
     <PropertyGroup Condition="'$(AppxPackagingArchitecture)' == ''">
       <AppxPackagingArchitecture Condition="$([System.Environment]::Is64BitProcess)">x64</AppxPackagingArchitecture>
       <AppxPackagingArchitecture Condition="!$([System.Environment]::Is64BitProcess)">x86</AppxPackagingArchitecture>
     </PropertyGroup>
 
-    <GetSdkFileFullPath Condition="'$(SDKIdentifier)' != ''"
+    <WinAppSdkGetSdkFileFullPath Condition="'$(SDKIdentifier)' != ''"
                         FileName="Microsoft.Windows.Build.Appx.AppxPackaging.dll.manifest"
                         FullFilePath="$(AppxPackagingComponentManifestPath)"
                         FileArchitecture="$(AppxPackagingArchitecture)"
@@ -449,14 +447,14 @@
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
                         VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="ActualFullFilePath" PropertyName="AppxPackagingComponentManifestPath" />
-    </GetSdkFileFullPath>
+    </WinAppSdkGetSdkFileFullPath>
 
     <PropertyGroup Condition="'$(MrmSupportLibraryArchitecture)' == ''">
       <MrmSupportLibraryArchitecture Condition="$([System.Environment]::Is64BitProcess)">x64</MrmSupportLibraryArchitecture>
       <MrmSupportLibraryArchitecture Condition="!$([System.Environment]::Is64BitProcess)">x86</MrmSupportLibraryArchitecture>
     </PropertyGroup>
 
-    <GetSdkFileFullPath Condition="'$(SDKIdentifier)' != ''"
+    <WinAppSdkGetSdkFileFullPath Condition="'$(SDKIdentifier)' != ''"
                         FileName="MrmSupport.dll"
                         FullFilePath="$(MrmSupportLibraryPath)"
                         FileArchitecture="$(MrmSupportLibraryArchitecture)"
@@ -469,9 +467,9 @@
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
                         VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="ActualFullFilePath" PropertyName="MrmSupportLibraryPath" />
-    </GetSdkFileFullPath>
+    </WinAppSdkGetSdkFileFullPath>
 
-    <GetSdkPropertyValue TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
+    <WinAppSdkGetSdkPropertyValue TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                          SDKIdentifier="$(SDKIdentifier)"
                          SDKVersion="$(SDKVersion)"
                          TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
@@ -481,9 +479,9 @@
                          VsTelemetrySession="$(VsTelemetrySession)"
                          Condition="'$(MakePriExtensionPath)' == '' and '$(SDKIdentifier)' == ''">
       <Output TaskParameter="PropertyValue" PropertyName="MakePriExtensionPath" />
-    </GetSdkPropertyValue>
+    </WinAppSdkGetSdkPropertyValue>
 
-    <GetSdkPropertyValue TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
+    <WinAppSdkGetSdkPropertyValue TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                          SDKIdentifier="$(SDKIdentifier)"
                          SDKVersion="$(SDKVersion)"
                          TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
@@ -493,7 +491,7 @@
                          VsTelemetrySession="$(VsTelemetrySession)"
                          Condition="'$(MakePriExtensionPath_x64)' == '' and '$(SDKIdentifier)' == ''">
       <Output TaskParameter="PropertyValue" PropertyName="MakePriExtensionPath_x64" />
-    </GetSdkPropertyValue>
+    </WinAppSdkGetSdkPropertyValue>
 
     <!--Clear out MakePriExtensionPath for UAP projects since it should never be used.-->
     <PropertyGroup Condition="'$(SDKIdentifier)' != ''">
@@ -580,12 +578,12 @@
       <_LibrariesUnfiltered Include="@(PackagingOutputs)" Condition="'%(Extension)' == '.dll'" />
     </ItemGroup>
 
-    <RemovePayloadDuplicates Inputs="@(_LibrariesUnfiltered)"
+    <WinAppSdkRemovePayloadDuplicates Inputs="@(_LibrariesUnfiltered)"
                              ProjectName="$(ProjectName)"
                              Platform="$(Platform)"
                              VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="Filtered" ItemName="_LibrariesFiltered" />
-    </RemovePayloadDuplicates>
+    </WinAppSdkRemovePayloadDuplicates>
 
     <ItemGroup>
       <_Libraries Include="@(_LibrariesFiltered)" Condition="'%(_LibrariesFiltered.BaseAssemblyFullPath)' == ''" />
@@ -619,7 +617,7 @@
     <!-- Now generate a PRI file for each set of ResW files (ie, a main assembly + all satellites). -->
     <!-- Note: The task relies on some metadata set on each ITaskItem, set by GenerateResource.  -->
 
-    <CreatePriFilesForPortableLibraries
+    <WinAppSdkCreatePriFilesForPortableLibraries
                     MakePriExeFullPath="$(MakePriExeFullPath)"
                     MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
                     ContentToIndex="@(CreatedResWFiles)"
@@ -638,7 +636,7 @@
       <Output TaskParameter="CreatedPriFiles" ItemName="_PortableLibraryCreatedPriFiles" />
       <Output TaskParameter="UnprocessedReswFiles_DefaultLanguage" ItemName="_UnprocessedReswFiles_DefaultLanguage" />
       <Output TaskParameter="UnprocessedReswFiles_OtherLanguages" ItemName="_UnprocessedReswFiles_OtherLanguages" />
-    </CreatePriFilesForPortableLibraries>
+    </WinAppSdkCreatePriFilesForPortableLibraries>
 
     <!-- Add all resw files we didn't generate a pri file for to the PRIResource group so they get included during           -->
     <!-- final pri generation, with the exception of those that need to be indexed using a language other than the project's -->
@@ -670,11 +668,11 @@
                                      />
     </ItemGroup>
 
-    <RemoveDuplicatePriFiles Inputs="@(_PriFilesFromPayloadRaw)"
+    <WinAppSdkRemoveDuplicatePriFiles Inputs="@(_PriFilesFromPayloadRaw)"
                              Platform="$(Platform)"
                              VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="Filtered" ItemName="_PriFilesFromPayload" />
-    </RemoveDuplicatePriFiles>
+    </WinAppSdkRemoveDuplicatePriFiles>
 
   </Target>
 
@@ -718,7 +716,7 @@
       <_PRIResourceFiltered Include="@(PRIResource)" Condition="'%(PRIResource.ExcludedFromBuild)' != 'true'" />
     </ItemGroup>
 
-    <GeneratePriConfigurationFiles
+    <WinAppSdkGeneratePriConfigurationFiles
           UnfilteredLayoutResfilesPath="$(_UnfilteredLayoutResfilesPath)"
           FilteredLayoutResfilesPath="$(_FilteredLayoutResfilesPath)"
           ExcludedLayoutResfilesPath="$(_ExcludedLayoutResfilesPath)"
@@ -733,9 +731,9 @@
           UnprocessedResourceFiles_OtherLanguages="@(_UnprocessedReswFiles_OtherLanguages)"
           VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="AdditionalResourceResFiles" ItemName="_AdditionalResourceResFiles" />
-    </GeneratePriConfigurationFiles>
+    </WinAppSdkGeneratePriConfigurationFiles>
 
-    <CreatePriConfigXmlForFullIndex
+    <WinAppSdkCreatePriConfigXmlForFullIndex
         PriConfigXmlPath="$(_PriConfigXmlPath)"
         LayoutResfilesPath="$(_FilteredLayoutResfilesPath)"
         ResourcesResfilesPath="$(_ResourcesResfilesPath)"
@@ -789,7 +787,7 @@
              Directories="$(_ReverseMapProjectPriDirectory)"
                  />
 
-    <GenerateProjectPriFile MakePriExeFullPath="$(MakePriExeFullPath)"
+    <WinAppSdkGenerateProjectPriFile MakePriExeFullPath="$(MakePriExeFullPath)"
                             MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
                             PriConfigXmlPath="$(_PriConfigXmlPath)"
                             IndexFilesForQualifiersCollection="$(_FilteredLayoutResfilesPath);$(_ResourcesResfilesPath)"
@@ -867,7 +865,7 @@
   <Target Name="_ExpandProjectPriFile"
           Condition="'$(AppxPackage)' == 'true' and '$(AppxUseResourceIndexerApi)' == 'false'">
 
-    <ExpandPriContent Inputs="@(ProjectPriFile)"
+    <WinAppSdkExpandPriContent Inputs="@(ProjectPriFile)"
                       MakePriExeFullPath="$(MakePriExeFullPath)"
                       MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
                       IntermediateDirectory="$(IntermediateOutputPath)"
@@ -876,7 +874,7 @@
                           >
       <Output TaskParameter="Expanded" ItemName="IndexedPayloadFiles" />
       <Output TaskParameter="IntermediateFileWrites" ItemName="FileWrites" />
-    </ExpandPriContent>
+    </WinAppSdkExpandPriContent>
 
   </Target>
 
@@ -911,7 +909,7 @@
       <_PriFilesToExpandFromReference Include="@(ReferenceCopyLocalPaths->'%(FullPath)')" Condition="'%(Extension)' == '.pri'" KeepDuplicates="false" />
     </ItemGroup>
 
-    <ExpandPriContent Condition="'$(MakePriExeFullPath)' != ''"
+    <WinAppSdkExpandPriContent Condition="'$(MakePriExeFullPath)' != ''"
                       Inputs="@(_PriFilesToExpandFromReference)"
                       MakePriExeFullPath="$(MakePriExeFullPath)"
                       MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
@@ -921,7 +919,7 @@
                       VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="Expanded" ItemName="_ExtraPriPayloadFiles" />
       <Output TaskParameter="IntermediateFileWrites" ItemName="FileWrites" />
-    </ExpandPriContent>
+    </WinAppSdkExpandPriContent>
 
     <ItemGroup>
       <_AllChildProjectItemsWithTargetPath Include="@(_ExtraPriPayloadFiles)" KeepMetadata="TargetPath">
@@ -940,7 +938,7 @@
                                />
     </ItemGroup>
 
-    <ExpandPriContent Inputs="@(_PriFilesToExpand)"
+    <WinAppSdkExpandPriContent Inputs="@(_PriFilesToExpand)"
                       MakePriExeFullPath="$(MakePriExeFullPath)"
                       MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
                       IntermediateDirectory="$(IntermediateOutputPath)"
@@ -950,7 +948,7 @@
                       >
       <Output TaskParameter="Expanded" ItemName="_ExpandedPriPayload" />
       <Output TaskParameter="IntermediateFileWrites" ItemName="FileWrites" />
-    </ExpandPriContent>
+    </WinAppSdkExpandPriContent>
 
   </Target>
 
@@ -1180,9 +1178,9 @@
       </_PackagingOutputsUnexpanded>
     </ItemGroup>
 
-    <ExpandPayloadDirectories Inputs="@(_PackagingOutputsUnexpanded)" VsTelemetrySession="$(VsTelemetrySession)">
+    <WinAppSdkExpandPayloadDirectories Inputs="@(_PackagingOutputsUnexpanded)" VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="Expanded" ItemName="_PackagingOutputsExpanded" />
-    </ExpandPayloadDirectories>
+    </WinAppSdkExpandPayloadDirectories>
 
     <CallTarget Targets="GetResolvedSDKReferences" Condition="'$(IncludeGetResolvedSDKReferences)' == 'true'">
       <Output TaskParameter="TargetOutputs" ItemName="_GetResolvedSDKReferencesOutputWithoutMetadata"/>
@@ -1392,13 +1390,13 @@
   <!-- Gets default resource language for the package. -->
   <Target Name="_GetDefaultResourceLanguage">
 
-    <GetDefaultResourceLanguage
+    <WinAppSdkGetDefaultResourceLanguage
         DefaultLanguage="$(DefaultLanguage)"
         SourceAppxManifest="@(SourceAppxManifest)"
         VsTelemetrySession="$(VsTelemetrySession)"
             >
       <Output TaskParameter="DefaultResourceLanguage" PropertyName="DefaultResourceLanguage" />
-    </GetDefaultResourceLanguage>
+    </WinAppSdkGetDefaultResourceLanguage>
 
   </Target>
 
@@ -1443,12 +1441,12 @@
     <!-- i.e., one entry will have ..\..-style paths embedded, and other will not.             -->
     <!-- Remove those duplicates first before proceeding to look for WINMD implementations.    -->
 
-    <RemovePayloadDuplicates Inputs="@(_CopyLocalFilesOutputGroupOutputFromReferences)"
+    <WinAppSdkRemovePayloadDuplicates Inputs="@(_CopyLocalFilesOutputGroupOutputFromReferences)"
                              ProjectName="$(ProjectName)"
                              Platform="$(Platform)"
                              VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="Filtered" ItemName="CopyLocalFilesOutputGroupOutput" />
-    </RemovePayloadDuplicates>
+    </WinAppSdkRemovePayloadDuplicates>
 
     <!-- In case of Winmd files, we may not get implementation -->
     <!-- file as separate CopyLocal file (if exist), so we are -->
@@ -1598,14 +1596,14 @@
   </Target>
 
   <Target Name="_ValidateConfiguration">
-    <ValidateConfiguration
+    <WinAppSdkValidateConfiguration
       TargetPlatformMinVersion="$(TargetPlatformMinVersion)"
       TargetPlatformVersion="$(TargetPlatformVersion)"
       ProjectLanguage="$(Language)"
       VsTelemetrySession="$(VsTelemetrySession)"
       TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
       Platform="$(Platform)">
-    </ValidateConfiguration>
+    </WinAppSdkValidateConfiguration>
   </Target>
 
   <!-- Configure Fast Up To Date for PRI generation. Please see the comment in ProjectItemsSchema.xaml for more info. -->
