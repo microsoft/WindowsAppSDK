@@ -8,8 +8,12 @@
 #include <microsoft.ui.xaml.window.h>
 #include <winrt/Windows.UI.Popups.h>
 
+#include <fstream>
+#include <string>
+
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
+using namespace winrt::Microsoft::Windows::Storage::Pickers;
 //using namespace Windows::Foundation;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -89,6 +93,42 @@ namespace winrt::PickerUsageApp::implementation
         labelBlock().Text(message);
     }
 
+    Windows::Foundation::IAsyncOperation<hstring> MainWindow::BigButtonClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
+    {
+        auto id = AppWindow().Id();
+        winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ id };
+
+        picker.CommitButtonText(L"Choose selected files");
+        picker.FileTypeFilter().Append(L".txt");
+        picker.FileTypeFilter().Append(L".pdf");
+        picker.FileTypeFilter().Append(L".doc");
+        picker.FileTypeFilter().Append(L".docx");
+
+
+        // Pick multiple files
+        picker.ViewMode(PickerViewMode::List);
+        auto& file = co_await picker.PickSingleFileAsync();
+        if (file != nullptr)
+        {
+            std::ifstream fileReader(file.Path().c_str());
+            std::string text((std::istreambuf_iterator<char>(fileReader)), std::istreambuf_iterator<char>());
+            winrt::hstring hText = winrt::to_hstring(text);
+
+            co_return hText;
+        }
+        else
+        {
+            // error handling;
+        }
+
+        //auto& files = co_await openPicker.PickMultipleFilesAsync();
+        //winrt::hstring names = L"";
+        //for (auto& file : files)
+        //{
+        //    names = names + file.Path() + L"\n";
+        //}
+        //co_return names;
+    }
 
     Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFileUWPClick(IInspectable const&, RoutedEventArgs const&)
     {

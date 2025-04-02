@@ -1,17 +1,23 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "FileOpenPicker.h"
 #include "FileOpenPicker.g.cpp"
+#include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
+#include "PickFileResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
     FileOpenPicker::FileOpenPicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
 
     winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
@@ -60,22 +66,26 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileOpenPicker::PickSingleFileAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime{ get_strong() };
+
+        auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
+
         PickerCommon::PickerParameters parameters{};
 
         CaptureParameters(parameters);
 
+        auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
 
-        auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
-
-        // TODO: should we initialize COM?
-        // wil::com_initialize_ex initializeCom{ COINIT_APARTMENTTHREADED };
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
 
@@ -85,34 +95,47 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr) || cancellationToken())
             {
+                logTelemetry.Stop(m_telemetryHelper, false);
                 co_return nullptr;
             }
         }
 
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
-        auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
+        auto path = PickerCommon::GetPathFromShellItem(shellItem);
 
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
-        co_return file;
+
+        auto result = make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path);
+
+        logTelemetry.Stop(m_telemetryHelper, true);
+        co_return result;
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile>> FileOpenPicker::PickMultipleFilesAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> > FileOpenPicker::PickMultipleFilesAsync()
     {
-        PickerCommon::PickerParameters parameters{};
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime{ get_strong() };
 
+        auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickMultipleFile::Start(m_telemetryHelper) };
+
+        // capture parameters to avoid using get strong referece of picker
+        PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
+        auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
 
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Storage::StorageFile> results{ winrt::single_threaded_vector<winrt::Windows::Storage::StorageFile>() };
+        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> results{ winrt::single_threaded_vector<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult>() };
 
-        auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, true, false);
             co_return results.GetView();
         }
 
@@ -126,6 +149,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr) || cancellationToken())
             {
+                logTelemetry.Stop(m_telemetryHelper, true, false);
                 co_return results.GetView();
             }
         }
@@ -140,15 +164,27 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         for (DWORD i = 0; i < itemCount; i++)
         {
             check_hresult(shellItems->GetItemAt(i, shellItem.put()));
-            auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem);
-            results.Append(file);
+            auto path = PickerCommon::GetPathFromShellItem(shellItem);
+            auto result{ make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(path) };
+            results.Append(result);
         }
 
+        bool isCancelled = false;
         if (cancellationToken())
         {
             results.Clear();
-            co_return results.GetView();
+            isCancelled = true;
         }
-        co_return results.GetView();
+        auto resultView = results.GetView();
+
+        if (results.Size() > 0)
+        {
+            logTelemetry.Stop(m_telemetryHelper, isCancelled, true);
+        }
+        else
+        {
+            logTelemetry.Stop(m_telemetryHelper, isCancelled, false);
+        }
+        co_return resultView;
     }
 }

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "PickerCommon.h"
 #include <wil/resource.h>
@@ -8,22 +11,21 @@ namespace {
 
     GUID HashHStringToGuid(winrt::hstring const& input)
     {
-        auto algorithmProvider = winrt::Windows::Security::Cryptography::Core::HashAlgorithmProvider::OpenAlgorithm(winrt::Windows::Security::Cryptography::Core::HashAlgorithmNames::Md5());
+        auto algorithm = winrt::Windows::Security::Cryptography::Core::HashAlgorithmProvider::OpenAlgorithm(winrt::Windows::Security::Cryptography::Core::HashAlgorithmNames::Md5());
 
         auto buffer = winrt::Windows::Security::Cryptography::CryptographicBuffer::ConvertStringToBinary(input, winrt::Windows::Security::Cryptography::BinaryStringEncoding::Utf16LE);
 
-        auto hash = algorithmProvider.HashData(buffer);
+        auto hash = algorithm.HashData(buffer);
 
-        if (hash.Length() != 16)
+        if (hash.Length() != sizeof(GUID))
         {
             throw winrt::hresult_error(E_FAIL, L"Invalid hash length");
         }
 
-        winrt::com_array<uint8_t> resultBuffer{};
+        winrt::com_array<uint8_t> resultBuffer(sizeof(GUID));
         winrt::Windows::Security::Cryptography::CryptographicBuffer::CopyToByteArray(hash, resultBuffer);
         GUID guid = *(reinterpret_cast<GUID*>(resultBuffer.data()));
 
-        // TODO: verify bit pattern code from copilot is correct to fit spec
         // Adjust the GUID to conform to version 3 UUID (MD5-based)
         guid.Data3 = (guid.Data3 & 0x0FFF) | 0x3000; // Set the version to 3
         guid.Data4[0] = (guid.Data4[0] & 0x3F) | 0x80; // Set variant to RFC 4122
@@ -31,8 +33,6 @@ namespace {
         return guid;
     }
 
-    // TODO: use better winrt implementations?
-    // Challenge: currently winrt based Storage.KnownFolder APIs does not provide all location id we need
     winrt::com_ptr<IShellItem> GetKnownFolderFromId(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId)
     {
         KNOWNFOLDERID knownFolderId;
@@ -70,10 +70,25 @@ namespace {
         }
 
         auto knownFolderManager = winrt::create_instance<IKnownFolderManager>(CLSID_KnownFolderManager);
+
         winrt::com_ptr<IKnownFolder> knownFolder{};
-        winrt::check_hresult(knownFolderManager->GetFolder(knownFolderId, knownFolder.put()));
+        winrt::hresult hr = knownFolderManager->GetFolder(knownFolderId, knownFolder.put());
+        if (!knownFolder)
+        {
+            knownFolderManager->GetFolder(FOLDERID_Documents, knownFolder.put());
+        }
+        if (!knownFolder)
+        {
+            return nullptr;
+        }
+
         winrt::com_ptr<IShellItem> defaultFolder{};
-        winrt::check_hresult(knownFolder->GetShellItem(0, IID_PPV_ARGS(defaultFolder.put())));
+        hr = knownFolder->GetShellItem(0, IID_PPV_ARGS(defaultFolder.put()));
+        if (FAILED(hr))
+        {
+            return nullptr;
+        }
+
         return defaultFolder;
     }
 
@@ -108,7 +123,6 @@ namespace {
         }
         return result;
     }
-
 }
 
 
@@ -118,44 +132,30 @@ namespace PickerCommon {
 
     bool IsHStringNullOrEmpty(winrt::hstring value)
     {
-        // TODO: proper handling of null string reference?
         return value.empty();
     }
 
-
-    // TODO: better way to convert ShellItem a StorageFile without relying on path?.
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CreateStorageFileFromShellItem(winrt::com_ptr<IShellItem> shellItem, bool createFile)
+    winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem)
     {
         wil::unique_cotaskmem_string filePath;
-        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
-        auto pathStr = filePath.get();
-
-        if (createFile)
-        {
-            HANDLE hFile = CreateFile(pathStr, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-            if (hFile == INVALID_HANDLE_VALUE)
-            {
-                co_return nullptr;
-            }
-            CloseHandle(hFile);
-        }
-
-        co_return co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(pathStr);
+        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
+        return winrt::hstring{ filePath.get() };
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> CreateStorageFolderFromShellItem(winrt::com_ptr<IShellItem> shellItem)
-    {
-        wil::unique_cotaskmem_string filePath;
-        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath));
-        co_return co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(filePath.get());
-    }
-
+    /// <summary>
+    /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type
+    /// </summary>
+    /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
+    /// <param name="filters">winrt style filters</param>
+    /// <returns>result Coomon Item Dialog style filters, note only raw pointers here,
+    /// they are valid up to lifetime of buffer
+    /// </returns>
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
         std::vector<COMDLG_FILTERSPEC> result(filters.Size());
         buffer.clear();
         buffer.reserve(filters.Size() * (size_t)2);
-        for (auto filter : filters)
+        for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
             buffer.push_back(filter);
@@ -165,9 +165,22 @@ namespace PickerCommon {
         {
             result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
         }
+
+        if (result.size() == 0)
+        {
+            result.push_back({ L"All Files", L"*.*" });
+        }
         return result;
     }
 
+    /// <summary>
+    /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type
+    /// </summary>
+    /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
+    /// <param name="filters">winrt style filters</param>
+    /// <returns>result Coomon Item Dialog style filters, note only raw pointers here,
+    /// they are valid up to lifetime of buffer
+    /// </returns>
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> filters)
     {
         std::vector<COMDLG_FILTERSPEC> result(filters.Size());
@@ -183,6 +196,11 @@ namespace PickerCommon {
         for (size_t i = 0; i < filters.Size(); i++)
         {
             result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
+        }
+
+        if (result.empty())
+        {
+            result.push_back({ L"All Files", L"*.*" });
         }
         return result;
     }
@@ -203,10 +221,9 @@ namespace PickerCommon {
         auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
         if (defaultFolder != nullptr)
         {
-            check_hresult(dialog->SetFolder(defaultFolder.get()));
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
         }
 
-        check_hresult(dialog->SetFileTypes(FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+        check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
     }
 }

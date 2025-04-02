@@ -113,6 +113,12 @@
     <ClInclude Include="FolderPicker.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PickerCommon.h" />
+    <ClInclude Include="PickFileResult.h" />
+    <ClInclude Include="PickFolderResult.h" />
+    <ClInclude Include="StoragePickersTelemetry.h" />
+    <ClInclude Include="StoragePickersTelemetryHelper.h" />
+    <ClInclude Include="TelemetryHelper.h" />
+    <ClInclude Include="TerminalVelocityFeatures-StoragePickers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileOpenPicker.cpp" />
@@ -123,6 +129,8 @@
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="PickerCommon.cpp" />
+    <ClCompile Include="PickFileResult.cpp" />
+    <ClCompile Include="PickFolderResult.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Microsoft_Windows_Storage_Pickers.def" />
@@ -134,7 +142,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="Pickers.idl" />
+    <Midl Include="Microsoft.Windows.Storage.Pickers.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

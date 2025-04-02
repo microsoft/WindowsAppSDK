@@ -1,0 +1,84 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Windows.Storage.Pickers
+{
+    
+    enum PickerViewMode
+    {
+        List,
+        Thumbnail,
+    };
+
+    
+    enum PickerLocationId
+    {
+        DocumentsLibrary,
+        ComputerFolder,
+        Desktop,
+        Downloads,
+        HomeGroup,
+        MusicLibrary,
+        PicturesLibrary,
+        VideosLibrary,
+        Objects3D,
+        Unspecified,
+    };
+
+    
+    runtimeclass PickFileResult
+    {
+        String Path { get; };
+    }
+
+    
+    runtimeclass FileOpenPicker
+    {
+        FileOpenPicker(Microsoft.UI.WindowId windowId);
+
+        Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
+        String SettingsIdentifier;
+        Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+        String CommitButtonText;
+        Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
+
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
+        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult> > PickMultipleFilesAsync();
+    }
+
+    
+    runtimeclass FileSavePicker
+    {
+        FileSavePicker(Microsoft.UI.WindowId windowId);
+
+        String SettingsIdentifier;
+        Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+        String CommitButtonText;
+        Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
+        String DefaultFileExtension;
+        Windows.Storage.StorageFile SuggestedSaveFile;
+        String SuggestedFileName;
+
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
+    }
+
+    
+    runtimeclass PickFolderResult
+    {
+        String Path { get; };
+    }
+
+    
+    runtimeclass FolderPicker
+    {
+        FolderPicker(Microsoft.UI.WindowId windowId);
+
+        Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
+        String SettingsIdentifier;
+        Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+        String CommitButtonText;
+        Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
+
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
+    }
+}

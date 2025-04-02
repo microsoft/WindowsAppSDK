@@ -15,6 +15,7 @@ namespace winrt::PickerUsageApp::implementation
             // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
         }
 
+        winrt::Windows::Foundation::IAsyncOperation<hstring> BigButtonClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
         winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFileSDKClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
         winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFileUWPClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
 

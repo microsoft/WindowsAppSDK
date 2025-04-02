@@ -16,6 +16,8 @@
     <ClCompile Include="FileSavePicker.cpp" />
     <ClCompile Include="FolderPicker.cpp" />
     <ClCompile Include="PickerCommon.cpp" />
+    <ClCompile Include="PickFileResult.cpp" />
+    <ClCompile Include="PickFolderResult.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -23,9 +25,15 @@
     <ClInclude Include="FileSavePicker.h" />
     <ClInclude Include="FolderPicker.h" />
     <ClInclude Include="PickerCommon.h" />
+    <ClInclude Include="PickFileResult.h" />
+    <ClInclude Include="PickFolderResult.h" />
+    <ClInclude Include="StoragePickersTelemetry.h" />
+    <ClInclude Include="StoragePickersTelemetryHelper.h" />
+    <ClInclude Include="TerminalVelocityFeatures-StoragePickers.h" />
+    <ClInclude Include="TelemetryHelper.h" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="Pickers.idl" />
+    <Midl Include="Microsoft.Windows.Storage.Pickers.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Microsoft_Windows_Storage_Pickers.def" />
@@ -33,5 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>

@@ -1,16 +1,22 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "FolderPicker.h"
 #include "FolderPicker.g.cpp"
+#include "StoragePickersTelemetry.h"
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
+#include "PickFolderResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
     FolderPicker::FolderPicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FolderPicker::ViewMode()
     {
@@ -59,16 +65,23 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFolder> FolderPicker::PickSingleFolderAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
     {
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime{ get_strong() };
+
+        auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
+
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
+        auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
 
-        auto cancellationToken = co_await winrt::get_cancellation_token();
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
 
@@ -81,18 +94,24 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr) || cancellationToken())
             {
+                logTelemetry.Stop(m_telemetryHelper, false);
                 co_return nullptr;
             }
         }
 
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
-        auto folder = co_await PickerCommon::CreateStorageFolderFromShellItem(shellItem);
+        auto path = PickerCommon::GetPathFromShellItem(shellItem);
 
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
-        co_return folder;
+
+        auto result = make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFolderResult>(path);
+
+        logTelemetry.Stop(m_telemetryHelper, true);
+        co_return result;
     }
 }

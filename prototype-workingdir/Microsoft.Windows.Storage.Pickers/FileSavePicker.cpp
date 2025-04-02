@@ -1,6 +1,10 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "FileSavePicker.h"
 #include "FileSavePicker.g.cpp"
+#include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>
 #include <shobjidl_core.h>
@@ -8,10 +12,11 @@
 #include <wil/cppwinrt.h>
 #include <wil/com.h>
 #include <wil/resource.h>
-#include <Microsoft.Ui.Xaml.Window.h>
+#include <wil/filesystem.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include "PickerCommon.h"
+#include "PickFileResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -19,6 +24,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     FileSavePicker::FileSavePicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
     hstring FileSavePicker::SettingsIdentifier()
     {
@@ -84,18 +90,27 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> FileSavePicker::PickSaveFileAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
     {
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime{ get_strong() };
+
+        auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
+
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedSaveFile = m_suggestedSaveFile;
         auto suggestedFileName = m_suggestedFileName;
+        auto fileTypeChoices = m_fileTypeChoices;
 
-        co_await winrt::resume_background();
         auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
+        co_await winrt::resume_background();
+
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
 
@@ -123,6 +138,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr))
             {
+                logTelemetry.Stop(m_telemetryHelper, false);
                 co_return nullptr;
             }
         }
@@ -130,14 +146,43 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
 
-        // TODO: Manually append the default extension if not present
+        // Get the file path from the dialog
+        wil::unique_cotaskmem_string filePath{};
+        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
+        winrt::hstring pathStr(filePath.get());
 
-        auto file = co_await PickerCommon::CreateStorageFileFromShellItem(shellItem, true);
+        wil::unique_cotaskmem_string fileName;
+        check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
+        std::wstring fileNameStr(fileName.get());
+
+        // Check if the file name has an extension
+        if ((fileNameStr.find_last_of(L".") == std::wstring::npos) && (fileTypeChoices.Size() > 0))
+        {
+            // If the user defined file name doesn't have an extension,
+            //     automatically use the first extension from the first category in fileTypeChoices.
+            auto firstCategory = fileTypeChoices.First().Current();
+            auto value = firstCategory.Value();
+            if (value.Size() > 0)
+            {
+                auto firstExtension = value.GetAt(0);
+                pathStr = pathStr + firstExtension;
+            }
+        }
+
+        // Create a file. If the file already exists,
+        // since common item dialog prompts to let user select cancel or override, thus we can safely truncate here.
+        // Due to our design spec to align with UWP pickers, we need ensure existance of picked file.
+        auto [handle, _] = wil::try_open_or_truncate_existing_file(pathStr.c_str(), GENERIC_WRITE);
 
         if (cancellationToken())
         {
+            logTelemetry.Stop(m_telemetryHelper, false);
             co_return nullptr;
         }
-        co_return file;
+
+        auto result = make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFileResult>(pathStr);
+
+        logTelemetry.Stop(m_telemetryHelper, true);
+        co_return result;
     }
 }
