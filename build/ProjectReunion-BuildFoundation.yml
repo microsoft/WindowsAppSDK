@@ -5,17 +5,22 @@ name: $(version)
 
 trigger: none
 
+variables:
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: WindowsAppSDK-SetSourceBranchVariableForConfigRepo.yml@WindowsAppSDKConfig
+
 resources:
   repositories:
     - repository: WindowsAppSDKConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
-
-variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
-- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+    - repository: WindowsAppSDKConfigSourceBranch
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: ${{ variables['mySourceBranch'] }}
 
 stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
