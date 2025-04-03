@@ -142,7 +142,8 @@ public:
             TraceLoggingClassWriteStop(
                 EnsurePackageReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingWideString(package.c_str(), "Package"));
+                TraceLoggingWideString(package.c_str(), "Package"),
+                TraceLoggingInt32(static_cast<std::int32_t>(readyOrNewerStatus), "ReadyOrNewerStatus"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
@@ -178,7 +179,8 @@ public:
             TraceLoggingClassWriteStop(
                 EnsurePackageSetReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
+                TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"),
+                TraceLoggingInt32(static_cast<std::int32_t>(readyOrNewerStatus), "ReadyOrNewerStatus"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();

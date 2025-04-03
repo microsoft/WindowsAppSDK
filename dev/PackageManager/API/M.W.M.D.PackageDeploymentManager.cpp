@@ -350,6 +350,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                     TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
                     TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                     TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
+                    TraceLoggingInt32(static_cast<std::int32_t>(status), "PackageReadyOrNewerAvailableStatus"),
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
@@ -364,6 +365,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                     TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
                     TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                     TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
+                    TraceLoggingInt32(static_cast<std::int32_t>(status), "PackageReadyOrNewerAvailableStatus"),
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 newerAvailable = true;
@@ -572,9 +574,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageUriAsString);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
@@ -638,9 +639,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::StagePackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options)
@@ -697,9 +697,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageUriAsString);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::StagePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options)
@@ -763,9 +762,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RegisterPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
@@ -832,9 +830,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageUriAsString);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RegisterPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
@@ -908,9 +905,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -975,9 +971,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFullName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByFamilyNameAsync(hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -1022,9 +1017,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -1094,9 +1088,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageUriAsString);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -1170,9 +1163,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ResetPackageAsync(hstring package)
@@ -1271,9 +1263,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ResetPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
@@ -1340,9 +1331,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RepairPackageAsync(hstring package)
@@ -1441,9 +1431,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RepairPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
@@ -1510,9 +1499,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     bool PackageDeploymentManager::IsPackageProvisioned(hstring const& package)
     {
@@ -1693,9 +1681,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
@@ -1741,9 +1728,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFullName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     winrt::hstring PackageDeploymentManager::GetUupProductIdIfMsUup(winrt::Windows::Foundation::Uri const& uri) const
@@ -2678,9 +2664,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::ResetPackageByFamilyName(
@@ -2790,9 +2775,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFullName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::ResetPackageByFullName(
@@ -2914,9 +2898,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::RepairPackageByFamilyName(
@@ -3026,9 +3009,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFullName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::RepairPackageByFullName(
@@ -3175,9 +3157,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::ProvisionPackageByFamilyName(
@@ -3290,9 +3271,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::DeprovisionPackageByFamilyName(
