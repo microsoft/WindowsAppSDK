@@ -200,14 +200,17 @@ namespace Test::PackageManager::Tests
 
     inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem _Make_PackageSetItem(
         PCWSTR packageFullName,
-        winrt::Windows::Foundation::Uri const& packageUri)
+        const winrt::Windows::Foundation::Uri* packageUri)
     {
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageUri.ToString().c_str()));
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, (packageUri ? packageUri->ToString().c_str() : L"<null>")));
         const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
 
         winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;
         psi.PackageFamilyName(packageFamilyName);
-        psi.PackageUri(packageUri);
+        if (packageUri)
+        {
+            psi.PackageUri(*packageUri);
+        }
         const ::AppModel::Identity::PackageVersion version{ packageVersion };
         psi.MinVersion(version.ToWinrtPackageVersion());
         return psi;
@@ -218,14 +221,20 @@ namespace Test::PackageManager::Tests
         PCWSTR packageDirName)
     {
         const auto packageUri{ TP::GetMsixPackageUri(packageDirName) };
-        return _Make_PackageSetItem(packageFullName, packageUri);
+        return _Make_PackageSetItem(packageFullName, &packageUri);
     }
 
     inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem_ForRegister(
         PCWSTR packageFullName)
     {
         const auto appxManifestUri{ TP::GetAppxManifestPackageUri(packageFullName) };
-        return _Make_PackageSetItem(packageFullName, appxManifestUri);
+        return _Make_PackageSetItem(packageFullName, &appxManifestUri);
+    }
+
+    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem_NoPackageUri(
+        PCWSTR packageFullName)
+    {
+        return _Make_PackageSetItem(packageFullName, nullptr);
     }
 
     inline bool IsPackageRegistered_Red()
@@ -235,6 +244,10 @@ namespace Test::PackageManager::Tests
     inline bool IsPackageStaged_Red()
     {
         return TP::IsPackageStaged(TPF::Red::GetPackageFullName());
+    }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Red()
+    {
+        return TP::GetPackageStatus(TPF::Red::GetPackageFullName());
     }
     inline void AddPackage_Red()
     {
@@ -288,6 +301,10 @@ namespace Test::PackageManager::Tests
     {
         return TP::IsPackageStaged(TPF::Redder::GetPackageFullName());
     }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Redder()
+    {
+        return TP::GetPackageStatus(TPF::Redder::GetPackageFullName());
+    }
     inline void AddPackage_Redder()
     {
         TP::AddPackageIfNecessary(TPF::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
@@ -340,6 +357,10 @@ namespace Test::PackageManager::Tests
     {
         return TP::IsPackageStaged(TPF::Green::GetPackageFullName());
     }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Green()
+    {
+        return TP::GetPackageStatus(TPF::Green::GetPackageFullName());
+    }
     inline void AddPackage_Green()
     {
         TP::AddPackageIfNecessary(TPF::Green::c_packageDirName, TPF::Green::GetPackageFullName());
@@ -391,6 +412,10 @@ namespace Test::PackageManager::Tests
     {
         return TP::IsPackageStaged(TPF::Blue::GetPackageFullName());
     }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Blue()
+    {
+        return TP::GetPackageStatus(TPF::Blue::GetPackageFullName());
+    }
     inline void AddPackage_Blue()
     {
         TP::AddPackageIfNecessary(TPF::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
@@ -441,6 +466,10 @@ namespace Test::PackageManager::Tests
     inline bool IsPackageStaged_Black()
     {
         return TP::IsPackageStaged(TPM::Black::GetPackageFullName());
+    }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Black()
+    {
+        return TP::GetPackageStatus(TPM::Black::GetPackageFullName());
     }
     inline void AddPackage_Black()
     {
@@ -497,6 +526,10 @@ namespace Test::PackageManager::Tests
     {
         return TP::IsPackageStaged(TPM::Blacker::GetPackageFullName());
     }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Blacker()
+    {
+        return TP::GetPackageStatus(TPM::Blacker::GetPackageFullName());
+    }
     inline void AddPackage_Blacker()
     {
         TP::AddPackageIfNecessary(TPM::Blacker::c_packageDirName, TPM::Blacker::GetPackageFullName());
@@ -551,6 +584,10 @@ namespace Test::PackageManager::Tests
     inline bool IsPackageStaged_White()
     {
         return TP::IsPackageStaged(TPM::White::GetPackageFullName());
+    }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_White()
+    {
+        return TP::GetPackageStatus(TPM::White::GetPackageFullName());
     }
     inline void AddPackage_White()
     {
@@ -607,6 +644,10 @@ namespace Test::PackageManager::Tests
     {
         return TP::IsPackageStaged(TPM::Whiter::GetPackageFullName());
     }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Whiter()
+    {
+        return TP::GetPackageStatus(TPM::Whiter::GetPackageFullName());
+    }
     inline void AddPackage_Whiter()
     {
         TP::AddPackageIfNecessary(TPM::Whiter::c_packageDirName, TPM::Whiter::GetPackageFullName());
@@ -654,11 +695,13 @@ namespace Test::PackageManager::Tests
         TP::DeprovisionPackageIfNecessary(TPM::Whiter::c_packageFamilyName);
     }
 
+#if 0
     inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)
     {
         auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
         return package.Status();
     }
+#endif
 
     inline void SetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName, winrt::Windows::Management::Deployment::PackageStatus status)
     {

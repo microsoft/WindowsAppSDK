@@ -21,6 +21,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(PackageDeploymentManagerTests_Remove)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")    /****SEEME****/
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
@@ -30,6 +31,9 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
+
+            TD::DumpExecutionContext();
+
             RemovePackage_Blue();
             RemovePackage_Green();
             RemovePackage_Redder();
@@ -103,7 +107,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RemovePackageAsync_PackageFullName_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             StagePackage_Red();
@@ -189,7 +193,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RemovePackageAsync_PackageFamilyName_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             StagePackage_Red();
@@ -279,7 +283,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RemovePackageByFullNameAsync_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             StagePackage_Red();
@@ -346,7 +350,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RemovePackageByFamilyNameAsync_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             StagePackage_Red();
@@ -396,11 +400,10 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
             options.FailIfNotFound(true);
             auto deploymentResult{ packageDeploymentManager.RemovePackageByUriAsync(packageUri, options).get() };
-//TODO WTH
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: %d", deploymentResult.Status()));
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Error: 0x%08X", deploymentResult.Error()));
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ExtendedError: 0x%08X", deploymentResult.ExtendedError()));
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploymentResult.ErrorText().c_str()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: %d", deploymentResult.Status()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Error: 0x%08X", deploymentResult.Error()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ExtendedError: 0x%08X", deploymentResult.ExtendedError()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploymentResult.ErrorText().c_str()));
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.Error()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -430,7 +433,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageByUriAsync_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             if (TPMT::SkipIfFeatureNotSupported_RemovePackageByUri() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
@@ -544,7 +547,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageSetAsync_Uri_1_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             StagePackage_Red();
@@ -745,7 +748,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageSetAsync_Uri_N_RegisteredAndNotInstalledAndStaged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             AddPackage_Red();
@@ -855,7 +858,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageSetAsync_NoUri_1_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             StagePackage_Red();
@@ -1022,7 +1025,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageSetAsync_NoUri_N_RegisteredAndNotInstalledAndStaged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             AddPackage_Red();
@@ -1096,7 +1099,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageAsync_PackageFullName_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1120,7 +1123,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageAsync_PackageFamilyName_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1144,7 +1147,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageByFullNameAsync_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1168,7 +1171,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageByFamilyNameAsync_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1202,7 +1205,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageSetAsync_Uri_1_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1237,7 +1240,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageSetAsync_Uri_N_RegisteredPackageStatusOkAndBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1272,7 +1275,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageSetAsync_NoUri_1_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1302,7 +1305,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploy
         TEST_METHOD(RemovePackageSetAsync_NoUri_N_RegisteredPackageStatusOkAndBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };

@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <Target Name="GenerateDeploymentManagerCpp" BeforeTargets="ClCompile">
+    <Target Name="GenerateDeploymentManagerCpp">
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\DeploymentManagerAutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -10,5 +10,11 @@
             </ClCompile>
         </ItemGroup>
     </Target>
+
+    <PropertyGroup>
+        <BeforeClCompileTargets>
+            $(BeforeClCompileTargets); GenerateDeploymentManagerCpp;
+        </BeforeClCompileTargets>
+    </PropertyGroup>
 
 </Project>

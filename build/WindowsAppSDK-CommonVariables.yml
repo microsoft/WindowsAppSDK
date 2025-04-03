@@ -17,12 +17,13 @@ variables:
   OUTPUTROOT: $(REPOROOT)\out
   NUGET_XMLDOC_MODE: none
 
-  # Native compiler version override for win undock. The two values below are for Ge, defined in:
+  # When the following 3 values are unpopulated, then on this repo we align to the global default LKG compiler version.
+  # In case we need to temporarily use a different LKG compiler version for this repo, possible values can be found in:
   # https://dev.azure.com/microsoft/OS/_git/UndockedES?path=/Pipelines/Config/CompilerToolsSettings.json
-  compilerOverridePackageName: "DevDiv.rel.LKG17.VCTools"
-  compilerOverridePackageVersion: "19.40.3381110000+DevDivGIT.CI20240625.01-DEFFC96F5DFBC335B83BD493D79973042E2EE96C"
+  compilerOverridePackageName: ""
+  compilerOverridePackageVersion: ""
   # Use the following corresponding version string instead of the above when calling nuget install directly.
-  compilerOverrideNupkgVersion: "19.40.33811100"
+  compilerOverrideNupkgVersion: ""
 
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
   WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'

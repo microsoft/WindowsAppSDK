@@ -11,7 +11,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: tools\DevCheck\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
+      arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: DownloadPipelineArtifact@2
@@ -37,9 +37,10 @@ steps:
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: CopyFiles@2
+    displayName: Download published redist files
     inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\packages'
-      TargetFolder: '$(Build.SourcesDirectory)\packages'
+      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\redist'
+      TargetFolder: '$(Build.SourcesDirectory)\redist'
 
   - task: powerShell@2
     displayName: 'Enable developer mode'
@@ -72,14 +73,14 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            $(Build.SourcesDirectory)\packages\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
+            $(Build.SourcesDirectory)\redist\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
 
   - task: powerShell@2
     displayName: 'Install VCLibs.Desktop'
     inputs:
       targetType: 'inline'
       script: |
-            $package = "$(Build.SourcesDirectory)\packages\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.Desktop.appx"
+            $package = "$(Build.SourcesDirectory)\redist\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.Desktop.appx"
             Add-AppxPackage $package -ErrorAction SilentlyContinue
 
   - task: powerShell@2
@@ -87,7 +88,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            $(Build.SourcesDirectory)\packages\vc_redist.${{ parameters.buildPlatform }}.exe /quiet /install /norestart
+            $(Build.SourcesDirectory)\redist\vc_redist.${{ parameters.buildPlatform }}.exe /quiet /install /norestart
 
   - task: powershell@2
     displayName: 'Run TE.Service'
@@ -142,6 +143,20 @@ steps:
 
             Write-Host "Get-WinSystemLocale"
             Get-WinSystemLocale
+
+            Write-Host "WhoAmI"
+            Write-Host (whoami /user /groups /priv)
+
+  - task: PowerShell@2
+    displayName: 'Dump services'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Get-Service
+        Get-Service | Write-Host
+        Get-Service | Out-Host
+        sc.exe queryex te.service | Write-Host
+        sc.exe qc te.service | Write-Host
 
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'

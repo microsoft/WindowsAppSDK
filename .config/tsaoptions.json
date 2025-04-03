@@ -1,8 +1,8 @@
 {
     "instanceUrl": "https://microsoft.visualstudio.com",
     "projectName": "os",
-    "areaPath": "OS\\Windows Client and Services\\ADEPT\\NEON\\TSABacklog",
-    "iterationPath": "OS\\2408",
+    "areaPath": "OS\\Windows Client and Services\\WinPD\\DEEP-Developer Experience, Ecosystem and Partnerships\\AmUse- App Metadata and User Setup Experience\\WinAppSDK\\WinAppSDK Engineering System",
+    "iterationPath": "OS\\2410",
     "notificationAliases": [ "WinAppSDK-Build@microsoft.com" ],
     "ignoreBranchName": true,
     "codebaseName": "WinAppSDK-Foundation"

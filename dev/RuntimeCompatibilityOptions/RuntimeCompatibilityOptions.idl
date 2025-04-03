@@ -1,0 +1,51 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
+{
+    [contractversion(1)]
+    apicontract RuntimeCompatibilityContract {};
+
+    /// The set of servicing changes that can be disabled.
+    [contract(RuntimeCompatibilityContract, 1)]
+    enum RuntimeCompatibilityChange
+    {
+        None = 0, /// do not use this value
+
+        // Add real changes here:
+
+        // 1.7.1
+        // ...
+    };
+
+    /// Represents a version of the Windows App Runtime.
+    [contract(RuntimeCompatibilityContract, 1)]
+    struct WindowsAppRuntimeVersion
+    {
+        UInt32 Major;
+        UInt32 Minor;
+        UInt32 Patch;
+    };
+
+    /// This object is used by the app to configure any desired compatibility options
+    /// for Windows App Runtime behavior of changes added in servicing updates. This
+    /// object is only used to set the runtime behavior and can't be used to query the
+    /// applied options.
+    [contract(RuntimeCompatibilityContract, 1)]
+    runtimeclass RuntimeCompatibilityOptions
+    {
+        RuntimeCompatibilityOptions();
+
+        /// An optional patch level to use if the runtime version matches the major.minor version.
+        WindowsAppRuntimeVersion PatchLevel1 { get; set; };
+
+        /// An optional patch level to use if the runtime version matches the major.minor version.
+        WindowsAppRuntimeVersion PatchLevel2 { get; set; };
+
+        /// An optional list of specific servicing changes to disable.
+        IVector<RuntimeCompatibilityChange> DisabledChanges{ get; };
+
+        /// Apply the compatibility options to the runtime.
+        void Apply();
+    }
+}

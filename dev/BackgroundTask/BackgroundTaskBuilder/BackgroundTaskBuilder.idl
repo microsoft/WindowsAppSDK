@@ -1,0 +1,32 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Windows.ApplicationModel.Background
+{
+    [contractversion(1)]
+    apicontract BackgroundTaskContract{};
+
+    [contract(BackgroundTaskContract, 1)]
+    runtimeclass BackgroundTaskBuilder
+    {
+        BackgroundTaskBuilder();
+
+        void SetTrigger(
+                Windows.ApplicationModel.Background.IBackgroundTrigger trigger
+            );
+        void SetTaskEntryPointClsid(
+                GUID clsId
+            );
+        void AddCondition (
+            Windows.ApplicationModel.Background.IBackgroundCondition condition
+            );
+
+        String Name{ set; get; };
+        Windows.ApplicationModel.Background.BackgroundTaskRegistrationGroup TaskGroup{ set; get; };
+
+        [return_name("task")]
+            Windows.ApplicationModel.Background.BackgroundTaskRegistration Register();
+        [return_name("task")]
+            Windows.ApplicationModel.Background.BackgroundTaskRegistration Register(String name);
+    }
+}

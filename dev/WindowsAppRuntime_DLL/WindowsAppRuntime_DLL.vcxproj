@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
@@ -97,8 +97,15 @@
     <Import Project="..\Licensing\Licensing.vcxitems" Label="Shared" />
     <Import Project="..\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems" Label="EnvironmentManager" />
     <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
+    <Import Project="..\OAuth\OAuth.vcxitems" Label="OAuth" />
     <Import Project="..\VersionInfo\VersionInfo.vcxitems" Label="VersionInfo" />
     <Import Project="..\PackageManager\API\PackageManager.vcxitems" Label="Shared" />
+    <Import Project="..\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems" Label="Shared" />
+    <Import Project="..\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems"/>
+    <Import Project="..\Notifications\BadgeNotifications\BadgeNotifications.vcxitems" Label="BadgeNotifications" />
+    <Import Project="..\Notifications\BaseNotifications\BaseNotifications.vcxitems" Label="BaseNotifications" />
+    <Import Project="..\RuntimeCompatibilityOptions\RuntimeCompatibilityOptions.vcxitems" Label="Shared" />
+    <Import Project="..\Interop\StoragePickers\StoragePickers.vcxitems" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -147,9 +154,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -165,9 +172,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -183,9 +190,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -201,9 +208,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -219,9 +226,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -237,9 +244,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -291,6 +298,7 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
@@ -311,6 +319,7 @@
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />

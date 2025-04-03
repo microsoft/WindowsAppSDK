@@ -58,6 +58,9 @@
 .PARAMETER RemoveTestCert
     Remove the Test certificate (i.e. undoc CheckTestCert)
 
+.PARAMETER RemoveTaefService
+     Remove the TAEF service
+
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
@@ -99,11 +102,7 @@
 #>
 
 Param(
-    [String]$CertPassword=$null,
-
-    [String]$CertPasswordFile=$null,
-
-    [String]$CertPasswordUser=$true,
+    [SecureString]$CertPassword=$null,
 
     [Switch]$CheckAll=$false,
 
@@ -130,6 +129,8 @@ Param(
     [Switch]$OnlineVSWhere=$false,
 
     [Switch]$RemoveAll=$false,
+
+    [Switch]$RemoveTAEFService=$false,
 
     [Switch]$RemoveTestCert=$false,
 
@@ -576,6 +577,7 @@ function Get-VisualStudio2022InstallPath
     $path = $path -replace [environment]::NewLine, ''
     Write-Verbose "Visual Studio 2022 detected at $path"
     $global:vspath = $path
+    return $path
 }
 
 function Test-VisualStudioComponent
@@ -769,39 +771,39 @@ function Repair-DevTestPfx
     $user = Get-UserPath
     $pwd_file = Join-Path $user 'winappsdk.certificate.test.pwd'
 
-    # -CertPassword <password> is a required parameter for this work
+    if (Test-Path -Path $pwd_file -PathType Leaf)
+    {
+        Write-Warning "WARNING: A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
+    }
+
     $password = ''
-    $password_plaintext = $null
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
-        $password_plaintext = $CertPassword
+        $password = $CertPassword
     }
-    elseif (-not [string]::IsNullOrEmpty($CertPasswordFile))
+    elseif ($NoInteractive -eq $false)
     {
-        if (-not(Test-Path -Path $CertPasswordFile -PathType Leaf))
+        $password = Read-Host -Prompt 'Creating test certificate. Please enter a password' -AsSecureString
+    }
+    else
+    {
+        $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@'
+        $passwordLength = 20
+        $password = New-Object -TypeName System.Security.SecureString
+        # Generate random characters and append to SecureString
+        for ($i = 0; $i -lt $passwordLength; $i++)
         {
-            Write-Host "Test certificate file $CertPasswordFile...Not Found"
-            $global:issues++
-            return $false
+            $randomChar = $charSet[(Get-Random -Maximum $charSet.Length)]
+            $password.AppendChar($randomChar)
         }
-        $password = Get-Content -Path $CertPasswordFile -Encoding utf8
     }
-    elseif (($CertPasswordUser -eq $true) -and (Test-Path -Path $pwd_file -PathType Leaf))
-    {
-        $password = Get-Content -Path $pwd_file -Encoding utf8
-    }
-    if ([string]::IsNullOrEmpty($password_plaintext) -And ($NoInteractive -eq $false))
-    {
-        $password_plaintext = Read-Host -Prompt 'Creating test certificate. Please enter a password'
-    }
-    if ([string]::IsNullOrEmpty($password_plaintext))
-    {
-        Write-Host "Test certificate .pfx...password parameter (-CertPassword | -CertPasswordFile | -CertPasswordUser) or prompting required"
-        $global:issues++
-        return $false
-    }
-    $password = ConvertTo-SecureString -String $password_plaintext -Force -AsPlainText
-    Set-Content -Path $pwd_file -Value $password_plaintext -Force
+
+    # Convert back to plaintext. This is not secure but this cert is only use for development purposes.
+    # Do not use for production purposes.
+    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password)
+    $passwordPlainText = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
+    Set-Content -Path $pwd_file -Value $passwordPlainText -Force
 
     # Prepare to record the pfx for the certificate
     $user = Get-UserPath
@@ -997,7 +999,7 @@ function Test-TAEFServiceVersion
     }
     else
     {
-        Write-Verbose "Expected TAEF service is registered ($actual_taef_version)"
+        Write-Host "Expected TAEF service is registered ($actual_taef_version)"
         return 'OK'
     }
 }
@@ -1055,16 +1057,29 @@ function Install-TAEFService
         return
     }
 
+    # TAEF is located in the NuGet on dev machines vs ...root...\redist\... on build machines
     $root = Get-ProjectRoot
     $cpu = Get-CpuArchitecture
     $taef_version = Get-TAEFPackageVersion
     $taef = "Microsoft.Taef.$($taef_version)"
     $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
-    if (-not(Test-Path -Path $path -PathType Leaf))
+    if (Test-Path -Path $path -PathType Leaf)
     {
-        Write-Host "Install TAEF service...Not Found ($path)"
-        $global:issues++
-        return 'TAEFNotFound'
+        Write-Host "TAEF installer found...$path"
+    }
+    else
+    {
+        $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
+        if (Test-Path -Path $path -PathType Leaf)
+        {
+            Write-Host "TAEF installer found...$path"
+        }
+        else
+        {
+            Write-Host "Install TAEF service...Not Found ($path)"
+            $global:issues++
+            return 'TAEFNotFound'
+        }
     }
 
     $args = '/install:TE.Service'
@@ -1246,46 +1261,52 @@ function Test-PackagesConfig
     Write-Verbose "Scanning $filename"
     $xml = [xml](Get-Content $filename -EA:Stop)
     $changed = $false
-    ForEach ($package in $xml.packages.package)
-    {
-        $name = $package.id
-        $version = $package.version
 
-        if (-not($versions.Contains($name)))
+    $packageCount = $xml.SelectNodes("//*[local-name()='package']").Count
+    if ($packageCount -gt 0)
+    {
+        ForEach ($package in $xml.packages.package)
         {
-            Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
-        }
-        elseif ($version -ne $versions[$name])
-        {
-            if ($SyncDependencies -eq $true)
+            $name = $package.id
+            $version = $package.version
+
+            if (-not($versions.Contains($name)))
             {
-                Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
-                $package.version = $versions[$name]
-                $changed = $true
+                Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
+                $global:issues++
+            }
+            elseif ($version -ne $versions[$name])
+            {
+                if ($SyncDependencies -eq $true)
+                {
+                    Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
+                    $package.version = $versions[$name]
+                    $changed = $true
+                }
+                else
+                {
+                    $expected = $versions[$name]
+                    Write-Host "ERROR: Unknown version $name=$version (not $expected) in $filename. Run DevCheck -SyncDepedencies to update" -ForegroundColor Red -BackgroundColor Black
+                    $global:issues++
+                }
+            }
+
+            if (-not($package.HasAttribute("targetFramework")))
+            {
+                Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
+                $global:issues++
             }
             else
             {
-                Write-Host "ERROR: Unknown version $name=$version in $filename" -ForegroundColor Red -BackgroundColor Black
-                $global:issues++
+                $targetFramework = $package.targetFramework
+                if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
+                {
+                    Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
+                    $global:issues++
+                }
             }
-        }
 
-        if (-not($package.HasAttribute("targetFramework")))
-        {
-            Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
         }
-        else
-        {
-            $targetFramework = $package.targetFramework
-            if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
-            {
-                Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
-                $global:issues++
-            }
-        }
-
     }
 
     if ($changed -eq $true)
@@ -1573,7 +1594,7 @@ $null = Set-UserSettings
 $null = Get-Settings
 $null = Get-UserSettings
 
-$remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
+$remove_any = ($RemoveAll -eq $true) -or ($RemoveTaefService -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
     ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
@@ -1589,7 +1610,7 @@ if ($SyncDependencies -eq $true)
 Write-Output "Checking developer environment..."
 
 $cpu = Get-CpuArchitecture
-Write-Verbose("Processor...$cpu")
+Write-Verbose "Processor...$cpu"
 
 $project_root = Get-ProjectRoot
 Write-Output "Windows App SDK location...$project_root"
@@ -1639,6 +1660,7 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     if ($test -eq 'NotFound')
     {
         $test = Install-TAEFService
+        $test = Start-TAEFService
     }
     elseif ($test -eq 'NotRunning-OlderVersion')
     {
@@ -1683,6 +1705,11 @@ if ($StartTAEFService -eq $true)
 if ($StopTAEFService -eq $true)
 {
     $null = Stop-TAEFService
+}
+
+if (($RemoveAll -ne $false) -Or ($RemoveTAEFService -ne $false))
+{
+    $null = Uninstall-TAEFService
 }
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))

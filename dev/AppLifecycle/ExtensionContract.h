@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #pragma once
 
@@ -50,6 +50,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     }
                 }
             }
+        }
+
+        // QueryParsed() function would return empty when it's a file contract with unicode characters in file path
+        // Thus following additional check for file contract is needed
+        auto fileContractUri = GenerateEncodedLaunchUri(L"App", c_fileContractId);
+        if (CompareStringOrdinal(uri.AbsoluteUri().c_str(), fileContractUri.length(), fileContractUri.c_str(), -1, TRUE) == CSTR_EQUAL)
+        {
+            return { ExtendedActivationKind::File, FileActivatedEventArgs::Deserialize(uri) };
         }
 
         return { ExtendedActivationKind::Protocol, nullptr };

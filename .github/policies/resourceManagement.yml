@@ -93,8 +93,8 @@ configuration:
           label: needs-triage
 
 
-      description: Add needs-triage to closed item if commented on by external user
-    - if: 
+    - description: Add needs-triage to closed item if commented on by external user
+      if: 
       - payloadType: Issue_Comment
       - not: isOpen
       - not:
@@ -114,7 +114,7 @@ configuration:
       - isAction:
           action: Created
       - isActivitySender:
-          issueAuthor: True
+          issueAuthor: true
       - hasLabel:
           label: needs-author-feedback
       - isAssignedToSomeone
@@ -131,7 +131,7 @@ configuration:
       - isAction:
           action: Created
       - isActivitySender:
-          issueAuthor: True
+          issueAuthor: true
       - hasLabel:
           label: needs-author-feedback
       - not: isAssignedToSomeone
@@ -161,7 +161,7 @@ configuration:
       - isAction:
           action: Created
       - isActivitySender:
-          issueAuthor: True
+          issueAuthor: true
       - hasLabel:
           label: needs-author-feedback
       - isOpen
@@ -193,6 +193,36 @@ configuration:
       then:
       - removeLabel:
           label: no-recent-activity
+
+    # /feedbackHub
+    - description: >-
+          Triggers:
+          * /feedbackhub
+          * /feedbackHub
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/feedback[H|h]ub'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              Hi @${issueAuthor}. Please file this issue on Feedback Hub [Windows]+[f] and paste 
+              the link here so we can more easily find your information on the back end. The link 
+              can be found at the bottom of the feedback report. Please use "Developer Platform" and "Windows App SDK" 
+              for the Category. 
+      - closeIssue
+      - removeLabel:
+          label: needs-triage
+      - removeLabel:
+          label: needs-assignee-attention
+      - addLabel:
+          label: needs-author-feedback
 
 
 

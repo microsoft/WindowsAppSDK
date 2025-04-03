@@ -14,8 +14,7 @@
 #                                                                                                                                   #
 #####################################################################################################################################
 
-# Add this for VPack versioning when using Package ES Setup task
-# name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+name: $(version)
 
 # https://aka.ms/obpipelines/triggers
 trigger: none
@@ -23,17 +22,23 @@ trigger: none
 parameters:
 - name: "PublishToMaestro"
   type: boolean
-  default: True
+  default: true
 - name: "IgnoreFailures"
   type: boolean
-  default: False
+  default: false
 - name: "SignOutput"
   type: boolean
-  default: True
+  default: true
 - name: runStaticAnalysis
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
-  default: True
+  default: true
+
+variables:
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: WindowsAppSDK-SetSourceBranchVariableForConfigRepo.yml@WindowsAppSDKConfig
 
 resources:
   repositories:
@@ -45,17 +50,19 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
-
-variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
-- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+    - repository: WindowsAppSDKConfigSourceBranch
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: ${{ variables['mySourceBranch'] }}
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     featureFlags:
-      EnableCDPxPAT: false
+      EnableCDPxPAT: false      
+      WindowsHostVersion:
+        Network: R1
+
     platform:
       name: 'windows_undocked' # windows undocked
 
@@ -71,8 +78,9 @@ extends:
       binskim:
         enabled: true
         break: true
+        analyzeTargetGlob: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe
       prefast:
-        ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+        ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
           enabled: true
         ${{ else }}:
           enabled: false
@@ -94,13 +102,17 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
-    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
         IsOfficial: true
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:

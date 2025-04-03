@@ -60,8 +60,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     private:
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> AddPackageByAppInstallerFileAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options);
-        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RegisterPackageByPackageFamilyNameAsync(winrt::hstring const& packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options);
-        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RegisterPackageByPackageFullNameAsync(winrt::hstring const& packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RegisterPackageByPackageFamilyNameAsync(const winrt::hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RegisterPackageByPackageFullNameAsync(const winrt::hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options);
 
     private:
         winrt::hstring GetUupProductIdIfMsUup(winrt::Windows::Foundation::Uri const& uri) const;
@@ -95,7 +95,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             const double progressMaxPerPackageSetItem,
             HRESULT& extendedError,
             winrt::hstring& errorText,
-            winrt::guid& activityId);
+            winrt::guid& activityId,
+            winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus& readyOrNewerStatus);
         HRESULT AddPackage(
             winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options,
@@ -155,6 +156,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+        const double progressMaxPerPackage,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -289,6 +291,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::AddPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const;
         winrt::Windows::Management::Deployment::DeploymentOptions ToDeploymentOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
         winrt::Windows::Management::Deployment::PackageAllUserProvisioningOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions const& options) const;
+        winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions ToRegisterOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const;
         static double PercentageToProgress(uint32_t percentage, const double progressMaxPerItem);
         static bool IsUriEndsWith(winrt::Windows::Foundation::Uri const& packageUri, PCWSTR target);
         static winrt::Windows::Foundation::Uri GetEffectivePackageUri(

@@ -1,4 +1,4 @@
-﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
@@ -18,6 +18,16 @@
     <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd">
       <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd</HintPath>
       <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.ApplicationModel.Background.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Background.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKBackgroundTask)' == 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.Windows.ApplicationModel.UniversalBGTask.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.AppLifecycle.winmd">
@@ -50,6 +60,30 @@
     <Reference Include="Microsoft.Windows.PushNotifications.winmd"
       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd')">
       <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Security.Authentication.OAuth.winmd"
+      Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Security.Authentication.OAuth.winmd')">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Security.Authentication.OAuth.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.Media.Capture.winmd"
+      Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Media.Capture.winmd')">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Media.Capture.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.BadgeNotifications.winmd"
+      Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.BadgeNotifications.winmd')">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.BadgeNotifications.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.Storage.Pickers.winmd"
+      Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.Pickers.winmd')">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
       <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>

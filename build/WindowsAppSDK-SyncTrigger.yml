@@ -1,12 +1,42 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+
+resources:
+  repositories:
+    - repository: InternalWindowsAppSDK
+      type: git
+      name: ProjectReunion/WindowsAppSDK
+      ref: refs/heads/main
+
 jobs:
-- job: TriggerSyncMirror
+- job: SyncMirror
   dependsOn: []
   pool: 'ProjectReunionESPool-2022'
   steps:
-  - task: powerShell@2
-    displayName: 'Shell task'
+  - checkout: InternalWindowsAppSDK
+    persistCredentials: true
+
+  - task: powershell@2
     inputs:
       targetType: 'inline'
       script: |
-        Write-Host "Triggering Foundation-ES-SyncMirrorRepos"
+        $branch = "$(Build.SourceBranch)".Replace("refs/heads/", "")
+        Write-Host "Sourcebranch " + $branch
+        Write-Host "TargetBranch " + $branch
+
+        $repo = "https://github.com/microsoft/WindowsAppSDK.git"
+        git remote add mirror $repo
+        git remote
+
+        $target = $branch
+        git fetch origin $target
+        git checkout $target
+        git pull origin $target
+
+        $source = $branch
+        git fetch mirror $source
+        git pull mirror $source
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+        git push

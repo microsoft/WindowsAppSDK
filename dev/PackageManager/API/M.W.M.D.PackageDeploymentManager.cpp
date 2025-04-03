@@ -58,12 +58,34 @@ static PackageManagement_ArchitectureType ToArchitectureType(const winrt::Window
     }
 }
 
+static constexpr PackageManagement_ArchitectureType GetPackageManagementArchitectureTypesCompatibleWithCallerArchitecture()
+{
+#if defined(_M_ARM)
+    return PackageManagement_ArchitectureType_Arm | PackageManagement_ArchitectureType_Neutral;
+#elif defined(_M_ARM64)
+    return PackageManagement_ArchitectureType_Arm64 | PackageManagement_ArchitectureType_Neutral;
+#elif defined(_M_IX86)
+    return PackageManagement_ArchitectureType_X86 | PackageManagement_ArchitectureType_Neutral;
+#elif defined(_M_X64)
+    return PackageManagement_ArchitectureType_X64 | PackageManagement_ArchitectureType_Neutral;
+#else
+#   error "Unknown processor architecture"
+#endif
+}
+
 namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency
 {
     DEFINE_ENUM_FLAG_OPERATORS(PackageDependencyProcessorArchitectures)
 }
 static PackageManagement_ArchitectureType ToArchitectureType(const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures processorArchitectureFilter)
 {
+    // Workaround bug in Windows https://task.ms/54835001 not handling processor architecture filter = None as "architcture(s) supported by the calling code"
+    // TODO: Use IsPackageDeploymentFeatureSupported(IsPackageReadyOrNewerAvailable_ProcessorArchitectureFilter_None) when available
+    if (processorArchitectureFilter == winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::None)
+    {
+        return GetPackageManagementArchitectureTypesCompatibleWithCallerArchitecture();
+    }
+
     auto architectureType{ PackageManagement_ArchitectureType_None };
     if (WI_IsFlagSet(processorArchitectureFilter, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral))
     {
@@ -119,9 +141,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup:
             {
-                //TODO Feature lookup
-                // Relies on PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup") exist in Microsoft.FrameworkUdk and enabled
-                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
+                BOOL isSupported{};
+                const HRESULT hr{ PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup", &isSupported) };
+                if (hr == E_NOTIMPL)
+                {
+                    return false;
+                }
+                THROW_IF_FAILED_MSG(hr, "PackageUriScheme_ms_uup");
+                return !!isSupported;
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
             {
@@ -323,6 +350,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                     TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
                     TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                     TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
+                    TraceLoggingInt32(static_cast<std::int32_t>(status), "PackageReadyOrNewerAvailableStatus"),
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
@@ -337,6 +365,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                     TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
                     TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                     TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
+                    TraceLoggingInt32(static_cast<std::int32_t>(status), "PackageReadyOrNewerAvailableStatus"),
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 newerAvailable = true;
@@ -390,15 +419,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (packageSet.Id().empty())
         {
             // Package URI isn't known to the system so it's an add or bust
+            logTelemetry.Stop(packageUri.ToString());
             co_return co_await AddPackageByUriAsync(packageUri, options.AddPackageOptions());
         }
         else
         {
             // Package URI is known so process the PackageSet
+            logTelemetry.Stop(packageUri.ToString());
             co_return co_await EnsurePackageSetReadyAsync(packageSet, options);
         }
-
-        logTelemetry.Stop(packageUri.ToString());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::EnsurePackageSetReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options)
@@ -429,8 +458,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const double c_progressPercentageStartOfIsReady{ 0.01 };
         packageDeploymentProgress.Progress = c_progressPercentageStartOfIsReady;
         progress(packageDeploymentProgress);
-        if (IsPackageSetReady(packageSet))
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus{};
+        if (options.RegisterNewerIfAvailable())
         {
+            THROW_HR_IF_MSG(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable), "RegisterNewerIfAvailable is not supported on this system");
+            readyOrNewerStatus = IsPackageSetReadyOrNewerAvailable(packageSet);
+        }
+        else
+        {
+            readyOrNewerStatus = IsPackageSetReady(packageSet) ?
+                winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready :
+                winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
+        }
+        if (readyOrNewerStatus == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready)
+        {
+            logTelemetry.Stop(packageSet.Id(), readyOrNewerStatus);
             co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, winrt::guid{});
         }
 
@@ -449,7 +491,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             const auto packageUri{ GetEffectivePackageUri(packageSet, packageSetItem) };
             try
             {
-                error = LOG_IF_FAILED_MSG(EnsureReadyAsync(packageUri, packageSetItem, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId),
+                error = LOG_IF_FAILED_MSG(EnsureReadyAsync(packageUri, packageSetItem, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId, readyOrNewerStatus),
                                           "Error:0x%08X (0x%08X) PackageFamilyName:%ls PackageUri:%ls : %ls",
                                           error, extendedError, packageFamilyName.c_str(), packageUri.ToString().c_str(), errorText.c_str());
             }
@@ -467,9 +509,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             progress(packageDeploymentProgress);
         }
 
+        logTelemetry.Stop(packageSet.Id(), readyOrNewerStatus);
         co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
-        logTelemetry.Stop(packageSet.Id());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
@@ -533,9 +574,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageUriAsString);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
@@ -599,9 +639,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::StagePackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options)
@@ -658,9 +697,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageUriAsString);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::StagePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options)
@@ -724,9 +762,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RegisterPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
@@ -793,9 +830,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageUriAsString);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RegisterPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
@@ -819,7 +855,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         progress(packageDeploymentProgress);
 
         // Check parameter(s)
-        Validate_PackageUriIsRequired(packageSet);
+        Validate_PackageUriIsOptional(packageSet);
 
         packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
         const double c_progressPercentageStartOfInstalls{ 0.10 };
@@ -834,12 +870,22 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
             const auto packageUri{ GetEffectivePackageUri(packageSet, packageSetItem) };
+            const auto packageFamilyName{ packageSetItem.PackageFamilyName() };
             try
             {
                 const auto progressBeforePackage{ packageDeploymentProgress.Progress };
-                error = LOG_IF_FAILED_MSG(RegisterPackage(packageUri, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId),
-                                          "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls",
-                                          extendedError, packageSetItem.PackageFamilyName().c_str(), packageUri.ToString().c_str());
+                if (packageUri)
+                {
+                    error = LOG_IF_FAILED_MSG(RegisterPackage(packageUri, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId),
+                                              "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls",
+                                              extendedError, packageFamilyName.c_str(), packageUri.ToString().c_str());
+                }
+                else
+                {
+                    error = LOG_IF_FAILED_MSG(RegisterPackageByPackageFamilyName(packageFamilyName, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId),
+                                              "ExtendedError:0x%08X PackageFamilyName:%ls",
+                                              extendedError, packageFamilyName.c_str());
+                }
                 const auto progressAfterPackage{ progressBeforePackage + progressIncrementPerPackageSetItem };
                 if (packageDeploymentProgress.Progress < progressAfterPackage)
                 {
@@ -850,7 +896,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls", extendedError, packageSetItem.PackageFamilyName().c_str(), packageUri.ToString().c_str());
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls", extendedError, packageFamilyName.c_str(), (packageUri ? packageUri.ToString().c_str() : L"<null>"));
             }
             if (FAILED(error))
             {
@@ -859,9 +905,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -926,9 +971,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFullName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByFamilyNameAsync(hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -973,9 +1017,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -1045,9 +1088,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageUriAsString);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -1121,9 +1163,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ResetPackageAsync(hstring package)
@@ -1212,7 +1253,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageUri:%ls PackageFamilyName:%ls PackageUri:%ls",
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFullName:%ls PackageUri:%ls",
                                    extendedError, packageFullName, packageUriAsString.c_str());
             }
             if (FAILED(error))
@@ -1222,9 +1263,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ResetPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
@@ -1291,9 +1331,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RepairPackageAsync(hstring package)
@@ -1382,7 +1421,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageUri:%ls PackageFamilyName:%ls PackageUri:%ls",
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFullName:%ls PackageUri:%ls",
                                    extendedError, packageFullName, packageUriAsString.c_str());
             }
             if (FAILED(error))
@@ -1392,9 +1431,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RepairPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
@@ -1461,9 +1499,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageSet.Id());
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
     bool PackageDeploymentManager::IsPackageProvisioned(hstring const& package)
     {
@@ -1602,7 +1639,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RegisterPackageByPackageFamilyNameAsync(winrt::hstring const& packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
+    PackageDeploymentManager::RegisterPackageByPackageFamilyNameAsync(const winrt::hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
     {
         auto logTelemetry{ PackageManagementTelemetry::RegisterPackageByPackageFamilyNameAsync::Start(packageFamilyName) };
 
@@ -1622,13 +1659,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentProgressStatus::Queued, 0} };
         progress(packageDeploymentProgress);
 
+        const double progressMaxPerPackageFamily{ 1.0 };
         HRESULT error{};
         HRESULT extendedError{};
         winrt::hstring errorText;
         winrt::guid activityId{};
         try
         {
-            error = LOG_IF_FAILED_MSG(RegisterPackageByPackageFamilyName(packageFamilyName, options, packageDeploymentProgress, progress, extendedError, errorText, activityId),
+            error = LOG_IF_FAILED_MSG(RegisterPackageByPackageFamilyName(packageFamilyName, options, packageDeploymentProgress, progress, progressMaxPerPackageFamily, extendedError, errorText, activityId),
                                       "ExtendedError:0x%08X PackageFamilyName:%ls",
                                       extendedError, packageFamilyName.c_str());
         }
@@ -1643,13 +1681,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RegisterPackageByPackageFullNameAsync(winrt::hstring const& packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
+    PackageDeploymentManager::RegisterPackageByPackageFullNameAsync(const winrt::hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
     {
         auto logTelemetry{ PackageManagementTelemetry::RegisterPackageByPackageFullNameAsync::Start(packageFullName) };
 
@@ -1691,9 +1728,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFullName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     winrt::hstring PackageDeploymentManager::GetUupProductIdIfMsUup(winrt::Windows::Foundation::Uri const& uri) const
@@ -1875,19 +1911,52 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const double progressMaxPerPackageSetItem,
         HRESULT& extendedError,
         winrt::hstring& errorText,
-        winrt::guid& activityId)
+        winrt::guid& activityId,
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus& readyOrNewerStatus)
     {
         extendedError = S_OK;
         errorText.clear();
         activityId = winrt::guid{};
 
-        if (IsReady(packageSetItem))
+        if (options.RegisterNewerIfAvailable())
+        {
+            // Our caller already verified PackageDeploymentFeature::IsPackageReadyOrNewerAvailable is supported so no need to check again
+            readyOrNewerStatus = IsReadyOrNewerAvailable(packageSetItem);
+        }
+        else
+        {
+            const bool isReady{ IsReady(packageSetItem) };
+            readyOrNewerStatus = isReady ?
+                winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready :
+                winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
+        }
+        if (readyOrNewerStatus == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready)
         {
             return S_OK;
         }
 
-        winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
+        // If the package family's known but a newer version's available on the machine than currently registered
+        // to the user we need to register the family to ensure the newer package is used.
+        //
+        // PackageManager.AddPackage.*Async() SHOULD do that but it doesn't. If the user has foo-v2 registered and foo-v3 is staged
+        // on the machine Add(foo-v2) is a NOOP. This does NOT reigster foo-v3 for the user. That'll require an OS change,
+        // 'cause, backwards compatibility (e.g. Register(foo-v2, options.VersionSupercedence=true)).
+        //
+        // https://task.ms/55967280 tracks this workaround registering the package family.
+        // https://task.ms/56383047 tracks enhancing PackageManager.AddPackage*Async() to support options.VersionSupercedence=true
+        // https://task.ms/56385363 tracks revising this code back to PackageManager.AddPackageByUriAsync() once it supports VersionSupercedence=true (https://task.ms/56383047)
+        if (readyOrNewerStatus == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable)
+        {
+            // We know there's a package registered to the user >=MinVersion AND there's a newer package than that available on the machine (staged, registered to other users, etc)
+            // IOW we want VersionSupercedence behavior and only RegisterPackageByPackageFamilyName() respects VersionSupercedence so let's do it...
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions registerOptions{ ToRegisterOptions(options) };
+            RETURN_IF_FAILED(RegisterPackageByPackageFamilyName(packageSetItem.PackageFamilyName(), registerOptions,
+                packageDeploymentProgress, progress, progressMaxPerPackageSetItem, extendedError, errorText, activityId));
+            return S_OK;
+        }
+
         const auto progressBefore{ packageDeploymentProgress.Progress };
+        winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
         auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
         deploymentOperation.Progress([&](winrt::Windows::Foundation::IAsyncOperationWithProgress<
                                             winrt::Windows::Management::Deployment::DeploymentResult,
@@ -2225,6 +2294,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
         winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
         wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+        const double progressMaxPerPackage,
         HRESULT& extendedError,
         winrt::hstring& errorText,
         winrt::guid& activityId)
@@ -2233,6 +2303,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
+        const auto progressBefore{ packageDeploymentProgress.Progress };
         const auto deploymentOptions{ ToDeploymentOptions(registerOptions) };
         auto deploymentOperation{ m_packageManager.RegisterPackageByFamilyNameAsync(packageFamilyName,
             registerOptions.DependencyPackageFamilyNames(), deploymentOptions,
@@ -2242,9 +2313,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
-            const double progressMaxPerPackageFamily{ 1.0 };
-            packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage, progressMaxPerPackageFamily);
-            progress(packageDeploymentProgress);
+            const auto progressAfter{ progressBefore + PercentageToProgress(progressInfo.percentage, progressMaxPerPackage) };
+            if (packageDeploymentProgress.Progress < progressAfter)
+            {
+                packageDeploymentProgress.Progress = progressAfter;
+                progress(packageDeploymentProgress);
+            }
         });
         deploymentOperation.get();
         try
@@ -2590,9 +2664,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::ResetPackageByFamilyName(
@@ -2702,9 +2775,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFullName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::ResetPackageByFullName(
@@ -2826,9 +2898,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::RepairPackageByFamilyName(
@@ -2938,9 +3009,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFullName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::RepairPackageByFullName(
@@ -3087,9 +3157,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::ProvisionPackageByFamilyName(
@@ -3202,9 +3271,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
-
         logTelemetry.Stop(packageFamilyName);
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
     HRESULT PackageDeploymentManager::DeprovisionPackageByFamilyName(
@@ -3328,7 +3396,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (options.IsExpectedDigestsSupported())
         {
             const auto expectedDigests{ options.ExpectedDigests() };
-            if (expectedDigests)
+            if (expectedDigests.Size() > 0)
             {
                 auto toExpectedDigests{ toOptions.ExpectedDigests() };
                 for (const auto expectedDigest : expectedDigests)
@@ -3383,7 +3451,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (options.IsExpectedDigestsSupported())
         {
             const auto expectedDigests{ options.ExpectedDigests() };
-            if (expectedDigests)
+            if (expectedDigests.Size() > 0)
             {
                 auto toExpectedDigests{ toOptions.ExpectedDigests() };
                 for (const auto expectedDigest : expectedDigests)
@@ -3427,7 +3495,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (options.IsExpectedDigestsSupported())
         {
             const auto expectedDigests{ options.ExpectedDigests() };
-            if (expectedDigests)
+            if (expectedDigests.Size() > 0)
             {
                 auto toExpectedDigests{ toOptions.ExpectedDigests() };
                 for (const auto expectedDigest : expectedDigests)
@@ -3509,6 +3577,61 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             toOptions.ProjectionOrderPackageFamilyNames().Append(projectionOrderPackageFamilyName);
         }
+        return toOptions;
+    }
+
+    winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions PackageDeploymentManager::ToRegisterOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const
+    {
+        winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions toOptions;
+        const auto addOptions{ options.AddPackageOptions() };
+
+        // RegisterPackageOptions has no TargetVolume -- no need (the packge is already staged however it's staged on the machine)
+        for (const auto uri : addOptions.DependencyPackageUris())
+        {
+            toOptions.DependencyPackageUris().Append(uri);
+        }
+        for (const auto packageFamilyName : addOptions.OptionalPackageFamilyNames())
+        {
+            toOptions.OptionalPackageFamilyNames().Append(packageFamilyName);
+        }
+        // RegisterPackageOptions has no OptionalPackageUris -- warn if any as we won't (can't) use them
+        for (const auto uri : addOptions.OptionalPackageUris())
+        {
+            const auto uriAsString{ uri.ToString() };
+            (void) LOG_HR_MSG(MDD_E_WINDOWSAPPRUNTIME_PACKAGEMANAGER_WARNING_OPTION_IGNORED, "OptionalPackageUri: %ls", uriAsString.c_str());
+        }
+        // RegisterPackageOptions has no RelatedPackageUris -- warn if any as we won't (can't) use them
+        for (const auto uri : addOptions.RelatedPackageUris())
+        {
+            const auto uriAsString{ uri.ToString() };
+            (void) LOG_HR_MSG(MDD_E_WINDOWSAPPRUNTIME_PACKAGEMANAGER_WARNING_OPTION_IGNORED, "RelatedPackageUri: %ls", uriAsString.c_str());
+        }
+        const auto externalLocationUri{ addOptions.ExternalLocationUri() };
+        if (externalLocationUri)
+        {
+            toOptions.ExternalLocationUri(externalLocationUri);
+        }
+        // RegisterPackageOptions has no StubPackageOption -- no need (the packge is already staged however it's staged on the machine)
+        toOptions.AllowUnsigned(addOptions.AllowUnsigned());
+        toOptions.DeveloperMode(addOptions.DeveloperMode());
+        toOptions.ForceAppShutdown(addOptions.ForceAppShutdown());
+        toOptions.ForceTargetAppShutdown(addOptions.ForceTargetAppShutdown());
+        toOptions.ForceUpdateFromAnyVersion(addOptions.ForceUpdateFromAnyVersion());
+        toOptions.InstallAllResources(addOptions.InstallAllResources());
+        // RegisterPackageOptions has no RequiredContentGroupOnly -- no need (the packge is already staged however it's staged on the machine)
+        // RegisterPackageOptions has no RetainFilesOnFailure -- no need (the packge is already staged however it's staged on the machine)
+        toOptions.StageInPlace(addOptions.StageInPlace());
+        toOptions.DeferRegistrationWhenPackagesAreInUse(addOptions.DeferRegistrationWhenPackagesAreInUse());
+        const auto expectedDigests{ addOptions.ExpectedDigests() };
+        if (expectedDigests)
+        {
+            auto toExpectedDigests{ addOptions.ExpectedDigests() };
+            for (const auto expectedDigest : expectedDigests)
+            {
+                toExpectedDigests.Insert(expectedDigest.Key(), expectedDigest.Value());
+            }
+        }
+        // RegisterPackageOptions has no LimitToExistingPackages -- no need (the packge is already staged however it's staged on the machine)
         return toOptions;
     }
 

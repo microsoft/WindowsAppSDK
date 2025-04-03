@@ -1,16 +1,20 @@
 parameters:
 - name: "SignOutput"
   type: boolean
-  default: False
+  default: false
 - name: "IsOneBranch"
   type: boolean
-  default: True
+  default: true
 - name: runStaticAnalysis
   type: boolean
-  default: True
+  default: true
 
 stages:
 - stage: Build
+  # Skip the build job if we are reusing the output of a previous build.
+  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
   dependsOn: []
   jobs:
   - job: VerifyCopyrightHeaders
@@ -26,7 +30,7 @@ stages:
         targetType: filePath
         filePath: tools\VerifyCopyrightHeaders.ps1
 
-  - job: BuildBinaries
+  - job: BuildFoundation
     pool:
       ${{ if parameters.IsOneBranch }}:
         type: windows
@@ -53,23 +57,49 @@ stages:
           buildConfiguration: 'release'
           normalizedConfiguration: 'fre'
     variables:
-      ob_outputDirectory: '$(REPOROOT)\out'
-      ob_sdl_codeSignValidation_excludes: '-|**\Release\**;-|**\packages\**'
-      ob_artifactBaseName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
-      ${{ if parameters.runStaticAnalysis }}:
-        ob_sdl_apiscan_enabled: true
-      ${{ if not( parameters.runStaticAnalysis ) }}:
-        ob_sdl_apiscan_enabled: false
-      ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\APIScanTarget'
-      ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
+      - name: ob_outputDirectory
+        value: '$(REPOROOT)\out'
+      - name: ob_sdl_codeSignValidation_excludes
+        value: '-|**\Release\**;-|**\packages\**'
+      - name: ob_artifactBaseName
+        value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+      - name: ob_sdl_apiscan_enabled
+        ${{ if parameters.runStaticAnalysis }}:
+          value: true
+        ${{ else }}:
+          value: false
+      - name: ob_sdl_apiscan_softwareFolder
+        value: '$(build.SourcesDirectory)\APIScanTarget'
+      - name: ob_sdl_apiscan_symbolsFolder
+        value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKConfigSourceBranch
+      - name: localCompilerOverridePackageName
+        value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
+      - name: localCompilerOverridePackageVersion
+        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
+      - name: localCompilerOverrideNupkgVersion
+        value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
     steps:
-    - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
+    - script: |
+        echo Build.SourceBranch=$(Build.SourceBranch)
+        echo Build.Reason=$(Build.Reason)
+        echo compilerOverridePackageName=$(compilerOverridePackageName)
+        echo compilerOverridePackageVersion=$(compilerOverridePackageVersion)
+        echo global_CompilerOverridePackageName=$(global_CompilerOverridePackageName)
+        echo global_CompilerOverridePackageVersion=$(global_CompilerOverridePackageVersion)
+        echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
+        echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
+        echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
+        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
+        echo mySourceBranch=$(mySourceBranch)        
+
+    - template: WindowsAppSDK-BuildFoundation-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
-  - job: BuildBinaries_release_anycpu
+  - job: BuildFoundation_release_anycpu
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
     pool:
@@ -90,7 +120,7 @@ stages:
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU'
       ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU;SRV*https://symweb.azurefd.net'
     steps:
-    - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
+    - template: WindowsAppSDK-BuildFoundation-AnyCPU-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
@@ -124,18 +154,44 @@ stages:
           buildConfiguration: 'Release'
           normalizedConfiguration: 'fre'
     variables:
-      ob_outputDirectory: '$(REPOROOT)\out'
-      ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
-      ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\dev\MRTCore\.gdn\mrt.gdnsuppress # This value is set on the job cdpx_engine, it will override the global gdnsuppress for this job
-      ob_sdl_suppression_suppressionSet: default
-      ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
-      ${{ if parameters.runStaticAnalysis }}:
-        ob_sdl_apiscan_enabled: true
-      ${{ if not( parameters.runStaticAnalysis ) }}:
-        ob_sdl_apiscan_enabled: false
-      ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\APIScanTarget'
-      ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
+      - name: ob_outputDirectory
+        value: '$(REPOROOT)\out'
+      - name: ob_sdl_codeSignValidation_excludes
+        value: '-|**\Release\**'
+      - name: ob_sdl_suppression_suppressionSet
+        value: default
+      - name: ob_artifactBaseName
+        value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+      - name: ob_sdl_apiscan_enabled
+        ${{ if parameters.runStaticAnalysis }}:
+          value: true
+        ${{ else }}:
+          value: false
+      - name: ob_sdl_apiscan_softwareFolder
+        value: '$(build.SourcesDirectory)\APIScanTarget'
+      - name: ob_sdl_apiscan_symbolsFolder
+        value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKConfigSourceBranch
+      - name: localCompilerOverridePackageName
+        value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
+      - name: localCompilerOverridePackageVersion
+        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
+      - name: localCompilerOverrideNupkgVersion
+        value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
     steps:
+    - script: |
+        echo Build.SourceBranch=$(Build.SourceBranch)
+        echo Build.Reason=$(Build.Reason)
+        echo compilerOverridePackageName=$(compilerOverridePackageName)
+        echo compilerOverridePackageVersion=$(compilerOverridePackageVersion)
+        echo global_CompilerOverridePackageName=$(global_CompilerOverridePackageName)
+        echo global_CompilerOverridePackageVersion=$(global_CompilerOverridePackageVersion)
+        echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
+        echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
+        echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
+        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
+        echo mySourceBranch=$(mySourceBranch)        
+
     - template: WindowsAppSDK-BuildMRT-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -6,7 +6,7 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.Framework-4.1"
+    Name="Microsoft.WindowsAppRuntime.Framework.4.1"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
@@ -34,6 +34,28 @@
          in the same manifest with the same ActivatableClassId (regardless in same
          or different <Extension>s).
       -->
+    <!-- Background Task -->
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Background.BackgroundTaskBuilder" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthRequestParams" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.ClientAuthentication" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.OAuth2Manager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthResponse" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthFailure" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthRequestResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenRequestParams" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenResponse" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenFailure" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenRequestResult" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
@@ -75,6 +97,7 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationConferencingConfig" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
@@ -85,6 +108,12 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationButton" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.BadgeNotifications.BadgeNotificationManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
@@ -104,6 +133,20 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.RegisterPackageOptions" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.RemovePackageOptions" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.StagePackageOptions" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Media.Capture.CameraCaptureUI" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileOpenPicker" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileSavePicker" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FolderPicker" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
@@ -140,6 +183,12 @@
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub">
