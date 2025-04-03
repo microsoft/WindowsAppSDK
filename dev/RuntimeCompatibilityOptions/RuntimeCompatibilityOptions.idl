@@ -15,7 +15,14 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         // Add real changes here:
 
         // 1.7.1
-        // ...
+        EnsurePackageReadyVersionSupercedence = 56439870,
+        FixPopupClosingReentrancyCrash = 56870998,
+        FixPopupUnloadingCrash = 56686624,
+        FixRandomUIFreezeInDispatcher = 56545444,
+        FixSetProgressBarIndicatorWidthCrash = 56779522,
+        FixStuckPointerInputQueue = 56620717,
+        FixWebViewVisibilityReentrancyCrash = 56852985,
+        FixWindowCloseFocusCrash = 56873234,
     };
 
     /// Represents a version of the Windows App Runtime.
