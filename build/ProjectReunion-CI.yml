@@ -83,8 +83,6 @@ jobs:
   - checkout: self
     persistCredentials: true
 
-  - task: NuGetToolInstaller@1
-
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
     parameters:
       IsOneBranch: false
@@ -111,8 +109,6 @@ jobs:
   pool:
     vmImage: 'windows-2022'
   steps:
-  - task: NuGetToolInstaller@1
-
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
     parameters:
       IsOneBranch: false
@@ -147,8 +143,6 @@ jobs:
   variables:
     ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)" # For BuildMRT to publish t
   steps:
-  - task: NuGetToolInstaller@1
-
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
     parameters:
       IsOneBranch: false
