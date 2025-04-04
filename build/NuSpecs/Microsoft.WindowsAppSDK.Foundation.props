@@ -6,6 +6,12 @@
         If true, this is the WindowsAppSdk deployment of Foundation, versus the internal deployment for test only.
         This property is defined by deployment-specific props imports, and should not be overridden by clients.-->
     <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
+
+    <!-- 
+        WindowsAppSDK apps cannot build without MSIX tooling enabled because MRTCore Tooling will failed to 
+        https://github.com/microsoft/WindowsAppSDK/issues/3939 
+    -->
+    <EnableMsixTooling Condition="'$(MSBuildRuntimeType)'=='Core'">true</EnableMsixTooling>
   </PropertyGroup>
 
   <!--
