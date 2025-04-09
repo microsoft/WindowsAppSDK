@@ -889,6 +889,7 @@ void FindDDLMViaEnumeration(
         TraceLoggingHexUInt32(majorMinorVersion, "Criteria.MajorMinorVersion"),
         TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
         TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+        _GENERIC_PARTB_FIELDS_ENABLED,
         TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     int packagesScanned{};
@@ -984,6 +985,7 @@ void FindDDLMViaEnumeration(
                 TraceLoggingHexUInt32(majorMinorVersion, "Criteria.MajorMinorVersion"),
                 TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
                 TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             continue;
@@ -1002,6 +1004,7 @@ void FindDDLMViaEnumeration(
                 TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
                 TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                 TraceLoggingWideString(::AppModel::Identity::GetCurrentArchitectureAsString(), "CurrentArchitecture"),
+                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             continue;
@@ -1017,6 +1020,7 @@ void FindDDLMViaEnumeration(
                 TraceLoggingHexUInt32(majorMinorVersion, "Criteria.MajorMinorVersion"),
                 TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
                 TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             bestFitVersion = version;
@@ -1040,6 +1044,7 @@ void FindDDLMViaEnumeration(
         TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
         TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
         TraceLoggingInt32(packagesScanned, "PackagesScanned"),
+        _GENERIC_PARTB_FIELDS_ENABLED,
         TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     ddlmPackageFamilyName = bestFitPackageFamilyName.c_str();
