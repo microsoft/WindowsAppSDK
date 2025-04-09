@@ -8,7 +8,8 @@
 #include "ToastRegistrationManager.h"
 
 class NotificationListener : public Microsoft::WRL::RuntimeClass<::ABI::Microsoft::Internal::PushNotifications::INotificationListener,
-                                                                    ::ABI::Microsoft::Internal::PushNotifications::INotificationListener2>
+                                                                    ::ABI::Microsoft::Internal::PushNotifications::INotificationListener2,
+                                                                    ::ABI::Microsoft::Internal::PushNotifications::INotificationListener3>
 {
 public:
     HRESULT RuntimeClassInitialize(
@@ -21,6 +22,8 @@ public:
     STDMETHOD(OnRawNotificationReceived)(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept;
     STDMETHOD(OnToastNotificationReceived)(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* notificationProperties,
         ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties*) noexcept;
+    STDMETHOD(GetAppProcessName)(_Out_ HSTRING* appProcessName) noexcept;
+
 private:
     std::shared_ptr<ForegroundSinkManager> m_foregroundSinkManager;
     std::shared_ptr<ToastRegistrationManager> m_toastRegistrationManager;

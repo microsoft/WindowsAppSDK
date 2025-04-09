@@ -10,8 +10,6 @@ parameters:
   default: true
 
 steps:
-- task: NuGetToolInstaller@1
-
 - task: NuGetAuthenticate@1
   inputs:
     nuGetServiceConnections: 'TelemetryInternal'
@@ -60,8 +58,8 @@ steps:
   displayName: 'Setup native compiler version override'
   inputs:
     microsoftDropReadPat: $(System.AccessToken)
-    compilerPackageName: $(compilerOverridePackageName)
-    compilerPackageVersion: $(compilerOverridePackageVersion)
+    compilerPackageName: $(localCompilerOverridePackageName)
+    compilerPackageVersion: $(localCompilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)
@@ -95,12 +93,24 @@ steps:
     inputs:
       SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
       TargetFolder: '$(build.SourcesDirectory)\APIScanTarget'
+      # Excluding from APIScan:
+      # - arm/arm64 binaries because APIScan does not support them currently.
+      # - TAEF binaries: te.*, wex.*.
+      # - HelloWorldAdvancedC* - These are test binaries w/o the word "test" in their file paths. We currently depririoritize APIScan for test binaries.
       contents: |
         **
         !**\*test*\**
         !**\*packages*\**
         !**\*Demoapp*\**
         !**\*Demopackage\**
+        !**\HelloWorldAdvancedC*\**        
+        !**\arm\**        
+        !**\arm64\**     
+        !**\te.*exe
+        !**\te.*dll
+        !**\wex.*exe
+        !**\wex.*dll
+        !**\wttlog.dll
         !**\*.json
         !**\*.msix
         !**\*.png

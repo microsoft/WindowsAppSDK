@@ -315,11 +315,11 @@ HRESULT DecisionInfoBuilder::Merge(
     }
 
     // merge qualifiers
-    for (UINT16 i = 1; i < pMerge->GetNumQualifiers(); i++)
+    for (int i = 1; i < pMerge->GetNumQualifiers(); i++)
     {
         RETURN_IF_FAILED(pMerge->GetQualifier(i, &qualifier));
         RETURN_IF_FAILED(GetOrAddQualifier(&qualifier, &index));
-        if (!pQualifierMapUsed->TrySetMapping(i, static_cast<UINT16>(index)))
+        if (!pQualifierMapUsed->TrySetMapping(static_cast<UINT16>(i), static_cast<UINT16>(index)))
         {
             return HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND);
         }
@@ -327,11 +327,11 @@ HRESULT DecisionInfoBuilder::Merge(
 
     // merge qualifiersets
     QualifierSetResult qualifierSet;
-    for (UINT16 i = 1; i < pMerge->GetNumQualifierSets(); i++)
+    for (int i = 1; i < pMerge->GetNumQualifierSets(); i++)
     {
         RETURN_IF_FAILED(pMerge->GetQualifierSet(i, &qualifierSet));
         RETURN_IF_FAILED(GetOrAddQualifierSet(&qualifierSet, pQualifierMapUsed, &index));
-        if (!pQualifierSetMapUsed->TrySetMapping(i, static_cast<UINT16>(index)))
+        if (!pQualifierSetMapUsed->TrySetMapping(static_cast<UINT16>(i), static_cast<UINT16>(index)))
         {
             return HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND);
         }
@@ -339,11 +339,11 @@ HRESULT DecisionInfoBuilder::Merge(
 
     // merge decisions
     DecisionResult decision;
-    for (UINT16 i = 2; i < pMerge->GetNumDecisions(); i++)
+    for (int i = 2; i < pMerge->GetNumDecisions(); i++)
     {
         RETURN_IF_FAILED(pMerge->GetDecision(i, &decision));
         RETURN_IF_FAILED(GetOrAddDecision(&decision, pQualifierSetMapUsed, &index));
-        if (!pDecisionMapUsed->TrySetMapping(i, static_cast<UINT16>(index)))
+        if (!pDecisionMapUsed->TrySetMapping(static_cast<UINT16>(i), static_cast<UINT16>(index)))
         {
             return HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND);
         }

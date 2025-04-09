@@ -16,7 +16,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
 {
     TokenRequestParams::TokenRequestParams(const winrt::hstring& grantType) : m_grantType(grantType)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
     }
 
     oauth::TokenRequestParams TokenRequestParams::CreateForAuthorizationCodeRequest(
@@ -41,16 +40,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         {
             result->m_codeVerifier = std::move(codeVerifier);
         }
-
-        return *result;
-    }
-
-    oauth::TokenRequestParams TokenRequestParams::CreateForResourceOwnerPasswordCredentials(
-        const winrt::hstring& username, const winrt::hstring& password)
-    {
-        auto result = winrt::make_self<TokenRequestParams>(L"password");
-        result->m_username = username;
-        result->m_password = password;
 
         return *result;
     }

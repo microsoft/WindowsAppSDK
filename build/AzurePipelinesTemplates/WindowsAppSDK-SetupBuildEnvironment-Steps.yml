@@ -72,7 +72,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: tools\DevCheck\DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
+    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2
@@ -148,11 +148,11 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
-  displayName: 'Create VersionInfo TerminalVelocity features'
+  displayName: 'Create CallingPreviewSupport TerminalVelocity features'
   inputs:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-VersionInfo.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-VersionInfo.h
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.CallingPreviewSupport -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CallingPreviewSupport.h
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
@@ -185,6 +185,14 @@ steps:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
     arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CameraCaptureUI.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Media.Capture -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CameraCaptureUI.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create OAuth2Manager TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-StoragePickers.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Storage.Pickers -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-StoragePickers.h
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2

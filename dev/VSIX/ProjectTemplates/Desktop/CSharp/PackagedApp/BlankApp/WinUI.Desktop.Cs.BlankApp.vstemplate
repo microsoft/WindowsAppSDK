@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Hidden>true</Hidden>
-    <Name>Blank App (WinUI 3 in Desktop)</Name>
-    <Description>A project for creating a Desktop app based on the Windows UI Library (WinUI 3).</Description>
+    <Name ID="1040" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1041" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Desktop.Cs.BlankApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.BlankApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>

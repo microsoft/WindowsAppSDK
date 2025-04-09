@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{0ff6a68f-6c7f-4e66-8cb8-c0b9501060ca}</ProjectGuid>
+    <RootNamespace>OAuth2ManagerTests</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+    <Import Project="..\inc\inc.vcxitems" Label="Shared" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>httpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;OAUTH2MANAGERTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="OAuth2APITests.h" />
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="OAuth2APITests.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VCLibsDebugConfigName Condition="'$(Configuration)' == 'Debug'">.Debug</VCLibsDebugConfigName>
+    <TestPkgDebugConfigName Condition="'$(Configuration)' == 'Debug'">_Debug</TestPkgDebugConfigName>
+    <TestPkgOutputPath>$(AppxPackageDir)\..\..\AppxPackages\OAuthTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
+    <TestPkgOutputFile>$(TestPkgOutputPath)\OAuthTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msix</TestPkgOutputFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" DestinationFolders="$(TargetDir)" DestinationFileName="OAuthTestAppPackage.msix" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Security.Authentication.OAuth">
+      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Security.Authentication.OAuth.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+      <Implementation>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\dev\Detours\Detours.vcxproj">
+      <Project>{d6bc25c5-1aa7-4c4a-a02c-b42dedbfea33}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
+      <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
+  </ImportGroup>
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" DestinationFolder="$(OutDir)" />
+  </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+  </Target>
+</Project>

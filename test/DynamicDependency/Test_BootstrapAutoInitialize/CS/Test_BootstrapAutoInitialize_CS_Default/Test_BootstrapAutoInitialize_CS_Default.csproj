@@ -44,4 +44,9 @@
     </ItemGroup>
   </Target>
 
+  <PropertyGroup>
+    <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
+  </PropertyGroup>
+  <Import Project="$(RepoRoot)\test\test.autoinitializer.CS.targets" />
+  
 </Project>

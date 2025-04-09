@@ -56,18 +56,6 @@ if ($Clean)
     Exit
 }
 
-# Make sure nuget directory exists.
-if(-not (test-path ".nuget"))
-{
-    new-item -path ".nuget" -itemtype directory
-}
-
-# Make sure nuget is on the system
-if(-not (test-path ".nuget\nuget.exe"))
-{
-    Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
-}
-
 $configurationForMrtAndAnyCPU = "Release"
 $MRTSourcesDirectory = "dev\MRTCore"
 
@@ -90,7 +78,7 @@ function NugetRestore([string] $Label, [string] $Target)
     {
         $env:NUGET_RESTORE_MSBUILD_ARGS = "/binaryLogger:BuildOutput\binlogs\$Label.restore.$Platform.$Configuration.binlog /p:Platform=$Platform /p:Configuration=$Configuration"
     }
-    & .\.nuget\nuget.exe restore $Target -configfile NuGet.config
+    nuget restore $Target -configfile NuGet.config
     if ($lastexitcode -ne 0)
     {
         write-host "ERROR: nuget.exe restore $Label FAILED."
@@ -277,14 +265,19 @@ Try {
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.props" -Destination "$BasePath\build\native\Microsoft.WindowsAppSDK.Foundation.props"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.C.props" -Destination "$BasePath\build\native"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.WinRt.props" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.AutoInitializer.targets" -Destination "$BasePath\build\native"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.CompatibilitySetter.targets" -Destination "$BasePath\build\native"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.DeploymentManager.targets" -Destination "$BasePath\build\native"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$BasePath\build\native"
 
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.AutoInitializer.CS.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$BasePath\build"
@@ -374,7 +367,7 @@ Try {
         Set-Content -Value $publicNuspec.OuterXml $nuspecPath
 
         # Make the foundation transport package.
-        & .\.nuget\nuget.exe pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+        nuget pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
 
         if ($lastexitcode -ne 0)
         {
