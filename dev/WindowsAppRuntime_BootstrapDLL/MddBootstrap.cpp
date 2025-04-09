@@ -81,7 +81,7 @@ enum class UsingWin11Support
     Unknown = 0,
     Yes,
     No,
-}
+};
 static UsingWin11Support g_usingWin11Support{ UsingWin11Support.Unknown };
 
 static IDynamicDependencyLifetimeManager* g_lifetimeManager{};
