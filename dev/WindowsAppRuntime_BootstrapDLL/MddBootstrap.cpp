@@ -82,7 +82,7 @@ enum class UsingWin11Support
     Yes,
     No,
 };
-static UsingWin11Support g_usingWin11Support{ UsingWin11Support.Unknown };
+static UsingWin11Support g_usingWin11Support{ UsingWin11Support::Unknown };
 
 static IDynamicDependencyLifetimeManager* g_lifetimeManager{};
 static wil::unique_event g_endTheLifetimeManagerEvent;
@@ -269,7 +269,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
             g_lifetimeManager = nullptr;
         }
 
-        g_usingWin11Support = UsingWin11Support.Unknown;
+        g_usingWin11Support = UsingWin11Support::Unknown;
     }
 
     if (activityContext.GetShutdownActivity().IsRunning())
@@ -324,7 +324,7 @@ void VerifyInitializationIsCompatible(
     // g_windowsAppRuntimeDll is only relevant if not delegating to OS APIs
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId == nullptr);
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext == nullptr);
-    FAIL_FAST_HR_IF(E_UNEXPECTED, (g_usingWin11Support == UsingWin11Support.Yes) && (g_windowsAppRuntimeDll != nullptr));
+    FAIL_FAST_HR_IF(E_UNEXPECTED, (g_usingWin11Support == UsingWin11Support::No) && (g_windowsAppRuntimeDll == nullptr));
 
     // Verify the parameter(s)
     // NOTE: GetFrameworkPackageFamilyName() verifies the resulting package family name is valid.
@@ -405,7 +405,7 @@ void FirstTimeInitialization(
         }
 
         // Track our initialized state
-        g_usingWin11Support = UsingWin11Support.Yes;
+        g_usingWin11Support = UsingWin11Support::Yes;
         //
         g_packageDependencyId = std::move(packageDependencyId);
         g_packageDependencyContext = packageDependencyContext;
@@ -479,7 +479,7 @@ void FirstTimeInitialization(
         }
 
         // Track our initialized state
-        g_usingWin11Support = UsingWin11Support.No;
+        g_usingWin11Support = UsingWin11Support::No;
         //
         g_lifetimeManager = lifetimeManager.detach();
         g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
