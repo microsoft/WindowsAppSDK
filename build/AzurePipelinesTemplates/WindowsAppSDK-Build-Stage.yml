@@ -69,6 +69,13 @@ stages:
         IsOneBranch: ${{ parameters.IsOneBranch }}
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
+    # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
+    # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
+    # requisite of isNative=true isn't met currently.
+    - script: |
+        md "C:\__t\NativeCompilerPrefast"
+      displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
+
   - job: BuildFoundation_release_anycpu
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
@@ -95,6 +102,13 @@ stages:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+
+    # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
+    # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
+    # requisite of isNative=true isn't met currently.
+    - script: |
+        md "C:\__t\NativeCompilerPrefast"
+      displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
 
   - job: BuildMRT
     pool:
@@ -141,3 +155,10 @@ stages:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+
+    # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
+    # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
+    # requisite of isNative=true isn't met currently.
+    - script: |
+        md "C:\__t\NativeCompilerPrefast"
+      displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
