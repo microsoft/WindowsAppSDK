@@ -32,7 +32,11 @@
 #include <winrt/Windows.System.h>
 #include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
 #include <winrt/Microsoft.Windows.AppNotifications.h>
+#include <winrt/Microsoft.Windows.AppNotifications.Builder.h>
+#include <winrt/Microsoft.Windows.ApplicationModel.Background.h>
+#include <winrt/Microsoft.Windows.BadgeNotifications.h>
 #include <winrt/Microsoft.Windows.Management.Deployment.h>
+#include <winrt/Microsoft.Windows.Security.AccessControl.h>
 #include <winrt/Microsoft.Windows.Storage.h>
 #include <winrt/Microsoft.Windows.System.h>
 #include <winrt/Microsoft.Windows.System.Power.h>

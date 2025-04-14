@@ -74,9 +74,32 @@ namespace Test::ABForward
             winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().Register();
         }
 
+        TEST_METHOD(AppNotificationsBuilder)
+        {
+            winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder();
+        }
+
+        TEST_METHOD(BackgroundTaskBuilder)
+        {
+            // BackgroundTaskBuilder is not available in 1.6
+            VERIFY_THROWS(winrt::Microsoft::Windows::ApplicationModel::Background::BackgroundTaskBuilder(), winrt::hresult_class_not_registered);
+        }
+
+        TEST_METHOD(BadgeNotifications)
+        {
+            // Badge Notifications is not available in 1.6
+            VERIFY_THROWS(winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationManager::Current(), winrt::hresult_class_not_registered);
+        }
+
         TEST_METHOD(BatteryStatus)
         {
             auto batteryStatus{ winrt::Microsoft::Windows::System::Power::PowerManager::BatteryStatus() };
+        }
+
+        TEST_METHOD(DeploymentManager)
+        {
+            // DeploymentManager fails when there is no Identity
+            VERIFY_THROWS(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentManager::DeploymentManager::Initialize(), winrt::hresult_error);
         }
 
         TEST_METHOD(EnvironmentManager)
@@ -101,10 +124,11 @@ namespace Test::ABForward
             VERIFY_THROWS(auto runtimeCompatibilityOptions = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions::RuntimeCompatibilityOptions(), winrt::hresult_class_not_registered);
         }
 
-        TEST_METHOD(DeploymentManager)
+        TEST_METHOD(SecurityAccessControl)
         {
-            // DeploymentManager fails when there is no Identity
-            VERIFY_THROWS(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentManager::DeploymentManager::Initialize(), winrt::hresult_error);
+            auto arr{ winrt::com_array<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess>(1)};
+            arr.at(0).appContainerName = winrt::hstring(L"Microsoft.WindowsAppRuntime.1.6_8wekyb3d8bbwe");
+            auto widgetManager{ winrt::Microsoft::Windows::Security::AccessControl::SecurityDescriptorHelpers::GetSddlForAppContainerNames(arr, winrt::hstring(), 0)};
         }
     };
 }
