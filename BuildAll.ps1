@@ -345,6 +345,8 @@ Try {
             exit 1
         }
 
+        Copy-Item -Path "LICENSE" -Destination "$ComponentBasePath" -force
+
         # for some reason xslt.load changes the working directory to C:\windows\system32.
         # store the current working directory here.
         $workingDirectory = get-location
