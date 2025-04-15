@@ -374,6 +374,13 @@ Try {
             -Source (Join-Path $BasePath 'build') `
             -dest (Join-Path $ComponentBasePath 'buildTransitive')
 
+        # Copy transport package specific props / targets after we are done copying
+        # for the other package.
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.props" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.props" -Destination "$BasePath\build\native"
+
         build\Scripts\RobocopyWrapper.ps1 `
             -Source (Join-Path $BasePath 'lib\uap10.0') `
             -dest (Join-Path $ComponentBasePath 'metadata')
