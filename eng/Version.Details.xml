@@ -27,17 +27,17 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="1.6.4-CI-27106.2610.250410-0941.0">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.6.4-CI-27106.2611.250414-1100.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>bc5dd07ec77079c367657d193154a29681300d42</Sha>
+      <Sha>aaee24f9a54adad0612b7f29001111ab4ee691cc</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.6.0-release.20250401.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>84ead26dd3acbae2be42c469c757e08e4bc8a116</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.6.4-CI-27106.2610.250410-0941.0">
+    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.6.4-CI-27106.2611.250414-1100.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>bc5dd07ec77079c367657d193154a29681300d42</Sha>
+      <Sha>aaee24f9a54adad0612b7f29001111ab4ee691cc</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
