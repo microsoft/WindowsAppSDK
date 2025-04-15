@@ -33,6 +33,7 @@ $ErrorActionPreference = 'Stop'
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
+$ComponentBasePath = "BuildOutput/ComponentNuget"
 
 # FUTURE(YML2PS): Update build to no longer place generated files in sources directory
 if ($Clean)
@@ -238,9 +239,19 @@ Try {
             new-item -path "$BasePath" -itemtype "directory"
         }
 
+        if(-not (test-path "$ComponentBasePath"))
+        {
+            new-item -path "$ComponentBasePath" -itemtype "directory"
+        }
+
         if(-not (test-path "$BasePath\build\native"))
         {
             new-item -path "$BasePath\build\native" -itemtype "directory"
+        }
+
+        if(-not (test-path "$ComponentBasePath\build\native"))
+        {
+            new-item -path "$ComponentBasePath\build\native" -itemtype "directory"
         }
 
         # Copy WindowsAppRuntime.sln files
@@ -350,9 +361,69 @@ Try {
             write-host "ERROR: xslt.Transform FAILED."
             exit 1
         }
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'build') `
+            -dest (Join-Path $ComponentBasePath 'build')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'include') `
+            -dest (Join-Path $ComponentBasePath 'include')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'build') `
+            -dest (Join-Path $ComponentBasePath 'buildTransitive')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'lib\uap10.0') `
+            -dest (Join-Path $ComponentBasePath 'metadata')
+
+        build\scripts\CopyContents.ps1 `
+            -SourceDir "$PSScriptRoot\$BasePath" `
+            -ContentsList @('lib') `
+            -Exclude @('*.winmd', '*.pdb') `
+            -TargetDir $ComponentBasePath
+
+        build\scripts\CopyContents.ps1 `
+            -SourceDir "$PSScriptRoot\$BasePath" `
+            -ContentsList @('runtimes\win-*') `
+            -Exclude @('*.pdb') `
+            -TargetDir $ComponentBasePath
+
+        foreach($platformToRun in $platform.Split(","))
+        {
+            build\scripts\CopyContents.ps1 `
+                -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
+                -ContentsList @(
+                    'native\DeploymentAgent.exe',
+                    'native\Microsoft.Windows.ApplicationModel.Resources.dll',
+                    'native\Microsoft.WindowsAppRuntime.dll',
+                    'native\Microsoft.WindowsAppRuntime.Insights.Resource.dll',
+                    'native\MRM.dll',
+                    'native\PushNotificationsLongRunningTask.ProxyStub.dll',
+                    'native\RestartAgent.exe') `
+                -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
+        }
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"
+        Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec" -Destination $nuspecPath
+
+        # Add the version to the nuspec.
+        [xml]$publicNuspec = Get-Content -Path $nuspecPath
+        $publicNuspec.package.metadata.version = $PackageVersion
+        Set-Content -Value $publicNuspec.OuterXml $nuspecPath
+
+        # Make the foundation transport package.
+        nuget pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
+            exit 1
+        }
+
         $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec"
         Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -Destination $nuspecPath
 
@@ -362,7 +433,7 @@ Try {
         Set-Content -Value $publicNuspec.OuterXml $nuspecPath
 
         # Make the foundation transport package.
-        nuget pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+        nuget pack $nuspecPath -BasePath $ComponentBasePath -OutputDirectory $OutputDirectory
 
         if ($lastexitcode -ne 0)
         {
