@@ -5,37 +5,39 @@
   <PropertyGroup>
     <Native-Platform Condition="'$(Platform)' == 'Win32'">x86</Native-Platform>
     <Native-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</Native-Platform>
+    <_FoundationMetadataFolder>$(MSBuildThisFileDirectory)..\..\metadata</_FoundationMetadataFolder>
+    <_FoundationMetadataFolder Condition="'$(WindowsAppSdkFoundationTransportPackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\lib\uap10.0</_FoundationMetadataFolder>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(AppxPackage)' == 'true'">
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Background.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.ApplicationModel.Background.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd">
+		<Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd">
 			<Private Condition="'$(WindowsAppSDKBackgroundTask)' == 'true'">true</Private>
 			<Private Condition="'$(WindowsAppSDKBackgroundTask)' != 'true'">false</Private>
 			<Implementation Condition="'$(WindowsAppSDKBackgroundTask)' == 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win-$(Platform)\native\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll</Implementation>
@@ -43,59 +45,59 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppLifecycle.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.AppLifecycle.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppNotifications.Builder.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.AppNotifications.Builder.winmd">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppNotifications.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.AppNotifications.winmd">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Globalization.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.Globalization.winmd">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Management.Deployment.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.Management.Deployment.winmd">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.winmd">
-      <Private>false</Private>
-      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.System.Power.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.Storage.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Security.AccessControl.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.System.Power.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Resources.winmd">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.Security.AccessControl.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.ApplicationModel.Resources.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.Windows.ApplicationModel.Resources.dll</Implementation>
     </Reference>
@@ -103,47 +105,47 @@
 
   <!-- conditionally include experimental metadata -->
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.System.winmd"
-       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.System.winmd')">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.System.winmd"
+       Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.System.winmd')">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd"
-       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd')">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.PushNotifications.winmd"
+       Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.PushNotifications.winmd')">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Security.Authentication.OAuth.winmd"
-       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Security.Authentication.OAuth.winmd')">
-      <Private>false</Private>
-      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Media.Capture.winmd"
-       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Media.Capture.winmd')">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Security.Authentication.OAuth.winmd"
+       Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Security.Authentication.OAuth.winmd')">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.BadgeNotifications.winmd"
-       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.BadgeNotifications.winmd')">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.Media.Capture.winmd"
+       Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.Media.Capture.winmd')">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.Pickers.winmd"
-       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Storage.Pickers.winmd')">
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.BadgeNotifications.winmd"
+       Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.BadgeNotifications.winmd')">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.Storage.Pickers.winmd"
+       Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.Storage.Pickers.winmd')">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
