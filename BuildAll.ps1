@@ -364,6 +364,8 @@ Try {
             exit 1
         }
 
+        Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
+
         build\Scripts\RobocopyWrapper.ps1 `
             -Source (Join-Path $BasePath 'build') `
             -dest (Join-Path $ComponentBasePath 'build')
