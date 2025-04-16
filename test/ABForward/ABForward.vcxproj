@@ -208,7 +208,7 @@
     <Content Condition="'$(Platform)'=='x64'" Include="x64\Microsoft.WindowsAppRuntime.DDLM.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM.1.6\Microsoft.WindowsAppRuntime.DDLM.1.6.msix"/>
     <Content Condition="'$(Platform)'=='x86'" Include="x86\Microsoft.WindowsAppRuntime.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.1.6\Microsoft.WindowsAppRuntime.1.6.msix"/>
     <Content Condition="'$(Platform)'=='x86'" Include="x86\Microsoft.WindowsAppRuntime.DDLM.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM.1.6\Microsoft.WindowsAppRuntime.DDLM.1.6.msix"/>
-    <Content Condition="'$(Platform)'=='ARM64'" Include="xar,4\Microsoft.WindowsAppRuntime.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.1.6\Microsoft.WindowsAppRuntime.1.6.msix"/>
+    <Content Condition="'$(Platform)'=='ARM64'" Include="arm64\Microsoft.WindowsAppRuntime.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.1.6\Microsoft.WindowsAppRuntime.1.6.msix"/>
     <Content Condition="'$(Platform)'=='ARM64'" Include="arm64\Microsoft.WindowsAppRuntime.DDLM.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM.1.6\Microsoft.WindowsAppRuntime.DDLM.1.6.msix"/>
     <None Include="packages.config" />
   </ItemGroup>
