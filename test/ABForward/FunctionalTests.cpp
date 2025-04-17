@@ -18,25 +18,32 @@ using namespace winrt::Windows::System;
 
 using namespace Windows::Management::Deployment;
 
+namespace TP = ::Test::Packages;
+
+#define WASDK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime"
+#define WASDK_PUBLISHER L"8wekyb3d8bbwe"
+
 namespace Test::ABForward
 {
     class FunctionalTests
     {
     private:
+        winrt::hstring packageFamilyName{};
+
         void AddPackages()
         {
             auto packageManager{ Windows::Management::Deployment::PackageManager() };
 
-            auto frameworkPackages{ packageManager.FindPackages(L"Microsoft.WindowsAppRuntime.1.6_8wekyb3d8bbwe") };
+            auto frameworkPackages{ packageManager.FindPackages(packageFamilyName) };
 
             if (!frameworkPackages.First().HasCurrent())
             {
-                auto frameworkUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime.1.6").c_str()) };
+                auto frameworkUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime").c_str()) };
                 auto frameworkOp{ packageManager.AddPackageAsync(frameworkUri, nullptr, DeploymentOptions::None) };
                 auto frameworkResult{ frameworkOp.get() };
             }
 
-            auto ddlmUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime.DDLM.1.6").c_str()) };
+            auto ddlmUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime.DDLM").c_str()) };
             auto ddlmOp{ packageManager.AddPackageAsync(ddlmUri, nullptr, DeploymentOptions::None) };
             auto ddlmResult{ ddlmOp.get() };
         }
@@ -49,9 +56,17 @@ namespace Test::ABForward
 
         TEST_CLASS_SETUP(ClassInit)
         {
+            packageFamilyName = winrt::hstring(WASDK_PACKAGE_NAME) +
+                winrt::hstring(L".") +
+                winrt::hstring(std::to_wstring(ABFORWARD_RUNTIME_VERSION_MAJOR)) +
+                winrt::hstring(L".") +
+                winrt::hstring(std::to_wstring(ABFORWARD_RUNTIME_VERSION_MINOR)) +
+                winrt::hstring(L"_") +
+                winrt::hstring(WASDK_PUBLISHER);
+
             AddPackages();
 
-            const UINT32 c_Version_MajorMinor{ 0x00010006 };
+            const UINT32 c_Version_MajorMinor{ ABFORWARD_RUNTIME_VERSION_MAJOR << 16 | ABFORWARD_RUNTIME_VERSION_MINOR };
             const PACKAGE_VERSION minVersion{};
             ::Test::Bootstrap::SetupBootstrapWithVersion(c_Version_MajorMinor, minVersion, false);
 
@@ -127,7 +142,7 @@ namespace Test::ABForward
         TEST_METHOD(SecurityAccessControl)
         {
             auto arr{ winrt::com_array<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess>(1)};
-            arr.at(0).appContainerName = winrt::hstring(L"Microsoft.WindowsAppRuntime.1.6_8wekyb3d8bbwe");
+            arr.at(0).appContainerName = packageFamilyName;
             auto widgetManager{ winrt::Microsoft::Windows::Security::AccessControl::SecurityDescriptorHelpers::GetSddlForAppContainerNames(arr, winrt::hstring(), 0)};
         }
     };

@@ -28,6 +28,28 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <PropertyGroup Label="UserMacros">
+    <RuntimeWASDKMajor>1</RuntimeWASDKMajor>
+    <RuntimeWASDKMinor>6</RuntimeWASDKMinor>
+    <RuntimeWASDKPatch>250408002</RuntimeWASDKPatch>
+    <RuntimeWASDKVersion>$(RuntimeWASDKMajor).$(RuntimeWASDKMinor)</RuntimeWASDKVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>
+        $(PreprocessorDefinitions);
+        ABFORWARD_RUNTIME_VERSION_MAJOR=$(RuntimeWASDKMajor);
+        ABFORWARD_RUNTIME_VERSION_MINOR=$(RuntimeWASDKMinor);
+      </PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>
+        $(PreprocessorDefinitions);
+        ABFORWARD_RUNTIME_VERSION_MAJOR=$(RuntimeWASDKMajor);
+        ABFORWARD_RUNTIME_VERSION_MINOR=$(RuntimeVersionMinor);
+      </PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{C40AE1D8-FD5F-472E-86B5-DDA5ABA6FF99}</ProjectGuid>
@@ -204,13 +226,12 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <Content Condition="'$(Platform)'=='x64'" Include="x64\Microsoft.WindowsAppRuntime.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.1.6\Microsoft.WindowsAppRuntime.1.6.msix"/>
-    <Content Condition="'$(Platform)'=='x64'" Include="x64\Microsoft.WindowsAppRuntime.DDLM.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM.1.6\Microsoft.WindowsAppRuntime.DDLM.1.6.msix"/>
-    <Content Condition="'$(Platform)'=='x86'" Include="x86\Microsoft.WindowsAppRuntime.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.1.6\Microsoft.WindowsAppRuntime.1.6.msix"/>
-    <Content Condition="'$(Platform)'=='x86'" Include="x86\Microsoft.WindowsAppRuntime.DDLM.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM.1.6\Microsoft.WindowsAppRuntime.DDLM.1.6.msix"/>
-    <Content Condition="'$(Platform)'=='ARM64'" Include="arm64\Microsoft.WindowsAppRuntime.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.1.6\Microsoft.WindowsAppRuntime.1.6.msix"/>
-    <Content Condition="'$(Platform)'=='ARM64'" Include="arm64\Microsoft.WindowsAppRuntime.DDLM.1.6.msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM.1.6\Microsoft.WindowsAppRuntime.DDLM.1.6.msix"/>
-    <None Include="packages.config" />
+    <Content Condition="'$(Platform)'=='x64'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x64\Microsoft.WindowsAppRuntime.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.msix"/>
+    <Content Condition="'$(Platform)'=='x64'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x64\Microsoft.WindowsAppRuntime.DDLM.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM\Microsoft.WindowsAppRuntime.DDLM.msix"/>
+    <Content Condition="'$(Platform)'=='x86'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x86\Microsoft.WindowsAppRuntime.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.msix"/>
+    <Content Condition="'$(Platform)'=='x86'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x86\Microsoft.WindowsAppRuntime.DDLM.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM\Microsoft.WindowsAppRuntime.DDLM.msix"/>
+    <Content Condition="'$(Platform)'=='ARM64'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-arm64\Microsoft.WindowsAppRuntime.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.msix"/>
+    <Content Condition="'$(Platform)'=='ARM64'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-arm64\Microsoft.WindowsAppRuntime.DDLM.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM\Microsoft.WindowsAppRuntime.DDLM.msix"/>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime">
