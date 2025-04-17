@@ -2,7 +2,7 @@
     "Tests": [
         {
             "Description": "ABForward Testing",
-            "Filename": "ABForward.dll",
+            "Filename": "ABForwardTests.dll",
             "Parameters": "",
             "Architectures": ["x64", "arm64"],
             "Status": "Enabled"
