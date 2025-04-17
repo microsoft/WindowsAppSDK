@@ -364,8 +364,6 @@ Try {
             exit 1
         }
 
-        Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
-
         build\Scripts\RobocopyWrapper.ps1 `
             -Source (Join-Path $BasePath 'build') `
             -dest (Join-Path $ComponentBasePath 'build')
@@ -415,6 +413,8 @@ Try {
                     'native\RestartAgent.exe') `
                 -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
         }
+
+        Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
