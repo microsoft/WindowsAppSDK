@@ -79,5 +79,5 @@ stages:
 - template: WindowsAppSDK-Build-Stage-Per-Platform.yml@self
   parameters:
     SignOutput: ${{ parameters.SignOutput }}
-      IsOneBranch: ${{ parameters.IsOneBranch }}
-      BuildPlatform: arm64
+    IsOneBranch: ${{ parameters.IsOneBranch }}
+    BuildPlatform: arm64
