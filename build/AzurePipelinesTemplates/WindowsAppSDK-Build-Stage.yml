@@ -64,19 +64,19 @@ stages:
         md "C:\__t\NativeCompilerPrefast"
       displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage-Per-Platform.yml@self
+  - template: WindowsAppSDK-Build-Stage-Per-Platform.yml@self
     parameters:
       SignOutput: ${{ parameters.SignOutput }}
       IsOneBranch: ${{ parameters.IsOneBranch }}
       BuildPlatform: x86
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage-Per-Platform.yml@self
+  - template: WindowsAppSDK-Build-Stage-Per-Platform.yml@self
     parameters:
       SignOutput: ${{ parameters.SignOutput }}
       IsOneBranch: ${{ parameters.IsOneBranch }}
       BuildPlatform: x64
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage-Per-Platform.yml@self
+  - template: WindowsAppSDK-Build-Stage-Per-Platform.yml@self
     parameters:
       SignOutput: ${{ parameters.SignOutput }}
       IsOneBranch: ${{ parameters.IsOneBranch }}
