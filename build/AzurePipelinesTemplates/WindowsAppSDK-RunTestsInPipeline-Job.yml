@@ -19,24 +19,25 @@ parameters:
   default: x64
 
 jobs:
-- job: ${{ parameters.jobName }}
-  strategy:
-    matrix: ${{ parameters.testMatrix }}
-  pool:
-    type: windows
-    isCustom: true
-    name: $(poolName)
-    demands: ImageOverride -equals $(imageName)
-  timeoutInMinutes: 120
-  variables:
-    testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
-    AZURE_PIPELINES_DEDUP_PARALLELISM: 16
-    targetPlatform: ${{ parameters.buildPlatform }}
-  condition: and(succeeded(), eq(matrix.buildPlatform, variables['targetPlatform']))
-  steps:
-    - template: WindowsAppSDK-RunTests-Steps.yml
-      parameters:
-        buildPlatform: $(buildPlatform)
-        buildConfiguration: $(buildConfiguration)
-        testLocale: $(testLocale)
-        ImageName: $(imageName)
+- ${{ each entry in parameters.testMatrix }}:
+  - ${{ if eq(entry.value.buildPlatform, parameters.buildPlatform) }}:
+    - job: ${{ parameters.jobName }}
+      strategy:
+        matrix: 
+          ${{ entry.key }}: ${{ entry.value }}
+      pool:
+        type: windows
+        isCustom: true
+        name: $(poolName)
+        demands: ImageOverride -equals $(imageName)
+      timeoutInMinutes: 120
+      variables:
+        testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+        AZURE_PIPELINES_DEDUP_PARALLELISM: 16
+      steps:
+        - template: WindowsAppSDK-RunTests-Steps.yml
+          parameters:
+            buildPlatform: $(buildPlatform)
+            buildConfiguration: $(buildConfiguration)
+            testLocale: $(testLocale)
+            ImageName: $(imageName)
