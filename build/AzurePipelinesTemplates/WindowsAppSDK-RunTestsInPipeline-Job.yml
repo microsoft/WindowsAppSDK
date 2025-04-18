@@ -27,11 +27,12 @@ jobs:
     isCustom: true
     name: $(poolName)
     demands: ImageOverride -equals $(imageName)
-  condition: and(succeeded(), eq(matrix.buildPlatform, ${{ parameters.buildPlatform }}))
   timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
     AZURE_PIPELINES_DEDUP_PARALLELISM: 16
+    targetPlatform: ${{ parameters.buildPlatform }}
+  condition: and(succeeded(), eq(matrix.buildPlatform, variables['targetPlatform']))
   steps:
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:
