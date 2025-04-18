@@ -14,6 +14,9 @@ parameters:
 - name: testMatrix
   type: object
   default: ''
+- name: buildPlatform
+  type: string
+  default: x64
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -24,6 +27,7 @@ jobs:
     isCustom: true
     name: $(poolName)
     demands: ImageOverride -equals $(imageName)
+  condition: and(succeeded(), eq(matrix.buildPlatform, ${{ parameters.buildPlatform }}))
   timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)

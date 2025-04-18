@@ -8,7 +8,7 @@ parameters:
 - name: runStaticAnalysis
   type: boolean
   default: true
-- name: "BuildPlatform"
+- name: buildPlatform
   type: string
   default: x64
 
