@@ -27,7 +27,7 @@ jobs:
     isCustom: true
     name: $(poolName)
     demands: ImageOverride -equals $(imageName)
-  condition: and(succeeded(), eq($(buildPlatform), ${{ parameters.buildPlatform }}))
+  condition: and(succeeded(), eq(variables['buildPlatform'], ${{ parameters.buildPlatform }}))
   timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
