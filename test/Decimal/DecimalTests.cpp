@@ -52,8 +52,8 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_bool() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_bool() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_char)
@@ -65,21 +65,21 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_char() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_char() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_int16)
         {
-            const std::uint16_t data{ -32109 };
+            const std::int16_t data{ -32109};
             Microsoft::Windows::Foundation::decimal object(data);
             const auto to{ object.to_int16() };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_int16() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_int16() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_int32)
@@ -91,21 +91,21 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_int32() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_int32() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_int64)
         {
-            const std::int64_t data{ 0x8000000000000000 };
+            const std::int64_t data{ -1234567890123456789 };
             Microsoft::Windows::Foundation::decimal object(data);
             const auto to{ object.to_int64() };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_int64() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_int64() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_uint8)
@@ -117,8 +117,8 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_uint16() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_uint16() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_uint16)
@@ -130,8 +130,8 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_uint16() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_uint16() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_uint32)
@@ -143,21 +143,21 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_uint32() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_uint32() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_uint64)
         {
-            const std::uint64_t data{ 0x7FFFFFFFFFFFFFFF };
+            const std::uint64_t data{ 0xFEDCBA0987654321 };
             Microsoft::Windows::Foundation::decimal object(data);
             const auto to{ object.to_uint64() };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_uint64() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_uint64() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_float)
@@ -169,8 +169,8 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_float() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_float() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_double)
@@ -182,8 +182,8 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_double() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_double() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_long)
@@ -195,8 +195,8 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_long() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_long() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_ulong)
@@ -208,8 +208,8 @@ namespace Test::ApplicationData::Tests
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to{ object.to_ulong() };
-            VERIFY_ARE_EQUAL(data, to);
+            const auto to2{ object.to_ulong() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_string)
