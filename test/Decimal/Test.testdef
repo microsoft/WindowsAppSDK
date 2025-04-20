@@ -1,0 +1,11 @@
+﻿{
+    "Tests": [
+        {
+            "Description": "DecimalTests tests for feature Decimal",
+            "Filename": "DecimalTests.dll",
+            "Parameters": "",
+            "Architectures": ["x86", "x64", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}

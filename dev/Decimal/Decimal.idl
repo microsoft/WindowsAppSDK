@@ -1,0 +1,18 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <TerminalVelocityFeatures-Decimal.h>
+
+namespace Microsoft.Windows.Foundation
+{
+    [contractversion(2)]
+    apicontract DecimalContract{};
+
+    [contract(DecimalContract, 1)]
+    runtimeclass Decimal : Windows.Foundation.IStringable
+    {
+        Decimal();
+
+        Decimal Abs();
+    }
+}
