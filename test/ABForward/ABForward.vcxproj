@@ -232,6 +232,7 @@
     <Content Condition="'$(Platform)'=='x86'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x86\Microsoft.WindowsAppRuntime.DDLM.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM\Microsoft.WindowsAppRuntime.DDLM.msix"/>
     <Content Condition="'$(Platform)'=='ARM64'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-arm64\Microsoft.WindowsAppRuntime.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.msix"/>
     <Content Condition="'$(Platform)'=='ARM64'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-arm64\Microsoft.WindowsAppRuntime.DDLM.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM\Microsoft.WindowsAppRuntime.DDLM.msix"/>
+    <Content Include="ABForward.testdef" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime">
@@ -310,9 +311,6 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
-  <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="ABForward.testdef" DestinationFolder="$(OutDir)" />
-  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
