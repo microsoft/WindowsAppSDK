@@ -10,14 +10,58 @@ namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 namespace TD = ::Test::Diagnostics;
 
-static const winrt::hstring null_hstring;
-
-namespace Test::ApplicationData::Tests
+namespace WEX::TestExecution
 {
-    class ApplicationDataTests
+    // Teach TAEF how to format a Microsoft::Windows::Foundation::decimal
+    template <>
+    class VerifyOutputTraits<Microsoft::Windows::Foundation::decimal>
     {
     public:
-        BEGIN_TEST_CLASS(ApplicationDataTests)
+        static WEX::Common::NoThrowString ToString(Microsoft::Windows::Foundation::decimal const& value)
+        {
+            const auto s{ value.to_string() };
+            return WEX::Common::NoThrowString().Format(L"\"%s\"", s.c_str());
+        }
+    };
+
+    // Teach TAEF how to compare a Microsoft::Windows::Foundation::decimal
+    template <>
+    class VerifyCompareTraits<Microsoft::Windows::Foundation::decimal, Microsoft::Windows::Foundation::decimal>
+    {
+    public:
+        static bool AreEqual(Microsoft::Windows::Foundation::decimal const& expected, Microsoft::Windows::Foundation::decimal const& actual)
+        {
+            return expected == actual;
+        }
+
+        static bool AreSame(Microsoft::Windows::Foundation::decimal const& expected, Microsoft::Windows::Foundation::decimal const& actual)
+        {
+            return &expected == &actual;
+        }
+
+        static bool IsLessThan(Microsoft::Windows::Foundation::decimal const& expectedLess, Microsoft::Windows::Foundation::decimal const& expectedGreater)
+        {
+            return expectedLess < expectedGreater;
+        }
+
+        static bool IsGreaterThan(Microsoft::Windows::Foundation::decimal const& expectedGreater, Microsoft::Windows::Foundation::decimal const& expectedLess)
+        {
+            return expectedGreater > expectedLess;
+        }
+
+        static bool IsNull(Microsoft::Windows::Foundation::decimal const& /*object*/)
+        {
+            return false;
+        }
+    };
+}
+
+namespace Test::Decimal::Tests
+{
+    class DecimalTests
+    {
+    public:
+        BEGIN_TEST_CLASS(DecimalTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
@@ -25,7 +69,7 @@ namespace Test::ApplicationData::Tests
         TEST_CLASS_SETUP(ClassSetup)
         {
             ::TD::DumpExecutionContext();
-            ::TB::Setup();
+            ::TB::Setup(TB::Packages::Framework);
             return true;
         }
 
@@ -212,134 +256,1025 @@ namespace Test::ApplicationData::Tests
             VERIFY_ARE_EQUAL(data, to2);
         }
 
+        TEST_METHOD(ctor_to_assign_pcwstr)
+        {
+            PCWSTR data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data);
+            const auto to{ object.to_string() };
+            VERIFY_ARE_EQUAL(0, wcscmp(data, to.c_str()));
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_string() };
+            VERIFY_ARE_EQUAL(0, wcscmp(data, to.c_str()), std::format(L"'{}' == '{}'", data, to.c_str()).c_str());
+        }
+
+        TEST_METHOD(ctor_to_assign_pcwstr_lcid)
+        {
+            PCWSTR data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, GetSystemDefaultLCID());
+            const auto to{ object.to_string(GetSystemDefaultLCID()) };
+            VERIFY_ARE_EQUAL(0, wcscmp(data, to.c_str()));
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_string(GetSystemDefaultLCID()) };
+            VERIFY_ARE_EQUAL(0, wcscmp(data, to.c_str()), std::format(L"'{}' == '{}'", data, to.c_str()).c_str());
+        }
+
         TEST_METHOD(ctor_to_assign_string)
         {
-            //TODO
+            const std::wstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data);
+            const auto to{ object.to_string() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_string() };
+            VERIFY_ARE_EQUAL(data, to2);
         }
+
+        TEST_METHOD(ctor_to_assign_string_lcid)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, GetSystemDefaultLCID());
+            const auto to{ object.to_hstring(GetSystemDefaultLCID()) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring(GetSystemDefaultLCID()) };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+
+#if defined(WINRT_BASE_H)
+        TEST_METHOD(ctor_to_assign_hstring)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data);
+            const auto to{ object.to_hstring() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring() };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+#endif // defined(WINRT_BASE_H)
+
+#if defined(WINRT_BASE_H)
+        TEST_METHOD(ctor_to_assign_hstring_lcid)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, GetSystemDefaultLCID());
+            const auto to{ object.to_hstring(GetSystemDefaultLCID()) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring(GetSystemDefaultLCID()) };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+#endif // defined(WINRT_BASE_H)
 
         TEST_METHOD(compare_bool)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal decimal_false(false);
+            Microsoft::Windows::Foundation::decimal decimal_true(true);
+            VERIFY_ARE_EQUAL(0, decimal_false.compare(decimal_false));
+            VERIFY_ARE_EQUAL(0, decimal_true.compare(decimal_true));
+            VERIFY_ARE_EQUAL(-1, decimal_false.compare(decimal_true));
+            VERIFY_ARE_EQUAL(1, decimal_true.compare(decimal_false));
+
+            VERIFY_IS_TRUE(decimal_true == decimal_true);
+            VERIFY_IS_FALSE(decimal_true != decimal_true);
+            VERIFY_IS_FALSE(decimal_true < decimal_true);
+            VERIFY_IS_TRUE(decimal_true <= decimal_true);
+            VERIFY_IS_FALSE(decimal_true > decimal_true);
+            VERIFY_IS_TRUE(decimal_true >= decimal_true);
         }
 
         TEST_METHOD(compare_char)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<char>(-123));
+            Microsoft::Windows::Foundation::decimal right(static_cast<char>(123));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_int16)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<std::int16_t>(-32109));
+            Microsoft::Windows::Foundation::decimal right(static_cast<std::int16_t>(32109));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_int32)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<std::int32_t>(-1234567890));
+            Microsoft::Windows::Foundation::decimal right(static_cast<std::int32_t>(1234567890));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_int64)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<std::int64_t>(-1234567890123456789));
+            Microsoft::Windows::Foundation::decimal right(static_cast<std::int64_t>(1234567890123456789));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_uint8)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<std::uint8_t>(123));
+            Microsoft::Windows::Foundation::decimal right(static_cast<std::uint8_t>(234));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_uint16)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<std::uint16_t>(32109));
+            Microsoft::Windows::Foundation::decimal right(static_cast<std::uint16_t>(65432));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_uint32)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<std::uint32_t>(1234567890));
+            Microsoft::Windows::Foundation::decimal right(static_cast<std::uint32_t>(4019283756));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_uint64)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<std::uint64_t>(0x1234567890ABCDEF));
+            Microsoft::Windows::Foundation::decimal right(static_cast<std::uint64_t>(0xFEDCBA0987654321));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_float)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<float>(-1.25));
+            Microsoft::Windows::Foundation::decimal right(static_cast<float>(1.25));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_double)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<double>(-1.25));
+            Microsoft::Windows::Foundation::decimal right(static_cast<double>(1.25));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_long)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<long>(-1234567890));
+            Microsoft::Windows::Foundation::decimal right(static_cast<long>(1234567890));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_ulong)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(static_cast<unsigned long>(1234567890));
+            Microsoft::Windows::Foundation::decimal right(static_cast<unsigned long>(4019283756));
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(compare_string)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal left(L"-12.345");
+            Microsoft::Windows::Foundation::decimal right(L"12.345");
+            VERIFY_ARE_EQUAL(0, left.compare(left));
+            VERIFY_ARE_EQUAL(0, right.compare(right));
+            VERIFY_ARE_EQUAL(-1, left.compare(right));
+            VERIFY_ARE_EQUAL(1, right.compare(left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
         }
 
         TEST_METHOD(operator_pos)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal zero(L"0");
+            Microsoft::Windows::Foundation::decimal pos(L"12.345");
+            Microsoft::Windows::Foundation::decimal neg(L"-12.345");
+
+            const auto zero_value{ +zero };
+            VERIFY_IS_TRUE(zero_value == zero);
+            VERIFY_IS_TRUE(zero_value != pos);
+            VERIFY_IS_TRUE(zero_value != neg);
+            VERIFY_IS_TRUE(zero_value < pos);
+            VERIFY_IS_TRUE(zero_value > neg);
+
+            const auto pos_value{ +pos };
+            VERIFY_IS_TRUE(pos_value != zero);
+            VERIFY_IS_TRUE(pos_value == pos);
+            VERIFY_IS_TRUE(pos_value != neg);
+            VERIFY_IS_TRUE(pos_value > zero);
+            VERIFY_IS_TRUE(pos_value > neg);
+
+            const auto neg_value{ +neg };
+            VERIFY_IS_TRUE(neg_value != zero);
+            VERIFY_IS_TRUE(neg_value != pos);
+            VERIFY_IS_TRUE(neg_value == neg);
+            VERIFY_IS_TRUE(neg_value < zero);
+            VERIFY_IS_TRUE(neg_value < pos);
         }
 
         TEST_METHOD(operator_neg)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal zero(L"0");
+            Microsoft::Windows::Foundation::decimal pos(L"12.345");
+            Microsoft::Windows::Foundation::decimal neg(L"-12.345");
+
+            const auto zero_value{ -zero };
+            VERIFY_IS_TRUE(zero_value == zero);
+            VERIFY_IS_TRUE(zero_value != pos);
+            VERIFY_IS_TRUE(zero_value != neg);
+            VERIFY_IS_TRUE(zero_value < pos);
+            VERIFY_IS_TRUE(zero_value > neg);
+
+            const auto pos_value{ -neg };
+            VERIFY_IS_TRUE(pos_value != zero);
+            VERIFY_IS_TRUE(pos_value == pos);
+            VERIFY_IS_TRUE(pos_value != neg);
+            VERIFY_IS_TRUE(pos_value > zero);
+            VERIFY_IS_TRUE(pos_value > neg);
+
+            const auto neg_value{ -pos };
+            VERIFY_IS_TRUE(neg_value != zero);
+            VERIFY_IS_TRUE(neg_value != pos);
+            VERIFY_IS_TRUE(neg_value == neg);
+            VERIFY_IS_TRUE(neg_value < zero);
+            VERIFY_IS_TRUE(neg_value < pos);
         }
 
         TEST_METHOD(abs)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal zero(L"0");
+            Microsoft::Windows::Foundation::decimal pos(L"12.345");
+            Microsoft::Windows::Foundation::decimal neg(L"-12.345");
+
+            const auto zero_value{ zero.abs() };
+            VERIFY_IS_TRUE(zero_value == zero);
+            VERIFY_IS_TRUE(zero_value != pos);
+            VERIFY_IS_TRUE(zero_value != neg);
+            VERIFY_IS_TRUE(zero_value < pos);
+            VERIFY_IS_TRUE(zero_value > neg);
+
+            const auto pos_value{ pos.abs() };
+            VERIFY_IS_TRUE(pos_value != zero);
+            VERIFY_IS_TRUE(pos_value == pos);
+            VERIFY_IS_TRUE(pos_value != neg);
+            VERIFY_IS_TRUE(pos_value > zero);
+            VERIFY_IS_TRUE(pos_value > neg);
+
+            const auto neg_value{ neg.abs() };
+            VERIFY_IS_TRUE(neg_value != zero);
+            VERIFY_IS_TRUE(neg_value == pos);
+            VERIFY_IS_TRUE(neg_value != neg);
+            VERIFY_IS_TRUE(neg_value > zero);
+            VERIFY_IS_TRUE(neg_value == pos);
         }
 
         TEST_METHOD(fix)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal zero(L"0");
+            const auto value{ zero.fix() };
+            VERIFY_IS_TRUE(value == zero);
+
+            Microsoft::Windows::Foundation::decimal pos(L"12.345");
+            Microsoft::Windows::Foundation::decimal pos_fix(L"12");
+            const auto pos_value{ pos.fix() };
+            VERIFY_IS_TRUE(pos_value == pos_fix);
+
+            Microsoft::Windows::Foundation::decimal neg(L"-12.345");
+            Microsoft::Windows::Foundation::decimal neg_fix(L"-12");
+            const auto neg_value{ neg.fix() };
+            VERIFY_IS_TRUE(neg_value == neg_fix);
         }
 
         TEST_METHOD(integer)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal zero(L"0");
+            const auto value{ zero.integer() };
+            VERIFY_IS_TRUE(value == zero);
+
+            Microsoft::Windows::Foundation::decimal pos(L"12.345");
+            Microsoft::Windows::Foundation::decimal pos_integer(L"12");
+            const auto pos_value{ pos.integer() };
+            VERIFY_IS_TRUE(pos_value == pos_integer);
+
+            Microsoft::Windows::Foundation::decimal neg(L"-12.345");
+            Microsoft::Windows::Foundation::decimal neg_integer(L"-13");
+            const auto neg_value{ neg.integer() };
+            VERIFY_IS_TRUE(neg_value == neg_integer);
         }
 
         TEST_METHOD(operator_add)
         {
-            //TODO
+            struct values
+            {
+                PCWSTR left;
+                PCWSTR right;
+                PCWSTR result;
+            } values[]{
+                { L"0",         L"0",       L"0"     },
+                { L"1",         L"2",       L"3"     },
+                { L"123",       L"4567",    L"4690"  },
+                { L"1",         L"-2",      L"-1"    },
+                { L"-1",        L"-2",      L"-3"    },
+                { L"-1",        L"2",       L"1"     },
+                { L"-0",        L"-0",      L"0"     },
+                { L"-0",        L"0",       L"0"     },
+                { L"0",         L"-0",      L"0"     },
+                { L"1.2",       L"3.45",    L"4.65"  },
+                { L"-1.2",      L"3.45",    L"2.25"  },
+                { L"1.2",       L"-3.45",   L"-2.25" },
+                { L"-1.2",      L"-3.45",   L"-4.65" },
+                { L".2",        L".45",     L".65"   },
+                { L"-.2",       L".45",     L".25"   },
+                { L".2",        L"-.45",    L"-.25"  },
+                { L"-.2",       L"-.45",    L"-.65"  }
+            };
+            for (size_t index=0; index < ARRAYSIZE(values); ++index)
+            {
+                const auto& value{ values[index] };
+                Microsoft::Windows::Foundation::decimal left{ value.left };
+                Microsoft::Windows::Foundation::decimal right{ value.right };
+                Microsoft::Windows::Foundation::decimal expected{ value.result };
+                const Microsoft::Windows::Foundation::decimal result{ left + right };
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s + %s = %s vs %s",
+                    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
+            }
         }
 
         TEST_METHOD(operator_subtract)
         {
-            //TODO
+            struct values
+            {
+                PCWSTR left;
+                PCWSTR right;
+                PCWSTR result;
+            } values[]{
+                { L"0",         L"0",       L"0"     },
+                { L"1",         L"2",       L"-1"    },
+                { L"123",       L"4567",    L"-4444" },
+                { L"1",         L"-2",      L"3"     },
+                { L"-1",        L"-2",      L"1"     },
+                { L"-1",        L"2",       L"-3"    },
+                { L"-0",        L"-0",      L"0"     },
+                { L"-0",        L"0",       L"0"     },
+                { L"0",         L"-0",      L"0"     },
+                { L"1.2",       L"3.45",    L"-2.25" },
+                { L"-1.2",      L"3.45",    L"-4.65" },
+                { L"1.2",       L"-3.45",   L"4.65"  },
+                { L"-1.2",      L"-3.45",   L"2.25"  },
+                { L".2",        L".45",     L"-.25"  },
+                { L"-.2",       L".45",     L"-.65"  },
+                { L".2",        L"-.45",    L".65"   },
+                { L"-.2",       L"-.45",    L".25"   }
+            };
+            for (size_t index=0; index < ARRAYSIZE(values); ++index)
+            {
+                const auto& value{ values[index] };
+                Microsoft::Windows::Foundation::decimal left{ value.left };
+                Microsoft::Windows::Foundation::decimal right{ value.right };
+                Microsoft::Windows::Foundation::decimal expected{ value.result };
+                const Microsoft::Windows::Foundation::decimal result{ left - right };
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s - %s = %s vs %s",
+                    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
+            }
         }
 
         TEST_METHOD(operator_multiply)
         {
-            //TODO
+            struct values
+            {
+                PCWSTR left;
+                PCWSTR right;
+                PCWSTR result;
+            } values[]{
+                { L"0",         L"0",       L"0"      },
+                { L"1",         L"2",       L"2"      },
+                { L"123",       L"4567",    L"561741" },
+                { L"1",         L"-2",      L"-2"     },
+                { L"-1",        L"-2",      L"2"      },
+                { L"-1",        L"2",       L"-2"     },
+                { L"-0",        L"-0",      L"0"      },
+                { L"-0",        L"0",       L"0"      },
+                { L"0",         L"-0",      L"0"      },
+                { L"1.2",       L"3.45",    L"4.140"  },
+                { L"-1.2",      L"3.45",    L"-4.140" },
+                { L"1.2",       L"-3.45",   L"-4.140" },
+                { L"-1.2",      L"-3.45",   L"4.140"  },
+                { L".2",        L".45",     L"0.090"  },
+                { L"-.2",       L".45",     L"-0.090" },
+                { L".2",        L"-.45",    L"-0.090" },
+                { L"-.2",       L"-.45",    L"0.090"  }
+            };
+            for (size_t index=0; index < ARRAYSIZE(values); ++index)
+            {
+                const auto& value{ values[index] };
+                Microsoft::Windows::Foundation::decimal left{ value.left };
+                Microsoft::Windows::Foundation::decimal right{ value.right };
+                Microsoft::Windows::Foundation::decimal expected{ value.result };
+                const Microsoft::Windows::Foundation::decimal result{ left * right };
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s * %s = %s vs %s",
+                    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
+            }
         }
 
         TEST_METHOD(operator_divide)
         {
-            //TODO
+            try
+            {
+                Microsoft::Windows::Foundation::decimal data{ 123 };
+                Microsoft::Windows::Foundation::decimal zero{};
+                const auto result{ data / zero };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (wil::ResultException& e)
+            {
+                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.GetErrorCode(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
+            }
+
+            struct values
+            {
+                PCWSTR left;
+                PCWSTR right;
+                PCWSTR result;
+            } values[]{
+                { L"1",         L"2",       L"0.5"                             },
+                { L"123",       L"4567",    L"0.0269323407050580249616816291"  },
+                { L"1",         L"-2",      L"-0.5"                            },
+                { L"-1",        L"-2",      L"0.5"                             },
+                { L"-1",        L"2",       L"-0.5"                            },
+                { L"1.2",       L"3.45",    L"0.3478260869565217391304347826"  },
+                { L"-1.2",      L"3.45",    L"-0.3478260869565217391304347826" },
+                { L"1.2",       L"-3.45",   L"-0.3478260869565217391304347826" },
+                { L"-1.2",      L"-3.45",   L"0.3478260869565217391304347826"  },
+                { L".2",        L".45",     L"0.4444444444444444444444444444"  },
+                { L"-.2",       L".45",     L"-0.4444444444444444444444444444" },
+                { L".2",        L"-.45",    L"-0.4444444444444444444444444444" },
+                { L"-.2",       L"-.45",    L"0.4444444444444444444444444444"  }
+            };
+            for (size_t index=0; index < ARRAYSIZE(values); ++index)
+            {
+                const auto& value{ values[index] };
+                Microsoft::Windows::Foundation::decimal left{ value.left };
+                Microsoft::Windows::Foundation::decimal right{ value.right };
+                Microsoft::Windows::Foundation::decimal expected{ value.result };
+                const Microsoft::Windows::Foundation::decimal result{ left / right };
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s / %s = %s vs %s",
+                    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
+            }
         }
 
         TEST_METHOD(operator_modulo)
         {
-            //TODO
+            try
+            {
+                Microsoft::Windows::Foundation::decimal data{ 123 };
+                Microsoft::Windows::Foundation::decimal zero{};
+                const auto result{ data / zero };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (wil::ResultException& e)
+            {
+                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.GetErrorCode(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
+            }
+
+            struct values
+            {
+                PCWSTR left;
+                PCWSTR right;
+                PCWSTR result;
+            } values[]{
+                { L"1",     L"2",       L"1"     },
+                { L"123",   L"4567",    L"123"   },
+                { L"1",     L"-2",      L"1"     },
+                { L"-1",    L"-2",      L"-1"    },
+                { L"-1",    L"2",       L"-1"    },
+                { L"1.2",   L"3.45",    L"1.2"   },
+                { L"-1.2",  L"3.45",    L"-1.2"  },
+                { L"1.2",   L"-3.45",   L"1.2"   },
+                { L"-1.2",  L"-3.45",   L"-1.2"  },
+                { L".2",    L".45",     L"0.2"   },
+                { L"-.2",   L".45",     L"-0.2"  },
+                { L".2",    L"-.45",    L"0.2"   },
+                { L"-.2",   L"-.45",    L"-0.2"  },
+
+                { L"2",     L"1",       L"0"     },
+                { L"4567",  L"123",     L"16"    },
+                { L"-2",    L"1",       L"0"     },
+                { L"-2",    L"-1",      L"0"     },
+                { L"2",     L"-1",      L"0"     },
+                { L"3.45",  L"1.2",     L"1.05"  },
+                { L"3.45",  L"-1.2",    L"1.05"  },
+                { L"-3.45", L"1.2",     L"-1.05" },
+                { L"-3.45", L"-1.2",    L"-1.05" },
+                { L".45",   L".2",      L"0.05"  },
+                { L".45",   L"-.2",     L"0.05"  },
+                { L"-.45",  L".2",      L"-0.05" },
+                { L"-.45",  L"-.2",     L"-0.05" }
+            };
+            for (size_t index=0; index < ARRAYSIZE(values); ++index)
+            {
+                WEX::Logging::Log::Comment(L"----------");
+
+                const auto& value{ values[index] };
+                Microsoft::Windows::Foundation::decimal left{ value.left };
+                Microsoft::Windows::Foundation::decimal right{ value.right };
+                Microsoft::Windows::Foundation::decimal expected{ value.result };
+                const Microsoft::Windows::Foundation::decimal result{ left % right };
+
+                Microsoft::Windows::Foundation::decimal zero{ 0 };
+                const bool left_is_negative{ left < zero };
+                const bool right_is_negative{ right < zero };
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"sign=%s %d", left_is_negative ? L"-" : L"+", left.compare(zero)));
+
+                Microsoft::Windows::Foundation::decimal one{ 1 };
+
+                Microsoft::Windows::Foundation::decimal quotient{ left.abs() / right.abs() };
+                Microsoft::Windows::Foundation::decimal fix{ quotient.integer() };
+                Microsoft::Windows::Foundation::decimal product{ fix * right.abs() };
+                //Microsoft::Windows::Foundation::decimal remainder{ left_is_negative ? left + product : left - product  };
+                Microsoft::Windows::Foundation::decimal remainder{ left - product  };
+                if (right.abs() == one) { remainder = zero; }
+                else if (left_is_negative && !right_is_negative) { remainder += product; }
+                else if (left_is_negative && right_is_negative) { remainder = -remainder; }
+                else if (!left_is_negative && right_is_negative) { remainder += product; }
+
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"l=%s r=%s q=%s f=%s p=%s r=%s",
+                    left.to_string().c_str(), right.to_string().c_str(), quotient.to_string().c_str(), fix.to_string().c_str(), product.to_string().c_str(), remainder.to_string().c_str()));
+
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s %% %s\n== %s - (FIX(%s / %s) * %s)\n== %s - (%s * %s)\n== %s - %s\n==> %s  <-->  %s  %s",
+                    left.to_string().c_str(), right.to_string().c_str(),
+                    left.to_string().c_str(), left.abs().to_string().c_str(), right.abs().to_string().c_str(), right.abs().to_string().c_str(),
+                    left.to_string().c_str(), fix.abs().to_string().c_str(), right.abs().to_string().c_str(),
+                    left.to_string().c_str(), product.abs().to_string().c_str(),
+                    remainder.to_string().c_str(), expected.to_string().c_str(), (remainder == expected ? L"" : L"********************")));
+
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s %% %s = %s vs %s",
+                    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
+
+                //VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s %% %s = %s vs %s",
+                //    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
+            }
+
+            {
+                Microsoft::Windows::Foundation::decimal zero{};
+                Microsoft::Windows::Foundation::decimal one{ 1 };
+
+                Microsoft::Windows::Foundation::decimal n_1{ L"1" };
+                Microsoft::Windows::Foundation::decimal n_2{ L"2" };
+                Microsoft::Windows::Foundation::decimal n_2_div_1{ n_2 / n_1 };
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s f=%s i=%s", n_1.to_string().c_str(), n_1.integer().to_string().c_str(), n_1.integer().to_string().c_str()));
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s f=%s i=%s", n_2.to_string().c_str(), n_2.integer().to_string().c_str(), n_2.integer().to_string().c_str()));
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s f=%s i=%s", n_2_div_1.to_string().c_str(), n_2_div_1.integer().to_string().c_str(), n_2_div_1.integer().to_string().c_str()));
+
+                const Microsoft::Windows::Foundation::decimal& left{ n_2 };
+                const Microsoft::Windows::Foundation::decimal& right{ n_1 };
+
+                Microsoft::Windows::Foundation::decimal quotient{ left.abs() / right.abs() };
+                Microsoft::Windows::Foundation::decimal fix{ quotient.integer() };
+                Microsoft::Windows::Foundation::decimal product{ quotient * fix };
+                Microsoft::Windows::Foundation::decimal remainder{ left == right || right == one ? zero : left - product  };
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"l=%s r=%s q=%s f=%s p=%s r=%s",
+                    left.to_string().c_str(), right.to_string().c_str(), quotient.to_string().c_str(), fix.to_string().c_str(), product.to_string().c_str(), remainder.to_string().c_str()));
+
+            }
         }
 
         TEST_METHOD(operator_round)
         {
-            //TODO
+            Microsoft::Windows::Foundation::decimal n_1_888{ L"1.888" };
+            Microsoft::Windows::Foundation::decimal n_neg1_888{ L"-1.888" };
+            Microsoft::Windows::Foundation::decimal n_1_25{ L"1.25" };
+            Microsoft::Windows::Foundation::decimal n_neg1_25{ L"-1.25" };
+
+            Microsoft::Windows::Foundation::decimal n_2{ L"2" };
+            Microsoft::Windows::Foundation::decimal n_1_9{ L"1.9" };
+            Microsoft::Windows::Foundation::decimal n_1_89{ L"1.89" };
+            Microsoft::Windows::Foundation::decimal n_neg1_9{ L"1.9" };
+            Microsoft::Windows::Foundation::decimal n_neg1_89{ L"1.89" };
+
+            Microsoft::Windows::Foundation::decimal n_1_888_round_0{ n_1_888.round(0) };
+            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_888.to_string().c_str(), n_1_888_round_0.to_string().c_str(), n_2.to_string().c_str()));
+
+            Microsoft::Windows::Foundation::decimal n_1_888_round_1{ n_1_888.round(1) };
+            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_888.to_string().c_str(), n_1_888_round_1.to_string().c_str(), n_1_9.to_string().c_str()));
+
+            Microsoft::Windows::Foundation::decimal n_1_888_round_2{ n_1_888.round(2) };
+            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_888.to_string().c_str(), n_1_888_round_2.to_string().c_str(), n_1_89.to_string().c_str()));
+
+            Microsoft::Windows::Foundation::decimal n_1_888_round_3{ n_1_888.round(3) };
+            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_888.to_string().c_str(), n_1_888_round_3.to_string().c_str(), n_1_888.to_string().c_str()));
+
+            Microsoft::Windows::Foundation::decimal n_1_888_round_4{ n_1_888.round(4) };
+            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_888.to_string().c_str(), n_1_888_round_4.to_string().c_str(), n_1_888.to_string().c_str()));
         }
     };
 }

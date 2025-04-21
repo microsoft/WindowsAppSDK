@@ -30,7 +30,16 @@ public:
 
     decimal(bool value)
     {
-        THROW_IF_FAILED(::VarDecFromBool(value ? VARIANT_TRUE : VARIANT_FALSE, &m_decimal));
+        // VARIANT_TRUE is weird by today's standards:
+        //      typedef short VARIANT_BOOL;
+        //      #define VARIANT_TRUE  ((VARIANT_BOOL) 0xffff)
+        //      #define VARIANT_FALSE ((VARIANT_BOOL) 0)
+        // Thus
+        //      VarDecFromBool(VARIANT_TRUE)  == -1
+        //      VarDecFromBool(VARIANT_FALSE) == 0
+        // But decimal(true) would be expected to be 1 (not -1)
+        // So we intentionally ignore VarDecFromBool() and treat decimal(bool) == 0 or 1
+        THROW_IF_FAILED(::VarDecFromUI4(value ? 1 : 0, &m_decimal));
     }
 
     decimal(char value)
@@ -93,23 +102,39 @@ public:
         THROW_IF_FAILED(::VarDecFromUI4(value, &m_decimal));
     }
 
-#if defined(TODO_STRING)
-    template<typename string_type>
-    decimal(const string_type& value)
+    decimal(PCWSTR value)
     {
-        auto str{ wil::str_raw_ptr(value) };
-        THROW_IF_FAILED(::VarDecFromStr(str, GetThreadLocale(), 0, &m_decimal));
+        THROW_IF_FAILED(::VarDecFromStr(value, GetThreadLocale(), 0, &m_decimal));
     }
-#endif // defined(TODO_STRING)
 
-#if defined(TODO_STRING)
-    template<typename string_type>
-    decimal(const string_type& value, const LCID locale)
+    decimal(PCWSTR value, const LCID locale)
     {
-        auto str{ wil::str_raw_ptr(value) };
-        THROW_IF_FAILED(::VarDecFromStr(str, locale, 0, &m_decimal));
+        THROW_IF_FAILED(::VarDecFromStr(value, locale, 0, &m_decimal));
     }
-#endif // defined(TODO_STRING)
+
+    decimal(const std::wstring& value)
+    {
+        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), GetThreadLocale(), 0, &m_decimal));
+    }
+
+    decimal(const std::wstring& value, const LCID locale)
+    {
+        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), locale, 0, &m_decimal));
+    }
+
+#if defined(WINRT_BASE_H)
+    decimal(const winrt::hstring& value)
+    {
+        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), GetThreadLocale(), 0, &m_decimal));
+    }
+#endif // defined(WINRT_BASE_H)
+
+#if defined(WINRT_BASE_H)
+    decimal(const winrt::hstring& value, const LCID locale)
+    {
+        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), locale, 0, &m_decimal));
+    }
+#endif // defined(WINRT_BASE_H)
 
     decimal& operator=(const decimal& value)
     {
@@ -132,7 +157,16 @@ public:
 
     decimal& operator=(bool value)
     {
-        THROW_IF_FAILED(::VarDecFromBool(value ? VARIANT_TRUE : VARIANT_FALSE, &m_decimal));
+        // VARIANT_TRUE is weird by today's standards:
+        //      typedef short VARIANT_BOOL;
+        //      #define VARIANT_TRUE  ((VARIANT_BOOL) 0xffff)
+        //      #define VARIANT_FALSE ((VARIANT_BOOL) 0)
+        // Thus
+        //      VarDecFromBool(VARIANT_TRUE)  == -1
+        //      VarDecFromBool(VARIANT_FALSE) == 0
+        // But decimal(true) would be expected to be 1 (not -1)
+        // So we intentionally ignore VarDecFromBool() and treat decimal(bool) == 0 or 1
+        THROW_IF_FAILED(::VarDecFromUI4(value ? 1 : 0, &m_decimal));
         return *this;
     }
 
@@ -208,20 +242,28 @@ public:
         return *this;
     }
 
-#if defined(TODO_STRING)
-    template<typename string_type>
-    decimal& operator=(const string_type& value)
+    decimal& operator=(PCWSTR value)
     {
-        auto str{ wil::str_raw_ptr(value) };
-        THROW_IF_FAILED(::VarDecFromStr(str, GetThreadLocale(), 0, &m_decimal));
+        THROW_IF_FAILED(::VarDecFromStr(value, GetThreadLocale(), 0, &m_decimal));
+        return *this;
     }
-#endif // defined(TODO_STRING)
+
+    decimal& operator=(const std::wstring& value)
+    {
+        return operator=(value.c_str());
+    }
+
+#if defined(WINRT_BASE_H)
+    decimal& operator=(const winrt::hstring& value)
+    {
+        return operator=(value.c_str());
+    }
+#endif // defined(WINRT_BASE_H)
 
     bool to_bool() const
     {
-        VARIANT_BOOL value{};
-        THROW_IF_FAILED(::VarBoolFromDec(const_cast<DECIMAL*>(&m_decimal), &value));
-        return value;
+        // Treat all values != 0 as true (good)
+        return m_decimal.Hi32 | m_decimal.Mid32 | m_decimal.Lo32;
     }
 
     char to_char() const
@@ -304,30 +346,35 @@ public:
         return value;
     }
 
-#if defined(TODO_STRING)
-    template<typename string_type>
-    string_type to_string() const
+    std::wstring to_string() const
     {
-        return to_string<string_type>(GetThreadLocale());
+        return to_string(GetThreadLocale());
     }
-#endif // defined(TODO_STRING)
 
-#if defined(TODO_STRING)
-    template<typename string_type>
-    string_type to_string(const LCID locale) const
+    std::wstring to_string(const LCID locale) const
     {
         wil::unique_bstr bstr;
         THROW_IF_FAILED(::VarBstrFromDec(&m_decimal, locale, 0, wil::out_param(bstr)));
-        return wil::make_unique_string<string_type>(bstr.get());
+        return std::wstring{ bstr.get() };
     }
-#endif // defined(TODO_STRING)
+
+#if defined(WINRT_BASE_H)
+    winrt::hstring to_hstring() const
+    {
+        return to_hstring(GetThreadLocale());
+    }
+#endif // defined(WINRT_BASE_H)
+
+#if defined(WINRT_BASE_H)
+    winrt::hstring to_hstring(const LCID locale) const
+    {
+        wil::unique_bstr bstr;
+        THROW_IF_FAILED(::VarBstrFromDec(&m_decimal, locale, 0, wil::out_param(bstr)));
+        return winrt::hstring{ bstr.get() };
+    }
+#endif // defined(WINRT_BASE_H)
 
     bool operator==(const decimal& value) const
-    {
-        return compare(value) == 0;
-    }
-
-    bool operator==(const double value) const
     {
         return compare(value) == 0;
     }
@@ -337,17 +384,7 @@ public:
         return compare(value) != 0;
     }
 
-    bool operator!=(const double value) const
-    {
-        return compare(value) != 0;
-    }
-
     bool operator< (const decimal& value) const
-    {
-        return compare(value) < 0;
-    }
-
-    bool operator< (const double value) const
     {
         return compare(value) < 0;
     }
@@ -357,27 +394,12 @@ public:
         return compare(value) <= 0;
     }
 
-    bool operator<=(const double value) const
-    {
-        return compare(value) <= 0;
-    }
-
     bool operator> (const decimal& value) const
     {
         return compare(value) > 0;
     }
 
-    bool operator> (const double value) const
-    {
-        return compare(value) > 0;
-    }
-
     bool operator>=(const decimal& value) const
-    {
-        return compare(value) >= 0;
-    }
-
-    bool operator>=(const double value) const
     {
         return compare(value) >= 0;
     }
@@ -388,14 +410,6 @@ public:
         static_assert(VARCMP_EQ == 1, "VARCMP_EQ == 1");
         static_assert(VARCMP_GT == 2, "VARCMP_GT == 2");
         return ::VarDecCmp(const_cast<DECIMAL*>(&m_decimal), const_cast<DECIMAL*>(&value.m_decimal)) - 1;
-    }
-
-    int compare(const double value) const
-    {
-        static_assert(VARCMP_LT == 0, "VARCMP_LT == 0");
-        static_assert(VARCMP_EQ == 1, "VARCMP_EQ == 1");
-        static_assert(VARCMP_GT == 2, "VARCMP_GT == 2");
-        return ::VarDecCmpR8(const_cast<DECIMAL*>(&m_decimal), value) - 1;
     }
 
     decimal operator+() const
@@ -417,6 +431,7 @@ public:
         return value;
     }
 
+    /// Chop to integer.
     decimal fix() const
     {
         decimal value{};
@@ -424,6 +439,7 @@ public:
         return value;
     }
 
+    /// Round down to integer.
     decimal integer() const
     {
         decimal value{};
@@ -485,17 +501,30 @@ public:
 
     decimal operator%(const decimal& value) const
     {
-        VARIANT left{};
-        left.vt = VT_DECIMAL;
-        left.decVal = m_decimal;
+        // VarMod() operates on I4 (int32) at best (not even I8 aka int64)
+        // So let's do it the grade school way...
+        //
+        //      remainder = left % right
+        // aka
+        //      q = (left / right)
+        //      remainder = left - (right * FIX(left / right) * right)
 
-        VARIANT right{};
-        right.vt = VT_DECIMAL;
-        right.decVal = value.m_decimal;
+        static const Microsoft::Windows::Foundation::decimal zero{};
+        static const Microsoft::Windows::Foundation::decimal one{ 1 };
+        if ((*this == value) || (value == one))
+        {
+            return zero;
+        }
 
-        VARIANT result{};
-        THROW_IF_FAILED(::VarMod(&left, &right, &result));
-        return decimal(result.decVal);
+        const Microsoft::Windows::Foundation::decimal& left{ *this };
+        const Microsoft::Windows::Foundation::decimal& right{ value };
+        const bool left_is_negative{ m_decimal.sign != 0 };
+
+        Microsoft::Windows::Foundation::decimal quotient{ left.abs() / right.abs() };
+        Microsoft::Windows::Foundation::decimal fix{ quotient.fix() };
+        Microsoft::Windows::Foundation::decimal product{ quotient * fix };
+        Microsoft::Windows::Foundation::decimal remainder{ left_is_negative ? left + product :  left - product };
+        return remainder;
     }
 
     decimal& operator%=(const decimal& value)
@@ -521,6 +550,7 @@ private:
 };
 }
 
+/*
 inline Microsoft::Windows::Foundation::decimal operator+(const Microsoft::Windows::Foundation::decimal& left, const Microsoft::Windows::Foundation::decimal& right)
 {
     return left.operator+(right);
@@ -545,3 +575,4 @@ inline Microsoft::Windows::Foundation::decimal operator%(const Microsoft::Window
 {
     return left.operator+(right);
 }
+*/
