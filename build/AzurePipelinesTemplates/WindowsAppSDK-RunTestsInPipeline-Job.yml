@@ -39,7 +39,7 @@ jobs:
 - job: ${{ parameters.jobName }}
   dependsOn: FilterMatrix
   strategy:
-    matrix: $[ dependencies.A.outputs['setFilteredMatrixStep.filteredMatrixJson'] ]
+    matrix: $[ dependencies.FilterMatrix.outputs['setFilteredMatrixStep.filteredMatrixJson'] ]
   pool:
     type: windows
     isCustom: true
