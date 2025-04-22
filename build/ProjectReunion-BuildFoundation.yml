@@ -23,6 +23,7 @@ resources:
       ref: ${{ variables['mySourceBranch'] }}
 
 stages:
+- template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml@self
@@ -32,7 +33,6 @@ stages:
     SignOutput: false
     IsOneBranch: false
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
   parameters:
