@@ -25,6 +25,7 @@ jobs:
       Write-Host "This is ${{ parameters.testMatrix }}"
       $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
       $targetPlatform = "${{ parameters.buildPlatform }}"
+      Write-Host "That is ${{ parameters.buildPlatform }}"
       $filteredMatrix = @{}
       foreach ($entry in $testMatrix.PSObject.Properties) {
         if ($entry.Value.buildPlatform -eq $targetPlatform) {
