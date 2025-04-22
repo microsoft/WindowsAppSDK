@@ -1,6 +1,5 @@
 stages:
 - stage: Test_x86
-  dependsOn: Build_x86
   condition: not(failed())
   jobs:
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
@@ -12,7 +11,6 @@ stages:
       buildPlatform: x86
 
 - stage: Test_x64
-  dependsOn: Build_x64
   condition: not(failed())
   jobs:
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
@@ -24,7 +22,6 @@ stages:
       buildPlatform: x64
 
 - stage: Test_arm64
-  dependsOn: Build_arm64
   condition: not(failed())
   jobs:
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
