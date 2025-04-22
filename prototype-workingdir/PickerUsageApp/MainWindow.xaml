@@ -11,7 +11,8 @@
 
 
     <StackPanel>
-        <Button Click="BigButtonClick">BigButtonClick</Button>
+        <Button Click="BigButtonClick_SavePicker">BigButtonClick Save</Button>
+        <Button Click="BigButtonClick_OpenPicker">BigButtonClick Open</Button>
 
         <StackPanel Visibility="Collapsed" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">

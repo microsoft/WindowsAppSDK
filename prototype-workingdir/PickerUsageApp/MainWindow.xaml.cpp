@@ -93,7 +93,33 @@ namespace winrt::PickerUsageApp::implementation
         labelBlock().Text(message);
     }
 
-    Windows::Foundation::IAsyncOperation<hstring> MainWindow::BigButtonClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
+    Windows::Foundation::IAsyncOperation<hstring> MainWindow::BigButtonClick_SavePicker(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
+    {
+        auto id = AppWindow().Id();
+        winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker{ id };
+
+        picker.CommitButtonText(L"Choose selected files");
+        picker.SuggestedFileName(L"TestFile");
+        //picker.DefaultFileExtension(L".txt");
+        picker.FileTypeChoices().Insert(L"Documents", single_threaded_vector<hstring>({ L".txt", L".doc", L".docx", L".pdf"}));
+        picker.FileTypeChoices().Insert(L"Pictures", single_threaded_vector<hstring>({ L".jpg", L"jpeg", L".png", L".bmp"}));
+
+        auto& file = co_await picker.PickSaveFileAsync();
+        if (file != nullptr)
+        {
+            std::ifstream fileReader(file.Path().c_str());
+            std::string text((std::istreambuf_iterator<char>(fileReader)), std::istreambuf_iterator<char>());
+            winrt::hstring hText = winrt::to_hstring(text);
+
+            co_return hText;
+        }
+        else
+        {
+            // error handling;
+        }
+    }
+
+    Windows::Foundation::IAsyncOperation<hstring> MainWindow::BigButtonClick_OpenPicker(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
     {
         auto id = AppWindow().Id();
         winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ id };

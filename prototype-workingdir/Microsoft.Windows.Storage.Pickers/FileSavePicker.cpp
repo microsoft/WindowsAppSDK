@@ -119,7 +119,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         if (!PickerCommon::IsHStringNullOrEmpty(defaultFileExtension))
         {
-            check_hresult(dialog->SetDefaultExtension(defaultFileExtension.c_str()));
+            // the default extension has a ".", like ".txt". remove the "." (a.k.a "txt") then set it to the dialog
+            //      otherwise, the diaplayed file name would have two "."
+            check_hresult(dialog->SetDefaultExtension(defaultFileExtension.c_str() + 1));
+        }
+        else
+        {
+            check_hresult(dialog->SetDefaultExtension(L""));
         }
 
         if (!PickerCommon::IsHStringNullOrEmpty(suggestedFileName))
@@ -154,20 +160,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         wil::unique_cotaskmem_string fileName;
         check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
-
-        // Check if the file name has an extension
-        if ((fileNameStr.find_last_of(L".") == std::wstring::npos) && (fileTypeChoices.Size() > 0))
-        {
-            // If the user defined file name doesn't have an extension,
-            //     automatically use the first extension from the first category in fileTypeChoices.
-            auto firstCategory = fileTypeChoices.First().Current();
-            auto value = firstCategory.Value();
-            if (value.Size() > 0)
-            {
-                auto firstExtension = value.GetAt(0);
-                pathStr = pathStr + firstExtension;
-            }
-        }
 
         // Create a file. If the file already exists,
         // since common item dialog prompts to let user select cancel or override, thus we can safely truncate here.
