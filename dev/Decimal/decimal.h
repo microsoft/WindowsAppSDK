@@ -28,6 +28,11 @@ public:
         m_decimal = DECIMAL{};
     }
 
+    decimal(const DECIMAL& value) :
+        m_decimal(value)
+    {
+    }
+
     decimal(bool value)
     {
         // VARIANT_TRUE is weird by today's standards:
@@ -155,6 +160,15 @@ public:
         return *this;
     }
 
+    decimal& operator=(const DECIMAL& value)
+    {
+        if (&value != &m_decimal)
+        {
+            m_decimal = value;
+        }
+        return *this;
+    }
+
     decimal& operator=(bool value)
     {
         // VARIANT_TRUE is weird by today's standards:
@@ -259,6 +273,12 @@ public:
         return operator=(value.c_str());
     }
 #endif // defined(WINRT_BASE_H)
+
+    const DECIMAL& to_decimal() const
+    {
+        // Treat all values != 0 as true (good)
+        return m_decimal;
+    }
 
     bool to_bool() const
     {
@@ -406,10 +426,15 @@ public:
 
     int compare(const decimal& value) const
     {
+        return compare(value.m_decimal);
+    }
+
+    int compare(const DECIMAL& value) const
+    {
         static_assert(VARCMP_LT == 0, "VARCMP_LT == 0");
         static_assert(VARCMP_EQ == 1, "VARCMP_EQ == 1");
         static_assert(VARCMP_GT == 2, "VARCMP_GT == 2");
-        return ::VarDecCmp(const_cast<DECIMAL*>(&m_decimal), const_cast<DECIMAL*>(&value.m_decimal)) - 1;
+        return ::VarDecCmp(const_cast<DECIMAL*>(&m_decimal), const_cast<DECIMAL*>(&value)) - 1;
     }
 
     decimal operator+() const
@@ -539,40 +564,8 @@ public:
         THROW_IF_FAILED(::VarDecRound(const_cast<DECIMAL*>(&m_decimal), decimalPlaces, &value.m_decimal));
         return value;
     }
-private:
-    decimal(const DECIMAL& value) :
-        m_decimal(value)
-    {
-    }
 
 private:
     DECIMAL m_decimal{};
 };
 }
-
-/*
-inline Microsoft::Windows::Foundation::decimal operator+(const Microsoft::Windows::Foundation::decimal& left, const Microsoft::Windows::Foundation::decimal& right)
-{
-    return left.operator+(right);
-}
-
-inline Microsoft::Windows::Foundation::decimal operator-(const Microsoft::Windows::Foundation::decimal& left, const Microsoft::Windows::Foundation::decimal& right)
-{
-    return left.operator+(right);
-}
-
-inline Microsoft::Windows::Foundation::decimal operator*(const Microsoft::Windows::Foundation::decimal& left, const Microsoft::Windows::Foundation::decimal& right)
-{
-    return left.operator+(right);
-}
-
-inline Microsoft::Windows::Foundation::decimal operator/(const Microsoft::Windows::Foundation::decimal& left, const Microsoft::Windows::Foundation::decimal& right)
-{
-    return left.operator+(right);
-}
-
-inline Microsoft::Windows::Foundation::decimal operator%(const Microsoft::Windows::Foundation::decimal& left, const Microsoft::Windows::Foundation::decimal& right)
-{
-    return left.operator+(right);
-}
-*/

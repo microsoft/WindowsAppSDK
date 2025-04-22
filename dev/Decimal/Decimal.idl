@@ -9,10 +9,87 @@ namespace Microsoft.Windows.Foundation
     apicontract DecimalContract{};
 
     [contract(DecimalContract, 1)]
+    struct DecimalValue
+    {
+        UInt16 Reserved;
+        UInt8 Scale;
+        UInt8 Sign;
+        UInt32 Hi32;
+        UInt64 Lo64;
+    };
+
+    [contract(DecimalContract, 1)]
     runtimeclass Decimal : Windows.Foundation.IStringable
     {
         Decimal();
+        //Decimal(Decimal value);
+
+        static Decimal CreateFromBoolean(Boolean value);
+        static Decimal CreateFromInt16(Int16 value);
+        static Decimal CreateFromInt32(Int32 value);
+        static Decimal CreateFromInt64(Int64 value);
+        static Decimal CreateFromUInt8(UInt8 value);
+        static Decimal CreateFromUInt16(UInt16 value);
+        static Decimal CreateFromUInt32(UInt32 value);
+        static Decimal CreateFromUInt64(UInt64 value);
+        static Decimal CreateFromSingle(Single value);
+        static Decimal CreateFromDouble(Double value);
+        static Decimal CreateFromString(String value);
+        static Decimal CreateFromStringWithDefaultSystemLocale(String value);
+        static Decimal CreateFromStringWithThreadLocale(String value);
+        static Decimal Create(IInspectable value);
+        static Decimal CreateFromDecimalValue(DecimalValue value);
+
+        void SetFromBoolean(Boolean value);
+        void SetFromInt16(Int16 value);
+        void SetFromInt32(Int32 value);
+        void SetFromInt64(Int64 value);
+        void SetFromUInt8(UInt8 value);
+        void SetFromUInt16(UInt16 value);
+        void SetFromUInt32(UInt32 value);
+        void SetFromUInt64(UInt64 value);
+        void SetFromSingle(Single value);
+        void SetFromDouble(Double value);
+        void SetFromString(String value);
+        void SetFromStringWithDefaultSystemLocale(String value);
+        void SetFromStringWithThreadLocale(String value);
+        void Set(IInspectable value);
+        void SetFromDecimalValue(DecimalValue value);
+
+        Boolean ToBoolean();
+        Int16 ToInt16();
+        Int32 ToInt32();
+        Int64 ToInt64();
+        UInt8 ToUInt8();
+        UInt16 ToUInt16();
+        UInt32 ToUInt32();
+        UInt64 ToUInt64();
+        Single ToSingle();
+        Double ToDouble();
+        //String ToString(); inherited from IStringable
+        String ToStringWithDefaultSystemLocale();
+        String ToStringWithThreadLocale();
+        IInspectable ToObject();
+        DecimalValue ToDecimalValue();
+
+        Int32 Compare(Decimal value);
+
+        Decimal Negate();
 
         Decimal Abs();
+
+        /// Return the value's integer portion (zero to the right of the decimal point).
+        Decimal Fix();
+
+        /// Return the value rounded down to the nearest integer.
+        Decimal Integer();
+
+        Decimal Round(Int32 decimalPlaces);
+
+        Decimal Add(Decimal value);
+        Decimal Sub(Decimal value); //TODO Subtract() ?
+        Decimal Mul(Decimal value); //TODO Multiply() ?
+        Decimal Div(Decimal value); //TODO Divide() ?
+        Decimal Mod(Decimal value); //TODO Modulo() or Remainder() ?
     }
 }
