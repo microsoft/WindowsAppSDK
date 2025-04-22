@@ -76,6 +76,14 @@ HRESULT MddBootstrapInitialize_ShowUI_OnNoMatch(
 
 static std::mutex g_initializationLock;
 
+enum class UsingWin11Support
+{
+    Unknown = 0,
+    Yes,
+    No,
+};
+static UsingWin11Support g_usingWin11Support{ UsingWin11Support::Unknown };
+
 static IDynamicDependencyLifetimeManager* g_lifetimeManager{};
 static wil::unique_event g_endTheLifetimeManagerEvent;
 static wil::unique_hmodule g_windowsAppRuntimeDll;
@@ -235,7 +243,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
     if (initializationCount == 1)
     {
         // Last one out turn out the lights...
-        if (g_packageDependencyContext && (MddCore::Win11::IsSupported() || g_windowsAppRuntimeDll))
+        if (g_packageDependencyContext)
         {
             MddRemovePackageDependency(g_packageDependencyContext);
             g_packageDependencyContext = nullptr;
@@ -251,7 +259,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
             g_endTheLifetimeManagerEvent.reset();
         }
 
-        HRESULT hrLifetimeManagerShutdown = S_OK;
+        HRESULT hrLifetimeManagerShutdown{};
         if (g_lifetimeManager)
         {
             hrLifetimeManagerShutdown = g_lifetimeManager->Shutdown();
@@ -260,6 +268,8 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
             g_lifetimeManager->Release();
             g_lifetimeManager = nullptr;
         }
+
+        g_usingWin11Support = UsingWin11Support::Unknown;
     }
 
     if (activityContext.GetShutdownActivity().IsRunning())
@@ -312,9 +322,9 @@ void VerifyInitializationIsCompatible(
     // g_lifetimeManager is optional. Don't check it
     // g_endTheLifetimeManagerEvent is optional. Don't check it
     // g_windowsAppRuntimeDll is only relevant if not delegating to OS APIs
-    FAIL_FAST_HR_IF(E_UNEXPECTED, !MddCore::Win11::IsSupported() && (g_windowsAppRuntimeDll == nullptr));
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId == nullptr);
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext == nullptr);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, (g_usingWin11Support == UsingWin11Support::No) && (g_windowsAppRuntimeDll == nullptr));
 
     // Verify the parameter(s)
     // NOTE: GetFrameworkPackageFamilyName() verifies the resulting package family name is valid.
@@ -363,8 +373,9 @@ void FirstTimeInitialization(
     // Make a copy of the versionTag in preparation of succcess
     const std::wstring packageVersionTag{ !versionTag ? L"" : versionTag };
 
-    // Use the Win11 APIs if available (instead of WinAppSDK's implementation)
-    if (MddCore::Win11::IsSupported())
+    // Use the Win11 APIs (instead of WinAppSDK's implementation) if target WinAppSDK >=1.7 and Win11 APIs are available
+    const UINT32 minVersionToUseWin11Support{ 0x00010007 };
+    if ((majorMinorVersion >= minVersionToUseWin11Support) && MddCore::Win11::IsSupported())
     {
         // Add the framework package to the package graph
         const std::wstring frameworkPackageFamilyName{ GetFrameworkPackageFamilyName(majorMinorVersion, packageVersionTag.c_str()) };
@@ -394,6 +405,8 @@ void FirstTimeInitialization(
         }
 
         // Track our initialized state
+        g_usingWin11Support = UsingWin11Support::Yes;
+        //
         g_packageDependencyId = std::move(packageDependencyId);
         g_packageDependencyContext = packageDependencyContext;
         //
@@ -466,6 +479,8 @@ void FirstTimeInitialization(
         }
 
         // Track our initialized state
+        g_usingWin11Support = UsingWin11Support::No;
+        //
         g_lifetimeManager = lifetimeManager.detach();
         g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
         g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);

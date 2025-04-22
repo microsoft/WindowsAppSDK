@@ -12,7 +12,11 @@ variables:
 
 jobs:
 - job: Localization
-  pool: 'ProjectReunionESPool'
+  pool:
+    type: windows
+    isCustom: true
+    name: 'ProjectReunionESPool-2022'
+    demands: ImageOverride -equals MMS2022
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-CallTouchDownBuild-Steps.yml
     parameters:
