@@ -19,15 +19,32 @@ parameters:
   default: x64
 
 jobs:
+- job: FilterMatrix
+  steps:
+  - powershell: |
+      $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
+      $targetPlatform = "${{ parameters.buildPlatform }}"
+      $filteredMatrix = @{}
+      foreach ($entry in $testMatrix.PSObject.Properties) {
+        if ($entry.Value.buildPlatform -eq $targetPlatform) {
+            $filteredMatrix[$entry.Name] = $entry.Value
+        }
+      }
+      $filteredMatrixJson = $filteredMatrix | ConvertTo-Json -Compress
+      Write-Host "##vso[task.setvariable variable=filteredMatrixJson;isOutput=true]$filteredMatrixJson"
+    name: setFilteredMatrixStep
+  - script: echo $(setFilteredMatrixStep.filteredMatrixJson)
+    name: echoMatrix
+
 - job: ${{ parameters.jobName }}
+  dependsOn: FilterMatrix
   strategy:
-    matrix: ${{ parameters.testMatrix }}
+    matrix: $[ dependencies.A.outputs['setFilteredMatrixStep.filteredMatrixJson'] ]
   pool:
     type: windows
     isCustom: true
     name: $(poolName)
     demands: ImageOverride -equals $(imageName)
-  condition: and(succeeded(), eq(variables['buildPlatform'], '${{ parameters.buildPlatform }}'))
   timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)

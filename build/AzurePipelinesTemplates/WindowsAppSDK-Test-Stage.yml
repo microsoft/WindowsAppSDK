@@ -8,7 +8,7 @@ stages:
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests
-      testMatrix: $[ variables.PipelineTests ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+      testMatrix: ${{ variables.PipelineTests }} # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       buildPlatform: x86
 
 - stage: Test_x64
@@ -20,7 +20,7 @@ stages:
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests
-      testMatrix: $[ variables.PipelineTests ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+      testMatrix: ${{ variables.PipelineTests }} # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       buildPlatform: x64
 
 - stage: Test_arm64
@@ -32,5 +32,5 @@ stages:
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests
-      testMatrix: $[ variables.PipelineTests ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+      testMatrix: ${{ variables.PipelineTests }} # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       buildPlatform: arm64
