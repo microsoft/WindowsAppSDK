@@ -22,7 +22,7 @@ jobs:
 - job: FilterMatrix
   steps:
   - powershell: |
-      Write-Host "${{ parameters.testMatrix }}"
+      Write-Host "This is ${{ parameters.testMatrix }}"
       $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
       $targetPlatform = "${{ parameters.buildPlatform }}"
       $filteredMatrix = @{}
@@ -32,7 +32,6 @@ jobs:
         }
       }
       $filteredMatrixJson = $filteredMatrix | ConvertTo-Json -Compress
-      Write-Host $filteredMatrixJson
       Write-Host "##vso[task.setvariable variable=filteredMatrixJson;isOutput=true]$filteredMatrixJson"
     name: setFilteredMatrixStep
   - script: echo $(setFilteredMatrixStep.filteredMatrixJson)
