@@ -42,4 +42,3 @@
 #include <winrt/Microsoft.Windows.System.Power.h>
 
 #include <WindowsAppRuntime.Test.Bootstrap.h>
-namespace TP = ::Test::Packages;
