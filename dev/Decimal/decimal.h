@@ -109,7 +109,7 @@ public:
 
     decimal(PCWSTR value)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value, GetThreadLocale(), 0, &m_decimal));
+        THROW_IF_FAILED(::VarDecFromStr(value, LOCALE_INVARIANT, 0, &m_decimal));
     }
 
     decimal(PCWSTR value, const LCID locale)
@@ -119,7 +119,7 @@ public:
 
     decimal(const std::wstring& value)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), GetThreadLocale(), 0, &m_decimal));
+        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), LOCALE_INVARIANT, 0, &m_decimal));
     }
 
     decimal(const std::wstring& value, const LCID locale)
@@ -130,7 +130,7 @@ public:
 #if defined(WINRT_BASE_H)
     decimal(const winrt::hstring& value)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), GetThreadLocale(), 0, &m_decimal));
+        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), LOCALE_INVARIANT, 0, &m_decimal));
     }
 #endif // defined(WINRT_BASE_H)
 
@@ -258,7 +258,7 @@ public:
 
     decimal& operator=(PCWSTR value)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value, GetThreadLocale(), 0, &m_decimal));
+        THROW_IF_FAILED(::VarDecFromStr(value, LOCALE_INVARIANT, 0, &m_decimal));
         return *this;
     }
 
@@ -368,7 +368,7 @@ public:
 
     std::wstring to_string() const
     {
-        return to_string(GetThreadLocale());
+        return to_string(LOCALE_INVARIANT);
     }
 
     std::wstring to_string(const LCID locale) const
@@ -381,7 +381,7 @@ public:
 #if defined(WINRT_BASE_H)
     winrt::hstring to_hstring() const
     {
-        return to_hstring(GetThreadLocale());
+        return to_hstring(LOCALE_INVARIANT);
     }
 #endif // defined(WINRT_BASE_H)
 

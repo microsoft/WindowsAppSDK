@@ -52,15 +52,23 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     }
     winrt::Microsoft::Windows::Foundation::Decimal Decimal::CreateFromString(hstring const& value)
     {
-        throw hresult_not_implemented();
+        return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(::Microsoft::Windows::Foundation::decimal(value));
     }
-    winrt::Microsoft::Windows::Foundation::Decimal Decimal::CreateFromStringWithDefaultSystemLocale(hstring const& value)
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::CreateFromStringWithSystemDefaultLocale(hstring const& value)
     {
-        throw hresult_not_implemented();
+        return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(::Microsoft::Windows::Foundation::decimal(value, LOCALE_SYSTEM_DEFAULT));
+    }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::CreateFromStringWithUserDefaultLocale(hstring const& value)
+    {
+        return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(::Microsoft::Windows::Foundation::decimal(value, LOCALE_USER_DEFAULT));
     }
     winrt::Microsoft::Windows::Foundation::Decimal Decimal::CreateFromStringWithThreadLocale(hstring const& value)
     {
-        throw hresult_not_implemented();
+        return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(::Microsoft::Windows::Foundation::decimal(value, GetThreadLocale()));
+    }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::CreateFromStringWithInvariantLocale(hstring const& value)
+    {
+        return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(::Microsoft::Windows::Foundation::decimal(value, LOCALE_INVARIANT));
     }
     winrt::Microsoft::Windows::Foundation::Decimal Decimal::Create(winrt::Windows::Foundation::IInspectable const& value)
     {
@@ -112,15 +120,28 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     }
     void Decimal::SetFromString(hstring const& value)
     {
-        throw hresult_not_implemented();
+        ::Microsoft::Windows::Foundation::decimal decimal{ value };
+        m_decimal = decimal;
     }
-    void Decimal::SetFromStringWithDefaultSystemLocale(hstring const& value)
+    void Decimal::SetFromStringWithSystemDefaultLocale(hstring const& value)
     {
-        throw hresult_not_implemented();
+        ::Microsoft::Windows::Foundation::decimal decimal(value, LOCALE_SYSTEM_DEFAULT);
+        m_decimal = decimal;
+    }
+    void Decimal::SetFromStringWithUserDefaultLocale(hstring const& value)
+    {
+        ::Microsoft::Windows::Foundation::decimal decimal(value, LOCALE_USER_DEFAULT);
+        m_decimal = decimal;
     }
     void Decimal::SetFromStringWithThreadLocale(hstring const& value)
     {
-        throw hresult_not_implemented();
+        ::Microsoft::Windows::Foundation::decimal decimal(value, GetThreadLocale());
+        m_decimal = decimal;
+    }
+    void Decimal::SetFromStringWithInvariantLocale(hstring const& value)
+    {
+        ::Microsoft::Windows::Foundation::decimal decimal(value, LOCALE_INVARIANT);
+        m_decimal = decimal;
     }
     void Decimal::Set(winrt::Windows::Foundation::IInspectable const& value)
     {
@@ -171,13 +192,21 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return m_decimal.to_double();
     }
-    hstring Decimal::ToStringWithDefaultSystemLocale()
+    hstring Decimal::ToStringWithSystemDefaultLocale()
     {
-        throw hresult_not_implemented();
+        return m_decimal.to_hstring(LOCALE_SYSTEM_DEFAULT);
+    }
+    hstring Decimal::ToStringWithUserDefaultLocale()
+    {
+        return m_decimal.to_hstring(LOCALE_USER_DEFAULT);
     }
     hstring Decimal::ToStringWithThreadLocale()
     {
-        throw hresult_not_implemented();
+        return m_decimal.to_hstring(GetThreadLocale());
+    }
+    hstring Decimal::ToStringWithInvariantLocale()
+    {
+        return m_decimal.to_hstring(LOCALE_INVARIANT);
     }
     winrt::Windows::Foundation::IInspectable Decimal::ToObject()
     {
@@ -234,6 +263,6 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     }
     hstring Decimal::ToString()
     {
-        throw hresult_not_implemented();
+        return m_decimal.to_hstring();
     }
 }

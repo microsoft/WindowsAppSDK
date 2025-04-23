@@ -54,8 +54,10 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromSingle(float value);
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromDouble(double value);
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromString(hstring const& value);
-        static winrt::Microsoft::Windows::Foundation::Decimal CreateFromStringWithDefaultSystemLocale(hstring const& value);
+        static winrt::Microsoft::Windows::Foundation::Decimal CreateFromStringWithSystemDefaultLocale(hstring const& value);
+        static winrt::Microsoft::Windows::Foundation::Decimal CreateFromStringWithUserDefaultLocale(hstring const& value);
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromStringWithThreadLocale(hstring const& value);
+        static winrt::Microsoft::Windows::Foundation::Decimal CreateFromStringWithInvariantLocale(hstring const& value);
         static winrt::Microsoft::Windows::Foundation::Decimal Create(winrt::Windows::Foundation::IInspectable const& value);
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromDecimalValue(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         void SetFromBoolean(bool value);
@@ -69,8 +71,10 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         void SetFromSingle(float value);
         void SetFromDouble(double value);
         void SetFromString(hstring const& value);
-        void SetFromStringWithDefaultSystemLocale(hstring const& value);
+        void SetFromStringWithSystemDefaultLocale(hstring const& value);
+        void SetFromStringWithUserDefaultLocale(hstring const& value);
         void SetFromStringWithThreadLocale(hstring const& value);
+        void SetFromStringWithInvariantLocale(hstring const& value);
         void Set(winrt::Windows::Foundation::IInspectable const& value);
         void SetFromDecimalValue(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         bool ToBoolean();
@@ -83,8 +87,10 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         uint64_t ToUInt64();
         float ToSingle();
         double ToDouble();
-        hstring ToStringWithDefaultSystemLocale();
+        hstring ToStringWithSystemDefaultLocale();
+        hstring ToStringWithUserDefaultLocale();
         hstring ToStringWithThreadLocale();
+        hstring ToStringWithInvariantLocale();
         winrt::Windows::Foundation::IInspectable ToObject();
         winrt::Microsoft::Windows::Foundation::DecimalValue ToDecimalValue();
         int32_t Compare(winrt::Microsoft::Windows::Foundation::Decimal const& value);

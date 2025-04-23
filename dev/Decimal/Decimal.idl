@@ -34,9 +34,11 @@ namespace Microsoft.Windows.Foundation
         static Decimal CreateFromUInt64(UInt64 value);
         static Decimal CreateFromSingle(Single value);
         static Decimal CreateFromDouble(Double value);
-        static Decimal CreateFromString(String value);
-        static Decimal CreateFromStringWithDefaultSystemLocale(String value);
-        static Decimal CreateFromStringWithThreadLocale(String value);
+        static Decimal CreateFromString(String value);                          // LCID=LOCALE_INVARIANT
+        static Decimal CreateFromStringWithSystemDefaultLocale(String value);   // LCID=GetSystemDefaultLCID()
+        static Decimal CreateFromStringWithUserDefaultLocale(String value);     // LCID=GetUserDefaultLCID()
+        static Decimal CreateFromStringWithThreadLocale(String value);          // LCID=GetThreadLocale()
+        static Decimal CreateFromStringWithInvariantLocale(String value);       // LCID=LOCALE_INVARIANT
         static Decimal Create(IInspectable value);
         static Decimal CreateFromDecimalValue(DecimalValue value);
 
@@ -50,9 +52,11 @@ namespace Microsoft.Windows.Foundation
         void SetFromUInt64(UInt64 value);
         void SetFromSingle(Single value);
         void SetFromDouble(Double value);
-        void SetFromString(String value);
-        void SetFromStringWithDefaultSystemLocale(String value);
-        void SetFromStringWithThreadLocale(String value);
+        void SetFromString(String value);                           // LCID=LOCALE_INVARIANT
+        void SetFromStringWithSystemDefaultLocale(String value);    // LCID=GetSystemDefaultLCID()
+        void SetFromStringWithUserDefaultLocale(String value);      // LCID=GetUserDefaultLCID()
+        void SetFromStringWithThreadLocale(String value);           // LCID=GetThreadLocale()
+        void SetFromStringWithInvariantLocale(String value);        // LCID=LOCALE_INVARIANT
         void Set(IInspectable value);
         void SetFromDecimalValue(DecimalValue value);
 
@@ -66,9 +70,11 @@ namespace Microsoft.Windows.Foundation
         UInt64 ToUInt64();
         Single ToSingle();
         Double ToDouble();
-        //String ToString(); inherited from IStringable
-        String ToStringWithDefaultSystemLocale();
-        String ToStringWithThreadLocale();
+        //String ToString(); inherited from IStringable     // LCID=LOCALE_INVARIANT
+        String ToStringWithSystemDefaultLocale();           // LCID=GetSystemDefaultLCID()
+        String ToStringWithUserDefaultLocale();             // LCID=GetUserDefaultLCID()
+        String ToStringWithThreadLocale();                  // LCID=GetThreadLocale()
+        String ToStringWithInvariantLocale();               // LCID=LOCALE_INVARIANT
         IInspectable ToObject();
         DecimalValue ToDecimalValue();
 

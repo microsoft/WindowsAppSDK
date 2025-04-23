@@ -295,16 +295,55 @@ namespace Test::Decimal::Tests
             VERIFY_ARE_EQUAL(data, to2);
         }
 
-        TEST_METHOD(ctor_to_assign_string_lcid)
+        TEST_METHOD(ctor_to_assign_string_lcid_system_default)
         {
             const winrt::hstring data{ L"-12.345" };
-            Microsoft::Windows::Foundation::decimal object(data, GetSystemDefaultLCID());
-            const auto to{ object.to_hstring(GetSystemDefaultLCID()) };
+            Microsoft::Windows::Foundation::decimal object(data, LOCALE_SYSTEM_DEFAULT);
+            const auto to{ object.to_hstring(LOCALE_SYSTEM_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to2{ object.to_hstring(GetSystemDefaultLCID()) };
+            const auto to2{ object.to_hstring(LOCALE_SYSTEM_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+
+        TEST_METHOD(ctor_to_assign_string_lcid_user_default)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, LOCALE_USER_DEFAULT);
+            const auto to{ object.to_hstring(LOCALE_USER_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring(LOCALE_USER_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+
+        TEST_METHOD(ctor_to_assign_string_lcid_thread)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, GetThreadLocale());
+            const auto to{ object.to_hstring(GetThreadLocale()) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring(GetThreadLocale()) };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+
+        TEST_METHOD(ctor_to_assign_string_lcid_invariant)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, LOCALE_INVARIANT);
+            const auto to{ object.to_hstring(LOCALE_INVARIANT) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring(LOCALE_INVARIANT) };
             VERIFY_ARE_EQUAL(data, to2);
         }
 
@@ -324,16 +363,61 @@ namespace Test::Decimal::Tests
 #endif // defined(WINRT_BASE_H)
 
 #if defined(WINRT_BASE_H)
-        TEST_METHOD(ctor_to_assign_hstring_lcid)
+        TEST_METHOD(ctor_to_assign_hstring_lcid_system_default)
         {
             const winrt::hstring data{ L"-12.345" };
-            Microsoft::Windows::Foundation::decimal object(data, GetSystemDefaultLCID());
-            const auto to{ object.to_hstring(GetSystemDefaultLCID()) };
+            Microsoft::Windows::Foundation::decimal object(data, LOCALE_SYSTEM_DEFAULT);
+            const auto to{ object.to_hstring(LOCALE_SYSTEM_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to2{ object.to_hstring(GetSystemDefaultLCID()) };
+            const auto to2{ object.to_hstring(LOCALE_SYSTEM_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+#endif // defined(WINRT_BASE_H)
+
+#if defined(WINRT_BASE_H)
+        TEST_METHOD(ctor_to_assign_hstring_lcid_user_default)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, LOCALE_USER_DEFAULT);
+            const auto to{ object.to_hstring(LOCALE_USER_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring(LOCALE_USER_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+#endif // defined(WINRT_BASE_H)
+
+#if defined(WINRT_BASE_H)
+        TEST_METHOD(ctor_to_assign_hstring_lcid_thread)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, GetThreadLocale());
+            const auto to{ object.to_hstring(GetThreadLocale()) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring(GetThreadLocale()) };
+            VERIFY_ARE_EQUAL(data, to2);
+        }
+#endif // defined(WINRT_BASE_H)
+
+#if defined(WINRT_BASE_H)
+        TEST_METHOD(ctor_to_assign_hstring_lcid_invariant)
+        {
+            const winrt::hstring data{ L"-12.345" };
+            Microsoft::Windows::Foundation::decimal object(data, LOCALE_INVARIANT);
+            const auto to{ object.to_hstring(LOCALE_INVARIANT) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_hstring(LOCALE_INVARIANT) };
             VERIFY_ARE_EQUAL(data, to2);
         }
 #endif // defined(WINRT_BASE_H)
