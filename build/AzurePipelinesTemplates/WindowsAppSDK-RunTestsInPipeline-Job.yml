@@ -19,11 +19,17 @@ parameters:
   default: x64
 
 jobs:
+- job: echoParam
+  steps:
+  - scirpt: echo "${{ convertToJson(parameters) }}"
+
 - job: FilterMatrix
   steps:
   - powershell: |
+      Write-Host "This is ${{ parameters.testMatrix }}"       // This is 
       $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
       $targetPlatform = "${{ parameters.buildPlatform }}"
+      Write-Host "That is ${{ parameters.buildPlatform }}"    // That is x86
       $filteredMatrix = @{}
       foreach ($entry in $testMatrix.PSObject.Properties) {
         if ($entry.Value.buildPlatform -eq $targetPlatform) {
