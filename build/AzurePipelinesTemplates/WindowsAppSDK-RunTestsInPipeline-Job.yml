@@ -16,6 +16,9 @@ parameters:
   default: ''
 
 jobs:
+- job: echoParam
+  steps:
+    - script: echo "${{ convertToJson(parameters) }}"
 - job: ${{ parameters.jobName }}
   strategy:
     matrix: ${{ parameters.testMatrix }}

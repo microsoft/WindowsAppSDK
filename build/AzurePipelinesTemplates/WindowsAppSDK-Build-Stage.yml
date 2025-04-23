@@ -10,7 +10,7 @@ parameters:
   default: true
 
 stages:
-- stage: Build
+- stage: Verify_Copyright_Headers_and_Build_anycpu
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
@@ -29,82 +29,6 @@ stages:
       inputs:
         targetType: filePath
         filePath: tools\VerifyCopyrightHeaders.ps1
-
-  - job: BuildFoundation
-    pool:
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
-    timeoutInMinutes: 120
-    strategy:
-      maxParallel: 10
-      matrix:
-        Release_x86:
-          buildPlatform: 'x86'
-          buildConfiguration: 'release'
-          normalizedConfiguration: 'fre'
-          PGOBuildMode: 'Optimize'
-        Release_x64:
-          buildPlatform: 'x64'
-          buildConfiguration: 'release'
-          normalizedConfiguration: 'fre'
-          PGOBuildMode: 'Optimize'
-        Release_Arm64:
-          buildPlatform: 'arm64'
-          buildConfiguration: 'release'
-          normalizedConfiguration: 'fre'
-    variables:
-      - name: ob_outputDirectory
-        value: '$(REPOROOT)\out'
-      - name: ob_sdl_codeSignValidation_excludes
-        value: '-|**\Release\**;-|**\packages\**'
-      - name: ob_artifactBaseName
-        value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
-      - name: ob_sdl_apiscan_enabled
-        ${{ if parameters.runStaticAnalysis }}:
-          value: true
-        ${{ else }}:
-          value: false
-      - name: ob_sdl_apiscan_softwareFolder
-        value: '$(build.SourcesDirectory)\APIScanTarget'
-      - name: ob_sdl_apiscan_symbolsFolder
-        value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKConfigSourceBranch
-      - name: localCompilerOverridePackageName
-        value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
-      - name: localCompilerOverridePackageVersion
-        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
-      - name: localCompilerOverrideNupkgVersion
-        value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
-    steps:
-    - script: |
-        echo Build.SourceBranch=$(Build.SourceBranch)
-        echo Build.Reason=$(Build.Reason)
-        echo compilerOverridePackageName=$(compilerOverridePackageName)
-        echo compilerOverridePackageVersion=$(compilerOverridePackageVersion)
-        echo global_CompilerOverridePackageName=$(global_CompilerOverridePackageName)
-        echo global_CompilerOverridePackageVersion=$(global_CompilerOverridePackageVersion)
-        echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
-        echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
-        echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
-        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
-        echo mySourceBranch=$(mySourceBranch)        
-
-    - template: WindowsAppSDK-BuildFoundation-Steps.yml@self
-      parameters:
-        SignOutput: ${{ parameters.SignOutput }}
-        IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
-
-    # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
-    # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
-    # requisite of isNative=true isn't met currently.
-    - script: |
-        md "C:\__t\NativeCompilerPrefast"
-      displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
 
   - job: BuildFoundation_release_anycpu
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
@@ -140,81 +64,20 @@ stages:
         md "C:\__t\NativeCompilerPrefast"
       displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
 
-  - job: BuildMRT
-    pool:
-      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
-    timeoutInMinutes: 120
-    strategy:
-      maxParallel: 10
-      matrix:
-        Release_x86:
-          buildPlatform: 'x86'
-          buildConfiguration: 'Release'
-          normalizedConfiguration: 'fre'
-          PGOBuildMode: 'Optimize'
-        Release_x64:
-          buildPlatform: 'x64'
-          buildConfiguration: 'Release'
-          normalizedConfiguration: 'fre'
-          PGOBuildMode: 'Optimize'
-        Release_Arm64:
-          buildPlatform: 'arm64'
-          buildConfiguration: 'Release'
-          normalizedConfiguration: 'fre'
-    variables:
-      - name: ob_outputDirectory
-        value: '$(REPOROOT)\out'
-      - name: ob_sdl_codeSignValidation_excludes
-        value: '-|**\Release\**'
-      - name: ob_sdl_suppression_suppressionSet
-        value: default
-      - name: ob_artifactBaseName
-        value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
-      - name: ob_sdl_apiscan_enabled
-        ${{ if parameters.runStaticAnalysis }}:
-          value: true
-        ${{ else }}:
-          value: false
-      - name: ob_sdl_apiscan_softwareFolder
-        value: '$(build.SourcesDirectory)\APIScanTarget'
-      - name: ob_sdl_apiscan_symbolsFolder
-        value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKConfigSourceBranch
-      - name: localCompilerOverridePackageName
-        value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
-      - name: localCompilerOverridePackageVersion
-        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
-      - name: localCompilerOverrideNupkgVersion
-        value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
-    steps:
-    - script: |
-        echo Build.SourceBranch=$(Build.SourceBranch)
-        echo Build.Reason=$(Build.Reason)
-        echo compilerOverridePackageName=$(compilerOverridePackageName)
-        echo compilerOverridePackageVersion=$(compilerOverridePackageVersion)
-        echo global_CompilerOverridePackageName=$(global_CompilerOverridePackageName)
-        echo global_CompilerOverridePackageVersion=$(global_CompilerOverridePackageVersion)
-        echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
-        echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
-        echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
-        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
-        echo mySourceBranch=$(mySourceBranch)        
+- template: WindowsAppSDK-Build-Stage-Per-Platform.yml@self
+  parameters:
+    SignOutput: ${{ parameters.SignOutput }}
+    IsOneBranch: ${{ parameters.IsOneBranch }}
+    BuildPlatform: x86
 
-    - template: WindowsAppSDK-BuildMRT-Steps.yml@self
-      parameters:
-        SignOutput: ${{ parameters.SignOutput }}
-        IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+- template: WindowsAppSDK-Build-Stage-Per-Platform.yml@self
+  parameters:
+    SignOutput: ${{ parameters.SignOutput }}
+    IsOneBranch: ${{ parameters.IsOneBranch }}
+    BuildPlatform: x64
 
-    # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
-    # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
-    # requisite of isNative=true isn't met currently.
-    - script: |
-        md "C:\__t\NativeCompilerPrefast"
-      displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
+- template: WindowsAppSDK-Build-Stage-Per-Platform.yml@self
+  parameters:
+    SignOutput: ${{ parameters.SignOutput }}
+    IsOneBranch: ${{ parameters.IsOneBranch }}
+    BuildPlatform: arm64
