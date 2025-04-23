@@ -14,14 +14,34 @@ parameters:
 - name: testMatrix
   type: object
   default: ''
+- name: buildPlatform
+  type: string
+  default: x64
 
 jobs:
-- job: echoParam
+- job: FilterMatrix
   steps:
-    - script: echo "${{ convertToJson(parameters) }}"
+  - powershell: |
+      Write-Host "This is ${{ convertToJson(parameters.testMatrix) }}"       // This is 
+      $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
+      $targetPlatform = "${{ parameters.buildPlatform }}"
+      Write-Host "That is ${{ parameters.buildPlatform }}"    // That is x86
+      $filteredMatrix = @{}
+      foreach ($entry in $testMatrix.PSObject.Properties) {
+        if ($entry.Value.buildPlatform -eq $targetPlatform) {
+            $filteredMatrix[$entry.Name] = $entry.Value
+        }
+      }
+      $filteredMatrixJson = $filteredMatrix | ConvertTo-Json -Compress
+      Write-Host "##vso[task.setvariable variable=filteredMatrixJson;isOutput=true]$filteredMatrixJson"
+    name: setFilteredMatrixStep
+  - script: echo $(setFilteredMatrixStep.filteredMatrixJson)
+    name: echoMatrix
+
 # - job: ${{ parameters.jobName }}
+#   dependsOn: FilterMatrix
 #   strategy:
-#     matrix: ${{ parameters.testMatrix }}
+#     matrix: $[ dependencies.FilterMatrix.outputs['setFilteredMatrixStep.filteredMatrixJson'] ]
 #   pool:
 #     type: windows
 #     isCustom: true
