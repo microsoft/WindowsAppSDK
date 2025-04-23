@@ -104,3 +104,5 @@ extends:
         SignOutput: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+      parameters:
+        testMatrix: ${{ variables.PipelineTests }}
