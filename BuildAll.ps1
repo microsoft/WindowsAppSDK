@@ -409,7 +409,7 @@ Try {
         build\scripts\CopyContents.ps1 `
             -SourceDir "$PSScriptRoot\$BasePath" `
             -ContentsList @('lib') `
-            -Exclude @('*.winmd', '*.pdb') `
+            -Exclude @('*.winmd', '*.pdb', '*.lib') `
             -TargetDir $ComponentBasePath
 
         build\scripts\CopyContents.ps1 `
@@ -420,6 +420,10 @@ Try {
 
         foreach($platformToRun in $platform.Split(","))
         {
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$PSScriptRoot\$BasePath\lib\win10-$platformToRun" `
+                -dest "$ComponentBasePath\lib\win-$platformToRun"
+
             build\scripts\CopyContents.ps1 `
                 -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
                 -ContentsList @(
@@ -431,6 +435,22 @@ Try {
                     'native\PushNotificationsLongRunningTask.ProxyStub.dll',
                     'native\RestartAgent.exe') `
                 -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
+        }
+
+        # Populate ARM64EC folders with x64 content
+        if ($platform.Split(",") -contains "x64")
+        {
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$AppxContentFolder\lib\win-x64" `
+                -dest "$AppxContentFolder\lib\win-arm64ec"
+
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$AppxContentFolder\runtimes\win-x64" `
+                -dest "$AppxContentFolder\runtimes\win-arm64ec"
+
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$AppxContentFolder\runtimes-framework\win-x64" `
+                -dest "$AppxContentFolder\runtimes-framework\win-arm64ec"
         }
 
         Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
