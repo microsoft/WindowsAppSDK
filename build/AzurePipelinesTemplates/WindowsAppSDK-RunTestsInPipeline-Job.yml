@@ -22,10 +22,8 @@ jobs:
 - job: FilterMatrix
   steps:
   - powershell: |
-      Write-Host "This is ${{ convertToJson(parameters.testMatrix) }}"       // This is 
       $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
       $targetPlatform = "${{ parameters.buildPlatform }}"
-      Write-Host "That is ${{ parameters.buildPlatform }}"    // That is x86
       $filteredMatrix = @{}
       foreach ($entry in $testMatrix.PSObject.Properties) {
         if ($entry.Value.buildPlatform -eq $targetPlatform) {
@@ -38,23 +36,23 @@ jobs:
   - script: echo $(setFilteredMatrixStep.filteredMatrixJson)
     name: echoMatrix
 
-# - job: ${{ parameters.jobName }}
-#   dependsOn: FilterMatrix
-#   strategy:
-#     matrix: $[ dependencies.FilterMatrix.outputs['setFilteredMatrixStep.filteredMatrixJson'] ]
-#   pool:
-#     type: windows
-#     isCustom: true
-#     name: $(poolName)
-#     demands: ImageOverride -equals $(imageName)
-#   timeoutInMinutes: 120
-#   variables:
-#     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
-#     AZURE_PIPELINES_DEDUP_PARALLELISM: 16
-#   steps:
-#     - template: WindowsAppSDK-RunTests-Steps.yml
-#       parameters:
-#         buildPlatform: $(buildPlatform)
-#         buildConfiguration: $(buildConfiguration)
-#         testLocale: $(testLocale)
-#         ImageName: $(imageName)
+- job: ${{ parameters.jobName }}
+  dependsOn: FilterMatrix
+  strategy:
+    matrix: $[ dependencies.FilterMatrix.outputs['setFilteredMatrixStep.filteredMatrixJson'] ]
+  pool:
+    type: windows
+    isCustom: true
+    name: $(poolName)
+    demands: ImageOverride -equals $(imageName)
+  timeoutInMinutes: 120
+  variables:
+    testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+    AZURE_PIPELINES_DEDUP_PARALLELISM: 16
+  steps:
+    - template: WindowsAppSDK-RunTests-Steps.yml
+      parameters:
+        buildPlatform: $(buildPlatform)
+        buildConfiguration: $(buildConfiguration)
+        testLocale: $(testLocale)
+        ImageName: $(imageName)
