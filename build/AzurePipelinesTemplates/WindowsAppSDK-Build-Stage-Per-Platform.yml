@@ -19,7 +19,7 @@ stages:
   jobs:
     - job: echoParam
       steps:
-    - script: echo "${{ convertToJson(parameters) }}"
+      - script: echo "${{ convertToJson(parameters) }}"
 
   # condition:
   #   eq(variables['useBuildOutputFromBuildId'],'')
