@@ -143,7 +143,7 @@ namespace PickerCommon {
     }
 
     /// <summary>
-    /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type
+    /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type, for FileOpenPicker
     /// </summary>
     /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
     /// <param name="filters">winrt style filters</param>
@@ -152,29 +152,41 @@ namespace PickerCommon {
     /// </returns>
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
-        std::vector<COMDLG_FILTERSPEC> result(filters.Size());
+        std::vector<COMDLG_FILTERSPEC> result(filters.Size() + 1);
         buffer.clear();
-        buffer.reserve(filters.Size() * (size_t)2);
+        buffer.reserve((filters.Size() + 1) * (size_t)2);
+
+        std::wstring allFilesExtensionList;
         for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
             buffer.push_back(filter);
             buffer.push_back(ext);
+            allFilesExtensionList += ext + L";";
         }
-        for (size_t i = 0; i < filters.Size(); i++)
+
+        buffer.push_back(L"All Files");
+        if (filters.Size() == 0)
+        {
+            buffer.push_back(L"*.*");
+        }
+        else
+        {
+            // Remove the last semicolon
+            allFilesExtensionList.pop_back();
+            buffer.push_back(allFilesExtensionList.c_str());
+        }
+
+        for (size_t i = 0; i < filters.Size() + 1; i++)
         {
             result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
         }
 
-        if (result.size() == 0)
-        {
-            result.push_back({ L"All Files", L"*.*" });
-        }
         return result;
     }
 
     /// <summary>
-    /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type
+    /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type, for FileSavePicker
     /// </summary>
     /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
     /// <param name="filters">winrt style filters</param>
