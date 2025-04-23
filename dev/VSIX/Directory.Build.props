@@ -5,7 +5,7 @@
     <!-- Provide default nuget feed (Windows App SDK internal) and package versions for developer builds -->
     <PropertyGroup>
         <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.230706.1</CppWinRTVersion>
-        <WindowsSDKBuildToolsVersion Condition="'$(WindowsSDKBuildToolsVersion)' == ''">10.0.22621.756</WindowsSDKBuildToolsVersion>
+        <WindowsSDKBuildToolsVersion Condition="'$(WindowsSDKBuildToolsVersion)' == ''">10.0.22621.3233</WindowsSDKBuildToolsVersion>
         <WILVersion Condition="'$(WILVersion)' == ''">1.0.220914.1</WILVersion>
         <!-- Provides a default package version in order to simplify dev inner loop testing -->
         <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">1.0.0-preview1</WindowsAppSdkVersion>
