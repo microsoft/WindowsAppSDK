@@ -345,7 +345,26 @@ Try {
             exit 1
         }
 
-        Copy-Item -Path "LICENSE" -Destination "$ComponentBasePath" -force
+        if ([string]::IsNullOrEmpty($env:Channel))
+        {
+            $componentLicenseFilePath = "LICENSE"
+        }
+        else
+        {
+            $componentLicenseFilePath = "..\WindowsAppSDKConfig\NuGetLicense\preview\license.txt"
+            if ($env:Channel -eq 'stable')
+            {
+                $componentLicenseFilePath = "..\WindowsAppSDKConfig\NuGetLicense\release\license.txt"
+            }
+        }
+
+        Copy-Item -Path $componentLicenseFilePath -Destination "$ComponentBasePath\license.txt" -force
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: Copy-Item -Path $componentLicenseFilePath FAILED."
+            exit 1
+        }
 
         # for some reason xslt.load changes the working directory to C:\windows\system32.
         # store the current working directory here.
