@@ -21,7 +21,7 @@ parameters:
 jobs:
 - job: echoParam
   steps:
-  - scirpt: echo "${{ convertToJson(parameters) }}"
+  - script: echo "${{ convertToJson(parameters) }}"
 
 - job: FilterMatrix
   steps:
