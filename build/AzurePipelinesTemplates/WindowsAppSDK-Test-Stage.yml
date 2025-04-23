@@ -1,6 +1,3 @@
-variables:
-- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-
 stages:
 - stage: Test_x86
   dependsOn: Build_x86
