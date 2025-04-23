@@ -4,6 +4,8 @@
   <PropertyGroup>
     <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' == 'Win32'">x86</_WindowsAppSDKFoundationPlatform>
     <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_WindowsAppSDKFoundationPlatform>
+    <_FoundationLibFolder>$(MSBuildThisFileDirectory)..\..\lib\win-$(_WindowsAppSDKFoundationPlatform)</_FoundationLibFolder>
+    <_FoundationLibFolder Condition="'$(WindowsAppSdkFoundationTransportPackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)</_FoundationLibFolder>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
@@ -15,7 +17,7 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>
-        $(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.lib;
+        $(_FoundationLibFolder)\Microsoft.WindowsAppRuntime.lib;
         %(AdditionalDependencies);
       </AdditionalDependencies>
     </Link>
@@ -24,7 +26,7 @@
   <ItemDefinitionGroup Condition="'$(AppxPackage)' != 'true'">
     <Link>
       <AdditionalDependencies>
-        $(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.lib;
+        $(_FoundationLibFolder)\Microsoft.WindowsAppRuntime.Bootstrap.lib;
         %(AdditionalDependencies);
       </AdditionalDependencies>
     </Link>
