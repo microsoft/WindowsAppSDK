@@ -32,6 +32,8 @@ stages:
     SignOutput: false
     IsOneBranch: false
 
+- template: AzurePipelinesTemplates\WindowsAppSDK-StaticAnalysis-Stage.yml@self
+
 - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
