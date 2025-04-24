@@ -20,20 +20,4 @@
     <Compile Condition="'$(WindowsAppSdkIncludeVersionInfo)'=='true'" Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
   </ItemGroup>
 
-  <!--Define compile-time constants-->
-  <!--TODO Move to windowsappsdk\build\NuSpecs\WindowsAppSDK-Nuget-Native.Bootstrap.targets -->
-  <Target Name="WindowsAppSDKBootstrapCompileTimeConstants"
-          BeforeTargets="ClCompile"
-          Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">
-    <ItemGroup>
-      <ClCompile>
-        <PreprocessorDefinitions>%(PreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE=1</PreprocessorDefinitions>
-      </ClCompile>
-    </ItemGroup>
-  </Target>
-  <!--TODO Move to windowsappsdk\build\NuSpecs\Microsoft.WindowsAppSDK.Bootstrap.CS.targets -->
-  <PropertyGroup Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">
-    <DefineConstants>$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE</DefineConstants>
-  </PropertyGroup>
-
 </Project>
