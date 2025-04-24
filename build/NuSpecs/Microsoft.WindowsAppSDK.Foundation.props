@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <WindowsAppSdkComponentPackage Include="$(MSBuildThisFileDirectory)..\" />
+    <WindowsAppSdkComponentPackages Include="$(MSBuildThisFileDirectory)..\" />
   </ItemGroup>
 
 </Project>
