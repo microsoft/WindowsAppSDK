@@ -441,16 +441,16 @@ Try {
         if ($platform.Split(",") -contains "x64")
         {
             build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$AppxContentFolder\lib\win-x64" `
-                -dest "$AppxContentFolder\lib\win-arm64ec"
+                -Source "$ComponentBasePath\lib\win-x64" `
+                -dest "$ComponentBasePath\lib\win-arm64ec"
 
             build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$AppxContentFolder\runtimes\win-x64" `
-                -dest "$AppxContentFolder\runtimes\win-arm64ec"
+                -Source "$ComponentBasePath\runtimes\win-x64" `
+                -dest "$ComponentBasePath\runtimes\win-arm64ec"
 
             build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$AppxContentFolder\runtimes-framework\win-x64" `
-                -dest "$AppxContentFolder\runtimes-framework\win-arm64ec"
+                -Source "$ComponentBasePath\runtimes-framework\win-x64" `
+                -dest "$ComponentBasePath\runtimes-framework\win-arm64ec"
         }
 
         Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
