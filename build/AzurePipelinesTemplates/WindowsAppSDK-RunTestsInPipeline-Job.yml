@@ -20,6 +20,11 @@ parameters:
 
 jobs:
 - job: FilterMatrix
+  pool:
+    type: windows
+    isCustom: true
+    name: $(poolName)
+    demands: ImageOverride -equals $(imageName)
   steps:
   - powershell: |
       $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
