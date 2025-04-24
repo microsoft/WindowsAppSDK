@@ -5,9 +5,9 @@
     <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' == 'Win32'">x86</_WindowsAppSDKFoundationPlatform>
     <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_WindowsAppSDKFoundationPlatform>
     <_FoundationMetadataFolder>$(MSBuildThisFileDirectory)..\..\metadata</_FoundationMetadataFolder>
-    <_FoundationMetadataFolder Condition="'$(WindowsAppSdkFoundationTransportPackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\lib\uap10.0</_FoundationMetadataFolder>
+    <_FoundationMetadataFolder Condition="'$(WindowsAppSDKAggregatePackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\lib\uap10.0</_FoundationMetadataFolder>
     <_FoundationRuntimesFrameworkFolder>$(MSBuildThisFileDirectory)..\..\runtimes-framework\win-$(_WindowsAppSDKFoundationPlatform)\native</_FoundationRuntimesFrameworkFolder>
-    <_FoundationRuntimesFrameworkFolder Condition="'$(WindowsAppSdkFoundationTransportPackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native</_FoundationRuntimesFrameworkFolder>
+    <_FoundationRuntimesFrameworkFolder Condition="'$(WindowsAppSDKAggregatePackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native</_FoundationRuntimesFrameworkFolder>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">

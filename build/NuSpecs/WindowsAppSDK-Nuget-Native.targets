@@ -6,7 +6,7 @@
     <Native-Platform Condition="'$(Platform)' == 'Win32'">x86</Native-Platform>
     <Native-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</Native-Platform>
     <_FoundationMetadataFolder>$(MSBuildThisFileDirectory)..\..\metadata</_FoundationMetadataFolder>
-    <_FoundationMetadataFolder Condition="'$(WindowsAppSdkFoundationTransportPackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\lib\uap10.0</_FoundationMetadataFolder>
+    <_FoundationMetadataFolder Condition="'$(WindowsAppSDKAggregatePackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\lib\uap10.0</_FoundationMetadataFolder>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
