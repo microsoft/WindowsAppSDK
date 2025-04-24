@@ -351,10 +351,10 @@ Try {
         }
         else
         {
-            $componentLicenseFilePath = "..\WindowsAppSDKConfig\NuGetLicense\preview\license.txt"
+            $componentLicenseFilePath = "WindowsAppSDKConfig\NuGetLicense\preview\license.txt"
             if ($env:Channel -eq 'stable')
             {
-                $componentLicenseFilePath = "..\WindowsAppSDKConfig\NuGetLicense\release\license.txt"
+                $componentLicenseFilePath = "WindowsAppSDKConfig\NuGetLicense\release\license.txt"
             }
         }
 

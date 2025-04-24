@@ -6,7 +6,7 @@
          <title>$id$</title>
          <authors>Microsoft</authors>
          <description>Windows App SDK</description>
-         <license type="file">LICENSE</license>
+         <license type="file">license.txt</license>
          <requireLicenseAcceptance>true</requireLicenseAcceptance>
          <projectUrl>https://aka.ms/windowsappsdk</projectUrl>
          <copyright>© Microsoft Corporation. All rights reserved.</copyright>
