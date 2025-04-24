@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_BOOTSTRAP_H
@@ -100,7 +100,7 @@ namespace Test::Bootstrap
         }
     }
 
-    inline void SetupBootstrap()
+    inline void SetupBootstrapWithVersion(const UINT32 version_MajorMinor, const PACKAGE_VERSION minVersion, bool shouldTestInit = true)
     {
         // Bootstrapper's only needed for non-packaged processes to use Dynamic Dependencies
         if (!NeedDynamicDependencies())
@@ -121,17 +121,26 @@ namespace Test::Bootstrap
             VERIFY_IS_NOT_NULL(bootstrapDll.get(), WEX::Common::String().Format(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, bootstrapDllAbsoluteFilename.c_str()));
         }
 
-        // Initialize the bootstrapper (for testing purposes)
-        VERIFY_SUCCEEDED(MddBootstrapTestInitialize(TP::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
-                                                    TP::DynamicDependencyLifetimeManager::c_PackagePublisherId,
-                                                    TP::WindowsAppRuntimeFramework::c_PackageNamePrefix,
-                                                    TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
+        if (shouldTestInit)
+        {
+            // Initialize the bootstrapper (for testing purposes)
+            VERIFY_SUCCEEDED(MddBootstrapTestInitialize(TP::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                TP::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                TP::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
+        }
 
+        VERIFY_SUCCEEDED(MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion));
+        s_bootstrapDll = std::move(bootstrapDll);
+    }
+
+    inline void SetupBootstrap()
+    {
         // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
         const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
         const PACKAGE_VERSION minVersion{};
-        VERIFY_SUCCEEDED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
-        s_bootstrapDll = std::move(bootstrapDll);
+
+        SetupBootstrapWithVersion(c_Version_MajorMinor, minVersion);
     }
 
     inline void CleanupBootstrap()
