@@ -526,6 +526,24 @@ public:
 
     decimal operator%(const decimal& value) const
     {
+        VARIANT left{};
+        left.vt = VT_DECIMAL;
+        left.decVal = m_decimal;
+
+        VARIANT right{};
+        right.vt = VT_DECIMAL;
+        right.decVal = value.m_decimal;
+
+        VARIANT result{};
+        THROW_IF_FAILED(::VarMod(&left, &right, &result));
+        VARIANT resultAsDecimal{};
+        THROW_IF_FAILED(::VariantChangeType(&resultAsDecimal, &result, 0, VT_DECIMAL));
+        THROW_HR_IF_MSG(E_UNEXPECTED, resultAsDecimal.vt != VT_DECIMAL, ".vt=%hu", resultAsDecimal.vt);
+        return Microsoft::Windows::Foundation::decimal{ resultAsDecimal.decVal };
+    }
+
+    decimal mod(const decimal& value) const
+    {
         // VarMod() operates on I4 (int32) at best (not even I8 aka int64)
         // So let's do it the grade school way...
         //

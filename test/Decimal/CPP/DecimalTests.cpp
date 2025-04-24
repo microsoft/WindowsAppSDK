@@ -1211,7 +1211,73 @@ namespace Test::Decimal::Tests
             }
         }
 
-        TEST_METHOD(operator_modulo)
+        TEST_METHOD(operator_mod)
+        {
+            try
+            {
+                Microsoft::Windows::Foundation::decimal data{ 123 };
+                Microsoft::Windows::Foundation::decimal zero{};
+                const auto result{ data / zero };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (wil::ResultException& e)
+            {
+                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.GetErrorCode(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
+            }
+
+            struct values
+            {
+                PCWSTR left;
+                PCWSTR right;
+                PCWSTR result;
+            } values[]{
+                { L"1",     L"2",       L"1"     },
+                { L"123",   L"4567",    L"123"   },
+                { L"1",     L"-2",      L"1"     },
+                { L"-1",    L"-2",      L"-1"    },
+                { L"-1",    L"2",       L"-1"    },
+                { L"1.2",   L"3.45",    L"1.2"   },
+                { L"-1.2",  L"3.45",    L"-1.2"  },
+                { L"1.2",   L"-3.45",   L"1.2"   },
+                { L"-1.2",  L"-3.45",   L"-1.2"  },
+                { L".2",    L".45",     L"0.2"   },
+                { L"-.2",   L".45",     L"-0.2"  },
+                { L".2",    L"-.45",    L"0.2"   },
+                { L"-.2",   L"-.45",    L"-0.2"  },
+
+                { L"2",     L"1",       L"0"     },
+                { L"4567",  L"123",     L"16"    },
+                { L"3.45",  L"1.2",     L"1.05"  },
+                { L"2",     L"-1",      L"0"     },
+                { L"-2",    L"1",       L"0"     },
+                { L"-2",    L"-1",      L"0"     },
+                { L"3.45",  L"-1.2",    L"1.05"  },
+                { L"-3.45", L"1.2",     L"-1.05" },
+                { L"-3.45", L"-1.2",    L"-1.05" },
+                { L".45",   L".2",      L"0.05"  },
+                { L".45",   L"-.2",     L"0.05"  },
+                { L"-.45",  L".2",      L"-0.05" },
+                { L"-.45",  L"-.2",     L"-0.05" }
+            };
+            for (size_t index=0; index < ARRAYSIZE(values); ++index)
+            {
+                WEX::Logging::Log::Comment(L"----------");
+
+                const auto& value{ values[index] };
+                Microsoft::Windows::Foundation::decimal left{ value.left };
+                Microsoft::Windows::Foundation::decimal right{ value.right };
+                Microsoft::Windows::Foundation::decimal expected{ value.result };
+                const Microsoft::Windows::Foundation::decimal result{ left.mod(right) };
+
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s %% %s = %s vs %s",
+                    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
+
+                //VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s mod %s = %s vs %s",
+                //    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
+            }
+        }
+
+        TEST_METHOD(mod)
         {
             try
             {

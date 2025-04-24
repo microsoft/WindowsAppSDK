@@ -20,6 +20,17 @@ namespace Test.DotNet
             ctor_to_assign_double();
             ctor_to_assign_string();
             compare_int16();
+            compare_int32();
+            compare_int64();
+            compare_uint8();
+            compare_uint16();
+            compare_uint32();
+            compare_uint64();
+            compare_float();
+            compare_double();
+            compare_string();
+            operator_neg();
+            abs();
         }
 
         public static void ctor()
@@ -153,6 +164,434 @@ namespace Test.DotNet
             Verify.IsFalse(right <= left);
             Verify.IsTrue(right > left);
             Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_int32()
+        {
+            var left = new Decimal((int)-1234567890);
+            var right = new Decimal((int)1234567890);
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_int64()
+        {
+            var left = new Decimal((long)-1234567890123456789);
+            var right = new Decimal((long)1234567890123456789);
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_uint8()
+        {
+            var left = new Decimal((byte)123);
+            var right = new Decimal((byte)234);
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_uint16()
+        {
+            var left = new Decimal((ushort)32109);
+            var right = new Decimal((ushort)65432);
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_uint32()
+        {
+            var left = new Decimal((uint)1234567890);
+            var right = new Decimal((uint)4019283756);
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_uint64()
+        {
+            var left = new Decimal((ulong)0x1234567890ABCDEF);
+            var right = new Decimal((ulong)0xFEDCBA0987654321);
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_float()
+        {
+            var left = new Decimal((float)-1.25);
+            var right = new Decimal((float)1.25);
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_double()
+        {
+            var left = new Decimal((double)-1.25);
+            var right = new Decimal((double)1.25);
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void compare_string()
+        {
+            var left = Decimal.Parse("-12.345");
+            var right = Decimal.Parse("12.345");
+            Verify.AreEqual(0, left.CompareTo(left));
+            Verify.AreEqual(0, right.CompareTo(right));
+            Verify.AreEqual(-1, left.CompareTo(right));
+            Verify.AreEqual(1, right.CompareTo(left));
+
+            Verify.IsTrue(left == left);
+            Verify.IsFalse(left != left);
+            Verify.IsFalse(left < left);
+            Verify.IsTrue(left <= left);
+            Verify.IsFalse(left > left);
+            Verify.IsTrue(left >= left);
+
+            Verify.IsTrue(right == right);
+            Verify.IsFalse(right != right);
+            Verify.IsFalse(right < right);
+            Verify.IsTrue(right <= right);
+            Verify.IsFalse(right > right);
+            Verify.IsTrue(right >= right);
+
+            Verify.IsFalse(left == right);
+            Verify.IsTrue(left != right);
+            Verify.IsTrue(left < right);
+            Verify.IsTrue(left <= right);
+            Verify.IsFalse(left > right);
+            Verify.IsFalse(left >= right);
+
+            Verify.IsFalse(right == left);
+            Verify.IsTrue(right != left);
+            Verify.IsFalse(right < left);
+            Verify.IsFalse(right <= left);
+            Verify.IsTrue(right > left);
+            Verify.IsTrue(right >= left);
+        }
+
+        public static void operator_neg()
+        {
+            var zero = Decimal.Parse("0");
+            var pos = Decimal.Parse("12.345");
+            var neg = Decimal.Parse("-12.345");
+
+            var zero_value = -zero;
+            Verify.AreEqual(0, zero_value.CompareTo(zero));
+            Verify.AreEqual(-1, zero_value.CompareTo(pos));
+            Verify.AreEqual(1, zero_value.CompareTo(neg));
+
+            var pos_value = -neg;
+            Verify.AreEqual(1, pos_value.CompareTo(zero));
+            Verify.AreEqual(0, pos_value.CompareTo(pos));
+            Verify.AreEqual(1, pos_value.CompareTo(neg));
+
+            var neg_value = -pos;
+            Verify.AreEqual(-1, neg_value.CompareTo(zero));
+            Verify.AreEqual(-1, neg_value.CompareTo(pos));
+            Verify.AreEqual(0, neg_value.CompareTo(neg));
+        }
+
+        public static void abs()
+        {
+            var zero = Decimal.Parse("0");
+            var pos = Decimal.Parse("12.345");
+            var neg = Decimal.Parse("-12.345");
+
+            var zero_value = abs(zero);
+            Verify.AreEqual(0, zero_value.CompareTo(zero));
+            Verify.AreEqual(-1, zero_value.CompareTo(pos));
+            Verify.AreEqual(1, zero_value.CompareTo(neg));
+
+            var pos_value = abs(pos);
+            Verify.AreEqual(1, pos_value.CompareTo(zero));
+            Verify.AreEqual(0, pos_value.CompareTo(pos));
+            Verify.AreEqual(1, pos_value.CompareTo(neg));
+
+            var neg_value = abs(neg);
+            Verify.AreEqual(1, neg_value.CompareTo(zero));
+            Verify.AreEqual(0, neg_value.CompareTo(pos));
+            Verify.AreEqual(1, neg_value.CompareTo(neg));
+        }
+
+        public static void fix()
+        {
+        }
+
+        public static void integer()
+        {
+        }
+
+        public static void operator_add()
+        {
+        }
+
+        public static void operator_sub()
+        {
+        }
+
+        public static void operator_mul()
+        {
+        }
+
+        public static void operator_div()
+        {
+        }
+
+        public static void operator_mod()
+        {
+        }
+
+        public static void mod()
+        {
+        }
+
+        public static void round()
+        {
+        }
+
+        private static Decimal abs(Decimal value)
+        {
+            var zero = new Decimal(0);
+            return value.CompareTo(zero) < 0 ? -value : value;
         }
     }
 }
