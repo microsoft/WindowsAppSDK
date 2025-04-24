@@ -5,13 +5,16 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: true
+- name: runStaticAnalysis
+  type: boolean
+  default: true
 
 stages:
-- stage: Build
+- stage: BuildWithStaticAnalysis
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+    and(eq(variables['useBuildOutputFromBuildId'],''), eq(parameters.runStaticAnalysis, 'true'))
   dependsOn: []
   jobs:
   - job: VerifyCopyrightHeaders
@@ -61,7 +64,10 @@ stages:
       - name: ob_artifactBaseName
         value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
-        value: false
+        ${{ if parameters.runStaticAnalysis }}:
+          value: true
+        ${{ else }}:
+          value: false
       - name: ob_sdl_apiscan_softwareFolder
         value: '$(build.SourcesDirectory)\APIScanTarget'
       - name: ob_sdl_apiscan_symbolsFolder
@@ -91,7 +97,7 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : false
+        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
     # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
     # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
@@ -114,7 +120,10 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
       ob_artifactBaseName: "FoundationBinaries_release_anycpu"
-      ob_sdl_apiscan_enabled: false
+      ${{ if parameters.runStaticAnalysis }}:
+        ob_sdl_apiscan_enabled: true
+      ${{ if not( parameters.runStaticAnalysis ) }}:
+        ob_sdl_apiscan_enabled: false
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU'
       ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU;SRV*https://symweb.azurefd.net'
     steps:
@@ -122,7 +131,7 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : false
+        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
     # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
     # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
@@ -168,7 +177,10 @@ stages:
       - name: ob_artifactBaseName
         value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
-        value: false
+        ${{ if parameters.runStaticAnalysis }}:
+          value: true
+        ${{ else }}:
+          value: false
       - name: ob_sdl_apiscan_softwareFolder
         value: '$(build.SourcesDirectory)\APIScanTarget'
       - name: ob_sdl_apiscan_symbolsFolder
@@ -198,7 +210,7 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis: false
+        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
     # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
     # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
