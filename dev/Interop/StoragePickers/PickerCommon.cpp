@@ -152,9 +152,9 @@ namespace PickerCommon {
     /// </returns>
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
-        std::vector<COMDLG_FILTERSPEC> result(filters.Size() + 1);
+        int resultSize = filters.Size() + 1;
         buffer.clear();
-        buffer.reserve((filters.Size() + 1) * (size_t)2);
+        buffer.reserve(resultSize * (size_t)2);
 
         std::wstring allFilesExtensionList;
         for (const auto& filter : filters)
@@ -165,19 +165,32 @@ namespace PickerCommon {
             allFilesExtensionList += ext + L";";
         }
 
-        buffer.push_back(L"All Files");
+        if (!allFilesExtensionList.empty())
+        {
+            allFilesExtensionList.pop_back(); // Remove the last semicolon
+        }
+
         if (filters.Size() == 0)
         {
+            // when filters not defined, set filter to All Files *.*
+            buffer.push_back(L"All Files");
             buffer.push_back(L"*.*");
+        }
+        else if (filters.Size() == 1 && allFilesExtensionList == L"*")
+        {
+            // when there're only one filter "*", set filter to All Files *.* (override the values pushed above)
+            buffer[0] = L"All Files";
+            buffer[1] = L"*.*";
+            resultSize = 1;
         }
         else
         {
-            // Remove the last semicolon
-            allFilesExtensionList.pop_back();
+            buffer.push_back(L"All Files");
             buffer.push_back(allFilesExtensionList.c_str());
         }
 
-        for (size_t i = 0; i < filters.Size() + 1; i++)
+        std::vector<COMDLG_FILTERSPEC> result(resultSize);
+        for (size_t i = 0; i < resultSize; i++)
         {
             result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
         }

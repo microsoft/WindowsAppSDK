@@ -90,6 +90,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
 
         parameters.ConfigureDialog(dialog);
+        check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
 
         {
             auto hr = dialog->Show(parameters.HWnd);
@@ -142,7 +143,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
 
         parameters.ConfigureDialog(dialog);
-
+        check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
         check_hresult(dialog->SetOptions(FOS_ALLOWMULTISELECT));
 
         {

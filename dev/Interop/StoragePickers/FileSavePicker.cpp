@@ -127,6 +127,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             check_hresult(dialog->SetDefaultExtension(L""));
         }
 
+        check_hresult(dialog->SetOptions(FOS_STRICTFILETYPES));
+
         if (!PickerCommon::IsHStringNullOrEmpty(suggestedFileName))
         {
             check_hresult(dialog->SetFileName(suggestedFileName.c_str()));
