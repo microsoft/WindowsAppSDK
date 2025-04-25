@@ -64,6 +64,7 @@ stages:
         md "C:\__t\NativeCompilerPrefast"
       displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
 
+# extract BuildFoundation and BuildMRT into WindowsAppSDK-Build-Stage-Per-Platform.yml. Separate the build stage per platform
 - template: WindowsAppSDK-Build-Stage-Per-Platform.yml@self
   parameters:
     SignOutput: ${{ parameters.SignOutput }}
