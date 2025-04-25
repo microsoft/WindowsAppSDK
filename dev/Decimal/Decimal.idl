@@ -93,9 +93,20 @@ namespace Microsoft.Windows.Foundation
         Decimal Round(Int32 decimalPlaces);
 
         Decimal Add(Decimal value);
+        Decimal AddAssign(Decimal value);
+
         Decimal Sub(Decimal value); //TODO Subtract() ?
+        Decimal SubAssign(Decimal value); //TODO Subtract() ?
+
         Decimal Mul(Decimal value); //TODO Multiply() ?
+        Decimal MulAssign(Decimal value); //TODO Multiply() ?
+
         Decimal Div(Decimal value); //TODO Divide() ?
+        Decimal DivAssign(Decimal value); //TODO Divide() ?
+
         Decimal Mod(Decimal value); //TODO Modulo() or Remainder() ?
+        Decimal ModAssign(Decimal value); //TODO Modulo() or Remainder() ?
+        Decimal ModVariant(Decimal value); //TODO Remove?
+        Decimal ModTruncated(Decimal value); //TODO Remove?
     }
 }

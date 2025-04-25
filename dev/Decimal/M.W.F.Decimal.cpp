@@ -245,21 +245,54 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(m_decimal + to_decimal(value));
     }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::AddAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value)
+    {
+        m_decimal += to_decimal(value);
+        return *this;
+    }
     winrt::Microsoft::Windows::Foundation::Decimal Decimal::Sub(winrt::Microsoft::Windows::Foundation::Decimal const& value)
     {
         return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(m_decimal - to_decimal(value));
+    }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::SubAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value)
+    {
+        m_decimal -= to_decimal(value);
+        return *this;
     }
     winrt::Microsoft::Windows::Foundation::Decimal Decimal::Mul(winrt::Microsoft::Windows::Foundation::Decimal const& value)
     {
         return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(m_decimal * to_decimal(value));
     }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::MulAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value)
+    {
+        m_decimal *= to_decimal(value);
+        return *this;
+    }
     winrt::Microsoft::Windows::Foundation::Decimal Decimal::Div(winrt::Microsoft::Windows::Foundation::Decimal const& value)
     {
         return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(m_decimal / to_decimal(value));
     }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::DivAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value)
+    {
+        m_decimal /= to_decimal(value);
+        return *this;
+    }
     winrt::Microsoft::Windows::Foundation::Decimal Decimal::Mod(winrt::Microsoft::Windows::Foundation::Decimal const& value)
     {
         return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(m_decimal % to_decimal(value));
+    }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::ModAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value)
+    {
+        m_decimal %= to_decimal(value);
+        return *this;
+    }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::ModVariant(winrt::Microsoft::Windows::Foundation::Decimal const& value)
+    {
+        return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(m_decimal.mod_variant(to_decimal(value)));
+    }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::ModTruncated(winrt::Microsoft::Windows::Foundation::Decimal const& value)
+    {
+        return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(m_decimal.mod_truncated(to_decimal(value)));
     }
     hstring Decimal::ToString()
     {

@@ -22,10 +22,10 @@ public:
     {
     }
 
-    decimal(const decimal&& value) :
+    decimal(decimal&& value) :
         m_decimal(value.m_decimal)
     {
-        m_decimal = DECIMAL{};
+        value.m_decimal = DECIMAL{};
     }
 
     decimal(const DECIMAL& value) :
@@ -150,12 +150,12 @@ public:
         return *this;
     }
 
-    decimal& operator=(const decimal&& value)
+    decimal& operator=(decimal&& value)
     {
         if (&value != this)
         {
             m_decimal = value.m_decimal;
-            m_decimal = DECIMAL{};
+            value.m_decimal = DECIMAL{};
         }
         return *this;
     }
@@ -465,11 +465,36 @@ public:
     }
 
     /// Round down to integer.
+    /// @note this rounds down to -infinity.
     decimal integer() const
     {
         decimal value{};
         THROW_IF_FAILED(::VarDecInt(const_cast<DECIMAL*>(&m_decimal), &value.m_decimal));
         return value;
+    }
+
+    decimal operator++()
+    {
+        return operator+=(decimal(1));
+    }
+
+    decimal operator++(int)
+    {
+        const decimal before(m_decimal);
+        operator+=(decimal(1));
+        return before;
+    }
+
+    decimal operator--()
+    {
+        return operator-=(decimal(1));
+    }
+
+    decimal operator--(int)
+    {
+        const decimal before(m_decimal);
+        operator-=(decimal(1));
+        return before;
     }
 
     decimal operator+(const decimal& value) const
@@ -526,6 +551,11 @@ public:
 
     decimal operator%(const decimal& value) const
     {
+        return mod_variant(value);
+    }
+
+    decimal mod_variant(const decimal& value) const
+    {
         VARIANT left{};
         left.vt = VT_DECIMAL;
         left.decVal = m_decimal;
@@ -544,30 +574,35 @@ public:
 
     decimal mod(const decimal& value) const
     {
+        return mod_truncated(value);
+    }
+
+    /// Modulo operation using the Truncated method.
+    /// @note The % operator in C, C#, Rust and other languages use this method.
+    /// @note The result's sign will match the current value's sign.
+    /// @see https://en.wikipedia.org/wiki/Modulo
+    decimal mod_truncated(const decimal& value) const
+    {
         // VarMod() operates on I4 (int32) at best (not even I8 aka int64)
-        // So let's do it the grade school way...
+        // So let's do it the grade school way and matching .NET's Decimal...
         //
         //      remainder = left % right
         // aka
-        //      q = (left / right)
-        //      remainder = left - (right * FIX(left / right) * right)
+        //      aleft = ABS(left)
+        //      aright = ABS(right)
+        //      q = (aleft / aright)
+        //      remainder = aleft - (aright * FIX(aleft / aright) * aright)
+        //      remainder = IF left < 0 THEN remainder = -remainder
 
-        static const Microsoft::Windows::Foundation::decimal zero{};
-        static const Microsoft::Windows::Foundation::decimal one{ 1 };
-        if ((*this == value) || (value == one))
-        {
-            return zero;
-        }
-
-        const Microsoft::Windows::Foundation::decimal& left{ *this };
-        const Microsoft::Windows::Foundation::decimal& right{ value };
+        const Microsoft::Windows::Foundation::decimal aleft{ abs() };
+        const Microsoft::Windows::Foundation::decimal aright{ value.abs() };
         const bool left_is_negative{ m_decimal.sign != 0 };
 
-        Microsoft::Windows::Foundation::decimal quotient{ left.abs() / right.abs() };
-        Microsoft::Windows::Foundation::decimal fix{ quotient.fix() };
-        Microsoft::Windows::Foundation::decimal product{ quotient * fix };
-        Microsoft::Windows::Foundation::decimal remainder{ left_is_negative ? left + product :  left - product };
-        return remainder;
+        const Microsoft::Windows::Foundation::decimal quotient{ aleft.abs() / aright.abs() };
+        const Microsoft::Windows::Foundation::decimal fix{ quotient.fix() };
+        const Microsoft::Windows::Foundation::decimal product{ fix * aright };
+        const Microsoft::Windows::Foundation::decimal remainder{ aleft - product };
+        return left_is_negative ? -remainder : remainder;
     }
 
     decimal& operator%=(const decimal& value)

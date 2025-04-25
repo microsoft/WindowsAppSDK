@@ -13,26 +13,24 @@ namespace Test
                 Help();
             }
 
-            foreach (var arg in args)
+            var arg = args[0];
+            if (arg.Equals("dotnet", StringComparison.OrdinalIgnoreCase))
             {
-                if (arg.Equals("dotnet", StringComparison.OrdinalIgnoreCase))
-                {
-                    Test.DotNet.DecimalTests.Run();
-                }
-                else if (arg.Equals("winappsdk", StringComparison.OrdinalIgnoreCase))
-                {
-                    Test.WinAppSDK.DecimalTests.Run();
-                }
-                else
-                {
-                    Help();
-                }
+                Test.DotNet.DecimalTests.Run();
+            }
+            else if (arg.Equals("winappsdk", StringComparison.OrdinalIgnoreCase))
+            {
+                Test.WinAppSDK.DecimalTests.Run();
+            }
+            else
+            {
+                Help();
             }
         }
 
         private static void Help()
         {
-            Console.WriteLine("Usage: DecimalTest_CS <test...>\n" +
+            Console.WriteLine("Usage: DecimalTest_CS <test>\n" +
                               "where\n" +
                               "    test = dotnet | winappsdk");
             Environment.Exit(1);

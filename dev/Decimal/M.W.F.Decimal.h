@@ -100,10 +100,17 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         winrt::Microsoft::Windows::Foundation::Decimal Integer();
         winrt::Microsoft::Windows::Foundation::Decimal Round(int32_t decimalPlaces);
         winrt::Microsoft::Windows::Foundation::Decimal Add(winrt::Microsoft::Windows::Foundation::Decimal const& value);
+        winrt::Microsoft::Windows::Foundation::Decimal AddAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Sub(winrt::Microsoft::Windows::Foundation::Decimal const& value);
+        winrt::Microsoft::Windows::Foundation::Decimal SubAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Mul(winrt::Microsoft::Windows::Foundation::Decimal const& value);
+        winrt::Microsoft::Windows::Foundation::Decimal MulAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Div(winrt::Microsoft::Windows::Foundation::Decimal const& value);
+        winrt::Microsoft::Windows::Foundation::Decimal DivAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Mod(winrt::Microsoft::Windows::Foundation::Decimal const& value);
+        winrt::Microsoft::Windows::Foundation::Decimal ModAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
+        winrt::Microsoft::Windows::Foundation::Decimal ModVariant(winrt::Microsoft::Windows::Foundation::Decimal const& value);
+        winrt::Microsoft::Windows::Foundation::Decimal ModTruncated(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         hstring ToString();
 
     private:
