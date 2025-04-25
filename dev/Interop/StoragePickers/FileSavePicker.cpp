@@ -113,7 +113,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             co_return nullptr;
         }
 
-        auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CONTEXT_ALL);
+        auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_ALL);
         parameters.ConfigureDialog(dialog);
 
         if (!PickerCommon::IsHStringNullOrEmpty(defaultFileExtension))

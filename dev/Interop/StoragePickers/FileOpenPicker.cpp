@@ -87,7 +87,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             co_return nullptr;
         }
 
-        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
+        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_ALL);
 
         parameters.ConfigureDialog(dialog);
 
@@ -139,7 +139,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             co_return results.GetView();
         }
 
-        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
+        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_ALL);
 
         parameters.ConfigureDialog(dialog);
 
