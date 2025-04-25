@@ -92,7 +92,13 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:
         SignOutput: false
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+        runStaticAnalysis: false
+    
+    - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+      parameters:
+        SignOutput: false
+        runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
