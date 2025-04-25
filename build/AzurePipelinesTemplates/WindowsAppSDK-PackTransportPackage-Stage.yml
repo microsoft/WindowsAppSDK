@@ -38,7 +38,7 @@ stages:
     steps:
     - ${{ if not( parameters.IsOneBranch ) }}:
       - checkout: self
-        path: .
+        path: s
 
     - checkout: WindowsAppSDKConfig
     - task: NuGetAuthenticate@1
