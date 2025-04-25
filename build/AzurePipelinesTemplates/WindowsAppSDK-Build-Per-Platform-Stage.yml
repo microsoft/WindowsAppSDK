@@ -13,7 +13,7 @@ parameters:
   default: x64
 
 stages:
-- stage: ${{ format(iif(parameters.runStaticAnalysis, 'BuildWithStaticAnalysis_{0}', 'Build_{0}'), parameters.buildPlatform) }}
+- stage: ${{ format(iif(parameters.runStaticAnalysis, 'Build_{0}_StaticAnalysis', 'Build_{0}'), parameters.buildPlatform) }}
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:

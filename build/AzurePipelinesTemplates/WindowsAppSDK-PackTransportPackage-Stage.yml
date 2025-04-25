@@ -18,6 +18,7 @@ parameters:
 stages:
 - stage: Pack
   dependsOn: 
+    - Build_AnyCPU
     - Build_x86
     - Build_x64
     - Build_arm64
