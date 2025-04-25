@@ -57,7 +57,7 @@ steps:
       foreach ($file in $files) # Iterate through each package we restored in the directory
       {
         Write-Host "file:" $file.FullName
-        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*WindowsAppSDK*.nupkg"
+        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*WindowsAppSDK*.nupkg" | Where-Object { $_.Name -notlike "*Microsoft.WindowsAppSDK.Base*.nupkg" }
 
         # Extract nupkg to access the nuspec
         # The files in this directory does not contain the nuspec by default
