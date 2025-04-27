@@ -12,10 +12,10 @@ namespace Microsoft.Windows.Foundation
             }
 
             string op = args[0];
-            Decimal left = Decimal.Parse(args[1]);
-            Decimal right = (args.Length >= 3 ? Decimal.Parse(args[2]) : new Decimal(0));
+            System.Decimal left = System.Decimal.Parse(args[1]);
+            System.Decimal right = (args.Length >= 3 ? System.Decimal.Parse(args[2]) : new System.Decimal(0));
             string expected = (args.Length >= 4 ? args[3] : null);
-            Decimal result = new Decimal(0);
+            System.Decimal result = new System.Decimal(0);
             if (args.Length == 3)
             {
                 // NOTE: Decimal unary operators not supported by C#: ! ~
@@ -60,7 +60,7 @@ namespace Microsoft.Windows.Foundation
             }
             if (expected != null)
             {
-                Decimal expectedValue = Decimal.Parse(expected);
+                System.Decimal expectedValue = System.Decimal.Parse(expected);
                 Console.WriteLine($"==> {result} == {expectedValue} = {expectedValue == result}");
             }
         }

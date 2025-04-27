@@ -726,11 +726,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DecimalTest_WinRT", "test\D
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CPP", "CPP", "{26127BDD-A9F3-49BF-A3ED-2EAE3177FFD6}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.WindowsAppRuntime.Decimal.Net", "Microsoft.WindowsAppRuntime.Decimal.Net", "{235FA29D-5A17-4EFF-9326-4C126B7511CA}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Decimal", "dev\Decimal\CPP\Decimal.vcxitems", "{DC453DE3-18FD-43E7-8103-20763C8B97C8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Decimal", "dev\Decimal\Decimal.vcxitems", "{DC453DE3-18FD-43E7-8103-20763C8B97C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2735,9 +2731,7 @@ Global
 		{5B07A0BE-62CD-C63A-5B0C-5CA48A98A646} = {6FE937DC-8AEE-4191-B6BA-51A32DE27ABE}
 		{022E355A-AB24-48EE-9CC0-965BEFDF5E8C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{E9C055BB-6AE4-497A-A354-D07841E68976} = {022E355A-AB24-48EE-9CC0-965BEFDF5E8C}
-		{26127BDD-A9F3-49BF-A3ED-2EAE3177FFD6} = {5012149E-F09F-4F18-A03C-FFE597203821}
-		{235FA29D-5A17-4EFF-9326-4C126B7511CA} = {5012149E-F09F-4F18-A03C-FFE597203821}
-		{DC453DE3-18FD-43E7-8103-20763C8B97C8} = {26127BDD-A9F3-49BF-A3ED-2EAE3177FFD6}
+		{DC453DE3-18FD-43E7-8103-20763C8B97C8} = {5012149E-F09F-4F18-A03C-FFE597203821}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -2782,7 +2776,7 @@ Global
 		dev\AccessControl\AccessControl.vcxitems*{c91bcb93-9ed1-4acd-85f3-26f9f6ac52e3}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{d5667df6-a151-4081-abc7-b93e8e5604ce}*SharedItemsImports = 4
 		dev\Deployment\Deployment.vcxitems*{db38fb4d-d04f-4c1d-93e0-f8ae259c5fd6}*SharedItemsImports = 9
-		dev\Decimal\CPP\Decimal.vcxitems*{dc453de3-18fd-43e7-8103-20763c8b97c8}*SharedItemsImports = 9
+		dev\Decimal\Decimal.vcxitems*{dc453de3-18fd-43e7-8103-20763c8b97c8}*SharedItemsImports = 9
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
 		dev\VersionInfo\VersionInfo.vcxitems*{e3edec7f-a24e-4766-bb1d-6bdfba157c51}*SharedItemsImports = 9
