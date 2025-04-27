@@ -85,7 +85,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             co_return nullptr;
         }
 
-        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_ALL);
+        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
         parameters.ConfigureDialog(dialog);
         dialog->SetOptions(FOS_PICKFOLDERS);
