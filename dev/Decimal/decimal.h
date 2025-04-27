@@ -43,7 +43,7 @@ public:
         //      VarDecFromBool(VARIANT_TRUE)  == -1
         //      VarDecFromBool(VARIANT_FALSE) == 0
         // But decimal(true) would be expected to be 1 (not -1)
-        // So we intentionally ignore VarDecFromBool() and treat decimal(bool) == 0 or 1
+        // So we intentionally ignore VarDecFromBool() and set decimal(bool) == 0 or 1
         THROW_IF_FAILED(::VarDecFromUI4(value ? 1 : 0, &m_decimal));
     }
 
@@ -179,7 +179,7 @@ public:
         //      VarDecFromBool(VARIANT_TRUE)  == -1
         //      VarDecFromBool(VARIANT_FALSE) == 0
         // But decimal(true) would be expected to be 1 (not -1)
-        // So we intentionally ignore VarDecFromBool() and treat decimal(bool) == 0 or 1
+        // So we intentionally ignore VarDecFromBool() and set decimal(bool) == 0 or 1
         THROW_IF_FAILED(::VarDecFromUI4(value ? 1 : 0, &m_decimal));
         return *this;
     }
@@ -282,8 +282,8 @@ public:
 
     bool to_bool() const
     {
-        // Treat all values != 0 as true (good)
-        return m_decimal.Hi32 | m_decimal.Mid32 | m_decimal.Lo32;
+        // Treat values != 0 as true
+        return (m_decimal.Lo64 != 0) | (m_decimal.Hi32 != 0);
     }
 
     char to_char() const
