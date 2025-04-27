@@ -61,9 +61,8 @@ namespace Microsoft.Windows.Foundation
             if (expected != null)
             {
                 Decimal expectedValue = Decimal.Parse(expected);
-                Console.Write($"==> {result} == {expectedValue} = {expectedValue == result}");
+                Console.WriteLine($"==> {result} == {expectedValue} = {expectedValue == result}");
             }
-            Console.WriteLine();
         }
 
         private static void Output(string evaluation)
