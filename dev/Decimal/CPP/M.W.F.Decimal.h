@@ -94,6 +94,7 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         hstring ToStringWithThreadLocale();
         hstring ToStringWithInvariantLocale();
         winrt::Windows::Foundation::IInspectable ToObject();
+        winrt::Microsoft::Windows::Foundation::Decimal ToDecimal();
         winrt::Microsoft::Windows::Foundation::DecimalValue ToDecimalValue();
         bool Equals(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         int32_t Compare(winrt::Microsoft::Windows::Foundation::Decimal const& value);

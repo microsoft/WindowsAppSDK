@@ -1,8 +1,8 @@
 ﻿{
     "Tests": [
         {
-            "Description": "C++ decimal tests",
-            "Filename": "DecimalTests.dll",
+            "Description": "WinRT Decimal tests",
+            "Filename": "DecimalTest_WinRT.dll",
             "Parameters": "",
             "Architectures": ["x86", "x64", "arm64"],
             "Status": "Enabled"

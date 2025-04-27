@@ -220,6 +220,10 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         throw hresult_not_implemented();
     }
+    winrt::Microsoft::Windows::Foundation::Decimal Decimal::ToDecimal()
+    {
+        return winrt::make<winrt::Microsoft::Windows::Foundation::implementation::Decimal>(m_decimal);
+    }
     winrt::Microsoft::Windows::Foundation::DecimalValue Decimal::ToDecimalValue()
     {
         const auto& decimal{ m_decimal.to_decimal() };

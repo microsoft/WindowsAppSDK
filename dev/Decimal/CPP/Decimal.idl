@@ -77,6 +77,7 @@ namespace Microsoft.Windows.Foundation
         String ToStringWithThreadLocale();                  // LCID=GetThreadLocale()
         String ToStringWithInvariantLocale();               // LCID=LOCALE_INVARIANT
         IInspectable ToObject();
+        Decimal ToDecimal();                //TODO: Rename to Copy(value) or Clone(value) ?
         DecimalValue ToDecimalValue();
 
         /// Return true if (this == value).

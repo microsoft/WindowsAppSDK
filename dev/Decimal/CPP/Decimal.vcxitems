@@ -26,6 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)decimal.h" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)..\common\TerminalVelocityFeatures-Decimal.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)..\..\common\TerminalVelocityFeatures-Decimal.h" />
   </ItemGroup>
 </Project>
