@@ -958,6 +958,51 @@ namespace Test::Decimal::Tests
             VERIFY_IS_TRUE(right >= left);
         }
 
+        TEST_METHOD(compare_decimal)
+        {
+            const Microsoft::Windows::Foundation::decimal leftDecimal{ L"-12.345" };
+            const DECIMAL left{ leftDecimal.to_decimal() };
+            const Microsoft::Windows::Foundation::decimal rightDecimal{ L"12.345" };
+            const DECIMAL right{ rightDecimal.to_decimal() };
+            VERIFY_ARE_EQUAL(0, leftDecimal.compare(left));
+            VERIFY_ARE_EQUAL(0, rightDecimal.compare(right));
+            VERIFY_ARE_EQUAL(-1, leftDecimal.compare(right));
+            VERIFY_ARE_EQUAL(1, rightDecimal.compare(left));
+
+            VERIFY_ARE_EQUAL(0, compare(left, left));
+            VERIFY_ARE_EQUAL(0, compare(right, right));
+            VERIFY_ARE_EQUAL(-1, compare(left, right));
+            VERIFY_ARE_EQUAL(1, compare(right, left));
+
+            VERIFY_IS_TRUE(left == left);
+            VERIFY_IS_FALSE(left != left);
+            VERIFY_IS_FALSE(left < left);
+            VERIFY_IS_TRUE(left <= left);
+            VERIFY_IS_FALSE(left > left);
+            VERIFY_IS_TRUE(left >= left);
+
+            VERIFY_IS_TRUE(right == right);
+            VERIFY_IS_FALSE(right != right);
+            VERIFY_IS_FALSE(right < right);
+            VERIFY_IS_TRUE(right <= right);
+            VERIFY_IS_FALSE(right > right);
+            VERIFY_IS_TRUE(right >= right);
+
+            VERIFY_IS_FALSE(left == right);
+            VERIFY_IS_TRUE(left != right);
+            VERIFY_IS_TRUE(left < right);
+            VERIFY_IS_TRUE(left <= right);
+            VERIFY_IS_FALSE(left > right);
+            VERIFY_IS_FALSE(left >= right);
+
+            VERIFY_IS_FALSE(right == left);
+            VERIFY_IS_TRUE(right != left);
+            VERIFY_IS_FALSE(right < left);
+            VERIFY_IS_FALSE(right <= left);
+            VERIFY_IS_TRUE(right > left);
+            VERIFY_IS_TRUE(right >= left);
+        }
+
         TEST_METHOD(operator_pos)
         {
             Microsoft::Windows::Foundation::decimal zero(L"0");
@@ -1406,252 +1451,18 @@ namespace Test::Decimal::Tests
             };
             for (size_t index=0; index < ARRAYSIZE(values); ++index)
             {
-                WEX::Logging::Log::Comment(L"----------");
-
-                const auto& value{ values[index] };
-                Microsoft::Windows::Foundation::decimal left{ value.left };
-                Microsoft::Windows::Foundation::decimal right{ value.right };
-                Microsoft::Windows::Foundation::decimal expected{ value.result };
-                const Microsoft::Windows::Foundation::decimal result{ left.mod(right) };
-
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s %% %s = %s vs %s",
-                    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
-
-                //VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s mod %s = %s vs %s",
-                //    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
-            }
-        }
-
-        TEST_METHOD(mod)
-        {
-            try
-            {
-                Microsoft::Windows::Foundation::decimal data{ 123 };
-                Microsoft::Windows::Foundation::decimal zero{};
-                const auto result{ data / zero };
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (wil::ResultException& e)
-            {
-                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.GetErrorCode(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
-            }
-
-            struct values
-            {
-                PCWSTR left;
-                PCWSTR right;
-                PCWSTR result;
-            } values[]{
-                { L"1",     L"2",       L"1"     },
-                { L"123",   L"4567",    L"123"   },
-                { L"1",     L"-2",      L"1"     },
-                { L"-1",    L"-2",      L"-1"    },
-                { L"-1",    L"2",       L"-1"    },
-                { L"1.2",   L"3.45",    L"1.2"   },
-                { L"-1.2",  L"3.45",    L"-1.2"  },
-                { L"1.2",   L"-3.45",   L"1.2"   },
-                { L"-1.2",  L"-3.45",   L"-1.2"  },
-                { L".2",    L".45",     L"0.2"   },
-                { L"-.2",   L".45",     L"-0.2"  },
-                { L".2",    L"-.45",    L"0.2"   },
-                { L"-.2",   L"-.45",    L"-0.2"  },
-
-                { L"2",     L"1",       L"0"     },
-                { L"4567",  L"123",     L"16"    },
-                { L"-2",    L"1",       L"0"     },
-                { L"-2",    L"-1",      L"0"     },
-                { L"2",     L"-1",      L"0"     },
-                { L"3.45",  L"1.2",     L"1.05"  },
-                { L"3.45",  L"-1.2",    L"1.05"  },
-                { L"-3.45", L"1.2",     L"-1.05" },
-                { L"-3.45", L"-1.2",    L"-1.05" },
-                { L".45",   L".2",      L"0.05"  },
-                { L".45",   L"-.2",     L"0.05"  },
-                { L"-.45",  L".2",      L"-0.05" },
-                { L"-.45",  L"-.2",     L"-0.05" }
-            };
-            for (size_t index=0; index < ARRAYSIZE(values); ++index)
-            {
-                WEX::Logging::Log::Comment(L"----------");
-
                 const auto& value{ values[index] };
                 Microsoft::Windows::Foundation::decimal left{ value.left };
                 Microsoft::Windows::Foundation::decimal right{ value.right };
                 Microsoft::Windows::Foundation::decimal expected{ value.result };
                 const Microsoft::Windows::Foundation::decimal result{ left % right };
-
-                Microsoft::Windows::Foundation::decimal zero{ 0 };
-                const bool left_is_negative{ left < zero };
-                const bool right_is_negative{ right < zero };
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"sign=%s %d", left_is_negative ? L"-" : L"+", left.compare(zero)));
-
-                Microsoft::Windows::Foundation::decimal one{ 1 };
-
-                Microsoft::Windows::Foundation::decimal quotient{ left.abs() / right.abs() };
-                Microsoft::Windows::Foundation::decimal fix{ quotient.integer() };
-                Microsoft::Windows::Foundation::decimal product{ fix * right.abs() };
-                //Microsoft::Windows::Foundation::decimal remainder{ left_is_negative ? left + product : left - product  };
-                Microsoft::Windows::Foundation::decimal remainder{ left - product  };
-                if (right.abs() == one) { remainder = zero; }
-                else if (left_is_negative && !right_is_negative) { remainder += product; }
-                else if (left_is_negative && right_is_negative) { remainder = -remainder; }
-                else if (!left_is_negative && right_is_negative) { remainder += product; }
-
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"l=%s r=%s q=%s f=%s p=%s r=%s",
-                    left.to_string().c_str(), right.to_string().c_str(), quotient.to_string().c_str(), fix.to_string().c_str(), product.to_string().c_str(), remainder.to_string().c_str()));
-
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s %% %s\n== %s - (FIX(%s / %s) * %s)\n== %s - (%s * %s)\n== %s - %s\n==> %s  <-->  %s  %s",
-                    left.to_string().c_str(), right.to_string().c_str(),
-                    left.to_string().c_str(), left.abs().to_string().c_str(), right.abs().to_string().c_str(), right.abs().to_string().c_str(),
-                    left.to_string().c_str(), fix.abs().to_string().c_str(), right.abs().to_string().c_str(),
-                    left.to_string().c_str(), product.abs().to_string().c_str(),
-                    remainder.to_string().c_str(), expected.to_string().c_str(), (remainder == expected ? L"" : L"********************")));
-
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s %% %s = %s vs %s",
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s %% %s = %s vs %s",
                     left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
 
-                //VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s %% %s = %s vs %s",
-                //    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
-            }
-
-            {
-                Microsoft::Windows::Foundation::decimal zero{};
-                Microsoft::Windows::Foundation::decimal one{ 1 };
-
-                Microsoft::Windows::Foundation::decimal n_1{ L"1" };
-                Microsoft::Windows::Foundation::decimal n_2{ L"2" };
-                Microsoft::Windows::Foundation::decimal n_2_div_1{ n_2 / n_1 };
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s f=%s i=%s", n_1.to_string().c_str(), n_1.integer().to_string().c_str(), n_1.integer().to_string().c_str()));
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s f=%s i=%s", n_2.to_string().c_str(), n_2.integer().to_string().c_str(), n_2.integer().to_string().c_str()));
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s f=%s i=%s", n_2_div_1.to_string().c_str(), n_2_div_1.integer().to_string().c_str(), n_2_div_1.integer().to_string().c_str()));
-
-                const Microsoft::Windows::Foundation::decimal& left{ n_2 };
-                const Microsoft::Windows::Foundation::decimal& right{ n_1 };
-
-                Microsoft::Windows::Foundation::decimal quotient{ left.abs() / right.abs() };
-                Microsoft::Windows::Foundation::decimal fix{ quotient.integer() };
-                Microsoft::Windows::Foundation::decimal product{ quotient * fix };
-                Microsoft::Windows::Foundation::decimal remainder{ left == right || right == one ? zero : left - product  };
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"l=%s r=%s q=%s f=%s p=%s r=%s",
-                    left.to_string().c_str(), right.to_string().c_str(), quotient.to_string().c_str(), fix.to_string().c_str(), product.to_string().c_str(), remainder.to_string().c_str()));
-
-            }
-        }
-
-        TEST_METHOD(operator_mod_variant_truncated)
-        {
-            try
-            {
-                Microsoft::Windows::Foundation::decimal data{ 123 };
-                Microsoft::Windows::Foundation::decimal zero{};
-                const auto result{ data.mod_variant(zero) };
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (wil::ResultException& e)
-            {
-                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.GetErrorCode(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
-            }
-
-            try
-            {
-                Microsoft::Windows::Foundation::decimal data{ 123 };
-                Microsoft::Windows::Foundation::decimal zero{};
-                const auto result{ data.mod_truncated(zero) };
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (wil::ResultException& e)
-            {
-                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.GetErrorCode(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
-            }
-
-            struct values
-            {
-                PCWSTR left;
-                PCWSTR right;
-                PCWSTR result;
-            } values[]{
-                { L"1",     L"2",       L"1"     },
-                { L"123",   L"4567",    L"123"   },
-                { L"1",     L"-2",      L"1"     },
-                { L"-1",    L"-2",      L"-1"    },
-                { L"-1",    L"2",       L"-1"    },
-                { L"1.2",   L"3.45",    L"1.2"   },
-                { L"-1.2",  L"3.45",    L"-1.2"  },
-                { L"1.2",   L"-3.45",   L"1.2"   },
-                { L"-1.2",  L"-3.45",   L"-1.2"  },
-                { L".2",    L".45",     L"0.2"   },
-                { L"-.2",   L".45",     L"-0.2"  },
-                { L".2",    L"-.45",    L"0.2"   },
-                { L"-.2",   L"-.45",    L"-0.2"  },
-
-                { L"2",     L"1",       L"0"     },
-                { L"4567",  L"123",     L"16"    },
-                { L"3.45",  L"1.2",     L"1.05"  },
-                { L"2",     L"-1",      L"0"     },
-                { L"-2",    L"1",       L"0"     },
-                { L"-2",    L"-1",      L"0"     },
-                { L"3.45",  L"-1.2",    L"1.05"  },
-                { L"-3.45", L"1.2",     L"-1.05" },
-                { L"-3.45", L"-1.2",    L"-1.05" },
-                { L".45",   L".2",      L"0.05"  },
-                { L".45",   L"-.2",     L"0.05"  },
-                { L"-.45",  L".2",      L"-0.05" },
-                { L"-.45",  L"-.2",     L"-0.05" }
-            };
-            for (size_t index=0; index < ARRAYSIZE(values); ++index)
-            {
-                WEX::Logging::Log::Comment(L"----------");
-
-                try
-                {
-                    const auto& value{ values[index] };
-                    Microsoft::Windows::Foundation::decimal left{ value.left };
-                    Microsoft::Windows::Foundation::decimal right{ value.right };
-                    Microsoft::Windows::Foundation::decimal expected{ value.result };
-                    Microsoft::Windows::Foundation::decimal result_variant;
-                    try
-                    {
-                        result_variant = left.mod_variant(right);
-                    }
-                    catch (std::exception& e)
-                    {
-                        // As explained in https://stackoverflow.com/questions/6121623/catching-exception-divide-by-zero
-                        //
-                        //   ...section [expr.mul] specifically states (for both integer and floating point division, and integer remainder):
-                        //       If the second operand of / or % is zero, the behavior is undefined.
-                        //   So, it could throw those (or any other) exceptions. It could also format your hard disk and laugh derisively :-)
-                        //
-                        // and
-                        //
-                        //   Stroustrup says, in "The Design and Evolution of C++" (Addison Wesley, 1994),
-                        //   "low-level events, such as arithmetic overflows and divide by zero, are assumed
-                        //   to be handled by a dedicated lower-level mechanism rather than by exceptions.
-                        //   This enables C++ to match the behaviour of other languages when it comes to
-                        //   arithmetic. It also avoids the problems that occur on heavily pipelined
-                        //   architectures where events such as divide by zero are asynchronous."`
-                        //
-                        // Our current implementation shows up as a throw exception of type std::exception or
-                        // derived type so we'll catch that and log what what little we know about what went wrong
-                        WEX::Logging::Log::Comment(
-                            WEX::Common::String().Format(L"%s mod_variant %s == std::exception.what: %hs",
-                                                         left.to_string().c_str(), right.to_string().c_str(), e.what()));
-                    }
-                    const Microsoft::Windows::Foundation::decimal result_truncated{ left.mod_truncated(right) };
-
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"  VARIANT: %s %% %s = %s vs %s",
-                        left.to_string().c_str(), right.to_string().c_str(), result_variant.to_string().c_str(), expected.to_string().c_str()));
-
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"TRUNCATED: %s %% %s = %s vs %s",
-                        left.to_string().c_str(), right.to_string().c_str(), result_truncated.to_string().c_str(), expected.to_string().c_str()));
-
-                    //VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s mod %s = %s vs %s",
-                    //    left.to_string().c_str(), right.to_string().c_str(), result.to_string().c_str(), expected.to_string().c_str()));
-                }
-                catch (std::exception& e)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::exception.what: %hs", e.what()));
-                    //VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.cod(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
-                }
+                Microsoft::Windows::Foundation::decimal result2{ left };
+                result2 %= right;
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s %%= %s = %s vs %s",
+                    left.to_string().c_str(), right.to_string().c_str(), result2.to_string().c_str(), expected.to_string().c_str()));
             }
         }
 

@@ -22,7 +22,6 @@ namespace Microsoft.Windows.Foundation
     runtimeclass Decimal : Windows.Foundation.IStringable
     {
         Decimal();
-        //Decimal(Decimal value);
 
         static Decimal CreateFromBoolean(Boolean value);
         static Decimal CreateFromInt16(Int16 value);
@@ -40,6 +39,7 @@ namespace Microsoft.Windows.Foundation
         static Decimal CreateFromStringWithThreadLocale(String value);          // LCID=GetThreadLocale()
         static Decimal CreateFromStringWithInvariantLocale(String value);       // LCID=LOCALE_INVARIANT
         static Decimal Create(IInspectable value);
+        static Decimal CreateFromDecimal(Decimal value);
         static Decimal CreateFromDecimalValue(DecimalValue value);
 
         void SetFromBoolean(Boolean value);
@@ -58,6 +58,7 @@ namespace Microsoft.Windows.Foundation
         void SetFromStringWithThreadLocale(String value);           // LCID=GetThreadLocale()
         void SetFromStringWithInvariantLocale(String value);        // LCID=LOCALE_INVARIANT
         void Set(IInspectable value);
+        void SetFromDecimal(Decimal value);
         void SetFromDecimalValue(DecimalValue value);
 
         Boolean ToBoolean();
@@ -78,10 +79,17 @@ namespace Microsoft.Windows.Foundation
         IInspectable ToObject();
         DecimalValue ToDecimalValue();
 
+        /// Return true if (this == value).
+        Boolean Equals(Decimal value);
+
+        /// Compare this decimal with value.
+        /// @return 0 if this and value are equal, <0 if this is less than value or >0 if this is greater than value.
         Int32 Compare(Decimal value);
 
+        /// Return a decimal whose value is (-this).
         Decimal Negate();
 
+        /// Return the absolute value.
         Decimal Abs();
 
         /// Return the value's integer portion (zero to the right of the decimal point).
@@ -90,23 +98,27 @@ namespace Microsoft.Windows.Foundation
         /// Return the value rounded down to the nearest integer.
         Decimal Integer();
 
+        /// Return the value rounded to the specific number of decimal places.
         Decimal Round(Int32 decimalPlaces);
 
+        /// Returns a Decimal whose value is (this + value).
         Decimal Add(Decimal value);
         Decimal AddAssign(Decimal value);
 
-        Decimal Sub(Decimal value); //TODO Subtract() ?
-        Decimal SubAssign(Decimal value); //TODO Subtract() ?
+        /// Returns a Decimal whose value is (this - value).
+        Decimal Sub(Decimal value);         //TODO Rename to Subtract() ?
+        Decimal SubAssign(Decimal value);   //TODO Rename to SubtractAssign() ?
 
-        Decimal Mul(Decimal value); //TODO Multiply() ?
-        Decimal MulAssign(Decimal value); //TODO Multiply() ?
+        /// Returns a Decimal whose value is (this * value).
+        Decimal Mul(Decimal value);         //TODO Rename to Multiply() ?
+        Decimal MulAssign(Decimal value);   //TODO Rename to MultiplyAssign() ?
 
-        Decimal Div(Decimal value); //TODO Divide() ?
-        Decimal DivAssign(Decimal value); //TODO Divide() ?
+        /// Returns a Decimal whose value is (this / value).
+        Decimal Div(Decimal value);         //TODO Rename to Divide() ?
+        Decimal DivAssign(Decimal value);   //TODO Rename to DivideAssign() ?
 
-        Decimal Mod(Decimal value); //TODO Modulo() or Remainder() ?
-        Decimal ModAssign(Decimal value); //TODO Modulo() or Remainder() ?
-        Decimal ModVariant(Decimal value); //TODO Remove?
-        Decimal ModTruncated(Decimal value); //TODO Remove?
+        /// Returns a Decimal whose value is (this % value).
+        Decimal Mod(Decimal value);         //TODO Rename to Modulo() or Remainder() ?
+        Decimal ModAssign(Decimal value);   //TODO Rename to ModuloAssign() or RemainderAssign() ?
     }
 }

@@ -31,6 +31,14 @@ namespace Test.DotNet
             compare_string();
             operator_neg();
             abs();
+            fix();
+            integer();
+            operator_add();
+            operator_sub();
+            operator_mul();
+            operator_div();
+            operator_mod();
+            round();
         }
 
         public static void ctor()
@@ -554,38 +562,70 @@ namespace Test.DotNet
 
         public static void fix()
         {
+            var zero = Decimal.Parse("0");
+            var zero_value = (long)zero;
+            Verify.AreEqual(0, zero.CompareTo(zero_value));
+
+            var pos = Decimal.Parse("12.345");
+            var pos_fix = Decimal.Parse("12");
+            var pos_value = (long)pos;
+            Verify.AreEqual(0, pos_fix.CompareTo(pos_value));
+
+            var neg = Decimal.Parse("-12.345");
+            var neg_fix = Decimal.Parse("-12");
+            var neg_value = (long)neg;
+            Verify.AreEqual(0, neg_fix.CompareTo(neg_value));
         }
 
         public static void integer()
         {
+            var zero = Decimal.Parse("0");
+            var zero_value = (long)zero;
+            Verify.AreEqual(0, zero.CompareTo(zero_value));
+
+            var pos = Decimal.Parse("12.345");
+            var pos_integer = Decimal.Parse("12");
+            var pos_value = (long)pos;
+            Verify.AreEqual(0, pos_integer.CompareTo(pos_value));
+
+            var neg = Decimal.Parse("-12.345");
+            var neg_integer = Decimal.Parse("-13");
+            var neg_value = (long)neg;
+            if ((neg_value < 0) && (neg_value != neg))
+            {
+                --neg_value;
+            }
+            Verify.AreEqual(0, neg_integer.CompareTo(neg_value));
         }
 
         public static void operator_add()
         {
+            // TODO operator_add tests
         }
 
         public static void operator_sub()
         {
+            // TODO operator_sub tests
         }
 
         public static void operator_mul()
         {
+            // TODO operator_mul tests
         }
 
         public static void operator_div()
         {
+            // TODO operator_div tests
         }
 
         public static void operator_mod()
         {
-        }
-
-        public static void mod()
-        {
+            // TODO operator_mod tests
         }
 
         public static void round()
         {
+            // TODO round tests
         }
 
         private static Decimal abs(Decimal value)

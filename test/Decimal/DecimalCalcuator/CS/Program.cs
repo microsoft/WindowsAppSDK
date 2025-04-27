@@ -21,10 +21,10 @@ namespace Microsoft.Windows.Foundation
                 // NOTE: Decimal unary operators not supported by C#: ! ~
                 switch (op)
                 {
-                    case "+":      result = +left; Console.Write($"{op}{left} = {result}"); break;
-                    case "-":      result = -left; Console.Write($"{op}{left} = {result}"); break;
-                    case "++":     result = ++left; Console.Write($"{op}{left} = {result}"); break;
-                    case "--":     result = --left; Console.Write($"{op}{left} = {result}"); break;
+                    case "+":      result = +left; Output($"{op}{left} = {result}"); break;
+                    case "-":      result = -left; Output($"{op}{left} = {result}"); break;
+                    case "++":     result = ++left; Output($"{op}{left} = {result}"); break;
+                    case "--":     result = --left; Output($"{op}{left} = {result}"); break;
                     case "int32":  expected = null; Console.WriteLine($"{op} {left} = {(int)left}"); break;
                     case "int64":  expected = null; Console.WriteLine($"{op} {left} = {(long)left}"); break;
                     case "uint32": expected = null; Console.WriteLine($"{op} {left} = {(uint)left}"); break;
@@ -39,12 +39,12 @@ namespace Microsoft.Windows.Foundation
                 // NOTE: Decimal unary operators not supported by C#: << >> >>> & | ^
                 switch (op)
                 {
-                    case "+":   result = left + right; Console.Write($"{left} {op} {right} = {result}"); break;
-                    case "-":   result = left - right; Console.Write($"{left} {op} {right} = {result}"); break;
-                    case "*":   result = left * right; Console.Write($"{left} {op} {right} = {result}"); break;
-                    case "/":   result = left / right; Console.Write($"{left} {op} {right} = {result}"); break;
-                    case "%":   result = left % right; Console.Write($"{left} {op} {right} = {result}"); break;
-                    case "mod": result = left % right; Console.Write($"{left} {op} {right} = {result}"); break;
+                    case "+":   result = left + right; Output($"{left} {op} {right} = {result}"); break;
+                    case "-":   result = left - right; Output($"{left} {op} {right} = {result}"); break;
+                    case "*":   result = left * right; Output($"{left} {op} {right} = {result}"); break;
+                    case "/":   result = left / right; Output($"{left} {op} {right} = {result}"); break;
+                    case "%":   result = left % right; Output($"{left} {op} {right} = {result}"); break;
+                    case "mod": result = left % right; Output($"{left} {op} {right} = {result}"); break;
                     case "==":  expected = null; Console.WriteLine($"{left} {op} {right} = {left == right}"); break;
                     case "!=":  expected = null; Console.WriteLine($"{left} {op} {right} = {left != right}"); break;
                     case "<":   expected = null; Console.WriteLine($"{left} {op} {right} = {left < right}"); break;
@@ -61,8 +61,14 @@ namespace Microsoft.Windows.Foundation
             if (expected != null)
             {
                 Decimal expectedValue = Decimal.Parse(expected);
-                Console.WriteLine($"\t\t    ==> {result} == {expectedValue} = {expectedValue == result}");
+                Console.Write($"==> {result} == {expectedValue} = {expectedValue == result}");
             }
+            Console.WriteLine();
+        }
+
+        private static void Output(string evaluation)
+        {
+            Console.Write($"{evaluation,-32}");
         }
 
         private static void UnknownOperator(string message)

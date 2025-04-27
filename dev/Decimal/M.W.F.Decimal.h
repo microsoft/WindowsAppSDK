@@ -59,6 +59,7 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromStringWithThreadLocale(hstring const& value);
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromStringWithInvariantLocale(hstring const& value);
         static winrt::Microsoft::Windows::Foundation::Decimal Create(winrt::Windows::Foundation::IInspectable const& value);
+        static winrt::Microsoft::Windows::Foundation::Decimal CreateFromDecimal(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromDecimalValue(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         void SetFromBoolean(bool value);
         void SetFromInt16(int16_t value);
@@ -76,6 +77,7 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         void SetFromStringWithThreadLocale(hstring const& value);
         void SetFromStringWithInvariantLocale(hstring const& value);
         void Set(winrt::Windows::Foundation::IInspectable const& value);
+        void SetFromDecimal(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         void SetFromDecimalValue(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         bool ToBoolean();
         int16_t ToInt16();
@@ -93,6 +95,7 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         hstring ToStringWithInvariantLocale();
         winrt::Windows::Foundation::IInspectable ToObject();
         winrt::Microsoft::Windows::Foundation::DecimalValue ToDecimalValue();
+        bool Equals(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         int32_t Compare(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Negate();
         winrt::Microsoft::Windows::Foundation::Decimal Abs();

@@ -9,6 +9,44 @@
 #pragma comment(linker, "/defaultlib:oleaut32.lib")
 #endif
 
+inline int compare(const DECIMAL& left, const DECIMAL& right)
+{
+    static_assert(VARCMP_LT == 0, "VARCMP_LT == 0");
+    static_assert(VARCMP_EQ == 1, "VARCMP_EQ == 1");
+    static_assert(VARCMP_GT == 2, "VARCMP_GT == 2");
+    return ::VarDecCmp(const_cast<DECIMAL*>(&left), const_cast<DECIMAL*>(&right)) - 1;
+}
+
+inline bool operator==(const DECIMAL& left, const DECIMAL& right)
+{
+    return compare(left, right) == 0;
+}
+
+inline bool operator!=(const DECIMAL& left, const DECIMAL& right)
+{
+    return compare(left, right) != 0;
+}
+
+inline bool operator< (const DECIMAL& left, const DECIMAL& right)
+{
+    return compare(left, right) < 0;
+}
+
+inline bool operator<=(const DECIMAL& left, const DECIMAL& right)
+{
+    return compare(left, right) <= 0;
+}
+
+inline bool operator> (const DECIMAL& left, const DECIMAL& right)
+{
+    return compare(left, right) > 0;
+}
+
+inline bool operator>=(const DECIMAL& left, const DECIMAL& right)
+{
+    return compare(left, right) >= 0;
+}
+
 namespace Microsoft::Windows::Foundation
 {
 class decimal
@@ -429,12 +467,39 @@ public:
         return compare(value.m_decimal);
     }
 
+    bool operator==(const DECIMAL& value) const
+    {
+        return compare(value) == 0;
+    }
+
+    bool operator!=(const DECIMAL& value) const
+    {
+        return compare(value) != 0;
+    }
+
+    bool operator< (const DECIMAL& value) const
+    {
+        return compare(value) < 0;
+    }
+
+    bool operator<=(const DECIMAL& value) const
+    {
+        return compare(value) <= 0;
+    }
+
+    bool operator> (const DECIMAL& value) const
+    {
+        return compare(value) > 0;
+    }
+
+    bool operator>=(const DECIMAL& value) const
+    {
+        return compare(value) >= 0;
+    }
+
     int compare(const DECIMAL& value) const
     {
-        static_assert(VARCMP_LT == 0, "VARCMP_LT == 0");
-        static_assert(VARCMP_EQ == 1, "VARCMP_EQ == 1");
-        static_assert(VARCMP_GT == 2, "VARCMP_GT == 2");
-        return ::VarDecCmp(const_cast<DECIMAL*>(&m_decimal), const_cast<DECIMAL*>(&value)) - 1;
+        return ::compare(m_decimal, value);
     }
 
     decimal operator+() const
@@ -549,39 +614,11 @@ public:
         return *this;
     }
 
-    decimal operator%(const decimal& value) const
-    {
-        return mod_variant(value);
-    }
-
-    decimal mod_variant(const decimal& value) const
-    {
-        VARIANT left{};
-        left.vt = VT_DECIMAL;
-        left.decVal = m_decimal;
-
-        VARIANT right{};
-        right.vt = VT_DECIMAL;
-        right.decVal = value.m_decimal;
-
-        VARIANT result{};
-        THROW_IF_FAILED(::VarMod(&left, &right, &result));
-        VARIANT resultAsDecimal{};
-        THROW_IF_FAILED(::VariantChangeType(&resultAsDecimal, &result, 0, VT_DECIMAL));
-        THROW_HR_IF_MSG(E_UNEXPECTED, resultAsDecimal.vt != VT_DECIMAL, ".vt=%hu", resultAsDecimal.vt);
-        return Microsoft::Windows::Foundation::decimal{ resultAsDecimal.decVal };
-    }
-
-    decimal mod(const decimal& value) const
-    {
-        return mod_truncated(value);
-    }
-
     /// Modulo operation using the Truncated method.
     /// @note The % operator in C, C#, Rust and other languages use this method.
     /// @note The result's sign will match the current value's sign.
     /// @see https://en.wikipedia.org/wiki/Modulo
-    decimal mod_truncated(const decimal& value) const
+    decimal operator%(const decimal& value) const
     {
         // VarMod() operates on I4 (int32) at best (not even I8 aka int64)
         // So let's do it the grade school way and matching .NET's Decimal...
