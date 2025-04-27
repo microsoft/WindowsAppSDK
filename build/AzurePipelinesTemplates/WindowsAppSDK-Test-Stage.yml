@@ -3,8 +3,6 @@ stages:
   dependsOn: Build_x86
   condition: not(failed())
   jobs:
-  # Arm64 uses a different VM type than x64, thus requiring them to be in different
-  # pools, hence, we split the two scenarios into separate jobs.
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests
@@ -15,8 +13,6 @@ stages:
   dependsOn: Build_x64
   condition: not(failed())
   jobs:
-  # Arm64 uses a different VM type than x64, thus requiring them to be in different
-  # pools, hence, we split the two scenarios into separate jobs.
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests
@@ -27,8 +23,6 @@ stages:
   dependsOn: Build_arm64
   condition: not(failed())
   jobs:
-  # Arm64 uses a different VM type than x64, thus requiring them to be in different
-  # pools, hence, we split the two scenarios into separate jobs.
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests

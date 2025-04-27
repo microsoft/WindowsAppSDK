@@ -37,8 +37,11 @@ jobs:
       $filteredMatrixJson = $filteredMatrix | ConvertTo-Json -Compress
       Write-Host "##vso[task.setvariable variable=filteredMatrixJson;isOutput=true]$filteredMatrixJson"
     name: setFilteredMatrixStep
+    displayName: "Filter matrix for next job - only matrix with specific platform will be passed to next job"
   - script: echo $(setFilteredMatrixStep.filteredMatrixJson)
     name: echoMatrix
+    displayName: "Echo filtered matrix"
+
 
 - job: ${{ parameters.jobName }}
   dependsOn: FilterMatrix
