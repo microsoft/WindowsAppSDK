@@ -207,4 +207,3 @@ stages:
           nuGetFeedType: 'internal'
           #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
           publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
-          
