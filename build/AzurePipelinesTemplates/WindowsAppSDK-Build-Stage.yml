@@ -7,10 +7,10 @@ parameters:
   default: true
 - name: runStaticAnalysis
   type: boolean
-  default: true
+  default: false
 
 stages:
-- stage: Build
+- stage: ${{ iif(parameters.runStaticAnalysis, 'StaticAnalysis', 'Build') }}
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
