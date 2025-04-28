@@ -8,6 +8,7 @@ namespace Microsoft.Windows.Foundation
     [contractversion(2)]
     apicontract DecimalContract{};
 
+    [feature(Feature_Decimal)]
     [contract(DecimalContract, 1)]
     struct DecimalValue
     {
@@ -18,6 +19,7 @@ namespace Microsoft.Windows.Foundation
         UInt64 Lo64;
     };
 
+    [feature(Feature_Decimal)]
     [contract(DecimalContract, 1)]
     runtimeclass Decimal : Windows.Foundation.IStringable
     {

@@ -21,6 +21,7 @@ Potential future changes
    4. Rename Div() to Divide()
    5. Rename Mod() to Modulo() or Remainder()
    6. Implement IInspectable methods -- Create(IInspectable), Set(IInspectable), ToObject()
+   7. Add experimental checks in ctor + static methods
 3. decimalcppwinrt.h
    1. Add operator+
    2. Add operator-
