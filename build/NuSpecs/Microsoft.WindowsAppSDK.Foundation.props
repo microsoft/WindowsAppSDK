@@ -8,4 +8,8 @@
     <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
   </PropertyGroup>
 
+  <ItemGroup>
+    <WindowsAppSdkComponentPackages Include="$(MSBuildThisFileDirectory)..\" />
+  </ItemGroup>
+
 </Project>

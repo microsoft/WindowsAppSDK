@@ -4,6 +4,8 @@
 using System;
 using System.Runtime.CompilerServices;
 
+using Microsoft.Windows.Foundation;
+
 namespace Microsoft.Windows.Foundation
 {
     public static class DecimalExtensions
