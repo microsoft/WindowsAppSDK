@@ -160,7 +160,7 @@ namespace PickerCommon {
         for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
-            buffer.push_back(filter);
+            buffer.push_back(L"");
             buffer.push_back(ext);
 
             allFilesExtensionList.reserve(allFilesExtensionList.length() + ext.size() + 1);
