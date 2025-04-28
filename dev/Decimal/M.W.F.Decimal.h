@@ -6,29 +6,10 @@
 #include "Microsoft.Windows.Foundation.Decimal.g.h"
 
 #include <decimal.h>
+#include <decimalcppwinrt.h>
 
 namespace winrt::Microsoft::Windows::Foundation::implementation
 {
-    inline DECIMAL to_DECIMAL(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
-    {
-        return *reinterpret_cast<const DECIMAL*>(&value);
-    }
-
-    inline ::Microsoft::Windows::Foundation::decimal to_decimal(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
-    {
-        return ::Microsoft::Windows::Foundation::decimal{ to_DECIMAL(value) };
-    }
-
-    inline ::Microsoft::Windows::Foundation::decimal to_decimal(winrt::Microsoft::Windows::Foundation::Decimal const& value)
-    {
-        return to_decimal(value.ToDecimalValue());
-    }
-
-    inline winrt::Microsoft::Windows::Foundation::DecimalValue to_DecimalValue(::Microsoft::Windows::Foundation::decimal const& value)
-    {
-        return *reinterpret_cast<const winrt::Microsoft::Windows::Foundation::DecimalValue*>(&value.to_decimal());
-    }
-
     struct Decimal : DecimalT<Decimal>
     {
         Decimal() = default;
@@ -40,6 +21,11 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
 
         Decimal(winrt::Microsoft::Windows::Foundation::DecimalValue const& value) :
             m_decimal(to_DECIMAL(value))
+        {
+        }
+
+        Decimal(DECIMAL const& value) :
+            m_decimal(value)
         {
         }
 
@@ -61,6 +47,9 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         static winrt::Microsoft::Windows::Foundation::Decimal Create(winrt::Windows::Foundation::IInspectable const& value);
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromDecimal(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         static winrt::Microsoft::Windows::Foundation::Decimal CreateFromDecimalValue(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
+        static uint32_t MaxScale();
+        static winrt::Microsoft::Windows::Foundation::Decimal MaxValue();
+        static winrt::Microsoft::Windows::Foundation::Decimal MinValue();
         void SetFromBoolean(bool value);
         void SetFromInt16(int16_t value);
         void SetFromInt32(int32_t value);
@@ -98,23 +87,18 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         winrt::Microsoft::Windows::Foundation::DecimalValue ToDecimalValue();
         bool Equals(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         int32_t Compare(winrt::Microsoft::Windows::Foundation::Decimal const& value);
+        uint32_t Scale();
+        int32_t Sign();
         winrt::Microsoft::Windows::Foundation::Decimal Negate();
         winrt::Microsoft::Windows::Foundation::Decimal Abs();
         winrt::Microsoft::Windows::Foundation::Decimal Fix();
         winrt::Microsoft::Windows::Foundation::Decimal Integer();
         winrt::Microsoft::Windows::Foundation::Decimal Round(int32_t decimalPlaces);
         winrt::Microsoft::Windows::Foundation::Decimal Add(winrt::Microsoft::Windows::Foundation::Decimal const& value);
-        winrt::Microsoft::Windows::Foundation::Decimal AddAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Sub(winrt::Microsoft::Windows::Foundation::Decimal const& value);
-        winrt::Microsoft::Windows::Foundation::Decimal SubAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Mul(winrt::Microsoft::Windows::Foundation::Decimal const& value);
-        winrt::Microsoft::Windows::Foundation::Decimal MulAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Div(winrt::Microsoft::Windows::Foundation::Decimal const& value);
-        winrt::Microsoft::Windows::Foundation::Decimal DivAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         winrt::Microsoft::Windows::Foundation::Decimal Mod(winrt::Microsoft::Windows::Foundation::Decimal const& value);
-        winrt::Microsoft::Windows::Foundation::Decimal ModAssign(winrt::Microsoft::Windows::Foundation::Decimal const& value);
-        winrt::Microsoft::Windows::Foundation::Decimal ModVariant(winrt::Microsoft::Windows::Foundation::Decimal const& value);
-        winrt::Microsoft::Windows::Foundation::Decimal ModTruncated(winrt::Microsoft::Windows::Foundation::Decimal const& value);
         hstring ToString();
 
     private:

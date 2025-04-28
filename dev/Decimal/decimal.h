@@ -1,7 +1,8 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#pragma once
+#ifndef DECIMAL_H
+#define DECIMAL_H
 
 #include <oleauto.h>
 
@@ -66,7 +67,7 @@ public:
         value.m_decimal = DECIMAL{};
     }
 
-    decimal(const DECIMAL& value) :
+    constexpr decimal(const DECIMAL& value) :
         m_decimal(value)
     {
     }
@@ -321,7 +322,7 @@ public:
     bool to_bool() const
     {
         // Treat values != 0 as true
-        return (m_decimal.Lo64 != 0) | (m_decimal.Hi32 != 0);
+        return (m_decimal.Lo64 != 0) || (m_decimal.Hi32 != 0);
     }
 
     char to_char() const
@@ -502,6 +503,45 @@ public:
         return ::compare(m_decimal, value);
     }
 
+    /// Return the scaling factor of the value (the number of decimal digits).
+    /// @return the scaling factor, ranging from 0 to max_scale().
+    std::uint32_t scale() const
+    {
+        return m_decimal.scale;
+    }
+
+    /// Return the sign of the value.
+    /// @return 0 if this os zero, <0 if this is less than zero or >0 if this is greater than zero.
+    std::int32_t sign() const
+    {
+        return ((m_decimal.Lo64 == 0) && (m_decimal.Hi32 == 0)) ? 0 : (m_decimal.sign != 0 ? -1 : 1);
+    }
+
+    /// Return the maximum scaling factor
+    static constexpr std::uint32_t max_scale()
+    {
+        return 28;
+    }
+
+    /// Return the maximum value (79,228,162,514,264,337,593,543,950,335).
+    static constexpr decimal max_value()
+    {
+        DECIMAL value{};
+        value.Lo64 = 0xFFFFFFFFFFFFFFFFllu;
+        value.Hi32 = 0xFFFFFFFFu;
+        return decimal{ value };
+    }
+
+    /// Return the minimum value (-79,228,162,514,264,337,593,543,950,335).
+    static constexpr decimal min_value()
+    {
+        DECIMAL value{};
+        value.Lo64 = 0xFFFFFFFFFFFFFFFFllu;
+        value.Hi32 = 0xFFFFFFFFu;
+        value.sign = DECIMAL_NEG;
+        return decimal{ value };
+    }
+
     decimal operator+() const
     {
         return *this;
@@ -659,3 +699,5 @@ private:
     DECIMAL m_decimal{};
 };
 }
+
+#endif // DECIMAL_H

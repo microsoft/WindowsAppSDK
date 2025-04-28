@@ -87,6 +87,23 @@ namespace Microsoft.Windows.Foundation
         /// @return 0 if this and value are equal, <0 if this is less than value or >0 if this is greater than value.
         Int32 Compare(Decimal value);
 
+        /// Return the scaling factor of the value (the number of decimal digits).
+        /// @return the scaling factor, ranging from 0 to max_scale().
+        UInt32 Scale { get; };
+
+        /// Return the sign of the value.
+        /// @return 0 if this os zero, <0 if this is less than zero or >0 if this is greater than zero.
+        Int32 Sign { get; };
+
+        /// Return the maximum scaling factor
+        static UInt32 MaxScale{ get; };
+
+        /// Return the maximum value (79,228,162,514,264,337,593,543,950,335).
+        static Decimal MaxValue{ get; };
+
+        /// Return the minimum value (-79,228,162,514,264,337,593,543,950,335).
+        static Decimal MinValue{ get; };
+
         /// Return a decimal whose value is (-this).
         Decimal Negate();
 
@@ -104,22 +121,17 @@ namespace Microsoft.Windows.Foundation
 
         /// Returns a Decimal whose value is (this + value).
         Decimal Add(Decimal value);
-        Decimal AddAssign(Decimal value);
 
         /// Returns a Decimal whose value is (this - value).
         Decimal Sub(Decimal value);         //TODO Rename to Subtract() ?
-        Decimal SubAssign(Decimal value);   //TODO Rename to SubtractAssign() ?
 
         /// Returns a Decimal whose value is (this * value).
         Decimal Mul(Decimal value);         //TODO Rename to Multiply() ?
-        Decimal MulAssign(Decimal value);   //TODO Rename to MultiplyAssign() ?
 
         /// Returns a Decimal whose value is (this / value).
         Decimal Div(Decimal value);         //TODO Rename to Divide() ?
-        Decimal DivAssign(Decimal value);   //TODO Rename to DivideAssign() ?
 
         /// Returns a Decimal whose value is (this % value).
         Decimal Mod(Decimal value);         //TODO Rename to Modulo() or Remainder() ?
-        Decimal ModAssign(Decimal value);   //TODO Rename to ModuloAssign() or RemainderAssign() ?
     }
 }

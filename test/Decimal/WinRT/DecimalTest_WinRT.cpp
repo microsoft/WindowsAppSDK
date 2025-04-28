@@ -5,6 +5,8 @@
 
 #include <winrt/Microsoft.Windows.Foundation.h>
 
+#include <decimalcppwinrt.h>
+
 namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -731,6 +733,66 @@ namespace Test::Decimal::Tests
             VERIFY_IS_TRUE(right >= left);
         }
 
+        TEST_METHOD(scale)
+        {
+            const auto n_0{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"79228162514264337593543950335" }) };
+            VERIFY_ARE_EQUAL(0u, n_0.Scale());
+
+            const auto n_1{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"7922816251426433759354395033.5" }) };
+            VERIFY_ARE_EQUAL(1u, n_1.Scale());
+
+            const auto n_2{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"792281625142643375935439503.35" }) };
+            VERIFY_ARE_EQUAL(2u, n_2.Scale());
+
+            const auto n_27{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"79.228162514264337593543950335" }) };
+            VERIFY_ARE_EQUAL(27u, n_27.Scale());
+
+            const auto n_28{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"7.9228162514264337593543950335" }) };
+            VERIFY_ARE_EQUAL(28u, n_28.Scale());
+
+            const auto neg_n_0{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"-79228162514264337593543950335" }) };
+            VERIFY_ARE_EQUAL(0u, neg_n_0.Scale());
+
+            const auto neg_n_1{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"-7922816251426433759354395033.5" }) };
+            VERIFY_ARE_EQUAL(1u, neg_n_1.Scale());
+
+            const auto neg_n_2{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"-792281625142643375935439503.35" }) };
+            VERIFY_ARE_EQUAL(2u, neg_n_2.Scale());
+
+            const auto neg_n_27{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"-79.228162514264337593543950335" }) };
+            VERIFY_ARE_EQUAL(27u, neg_n_27.Scale());
+
+            const auto neg_n_28{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"-7.9228162514264337593543950335" }) };
+            VERIFY_ARE_EQUAL(28u, neg_n_28.Scale());
+        }
+
+        TEST_METHOD(sign)
+        {
+            const winrt::Microsoft::Windows::Foundation::Decimal zero{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"0" }) };
+            VERIFY_ARE_EQUAL(0, zero.Sign());
+
+            const winrt::Microsoft::Windows::Foundation::Decimal neg_zero{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"-0" }) };
+            VERIFY_ARE_EQUAL(0, neg_zero.Sign());
+            VERIFY_ARE_EQUAL(zero, neg_zero);
+
+            const winrt::Microsoft::Windows::Foundation::Decimal pos{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"12.345" }) };
+            VERIFY_ARE_EQUAL(1, pos.Sign());
+
+            const winrt::Microsoft::Windows::Foundation::Decimal neg{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"-12.345" }) };
+            VERIFY_ARE_EQUAL(-1, neg.Sign());
+        }
+
+        TEST_METHOD(min_max)
+        {
+            VERIFY_ARE_EQUAL(28u, winrt::Microsoft::Windows::Foundation::Decimal::MaxScale());
+
+            const winrt::Microsoft::Windows::Foundation::Decimal max_decimal{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"79228162514264337593543950335" }) };
+            VERIFY_ARE_EQUAL(max_decimal, winrt::Microsoft::Windows::Foundation::Decimal::MaxValue());
+
+            const winrt::Microsoft::Windows::Foundation::Decimal min_decimal{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"-79228162514264337593543950335" }) };
+            VERIFY_ARE_EQUAL(min_decimal, winrt::Microsoft::Windows::Foundation::Decimal::MinValue());
+        }
+
         TEST_METHOD(negate)
         {
             winrt::Microsoft::Windows::Foundation::Decimal zero{ winrt::Microsoft::Windows::Foundation::Decimal::CreateFromString(winrt::hstring{ L"0" }) };
@@ -859,11 +921,6 @@ namespace Test::Decimal::Tests
                 const winrt::Microsoft::Windows::Foundation::Decimal result{ left.Add(right) };
                 VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Add %s = %s vs %s",
                     left.ToString().c_str(), right.ToString().c_str(), result.ToString().c_str(), expected.ToString().c_str()));
-
-                winrt::Microsoft::Windows::Foundation::Decimal result2{ left };
-                result2.AddAssign(right);
-                VERIFY_ARE_EQUAL(expected, result2, WEX::Common::String().Format(L"%s AddAssign %s = %s vs %s",
-                    left.ToString().c_str(), right.ToString().c_str(), result2.ToString().c_str(), expected.ToString().c_str()));
             }
         }
 
@@ -905,11 +962,6 @@ namespace Test::Decimal::Tests
                 const winrt::Microsoft::Windows::Foundation::Decimal result{ left.Sub(right) };
                 VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Sub %s = %s vs %s",
                     left.ToString().c_str(), right.ToString().c_str(), result.ToString().c_str(), expected.ToString().c_str()));
-
-                winrt::Microsoft::Windows::Foundation::Decimal result2{ left };
-                result2.SubAssign(right);
-                VERIFY_ARE_EQUAL(expected, result2, WEX::Common::String().Format(L"%s SubAssign %s = %s vs %s",
-                    left.ToString().c_str(), right.ToString().c_str(), result2.ToString().c_str(), expected.ToString().c_str()));
             }
         }
 
@@ -951,11 +1003,6 @@ namespace Test::Decimal::Tests
                 const winrt::Microsoft::Windows::Foundation::Decimal result{ left.Mul(right) };
                 VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Mul %s = %s vs %s",
                     left.ToString().c_str(), right.ToString().c_str(), result.ToString().c_str(), expected.ToString().c_str()));
-
-                winrt::Microsoft::Windows::Foundation::Decimal result2{ left };
-                result2.MulAssign(right);
-                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s MulAssign %s = %s vs %s",
-                    left.ToString().c_str(), right.ToString().c_str(), result2.ToString().c_str(), expected.ToString().c_str()));
             }
         }
 
@@ -971,6 +1018,10 @@ namespace Test::Decimal::Tests
             catch (wil::ResultException& e)
             {
                 VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.GetErrorCode(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.code(), WEX::Common::String().Format(L"0x%X %hs", e.code(), e.message().c_str()));
             }
 
             struct values
@@ -1005,11 +1056,6 @@ namespace Test::Decimal::Tests
                 const winrt::Microsoft::Windows::Foundation::Decimal result{ left.Div(right) };
                 VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Div %s = %s vs %s",
                     left.ToString().c_str(), right.ToString().c_str(), result.ToString().c_str(), expected.ToString().c_str()));
-
-                winrt::Microsoft::Windows::Foundation::Decimal result2{ left };
-                result2.DivAssign(right);
-                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s DivAssign %s = %s vs %s",
-                    left.ToString().c_str(), right.ToString().c_str(), result2.ToString().c_str(), expected.ToString().c_str()));
             }
         }
 
@@ -1025,6 +1071,10 @@ namespace Test::Decimal::Tests
             catch (wil::ResultException& e)
             {
                 VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.GetErrorCode(), WEX::Common::String().Format(L"0x%X %hs", e.GetErrorCode(), e.what()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.code(), WEX::Common::String().Format(L"0x%X %hs", e.code(), e.message().c_str()));
             }
 
             struct values
@@ -1073,11 +1123,6 @@ namespace Test::Decimal::Tests
                 const winrt::Microsoft::Windows::Foundation::Decimal result{ left.Mod(right) };
                 VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Mod %s = %s vs %s",
                     left.ToString().c_str(), right.ToString().c_str(), result.ToString().c_str(), expected.ToString().c_str()));
-
-                winrt::Microsoft::Windows::Foundation::Decimal result2{ left };
-                result2.ModAssign(right);
-                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s ModAssign %s = %s vs %s",
-                    left.ToString().c_str(), right.ToString().c_str(), result2.ToString().c_str(), expected.ToString().c_str()));
             }
         }
 
