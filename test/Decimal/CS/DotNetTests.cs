@@ -633,5 +633,25 @@ namespace Test.DotNet
             var zero = new Decimal(0);
             return value.CompareTo(zero) < 0 ? -value : value;
         }
+
+        public static void ToDecimal()
+        {
+            // TODO ToDecimal tests
+        }
+
+        public static void ToDecimalValue()
+        {
+            // TODO ToDecimalValue tests
+        }
+
+        public static void FromDecimal()
+        {
+            // TODO FromDecimal tests
+        }
+
+        public static void FromDecimalValue()
+        {
+            // TODO FromDecimalValue tests
+        }
     }
 }

@@ -12,7 +12,7 @@ Potential future changes
    1. Add floor() - round towards +infinity. https://learn.microsoft.com/en-us/dotnet/api/system.decimal.floor
    2. Add ceil() - round towards -infinity. https://learn.microsoft.com/en-us/dotnet/api/system.decimal.ceiling
       1. Rename integer() to ceil() ?
-   3. Add round towards zero
+   3. Add floor-ceil-variant() - round towards zero
    4. decimal zero{}; decimal neg{ -zero }; neg.sign() < 0 because DECIMAL.sign = 0x80. Treat -0 the same as +0 (prevent -0 from being set?)
 2. winrt::Microsoft::Windows::Foundation::Decimal
    1. Rename ToDecimal() -- Copy(value) or Clone(value)
@@ -32,9 +32,12 @@ Potential future changes
    7. Add ctor(type) where type = bool / [u]int8/16/32/64 / float / double ?
    8. Add operator=(type) where type = bool / [u]int8/16/32/64 / float / double ?
 4. Microsoft.Windows.Foundation.Projection
-   1. Delete WDecimal.cs
-   2. Add WinRT<->C# conversion functions
-      1. System.Decimal ToSystemDecimal(Microsoft.Windows.Foundation.Decimal from)
-      1. System.Decimal ToSystemDecimal(Microsoft.Windows.Foundation.DecimalValue from)
-      1. Microsoft.Windows.Foundation.Decimal ToDecimal(System.Decimal from)
-      1. Microsoft.Windows.Foundation.DecimalValue ToDecimalValue(System.Decimal from)
+   1. Add more WinRT<->C# conversion functions
+      1. Constructors
+5. C# Tests
+   1. TAEF for C# ?
+   2. Port test\inc\WindowsAppRuntime.Test.Package.h to C#
+   3. Port test\inc\WindowsAppRuntime.Test.Bootstrap.h to C#
+   4. Register framework package
+   5. Bootstrap.Initialize()
+   6. Implement remaining tests
