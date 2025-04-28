@@ -224,6 +224,45 @@ configuration:
       - addLabel:
           label: needs-author-feedback
 
+    # /feedbackHub_WAA
+    - description: >-
+          Triggers:
+          * /feedbackhubWCR
+          * /feedbackHubWCR
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/feedback[H|h]ub'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              Hi @${issueAuthor}. Please file this issue on Feedback Hub [Windows]+[f] and paste 
+              the link here so we can more easily find your information on the back end. The link 
+              can be found at the bottom of the feedback report. Please use "Developer Platform" and "Windows Copilot Runtime" 
+              for the Category.
+              Full instructions
+              Open Feedback Hub (Use Windows key + F)
+              Make sure you're signed in to Feedback Hub.
+              In section 1, Start entering Bug details. Please prefix your bug title with "[WCR APIs]".
+              In section 2, use Developer Platform -> Windows Copilot Runtime
+              In section 4, Add more details -> Recreate my problem
+              Start recording, run your test app/the samples and demonstrate the issue, stop recording.
+              Please fill in as much info as possible, including repro steps.
+              Submit the feedback.
+
+      - removeLabel:
+          label: needs-triage
+      - removeLabel:
+          label: needs-assignee-attention
+      - addLabel:
+          label: needs-author-feedback
+
 
 
 onFailure: 
