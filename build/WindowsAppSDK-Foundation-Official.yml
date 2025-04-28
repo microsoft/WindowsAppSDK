@@ -100,13 +100,13 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
-        runStaticAnalysis : false
+        runStaticAnalysis: false
     
     - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
-      parameters:
-        SignOutput: ${{ parameters.SignOutput }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+        parameters:
+          SignOutput: ${{ parameters.SignOutput }}
+          runStaticAnalysis: true
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:

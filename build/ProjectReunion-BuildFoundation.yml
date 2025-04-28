@@ -37,6 +37,7 @@ stages:
   parameters:
     SignOutput: false
     IsOneBranch: false
+    runStaticAnalysis: true
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
   parameters:
