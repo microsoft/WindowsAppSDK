@@ -144,7 +144,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         parameters.ConfigureDialog(dialog);
         check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
-        check_hresult(dialog->SetOptions(FOS_ALLOWMULTISELECT));
+
+        FILEOPENDIALOGOPTIONS dialogOptions;
+        check_hresult(dialog->GetOptions(&dialogOptions));
+        check_hresult(dialog->SetOptions(dialogOptions | FOS_ALLOWMULTISELECT));
 
         {
             auto hr = dialog->Show(parameters.HWnd);

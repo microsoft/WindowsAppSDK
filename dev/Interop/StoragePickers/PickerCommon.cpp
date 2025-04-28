@@ -152,9 +152,9 @@ namespace PickerCommon {
     /// </returns>
     std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
-        int resultSize = filters.Size() + 1;
+        size_t resultSize = filters.Size() + 1;
         buffer.clear();
-        buffer.reserve(resultSize * (size_t)2);
+        buffer.reserve(resultSize * static_cast<size_t>(2));
 
         std::wstring allFilesExtensionList;
         for (const auto& filter : filters)
@@ -162,7 +162,10 @@ namespace PickerCommon {
             auto ext = FormatExtensionWithWildcard(filter);
             buffer.push_back(filter);
             buffer.push_back(ext);
-            allFilesExtensionList += ext + L";";
+
+            allFilesExtensionList.reserve(allFilesExtensionList.length() + ext.size() + 1);
+            allFilesExtensionList += ext;
+            allFilesExtensionList += L";";
         }
 
         if (!allFilesExtensionList.empty())
@@ -173,23 +176,23 @@ namespace PickerCommon {
         if (filters.Size() == 0)
         {
             // when filters not defined, set filter to All Files *.*
-            buffer.push_back(L"All Files");
-            buffer.push_back(L"*.*");
+            buffer.push_back(L"");
+            buffer.push_back(L"*");
         }
         else if (filters.Size() == 1 && allFilesExtensionList == L"*")
         {
             // when there're only one filter "*", set filter to All Files *.* (override the values pushed above)
-            buffer[0] = L"All Files";
-            buffer[1] = L"*.*";
+            buffer[0] = L"";
+            buffer[1] = L"*";
             resultSize = 1;
         }
         else
         {
-            buffer.push_back(L"All Files");
+            buffer.push_back(L"");
             buffer.push_back(allFilesExtensionList.c_str());
         }
 
-        std::vector<COMDLG_FILTERSPEC> result(resultSize);
+        std::vector<COMDLG_FILTERSPEC> result{ resultSize };
         for (size_t i = 0; i < resultSize; i++)
         {
             result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
@@ -210,7 +213,7 @@ namespace PickerCommon {
     {
         std::vector<COMDLG_FILTERSPEC> result(filters.Size());
         buffer.clear();
-        buffer.reserve(filters.Size() * (size_t)2);
+        buffer.reserve(filters.Size() * static_cast<size_t>(2));
 
         for (const auto& filter : filters)
         {
@@ -225,7 +228,7 @@ namespace PickerCommon {
 
         if (result.empty())
         {
-            result.push_back({ L"All Files", L"*.*" });
+            result.push_back({ L"", L"*.*" });
         }
         return result;
     }
