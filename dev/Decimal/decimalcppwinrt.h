@@ -59,7 +59,7 @@ namespace winrt::Microsoft::Windows::Foundation
 /// Return value as DECIMAL.
 inline DECIMAL to_DECIMAL(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
 {
-    return *reinterpret_cast<DECIMAL const*>(&value);
+    return std::bit_cast<DECIMAL>(value);
 }
 
 /// Return value as DECIMAL.
@@ -71,7 +71,7 @@ inline DECIMAL to_DECIMAL(winrt::Microsoft::Windows::Foundation::Decimal const& 
 /// Return value as a WinRT DecimalValue structure.
 inline winrt::Microsoft::Windows::Foundation::DecimalValue to_DecimalValue(DECIMAL const& value)
 {
-    return *reinterpret_cast<winrt::Microsoft::Windows::Foundation::DecimalValue const*>(&value);
+    return std::bit_cast<winrt::Microsoft::Windows::Foundation::DecimalValue>(value);
 }
 
 /// Return value as a WinRT Decimal object.

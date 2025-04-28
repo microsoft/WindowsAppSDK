@@ -171,8 +171,7 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     }
     void Decimal::SetFromDecimalValue(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
     {
-        const auto& decimalValue{ *reinterpret_cast<const DECIMAL*>(&value) };
-        m_decimal = decimalValue;
+        m_decimal = std::bit_cast<DECIMAL>(value);
     }
     bool Decimal::ToBoolean()
     {
