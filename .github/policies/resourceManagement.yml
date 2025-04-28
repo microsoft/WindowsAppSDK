@@ -232,7 +232,8 @@ configuration:
       if:
       - payloadType: Issue_Comment
       - commentContains:
-          pattern: '\/feedback[H|h]ub'
+          pattern: '\/feedback[H|h]ubWCR'
+
           isRegex: True
       - or:
         - activitySenderHasAssociation:
