@@ -23,10 +23,10 @@ is recommended when your language has no native type or other comparable solutio
 
 # 2. Common Decimal Representation
 
-The [DECIMAL structure](https://learn.microsoft.com/windows/win32/api/wtypes/ns-wtypes-decimal-r1)
-is the common decimal format, stored as a 96-bit (12-byte) unsigned integer scaled by a variable
-power of 10. The power of 10 scaling factor specifies the number of digits to the right of the
-decimal point, and ranges from 0 to 28. This is expressed in WinRT as the following structure:
+The Win32 [DECIMAL](https://learn.microsoft.com/windows/win32/api/wtypes/ns-wtypes-decimal-r1)
+structure is the common decimal format, stored as a 96-bit (12-byte) unsigned integer scaled by a
+variable power of 10. The power of 10 scaling factor specifies the number of digits to the right of
+the decimal point, and ranges from 0 to 28. This is expressed in WinRT as the following structure:
 
 ```c# (but really midl3)
     struct DecimalValue
@@ -39,10 +39,11 @@ decimal point, and ranges from 0 to 28. This is expressed in WinRT as the follow
     }
 ```
 
-This matches the memory layout and use of the [Win32 DECIMAL structure](https://learn.microsoft.com/windows/win32/api/wtypes/ns-wtypes-decimal-r1)
-and the [C# Decimal struct](https://learn.microsoft.com/dotnet/api/system.decimal). This data
-structure may be re-expressed in each language using language-specific constructs e.g. WinRT defines
-the `DecimalValue` structure as the Win32 `DECIMAL` definition syntax is incompatible with WinRT IDL.
+This matches the memory layout and use of the Win32 [DECIMAL](https://learn.microsoft.com/windows/win32/api/wtypes/ns-wtypes-decimal-r1)
+structure and the [C# Decimal struct](https://learn.microsoft.com/dotnet/api/system.decimal). This
+data structure may be re-expressed in each language using language-specific constructs e.g. WinRT
+defines the `DecimalValue` structure as the Win32 `DECIMAL` definition syntax is incompatible with
+WinRT IDL.
 
 # 3. WinRT API
 
