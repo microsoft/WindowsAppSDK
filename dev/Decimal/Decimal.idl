@@ -5,7 +5,7 @@
 
 namespace Microsoft.Windows.Foundation
 {
-    [contractversion(2)]
+    [contractversion(1)]
     apicontract DecimalContract{};
 
     [feature(Feature_Decimal)]
@@ -13,8 +13,8 @@ namespace Microsoft.Windows.Foundation
     struct DecimalValue
     {
         UInt16 Reserved;
-        UInt8 Scale;
-        UInt8 Sign;
+        UInt8 Scale;        // Allowed values: 0-28
+        UInt8 Sign;         // Allowed values: 0x80 = negative, 0x00 = zero or positive
         UInt32 Hi32;
         UInt64 Lo64;
     };
@@ -125,15 +125,15 @@ namespace Microsoft.Windows.Foundation
         Decimal Add(Decimal value);
 
         /// Returns a Decimal whose value is (this - value).
-        Decimal Sub(Decimal value);         //TODO Rename to Subtract() ?
+        Decimal Sub(Decimal value);
 
         /// Returns a Decimal whose value is (this * value).
-        Decimal Mul(Decimal value);         //TODO Rename to Multiply() ?
+        Decimal Mul(Decimal value);
 
         /// Returns a Decimal whose value is (this / value).
-        Decimal Div(Decimal value);         //TODO Rename to Divide() ?
+        Decimal Div(Decimal value);
 
         /// Returns a Decimal whose value is (this % value).
-        Decimal Mod(Decimal value);         //TODO Rename to Modulo() or Remainder() ?
+        Decimal Mod(Decimal value);
     }
 }
