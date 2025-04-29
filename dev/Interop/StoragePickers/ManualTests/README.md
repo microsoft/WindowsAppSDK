@@ -8,7 +8,7 @@ Therefore, we are recording the helpful manual test cases for the Storage Picker
 as a reference for us to investigate to add unit test automations afterward.
 
 ## Manual Tests
-Below tests aiming at the functionalities fixed in #5358 for `FileOpenPicker.FileTypeFilter` and 
+Below tests aiming at the functionalities fixed in [#5358](https://github.com/microsoft/WindowsAppSDK/pull/5358) for `FileOpenPicker.FileTypeFilter` and 
 `FileSavePicker.FilterTypeChoices`:
 
 ### FileOpenPicker.FileTypeFilter
