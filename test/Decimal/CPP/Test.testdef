@@ -1,0 +1,11 @@
+﻿{
+    "Tests": [
+        {
+            "Description": "C++ decimal tests",
+            "Filename": "DecimalTests.dll",
+            "Parameters": "",
+            "Architectures": ["x86", "x64", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}

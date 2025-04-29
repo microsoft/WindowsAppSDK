@@ -158,16 +158,16 @@ namespace Test::Bootstrap
         s_bootstrapDll.reset();
     }
 
-    inline void Setup()
+    inline void Setup(Test::Bootstrap::Packages packagesToSetup = Test::Bootstrap::Packages::Default)
     {
-        SetupPackages();
+        SetupPackages(packagesToSetup);
         SetupBootstrap();
     }
 
-    inline void Cleanup()
+    inline void Cleanup(Test::Bootstrap::Packages packagesToSetup = Test::Bootstrap::Packages::Default)
     {
         CleanupBootstrap();
-        CleanupPackages();
+        CleanupPackages(packagesToSetup);
     }
 }
 
