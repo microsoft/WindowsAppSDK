@@ -47,8 +47,6 @@ steps:
         $pfxPath = (Join-Path $userPath 'winappsdk.certificate.test.pfx')
         [System.IO.File]::WriteAllBytes($pfxPath, $certificateBytes)
 
-  - task: NuGetToolInstaller@1
-
   - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: ${{ parameters.NuGetServiceConnectionName }}

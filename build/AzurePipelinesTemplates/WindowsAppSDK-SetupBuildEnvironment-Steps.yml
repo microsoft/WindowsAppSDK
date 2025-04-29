@@ -72,7 +72,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: eng\common\DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
+    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2
