@@ -11,13 +11,13 @@ namespace Microsoft.Windows.Foundation
     public static class DecimalExtensions
     {
         /// Return a WinRT Decimal object.
-        public static Microsoft.Windows.Foundation.Decimal ToDecimal(this System.Decimal d)
+        public static Microsoft.Windows.Foundation.Decimal ToDecimal(this decimal d)
         {
             return Microsoft.Windows.Foundation.Decimal.CreateFromDecimalValue(ToDecimalValue(d));
         }
 
         /// Return a WinRT DecimalValue structure..
-        public static Microsoft.Windows.Foundation.DecimalValue ToDecimalValue(this System.Decimal d)
+        public static Microsoft.Windows.Foundation.DecimalValue ToDecimalValue(this decimal d)
         {
             // decimal.GetBits() returns a binary representation of a Decimal. The return value is an
             // integer array with four elements. Elements 0, 1, and 2 contain the low,
@@ -36,7 +36,8 @@ namespace Microsoft.Windows.Foundation
             //
             // @see https://github.com/dotnet/runtime/blob/1d1bf92fcf43aa6981804dc53c5174445069c9e4/src/libraries/System.Private.CoreLib/src/System/Decimal.cs#L581C13-L581C80
 
-            int[] bits = System.Decimal.GetBits(d);
+            Span<int> bits = stackalloc int[4];
+            decimal.GetBits(d, bits);
 
             var decimalValue = new Microsoft.Windows.Foundation.DecimalValue();
             decimalValue.Sign = (byte)((bits[3] & 0x80000000) >> 24);
@@ -49,15 +50,15 @@ namespace Microsoft.Windows.Foundation
         }
 
         /// Return a C# Decimal object.
-        public static System.Decimal FromDecimalValue(this System.Decimal d, Microsoft.Windows.Foundation.DecimalValue value)
+        public static decimal FromDecimalValue(this decimal d, Microsoft.Windows.Foundation.DecimalValue value)
         {
             int low32 = (int)(value.Lo64 & 0x00000000FFFFFFFF);
             int mid32 = (int)((value.Lo64 >> 32) & 0x00000000FFFFFFFF);
-            return new System.Decimal(low32, mid32, (int)value.Hi32, value.Sign != 0, value.Scale);
+            return new decimal(low32, mid32, (int)value.Hi32, value.Sign != 0, value.Scale);
         }
 
         /// Return a C# Decimal object.
-        public static System.Decimal FromDecimal(this System.Decimal d, Microsoft.Windows.Foundation.Decimal value)
+        public static decimal FromDecimal(this decimal d, Microsoft.Windows.Foundation.Decimal value)
         {
             return FromDecimalValue(d, value.ToDecimalValue());
         }
