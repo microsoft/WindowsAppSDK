@@ -88,8 +88,6 @@ steps:
       }
       Exit 1
 
-- task: NuGetToolInstaller@1
-
 - task: NuGetAuthenticate@1
 
 - task: VSBuild@1
