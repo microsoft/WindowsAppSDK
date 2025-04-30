@@ -33,6 +33,8 @@ stages:
     IsOneBranch: false
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+  parameters:
+    testMatrix: ${{ variables.PipelineTests }}
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
   parameters:
