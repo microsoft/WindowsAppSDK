@@ -95,7 +95,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             const double progressMaxPerPackageSetItem,
             HRESULT& extendedError,
             winrt::hstring& errorText,
-            winrt::guid& activityId);
+            winrt::guid& activityId,
+            winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus& readyOrNewerStatus);
         HRESULT AddPackage(
             winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options,

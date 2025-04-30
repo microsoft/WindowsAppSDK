@@ -187,7 +187,7 @@ steps:
   inputs:
     targetType: "inline"
     script: |
-      $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*'
+      $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*' | Where-Object { $_.Name -match "Microsoft\.WindowsAppSDK\.[0-9].*" }
       Copy-Item -Force $srcWinAppSDKNupkgPath.FullName '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\'
       $destWinAppSDKNupkgPath = Get-Childitem -Path '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\' -File '*Microsoft.WindowsAppSDK*'
       $winAppSDKZip = $destWinAppSDKNupkgPath.FullName -replace '.nupkg','.zip'
@@ -199,8 +199,8 @@ steps:
   displayName: 'Setup native compiler version override'
   inputs:
     microsoftDropReadPat: $(System.AccessToken)
-    compilerPackageName: $(compilerOverridePackageName)
-    compilerPackageVersion: $(compilerOverridePackageVersion)
+    compilerPackageName: $(localCompilerOverridePackageName)
+    compilerPackageVersion: $(localCompilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)

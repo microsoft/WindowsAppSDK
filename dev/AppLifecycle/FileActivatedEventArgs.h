@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #pragma once
 
@@ -47,9 +47,46 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
-            auto query = uri.QueryParsed();
-            auto verb = query.GetFirstValueByName(L"Verb");
-            auto file = query.GetFirstValueByName(L"File");
+            auto parsedQuery = uri.QueryParsed();
+
+            // By design parsed query should have a size of 3 (ContractId, Verb, File), in which case result from QueryParsed() can be used directly.
+            // However, it may have a size of 0 when uri contains unicode characters, or more than 3 when file path contains "&", which requires manual parsing with string functions.
+            if (parsedQuery.Size() == 3)
+            {
+                auto verb = parsedQuery.GetFirstValueByName(L"Verb");
+                auto file = parsedQuery.GetFirstValueByName(L"File");
+                return make<FileActivatedEventArgs>(verb, file);
+            }
+
+            const std::wstring query = uri.Query().c_str();
+            auto queryLength = query.length();
+
+            auto verbBegin = query.find(L"&Verb=");
+            if (verbBegin == std::wstring::npos)
+            {
+                throw winrt::hresult_invalid_argument(L"Query of encoded file protocol should contain 'Verb'");
+            }
+            verbBegin += 6; // Length of "&Verb="
+
+            auto verbEnd = query.find(L"&", verbBegin);
+            if (verbEnd == std::wstring::npos)
+            {
+                verbEnd = queryLength;
+            }
+
+            auto fileBegin = query.find(L"&File=");
+            if (fileBegin == std::wstring::npos)
+            {
+                throw winrt::hresult_invalid_argument(L"Query of encoded file protocol should contain 'File'");
+            }
+            fileBegin += 6; // Length of "&File="
+
+            // File path may contain '&' character, so fileEnd can only be assumed to be the end of the query or start of Verb
+            auto fileEnd = verbBegin > fileBegin ? verbBegin : queryLength;
+
+            auto verb = winrt::to_hstring(query.substr(verbBegin, verbEnd - verbBegin).c_str());
+            auto file = winrt::to_hstring(query.substr(fileBegin, fileEnd - fileBegin).c_str());
+
             return make<FileActivatedEventArgs>(verb, file);
         }
 
