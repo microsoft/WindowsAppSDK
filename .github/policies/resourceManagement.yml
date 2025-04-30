@@ -224,7 +224,7 @@ configuration:
       - addLabel:
           label: needs-author-feedback
 
-    # /feedbackHub_WAA
+    # /feedbackHub_WCR
     - description: >-
           Triggers:
           * /feedbackhubWCR
@@ -233,7 +233,6 @@ configuration:
       - payloadType: Issue_Comment
       - commentContains:
           pattern: '\/feedback[H|h]ubWCR'
-
           isRegex: True
       - or:
         - activitySenderHasAssociation:
