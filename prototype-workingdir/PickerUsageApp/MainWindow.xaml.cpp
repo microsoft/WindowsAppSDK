@@ -95,14 +95,13 @@ namespace winrt::PickerUsageApp::implementation
 
     Windows::Foundation::IAsyncOperation<hstring> MainWindow::BigButtonClick_SavePicker(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
     {
-        auto id = AppWindow().Id();
-        winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker{ id };
+        winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker{ AppWindow().Id() };
 
         picker.CommitButtonText(L"Choose selected files");
-        picker.SuggestedFileName(L"TestFile");
-        //picker.DefaultFileExtension(L".txt");
+        picker.SuggestedFileName(L"HelloDevelopers");
         picker.FileTypeChoices().Insert(L"Documents", single_threaded_vector<hstring>({ L".txt", L".doc", L".docx", L".pdf"}));
         picker.FileTypeChoices().Insert(L"Pictures", single_threaded_vector<hstring>({ L".jpg", L"jpeg", L".png", L".bmp"}));
+        //picker.FileTypeChoices().Insert(L"All Files", single_threaded_vector<hstring>({ L".*" }));
 
         auto& file = co_await picker.PickSaveFileAsync();
         if (file != nullptr)
@@ -121,15 +120,12 @@ namespace winrt::PickerUsageApp::implementation
 
     Windows::Foundation::IAsyncOperation<hstring> MainWindow::BigButtonClick_OpenPicker(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
     {
-        auto id = AppWindow().Id();
-        winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ id };
+        winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ AppWindow().Id() };
 
         picker.CommitButtonText(L"Choose selected files");
-        picker.FileTypeFilter().Append(L".txt");
-        picker.FileTypeFilter().Append(L".pdf");
+ /*       picker.FileTypeFilter().Append(L".txt");
         picker.FileTypeFilter().Append(L".doc");
-        picker.FileTypeFilter().Append(L".docx");
-
+        picker.FileTypeFilter().Append(L".pdf");*/
 
         // Pick multiple files
         picker.ViewMode(PickerViewMode::List);
@@ -147,7 +143,7 @@ namespace winrt::PickerUsageApp::implementation
             // error handling;
         }
 
-        //auto& files = co_await openPicker.PickMultipleFilesAsync();
+        //auto& files = co_await picker.PickMultipleFilesAsync();
         //winrt::hstring names = L"";
         //for (auto& file : files)
         //{

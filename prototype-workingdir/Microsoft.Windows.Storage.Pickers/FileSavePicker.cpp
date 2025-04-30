@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "FileSavePicker.h"
-#include "FileSavePicker.g.cpp"
+#include "Microsoft.Windows.Storage.Pickers.FileSavePicker.g.cpp"
 #include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>
@@ -12,7 +12,6 @@
 #include <wil/cppwinrt.h>
 #include <wil/com.h>
 #include <wil/resource.h>
-#include <wil/filesystem.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include "PickerCommon.h"
@@ -127,6 +126,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         {
             check_hresult(dialog->SetDefaultExtension(L""));
         }
+
+        FILEOPENDIALOGOPTIONS dialogOptions;
+        check_hresult(dialog->GetOptions(&dialogOptions));
+        check_hresult(dialog->SetOptions(dialogOptions | FOS_STRICTFILETYPES));
 
         if (!PickerCommon::IsHStringNullOrEmpty(suggestedFileName))
         {
