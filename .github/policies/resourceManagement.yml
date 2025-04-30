@@ -243,19 +243,21 @@ configuration:
       then:
       - addReply:
           reply: >- 
-              Hi @${issueAuthor}. Please file this issue on Feedback Hub [Windows]+[f] and paste 
-              the link here so we can more easily find your information on the back end. The link 
-              can be found at the bottom of the feedback report. Please use "Developer Platform" and "Windows Copilot Runtime" 
-              for the Category.
-              Full instructions
-              Open Feedback Hub (Use Windows key + F)
-              Make sure you're signed in to Feedback Hub.
-              In section 1, Start entering Bug details. Please prefix your bug title with "[WCR APIs]".
-              In section 2, use Developer Platform -> Windows Copilot Runtime
-              In section 4, Add more details -> Recreate my problem
-              Start recording, run your test app/the samples and demonstrate the issue, stop recording.
-              Please fill in as much info as possible, including repro steps.
-              Submit the feedback.
+              Hi @${issueAuthor}. Could you please submit this issue through Feedback Hub (press [Windows key]+[F])? Once you've done that, share the link here so we can track your issue more effectively on our end.
+
+              When submitting, please select "Developer Platform" as the category and "Windows Copilot Runtime" as the sub-category.
+
+              Follow these steps:
+              1. Open Feedback Hub using [Windows key]+[F]
+              2. Make sure you're signed in
+              3. When entering your bug details, please start your title with "[WCR APIs]"
+              4. Choose "Developer Platform" as the category and "Windows Copilot Runtime" as the sub-category
+              5. Under "Add more details", select "Recreate my problem"
+              6. Start the recording, show us the issue with your app or sample, then stop recording
+              7. Include as many details as you can about how to reproduce the issue
+              8. Submit your feedback
+
+              Thanks for helping us improve!
 
       - removeLabel:
           label: needs-triage
