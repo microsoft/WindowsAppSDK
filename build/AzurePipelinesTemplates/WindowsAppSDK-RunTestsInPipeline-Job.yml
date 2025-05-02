@@ -19,7 +19,7 @@ parameters:
   default: x64
 
 jobs:
-- job: FilterMatrix
+- job: ExtractMatrix
   pool:
     type: windows
     isCustom: true
@@ -34,16 +34,19 @@ jobs:
             $filteredMatrix[$entry.Name] = $entry.Value
         }
       }
-      $filteredMatrixJson = $filteredMatrix | ConvertTo-Json -Compress
-      Write-Host "##vso[task.setvariable variable=filteredMatrixJson;isOutput=true]$filteredMatrixJson"
-    name: setFilteredMatrixStep
-  - script: echo $(setFilteredMatrixStep.filteredMatrixJson)
+      $matrixJson = $filteredMatrix | ConvertTo-Json -Compress
+      Write-Host "##vso[task.setvariable variable=matrixJson;isOutput=true]$matrixJson"
+    name: filterByPlatformStep
+    displayName: "Extract matrix as json value filtering by build platform and pass the extracted matrix to next job"
+  - script: echo $(filterByPlatformStep.matrixJson)
     name: echoMatrix
+    displayName: "Echo filtered matrix"
+
 
 - job: ${{ parameters.jobName }}
-  dependsOn: FilterMatrix
+  dependsOn: ExtractMatrix
   strategy:
-    matrix: $[ dependencies.FilterMatrix.outputs['setFilteredMatrixStep.filteredMatrixJson'] ]
+    matrix: $[ dependencies.ExtractMatrix.outputs['filterByPlatformStep.matrixJson'] ]
   pool:
     type: windows
     isCustom: true
