@@ -7,6 +7,7 @@
 #include <WexTestClass.h>
 
 #include <sddl.h>
+#include <appmodel.h>
 
 #include <filesystem>
 

@@ -50,7 +50,8 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     // (Optional) specify the text displayed on commit button. If not specified, use system default.
     CommitButtonText = "Save Document",
 
-    // (Optional) categorized extensions types. If not specified, use system default: All Files (*.*)
+    // (Optional) categorized extensions types. If not specified, allow All Files (*.*)
+    //     Note that when allow All Files (*.*), end users can save a file without extension.
     FileTypeChoices = {
         { "Documents", new List<string> { ".txt", ".doc", ".docx" } }
     },
@@ -76,7 +77,8 @@ savePicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 // (Optional) specify the default file name. If not specified, use system default.
 savePicker.SuggestedFileName(L"NewDocument");
 
-// (Optional) categorized extensions types. If not specified, use system default: All Files (*.*)
+// (Optional) categorized extensions types. If not specified, allow All Files (*.*)
+//     Note that when allow All Files (*.*), end users can save a file without extension.
 savePicker.FileTypeChoices().Insert(L"Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
 
 // (Optional) specify the default file extension (will be appended after the default file name).

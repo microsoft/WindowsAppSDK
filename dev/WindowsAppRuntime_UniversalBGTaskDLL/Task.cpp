@@ -14,7 +14,6 @@ using namespace winrt::Windows::Storage;
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Background::UniversalBGTask::implementation
 {
-    inline constexpr CLSID IID_IBackgroundTask = { 2098451764, 64786, 17358, 140, 34, 234, 31, 241, 60, 6, 223 };
     void Task::Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance taskInstance)
     {
         winrt::hstring lookupStr = winrt::to_hstring(taskInstance.Task().TaskId());
@@ -23,7 +22,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::UniversalBGTa
         auto lookupobj = values.Lookup(lookupStr);
         winrt::guid comClsId = winrt::unbox_value<winrt::guid>(lookupobj);
 
-        THROW_IF_FAILED(CoCreateInstance(comClsId, nullptr, CLSCTX_LOCAL_SERVER, IID_IBackgroundTask, reinterpret_cast<void**>(&m_bgTask)));
+        THROW_IF_FAILED(CoCreateInstance(comClsId, nullptr, CLSCTX_LOCAL_SERVER, winrt::guid_of<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(), winrt::put_abi(m_bgTask)));
         m_bgTask.Run(taskInstance);
     }
 }
