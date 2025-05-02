@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+     <!-- This ItemGroup is for items to be included only in the component package
+          as it is removed in the other one. -->
     <ProjectCapability Id="VersionGeneral" Include="Microsoft.WindowsAppSDK.Foundation" />
     <ProjectCapability Id="VersionSpecific" Include="SET-ME-ON-WINDOWSAPPSDK-NUGET-CREATION-PLEASE" />
     <WindowsAppSdkComponentPackages Include="$(MSBuildThisFileDirectory)..\" />
