@@ -489,6 +489,7 @@ Try {
         # Remove ProjectCapability for the one in the transport package
         $propsFilePath = (Join-Path $BasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
         [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+        $wasFoundationProps.Project.ItemGroup | Format-List | Out-Host
         if ($wasFoundationProps.Project.ItemGroup.ProjectCapability)
         {
             foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
