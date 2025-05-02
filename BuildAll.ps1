@@ -489,21 +489,21 @@ Try {
         # Remove ProjectCapability for the one in the transport package
         $propsFilePath = (Join-Path $BasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
         [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
-        Write-Host "Test: $propsFilePath"
-        Write-Host "Test2: $($wasFoundationProps.Project.ItemGroup)"
-        $wasFoundationProps.Project.ItemGroup
-        foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
+        if ($wasFoundationProps.Project.ItemGroup.ProjectCapability)
         {
-            if ($projectCapability.Id -eq "VersionSpecific")
+            foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
             {
-                $wasFoundationProps.Project.RemoveChild($projectCapability.ParentNode)
+                if ($projectCapability.Id -eq "VersionSpecific")
+                {
+                    $wasFoundationProps.Project.RemoveChild($projectCapability.ParentNode)
+                    break
+                }
             }
+            $wasFoundationProps.Save($propsFilePath)
         }
-        $wasFoundationProps.Save($propsFilePath)
 
         # Keep ProjectCapability and update the version for the one in the component package
         $propsFilePath = (Join-Path $ComponentBasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
-
         [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
         foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
         {

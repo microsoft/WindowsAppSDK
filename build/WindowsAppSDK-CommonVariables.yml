@@ -5,6 +5,7 @@ variables:
   channel: 'experimental'
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
+  versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
   versionCounter: $[counter(variables['versionDate'], 0)]
   version: $[format('{0}.{1}.{2}-{3}.{4}', variables['major'], variables['minor'], variables['patch'], variables['versionDate'], variables['versionCounter'])]
   versionTag: $[coalesce(variables.VersionTagOverride, '')]

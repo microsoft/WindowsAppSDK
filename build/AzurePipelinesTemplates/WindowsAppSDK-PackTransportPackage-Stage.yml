@@ -185,7 +185,7 @@ stages:
           }
 
           $buildType = '$(channel)'
-          $majorMinorPatchRev = '$(major).$(minor).$(versionDate)'
+          $majorMinorPatchRev = '$(major).$(minor).$(versionMinDate)'
           $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
           $version = $majorMinorPatchRev + '-' + $buildType
 
