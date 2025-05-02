@@ -489,6 +489,9 @@ Try {
         # Remove ProjectCapability for the one in the transport package
         $propsFilePath = (Join-Path $BasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
         [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+        Write-Host "Test: $propsFilePath"
+        Write-Host "Test2: $($wasFoundationProps.Project.ItemGroup)"
+        $wasFoundationProps.Project.ItemGroup
         foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
         {
             if ($projectCapability.Id -eq "VersionSpecific")
