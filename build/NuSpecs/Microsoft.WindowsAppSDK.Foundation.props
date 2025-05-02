@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectCapability Id="VersionGeneral" Include="Microsoft.WindowsAppSDK.Foundation" />
+    <ProjectCapability Id="VersionSpecific" Include="SET-ME-ON-WINDOWSAPPSDK-NUGET-CREATION-PLEASE" />
+  </ItemGroup>
+
+  <ItemGroup>
     <WindowsAppSdkComponentPackages Include="$(MSBuildThisFileDirectory)..\" />
   </ItemGroup>
 

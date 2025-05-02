@@ -9,6 +9,7 @@ AzureBuildStep: Only used by the pipeline to perform tasks such as signing in be
 OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
 Clean: Performs a clean on BuildOutput, Obj, and build\override
+ComponentPackageVersion: NuGet Package Version that will be used in the packing of Foundation Component Package
 
 Note about building in different environments.
 The feed the NuGet.config points to changes depending on the branch.
@@ -25,6 +26,7 @@ Param(
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
     [switch]$Clean = $false
+    [string]$ComponentPackageVersion = "1.1.1.1",
 )
 
 Set-StrictMode -Version 3.0
@@ -454,9 +456,61 @@ Try {
         }
 
         Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
+
+        # Populate Intellisense files
+        $IntellisensePath = "$PSScriptRoot\build\NuSpecs\Intellisense"
+
+        $LibPaths = @(
+            (Join-Path $ComponentBasePath "metadata"),
+            (Join-Path $ComponentBasePath "lib\net6.0-windows10.0.17763.0")
+        )
+
+        foreach ($File in Get-ChildItem -Path $LibPaths)
+        {
+            if ($File.Extension -ne ".dll" -and $File.Extension -ne ".winmd")
+            {
+                continue
+            }
+
+            $IntellisenseFile = (Join-Path $IntellisensePath "$($File.BaseName).xml")
+            $DestinationDir = ($File.DirectoryName)
+
+            if (-not (Test-Path $IntellisenseFile))
+            {
+                Write-Host "Intellisense file not found: $IntellisenseFile"
+                continue
+            }
+
+            Copy-Item -Path $IntellisenseFile -Destination $DestinationDir
+        }
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
+        # Remove ProjectCapability for the one in the transport package
+        $propsFilePath = (Join-Path $BasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
+        [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+        foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
+        {
+            if ($projectCapability.Id -eq "VersionSpecific")
+            {
+                $wasFoundationProps.Project.RemoveChild($projectCapability.ParentNode)
+            }
+        }
+        $wasFoundationProps.Save($propsFilePath)
+
+        # Keep ProjectCapability and update the version for the one in the component package
+        $propsFilePath = (Join-Path $ComponentBasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
+
+        [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+        foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
+        {
+            if ($projectCapability.Id -eq "VersionSpecific")
+            {
+                $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
+            }
+        }
+        $wasFoundationProps.Save($propsFilePath)
+
         $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"
         Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec" -Destination $nuspecPath
 
@@ -479,7 +533,7 @@ Try {
 
         # Add the version to the nuspec.
         [xml]$publicNuspec = Get-Content -Path $nuspecPath
-        $publicNuspec.package.metadata.version = $PackageVersion
+        $publicNuspec.package.metadata.version = $ComponentPackageVersion
         Set-Content -Value $publicNuspec.OuterXml $nuspecPath
 
         # Make the foundation transport package.
