@@ -19,14 +19,14 @@ Main branch points to the external feed.
 
 Param(
     [string]$PackageVersion = "1.1.1.1",
-    [string]$ComponentPackageVersion = "1.1.1.1"
+    [string]$ComponentPackageVersion = "1.1.1.1",
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
     [string]$OutputDirectory = (Split-Path $MyInvocation.MyCommand.Path) + "\BuildOutput",
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
-    [switch]$Clean = $false,
+    [switch]$Clean = $false
 )
 
 Set-StrictMode -Version 3.0
