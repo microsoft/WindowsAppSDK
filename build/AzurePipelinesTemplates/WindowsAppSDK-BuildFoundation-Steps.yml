@@ -65,27 +65,28 @@ steps:
     ucrtFeedPat: $(System.AccessToken)
     platform: $(buildPlatform)
 
-- task: PowerShell@2
-  name: BuildFoundation
-  inputs:
-    filePath: 'BuildAll.ps1'
-    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildFoundation"
-
-- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+- ${{ if and(eq(parameters.runStaticAnalysis, 'true'), eq(variables['buildConfiguration'], 'Release')) }}:
   - task: SDLNativeRules@3
     displayName: Run PREfast SDL Native Rules
-    condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
+    # condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
     inputs:
       setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
-      msBuildArchitecture: amd64
-      msBuildCommandline: 'msbuild.exe /restore /nologo /nr:false /p:configuration=Release /p:platform=x64 $(Build.SourcesDirectory)\WindowsAppRuntime.sln'
+      # msBuildArchitecture: amd64
+      msBuildCommandline: 'msbuild.exe /restore /nologo /nr:false /p:configuration=Release /p:platform=$(buildPlatform) $(Build.SourcesDirectory)\WindowsAppRuntime.sln'
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
         $(Build.SourcesDirectory)\packages
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     continueOnError: true
+- ${{ else }}:
+  - task: PowerShell@2
+    name: BuildFoundation
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildFoundation"
 
+- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   # Copy build output to folder APIScanTarget for APIScan to scan later, in the mean time, exclude some folders/files.
   - task: CopyFiles@2
     displayName: Populate APIScanTarget
