@@ -65,7 +65,7 @@ steps:
     ucrtFeedPat: $(System.AccessToken)
     platform: $(buildPlatform)
 
-- ${{ if and(eq(parameters.runStaticAnalysis, 'true'), eq(variables['buildConfiguration'], 'Release')) }}:
+- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
     displayName: Run PREfast SDL Native Rules
     # condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
