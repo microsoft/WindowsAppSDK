@@ -12,4 +12,8 @@
          <copyright>© Microsoft Corporation. All rights reserved.</copyright>
          <tags>Microsoft Resources Native Windows WindowsAppSDK</tags>
      </metadata>
+    <dependencies>
+      <dependency id="Microsoft.WindowsAppSDK.Base" version="0.0.0" />
+      <dependency id="Microsoft.WindowsAppSDK.InteractiveExperiences" version="0.0.0" />
+    </dependencies>
 </package>

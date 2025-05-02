@@ -3,13 +3,13 @@ This script is to build the Foundation transport package that will be used to ge
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
 
 PackageVersion: NuGet Package Version that will be used in the packing of Foundation Transport Package
+ComponentPackageVersion: NuGet Package Version that will be used in the packing of Foundation Component Package
 Platform: Comma delimited string of platforms to run.
 Configuration: Comma delimited string of configurations to run.
 AzureBuildStep: Only used by the pipeline to perform tasks such as signing in between the steps
 OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
 Clean: Performs a clean on BuildOutput, Obj, and build\override
-ComponentPackageVersion: NuGet Package Version that will be used in the packing of Foundation Component Package
 
 Note about building in different environments.
 The feed the NuGet.config points to changes depending on the branch.
@@ -19,14 +19,14 @@ Main branch points to the external feed.
 
 Param(
     [string]$PackageVersion = "1.1.1.1",
+    [string]$ComponentPackageVersion = "1.1.1.1"
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
     [string]$OutputDirectory = (Split-Path $MyInvocation.MyCommand.Path) + "\BuildOutput",
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
-    [switch]$Clean = $false
-    [string]$ComponentPackageVersion = "1.1.1.1",
+    [switch]$Clean = $false,
 )
 
 Set-StrictMode -Version 3.0
@@ -534,6 +534,23 @@ Try {
         # Add the version to the nuspec.
         [xml]$publicNuspec = Get-Content -Path $nuspecPath
         $publicNuspec.package.metadata.version = $ComponentPackageVersion
+
+        # Update dependency versions in the nuspec
+        $versionDetailsPath = ".\eng\Version.Details.xml"
+        [xml]$buildConfig = Get-Content -Path $versionDetailsPath
+
+        foreach ($dependency in $publicNuspec.package.dependencies.dependency)
+        {
+            $buildDependency = $buildConfig.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
+            if (-not($buildDependency))
+            {
+                write-host "ERROR: NuGet package dependency $($dependency.Id) not found."
+                exit 1
+            }
+
+            $dependency.version = $buildDependency.Version
+        }
+
         Set-Content -Value $publicNuspec.OuterXml $nuspecPath
 
         # Make the foundation transport package.
