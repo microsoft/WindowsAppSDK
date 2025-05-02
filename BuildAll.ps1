@@ -505,10 +505,10 @@ Try {
             'buildTransitive'
         )
 
-        foreach ($BuildPath in Get-ChildItem -Path $FoundationBuildPaths)
+        foreach ($BuildPath in $FoundationBuildPaths)
         {
             # Keep ProjectCapability and update the version for the one in the component package
-            $propsFilePath = (Join-Path $ComponentBasePath $BuildPath 'Microsoft.WindowsAppSDK.Foundation.props')
+            $propsFilePath = (Join-Path $ComponentBasePath "$BuildPath\Microsoft.WindowsAppSDK.Foundation.props")
             [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
             foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
             {
