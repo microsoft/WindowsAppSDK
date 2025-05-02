@@ -489,7 +489,6 @@ Try {
         # Remove ProjectCapability for the one in the transport package
         $propsFilePath = (Join-Path $BasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
         [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
-        $wasFoundationProps.Project.ItemGroup | Format-List | Out-Host
         if ($wasFoundationProps.Project.ItemGroup.ProjectCapability)
         {
             foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
@@ -543,7 +542,7 @@ Try {
         $versionDetailsPath = ".\eng\Version.Details.xml"
         [xml]$buildConfig = Get-Content -Path $versionDetailsPath
 
-        foreach ($dependency in $publicNuspec.package.dependencies.dependency)
+        foreach ($dependency in $publicNuspec.package.metadata.dependencies.dependency)
         {
             $buildDependency = $buildConfig.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
             if (-not($buildDependency))
