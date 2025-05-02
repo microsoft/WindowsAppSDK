@@ -486,33 +486,42 @@ Try {
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
-        # Remove ProjectCapability for the one in the transport package
-        $propsFilePath = (Join-Path $BasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
-        [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
-        if ($wasFoundationProps.Project.ItemGroup.ProjectCapability)
+        # Fix up ProjectCapability versions
+        $FoundationBuildPaths = @(
+            'build',
+            'buildTransitive'
+        )
+
+        foreach ($BuildPath in Get-ChildItem -Path $FoundationBuildPaths)
         {
+            # Remove ProjectCapability for the one in the transport package
+            $propsFilePath = (Join-Path $BasePath $BuildPath 'Microsoft.WindowsAppSDK.Foundation.props')
+            [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+            if ($wasFoundationProps.Project.ItemGroup.ProjectCapability)
+            {
+                foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
+                {
+                    if ($projectCapability.Id -eq "VersionSpecific")
+                    {
+                        $wasFoundationProps.Project.RemoveChild($projectCapability.ParentNode)
+                        break
+                    }
+                }
+                $wasFoundationProps.Save($propsFilePath)
+            }
+
+            # Keep ProjectCapability and update the version for the one in the component package
+            $propsFilePath = (Join-Path $ComponentBasePath $BuildPath 'Microsoft.WindowsAppSDK.Foundation.props')
+            [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
             foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
             {
                 if ($projectCapability.Id -eq "VersionSpecific")
                 {
-                    $wasFoundationProps.Project.RemoveChild($projectCapability.ParentNode)
-                    break
+                    $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
                 }
             }
             $wasFoundationProps.Save($propsFilePath)
         }
-
-        # Keep ProjectCapability and update the version for the one in the component package
-        $propsFilePath = (Join-Path $ComponentBasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
-        [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
-        foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
-        {
-            if ($projectCapability.Id -eq "VersionSpecific")
-            {
-                $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
-            }
-        }
-        $wasFoundationProps.Save($propsFilePath)
 
         $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"
         Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec" -Destination $nuspecPath
