@@ -864,8 +864,8 @@ namespace Test::DecimalValue::Tests
                 const auto right{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(rightString) };
                 const winrt::hstring expectedString{ value.result };
                 const auto expected{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(expectedString) };
-                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Sub(left, right) };
-                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Sub %s = %s vs %s",
+                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Subtract(left, right) };
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Subtract %s = %s vs %s",
                     winrt::DecimalValueToString(left).c_str(), winrt::DecimalValueToString(right).c_str(),
                     winrt::DecimalValueToString(result).c_str(), winrt::DecimalValueToString(expected).c_str()));
             }
@@ -906,8 +906,8 @@ namespace Test::DecimalValue::Tests
                 const auto right{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(rightString) };
                 const winrt::hstring expectedString{ value.result };
                 const auto expected{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(expectedString) };
-                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Mul(left, right) };
-                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Mul %s = %s vs %s",
+                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Multiply(left, right) };
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Multiply %s = %s vs %s",
                     winrt::DecimalValueToString(left).c_str(), winrt::DecimalValueToString(right).c_str(),
                     winrt::DecimalValueToString(result).c_str(), winrt::DecimalValueToString(expected).c_str()));
             }
@@ -919,7 +919,7 @@ namespace Test::DecimalValue::Tests
             {
                 const auto data{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromInt32(123) };
                 const winrt::Microsoft::Windows::Foundation::DecimalValue zero{};
-                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Div(data, zero) };
+                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Divide(data, zero) };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (wil::ResultException& e)
@@ -960,8 +960,8 @@ namespace Test::DecimalValue::Tests
                 const auto right{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(rightString) };
                 const winrt::hstring expectedString{ value.result };
                 const auto expected{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(expectedString) };
-                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Div(left, right) };
-                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Div %s = %s vs %s",
+                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Divide(left, right) };
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Divide %s = %s vs %s",
                     winrt::DecimalValueToString(left).c_str(), winrt::DecimalValueToString(right).c_str(),
                     winrt::DecimalValueToString(result).c_str(), winrt::DecimalValueToString(expected).c_str()));
             }
@@ -973,7 +973,7 @@ namespace Test::DecimalValue::Tests
             {
                 const auto data{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromInt32(123) };
                 const winrt::Microsoft::Windows::Foundation::DecimalValue zero{};
-                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Mod(data, zero) };
+                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Modulo(data, zero) };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (wil::ResultException& e)
@@ -1028,8 +1028,8 @@ namespace Test::DecimalValue::Tests
                 const auto right{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(rightString) };
                 const winrt::hstring expectedString{ value.result };
                 const auto expected{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(expectedString) };
-                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Mod(left, right) };
-                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Mod %s = %s vs %s",
+                const auto result{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Modulo(left, right) };
+                VERIFY_ARE_EQUAL(expected, result, WEX::Common::String().Format(L"%s Modulo %s = %s vs %s",
                     winrt::DecimalValueToString(left).c_str(), winrt::DecimalValueToString(right).c_str(),
                     winrt::DecimalValueToString(result).c_str(), winrt::DecimalValueToString(expected).c_str()));
             }

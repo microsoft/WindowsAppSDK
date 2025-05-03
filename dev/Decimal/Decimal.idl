@@ -100,15 +100,15 @@ namespace Microsoft.Windows.Foundation
         static DecimalValue Add(DecimalValue left, DecimalValue right);
 
         /// Returns a DecimalValue whose value is (left - right).
-        static DecimalValue Sub(DecimalValue left, DecimalValue right);
+        static DecimalValue Subtract(DecimalValue left, DecimalValue right);
 
         /// Returns a DecimalValue whose value is (left * right).
-        static DecimalValue Mul(DecimalValue left, DecimalValue right);
+        static DecimalValue Multiply(DecimalValue left, DecimalValue right);
 
         /// Returns a DecimalValue whose value is (left / right).
-        static DecimalValue Div(DecimalValue left, DecimalValue right);
+        static DecimalValue Divide(DecimalValue left, DecimalValue right);
 
         /// Returns a DecimalValue whose value is (left % right).
-        static DecimalValue Mod(DecimalValue left, DecimalValue right);
+        static DecimalValue Modulo(DecimalValue left, DecimalValue right);
     }
 }

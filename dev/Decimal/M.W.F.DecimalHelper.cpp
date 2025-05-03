@@ -177,19 +177,19 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return to_DecimalValue(to_decimal(left) + to_decimal(right));
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Sub(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Subtract(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
     {
         return to_DecimalValue(to_decimal(left) - to_decimal(right));
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Mul(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Multiply(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
     {
         return to_DecimalValue(to_decimal(left) * to_decimal(right));
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Div(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Divide(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
     {
         return to_DecimalValue(to_decimal(left) / to_decimal(right));
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Mod(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Modulo(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
     {
         return to_DecimalValue(to_decimal(left) % to_decimal(right));
     }

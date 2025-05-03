@@ -54,10 +54,10 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         static winrt::Microsoft::Windows::Foundation::DecimalValue Integer(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         static winrt::Microsoft::Windows::Foundation::DecimalValue Round(winrt::Microsoft::Windows::Foundation::DecimalValue const& value, int32_t decimalPlaces);
         static winrt::Microsoft::Windows::Foundation::DecimalValue Add(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
-        static winrt::Microsoft::Windows::Foundation::DecimalValue Sub(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
-        static winrt::Microsoft::Windows::Foundation::DecimalValue Mul(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
-        static winrt::Microsoft::Windows::Foundation::DecimalValue Div(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
-        static winrt::Microsoft::Windows::Foundation::DecimalValue Mod(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
+        static winrt::Microsoft::Windows::Foundation::DecimalValue Subtract(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
+        static winrt::Microsoft::Windows::Foundation::DecimalValue Multiply(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
+        static winrt::Microsoft::Windows::Foundation::DecimalValue Divide(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
+        static winrt::Microsoft::Windows::Foundation::DecimalValue Modulo(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
     };
 }
 namespace winrt::Microsoft::Windows::Foundation::factory_implementation
