@@ -8,6 +8,10 @@ namespace Microsoft.Windows.Foundation
     [contractversion(1)]
     apicontract DecimalContract{};
 
+    /// WinRT representation of the Win32 DECIMAL structure.
+    /// @note This is the identical memory layout and encoding of the Win32 DECIMAL structure.
+    ///       The latter's definition is valid for COM but not WinRT making this equivalent structure necessary.
+    /// @see https://learn.microsoft.com/windows/win32/api/wtypes/ns-wtypes-decimal-r1
     [feature(Feature_Decimal)]
     [contract(DecimalContract, 1)]
     struct DecimalValue
@@ -21,119 +25,90 @@ namespace Microsoft.Windows.Foundation
 
     [feature(Feature_Decimal)]
     [contract(DecimalContract, 1)]
-    runtimeclass Decimal : Windows.Foundation.IStringable
+    runtimeclass DecimalHelper
     {
-        Decimal();
+        static DecimalValue FromBoolean(Boolean value);
+        static DecimalValue FromInt16(Int16 value);
+        static DecimalValue FromInt32(Int32 value);
+        static DecimalValue FromInt64(Int64 value);
+        static DecimalValue FromUInt8(UInt8 value);
+        static DecimalValue FromUInt16(UInt16 value);
+        static DecimalValue FromUInt32(UInt32 value);
+        static DecimalValue FromUInt64(UInt64 value);
+        static DecimalValue FromSingle(Single value);
+        static DecimalValue FromDouble(Double value);
+        static DecimalValue FromString(String value);                          // LCID=LOCALE_INVARIANT
+        static DecimalValue FromStringWithSystemDefaultLocale(String value);   // LCID=GetSystemDefaultLCID()
+        static DecimalValue FromStringWithUserDefaultLocale(String value);     // LCID=GetUserDefaultLCID()
+        static DecimalValue FromStringWithThreadLocale(String value);          // LCID=GetThreadLocale()
 
-        static Decimal CreateFromBoolean(Boolean value);
-        static Decimal CreateFromInt16(Int16 value);
-        static Decimal CreateFromInt32(Int32 value);
-        static Decimal CreateFromInt64(Int64 value);
-        static Decimal CreateFromUInt8(UInt8 value);
-        static Decimal CreateFromUInt16(UInt16 value);
-        static Decimal CreateFromUInt32(UInt32 value);
-        static Decimal CreateFromUInt64(UInt64 value);
-        static Decimal CreateFromSingle(Single value);
-        static Decimal CreateFromDouble(Double value);
-        static Decimal CreateFromString(String value);                          // LCID=LOCALE_INVARIANT
-        static Decimal CreateFromStringWithSystemDefaultLocale(String value);   // LCID=GetSystemDefaultLCID()
-        static Decimal CreateFromStringWithUserDefaultLocale(String value);     // LCID=GetUserDefaultLCID()
-        static Decimal CreateFromStringWithThreadLocale(String value);          // LCID=GetThreadLocale()
-        static Decimal CreateFromStringWithInvariantLocale(String value);       // LCID=LOCALE_INVARIANT
-        static Decimal Create(IInspectable value);
-        static Decimal CreateFromDecimal(Decimal value);
-        static Decimal CreateFromDecimalValue(DecimalValue value);
+        static Boolean ToBoolean(DecimalValue value);
+        static Int16 ToInt16(DecimalValue value);
+        static Int32 ToInt32(DecimalValue value);
+        static Int64 ToInt64(DecimalValue value);
+        static UInt8 ToUInt8(DecimalValue value);
+        static UInt16 ToUInt16(DecimalValue value);
+        static UInt32 ToUInt32(DecimalValue value);
+        static UInt64 ToUInt64(DecimalValue value);
+        static Single ToSingle(DecimalValue value);
+        static Double ToDouble(DecimalValue value);
+        static String ToString(DecimalValue value);                         // LCID=LOCALE_INVARIANT
+        static String ToStringWithSystemDefaultLocale(DecimalValue value);  // LCID=GetSystemDefaultLCID()
+        static String ToStringWithUserDefaultLocale(DecimalValue value);    // LCID=GetUserDefaultLCID()
+        static String ToStringWithThreadLocale(DecimalValue value);         // LCID=GetThreadLocale()
 
-        void SetFromBoolean(Boolean value);
-        void SetFromInt16(Int16 value);
-        void SetFromInt32(Int32 value);
-        void SetFromInt64(Int64 value);
-        void SetFromUInt8(UInt8 value);
-        void SetFromUInt16(UInt16 value);
-        void SetFromUInt32(UInt32 value);
-        void SetFromUInt64(UInt64 value);
-        void SetFromSingle(Single value);
-        void SetFromDouble(Double value);
-        void SetFromString(String value);                           // LCID=LOCALE_INVARIANT
-        void SetFromStringWithSystemDefaultLocale(String value);    // LCID=GetSystemDefaultLCID()
-        void SetFromStringWithUserDefaultLocale(String value);      // LCID=GetUserDefaultLCID()
-        void SetFromStringWithThreadLocale(String value);           // LCID=GetThreadLocale()
-        void SetFromStringWithInvariantLocale(String value);        // LCID=LOCALE_INVARIANT
-        void Set(IInspectable value);
-        void SetFromDecimal(Decimal value);
-        void SetFromDecimalValue(DecimalValue value);
+        /// Return true if (left == right).
+        static Boolean Equals(DecimalValue left, DecimalValue right);
 
-        Boolean ToBoolean();
-        Int16 ToInt16();
-        Int32 ToInt32();
-        Int64 ToInt64();
-        UInt8 ToUInt8();
-        UInt16 ToUInt16();
-        UInt32 ToUInt32();
-        UInt64 ToUInt64();
-        Single ToSingle();
-        Double ToDouble();
-        //String ToString(); inherited from IStringable     // LCID=LOCALE_INVARIANT
-        String ToStringWithSystemDefaultLocale();           // LCID=GetSystemDefaultLCID()
-        String ToStringWithUserDefaultLocale();             // LCID=GetUserDefaultLCID()
-        String ToStringWithThreadLocale();                  // LCID=GetThreadLocale()
-        String ToStringWithInvariantLocale();               // LCID=LOCALE_INVARIANT
-        IInspectable ToObject();
-        Decimal ToDecimal();                //TODO: Rename to Copy(value) or Clone(value) ?
-        DecimalValue ToDecimalValue();
-
-        /// Return true if (this == value).
-        Boolean Equals(Decimal value);
-
-        /// Compare this decimal with value.
-        /// @return 0 if this and value are equal, <0 if this is less than value or >0 if this is greater than value.
-        Int32 Compare(Decimal value);
+        /// Compare decimal values.
+        /// @return 0 if left and right are equal, <0 if left is less than right or >0 if left is greater than right.
+        static Int32 Compare(DecimalValue left, DecimalValue right);
 
         /// Return the scaling factor of the value (the number of decimal digits).
         /// @return the scaling factor, ranging from 0 to max_scale().
-        UInt32 Scale { get; };
+        static UInt32 Scale(DecimalValue value);
 
         /// Return the sign of the value.
-        /// @return 0 if this os zero, <0 if this is less than zero or >0 if this is greater than zero.
-        Int32 Sign { get; };
+        /// @return 0 if value is zero, <0 if value is less than zero or >0 if value is greater than zero.
+        static Int32 Sign(DecimalValue value);
 
         /// Return the maximum scaling factor
-        static UInt32 MaxScale{ get; };
+        static UInt32 MaxScale();
 
         /// Return the maximum value (79,228,162,514,264,337,593,543,950,335).
-        static Decimal MaxValue{ get; };
+        static DecimalValue MaxValue();
 
         /// Return the minimum value (-79,228,162,514,264,337,593,543,950,335).
-        static Decimal MinValue{ get; };
+        static DecimalValue MinValue();
 
-        /// Return a decimal whose value is (-this).
-        Decimal Negate();
+        /// Return a decimal whose value is (-value).
+        static DecimalValue Negate(DecimalValue value);
 
         /// Return the absolute value.
-        Decimal Abs();
+        static DecimalValue Abs(DecimalValue value);
 
         /// Return the value's integer portion (zero to the right of the decimal point).
-        Decimal Fix();
+        static DecimalValue Fix(DecimalValue value);
 
         /// Return the value rounded down to the nearest integer.
-        Decimal Integer();
+        static DecimalValue Integer(DecimalValue value);
 
         /// Return the value rounded to the specific number of decimal places.
-        Decimal Round(Int32 decimalPlaces);
+        static DecimalValue Round(DecimalValue value, Int32 decimalPlaces);
 
-        /// Returns a Decimal whose value is (this + value).
-        Decimal Add(Decimal value);
+        /// Returns a DecimalValue whose value is (left + right).
+        static DecimalValue Add(DecimalValue left, DecimalValue right);
 
-        /// Returns a Decimal whose value is (this - value).
-        Decimal Sub(Decimal value);
+        /// Returns a DecimalValue whose value is (left - right).
+        static DecimalValue Sub(DecimalValue left, DecimalValue right);
 
-        /// Returns a Decimal whose value is (this * value).
-        Decimal Mul(Decimal value);
+        /// Returns a DecimalValue whose value is (left * right).
+        static DecimalValue Mul(DecimalValue left, DecimalValue right);
 
-        /// Returns a Decimal whose value is (this / value).
-        Decimal Div(Decimal value);
+        /// Returns a DecimalValue whose value is (left / right).
+        static DecimalValue Div(DecimalValue left, DecimalValue right);
 
-        /// Returns a Decimal whose value is (this % value).
-        Decimal Mod(Decimal value);
+        /// Returns a DecimalValue whose value is (left % right).
+        static DecimalValue Mod(DecimalValue left, DecimalValue right);
     }
 }

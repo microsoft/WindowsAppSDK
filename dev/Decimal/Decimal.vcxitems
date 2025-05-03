@@ -14,10 +14,10 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.F.Decimal.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.F.DecimalHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.Decimal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.DecimalHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.DecimalTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>

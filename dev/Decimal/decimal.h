@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#ifndef DECIMAL_H
-#define DECIMAL_H
+#if !defined(__WindowsAppSDK_Microsoft_Windows_Foundation_decimal_)
+#define __WindowsAppSDK_Microsoft_Windows_Foundation_decimal_
 
 #include <oleauto.h>
 
@@ -700,4 +700,4 @@ private:
 };
 }
 
-#endif // DECIMAL_H
+#endif // !defined(__WindowsAppSDK_Microsoft_Windows_Foundation_decimal_)
