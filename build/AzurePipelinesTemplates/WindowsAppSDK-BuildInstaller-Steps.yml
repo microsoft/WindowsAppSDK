@@ -188,6 +188,10 @@ steps:
     targetType: "inline"
     script: |
       $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Packages*'
+      if ($srcWinAppSDKNupkgPath -eq $null)
+      {
+        $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*'
+      }
       Copy-Item -Force $srcWinAppSDKNupkgPath.FullName '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\'
       $destWinAppSDKNupkgPath = Get-Childitem -Path '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\' -File '*Microsoft.WindowsAppSDK*'
       $winAppSDKZip = $destWinAppSDKNupkgPath.FullName -replace '.nupkg','.zip'
