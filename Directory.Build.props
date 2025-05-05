@@ -23,6 +23,9 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
     <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
+
+    <!-- Workaround to ensure the right WinMDs are picked up from the IXP transport package. -->
+    <WindowsAppSDKAggregatePackage>true</WindowsAppSDKAggregatePackage>
   </PropertyGroup>
 
   <PropertyGroup>
