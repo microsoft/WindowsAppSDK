@@ -990,35 +990,37 @@ Potential changes for API Review consideration:
 1. String conversions - How to handle
    1. VarDecFromStr() and VarBStrFromDec() support localization via LCID. WinRT doesn't.
       1. Support LCID for localization?
-         1. C++ has to/from string with taking (value, LCID) with default LCID=LOCALE_INVARIANT
+         1. C++ has to/from string with optional LCID parameter
+            1. Default LCID=LOCALE_INVARIANT
          2. WinRT has pre-canned variants:
-            1. ToStringWithSystemDefaultLocale();           // LCID=GetSystemDefaultLCID()
-            2. ToStringWithUserDefaultLocale();             // LCID=GetUserDefaultLCID()
-            3. ToStringWithThreadLocale();                  // LCID=GetThreadLocale()
-            4. ToStringWithInvariantLocale();               // LCID=LOCALE_INVARIANT
-            5. ToString() == ToStringWithInvariantLocale()
+            1. ToString()                           // LCID=LOCALE_INVARIANT
+            2. ToStringWithSystemDefaultLocale()    // LCID=GetSystemDefaultLCID()
+            3. ToStringWithUserDefaultLocale()      // LCID=GetUserDefaultLCID()
+            4. ToStringWithThreadLocale()           // LCID=GetThreadLocale()
       2. Use alternative ??? for localization?
          1. ??? <-> LCID conversion APIs?
          2. Rewrite VarDecFromStr() and VBstrFromDec() as equivalents using ???
-         3. Windows.Globalization.NumberFormatting.DecimalFormatter has Format(Double/Int64/UInt64) but no DECIMAL
-2. C++ class
-   1. Add floor() - round towards +infinity. https://learn.microsoft.com/en-us/dotnet/api/system.decimal.floor
-   2. Add ceil() - round towards -infinity. https://learn.microsoft.com/en-us/dotnet/api/system.decimal.ceiling
-      1. Rename integer() to ceil() ?
-   3. Add floor-ceil-variant() - round towards zero
-3. winrt::Microsoft::Windows::Foundation::DecimalHelper
-   1. Add Floor()
-   2. Rename Integer() to Ceil()
-   3. Add Floor-Ceil-Variant() for rounds towards zero
+         3. Windows.Globalization.NumberFormatting.DecimalFormatter has Format/Parse(Double/Int64/UInt64) but no DECIMAL
+2. Rename FromString*() to Parse() + TryParse()?
+3. Rename ToString*() to Format()?
 
 # 6.2. TODO
 
 Punchlist to reach Stable:
 
 1. C++ class
-   1. BUG? decimal zero{}; decimal neg{ -zero }; neg.sign() < 0 because DECIMAL.sign = 0x80. Treat -0 the same as +0 (prevent -0 from being set?)
+   1. Add floor() - round towards +infinity. https://learn.microsoft.com/en-us/dotnet/api/system.decimal.floor
+   2. Add ceil() - round towards -infinity. https://learn.microsoft.com/en-us/dotnet/api/system.decimal.ceiling
+      1. Rename integer() to ceil() ?
+   3. Add floor-ceil-variant() - round towards zero
+   4. Add Round(decimalPlaces, Windows.Globalization.NumberFormatting.RoundingAlgorithm)
+   5. BUG? decimal zero{}; decimal neg{ -zero }; neg.sign() < 0 because DECIMAL.sign = 0x80. Treat -0 the same as +0 (prevent -0 from being set?)
 2. winrt::Microsoft::Windows::Foundation::DecimalHelper
-   1. Add experimental checks
+   1. Add Floor()
+   2. Rename Integer() to Ceil()
+   3. Add Floor-Ceil-Variant() for rounds towards zero
+   4. Add Round(decimalPlaces, Windows.Globalization.NumberFormatting.RoundingAlgorithm)
+   5. Add experimental checks
 3. C# Tests
    1. TAEF for C# ?
    2. Port test\inc\WindowsAppRuntime.Test.Package.h to C#

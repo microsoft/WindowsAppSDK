@@ -1031,6 +1031,31 @@ namespace Test::Decimal::Tests
             VERIFY_IS_TRUE(neg_value < pos);
         }
 
+        TEST_METHOD(is_valid)
+        {
+            DECIMAL value{};
+            VERIFY_IS_TRUE(Microsoft::Windows::Foundation::decimal::is_valid(value));
+
+            for (BYTE scale=0; scale <= Microsoft::Windows::Foundation::decimal::max_scale(); ++scale)
+            {
+                value.scale = scale;
+                VERIFY_IS_TRUE(Microsoft::Windows::Foundation::decimal::is_valid(value));
+            }
+
+            value.scale = Microsoft::Windows::Foundation::decimal::max_scale() + 1;
+            VERIFY_IS_FALSE(Microsoft::Windows::Foundation::decimal::is_valid(value));
+
+            value = DECIMAL{};
+            const BYTE sign_is_negative{ 0x80 };
+            value.sign = sign_is_negative;
+            VERIFY_IS_TRUE(Microsoft::Windows::Foundation::decimal::is_valid(value));
+
+            for (BYTE sign=0x01; sign < sign_is_negative; sign <<= 1)
+            {
+                VERIFY_IS_FALSE(Microsoft::Windows::Foundation::decimal::is_valid(value));
+            }
+        }
+
         TEST_METHOD(scale)
         {
             const Microsoft::Windows::Foundation::decimal n_0{ L"79228162514264337593543950335" };

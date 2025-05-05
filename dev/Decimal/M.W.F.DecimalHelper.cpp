@@ -133,6 +133,10 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return to_decimal(left).compare(to_decimal(right));
     }
+    bool DecimalHelper::IsValid(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+    {
+        return winrt::Microsoft::Windows::Foundation::is_valid(value);
+    }
     uint32_t DecimalHelper::Scale(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
     {
         return value.Scale;

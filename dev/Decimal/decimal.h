@@ -503,6 +503,19 @@ public:
         return ::compare(m_decimal, value);
     }
 
+    /// Return true if this is valid.
+    static bool is_valid()
+    {
+        return is_valid(m_decimal);
+    }
+
+    /// Return true if value is valid.
+    static constexpr bool is_valid(const DECIMAL& value)
+    {
+        const BYTE sign_is_negative{ 0x80 };
+        return (value.scale <= max_scale()) && ((value & ~sign_is_negative) == 0);
+    }
+
     /// Return the scaling factor of the value (the number of decimal digits).
     /// @return the scaling factor, ranging from 0 to max_scale().
     std::uint32_t scale() const

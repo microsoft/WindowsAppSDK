@@ -64,6 +64,9 @@ namespace Microsoft.Windows.Foundation
         /// @return 0 if left and right are equal, <0 if left is less than right or >0 if left is greater than right.
         static Int32 Compare(DecimalValue left, DecimalValue right);
 
+        /// Return true if the value is valid.
+        static Boolean IsValid(DecimalValue value);
+
         /// Return the scaling factor of the value (the number of decimal digits).
         /// @return the scaling factor, ranging from 0 to max_scale().
         static UInt32 Scale(DecimalValue value);

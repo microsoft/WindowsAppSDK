@@ -43,6 +43,7 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         static hstring ToStringWithThreadLocale(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         static bool Equals(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
         static int32_t Compare(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
+        static bool IsValid(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         static uint32_t Scale(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         static int32_t Sign(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         static uint32_t MaxScale();

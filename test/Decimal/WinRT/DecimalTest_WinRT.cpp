@@ -637,6 +637,33 @@ namespace Test::DecimalValue::Tests
             VERIFY_IS_TRUE(right >= left);
         }
 
+        TEST_METHOD(is_valid)
+        {
+            // Scale = 0 to 28
+            winrt::Microsoft::Windows::Foundation::DecimalValue value{};
+            VERIFY_IS_TRUE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
+
+            for (BYTE Scale=0; Scale <= winrt::Microsoft::Windows::Foundation::DecimalHelper::MaxScale(); ++Scale)
+            {
+                value.Scale = Scale;
+                VERIFY_IS_TRUE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
+            }
+
+            value.Scale = winrt::Microsoft::Windows::Foundation::DecimalHelper::MaxScale() + 1;
+            VERIFY_IS_FALSE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
+
+            // Sign is 0x00 or 0x80
+            value = winrt::Microsoft::Windows::Foundation::DecimalValue{};
+            const BYTE sign_is_negative{ 0x80 };
+            value.Sign = sign_is_negative;
+            VERIFY_IS_TRUE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
+
+            for (BYTE Sign=0x01; Sign < sign_is_negative; Sign <<= 1)
+            {
+                VERIFY_IS_FALSE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
+            }
+        }
+
         TEST_METHOD(scale)
         {
             const auto n_0{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"79228162514264337593543950335" }) };

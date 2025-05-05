@@ -75,6 +75,12 @@ inline bool operator>=(
 
 namespace winrt::Microsoft::Windows::Foundation
 {
+/// Return true if value is valid.
+constexpr bool is_valid(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+{
+    return ::Microsoft::Windows::Foundation::decimal::is_valid(to_DECIMAL(value));
+}
+
 /// Return value as a C++ decimal object.
 inline ::Microsoft::Windows::Foundation::decimal to_decimal(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
 {
