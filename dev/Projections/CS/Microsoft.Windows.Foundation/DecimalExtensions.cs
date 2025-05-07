@@ -13,8 +13,8 @@ namespace Microsoft.Windows.Foundation
         /// Return a WinRT DecimalValue structure.
         public static Microsoft.Windows.Foundation.DecimalValue ToDecimalValue(this decimal d)
         {
-            // decimal.GetBits() returns a binary representation of a Decimal. The return value is an
-            // integer array with four elements. Elements 0, 1, and 2 contain the low,
+            // decimal.GetBits() returns a binary representation of a Decimal. The return value
+            // is an integer array with four elements. Elements 0, 1, and 2 contain the low,
             // middle, and high 32 bits of the 96-bit integer part of the Decimal.
             // Element 3 contains the scale factor and sign of the Decimal: bits 0-15
             // (the lower word) are unused; bits 16-23 contain a value between 0 and

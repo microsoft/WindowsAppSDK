@@ -601,34 +601,240 @@ namespace Test.DotNet
             Verify.AreEqual(0, neg_integer.CompareTo(neg_value));
         }
 
+        private static void Output(int expressionLength, string expression, decimal expected, decimal result)
+        {
+            var pad = new string(' ', expressionLength - expression.Length);
+            Console.Write($"{expression}{pad}");
+            Verify.AreEqual(expected, result);
+        }
+
+        struct Values
+        {
+            public string left;
+            public string right;
+            public string result;
+
+            public Values(string left, string right, string result)
+            {
+                this.left = left;
+                this.right = right;
+                this.result = result;
+            }
+        }
+
         public static void operator_add()
         {
-            // TODO operator_add tests
+            var values = new Values[]{
+                new Values( "0",      "0",       "0"     ),
+                new Values( "1",      "2",       "3"     ),
+                new Values( "123",    "4567",    "4690"  ),
+                new Values( "1",      "-2",      "-1"    ),
+                new Values( "-1",     "-2",      "-3"    ),
+                new Values( "-1",     "2",       "1"     ),
+                new Values( "-0",     "-0",      "0"     ),
+                new Values( "-0",     "0",       "0"     ),
+                new Values( "0",      "-0",      "0"     ),
+                new Values( "1.2",    "3.45",    "4.65"  ),
+                new Values( "-1.2",   "3.45",    "2.25"  ),
+                new Values( "1.2",    "-3.45",   "-2.25" ),
+                new Values( "-1.2",   "-3.45",   "-4.65" ),
+                new Values( ".2",     ".45",     ".65"   ),
+                new Values( "-.2",    ".45",     ".25"   ),
+                new Values( ".2",     "-.45",    "-.25"  ),
+                new Values( "-.2",    "-.45",    "-.65"  )
+            };
+
+            foreach (var value in values)
+            {
+                var left = Decimal.Parse(value.left);
+                var right = Decimal.Parse(value.right);
+                var expected = Decimal.Parse(value.result);
+                var result = left + right;
+                Output(36, $"{left} + {right} = {result} vs {expected}", expected, result);
+
+                var result2 = left;
+                result2 += right;
+                Output(36, $"{left} + {right} = {result} vs {expected}", expected, result);
+            }
         }
 
         public static void operator_sub()
         {
-            // TODO operator_sub tests
+            var values = new Values[]{
+                new Values( "0",      "0",       "0"     ),
+                new Values( "1",      "2",       "-1"    ),
+                new Values( "123",    "4567",    "-4444" ),
+                new Values( "1",      "-2",      "3"     ),
+                new Values( "-1",     "-2",      "1"     ),
+                new Values( "-1",     "2",       "-3"    ),
+                new Values( "-0",     "-0",      "0"     ),
+                new Values( "-0",     "0",       "0"     ),
+                new Values( "0",      "-0",      "0"     ),
+                new Values( "1.2",    "3.45",    "-2.25" ),
+                new Values( "-1.2",   "3.45",    "-4.65" ),
+                new Values( "1.2",    "-3.45",   "4.65"  ),
+                new Values( "-1.2",   "-3.45",   "2.25"  ),
+                new Values( ".2",     ".45",     "-.25"  ),
+                new Values( "-.2",    ".45",     "-.65"  ),
+                new Values( ".2",     "-.45",    ".65"   ),
+                new Values( "-.2",    "-.45",    ".25"   )
+            };
+
+            foreach (var value in values)
+            {
+                var left = Decimal.Parse(value.left);
+                var right = Decimal.Parse(value.right);
+                var expected = Decimal.Parse(value.result);
+                var result = left - right;
+                Output(36, $"{left} - {right} = {result} vs {expected}", expected, result);
+
+                var result2 = left;
+                result2 -= right;
+                Output(36, $"{left} - {right} = {result} vs {expected}", expected, result);
+            }
         }
 
         public static void operator_mul()
         {
-            // TODO operator_mul tests
+            var values = new Values[]{
+                new Values( "0",      "0",       "0"      ),
+                new Values( "1",      "2",       "2"      ),
+                new Values( "123",    "4567",    "561741" ),
+                new Values( "1",      "-2",      "-2"     ),
+                new Values( "-1",     "-2",      "2"      ),
+                new Values( "-1",     "2",       "-2"     ),
+                new Values( "-0",     "-0",      "0"      ),
+                new Values( "-0",     "0",       "0"      ),
+                new Values( "0",      "-0",      "0"      ),
+                new Values( "1.2",    "3.45",    "4.140"  ),
+                new Values( "-1.2",   "3.45",    "-4.140" ),
+                new Values( "1.2",    "-3.45",   "-4.140" ),
+                new Values( "-1.2",   "-3.45",   "4.140"  ),
+                new Values( ".2",     ".45",     "0.090"  ),
+                new Values( "-.2",    ".45",     "-0.090" ),
+                new Values( ".2",     "-.45",    "-0.090" ),
+                new Values( "-.2",    "-.45",    "0.090"  )
+            };
+
+            foreach (var value in values)
+            {
+                var left = Decimal.Parse(value.left);
+                var right = Decimal.Parse(value.right);
+                var expected = Decimal.Parse(value.result);
+                var result = left * right;
+                Output(36, $"{left} * {right} = {result} vs {expected}", expected, result);
+
+                var result2 = left;
+                result2 *= right;
+                Output(36, $"{left} * {right} = {result} vs {expected}", expected, result);
+            }
         }
 
         public static void operator_div()
         {
-            // TODO operator_div tests
+            var values = new Values[]{
+                new Values( "1",         "2",       "0.5"                             ),
+                new Values( "123",       "4567",    "0.0269323407050580249616816291"  ),
+                new Values( "1",         "-2",      "-0.5"                            ),
+                new Values( "-1",        "-2",      "0.5"                             ),
+                new Values( "-1",        "2",       "-0.5"                            ),
+                new Values( "1.2",       "3.45",    "0.3478260869565217391304347826"  ),
+                new Values( "-1.2",      "3.45",    "-0.3478260869565217391304347826" ),
+                new Values( "1.2",       "-3.45",   "-0.3478260869565217391304347826" ),
+                new Values( "-1.2",      "-3.45",   "0.3478260869565217391304347826"  ),
+                new Values( ".2",        ".45",     "0.4444444444444444444444444444"  ),
+                new Values( "-.2",       ".45",     "-0.4444444444444444444444444444" ),
+                new Values( ".2",        "-.45",    "-0.4444444444444444444444444444" ),
+                new Values( "-.2",       "-.45",    "0.4444444444444444444444444444"  )
+            };
+
+            foreach (var value in values)
+            {
+                var left = Decimal.Parse(value.left);
+                var right = Decimal.Parse(value.right);
+                var expected = Decimal.Parse(value.result);
+                var result = left / right;
+                Output(90, $"{left} / {right} = {result} vs {expected}", expected, result);
+
+                var result2 = left;
+                result2 /= right;
+                Output(90, $"{left} / {right} = {result} vs {expected}", expected, result);
+            }
         }
 
         public static void operator_mod()
         {
-            // TODO operator_mod tests
+            var values = new Values[]{
+                new Values( "1",     "2",       "1"     ),
+                new Values( "123",   "4567",    "123"   ),
+                new Values( "1",     "-2",      "1"     ),
+                new Values( "-1",    "-2",      "-1"    ),
+                new Values( "-1",    "2",       "-1"    ),
+                new Values( "1.2",   "3.45",    "1.2"   ),
+                new Values( "-1.2",  "3.45",    "-1.2"  ),
+                new Values( "1.2",   "-3.45",   "1.2"   ),
+                new Values( "-1.2",  "-3.45",   "-1.2"  ),
+                new Values( ".2",    ".45",     "0.2"   ),
+                new Values( "-.2",   ".45",     "-0.2"  ),
+                new Values( ".2",    "-.45",    "0.2"   ),
+                new Values( "-.2",   "-.45",    "-0.2"  ),
+
+                new Values( "2",     "1",       "0"     ),
+                new Values( "4567",  "123",     "16"    ),
+                new Values( "3.45",  "1.2",     "1.05"  ),
+                new Values( "2",     "-1",      "0"     ),
+                new Values( "-2",    "1",       "0"     ),
+                new Values( "-2",    "-1",      "0"     ),
+                new Values( "3.45",  "-1.2",    "1.05"  ),
+                new Values( "-3.45", "1.2",     "-1.05" ),
+                new Values( "-3.45", "-1.2",    "-1.05" ),
+                new Values( ".45",   ".2",      "0.05"  ),
+                new Values( ".45",   "-.2",     "0.05"  ),
+                new Values( "-.45",  ".2",      "-0.05" ),
+                new Values( "-.45",  "-.2",     "-0.05" )
+            };
+
+            foreach (var value in values)
+            {
+                var left = Decimal.Parse(value.left);
+                var right = Decimal.Parse(value.right);
+                var expected = Decimal.Parse(value.result);
+                var result = left % right;
+                Output(36, $"{left} % {right} = {result} vs {expected}", expected, result);
+
+                var result2 = left;
+                result2 %= right;
+                Output(36, $"{left} % {right} = {result} vs {expected}", expected, result);
+            }
         }
 
         public static void round()
         {
-            // TODO round tests
+            var n_1_888 = Decimal.Parse("1.888");
+            var n_neg1_888 = Decimal.Parse("-1.888");
+            var n_1_25 = Decimal.Parse("1.25");
+            var n_neg1_25 = Decimal.Parse("-1.25");
+
+            var n_2 = Decimal.Parse("2");
+            var n_1_9 = Decimal.Parse("1.9");
+            var n_1_89 = Decimal.Parse("1.89");
+            var n_neg1_9 = Decimal.Parse("1.9");
+            var n_neg1_89 = Decimal.Parse("1.89");
+
+            var n_1_888_round_0 = Decimal.Round(n_1_888, 0);
+            Output(36, $"{n_1_888}.round(0) = {n_1_888_round_0} vs {n_2}", n_2, n_1_888_round_0);
+
+            var n_1_888_round_1 = Decimal.Round(n_1_888, 1);
+            Output(36, $"${n_1_888}.round(1) = {n_1_888_round_1} vs {n_1_9}", n_1_9, n_1_888_round_1);
+
+            var n_1_888_round_2 = Decimal.Round(n_1_888, 2);
+            Output(36, $"${n_1_888}.round(2) = {n_1_888_round_2} vs {n_1_89}", n_1_89, n_1_888_round_2);
+
+            var n_1_888_round_3 = Decimal.Round(n_1_888, 3);
+            Output(36, $"${n_1_888}.round(3) = {n_1_888_round_3} vs {n_1_888}", n_1_888, n_1_888_round_3);
+
+            var n_1_888_round_4 = Decimal.Round(n_1_888, 4);
+            Output(36, $"${n_1_888}.round(4) = {n_1_888_round_4} vs {n_1_888}", n_1_888, n_1_888_round_4);
         }
 
         private static Decimal abs(Decimal value)

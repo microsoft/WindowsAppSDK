@@ -9,8 +9,6 @@
 #include "decimal.h"
 #include "decimalcppwinrt.h"
 
-#include "DecimalTelemetry.h"
-
 namespace winrt::Microsoft::Windows::Foundation::implementation
 {
     winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::FromBoolean(bool value)

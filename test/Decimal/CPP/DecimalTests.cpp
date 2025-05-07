@@ -1042,7 +1042,7 @@ namespace Test::Decimal::Tests
                 VERIFY_IS_TRUE(Microsoft::Windows::Foundation::decimal::is_valid(value));
             }
 
-            value.scale = Microsoft::Windows::Foundation::decimal::max_scale() + 1;
+            value.scale = static_cast<BYTE>(Microsoft::Windows::Foundation::decimal::max_scale() + 1);
             VERIFY_IS_FALSE(Microsoft::Windows::Foundation::decimal::is_valid(value));
 
             value = DECIMAL{};
@@ -1052,7 +1052,8 @@ namespace Test::Decimal::Tests
 
             for (BYTE sign=0x01; sign < sign_is_negative; sign <<= 1)
             {
-                VERIFY_IS_FALSE(Microsoft::Windows::Foundation::decimal::is_valid(value));
+                value.sign = sign;
+                VERIFY_IS_FALSE(Microsoft::Windows::Foundation::decimal::is_valid(value), WEX::Common::String().Format(L"sign=0x%02X", static_cast<std::uint32_t>(value.sign)));
             }
         }
 

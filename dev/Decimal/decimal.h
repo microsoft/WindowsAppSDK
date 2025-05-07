@@ -504,7 +504,7 @@ public:
     }
 
     /// Return true if this is valid.
-    static bool is_valid()
+    bool is_valid()
     {
         return is_valid(m_decimal);
     }
@@ -513,7 +513,7 @@ public:
     static constexpr bool is_valid(const DECIMAL& value)
     {
         const BYTE sign_is_negative{ 0x80 };
-        return (value.scale <= max_scale()) && ((value & ~sign_is_negative) == 0);
+        return (value.scale <= max_scale()) && ((value.sign & ~sign_is_negative) == 0);
     }
 
     /// Return the scaling factor of the value (the number of decimal digits).

@@ -19,9 +19,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.DecimalHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.DecimalTelemetry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>

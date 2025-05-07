@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <TerminalVelocityFeatures-Decimal.h>
-
 namespace Microsoft.Windows.Foundation
 {
     [contractversion(1)]

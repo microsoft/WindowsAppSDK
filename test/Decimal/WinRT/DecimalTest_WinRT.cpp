@@ -649,7 +649,7 @@ namespace Test::DecimalValue::Tests
                 VERIFY_IS_TRUE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
             }
 
-            value.Scale = winrt::Microsoft::Windows::Foundation::DecimalHelper::MaxScale() + 1;
+            value.Scale = static_cast<BYTE>(winrt::Microsoft::Windows::Foundation::DecimalHelper::MaxScale() + 1);
             VERIFY_IS_FALSE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
 
             // Sign is 0x00 or 0x80
