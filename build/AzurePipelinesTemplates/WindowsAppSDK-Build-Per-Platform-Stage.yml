@@ -65,7 +65,7 @@ stages:
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
-        value: $[coalesce(variables.compiflerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
+        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
       - name: localCompilerOverrideNupkgVersion
         value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
     steps:
