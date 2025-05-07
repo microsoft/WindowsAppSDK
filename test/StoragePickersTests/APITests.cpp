@@ -1,40 +1,49 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include "AssemblyInfo.h"
-
 #include <FrameworkUdk/Containment.h>
-#include <winrt/Microsoft.Windows.Storage.Pickers.h>
-#include <TerminalVelocityFeatures-StoragePickers.h>
+#include "winrt/Microsoft.Windows.Storage.Pickers.h"
+#include "TerminalVelocityFeatures-StoragePickers.h"
 
-namespace TB = ::Test::Bootstrap;
-namespace TP = ::Test::Packages;
+#include <thread>
+#include <future>
+#include <vector>
+#include <mutex>
 
+#include <winrt/Windows.Foundation.h>
+
+using namespace std::chrono_literals;
 using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-namespace Test::StoragePickersTests
+namespace TB = ::Test::Bootstrap;
+namespace TP = ::Test::Packages;
+
+// #include <winrt/Windows.Storage.h>  // camera has this
+// using namespace winrt::Windows::Storage; // camera has this
+
+namespace StoragePickersTests
 {
-    class StoragePickersTests
+    // Timeout in milliseconds
+    class APITests
     {
     public:
-        BEGIN_TEST_CLASS(StoragePickersTests)
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::SetupPackages()
+        BEGIN_TEST_CLASS(APITests)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
-            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"UAP")
-            //TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"StoragePickers-AppxManifest.xml")
             END_TEST_CLASS()
 
-            TEST_CLASS_SETUP(ClassSetup)
+        TEST_CLASS_SETUP(ClassInit)
         {
             ::Test::Bootstrap::SetupPackages();
             return true;
         }
 
-        TEST_CLASS_CLEANUP(ClassCleanup)
+        TEST_CLASS_CLEANUP(ClassUninit)
         {
             ::Test::Bootstrap::CleanupPackages();
             return true;
@@ -43,98 +52,14 @@ namespace Test::StoragePickersTests
         TEST_METHOD_SETUP(MethodInit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
-
-            // The test method setup and execution is on a different thread than the class setup.
-            // Initialize the framework for the test thread.
-            ::Test::Bootstrap::SetupBootstrap();
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
-            ::Test::Bootstrap::CleanupBootstrap();
             return true;
         }
-       // The unit tests will be updated,first test might is there for testing purpose locally.
-       // Focusing solely on functional tests for now.
-
-       // Commenting out this test as it is an E2E scenario test that requires UI automation for pipeline execution.
-       /*
-
-        TEST_METHOD(FileOpenPicker_ShouldPickFile)
-        {
-            try
-            {
-                auto parentWindow = ::GetForegroundWindow();
-                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
-                winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ windowId };
-                picker.FileTypeFilter().Append(L"*");
-                // Act
-                auto operation = picker.PickSingleFileAsync();
-                auto file = operation.get();
-                auto path = file.Path();
-                // Assert
-                if (file != nullptr)
-                {
-                    Log::Comment(L"File open was successful");
-                }
-                else
-                {
-                    Log::Error(L"File open canceled.");
-                }
-            }
-            catch (const winrt::hresult_error& ex)
-            {
-                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
-                VERIFY_FAIL(L"Exception occurred during file open picker.");
-            }
-            catch (const std::exception& ex)
-            {
-                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
-                VERIFY_FAIL(L"Standard exception occurred during file open picker.");
-            }
-        }
-
-        TEST_METHOD(FileSavePicker_ShouldCreateNewFile)
-        {
-            try
-            {
-                auto parentWindow = ::GetForegroundWindow();
-                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
-                winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker savePicker(windowId);
-                //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
-                savePicker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
-                savePicker.SuggestedFileName(L"test.txt");
-                // Act
-                auto fileOperation = savePicker.PickSaveFileAsync();
-                auto file = fileOperation.get();
-                auto path = file.Path();
-
-                // Assert
-                if (file != nullptr)
-                {
-                    Log::Comment(L"File save was successful.");
-                }
-                else
-                {
-                    Log::Error(L"File save failed or was canceled.");
-                }
-            }
-            catch (const winrt::hresult_error& ex)
-            {
-                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
-                VERIFY_FAIL(L"Exception occurred during file save picker.");
-            }
-            catch (const std::exception& ex)
-            {
-                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
-                VERIFY_FAIL(L"Standard exception occurred during file save picker.");
-            }
-        }
-
-       */
-
 
         TEST_METHOD(VerifyFileOpenPickerOptionsAreReadCorrectly)
         {
