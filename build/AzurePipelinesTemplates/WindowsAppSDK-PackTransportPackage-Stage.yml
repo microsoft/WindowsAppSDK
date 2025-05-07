@@ -162,10 +162,71 @@ stages:
           Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
 
     - task: PowerShell@2
+      name: DetermineComponentNugetPackageVersion
+      displayName: 'Determine Component Nuget Package Version'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $paddedRevision = '$(versionCounter)'
+          if([int]$(versionCounter) -lt 10)
+          {
+            $paddedRevision = '00' + '$(versionCounter)'
+          }
+          elseif ([int]$(versionCounter) -lt 100)
+          {
+            $paddedRevision = '0' + '$(versionCounter)'
+          }
+          Write-Host "paddedRevision " $paddedRevision
+
+          if ([int]$(versionCounter) -gt 999)
+          {
+            Write-Host "Revision Number limit reach. Please try again the next day"
+            Write-Host "##vso[task.complete result=Failed;]DONE"
+          }
+
+          $buildType = '$(channel)'
+          $majorMinorPatchRev = '$(major).$(minor).$(versionMinDate)'
+          $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
+          $version = $majorMinorPatchRev + '-' + $buildType
+
+          # If using release versioning, drop the version suffix, which includes a tag & build stamp.
+          # This should only be done when prepping final release packages.
+
+          if ('${{ parameters.IsOfficial }}' -eq 'true')
+          {
+            $versionTag = '$(versionTag)'
+            Write-Host "VersionTag: " $versionTag
+            if ($buildType -ne "stable" -and -not $versionTag.StartsWith($buildType))
+            {
+              Write-Host "Variable VersionTag must start with " $buildType
+              Write-Host "Please update this variable and restart the build"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+            if ($buildType -eq "stable" -and -not [String]::IsNullOrEmpty($versionTag))
+            {
+              Write-Host "Stable builds must have an empty VersionTag"
+              Write-Host "Please update this variable and restart the build"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+
+            $formattedTag = ''
+            if(-not [String]::IsNullOrEmpty($versionTag))
+            {
+              $formattedTag = '-' + $versionTag
+            }
+            Write-Host "Using Release Versioning"
+            $version = $majorMinorPatchRev + $formattedTag
+          }
+
+          Write-Host 'Component Package Version: ' $version
+          Write-Host "##vso[task.setvariable variable=componentPackageVersion;isOutput=true]$version"
+          Write-Host "##vso[task.setvariable variable=componentPackageVersion;]$version"
+
+    - task: PowerShell@2
       name: PackNuget
       inputs:
         filePath: 'BuildAll.ps1'
-        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)" -ComponentPackageVersion "$(componentPackageVersion)"
 
     # Disable building MockWindowsAppSDK until we can consider the public vs private scenario
     # - ${{ if eq(parameters.BuildMockWindowsAppSDK, 'true') }}:
