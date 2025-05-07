@@ -5,9 +5,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: true
-- name: runStaticAnalysis
+- name: runPREfast
   type: boolean
-  default: true
+  default: false
 
 steps:
 - task: NuGetAuthenticate@1
@@ -30,7 +30,7 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -AzureBuildStep "BuildAnyCPU"
 
-- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+- ${{ if eq(parameters.runPREfast, 'true') }}:
   - task: SDLNativeRules@3
     displayName: Run PREfast SDL Native Rules
     inputs:
