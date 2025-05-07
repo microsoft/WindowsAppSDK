@@ -5,9 +5,6 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: true
-- name: runStaticAnalysis
-  type: boolean
-  default: true
 - name: runApiScan
   type: boolean
   default: true
