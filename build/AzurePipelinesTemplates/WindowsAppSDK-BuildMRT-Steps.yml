@@ -5,9 +5,12 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: true
-- name: runStaticAnalysis
+- name: runApiScan
   type: boolean
   default: true
+- name: runPREfast
+  type: boolean
+  default: false
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
@@ -32,7 +35,7 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
-- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+- ${{ if eq(parameters.runPREfast, 'true') }}:
   - task: SDLNativeRules@3
     displayName: Run PREfast SDL Native Rules
     condition: and(succeeded(), eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
@@ -47,6 +50,7 @@ steps:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     continueOnError: true
 
+- ${{ if eq(parameters.runApiScan, 'true') }}:
   # Copy build output to folder APIScanTarget for APIScan to scan, in the mean time, exclude some folders/files.
   - task: CopyFiles@2
     displayName: Populate APIScanTarget

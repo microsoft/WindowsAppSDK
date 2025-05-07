@@ -8,6 +8,12 @@ parameters:
 - name: runStaticAnalysis
   type: boolean
   default: true
+- name: runApiScan
+  type: boolean
+  default: true
+- name: runPREfast
+  type: boolean
+  default: false
 - name: buildPlatform
   type: string
   default: x64
@@ -50,7 +56,7 @@ stages:
       - name: ob_artifactBaseName
         value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
-        ${{ if parameters.runStaticAnalysis }}:
+        ${{ if parameters.runApiScan }}:
           value: true
         ${{ else }}:
           value: false
@@ -62,7 +68,7 @@ stages:
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
-        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
+        value: $[coalesce(variables.compiflerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
       - name: localCompilerOverrideNupkgVersion
         value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
     steps:
@@ -83,7 +89,8 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+        runApiScan: ${{ parameters.runApiScan }}
+        runPREfast: ${{ parameters.runPREfast }}
 
     # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
     # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
@@ -125,7 +132,7 @@ stages:
       - name: ob_artifactBaseName
         value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
-        ${{ if parameters.runStaticAnalysis }}:
+        ${{ if parameters.runApiScan }}:
           value: true
         ${{ else }}:
           value: false
@@ -158,7 +165,8 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+        runPREfast : ${{ parameters.runPREfast }}
+        runApiScan : ${{ parameters.runApiScan }}
 
     # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
     # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-

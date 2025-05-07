@@ -31,13 +31,15 @@ stages:
   parameters:
     SignOutput: false
     IsOneBranch: false
-    runStaticAnalysis: false
+    runApiScan: true
+    runPREFast: false
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:
     SignOutput: false
     IsOneBranch: false
-    runStaticAnalysis: true
+    runApiScan: false
+    runPREFast: true
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
   parameters:
