@@ -61,7 +61,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
-        parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
+        parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
 
 
