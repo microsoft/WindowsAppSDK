@@ -23,9 +23,8 @@ namespace Test::StoragePickersTests
         BEGIN_TEST_CLASS(StoragePickersTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::SetupPackages()
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
-            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"UAP")
-            //TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"StoragePickers-AppxManifest.xml")
             END_TEST_CLASS()
 
             TEST_CLASS_SETUP(ClassSetup)
