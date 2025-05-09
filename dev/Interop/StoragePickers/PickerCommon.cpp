@@ -7,7 +7,7 @@
 #include "ShObjIdl.h"
 #include <KnownFolders.h>
 
-namespace {
+namespace PickerCommon {
 
     GUID HashHStringToGuid(winrt::hstring const& input)
     {
@@ -193,7 +193,7 @@ namespace PickerCommon {
         FileTypeFilterPara.reserve(resultSize);
         for (size_t i = 0; i < resultSize; i++)
         {
-            FileTypeFilterPara.at(i) = { FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() };
+            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
     }
 
@@ -224,10 +224,10 @@ namespace PickerCommon {
         }
 
         FileTypeFilterPara.clear();
-        FileTypeFilterPara.reserve(filters.Size());
-        for (size_t i = 0; i < filters.Size(); i++)
+        FileTypeFilterPara.reserve(resultSize);
+        for (size_t i = 0; i < resultSize; i++)
         {
-            FileTypeFilterPara.at(i) = { FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() };
+            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
     }
 

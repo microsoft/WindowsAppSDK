@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 #pragma once
-#include "pch.h"
 #include "ShObjIdl.h"
 #include "wil/cppwinrt.h"
 #include "winrt/base.h"
