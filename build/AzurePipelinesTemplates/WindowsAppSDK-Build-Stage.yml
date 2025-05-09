@@ -46,7 +46,10 @@ stages:
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
-      ob_artifactBaseName: "FoundationBinaries_release_anycpu"
+      ${{ if parameters.runPREfast }}:
+        ob_artifactBaseName: "FoundationBinaries_release_anycpu_PREfast"
+      ${{ if not( parameters.runPREfast ) }}:
+        ob_artifactBaseName: "FoundationBinaries_release_anycpu"
       ${{ if parameters.runApiScan }}:
         ob_sdl_apiscan_enabled: true
       ${{ if not( parameters.runApiScan ) }}:

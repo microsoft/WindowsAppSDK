@@ -51,7 +51,10 @@ stages:
       - name: ob_sdl_codeSignValidation_excludes
         value: '-|**\Release\**;-|**\packages\**'
       - name: ob_artifactBaseName
-        value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+        ${{ if parameters.runPREfast }}:
+          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+        ${{ else }}:
+          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
         ${{ if parameters.runApiScan }}:
           value: true
@@ -127,7 +130,10 @@ stages:
       - name: ob_sdl_suppression_suppressionSet
         value: default
       - name: ob_artifactBaseName
-        value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+        ${{ if parameters.runPREfast }}:
+          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+        ${{ else }}:
+          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
         ${{ if parameters.runApiScan }}:
           value: true
