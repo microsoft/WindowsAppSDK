@@ -568,77 +568,68 @@ namespace Test.DotNet
         public static void truncate()
         {
             var zero = Decimal.Parse("0");
-            var zero_value = (long)zero;
-            Verify.AreEqual(0, zero.CompareTo(zero_value));
+            var zero_value = Decimal.Truncate(zero);
+            Verify.AreEqual(zero, zero_value);
 
             var pos = Decimal.Parse("12.345");
-            var pos_fix = Decimal.Parse("12");
-            var pos_value = (long)pos;
-            Verify.AreEqual(0, pos_fix.CompareTo(pos_value));
+            var pos_expected = Decimal.Parse("12");
+            var pos_value = Decimal.Truncate(pos);
+            Verify.AreEqual(pos_expected, pos_value);
 
             var neg = Decimal.Parse("-12.345");
-            var neg_fix = Decimal.Parse("-12");
-            var neg_value = (long)neg;
-            Verify.AreEqual(0, neg_fix.CompareTo(neg_value));
-        }
-
-        public static void clamp()
-        {
-            var zero = Decimal.Parse("0");
-            var zero_value = (long)zero;
-            Verify.AreEqual(0, zero.CompareTo(zero_value));
-
-            var pos = Decimal.Parse("12.345");
-            var pos_fix = Decimal.Parse("12");
-            var pos_value = (long)pos;
-            Verify.AreEqual(0, pos_fix.CompareTo(pos_value));
-
-            var neg = Decimal.Parse("-12.345");
-            var neg_fix = Decimal.Parse("-12");
-            var neg_value = (long)neg;
-            Verify.AreEqual(0, neg_fix.CompareTo(neg_value));
+            var neg_expected = Decimal.Parse("-12");
+            var neg_value = Decimal.Truncate(neg);
+            Verify.AreEqual(neg_expected, neg_value);
         }
 
         public static void floor()
         {
             var zero = Decimal.Parse("0");
-            var zero_value = (long)zero;
-            Verify.AreEqual(0, zero.CompareTo(zero_value));
+            var zero_value = Decimal.Floor(zero);
+            Verify.AreEqual(zero, zero_value);
 
             var pos = Decimal.Parse("12.345");
-            var pos_integer = Decimal.Parse("12");
-            var pos_value = (long)pos;
-            Verify.AreEqual(0, pos_integer.CompareTo(pos_value));
+            var pos_expected = Decimal.Parse("12");
+            var pos_value = Decimal.Floor(pos);
+            Verify.AreEqual(pos_expected, pos_value);
 
             var neg = Decimal.Parse("-12.345");
-            var neg_integer = Decimal.Parse("-13");
-            var neg_value = (long)neg;
-            if ((neg_value < 0) && (neg_value != neg))
-            {
-                --neg_value;
-            }
-            Verify.AreEqual(0, neg_integer.CompareTo(neg_value));
+            var neg_expected = Decimal.Parse("-13");
+            var neg_value = Decimal.Floor(neg);
+            Verify.AreEqual(neg_expected, neg_value);
         }
 
         public static void ceiling()
         {
             var zero = Decimal.Parse("0");
-            var zero_value = (long)zero;
-            Verify.AreEqual(0, zero.CompareTo(zero_value));
+            var zero_value = Decimal.Ceiling(zero);
+            Verify.AreEqual(zero, zero_value);
 
             var pos = Decimal.Parse("12.345");
-            var pos_integer = Decimal.Parse("12");
-            var pos_value = (long)pos;
-            Verify.AreEqual(0, pos_integer.CompareTo(pos_value));
+            var pos_expected = Decimal.Parse("13");
+            var pos_value = Decimal.Ceiling(pos);
+            Verify.AreEqual(pos_expected, pos_value);
 
             var neg = Decimal.Parse("-12.345");
-            var neg_integer = Decimal.Parse("-13");
-            var neg_value = (long)neg;
-            if ((neg_value < 0) && (neg_value != neg))
-            {
-                --neg_value;
-            }
-            Verify.AreEqual(0, neg_integer.CompareTo(neg_value));
+            var neg_expected = Decimal.Parse("-12");
+            var neg_value = Decimal.Ceiling(neg);
+            Verify.AreEqual(neg_expected, neg_value);
+        }
+
+        public static void clamp()
+        {
+            var n1 = new Decimal(1);
+            var n2 = new Decimal(2);
+            var n3 = new Decimal(3);
+
+            Output(36, $"clamp {n1} {n2} {n3} = {clamp(n1,n2,n3)} vs {n2}", n2, clamp(n1,n2,n3));
+            Output(36, $"clamp {n2} {n1} {n3} = {clamp(n2,n1,n3)} vs {n2}", n2, clamp(n2,n1,n3));
+            Output(36, $"clamp {n3} {n1} {n2} = {clamp(n3,n1,n2)} vs {n2}", n2, clamp(n3,n1,n2));
+        }
+
+        private static Decimal clamp(Decimal value, Decimal min, Decimal max)
+        {
+            return value < min ? min : (value > max ? max : value);
         }
 
         private static void Output(int expressionLength, string expression, decimal expected, decimal result)
