@@ -51,9 +51,11 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
         static winrt::Microsoft::Windows::Foundation::DecimalValue MinValue();
         static winrt::Microsoft::Windows::Foundation::DecimalValue Negate(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         static winrt::Microsoft::Windows::Foundation::DecimalValue Abs(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
-        static winrt::Microsoft::Windows::Foundation::DecimalValue Fix(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
-        static winrt::Microsoft::Windows::Foundation::DecimalValue Integer(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
+        static winrt::Microsoft::Windows::Foundation::DecimalValue Truncate(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
+        static winrt::Microsoft::Windows::Foundation::DecimalValue Floor(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
+        static winrt::Microsoft::Windows::Foundation::DecimalValue Ceiling(winrt::Microsoft::Windows::Foundation::DecimalValue const& value);
         static winrt::Microsoft::Windows::Foundation::DecimalValue Round(winrt::Microsoft::Windows::Foundation::DecimalValue const& value, int32_t decimalPlaces);
+        static winrt::Microsoft::Windows::Foundation::DecimalValue Clamp(winrt::Microsoft::Windows::Foundation::DecimalValue const& value, winrt::Microsoft::Windows::Foundation::DecimalValue const& min, winrt::Microsoft::Windows::Foundation::DecimalValue const& max);
         static winrt::Microsoft::Windows::Foundation::DecimalValue Add(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
         static winrt::Microsoft::Windows::Foundation::DecimalValue Subtract(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);
         static winrt::Microsoft::Windows::Foundation::DecimalValue Multiply(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right);

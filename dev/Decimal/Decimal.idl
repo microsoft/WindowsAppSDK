@@ -90,14 +90,21 @@ namespace Microsoft.Windows.Foundation
         /// Return the absolute value.
         static DecimalValue Abs(DecimalValue value);
 
-        /// Return the value's integer portion (zero to the right of the decimal point).
-        static DecimalValue Fix(DecimalValue value);
+        /// Return the integral digits; any fractional digits are discarded.
+        static DecimalValue Truncate(DecimalValue value);
 
-        /// Return the value rounded down to the nearest integer.
-        static DecimalValue Integer(DecimalValue value);
+        /// Return the integral digits rounded down to -infinity; any fractional digits are discarded.
+        static DecimalValue Floor(DecimalValue value);
+
+        /// Return the integral digits rounded up to +infinity; any fractional digits are discarded.
+        static DecimalValue Ceiling(DecimalValue value);
 
         /// Return the value rounded to the specific number of decimal places.
         static DecimalValue Round(DecimalValue value, Int32 decimalPlaces);
+
+        /// Return value clamped to the inclusive range of min and max.
+        /// @return value if min <= value <= max, or min if value < min, or max if max < value.
+        static DecimalValue Clamp(DecimalValue value, DecimalValue min, DecimalValue max);
 
         /// Returns a DecimalValue whose value is (left + right).
         static DecimalValue Add(DecimalValue left, DecimalValue right);

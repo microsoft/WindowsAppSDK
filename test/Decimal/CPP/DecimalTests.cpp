@@ -1033,6 +1033,7 @@ namespace Test::Decimal::Tests
 
         TEST_METHOD(is_valid)
         {
+            // Scale = 0 to 28
             DECIMAL value{};
             VERIFY_IS_TRUE(Microsoft::Windows::Foundation::decimal::is_valid(value));
 
@@ -1045,6 +1046,7 @@ namespace Test::Decimal::Tests
             value.scale = static_cast<BYTE>(Microsoft::Windows::Foundation::decimal::max_scale() + 1);
             VERIFY_IS_FALSE(Microsoft::Windows::Foundation::decimal::is_valid(value));
 
+            // Sign is 0x00 or 0x80
             value = DECIMAL{};
             const BYTE sign_is_negative{ 0x80 };
             value.sign = sign_is_negative;
@@ -1173,38 +1175,81 @@ namespace Test::Decimal::Tests
             VERIFY_IS_TRUE(neg_value == pos);
         }
 
-        TEST_METHOD(fix)
+        TEST_METHOD(truncate)
         {
             const Microsoft::Windows::Foundation::decimal zero(L"0");
-            const auto value{ zero.fix() };
+            const auto value{ zero.truncate() };
             VERIFY_IS_TRUE(value == zero);
 
             const Microsoft::Windows::Foundation::decimal pos(L"12.345");
             const Microsoft::Windows::Foundation::decimal pos_fix(L"12");
-            const auto pos_value{ pos.fix() };
+            const auto pos_value{ pos.truncate() };
             VERIFY_IS_TRUE(pos_value == pos_fix);
 
             const Microsoft::Windows::Foundation::decimal neg(L"-12.345");
             const Microsoft::Windows::Foundation::decimal neg_fix(L"-12");
-            const auto neg_value{ neg.fix() };
+            const auto neg_value{ neg.truncate() };
             VERIFY_IS_TRUE(neg_value == neg_fix);
         }
 
-        TEST_METHOD(integer)
+        TEST_METHOD(floor)
         {
             const Microsoft::Windows::Foundation::decimal zero(L"0");
-            const auto value{ zero.integer() };
+            const auto value{ zero.floor() };
             VERIFY_IS_TRUE(value == zero);
 
             const Microsoft::Windows::Foundation::decimal pos(L"12.345");
             const Microsoft::Windows::Foundation::decimal pos_integer(L"12");
-            const auto pos_value{ pos.integer() };
+            const auto pos_value{ pos.floor() };
             VERIFY_IS_TRUE(pos_value == pos_integer);
 
             const Microsoft::Windows::Foundation::decimal neg(L"-12.345");
             const Microsoft::Windows::Foundation::decimal neg_integer(L"-13");
-            const auto neg_value{ neg.integer() };
+            const auto neg_value{ neg.floor() };
             VERIFY_IS_TRUE(neg_value == neg_integer);
+        }
+
+        TEST_METHOD(ceil)
+        {
+            const Microsoft::Windows::Foundation::decimal zero(L"0");
+            const auto value{ zero.ceil() };
+            VERIFY_IS_TRUE(value == zero);
+
+            const Microsoft::Windows::Foundation::decimal pos(L"12.345");
+            const Microsoft::Windows::Foundation::decimal pos_integer(L"13");
+            const auto pos_value{ pos.ceil() };
+            VERIFY_IS_TRUE(pos_value == pos_integer);
+
+            const Microsoft::Windows::Foundation::decimal neg(L"-12.345");
+            const Microsoft::Windows::Foundation::decimal neg_integer(L"-12");
+            const auto neg_value{ neg.ceil() };
+            VERIFY_IS_TRUE(neg_value == neg_integer);
+        }
+
+        TEST_METHOD(clamp)
+        {
+            const Microsoft::Windows::Foundation::decimal n1{ 1 };
+            const Microsoft::Windows::Foundation::decimal n2{ 2 };
+            const Microsoft::Windows::Foundation::decimal n3{ 3 };
+
+            try
+            {
+                const auto value_n1{ n1.clamp(n3, n2) };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (std::invalid_argument& e)
+            {
+                VERIFY_ARE_EQUAL(WEX::Common::String(L"max < min"), WEX::Common::String().Format(L"%hs", e.what()));
+            }
+
+            const auto value_n1{ n1.clamp(n2, n3) };
+            VERIFY_IS_TRUE(value_n1 == n2);
+
+            const auto value_n2{ n2.clamp(n1, n3) };
+            VERIFY_IS_TRUE(value_n2 == n2);
+
+            const auto value_n3{ n3.clamp(n1, n2) };
+            VERIFY_IS_TRUE(value_n3 == n2);
         }
 
         TEST_METHOD(operator_increment)
@@ -1559,31 +1604,104 @@ namespace Test::Decimal::Tests
             const Microsoft::Windows::Foundation::decimal n_1_25{ L"1.25" };
             const Microsoft::Windows::Foundation::decimal n_neg1_25{ L"-1.25" };
 
-            const Microsoft::Windows::Foundation::decimal n_2{ L"2" };
-            const Microsoft::Windows::Foundation::decimal n_1_9{ L"1.9" };
+            const Microsoft::Windows::Foundation::decimal n_1_2{ L"1.2" };
             const Microsoft::Windows::Foundation::decimal n_1_89{ L"1.89" };
-            const Microsoft::Windows::Foundation::decimal n_neg1_9{ L"1.9" };
-            const Microsoft::Windows::Foundation::decimal n_neg1_89{ L"1.89" };
+            const Microsoft::Windows::Foundation::decimal n_1_9{ L"1.9" };
+            const Microsoft::Windows::Foundation::decimal n_1{ L"1" };
+            const Microsoft::Windows::Foundation::decimal n_2{ L"2" };
+            const Microsoft::Windows::Foundation::decimal n_neg1_2{ L"-1.2" };
+            const Microsoft::Windows::Foundation::decimal n_neg1_89{ L"-1.89" };
+            const Microsoft::Windows::Foundation::decimal n_neg1_9{ L"-1.9" };
+            const Microsoft::Windows::Foundation::decimal n_neg1{ L"-1" };
+            const Microsoft::Windows::Foundation::decimal n_neg2{ L"-2" };
+
+            //----------------------------------------------
 
             const Microsoft::Windows::Foundation::decimal n_1_888_round_0{ n_1_888.round(0) };
             VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
                 n_1_888.to_string().c_str(), n_1_888_round_0.to_string().c_str(), n_2.to_string().c_str()));
 
             const Microsoft::Windows::Foundation::decimal n_1_888_round_1{ n_1_888.round(1) };
-            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+            VERIFY_ARE_EQUAL(n_1_9, n_1_888_round_1, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
                 n_1_888.to_string().c_str(), n_1_888_round_1.to_string().c_str(), n_1_9.to_string().c_str()));
 
             const Microsoft::Windows::Foundation::decimal n_1_888_round_2{ n_1_888.round(2) };
-            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+            VERIFY_ARE_EQUAL(n_1_89, n_1_888_round_2, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
                 n_1_888.to_string().c_str(), n_1_888_round_2.to_string().c_str(), n_1_89.to_string().c_str()));
 
             const Microsoft::Windows::Foundation::decimal n_1_888_round_3{ n_1_888.round(3) };
-            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+            VERIFY_ARE_EQUAL(n_1_888, n_1_888_round_3, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
                 n_1_888.to_string().c_str(), n_1_888_round_3.to_string().c_str(), n_1_888.to_string().c_str()));
 
             const Microsoft::Windows::Foundation::decimal n_1_888_round_4{ n_1_888.round(4) };
-            VERIFY_ARE_EQUAL(n_2, n_1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+            VERIFY_ARE_EQUAL(n_1_888, n_1_888_round_4, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
                 n_1_888.to_string().c_str(), n_1_888_round_4.to_string().c_str(), n_1_888.to_string().c_str()));
+
+            //----------------------------------------------
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_888_round_0{ n_neg1_888.round(0) };
+            VERIFY_ARE_EQUAL(n_neg2, n_neg1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_888.to_string().c_str(), n_neg1_888_round_0.to_string().c_str(), n_neg2.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_888_round_1{ n_neg1_888.round(1) };
+            VERIFY_ARE_EQUAL(n_neg2, n_neg1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_888.to_string().c_str(), n_neg1_888_round_1.to_string().c_str(), n_neg1_9.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_888_round_2{ n_neg1_888.round(2) };
+            VERIFY_ARE_EQUAL(n_neg2, n_neg1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_888.to_string().c_str(), n_neg1_888_round_2.to_string().c_str(), n_neg1_89.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_888_round_3{ n_neg1_888.round(3) };
+            VERIFY_ARE_EQUAL(n_neg2, n_neg1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_888.to_string().c_str(), n_neg1_888_round_3.to_string().c_str(), n_neg1_888.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_888_round_4{ n_neg1_888.round(4) };
+            VERIFY_ARE_EQUAL(n_neg2, n_neg1_888_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_888.to_string().c_str(), n_neg1_888_round_4.to_string().c_str(), n_neg1_888.to_string().c_str()));
+
+            //----------------------------------------------
+
+            const Microsoft::Windows::Foundation::decimal n_1_25_round_0{ n_1_25.round(0) };
+            VERIFY_ARE_EQUAL(n_1, n_1_25_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_25.to_string().c_str(), n_1_25_round_0.to_string().c_str(), n_1.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_1_25_round_1{ n_1_25.round(1) };
+            VERIFY_ARE_EQUAL(n_1_2, n_1_25_round_1, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_25.to_string().c_str(), n_1_25_round_1.to_string().c_str(), n_1_2.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_1_25_round_2{ n_1_25.round(2) };
+            VERIFY_ARE_EQUAL(n_1_25, n_1_25_round_2, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_25.to_string().c_str(), n_1_25_round_2.to_string().c_str(), n_1_25.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_1_25_round_3{ n_1_25.round(3) };
+            VERIFY_ARE_EQUAL(n_1_25, n_1_25_round_3, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_25.to_string().c_str(), n_1_25_round_3.to_string().c_str(), n_1_25.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_1_25_round_4{ n_1_25.round(4) };
+            VERIFY_ARE_EQUAL(n_1_25, n_1_25_round_4, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_1_25.to_string().c_str(), n_1_25_round_4.to_string().c_str(), n_1_25.to_string().c_str()));
+
+            //----------------------------------------------
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_25_round_0{ n_neg1_25.round(0) };
+            VERIFY_ARE_EQUAL(n_neg1, n_neg1_25_round_0, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_25.to_string().c_str(), n_neg1_25_round_0.to_string().c_str(), n_neg1.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_25_round_1{ n_neg1_25.round(1) };
+            VERIFY_ARE_EQUAL(n_neg1_2, n_neg1_25_round_1, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_25.to_string().c_str(), n_neg1_25_round_1.to_string().c_str(), n_neg1_2.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_25_round_2{ n_neg1_25.round(2) };
+            VERIFY_ARE_EQUAL(n_neg1_25, n_neg1_25_round_2, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_25.to_string().c_str(), n_neg1_25_round_2.to_string().c_str(), n_neg1_25.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_25_round_3{ n_neg1_25.round(3) };
+            VERIFY_ARE_EQUAL(n_neg1_25, n_neg1_25_round_3, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_25.to_string().c_str(), n_neg1_25_round_3.to_string().c_str(), n_neg1_25.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal n_neg1_25_round_4{ n_neg1_25.round(4) };
+            VERIFY_ARE_EQUAL(n_neg1_25, n_neg1_25_round_4, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
+                n_neg1_25.to_string().c_str(), n_neg1_25_round_4.to_string().c_str(), n_neg1_25.to_string().c_str()));
         }
     };
 }

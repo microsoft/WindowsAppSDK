@@ -70,6 +70,7 @@ public:
     constexpr decimal(const DECIMAL& value) :
         m_decimal(value)
     {
+        validate(value);
     }
 
     decimal(bool value)
@@ -149,27 +150,47 @@ public:
     decimal(PCWSTR value)
     {
         THROW_IF_FAILED(::VarDecFromStr(value, LOCALE_INVARIANT, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
     }
 
     decimal(PCWSTR value, const LCID locale)
     {
         THROW_IF_FAILED(::VarDecFromStr(value, locale, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
     }
 
     decimal(const std::wstring& value)
     {
         THROW_IF_FAILED(::VarDecFromStr(value.c_str(), LOCALE_INVARIANT, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
     }
 
     decimal(const std::wstring& value, const LCID locale)
     {
         THROW_IF_FAILED(::VarDecFromStr(value.c_str(), locale, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
     }
 
 #if defined(WINRT_BASE_H)
     decimal(const winrt::hstring& value)
     {
         THROW_IF_FAILED(::VarDecFromStr(value.c_str(), LOCALE_INVARIANT, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
     }
 #endif // defined(WINRT_BASE_H)
 
@@ -177,6 +198,10 @@ public:
     decimal(const winrt::hstring& value, const LCID locale)
     {
         THROW_IF_FAILED(::VarDecFromStr(value.c_str(), locale, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
     }
 #endif // defined(WINRT_BASE_H)
 
@@ -201,6 +226,8 @@ public:
 
     decimal& operator=(const DECIMAL& value)
     {
+        validate(value);
+
         if (&value != &m_decimal)
         {
             m_decimal = value;
@@ -298,6 +325,11 @@ public:
     decimal& operator=(PCWSTR value)
     {
         THROW_IF_FAILED(::VarDecFromStr(value, LOCALE_INVARIANT, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
+
         return *this;
     }
 
@@ -562,6 +594,15 @@ public:
 
     decimal operator-() const
     {
+        // VarDecNeg(0) ==> -0 ("signed zero")
+        // We don't support signed zero (neither do C#, Python and other languages)
+        // Handle it
+        if ((m_decimal.Lo64 == 0) && (m_decimal.Hi32 == 0))
+        {
+            // Current value is zero. Result is zero
+            return *this;
+        }
+
         decimal value{};
         THROW_IF_FAILED(::VarDecNeg(const_cast<DECIMAL*>(&m_decimal), &value.m_decimal));
         return value;
@@ -574,21 +615,41 @@ public:
         return value;
     }
 
-    /// Chop to integer.
-    decimal fix() const
+    /// Return the integral digits; any fractional digits are discarded.
+    decimal truncate() const
     {
         decimal value{};
         THROW_IF_FAILED(::VarDecFix(const_cast<DECIMAL*>(&m_decimal), &value.m_decimal));
         return value;
     }
 
-    /// Round down to integer.
-    /// @note this rounds down to -infinity.
-    decimal integer() const
+    /// Return the integral digits rounded down to -infinity; any fractional digits are discarded.
+    decimal floor() const
     {
         decimal value{};
         THROW_IF_FAILED(::VarDecInt(const_cast<DECIMAL*>(&m_decimal), &value.m_decimal));
         return value;
+    }
+
+    /// Return the integral digits rounded up to +infinity; any fractional digits are discarded.
+    decimal ceil() const
+    {
+        // The floor(x) function returns the greatest integer less than or equal to x.
+        // By negating x and applying floor(), we get the smallest integer greater than or equal to -x.
+        // Negating the result gives the ceiling of x.
+        // Thus math.ceil(this) == -math.floor(-this)
+        return operator-().floor().operator-();
+    }
+
+    /// Return this clamped to the inclusive range of min and max.
+    /// @return this if min <= this <= max, or min if this < min, or max if max < this.
+    decimal clamp(decimal min, decimal max) const
+    {
+        if (max < min)
+        {
+            throw std::invalid_argument("max < min");
+        }
+        return *this < min ? min : (*this > max ? max : *this);
     }
 
     decimal operator++()
@@ -681,7 +742,7 @@ public:
         //      aleft = ABS(left)
         //      aright = ABS(right)
         //      q = (aleft / aright)
-        //      remainder = aleft - (aright * FIX(aleft / aright) * aright)
+        //      remainder = aleft - (aright * TRUNCATE(aleft / aright) * aright)
         //      remainder = IF left < 0 THEN remainder = -remainder
 
         const Microsoft::Windows::Foundation::decimal aleft{ abs() };
@@ -689,8 +750,8 @@ public:
         const bool left_is_negative{ m_decimal.sign != 0 };
 
         const Microsoft::Windows::Foundation::decimal quotient{ aleft.abs() / aright.abs() };
-        const Microsoft::Windows::Foundation::decimal fix{ quotient.fix() };
-        const Microsoft::Windows::Foundation::decimal product{ fix * aright };
+        const Microsoft::Windows::Foundation::decimal truncate{ quotient.truncate() };
+        const Microsoft::Windows::Foundation::decimal product{ truncate * aright };
         const Microsoft::Windows::Foundation::decimal remainder{ aleft - product };
         return left_is_negative ? -remainder : remainder;
     }
@@ -706,6 +767,16 @@ public:
         decimal value{};
         THROW_IF_FAILED(::VarDecRound(const_cast<DECIMAL*>(&m_decimal), decimalPlaces, &value.m_decimal));
         return value;
+    }
+
+private:
+    /// @throw std::invalid_argument if value is not valid.
+    static constexpr void validate(const DECIMAL& value)
+    {
+        if (!is_valid(value))
+        {
+            throw std::invalid_argument("value is not valid");
+        }
     }
 
 private:

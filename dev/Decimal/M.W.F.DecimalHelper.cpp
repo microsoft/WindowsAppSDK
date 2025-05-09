@@ -141,7 +141,7 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     }
     int32_t DecimalHelper::Sign(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
     {
-        return (value.Sign < 0) ? -1 : ((value.Sign == 0) ? 0 : 1);
+        return ((value.Lo64 == 0) && (value.Hi32 == 0)) ? 0 : (value.Sign != 0 ? -1 : 1);
     }
     uint32_t DecimalHelper::MaxScale()
     {
@@ -163,17 +163,25 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return to_DecimalValue(to_decimal(value).abs());
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Fix(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Truncate(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
     {
-        return to_DecimalValue(to_decimal(value).fix());
+        return to_DecimalValue(to_decimal(value).truncate());
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Integer(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Floor(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
     {
-        return to_DecimalValue(to_decimal(value).integer());
+        return to_DecimalValue(to_decimal(value).floor());
+    }
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Ceiling(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+    {
+        return to_DecimalValue(to_decimal(value).ceil());
     }
     winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Round(winrt::Microsoft::Windows::Foundation::DecimalValue const& value, int32_t decimalPlaces)
     {
         return to_DecimalValue(to_decimal(value).round(decimalPlaces));
+    }
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Clamp(winrt::Microsoft::Windows::Foundation::DecimalValue const& value, winrt::Microsoft::Windows::Foundation::DecimalValue const& min, winrt::Microsoft::Windows::Foundation::DecimalValue const& max)
+    {
+        return to_DecimalValue(to_decimal(value).clamp(to_decimal(min), to_decimal(max)));
     }
     winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::Add(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
     {

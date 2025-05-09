@@ -34,8 +34,10 @@ namespace Test.DotNet
             compare_string();
             operator_neg();
             abs();
-            fix();
-            integer();
+            truncate();
+            floor();
+            ceiling();
+            clamp();
             operator_add();
             operator_sub();
             operator_mul();
@@ -563,7 +565,7 @@ namespace Test.DotNet
             Verify.AreEqual(1, neg_value.CompareTo(neg));
         }
 
-        public static void fix()
+        public static void truncate()
         {
             var zero = Decimal.Parse("0");
             var zero_value = (long)zero;
@@ -580,7 +582,45 @@ namespace Test.DotNet
             Verify.AreEqual(0, neg_fix.CompareTo(neg_value));
         }
 
-        public static void integer()
+        public static void clamp()
+        {
+            var zero = Decimal.Parse("0");
+            var zero_value = (long)zero;
+            Verify.AreEqual(0, zero.CompareTo(zero_value));
+
+            var pos = Decimal.Parse("12.345");
+            var pos_fix = Decimal.Parse("12");
+            var pos_value = (long)pos;
+            Verify.AreEqual(0, pos_fix.CompareTo(pos_value));
+
+            var neg = Decimal.Parse("-12.345");
+            var neg_fix = Decimal.Parse("-12");
+            var neg_value = (long)neg;
+            Verify.AreEqual(0, neg_fix.CompareTo(neg_value));
+        }
+
+        public static void floor()
+        {
+            var zero = Decimal.Parse("0");
+            var zero_value = (long)zero;
+            Verify.AreEqual(0, zero.CompareTo(zero_value));
+
+            var pos = Decimal.Parse("12.345");
+            var pos_integer = Decimal.Parse("12");
+            var pos_value = (long)pos;
+            Verify.AreEqual(0, pos_integer.CompareTo(pos_value));
+
+            var neg = Decimal.Parse("-12.345");
+            var neg_integer = Decimal.Parse("-13");
+            var neg_value = (long)neg;
+            if ((neg_value < 0) && (neg_value != neg))
+            {
+                --neg_value;
+            }
+            Verify.AreEqual(0, neg_integer.CompareTo(neg_value));
+        }
+
+        public static void ceiling()
         {
             var zero = Decimal.Parse("0");
             var zero_value = (long)zero;

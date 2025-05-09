@@ -643,9 +643,9 @@ namespace Test::DecimalValue::Tests
             winrt::Microsoft::Windows::Foundation::DecimalValue value{};
             VERIFY_IS_TRUE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
 
-            for (BYTE Scale=0; Scale <= winrt::Microsoft::Windows::Foundation::DecimalHelper::MaxScale(); ++Scale)
+            for (BYTE scale=0; scale <= winrt::Microsoft::Windows::Foundation::DecimalHelper::MaxScale(); ++scale)
             {
-                value.Scale = Scale;
+                value.Scale = scale;
                 VERIFY_IS_TRUE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
             }
 
@@ -658,8 +658,9 @@ namespace Test::DecimalValue::Tests
             value.Sign = sign_is_negative;
             VERIFY_IS_TRUE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
 
-            for (BYTE Sign=0x01; Sign < sign_is_negative; Sign <<= 1)
+            for (BYTE sign=0x01; sign < sign_is_negative; sign <<= 1)
             {
+                value.Sign = sign;
                 VERIFY_IS_FALSE(winrt::Microsoft::Windows::Foundation::DecimalHelper::IsValid(value));
             }
         }
@@ -731,25 +732,25 @@ namespace Test::DecimalValue::Tests
             const auto neg{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"-12.345" }) };
 
             const auto zero_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Negate(zero) };
-            VERIFY_IS_TRUE(zero_value == zero);
-            VERIFY_IS_TRUE(zero_value != pos);
-            VERIFY_IS_TRUE(zero_value != neg);
-            VERIFY_IS_TRUE(zero_value < pos);
-            VERIFY_IS_TRUE(zero_value > neg);
+            VERIFY_IS_TRUE(zero_value == zero, WEX::Common::String().Format(L"%s == %s", winrt::DecimalValueToString(zero_value).c_str(), winrt::DecimalValueToString(zero).c_str()));
+            VERIFY_IS_TRUE(zero_value != pos, WEX::Common::String().Format(L"%s != %s", winrt::DecimalValueToString(zero_value).c_str(), winrt::DecimalValueToString(pos).c_str()));
+            VERIFY_IS_TRUE(zero_value != neg, WEX::Common::String().Format(L"%s != %s", winrt::DecimalValueToString(zero_value).c_str(), winrt::DecimalValueToString(neg).c_str()));
+            VERIFY_IS_TRUE(zero_value < pos, WEX::Common::String().Format(L"%s < %s", winrt::DecimalValueToString(zero_value).c_str(), winrt::DecimalValueToString(pos).c_str()));
+            VERIFY_IS_TRUE(zero_value > neg, WEX::Common::String().Format(L"%s > %s", winrt::DecimalValueToString(zero_value).c_str(), winrt::DecimalValueToString(neg).c_str()));
 
             const auto pos_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Negate(neg) };
-            VERIFY_IS_TRUE(pos_value != zero);
-            VERIFY_IS_TRUE(pos_value == pos);
-            VERIFY_IS_TRUE(pos_value != neg);
-            VERIFY_IS_TRUE(pos_value > zero);
-            VERIFY_IS_TRUE(pos_value > neg);
+            VERIFY_IS_TRUE(pos_value != zero, WEX::Common::String().Format(L"%s != %s", winrt::DecimalValueToString(pos_value).c_str(), winrt::DecimalValueToString(zero).c_str()));
+            VERIFY_IS_TRUE(pos_value == pos, WEX::Common::String().Format(L"%s == %s", winrt::DecimalValueToString(pos_value).c_str(), winrt::DecimalValueToString(pos).c_str()));
+            VERIFY_IS_TRUE(pos_value != neg, WEX::Common::String().Format(L"%s != %s", winrt::DecimalValueToString(pos_value).c_str(), winrt::DecimalValueToString(neg).c_str()));
+            VERIFY_IS_TRUE(pos_value > zero, WEX::Common::String().Format(L"%s > %s", winrt::DecimalValueToString(pos_value).c_str(), winrt::DecimalValueToString(zero).c_str()));
+            VERIFY_IS_TRUE(pos_value > neg, WEX::Common::String().Format(L"%s > %s", winrt::DecimalValueToString(pos_value).c_str(), winrt::DecimalValueToString(neg).c_str()));
 
             const auto neg_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Negate(pos) };
-            VERIFY_IS_TRUE(neg_value != zero);
-            VERIFY_IS_TRUE(neg_value != pos);
-            VERIFY_IS_TRUE(neg_value == neg);
-            VERIFY_IS_TRUE(neg_value < zero);
-            VERIFY_IS_TRUE(neg_value < pos);
+            VERIFY_IS_TRUE(neg_value != zero, WEX::Common::String().Format(L"%s != %s", winrt::DecimalValueToString(neg_value).c_str(), winrt::DecimalValueToString(zero).c_str()));
+            VERIFY_IS_TRUE(neg_value != pos, WEX::Common::String().Format(L"%s != %s", winrt::DecimalValueToString(neg_value).c_str(), winrt::DecimalValueToString(pos).c_str()));
+            VERIFY_IS_TRUE(neg_value == neg, WEX::Common::String().Format(L"%s == %s", winrt::DecimalValueToString(neg_value).c_str(), winrt::DecimalValueToString(neg).c_str()));
+            VERIFY_IS_TRUE(neg_value < zero, WEX::Common::String().Format(L"%s < %s", winrt::DecimalValueToString(neg_value).c_str(), winrt::DecimalValueToString(zero).c_str()));
+            VERIFY_IS_TRUE(neg_value < pos, WEX::Common::String().Format(L"%s < %s", winrt::DecimalValueToString(neg_value).c_str(), winrt::DecimalValueToString(pos).c_str()));
         }
 
         TEST_METHOD(abs)
@@ -780,38 +781,82 @@ namespace Test::DecimalValue::Tests
             VERIFY_IS_TRUE(neg_value == pos);
         }
 
-        TEST_METHOD(fix)
+        TEST_METHOD(truncate)
         {
             const auto zero{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"0" }) };
-            const auto value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Fix(zero) };
+            const auto value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Truncate(zero) };
             VERIFY_IS_TRUE(value == zero);
 
             const auto pos{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"12.345" }) };
             const auto pos_fix{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"12" }) };
-            const auto pos_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Fix(pos) };
+            const auto pos_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Truncate(pos) };
             VERIFY_IS_TRUE(pos_value == pos_fix);
 
             const auto neg{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"-12.345" }) };
             const auto neg_fix{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"-12" }) };
-            const auto neg_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Fix(neg) };
+            const auto neg_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Truncate(neg) };
             VERIFY_IS_TRUE(neg_value == neg_fix);
         }
 
-        TEST_METHOD(integer)
+        TEST_METHOD(floor)
         {
             const auto zero{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"0" }) };
-            const auto value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Integer(zero) };
+            const auto value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Floor(zero) };
             VERIFY_IS_TRUE(value == zero);
 
             const auto pos{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"12.345" }) };
             const auto pos_integer{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"12" }) };
-            const auto pos_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Integer(pos) };
+            const auto pos_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Floor(pos) };
             VERIFY_IS_TRUE(pos_value == pos_integer);
 
             const auto neg{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"-12.345" }) };
             const auto neg_integer{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"-13" }) };
-            const auto neg_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Integer(neg) };
+            const auto neg_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Floor(neg) };
             VERIFY_IS_TRUE(neg_value == neg_integer);
+        }
+
+        TEST_METHOD(ceiling)
+        {
+            const auto zero{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"0" }) };
+            const auto value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Ceiling(zero) };
+            VERIFY_IS_TRUE(value == zero);
+
+            const auto pos{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"12.345" }) };
+            const auto pos_integer{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"13" }) };
+            const auto pos_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Ceiling(pos) };
+            VERIFY_IS_TRUE(pos_value == pos_integer);
+
+            const auto neg{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"-12.345" }) };
+            const auto neg_integer{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(winrt::hstring{ L"-12" }) };
+            const auto neg_value{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Ceiling(neg) };
+            VERIFY_IS_TRUE(neg_value == neg_integer);
+        }
+
+        TEST_METHOD(clamp)
+        {
+            const auto n1{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromInt32(1) };
+            const auto n2{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromInt32(2) };
+            const auto n3{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromInt32(3) };
+
+            try
+            {
+                const auto value_n1{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Clamp(n1, n3, n2) };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(CSTR_EQUAL, CompareStringOrdinal(L"std::exception: max < min", -1, e.message().c_str(), -1, FALSE));
+            }
+
+            const auto value_n1{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Clamp(n1, n2, n3) };
+            VERIFY_IS_TRUE(value_n1 == n2);
+
+            const auto value_n2{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Clamp(n2, n1, n3) };
+            VERIFY_IS_TRUE(value_n2 == n2);
+
+            const auto value_n3{ winrt::Microsoft::Windows::Foundation::DecimalHelper::Clamp(n3, n1, n2) };
+            VERIFY_IS_TRUE(value_n3 == n2);
         }
 
         TEST_METHOD(operator_add)
@@ -955,7 +1000,8 @@ namespace Test::DecimalValue::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.code(), WEX::Common::String().Format(L"0x%X %hs", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(CSTR_EQUAL, CompareStringOrdinal(L"Division by zero.", -1, e.message().c_str(), -1, FALSE));
             }
 
             struct values
@@ -1009,7 +1055,8 @@ namespace Test::DecimalValue::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.code(), WEX::Common::String().Format(L"0x%X %hs", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(DISP_E_DIVBYZERO, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(CSTR_EQUAL, CompareStringOrdinal(L"Division by zero.", -1, e.message().c_str(), -1, FALSE));
             }
 
             struct values

@@ -137,14 +137,21 @@ namespace Microsoft.Windows.Foundation
         /// Return the absolute value.
         static DecimalValue Abs(DecimalValue value);
 
-        /// Return the value's integer portion (zero to the right of the decimal point).
-        static DecimalValue Fix(DecimalValue value);
+        /// Return the integral digits; any fractional digits are discarded.
+        static DecimalValue Truncate(DecimalValue value);
 
-        /// Return the value rounded down to the nearest integer.
-        static DecimalValue Integer(DecimalValue value);
+        /// Return the integral digits rounded down to -infinity; any fractional digits are discarded.
+        static DecimalValue Floor(DecimalValue value);
+
+        /// Return the integral digits rounded up to +infinity; any fractional digits are discarded.
+        static DecimalValue Ceiling(DecimalValue value);
 
         /// Return the value rounded to the specific number of decimal places.
         static DecimalValue Round(DecimalValue value, Int32 decimalPlaces);
+
+        /// Return value clamped to the inclusive range of min and max.
+        /// @return value if min <= value <= max, or min if value < min, or max if max < value.
+        static DecimalValue Clamp(DecimalValue value, DecimalValue min, DecimalValue max);
 
         /// Returns a DecimalValue whose value is (left + right).
         static DecimalValue Add(DecimalValue left, DecimalValue right);
@@ -175,7 +182,7 @@ Windows App SDK provides a native language decimal data type for C++ as the
 * Unary operations: + - ++ --
 * Binary operations: + += - -= * *= / /= % %=
 * Properties: `sign()` `scale()`
-* Mathematical operations: `abs()` `fix()` `integer()` `round()`
+* Mathematical operations: `abs()` `truncate()` `floor()` `ceil()` `round()` `clamp()`
 * Constants: `max_scale()` `max_value()` `min_value()`
 
 Errors are expressed via thrown exceptions e.g. `decimal{1} / decimal{0}` will throw a divide-by-zero exception
@@ -327,12 +334,18 @@ public:
 
     decimal abs() const;
 
-    /// Chop to integer.
-    decimal fix() const;
+    /// Return the integral digits; any fractional digits are discarded.
+    decimal truncate() const;
 
-    /// Round down to integer.
-    /// @note this rounds down to -infinity.
-    decimal integer() const;
+    /// Return the integral digits rounded down to -infinity; any fractional digits are discarded.
+    decimal floor() const;
+
+    /// Return the integral digits rounded up to +infinity; any fractional digits are discarded.
+    decimal ceil() const;
+
+    /// Return this clamped to the inclusive range of min and max.
+    /// @return this if min <= this <= max, or min if this < min, or max if max < this.
+    decimal clamp(decimal min, decimal max) const;
 
     decimal operator++();
     decimal operator++(int);
@@ -470,18 +483,10 @@ Potential changes for API Review consideration:
 Punchlist to reach Stable:
 
 1. C++ class
-   1. Add floor() - round towards +infinity. https://learn.microsoft.com/en-us/dotnet/api/system.decimal.floor
-   2. Add ceil() - round towards -infinity. https://learn.microsoft.com/en-us/dotnet/api/system.decimal.ceiling
-      1. Rename integer() to ceil() ?
-   3. Add floor-ceil-variant() - round towards zero
-   4. Add Round(decimalPlaces, Windows.Globalization.NumberFormatting.RoundingAlgorithm)
-   5. BUG? decimal zero{}; decimal neg{ -zero }; neg.sign() < 0 because DECIMAL.sign = 0x80. Treat -0 the same as +0 (prevent -0 from being set?)
+   1. Add Round(decimalPlaces, Windows.Globalization.NumberFormatting.RoundingAlgorithm)
 2. winrt::Microsoft::Windows::Foundation::DecimalHelper
-   1. Add Floor()
-   2. Rename Integer() to Ceil()
-   3. Add Floor-Ceil-Variant() for rounds towards zero
-   4. Add Round(decimalPlaces, Windows.Globalization.NumberFormatting.RoundingAlgorithm)
-   5. Add experimental checks
+   1. Add Round(decimalPlaces, Windows.Globalization.NumberFormatting.RoundingAlgorithm)
+   2. Add experimental checks
 3. C# Tests
    1. TAEF for C# ?
    2. Port test\inc\WindowsAppRuntime.Test.Package.h to C#
