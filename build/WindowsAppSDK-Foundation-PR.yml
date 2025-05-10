@@ -64,6 +64,8 @@ extends:
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
       psscriptanalyzer:
         enable: true
         break: true
