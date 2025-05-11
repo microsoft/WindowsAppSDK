@@ -322,55 +322,160 @@ namespace Test::Decimal::Tests
 
         TEST_METHOD(ctor_to_assign_string_lcid_system_default)
         {
-            const winrt::hstring data{ L"-12.345" };
+            const std::wstring data{ L"-12.345" };
             const Microsoft::Windows::Foundation::decimal object(data, LOCALE_SYSTEM_DEFAULT);
             const auto to{ object.to_hstring(LOCALE_SYSTEM_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to2{ object.to_hstring(LOCALE_SYSTEM_DEFAULT) };
+            const auto to2{ object.to_string(LOCALE_SYSTEM_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_string_lcid_user_default)
         {
-            const winrt::hstring data{ L"-12.345" };
+            const std::wstring data{ L"-12.345" };
             const Microsoft::Windows::Foundation::decimal object(data, LOCALE_USER_DEFAULT);
-            const auto to{ object.to_hstring(LOCALE_USER_DEFAULT) };
+            const auto to{ object.to_string(LOCALE_USER_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to2{ object.to_hstring(LOCALE_USER_DEFAULT) };
+            const auto to2{ object.to_string(LOCALE_USER_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_string_lcid_thread)
         {
-            const winrt::hstring data{ L"-12.345" };
+            const std::wstring data{ L"-12.345" };
             const Microsoft::Windows::Foundation::decimal object(data, GetThreadLocale());
-            const auto to{ object.to_hstring(GetThreadLocale()) };
+            const auto to{ object.to_string(GetThreadLocale()) };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to2{ object.to_hstring(GetThreadLocale()) };
+            const auto to2{ object.to_string(GetThreadLocale()) };
             VERIFY_ARE_EQUAL(data, to2);
         }
 
         TEST_METHOD(ctor_to_assign_string_lcid_invariant)
         {
-            const winrt::hstring data{ L"-12.345" };
+            const std::wstring data{ L"-12.345" };
             const Microsoft::Windows::Foundation::decimal object(data, LOCALE_INVARIANT);
-            const auto to{ object.to_hstring(LOCALE_INVARIANT) };
+            const auto to{ object.to_string(LOCALE_INVARIANT) };
             VERIFY_ARE_EQUAL(data, to);
 
             Microsoft::Windows::Foundation::decimal object2;
             object2 = data;
-            const auto to2{ object.to_hstring(LOCALE_INVARIANT) };
+            const auto to2{ object.to_string(LOCALE_INVARIANT) };
             VERIFY_ARE_EQUAL(data, to2);
         }
+
+#if defined(__WINSTRING_H_)
+        TEST_METHOD(ctor_to_assign_HSTRING)
+        {
+            PCWSTR rawData{ L"-12.345" };
+            const HSTRING data{};
+            VERIFY_SUCCEEDED(WindowsCreateString(rawData, wcslen(rawData), wil::out_param(data)));
+            const Microsoft::Windows::Foundation::decimal object(data);
+            const auto to{ object.to_HSTRING() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_HSTRING() };
+            VERIFY_ARE_EQUAL(data, to2);
+
+            WindowsDeleteString(data);
+            WindowsDeleteString(to);
+            WindowsDeleteString(to2);
+        }
+#endif // defined(__WINSTRING_H_)
+
+#if defined(__WINSTRING_H_)
+        TEST_METHOD(ctor_to_assign_HSTRING_lcid_system_default)
+        {
+            PCWSTR rawData{ L"-12.345" };
+            const HSTRING data{};
+            VERIFY_SUCCEEDED(WindowsCreateString(rawData, wcslen(rawData), wil::out_param(data)));
+            const Microsoft::Windows::Foundation::decimal object(data, LOCALE_SYSTEM_DEFAULT);
+            const auto to{ object.to_HSTRING(LOCALE_SYSTEM_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_HSTRING(LOCALE_SYSTEM_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to2);
+
+            WindowsDeleteString(data);
+            WindowsDeleteString(to);
+            WindowsDeleteString(to2);
+        }
+#endif // defined(__WINSTRING_H_)
+
+#if defined(__WINSTRING_H_)
+        TEST_METHOD(ctor_to_assign_HSTRING_lcid_user_default)
+        {
+            PCWSTR rawData{ L"-12.345" };
+            const HSTRING data{};
+            VERIFY_SUCCEEDED(WindowsCreateString(rawData, wcslen(rawData), wil::out_param(data)));
+            const Microsoft::Windows::Foundation::decimal object(data, LOCALE_USER_DEFAULT);
+            const auto to{ object.to_HSTRING(LOCALE_USER_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_HSTRING(LOCALE_USER_DEFAULT) };
+            VERIFY_ARE_EQUAL(data, to2);
+
+            WindowsDeleteString(data);
+            WindowsDeleteString(to);
+            WindowsDeleteString(to2);
+        }
+#endif // defined(__WINSTRING_H_)
+
+#if defined(__WINSTRING_H_)
+        TEST_METHOD(ctor_to_assign_HSTRING_lcid_thread)
+        {
+            PCWSTR rawData{ L"-12.345" };
+            const HSTRING data{};
+            VERIFY_SUCCEEDED(WindowsCreateString(rawData, wcslen(rawData), wil::out_param(data)));
+            const Microsoft::Windows::Foundation::decimal object(data, GetThreadLocale());
+            const auto to{ object.to_HSTRING(GetThreadLocale()) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_HSTRING(GetThreadLocale()) };
+            VERIFY_ARE_EQUAL(data, to2);
+
+            WindowsDeleteString(data);
+            WindowsDeleteString(to);
+            WindowsDeleteString(to2);
+        }
+#endif // defined(__WINSTRING_H_)
+
+#if defined(__WINSTRING_H_)
+        TEST_METHOD(ctor_to_assign_HSTRING_lcid_invariant)
+        {
+            PCWSTR rawData{ L"-12.345" };
+            const HSTRING data{};
+            VERIFY_SUCCEEDED(WindowsCreateString(rawData, wcslen(rawData), wil::out_param(data)));
+            const Microsoft::Windows::Foundation::decimal object(data, LOCALE_INVARIANT);
+            const auto to{ object.to_HSTRING(LOCALE_INVARIANT) };
+            VERIFY_ARE_EQUAL(data, to);
+
+            Microsoft::Windows::Foundation::decimal object2;
+            object2 = data;
+            const auto to2{ object.to_HSTRING(LOCALE_INVARIANT) };
+            VERIFY_ARE_EQUAL(data, to2);
+
+            WindowsDeleteString(data);
+            WindowsDeleteString(to);
+            WindowsDeleteString(to2);
+        }
+#endif // defined(__WINSTRING_H_)
 
 #if defined(WINRT_BASE_H)
         TEST_METHOD(ctor_to_assign_hstring)

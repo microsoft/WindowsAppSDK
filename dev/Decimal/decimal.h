@@ -183,7 +183,29 @@ public:
         m_decimal.wReserved = 0;
     }
 
-#if defined(WINRT_BASE_H)
+#if defined(__WINSTRING_H_)
+    decimal(const HSTRING& value)
+    {
+        THROW_IF_FAILED(::VarDecFromStr(::WindowsGetStringRawBuffer(value, nullptr), LOCALE_INVARIANT, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
+    }
+#endif // defined(__WINSTRING_H_)
+
+#if defined(__WINSTRING_H_)
+    decimal(const HSTRING& value, const LCID locale)
+    {
+        THROW_IF_FAILED(::VarDecFromStr(::WindowsGetStringRawBuffer(value, nullptr), locale, 0, &m_decimal));
+
+        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
+        // Make sure it's always zero to avoid inconsistent results by others using the value
+        m_decimal.wReserved = 0;
+    }
+#endif // defined(__WINSTRING_H_)
+
+#if defined(__WINSTRING_H_)
     decimal(const winrt::hstring& value)
     {
         THROW_IF_FAILED(::VarDecFromStr(value.c_str(), LOCALE_INVARIANT, 0, &m_decimal));
@@ -192,9 +214,9 @@ public:
         // Make sure it's always zero to avoid inconsistent results by others using the value
         m_decimal.wReserved = 0;
     }
-#endif // defined(WINRT_BASE_H)
+#endif // defined(__WINSTRING_H_)
 
-#if defined(WINRT_BASE_H)
+#if defined(__WINSTRING_H_)
     decimal(const winrt::hstring& value, const LCID locale)
     {
         THROW_IF_FAILED(::VarDecFromStr(value.c_str(), locale, 0, &m_decimal));
@@ -203,7 +225,7 @@ public:
         // Make sure it's always zero to avoid inconsistent results by others using the value
         m_decimal.wReserved = 0;
     }
-#endif // defined(WINRT_BASE_H)
+#endif // defined(__WINSTRING_H_)
 
     decimal& operator=(const decimal& value)
     {
@@ -338,6 +360,13 @@ public:
         return operator=(value.c_str());
     }
 
+#if defined(__WINSTRING_H_)
+    decimal& operator=(const HSTRING& value)
+    {
+        return operator=(::WindowsGetStringRawBuffer(value, nullptr));
+    }
+#endif // defined(__WINSTRING_H_)
+
 #if defined(WINRT_BASE_H)
     decimal& operator=(const winrt::hstring& value)
     {
@@ -448,6 +477,24 @@ public:
         THROW_IF_FAILED(::VarBstrFromDec(&m_decimal, locale, 0, wil::out_param(bstr)));
         return std::wstring{ bstr.get() };
     }
+
+#if defined(__WINSTRING_H_)
+    HSTRING to_HSTRING() const
+    {
+        return to_HSTRING(LOCALE_INVARIANT);
+    }
+#endif // defined(WINRT_BASE_H)
+
+#if defined(WINRT_BASE_H)
+    HSTRING to_HSTRING(const LCID locale) const
+    {
+        wil::unique_bstr bstr;
+        THROW_IF_FAILED(::VarBstrFromDec(&m_decimal, locale, 0, wil::out_param(bstr)));
+        HSTRING hstring{};
+        THROW_IF_FAILED(::WindowsCreateString(bstr.get(), ::SysStringLen(bstr.get()), &hstring));
+        return hstring;
+    }
+#endif // defined(WINRT_BASE_H)
 
 #if defined(WINRT_BASE_H)
     winrt::hstring to_hstring() const

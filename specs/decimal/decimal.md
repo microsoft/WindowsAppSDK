@@ -241,6 +241,10 @@ public:
     decimal(PCWSTR value, const LCID locale);
     decimal(const std::wstring& value);
     decimal(const std::wstring& value, const LCID locale);
+#if defined(__WINSTRING_H_)
+    decimal(const HSTRING& value);
+    decimal(const HSTRING& value, const LCID locale);
+#endif // defined(WINRT_BASE_H)
 #if defined(WINRT_BASE_H)
     decimal(const winrt::hstring& value);
     decimal(const winrt::hstring& value, const LCID locale);
@@ -264,6 +268,9 @@ public:
     decimal& operator=(unsigned long value);
     decimal& operator=(PCWSTR value);
     decimal& operator=(const std::wstring& value);
+#if defined(__WINSTRING_H_)
+    decimal& operator=(const HSTRING& value);
+#endif // defined(WINRT_BASE_H)
 #if defined(WINRT_BASE_H)
     decimal& operator=(const winrt::hstring& value);
 #endif // defined(WINRT_BASE_H)
@@ -284,6 +291,10 @@ public:
     unsigned long to_ulong() const;
     std::wstring to_string() const;
     std::wstring to_string(const LCID locale) const;
+#if defined(__WINSTRING_H_)
+    HSTRING to_HSTRING() const;
+    HSTRING to_HSTRING(const LCID locale) const;
+#endif // defined(WINRT_BASE_H)
 #if defined(WINRT_BASE_H)
     winrt::hstring to_hstring() const;
     winrt::hstring to_hstring(const LCID locale) const;
