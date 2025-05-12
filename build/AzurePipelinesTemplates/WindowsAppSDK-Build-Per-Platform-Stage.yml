@@ -31,7 +31,11 @@ stages:
         type: windows
         isCustom: true
         name: 'ProjectReunionESPool-2022'
-    timeoutInMinutes: 120
+      # In the less likely case of running APIScan, give it more time.
+      ${{ if parameters.runApiScan }}:
+        timeoutInMinutes: 180
+      ${{ else }}:
+        timeoutInMinutes: 120
     strategy:
       maxParallel: 10
       matrix:
@@ -108,7 +112,11 @@ stages:
         type: windows
         isCustom: true
         name: 'ProjectReunionESPool-2022'
-    timeoutInMinutes: 120
+    # In the less likely case of running APIScan, give it more time.
+    ${{ if parameters.runApiScan }}:
+      timeoutInMinutes: 150
+    ${{ else }}:
+      timeoutInMinutes: 120
     strategy:
       maxParallel: 10
       matrix:
