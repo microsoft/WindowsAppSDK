@@ -68,6 +68,8 @@ extends:
         # enabled:  $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
         enabled:  false        
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
       asyncSdl: # https://aka.ms/obpipelines/asyncsdl
         enabled: false
       binskim:
