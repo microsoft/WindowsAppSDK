@@ -2773,6 +2773,7 @@ Global
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
 		dev\ApplicationData\ApplicationData.vcxitems*{7cf52890-56fa-47e2-84fb-68ee274324b6}*SharedItemsImports = 9
 		dev\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems*{858fa9a9-f822-4b98-84a1-fe44e2c00a5d}*SharedItemsImports = 9
+		dev\Interop\StoragePickers\StoragePickers.vcxitems*{85c86306-46d1-4563-8303-0a79df923586}*SharedItemsImports = 4
 		dev\Notifications\BadgeNotifications\BadgeNotifications.vcxitems*{85d111c7-b720-4e19-a56d-03c87b953983}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9

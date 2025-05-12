@@ -6,7 +6,6 @@
 #include "wil/cppwinrt.h"
 #include "winrt/base.h"
 #include "winrt/Microsoft.Windows.Storage.Pickers.h"
-#include "TerminalVelocityFeatures-StoragePickers.h"
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>

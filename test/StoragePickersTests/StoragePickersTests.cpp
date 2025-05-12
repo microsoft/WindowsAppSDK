@@ -15,6 +15,9 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
+#include "Simple.h"
+using namespace TestCommon;
+
 namespace Test::StoragePickersTests
 {
     class StoragePickersTests

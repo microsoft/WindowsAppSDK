@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include "TerminalVelocityFeatures-StoragePickers.h"
 #include "FileOpenPicker.h"
 #include "Microsoft.Windows.Storage.Pickers.FileOpenPicker.g.cpp"
 #include "StoragePickersTelemetry.h"

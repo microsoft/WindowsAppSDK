@@ -6,6 +6,7 @@
 #include <wil/resource.h>
 #include "ShObjIdl.h"
 #include <KnownFolders.h>
+#include "TerminalVelocityFeatures-StoragePickers.h"
 
 namespace PickerCommon {
 
