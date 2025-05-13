@@ -10,17 +10,11 @@ namespace Microsoft.Windows.Foundation
 {
     public static class DecimalExtensions
     {
-        /// Return a WinRT Decimal object.
-        public static Microsoft.Windows.Foundation.Decimal ToDecimal(this decimal d)
-        {
-            return Microsoft.Windows.Foundation.Decimal.CreateFromDecimalValue(ToDecimalValue(d));
-        }
-
-        /// Return a WinRT DecimalValue structure..
+        /// Return a WinRT DecimalValue structure.
         public static Microsoft.Windows.Foundation.DecimalValue ToDecimalValue(this decimal d)
         {
-            // decimal.GetBits() returns a binary representation of a Decimal. The return value is an
-            // integer array with four elements. Elements 0, 1, and 2 contain the low,
+            // decimal.GetBits() returns a binary representation of a Decimal. The return value
+            // is an integer array with four elements. Elements 0, 1, and 2 contain the low,
             // middle, and high 32 bits of the 96-bit integer part of the Decimal.
             // Element 3 contains the scale factor and sign of the Decimal: bits 0-15
             // (the lower word) are unused; bits 16-23 contain a value between 0 and
@@ -55,12 +49,6 @@ namespace Microsoft.Windows.Foundation
             int low32 = (int)(value.Lo64 & 0x00000000FFFFFFFF);
             int mid32 = (int)((value.Lo64 >> 32) & 0x00000000FFFFFFFF);
             return new decimal(low32, mid32, (int)value.Hi32, value.Sign != 0, value.Scale);
-        }
-
-        /// Return a C# Decimal object.
-        public static decimal FromDecimal(this decimal d, Microsoft.Windows.Foundation.Decimal value)
-        {
-            return FromDecimalValue(d, value.ToDecimalValue());
         }
     }
 }
