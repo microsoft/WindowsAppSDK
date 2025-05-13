@@ -17,7 +17,7 @@
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializer.CS.targets" Condition="'$(WindowsAppSdkAutoInitialize)' == 'true'"/>
   
   <ItemGroup>
-    <Compile Condition="'$(WindowsAppSdkIncludeVersionInfo)'=='true'" Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
+    <Compile Condition="'$(WindowsAppSDKAggregatePackage)' == 'true' and '$(WindowsAppSdkIncludeVersionInfo)'=='true'" Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
   </ItemGroup>
 
 </Project>

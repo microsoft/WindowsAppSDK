@@ -5,12 +5,15 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: true
-- name: runStaticAnalysis
+- name: runApiScan
   type: boolean
   default: true
+- name: runPREfast
+  type: boolean
+  default: false
 
 stages:
-- stage: Build_AnyCPU
+- stage: ${{ iif(parameters.runPREfast, 'PREfast_AnyCPU', 'Build_AnyCPU') }}
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
@@ -43,10 +46,13 @@ stages:
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
-      ob_artifactBaseName: "FoundationBinaries_release_anycpu"
-      ${{ if parameters.runStaticAnalysis }}:
+      ${{ if parameters.runPREfast }}:
+        ob_artifactBaseName: "FoundationBinaries_release_anycpu_PREfast"
+      ${{ if not( parameters.runPREfast ) }}:
+        ob_artifactBaseName: "FoundationBinaries_release_anycpu"
+      ${{ if parameters.runApiScan }}:
         ob_sdl_apiscan_enabled: true
-      ${{ if not( parameters.runStaticAnalysis ) }}:
+      ${{ if not( parameters.runApiScan ) }}:
         ob_sdl_apiscan_enabled: false
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU'
       ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU;SRV*https://symweb.azurefd.net'
@@ -55,7 +61,7 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+        runPREfast : ${{ parameters.runPREfast }}
 
     # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
     # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
@@ -65,23 +71,28 @@ stages:
       displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
 
 # extract BuildFoundation and BuildMRT into WindowsAppSDK-Build-Stage-Per-Platform.yml. Separate the build stage per platform
-- template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
-  parameters:
-    SignOutput: ${{ parameters.SignOutput }}
-    IsOneBranch: ${{ parameters.IsOneBranch }}
-    runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
-    BuildPlatform: x86
 
 - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
   parameters:
     SignOutput: ${{ parameters.SignOutput }}
     IsOneBranch: ${{ parameters.IsOneBranch }}
-    runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+    runPREfast : ${{ parameters.runPREfast }}
+    runApiScan : ${{ parameters.runApiScan }}
     BuildPlatform: x64
 
-- template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
-  parameters:
-    SignOutput: ${{ parameters.SignOutput }}
-    IsOneBranch: ${{ parameters.IsOneBranch }}
-    runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
-    BuildPlatform: arm64
+- ${{ if not(parameters.runPREfast) }}:
+  - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
+    parameters:
+      SignOutput: ${{ parameters.SignOutput }}
+      IsOneBranch: ${{ parameters.IsOneBranch }}
+      runPREfast : ${{ parameters.runPREfast }}
+      runApiScan : ${{ parameters.runApiScan }}
+      BuildPlatform: x86
+
+  - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
+    parameters:
+      SignOutput: ${{ parameters.SignOutput }}
+      IsOneBranch: ${{ parameters.IsOneBranch }}
+      runPREfast : ${{ parameters.runPREfast }}
+      runApiScan : ${{ parameters.runApiScan }}
+      BuildPlatform: arm64

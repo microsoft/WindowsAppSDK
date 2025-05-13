@@ -5,15 +5,18 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: true
-- name: runStaticAnalysis
+- name: runApiScan
   type: boolean
   default: true
+- name: runPREfast
+  type: boolean
+  default: false
 - name: buildPlatform
   type: string
   default: x64
 
 stages:
-- stage: ${{ format('Build_{0}', parameters.buildPlatform) }}
+- stage: ${{ format(iif(parameters.runPREfast, 'PREfast_{0}', 'Build_{0}'), parameters.buildPlatform) }}
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
@@ -48,9 +51,12 @@ stages:
       - name: ob_sdl_codeSignValidation_excludes
         value: '-|**\Release\**;-|**\packages\**'
       - name: ob_artifactBaseName
-        value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+        ${{ if parameters.runPREfast }}:
+          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+        ${{ else }}:
+          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
-        ${{ if parameters.runStaticAnalysis }}:
+        ${{ if parameters.runApiScan }}:
           value: true
         ${{ else }}:
           value: false
@@ -83,7 +89,8 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+        runApiScan: ${{ parameters.runApiScan }}
+        runPREfast: ${{ parameters.runPREfast }}
 
     # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
     # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
@@ -123,9 +130,12 @@ stages:
       - name: ob_sdl_suppression_suppressionSet
         value: default
       - name: ob_artifactBaseName
-        value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+        ${{ if parameters.runPREfast }}:
+          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+        ${{ else }}:
+          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       - name: ob_sdl_apiscan_enabled
-        ${{ if parameters.runStaticAnalysis }}:
+        ${{ if parameters.runApiScan }}:
           value: true
         ${{ else }}:
           value: false
@@ -158,7 +168,8 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+        runPREfast : ${{ parameters.runPREfast }}
+        runApiScan : ${{ parameters.runApiScan }}
 
     # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
     # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
