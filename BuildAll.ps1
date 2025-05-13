@@ -56,18 +56,6 @@ if ($Clean)
     Exit
 }
 
-# Make sure nuget directory exists.
-if(-not (test-path ".nuget"))
-{
-    new-item -path ".nuget" -itemtype directory
-}
-
-# Make sure nuget is on the system
-if(-not (test-path ".nuget\nuget.exe"))
-{
-    Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
-}
-
 $configurationForMrtAndAnyCPU = "Release"
 $MRTSourcesDirectory = "dev\MRTCore"
 
@@ -90,7 +78,7 @@ function NugetRestore([string] $Label, [string] $Target)
     {
         $env:NUGET_RESTORE_MSBUILD_ARGS = "/binaryLogger:BuildOutput\binlogs\$Label.restore.$Platform.$Configuration.binlog /p:Platform=$Platform /p:Configuration=$Configuration"
     }
-    & .\.nuget\nuget.exe restore $Target -configfile NuGet.config
+    nuget restore $Target -configfile NuGet.config
     if ($lastexitcode -ne 0)
     {
         write-host "ERROR: nuget.exe restore $Label FAILED."
@@ -383,7 +371,7 @@ Try {
         Set-Content -Value $publicNuspec.OuterXml $nuspecPath
 
         # Make the foundation transport package.
-        & .\.nuget\nuget.exe pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+        nuget pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
 
         if ($lastexitcode -ne 0)
         {

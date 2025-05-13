@@ -58,6 +58,9 @@
 .PARAMETER RemoveTestCert
     Remove the Test certificate (i.e. undoc CheckTestCert)
 
+.PARAMETER RemoveTaefService
+     Remove the TAEF service
+
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
@@ -101,10 +104,6 @@
 Param(
     [SecureString]$CertPassword=$null,
 
-    [String]$CertPasswordFile=$null,
-
-    [String]$CertPasswordUser=$true,
-
     [Switch]$CheckAll=$false,
 
     [Switch]$CheckTAEFService=$false,
@@ -130,6 +129,8 @@ Param(
     [Switch]$OnlineVSWhere=$false,
 
     [Switch]$RemoveAll=$false,
+
+    [Switch]$RemoveTAEFService=$false,
 
     [Switch]$RemoveTestCert=$false,
 
@@ -770,27 +771,17 @@ function Repair-DevTestPfx
     $user = Get-UserPath
     $pwd_file = Join-Path $user 'winappsdk.certificate.test.pwd'
 
-    # -CertPassword <password> is a required parameter for this work
+    if (Test-Path -Path $pwd_file -PathType Leaf)
+    {
+        Write-Warning "WARNING: A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
+    }
+
     $password = ''
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
         $password = $CertPassword
     }
-    elseif (-not [string]::IsNullOrEmpty($CertPasswordFile))
-    {
-        if (-not(Test-Path -Path $CertPasswordFile -PathType Leaf))
-        {
-            Write-Host "Test certificate file $CertPasswordFile...Not Found"
-            $global:issues++
-            return $false
-        }
-        $password = Get-Content -Path $CertPasswordFile -Encoding utf8
-    }
-    elseif (($CertPasswordUser -eq $true) -and (Test-Path -Path $pwd_file -PathType Leaf))
-    {
-        $password = Get-Content -Path $pwd_file -Encoding utf8
-    }
-    elseif ([string]::IsNullOrEmpty($password) -And ($NoInteractive -eq $false))
+    elseif ($NoInteractive -eq $false)
     {
         $password = Read-Host -Prompt 'Creating test certificate. Please enter a password' -AsSecureString
     }
@@ -1066,16 +1057,29 @@ function Install-TAEFService
         return
     }
 
+    # TAEF is located in the NuGet on dev machines vs ...root...\redist\... on build machines
     $root = Get-ProjectRoot
     $cpu = Get-CpuArchitecture
     $taef_version = Get-TAEFPackageVersion
     $taef = "Microsoft.Taef.$($taef_version)"
     $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
-    if (-not(Test-Path -Path $path -PathType Leaf))
+    if (Test-Path -Path $path -PathType Leaf)
     {
-        Write-Host "Install TAEF service...Not Found ($path)"
-        $global:issues++
-        return 'TAEFNotFound'
+        Write-Host "TAEF installer found...$path"
+    }
+    else
+    {
+        $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
+        if (Test-Path -Path $path -PathType Leaf)
+        {
+            Write-Host "TAEF installer found...$path"
+        }
+        else
+        {
+            Write-Host "Install TAEF service...Not Found ($path)"
+            $global:issues++
+            return 'TAEFNotFound'
+        }
     }
 
     $args = '/install:TE.Service'
@@ -1701,6 +1705,11 @@ if ($StartTAEFService -eq $true)
 if ($StopTAEFService -eq $true)
 {
     $null = Stop-TAEFService
+}
+
+if (($RemoveAll -ne $false) -Or ($RemoveTAEFService -ne $false))
+{
+    $null = Uninstall-TAEFService
 }
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
