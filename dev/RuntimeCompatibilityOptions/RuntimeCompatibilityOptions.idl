@@ -23,6 +23,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         FixStuckPointerInputQueue = 56620717,
         FixWebViewVisibilityReentrancyCrash = 56852985,
         FixWindowCloseFocusCrash = 56873234,
+
+        // 1.7.2
+        ActivateDirectManipulationManager_CheckCanInit = 56997009,
+        DwmCoreI_OptimizeFirstFrameLatency = 57345278,
+        InputStateManager_PenInputCrashX86 = 57003641,
     };
 
     /// Represents a version of the Windows App Runtime.
