@@ -3,6 +3,7 @@ This script is to build the Foundation transport package that will be used to ge
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
 
 PackageVersion: NuGet Package Version that will be used in the packing of Foundation Transport Package
+ComponentPackageVersion: NuGet Package Version that will be used in the packing of Foundation Component Package
 Platform: Comma delimited string of platforms to run.
 Configuration: Comma delimited string of configurations to run.
 AzureBuildStep: Only used by the pipeline to perform tasks such as signing in between the steps
@@ -18,6 +19,7 @@ Main branch points to the external feed.
 
 Param(
     [string]$PackageVersion = "1.1.1.1",
+    [string]$ComponentPackageVersion = "1.1.1.1",
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
@@ -33,6 +35,7 @@ $ErrorActionPreference = 'Stop'
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
+$ComponentBasePath = "BuildOutput/ComponentNuget"
 
 # FUTURE(YML2PS): Update build to no longer place generated files in sources directory
 if ($Clean)
@@ -238,9 +241,19 @@ Try {
             new-item -path "$BasePath" -itemtype "directory"
         }
 
+        if(-not (test-path "$ComponentBasePath"))
+        {
+            new-item -path "$ComponentBasePath" -itemtype "directory"
+        }
+
         if(-not (test-path "$BasePath\build\native"))
         {
             new-item -path "$BasePath\build\native" -itemtype "directory"
+        }
+
+        if(-not (test-path "$ComponentBasePath\build\native"))
+        {
+            new-item -path "$ComponentBasePath\build\native" -itemtype "directory"
         }
 
         # Copy WindowsAppRuntime.sln files
@@ -304,18 +317,9 @@ Try {
             }
         }
 
-        # copy MRT IDL over.
-        Copy-Item -path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -destination "$BasePath\include" -force
-
         # Copy MRT metadata files.
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.props" -Destination "$BasePath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.PriGen.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.References.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.C.props" -Destination "$BasePath\build\native"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.props" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.targets" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\ProjectItemsSchema.xaml" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\README.md" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\MRM.h" -Destination "$BasePath\include"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -Destination "$BasePath\include"
@@ -343,6 +347,27 @@ Try {
             exit 1
         }
 
+        if ([string]::IsNullOrEmpty($env:Channel))
+        {
+            $componentLicenseFilePath = "LICENSE"
+        }
+        else
+        {
+            $componentLicenseFilePath = "WindowsAppSDKConfig\NuGetLicense\preview\license.txt"
+            if ($env:Channel -eq 'stable')
+            {
+                $componentLicenseFilePath = "WindowsAppSDKConfig\NuGetLicense\release\license.txt"
+            }
+        }
+
+        Copy-Item -Path $componentLicenseFilePath -Destination "$ComponentBasePath\license.txt" -force
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: Copy-Item -Path $componentLicenseFilePath FAILED."
+            exit 1
+        }
+
         # for some reason xslt.load changes the working directory to C:\windows\system32.
         # store the current working directory here.
         $workingDirectory = get-location
@@ -359,11 +384,144 @@ Try {
             write-host "ERROR: xslt.Transform FAILED."
             exit 1
         }
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'build') `
+            -dest (Join-Path $ComponentBasePath 'build')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'include') `
+            -dest (Join-Path $ComponentBasePath 'include')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'build') `
+            -dest (Join-Path $ComponentBasePath 'buildTransitive')
+
+        # Copy transport package specific props / targets after we are done copying
+        # for the other package.
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.props" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.props" -Destination "$BasePath\build\native"
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'lib\uap10.0') `
+            -dest (Join-Path $ComponentBasePath 'metadata')
+
+        build\scripts\CopyContents.ps1 `
+            -SourceDir "$PSScriptRoot\$BasePath" `
+            -ContentsList @('lib') `
+            -Exclude @('*.winmd', '*.pdb', '*.lib') `
+            -TargetDir $ComponentBasePath
+
+        build\scripts\CopyContents.ps1 `
+            -SourceDir "$PSScriptRoot\$BasePath" `
+            -ContentsList @('runtimes\win-*') `
+            -Exclude @('*.pdb') `
+            -TargetDir $ComponentBasePath
+
+        foreach($platformToRun in $platform.Split(","))
+        {
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$PSScriptRoot\$BasePath\lib\win10-$platformToRun" `
+                -dest "$ComponentBasePath\lib\win-$platformToRun"
+
+            build\scripts\CopyContents.ps1 `
+                -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
+                -ContentsList @(
+                    'native\DeploymentAgent.exe',
+                    'native\Microsoft.Windows.ApplicationModel.Resources.dll',
+                    'native\Microsoft.WindowsAppRuntime.dll',
+                    'native\Microsoft.WindowsAppRuntime.Insights.Resource.dll',
+                    'native\MRM.dll',
+                    'native\PushNotificationsLongRunningTask.ProxyStub.dll',
+                    'native\RestartAgent.exe') `
+                -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
+        }
+
+        # Populate ARM64EC folders with x64 content
+        if ($platform.Split(",") -contains "x64")
+        {
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$ComponentBasePath\lib\win-x64" `
+                -dest "$ComponentBasePath\lib\win-arm64ec"
+
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$ComponentBasePath\runtimes\win-x64" `
+                -dest "$ComponentBasePath\runtimes\win-arm64ec"
+
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$ComponentBasePath\runtimes-framework\win-x64" `
+                -dest "$ComponentBasePath\runtimes-framework\win-arm64ec"
+        }
+
+        Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
+
+        # Populate Intellisense files
+        $IntellisensePath = "$PSScriptRoot\build\NuSpecs\Intellisense"
+
+        $LibPaths = @(
+            (Join-Path $ComponentBasePath "metadata"),
+            (Join-Path $ComponentBasePath "lib\net6.0-windows10.0.17763.0")
+        )
+
+        foreach ($File in Get-ChildItem -Path $LibPaths)
+        {
+            if ($File.Extension -ne ".dll" -and $File.Extension -ne ".winmd")
+            {
+                continue
+            }
+
+            $IntellisenseFile = (Join-Path $IntellisensePath "$($File.BaseName).xml")
+            $DestinationDir = ($File.DirectoryName)
+
+            if (-not (Test-Path $IntellisenseFile))
+            {
+                Write-Host "Intellisense file not found: $IntellisenseFile"
+                continue
+            }
+
+            Copy-Item -Path $IntellisenseFile -Destination $DestinationDir
+        }
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
-        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec"
-        Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -Destination $nuspecPath
+        # Remove ProjectCapability for the one in the transport package
+        $propsFilePath = (Join-Path $BasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
+        [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+        foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
+        {
+            if ($projectCapability.Id -eq "VersionSpecific")
+            {
+                $wasFoundationProps.Project.RemoveChild($projectCapability.ParentNode)
+                break
+            }
+        }
+        $wasFoundationProps.Save($propsFilePath)
+
+        # Fix up ProjectCapability versions
+        $FoundationBuildPaths = @(
+            'build',
+            'buildTransitive'
+        )
+
+        foreach ($BuildPath in $FoundationBuildPaths)
+        {
+            # Keep ProjectCapability and update the version for the one in the component package
+            $propsFilePath = (Join-Path $ComponentBasePath "$BuildPath\Microsoft.WindowsAppSDK.Foundation.props")
+            [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+            foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
+            {
+                if ($projectCapability.Id -eq "VersionSpecific")
+                {
+                    $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
+                }
+            }
+            $wasFoundationProps.Save($propsFilePath)
+        }
+
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"
+        Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec" -Destination $nuspecPath
 
         # Add the version to the nuspec.
         [xml]$publicNuspec = Get-Content -Path $nuspecPath
@@ -372,6 +530,40 @@ Try {
 
         # Make the foundation transport package.
         nuget pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
+            exit 1
+        }
+
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec"
+        Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -Destination $nuspecPath
+
+        # Add the version to the nuspec.
+        [xml]$publicNuspec = Get-Content -Path $nuspecPath
+        $publicNuspec.package.metadata.version = $ComponentPackageVersion
+
+        # Update dependency versions in the nuspec
+        $versionDetailsPath = ".\eng\Version.Details.xml"
+        [xml]$buildConfig = Get-Content -Path $versionDetailsPath
+
+        foreach ($dependency in $publicNuspec.package.metadata.dependencies.dependency)
+        {
+            $buildDependency = $buildConfig.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
+            if (-not($buildDependency))
+            {
+                write-host "ERROR: NuGet package dependency $($dependency.Id) not found."
+                exit 1
+            }
+
+            $dependency.version = $buildDependency.Version
+        }
+
+        Set-Content -Value $publicNuspec.OuterXml $nuspecPath
+
+        # Make the foundation transport package.
+        nuget pack $nuspecPath -BasePath $ComponentBasePath -OutputDirectory $OutputDirectory
 
         if ($lastexitcode -ne 0)
         {

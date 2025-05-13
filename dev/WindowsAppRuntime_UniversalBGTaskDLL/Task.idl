@@ -11,6 +11,5 @@ namespace Microsoft.Windows.ApplicationModel.Background.UniversalBGTask
     runtimeclass Task : Windows.ApplicationModel.Background.IBackgroundTask
     {
         Task();
-        void Run(Windows.ApplicationModel.Background.IBackgroundTaskInstance taskInstance);
     }
 }

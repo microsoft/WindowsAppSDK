@@ -1,0 +1,142 @@
+{
+  "version": "latest",
+  "suppressionSets": {
+    "default": {
+      "name": "default",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "lastUpdatedDate": "2025-05-10 01:01:01Z"
+    }
+  },
+  "results": {
+    "b80f9b7b5122ba6141e5944eba7e83f5355c12b862f54670b763ab4143af020f": {
+      "signature": "b80f9b7b5122ba6141e5944eba7e83f5355c12b862f54670b763ab4143af020f",
+      "target": "BuildOutput/Release/x86/StoragePickersTests/StoragePickersTests.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "eddac77143999a6c04d5b80b5e6167f079dab8dab696b2a8c3e82dddbdc77a8f": {
+      "signature": "eddac77143999a6c04d5b80b5e6167f079dab8dab696b2a8c3e82dddbdc77a8f",
+      "target": "out/Release/x86/StoragePickersTests/StoragePickersTests.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "7292a6f4eb3135b99d94e3730ea72ade6a9736d4a864aa70710c682bb736b3e1": {
+      "signature": "7292a6f4eb3135b99d94e3730ea72ade6a9736d4a864aa70710c682bb736b3e1",
+      "target": "BuildOutput/Release/ARM64/ApplicationDataTests/ApplicationDataTests.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "c409974ee5d84fe227bcb23bf10856120d54ce3e37a30d949e2140da40707332": {
+      "signature": "c409974ee5d84fe227bcb23bf10856120d54ce3e37a30d949e2140da40707332",
+      "target": "BuildOutput/Release/ARM64/AppLifecycleTests/AppLifecycleTests.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "0dba5a45d457e90eb9dd378bfca5a08f51c291ba6df7ec18b813878f9ba9fd8e": {
+      "signature": "0dba5a45d457e90eb9dd378bfca5a08f51c291ba6df7ec18b813878f9ba9fd8e",
+      "target": "BuildOutput/Release/ARM64/DeploymentAgent/DeploymentAgent.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "47634a6c6e2debff9e29a82c20717cdd92dafd4304f9df4393ae14ec11661386": {
+      "signature": "47634a6c6e2debff9e29a82c20717cdd92dafd4304f9df4393ae14ec11661386",
+      "target": "out/Release/ARM64/ApplicationDataTests/ApplicationDataTests.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "fec3ff98074dae0aa9623449f8f787c04b62441cd339f98f533a647740279bd7": {
+      "signature": "fec3ff98074dae0aa9623449f8f787c04b62441cd339f98f533a647740279bd7",
+      "target": "out/Release/ARM64/AppLifecycleTests/AppLifecycleTests.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "7ac0c4244a4fcad79e8c3ca2a9d2dbbd76f83e6e9b575877e61fba9feddac184": {
+      "signature": "7ac0c4244a4fcad79e8c3ca2a9d2dbbd76f83e6e9b575877e61fba9feddac184",
+      "target": "out/Release/ARM64/DeploymentAgent/DeploymentAgent.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "a52bd33db860e06be0b39a0dbc5a78bf449951cb8f4dcc033bbfa5b7ce1f8055": {
+      "signature": "a52bd33db860e06be0b39a0dbc5a78bf449951cb8f4dcc033bbfa5b7ce1f8055",
+      "target": "BuildOutput/Release/ARM64/Microsoft.WindowsAppRuntime.Framework/msix/DeploymentAgent.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    },
+    "a364e6559108458417190d094200bc995308b1d0a9bf2543f91edf8294ee46cb": {
+      "signature": "a364e6559108458417190d094200bc995308b1d0a9bf2543f91edf8294ee46cb",
+      "target": "out/Release/ARM64/Microsoft.WindowsAppRuntime.Framework/msix/DeploymentAgent.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "expirationDate": "2025-08-10 01:01:01Z",
+      "type": null
+    }
+  }
+}

@@ -8,10 +8,12 @@
     <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
   </PropertyGroup>
 
-  <!--
-    Ideally, this import would be done only if EnableCoreMrtTooling is true. That's impossible though because that
-    property cannot be defined beforehand.
-  -->
-  <Import Project="$(MSBuildThisFileDirectory)MrtCore.props" />
+  <ItemGroup>
+     <!-- This ItemGroup is for items to be included only in the component package
+          as it is removed in the other one. -->
+    <ProjectCapability Id="VersionGeneral" Include="Microsoft.WindowsAppSDK.Foundation" />
+    <ProjectCapability Id="VersionSpecific" Include="SET-ME-ON-WINDOWSAPPSDK-NUGET-CREATION-PLEASE" />
+    <WindowsAppSdkComponentPackages Include="$(MSBuildThisFileDirectory)..\" />
+  </ItemGroup>
 
 </Project>

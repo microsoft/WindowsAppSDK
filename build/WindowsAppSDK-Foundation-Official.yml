@@ -73,6 +73,8 @@ extends:
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
       asyncSdl: # https://aka.ms/obpipelines/asyncsdl
         enabled: false
       binskim:
@@ -97,10 +99,19 @@ extends:
         break: false
 
     stages:
+    
     - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
-        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+        runApiScan: ${{ parameters.runStaticAnalysis }}
+        runPREFast: false
+    
+    - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+        parameters:
+          SignOutput: ${{ parameters.SignOutput }}
+          runApiScan: false
+          runPREFast: true
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
@@ -113,6 +124,8 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+      parameters:
+        testMatrix: ${{ variables.PipelineTests }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
