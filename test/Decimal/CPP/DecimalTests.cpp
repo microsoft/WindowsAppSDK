@@ -102,7 +102,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_decimal)
         {
             const Microsoft::Windows::Foundation::decimal data{ -1234567890 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_decimal() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -115,7 +115,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_bool)
         {
             const bool data{ true };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_bool() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -128,7 +128,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_char)
         {
             const char data{ -123 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_char() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -141,7 +141,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_int16)
         {
             const std::int16_t data{ -32109};
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_int16() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -154,7 +154,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_int32)
         {
             const std::int32_t data{ -1234567890 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_int32() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -167,7 +167,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_int64)
         {
             const std::int64_t data{ -1234567890123456789 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_int64() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -180,7 +180,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_uint8)
         {
             const std::uint8_t data{ 123 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_uint8() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -193,7 +193,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_uint16)
         {
             const std::uint16_t data{ 32109 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_uint16() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -206,7 +206,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_uint32)
         {
             const std::uint32_t data{ 1234567890 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_uint32() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -219,7 +219,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_uint64)
         {
             const std::uint64_t data{ 0xFEDCBA0987654321 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_uint64() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -232,7 +232,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_float)
         {
             const float data{ -1.25 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_float() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -245,7 +245,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_double)
         {
             const double data{ -1.25 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_double() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -258,7 +258,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_long)
         {
             const long data{ -1234567890 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_long() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -271,7 +271,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_ulong)
         {
             const unsigned long data{ 1234567890 };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_ulong() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -284,7 +284,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_pcwstr)
         {
             PCWSTR data{ L"-12.345" };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_string() };
             VERIFY_ARE_EQUAL(0, wcscmp(data, to.c_str()));
 
@@ -310,7 +310,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_string)
         {
             const std::wstring data{ L"-12.345" };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_string() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -378,7 +378,7 @@ namespace Test::Decimal::Tests
             PCWSTR rawData{ L"-12.345" };
             const HSTRING data{};
             VERIFY_SUCCEEDED(WindowsCreateString(rawData, wcslen(rawData), wil::out_param(data)));
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_HSTRING() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -481,7 +481,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_hstring)
         {
             const winrt::hstring data{ L"-12.345" };
-            const Microsoft::Windows::Foundation::decimal object(data);
+            const Microsoft::Windows::Foundation::decimal object{ data };
             const auto to{ object.to_hstring() };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -496,7 +496,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(ctor_to_assign_hstring_lcid_system_default)
         {
             const winrt::hstring data{ L"-12.345" };
-            const Microsoft::Windows::Foundation::decimal object(data, LOCALE_SYSTEM_DEFAULT);
+            const ::Microsoft::Windows::Foundation::decimal object(data, LOCALE_SYSTEM_DEFAULT);
             const auto to{ object.to_hstring(LOCALE_SYSTEM_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to);
 
@@ -1807,6 +1807,33 @@ namespace Test::Decimal::Tests
             const Microsoft::Windows::Foundation::decimal n_neg1_25_round_4{ n_neg1_25.round(4) };
             VERIFY_ARE_EQUAL(n_neg1_25, n_neg1_25_round_4, WEX::Common::String().Format(L"%s.round(0) = %s vs %s",
                 n_neg1_25.to_string().c_str(), n_neg1_25_round_4.to_string().c_str(), n_neg1_25.to_string().c_str()));
+        }
+
+        TEST_METHOD(math)
+        {
+            const Microsoft::Windows::Foundation::decimal a{ 1 };
+            const Microsoft::Windows::Foundation::decimal b{ 0.5 };
+            const Microsoft::Windows::Foundation::decimal c{ L"-6.66" };
+            const Microsoft::Windows::Foundation::decimal d{ L"1.23" };
+            const Microsoft::Windows::Foundation::decimal e{ L"4567.089" };
+            const Microsoft::Windows::Foundation::decimal f{ -4ll };
+            const Microsoft::Windows::Foundation::decimal g{ 1967u };
+            const Microsoft::Windows::Foundation::decimal h{ 1001.0f };
+
+            auto x = (((a - b) + (c % d)) * e).round(5) / f;
+            auto y = x++.round(3).clamp(f, g);
+            auto z = --y.floor() * ++x.ceil() * -y.truncate();
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"x = %ls", x.to_string().c_str()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"y = %ls", y.to_string().c_str()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"z = %ls", z.to_string().c_str()));
+
+            const Microsoft::Windows::Foundation::decimal expectedX{ L"12.4177225" };
+            const Microsoft::Windows::Foundation::decimal expectedY{ L"11.418" };
+            const Microsoft::Windows::Foundation::decimal expectedZ{ L"-1540" };
+            VERIFY_ARE_EQUAL(expectedX, x);
+            VERIFY_ARE_EQUAL(expectedY, y);
+            VERIFY_ARE_EQUAL(expectedZ, z);
         }
     };
 }

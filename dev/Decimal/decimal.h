@@ -4,6 +4,8 @@
 #if !defined(__WindowsAppSDK_Microsoft_Windows_Foundation_decimal_)
 #define __WindowsAppSDK_Microsoft_Windows_Foundation_decimal_
 
+#include <string>
+
 #include <oleauto.h>
 
 #if !defined(_VC_NODEFAULTLIB)
@@ -205,7 +207,7 @@ public:
     }
 #endif // defined(__WINSTRING_H_)
 
-#if defined(__WINSTRING_H_)
+#if defined(WINRT_BASE_H)
     decimal(const winrt::hstring& value)
     {
         THROW_IF_FAILED(::VarDecFromStr(value.c_str(), LOCALE_INVARIANT, 0, &m_decimal));
@@ -214,9 +216,9 @@ public:
         // Make sure it's always zero to avoid inconsistent results by others using the value
         m_decimal.wReserved = 0;
     }
-#endif // defined(__WINSTRING_H_)
+#endif // defined(WINRT_BASE_H)
 
-#if defined(__WINSTRING_H_)
+#if defined(WINRT_BASE_H)
     decimal(const winrt::hstring& value, const LCID locale)
     {
         THROW_IF_FAILED(::VarDecFromStr(value.c_str(), locale, 0, &m_decimal));
@@ -225,7 +227,7 @@ public:
         // Make sure it's always zero to avoid inconsistent results by others using the value
         m_decimal.wReserved = 0;
     }
-#endif // defined(__WINSTRING_H_)
+#endif // defined(WINRT_BASE_H)
 
     decimal& operator=(const decimal& value)
     {
@@ -483,9 +485,9 @@ public:
     {
         return to_HSTRING(LOCALE_INVARIANT);
     }
-#endif // defined(WINRT_BASE_H)
+#endif // defined(__WINSTRING_H_)
 
-#if defined(WINRT_BASE_H)
+#if defined(__WINSTRING_H_)
     HSTRING to_HSTRING(const LCID locale) const
     {
         wil::unique_bstr bstr;
@@ -494,7 +496,7 @@ public:
         THROW_IF_FAILED(::WindowsCreateString(bstr.get(), ::SysStringLen(bstr.get()), &hstring));
         return hstring;
     }
-#endif // defined(WINRT_BASE_H)
+#endif // defined(__WINSTRING_H_)
 
 #if defined(WINRT_BASE_H)
     winrt::hstring to_hstring() const

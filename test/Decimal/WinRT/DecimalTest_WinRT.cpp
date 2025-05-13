@@ -1147,5 +1147,41 @@ namespace Test::DecimalValue::Tests
                 winrt::DecimalValueToString(n_1_888).c_str(), winrt::DecimalValueToString(n_1_888_round_4).c_str(),
                 winrt::DecimalValueToString(n_1_888).c_str()));
         }
+
+        TEST_METHOD(math)
+        {
+            using DH = winrt::Microsoft::Windows::Foundation::DecimalHelper;
+            const auto a{ DH::FromInt32(1) };
+            const auto b{ DH::FromDouble(0.5) };
+            const auto c{ DH::FromString(L"-6.66") };
+            const auto d{ DH::FromString(L"1.23") };
+            const auto e{ DH::FromString(L"4567.089") };
+            const auto f{ DH::FromInt64(-4ll) };
+            const auto g{ DH::FromUInt16(1967u) };
+            const auto h{ DH::FromSingle(1001.0f) };
+
+            // WinRT equivalent to C++ formula
+            //
+            //      x = (((a - b) + (c % d)) * e).round(5) / f
+            //      y = x++.round(3).clamp(f, g)
+            //      z = --y.floor() * ++x.ceil() * -y.truncate()
+
+            auto x = DH::Divide(DH::Round(DH::Multiply(DH::Add(DH::Subtract(a, b), (DH::Modulo(c, d))), e), 5), f);
+            auto one = DH::FromInt32(1);
+            auto y = DH::Clamp(DH::Round(x, 3), f, g);
+            x = DH::Add(x, one);
+            auto z = DH::Multiply(DH::Multiply(DH::Subtract(DH::Floor(y), one), DH::Add(DH::Ceiling(x), one)), DH::Negate(DH::Truncate(y)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"x = %ls", DH::ToString(x).c_str()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"y = %ls", DH::ToString(y).c_str()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"z = %ls", DH::ToString(z).c_str()));
+
+            const winrt::Microsoft::Windows::Foundation::DecimalValue expectedX{ DH::FromString(L"12.4177225") };
+            const winrt::Microsoft::Windows::Foundation::DecimalValue expectedY{ DH::FromString(L"11.418") };
+            const winrt::Microsoft::Windows::Foundation::DecimalValue expectedZ{ DH::FromString(L"-1540") };
+            VERIFY_ARE_EQUAL(expectedX, x);
+            VERIFY_ARE_EQUAL(expectedY, y);
+            VERIFY_ARE_EQUAL(expectedZ, z);
+        }
     };
 }
