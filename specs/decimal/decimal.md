@@ -45,7 +45,152 @@ data structure may be re-expressed in each language using language-specific cons
 defines the `DecimalValue` structure as the Win32 `DECIMAL` definition syntax is incompatible with
 WinRT IDL.
 
-# 3. WinRT API
+# 3. Examples
+
+The examples are a program displaying the results of the the mathematical formula:
+
+```
+x = (((a - b) + (c % d)) * e).round(5) / f;
+y = x++.round(3).clamp(f, g);
+z = --y.floor() * ++x.ceil() * -y.truncate();
+```
+
+Given the values
+
+```
+a = 1
+b = 0.5
+c = -6.66
+d = 1.23
+e = 4567.089
+f = -4
+g = 1967
+h = 1001.0
+```
+
+the output is
+
+```
+x == 12.4177225
+y == 11.418
+z == -1540
+```
+
+and the process exit code is -1540.
+
+# 3.1. C#
+
+NOTE: This example uses [C#'s Decimal support](https://learn.microsoft.com/dotnet/api/system.decimal)
+providing the canonical reference for examples in other languages.
+
+```c++
+Using System;
+Using System.IO;
+
+class Program
+{
+    static void Main()
+    {
+        var a = new Decimal(1);
+        var b = new Decimal(0.5);
+        var c = Decimal.Parse("-6.66");
+        var d = Decimal.Parse("1.23");
+        var e = Decimal.Parse("4567.089");
+        var f = new Decimal((long)-4);
+        var g = new Decimal((uint)1967);
+        var h = new Decimal(1001.0);
+
+        var x = Decimal.Round(((a - b) + (c % d)) * e, 5) / f;
+        var y = Math.Clamp(Decimal.Round(x++, 3), f, g);
+        var yfloor = Decimal.Floor(y);
+        var xceil = Decimal.Ceiling(x);
+        var z = --yfloor * ++xceil * -Decimal.Truncate(y);
+
+        Console.WriteLine($"x = {x}");
+        Console.WriteLine($"y = {y}");
+        Console.WriteLine($"z = {z}");
+
+        Environment.Exit((int)z);
+    }
+}
+```
+
+# 3.2. C++
+
+This program illustrates the reference example using Windows App SDK's C++ decimal class.
+
+```c++
+#include <windows.h>
+#include <stdio.h>
+#include <decimal.h>
+
+int main()
+{
+    const Microsoft::Windows::Foundation::decimal a{ 1 };
+    const Microsoft::Windows::Foundation::decimal b{ 0.5 };
+    const Microsoft::Windows::Foundation::decimal c{ L"-6.66" };
+    const Microsoft::Windows::Foundation::decimal d{ L"1.23" };
+    const Microsoft::Windows::Foundation::decimal e{ L"4567.089" };
+    const Microsoft::Windows::Foundation::decimal f{ -4ll };
+    const Microsoft::Windows::Foundation::decimal g{ 1967u };
+    const Microsoft::Windows::Foundation::decimal h{ 1001.0f };
+
+    auto x = (((a - b) + (c % d)) * e).round(5) / f;
+    auto y = x++.round(3).clamp(f, g);
+    auto z = --y.floor() * ++x.ceil() * -y.truncate();
+
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"x = %ls", x.to_string().c_str()));
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"y = %ls", y.to_string().c_str()));
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"z = %ls", z.to_string().c_str()));
+
+    printf(L"x = %ls\n", x.to_string().c_str());
+    printf(L"y = %ls\n", y.to_string().c_str());
+    printf(L"z = %ls\n", z.to_string().c_str());
+    return z.to_int32();
+}
+```
+
+# 3.3. WinRT
+
+This program illustrates the reference example using Windows App SDK's WinRT `DecimalValue` struct and `DecimalHelper` runtimeclass.
+
+```c++
+#include <windows.h>
+#include <stdio.h>
+#include <winrt/Microsoft.Windows.Foundation.h>
+
+int main()
+{
+    using DH = winrt::Microsoft::Windows::Foundation::DecimalHelper;
+    const auto a{ DH::FromInt32(1) };
+    const auto b{ DH::FromDouble(0.5) };
+    const auto c{ DH::FromString(L"-6.66") };
+    const auto d{ DH::FromString(L"1.23") };
+    const auto e{ DH::FromString(L"4567.089") };
+    const auto f{ DH::FromInt64(-4ll) };
+    const auto g{ DH::FromUInt16(1967u) };
+    const auto h{ DH::FromSingle(1001.0f) };
+
+    // WinRT equivalent to C++ formula
+    //
+    //   x = (((a - b) + (c % d)) * e).round(5) / f
+    //   y = x++.round(3).clamp(f, g)
+    //   z = --y.floor() * ++x.ceil() * -y.truncate()
+
+    auto x = DH::Divide(DH::Round(DH::Multiply(DH::Add(DH::Subtract(a, b), (DH::Modulo(c, d))), e), 5), f);
+    auto one = DH::FromInt32(1);
+    auto y = DH::Clamp(DH::Round(x, 3), f, g);
+    x = DH::Add(x, one);
+    auto z = DH::Multiply(DH::Multiply(DH::Subtract(DH::Floor(y), one), DH::Add(DH::Ceiling(x), one)), DH::Negate(DH::Truncate(y)));
+
+    printf(L"x = %ls\n", DH::ToString(x).c_str());
+    printf(L"y = %ls\n", DH::ToString(y).c_str());
+    printf(L"z = %ls\n", DH::ToString(z).c_str());
+    return DH::ToInt32(z);
+}
+```
+
+# 4. WinRT API
 
 Windows App SDK provides a `Decimal` WinRT runtimeclass in addition to the `DecimalValue` structure.
 
@@ -171,7 +316,7 @@ namespace Microsoft.Windows.Foundation
 }
 ```
 
-# 4. C++ API
+# 5. C++ API
 
 Windows App SDK provides a native language decimal data type for C++ as the
 `Microsoft::Windows::Foundation::decimal` class in `decimal.h`. This class has the following features:
