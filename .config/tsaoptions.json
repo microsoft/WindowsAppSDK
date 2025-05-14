@@ -1,7 +1,7 @@
 {
     "instanceUrl": "https://microsoft.visualstudio.com",
     "projectName": "os",
-    "areaPath": "OS\\Windows Client and Services\\WinPD\\DFX-Developer Fundamentals and Experiences\\AmUse- App Metadata and User Setup Experience\\WinAppSDK\\WinAppSDK Engineering System",
+    "areaPath": "OS\\Windows Client and Services\\WinPD\\DFX-Developer Fundamentals and Experiences\\DEFT\\AmUse\\WinAppSDK\\WinAppSDK Engineering System",
     "iterationPath": "OS\\2505",
     "notificationAliases": [ "WinAppSDK-Build@microsoft.com" ],
     "ignoreBranchName": true,
