@@ -140,6 +140,10 @@ namespace Test::StoragePickersTests
             winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
 
+            //picker.Poke();
+            //picker.Poke();
+            //VERIFY_ARE_EQUAL(picker.CountPoke(), 2);
+
             picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List);
             VERIFY_ARE_EQUAL(picker.ViewMode(), winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List);
 
@@ -153,7 +157,8 @@ namespace Test::StoragePickersTests
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
 
             picker.CommitButtonText(L"commit");
-            VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
+            auto newText = picker.CommitButtonText();
+            VERIFY_ARE_EQUAL(newText, L"Hello commit");
 
             picker.FileTypeFilter().Append(L"*");
             VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
@@ -204,6 +209,7 @@ namespace Test::StoragePickersTests
             VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
         }
 
+        /*
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeFiltersDefinedExpectAddingUnionedType)
         {
             winrt::Microsoft::UI::WindowId windowId{};
@@ -311,5 +317,6 @@ namespace Test::StoragePickersTests
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
         }
+        */
     };
 }

@@ -45,6 +45,10 @@ namespace Microsoft.Windows.Storage.Pickers
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
         [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult> > PickMultipleFilesAsync();
+
+        // // Add Poke and CountPoke methods
+        // void Poke();
+        // Int32 CountPoke();
     }
 
     [feature(Feature_StoragePickers)]

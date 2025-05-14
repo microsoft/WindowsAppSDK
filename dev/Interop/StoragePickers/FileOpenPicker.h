@@ -29,6 +29,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> PickSingleFileAsync();
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult>> PickMultipleFilesAsync();
 
+        // void Poke();
+        // int CountPoke();
+
     private:
         winrt::Microsoft::UI::WindowId m_windowId{};
         PickerViewMode m_viewMode{ PickerViewMode::List };
@@ -39,6 +42,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         StoragePickersTelemetryHelper m_telemetryHelper{};
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);
+        // int m_count{ 0 };
     };
 }
 namespace winrt::Microsoft::Windows::Storage::Pickers::factory_implementation

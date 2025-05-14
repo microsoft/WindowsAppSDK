@@ -11,6 +11,7 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
 #include "PickFileResult.h"
+#include "..\StoragePickersImpl\StoragePickersImpl.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -19,6 +20,17 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
+
+    // void FileOpenPicker::Poke()
+    // {
+    //     m_count = StoragePickersImpl::test_add(m_count, 1);
+    //     // m_count++;
+    // }
+
+    // int FileOpenPicker::CountPoke()
+    // {
+    //     return m_count;
+    // }
 
     winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
     {
@@ -46,7 +58,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     winrt::hstring FileOpenPicker::CommitButtonText()
     {
-        return m_commitButtonText;
+        auto newString = StoragePickersImpl::test_hello(std::wstring(m_commitButtonText));
+        return winrt::hstring(newString);
     }
     void FileOpenPicker::CommitButtonText(winrt::hstring const& value)
     {
