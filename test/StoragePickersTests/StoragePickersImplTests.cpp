@@ -58,41 +58,140 @@ namespace Test::StoragePickersImplTests
             return true;
         }
 
-        // Test the test_add function from StoragePickersImpl
-        TEST_METHOD(TestAdd)
+        TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeFiltersDefinedExpectAddingUnionedType)
         {
-            // Call the test_add function from StoragePickersImpl
-            int a = 5;
-            int b = 7;
-            int result = test_add(a, b);
-            
-            // Verify the result
-            VERIFY_ARE_EQUAL(result, a + b);
-            Log::Comment(WEX::Common::String().Format(L"test_add(%d, %d) = %d", a, b, result));
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            picker.FileTypeFilter().Append(L".txt");
+            picker.FileTypeFilter().Append(L".doc");
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*.txt");
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
+                L"*.doc");
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
+                L"*.txt;*.doc");
         }
 
-        // Test negative numbers
-        TEST_METHOD(TestAddWithNegativeNumbers)
+        TEST_METHOD(VerifyFilters_FileOpenPickerWhenNoFileTypeFiltersDefinedExpectAsteriskSpec)
         {
-            int a = -3;
-            int b = -8;
-            int result = test_add(a, b);
-            
-            VERIFY_ARE_EQUAL(result, a + b);
-            Log::Comment(WEX::Common::String().Format(L"test_add(%d, %d) = %d", a, b, result));
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*");
         }
 
-        // Test with zero
-        TEST_METHOD(TestAddWithZero)
+        TEST_METHOD(VerifyFilters_FileOpenPickerWhenAsteriskFileTypeFilterDefinedExpectAsteriskSpec)
         {
-            int a = 0;
-            int b = 42;
-            int result = test_add(a, b);
-            
-            VERIFY_ARE_EQUAL(result, b);
-            Log::Comment(WEX::Common::String().Format(L"test_add(%d, %d) = %d", a, b, result));
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            picker.FileTypeFilter().Append(L"*");
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*");
         }
 
-        // Add more tests for other functions in StoragePickersImpl as needed
+        TEST_METHOD(VerifyFilters_FileSavePickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc", L".docx" }));
+            picker.FileTypeChoices().Insert(
+                L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg", L".jpeg", L".bmp" }));
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*.txt;*.doc;*.docx");
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
+                L"*.png;*.jpg;*.jpeg;*.bmp");
+        }
+
+        TEST_METHOD(VerifyFilters_FileSavePickerWhenNoFileTypeChoicesDefinedExpectAsteriskSpec)
+        {
+            // Note that is is a different behavior than the UWP pickers, where FileTypeChoices are required.
+
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*");
+        }
+
+        TEST_METHOD(VerifyFilters_FileSavePickerWhenAsteriskFileTypeChoicesDefinedExpectAsteriskSpec)
+        {
+            // Note that is is a different behavior than the UWP pickers, where FileTypeChoices cannot be *.
+
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            picker.FileTypeChoices().Insert(
+                L"All Files", winrt::single_threaded_vector<winrt::hstring>({ L"*" }));
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*");
+        }
     };
 }
