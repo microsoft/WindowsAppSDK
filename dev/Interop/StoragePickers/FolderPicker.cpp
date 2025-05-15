@@ -55,12 +55,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         return m_fileTypeFilter;
     }
 
-    void FolderPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
+    void FolderPicker::CaptureParameters(StoragePickersImpl::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
-        parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
 
@@ -72,7 +71,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
 
-        PickerCommon::PickerParameters parameters{};
+        StoragePickersImpl::PickerParameters parameters{};
         CaptureParameters(parameters);
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
@@ -87,7 +86,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
-        parameters.ConfigureDialog(dialog);
+        PickerCommon::ConfigureDialog(dialog, parameters, m_suggestedStartLocation);
         dialog->SetOptions(FOS_PICKFOLDERS);
 
         {

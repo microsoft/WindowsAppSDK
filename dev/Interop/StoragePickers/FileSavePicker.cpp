@@ -79,12 +79,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
 
-    void FileSavePicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
+    void FileSavePicker::CaptureParameters(StoragePickersImpl::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
-        parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.CaptureFilterSpec(m_fileTypeChoices.GetView());
 
     }
@@ -96,7 +95,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
 
-        PickerCommon::PickerParameters parameters{};
+        StoragePickersImpl::PickerParameters parameters{};
         CaptureParameters(parameters);
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedSaveFile = m_suggestedSaveFile;
@@ -114,7 +113,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         }
 
         auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
-        parameters.ConfigureDialog(dialog);
+        PickerCommon::ConfigureDialog(dialog, parameters, m_suggestedStartLocation);
 
         if (!PickerCommon::IsHStringNullOrEmpty(defaultFileExtension))
         {

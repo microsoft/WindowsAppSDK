@@ -47,7 +47,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 		hstring m_suggestedFileName{};
         StoragePickersTelemetryHelper m_telemetryHelper{};
 
-		void CaptureParameters(PickerCommon::PickerParameters& parameters);
+		void CaptureParameters(StoragePickersImpl::PickerParameters& parameters);
 	};
 }
 namespace winrt::Microsoft::Windows::Storage::Pickers::factory_implementation

@@ -57,12 +57,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         return m_fileTypeFilter;
     }
 
-    void FileOpenPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
+    void FileOpenPicker::CaptureParameters(StoragePickersImpl::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
-        parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
 
@@ -73,7 +72,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
 
-        PickerCommon::PickerParameters parameters{};
+        StoragePickersImpl::PickerParameters parameters{};
 
         CaptureParameters(parameters);
 
@@ -89,7 +88,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
-        parameters.ConfigureDialog(dialog);
+        PickerCommon::ConfigureDialog(dialog, parameters, m_suggestedStartLocation);
         check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
 
         {
@@ -125,7 +124,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickMultipleFile::Start(m_telemetryHelper) };
 
         // capture parameters to avoid using get strong referece of picker
-        PickerCommon::PickerParameters parameters{};
+        StoragePickersImpl::PickerParameters parameters{};
         CaptureParameters(parameters);
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
@@ -142,7 +141,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
-        parameters.ConfigureDialog(dialog);
+        PickerCommon::ConfigureDialog(dialog, parameters, m_suggestedStartLocation);
         check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
 
         FILEOPENDIALOGOPTIONS dialogOptions;

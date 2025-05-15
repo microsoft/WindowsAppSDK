@@ -110,6 +110,9 @@
     <ClCompile Include="StoragePickersTests.cpp">
       <AdditionalIncludeDirectories>$(RepoRoot)\build\VersionInfo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="StoragePickersImplTests.cpp">
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Interop\StoragePickersImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -126,6 +129,9 @@
   <ItemGroup>
     <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(RepoRoot)\dev\Interop\StoragePickersImpl\StoragePickersImpl.vcxproj">
+      <Project>{b9bb114e-0fb5-4ad4-a943-306c46688188}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

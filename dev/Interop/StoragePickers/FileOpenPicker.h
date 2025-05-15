@@ -38,7 +38,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
         StoragePickersTelemetryHelper m_telemetryHelper{};
 
-        void CaptureParameters(PickerCommon::PickerParameters& parameters);
+        void CaptureParameters(StoragePickersImpl::PickerParameters& parameters);
     };
 }
 namespace winrt::Microsoft::Windows::Storage::Pickers::factory_implementation
