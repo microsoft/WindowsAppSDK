@@ -36,7 +36,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Xml Include="StoragePickers-AppxManifest.xml" />
-  </ItemGroup>
 </Project>
