@@ -25,8 +25,12 @@ namespace Test::StoragePickersImplTests
         BEGIN_TEST_CLASS(StoragePickersImplTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::SetupPackages()
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
-            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"StoragePickers-AppxManifest.xml")
+
+            //// If the local debugging cannot run step by step (the tests pass but don't stop at breakpoint),
+            ////     enable below 2 lines and try again.
+            //TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            //TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"StoragePickers-AppxManifest.xml")
+
             END_TEST_CLASS()
 
             TEST_CLASS_SETUP(ClassSetup)
