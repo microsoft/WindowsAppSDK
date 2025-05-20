@@ -119,7 +119,7 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.Foundation.Decimal" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Foundation.DecimalHelper" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
