@@ -35,7 +35,8 @@ public:
             TraceLoggingValue(!versionTag ? L"": versionTag, "versionTag"),
             TraceLoggingValue(minVersion.Version, "minVersion"),
             TraceLoggingValue(mddInitializeOptions, "mddInitializeOptions"),
-            TraceLoggingValue(initializationCount, "initializationCount"));
+            TraceLoggingValue(initializationCount, "initializationCount"),
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     }
     void StopWithResult(
         const HRESULT hresult,
@@ -61,7 +62,8 @@ public:
                 TraceLoggingValue(failureFile, "failureFile"),
                 TraceLoggingValue(failureLineNumber, "failureLineNumber"),
                 TraceLoggingValue(failureMessage, "failureMessage"),
-                TraceLoggingValue(failureModule, "failureModule"));
+                TraceLoggingValue(failureModule, "failureModule"),
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
         }
         else
         {
@@ -69,7 +71,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingValue(initializationCount, "initializationCount"),
                 TraceLoggingValue(IntegrityFlags, "IntegrityFlags"),
-                TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"));
+                TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"),
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
         }
     }
     END_ACTIVITY_CLASS();
@@ -86,7 +89,8 @@ public:
         TraceLoggingClassWriteStart(Shutdown,
             _GENERIC_PARTB_FIELDS_ENABLED,
             TraceLoggingValue(initializationCount, "initializationCount"),
-            TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"));
+            TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"),
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     }
     void StopWithResult(
         HRESULT hresult,
@@ -108,13 +112,15 @@ public:
                 TraceLoggingValue(failureFile, "FailureFile"),
                 TraceLoggingValue(failureLineNumber, "FailureLineNumber"),
                 TraceLoggingValue(failureMessage, "FailureMessage"),
-                TraceLoggingValue(failureModule, "FailureModule"));
+                TraceLoggingValue(failureModule, "FailureModule"),
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
         }
         else
         {
             TraceLoggingClassWriteStop(Shutdown,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingValue(initializationCount, "initializationCount"));
+                TraceLoggingValue(initializationCount, "initializationCount"),
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
         }
     }
     END_ACTIVITY_CLASS();
@@ -130,13 +136,11 @@ public:
         _eventname_,\
         _activityId_,\
         nullptr,\
-        _WRITE_FAILURE_INFO,\
+        TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
+        TraceLoggingValue(failure.hr, "HResult"),\
+        TraceLoggingValue(failure.pszFile, "File"),\
+        TraceLoggingValue(failure.uLineNumber,"Line"),\
+        TraceLoggingValue(failure.pszModule, "Module"),\
+        TraceLoggingValue(failure.pszMessage,"Message"),\
+        _GENERIC_PARTB_FIELDS_ENABLED,\
         __VA_ARGS__)
-
-#define _WRITE_FAILURE_INFO \
-    TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
-    TraceLoggingValue(failure.hr, "HResult"),\
-    TraceLoggingValue(failure.pszFile, "File"),\
-    TraceLoggingValue(failure.uLineNumber,"Line"),\
-    TraceLoggingValue(failure.pszModule, "Module"),\
-    TraceLoggingValue(failure.pszMessage,"Message")
