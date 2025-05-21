@@ -11,6 +11,7 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
 #include "PickFileResult.h"
+#include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -68,6 +69,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
+        hstring priPath = L"LocalizationTest.pri";
+        hstring resourceName = L"Resources/SampleString";
+        auto factory = winrt::get_activation_factory<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager, winrt::Microsoft::Windows::ApplicationModel::Resources::IResourceManagerFactory>();
+        winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager = factory.CreateInstance(priPath);
+        //auto factory = winrt::get_activation_factory<ResourceManager, IResourceManagerFactory>();
+        //ResourceManager manager = factory.CreateInstance(priPath);
+
         // TODO: remove get strong reference when telementry is safe stop
         auto lifetime { get_strong() };
 
