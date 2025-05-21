@@ -17,5 +17,5 @@ namespace PickerCommon {
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
 
-    void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog, StoragePickersImpl::PickerParameters parameters, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId);
+    void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog, const StoragePickersImpl::PickerParameters & parameters, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId);
 }

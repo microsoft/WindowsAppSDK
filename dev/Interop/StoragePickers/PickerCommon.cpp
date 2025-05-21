@@ -107,7 +107,7 @@ namespace PickerCommon {
         return winrt::hstring{ filePath.get() };
     }
 
-    void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog, StoragePickersImpl::PickerParameters parameters, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId)
+    void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog, const StoragePickersImpl::PickerParameters & parameters, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId)
     {
         if (!IsHStringNullOrEmpty(parameters.CommitButtonText))
         {

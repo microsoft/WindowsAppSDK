@@ -44,11 +44,12 @@ namespace StoragePickersImpl {
     /// <param name="filters">winrt style filters</param>
     void PickerParameters::CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
-        size_t resultSize = filters.Size() + 1;   // A vector input will have unioned "All Files" category appended.
+        size_t resultSize = filters.Size() + 1;   // A vector input will have unioned All Files category appended.
         FileTypeFilterData.clear();
         FileTypeFilterData.reserve(resultSize * static_cast<size_t>(2));
 
         std::wstring allFilesExtensionList;
+        allFilesExtensionList.reserve(resultSize * 8); // a typical extension takes 6-7 chars, like "*.txt;" and "*.docx;"
         for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
