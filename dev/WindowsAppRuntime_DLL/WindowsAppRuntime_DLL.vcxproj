@@ -101,7 +101,7 @@
     <Import Project="..\VersionInfo\VersionInfo.vcxitems" Label="VersionInfo" />
     <Import Project="..\PackageManager\API\PackageManager.vcxitems" Label="Shared" />
     <Import Project="..\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems" Label="Shared" />
-    <Import Project="..\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems"/>
+    <Import Project="..\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems" />
     <Import Project="..\Notifications\BadgeNotifications\BadgeNotifications.vcxitems" Label="BadgeNotifications" />
     <Import Project="..\Notifications\BaseNotifications\BaseNotifications.vcxitems" Label="BaseNotifications" />
     <Import Project="..\RuntimeCompatibilityOptions\RuntimeCompatibilityOptions.vcxitems" Label="Shared" />
@@ -155,7 +155,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\StoragePickersImpl\StoragePickersImpl.lib;onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -173,7 +173,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\StoragePickersImpl\StoragePickersImpl.lib;onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -191,7 +191,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\StoragePickersImpl\StoragePickersImpl.lib;onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -209,7 +209,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\StoragePickersImpl\StoragePickersImpl.lib;onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -245,7 +245,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\StoragePickersImpl\StoragePickersImpl.lib;onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>

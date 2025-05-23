@@ -19,4 +19,6 @@
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
 
+#include <winrt/Windows.Storage.Streams.h>
+
 #endif //PCH_H
