@@ -14,6 +14,7 @@
 #include <wil/resource.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
 
@@ -79,13 +80,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
 
-    void FileSavePicker::CaptureParameters(StoragePickersImpl::PickerParameters& parameters)
+    void FileSavePicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
+        parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.CaptureFilterSpec(m_fileTypeChoices.GetView());
-
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
@@ -95,7 +96,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
 
-        StoragePickersImpl::PickerParameters parameters{};
+        PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedSaveFile = m_suggestedSaveFile;
@@ -113,7 +114,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         }
 
         auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
-        PickerCommon::ConfigureDialog(dialog, parameters, m_suggestedStartLocation);
+        parameters.ConfigureDialog(dialog);
 
         if (!PickerCommon::IsHStringNullOrEmpty(defaultFileExtension))
         {
@@ -180,3 +181,4 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         co_return result;
     }
 }
+

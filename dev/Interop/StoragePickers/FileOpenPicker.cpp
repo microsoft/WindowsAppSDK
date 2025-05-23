@@ -9,6 +9,7 @@
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
+#include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
 
@@ -57,22 +58,23 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         return m_fileTypeFilter;
     }
 
-    void FileOpenPicker::CaptureParameters(StoragePickersImpl::PickerParameters& parameters)
+    void FileOpenPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
+        parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
         // TODO: remove get strong reference when telementry is safe stop
-        auto lifetime { get_strong() };
+        auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
 
-        StoragePickersImpl::PickerParameters parameters{};
+        PickerCommon::PickerParameters parameters{};
 
         CaptureParameters(parameters);
 
@@ -88,7 +90,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
-        PickerCommon::ConfigureDialog(dialog, parameters, m_suggestedStartLocation);
+        parameters.ConfigureDialog(dialog);
         check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
 
         {
@@ -119,12 +121,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> > FileOpenPicker::PickMultipleFilesAsync()
     {
         // TODO: remove get strong reference when telementry is safe stop
-        auto lifetime { get_strong() };
+        auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickMultipleFile::Start(m_telemetryHelper) };
 
         // capture parameters to avoid using get strong referece of picker
-        StoragePickersImpl::PickerParameters parameters{};
+        PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
@@ -141,7 +143,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
-        PickerCommon::ConfigureDialog(dialog, parameters, m_suggestedStartLocation);
+        parameters.ConfigureDialog(dialog);
         check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
 
         FILEOPENDIALOGOPTIONS dialogOptions;

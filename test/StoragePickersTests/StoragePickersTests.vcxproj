@@ -104,17 +104,17 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\dev\Interop\StoragePickers\PickerCommon.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="PickerCommonTests.cpp" />
     <ClCompile Include="StoragePickersTests.cpp">
       <AdditionalIncludeDirectories>$(RepoRoot)\build\VersionInfo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <ClCompile Include="StoragePickersImplTests.cpp">
-      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Interop\StoragePickersImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\dev\Interop\StoragePickers\PickerCommon.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -129,9 +129,6 @@
   <ItemGroup>
     <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(RepoRoot)\dev\Interop\StoragePickersImpl\StoragePickersImpl.vcxproj">
-      <Project>{b9bb114e-0fb5-4ad4-a943-306c46688188}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

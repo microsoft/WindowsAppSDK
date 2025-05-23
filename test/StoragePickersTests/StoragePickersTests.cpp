@@ -8,6 +8,8 @@
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
 #include <TerminalVelocityFeatures-StoragePickers.h>
 
+#include "..\..\dev\Interop\StoragePickers\PickerCommon.h"
+
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
