@@ -402,7 +402,6 @@ public:
     decimal(decimal&& value);
     constexpr decimal(const DECIMAL& value);
     decimal(bool value);
-    decimal(char value);
     decimal(std::int16_t value);
     decimal(std::int32_t value);
     decimal(std::int64_t value);
@@ -414,6 +413,31 @@ public:
     decimal(double value);
     decimal(long value);
     decimal(unsigned long value);
+
+    //---- Parse String: PCSTR
+
+    /// Parse the string using the user's default locale.
+    static decimal from_string(PCSTR source);
+
+    /// Parse the string using the invariant locale.
+    static decimal from_string_invariant(PCSTR source);
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT ("!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (NULL) for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT ("") for the user default locale.
+    static decimal from_string(PCSTR source, PCSTR localeName);
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_string(PCSTR source, decimal& value);
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_string_invariant(PCSTR source, decimal& value);
+
+    /// Parse the string using the specified locale.
+    static bool try_from_string(PCSTR source, PCSTR localeName, decimal& value);
+
+    //---- Parse String: PCWSTR
 
     /// Parse the string using the user's default locale.
     static decimal from_string(PCWSTR source);
@@ -436,6 +460,8 @@ public:
     /// Parse the string using the specified locale.
     static bool try_from_string(PCWSTR source, PCWSTR localeName, decimal& value);
 
+    //---- Parse String: std::string
+
     /// Parse the string using the user's default locale.
     static decimal from_string(const std::string& source);
 
@@ -453,6 +479,28 @@ public:
 
     /// Parse bool try_string using the specified local, decimal& valuee.
     static decimal from_string(const std::string& source, const std::string& localeName);
+
+    //---- Parse String: std::string_value
+
+    /// Parse the string_value using the user's default locale.
+    static decimal from_string_value(const std::string_value& source);
+
+    /// Parse the string_value using the invariant locale.
+    static decimal from_string_value_invariant(const std::string_value& source);
+
+    /// Parse the string_value using the specified locale.
+    static decimal from_string_value(const std::string_value& source, const std::string_value& localeName);
+
+    /// Parse the string_value using the user's default locale.
+    static bool try_from_string_value(const std::string_value& source, decimal& value);
+
+    /// Parse the string_value using the invariant locale.
+    static bool try_from_string_value_invariant(const std::string_value& source, decimal& value);
+
+    /// Parse bool try_string_value using the specified local, decimal& valuee.
+    static decimal from_string_value(const std::string_value& source, const std::string_value& localeName);
+
+    //---- Parse String: std::wstring
 
     /// Parse the string using the user's default locale.
     static decimal from_wstring(const std::wstring& source);
@@ -472,7 +520,29 @@ public:
     /// Parse bool try_string using the specified local, decimal& valuee.
     static decimal from_wstring(const std::wstring& source, const std::wstring& localeNAme);
 
+    //---- Parse String: std::wstring_value
+
+    /// Parse the string using the user's default locale.
+    static decimal from_wstring_value(const std::wstring_value& source);
+
+    /// Parse the string using the invariant locale.
+    static decimal from_wstring_value_invariant(const std::wstring_value& source);
+
+    /// Parse the string using the specified locale.
+    static decimal from_wstring_value(const std::wstring_value& source, const std::wstring_value& localeName);
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_wstring_value(const std::wstring_value& source, decimal& value);
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_wstring_value_invariant(const std::wstring_value& source, decimal& value);
+
+    /// Parse bool try_string using the specified local, decimal& valuee.
+    static decimal from_wstring_value(const std::wstring_value& source, const std::wstring_value& localeNAme);
+
 #if defined(__hstring_h__)
+    //---- Parse String: HSTRING
+
     /// Parse the string using the user's default locale.
     static decimal from_hstring(const HSTRING& source);
 
@@ -493,6 +563,8 @@ public:
 #endif // defined(__hstring_h__)
 
 #if defined(WINRT_BASE_H)
+    //---- Parse String: winrt::hstring
+
     /// Parse the string using the user's default locale.
     static decimal from_hstring(const winrt::hstring& source);
 
@@ -516,7 +588,6 @@ public:
     decimal& operator=(decimal&& value);
     decimal& operator=(const DECIMAL& value);
     decimal& operator=(bool value);
-    decimal& operator=(char value);
     decimal& operator=(std::int16_t value);
     decimal& operator=(std::int32_t value);
     decimal& operator=(std::int64_t value);
@@ -531,7 +602,6 @@ public:
 
     const DECIMAL& to_decimal() const;
     bool to_bool() const;
-    char to_char() const;
     std::int16_t to_int16() const;
     std::int32_t to_int32() const;
     std::int64_t to_int64() const;
@@ -544,6 +614,8 @@ public:
     long to_long() const;
     unsigned long to_ulong() const;
 
+    //---- Parse String: std::string
+
     // Format the string using the user's default locale.
     std::string to_string() const;
 
@@ -552,6 +624,8 @@ public:
 
     // Format the string using the specified locale.
     std::string to_string(const std::string& localeName) const;
+
+    //---- Parse String: std::wstring
 
     // Format the string using the user's default locale.
     std::wstring to_wstring() const;
@@ -563,6 +637,8 @@ public:
     std::wstring to_wstring(const std::wstring& localeName) const;
 
 #if defined(__hstring_h__)
+    //---- Parse String: HSTRING
+
     // Format the string using the user's default locale.
     HSTRING to_HSTRING() const;
 
@@ -574,6 +650,8 @@ public:
 #endif // defined(__hstring_h__)
 
 #if defined(WINRT_BASE_H)
+    //---- Parse String: winrt::hstring
+
     // Format the string using the user's default locale.
     winrt::hstring to_hstring() const;
 
