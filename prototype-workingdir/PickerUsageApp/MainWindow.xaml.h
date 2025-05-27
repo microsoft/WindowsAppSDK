@@ -2,110 +2,64 @@
 
 #include "MainWindow.g.h"
 #include <functional>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <chrono>
+#include <iomanip>
+#include <algorithm>
+#include <cwctype>
+
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Storage.Pickers.h>
+#include <winrt/Windows.Storage.h>
+#include <winrt/Microsoft.Windows.Storage.Pickers.h>
+#include <winrt/Microsoft.UI.Xaml.h>
+#include <winrt/Microsoft.UI.Xaml.Controls.h>
+#include <winrt/Microsoft.UI.Windowing.h>
+#include <winrt/Windows.Data.Json.h>
+
+#include <Windows.h>
+#include <Shobjidl.h>
+#include <microsoft.ui.xaml.window.h>
 
 namespace winrt::PickerUsageApp::implementation
 {
     struct MainWindow : MainWindowT<MainWindow>
     {
-        int count{ 0 };
-
         MainWindow()
         {
-            // Xaml objects should not call InitializeComponent during construction.
-            // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
         }
+        
+        // Helper Methods
+        void LogResult(hstring const& message);
+        winrt::Windows::Storage::Pickers::PickerLocationId GetSelectedLocation();
+        winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId GetSelectedNewLocationId();
+        winrt::Windows::Storage::Pickers::PickerViewMode GetSelectedViewMode();
+        winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode GetSelectedNewViewMode();
+        std::vector<hstring> GetFileFilters();
+        HWND MainWindow::GetWindowHandle();
+        
+        // FileOpenPicker Tests
+        winrt::Windows::Foundation::IAsyncAction MainWindow::UwpPickSingleFile_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        winrt::Windows::Foundation::IAsyncAction MainWindow::NewPickSingleFile_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        winrt::Windows::Foundation::IAsyncAction MainWindow::UwpPickMultipleFiles_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        winrt::Windows::Foundation::IAsyncAction MainWindow::NewPickMultipleFiles_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        winrt::Windows::Foundation::IAsyncAction MainWindow::UwpFileTypeFilter_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        winrt::Windows::Foundation::IAsyncAction MainWindow::NewFileTypeFilter_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        
+        // FileSavePicker Tests
+        winrt::Windows::Foundation::IAsyncAction MainWindow::UwpFileTypeChoices_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        winrt::Windows::Foundation::IAsyncAction MainWindow::NewFileTypeChoices_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        
+        // FolderPicker Tests
+        winrt::Windows::Foundation::IAsyncAction MainWindow::UwpPickFolder_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        winrt::Windows::Foundation::IAsyncAction MainWindow::NewPickFolder_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        
+        // Test any code
+        winrt::Windows::Foundation::IAsyncAction MainWindow::TestAnyCode_Click(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
 
-        winrt::Windows::Foundation::IAsyncOperation<hstring> BigButtonClick_SavePicker(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
-        winrt::Windows::Foundation::IAsyncOperation<hstring> BigButtonClick_OpenPicker(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
-        winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFileSDKClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
-        winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFileUWPClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
-
-        winrt::Windows::Foundation::IAsyncOperation<hstring> SaveFileUWPClick();
-        winrt::Windows::Foundation::IAsyncOperation<hstring> SaveFileSDKClick();
-
-        winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFolderSDKClick();
-        winrt::Windows::Foundation::IAsyncOperation<hstring> OpenFolderUWPClick();
-
-
-        winrt::Windows::Foundation::IAsyncAction SDKClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
-        winrt::Windows::Foundation::IAsyncAction UWPClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
-
-        void UIFronzenTestClick(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void toggleCustomLableClick(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void ViewModeSelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);
-        void FilterTypeSelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);
-        void SettingsIdentifierChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);
-        void PickerLocationIdChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);
-        void MultiSelectToggled(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void PickerTypeChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-
-    private:
-        bool m_isUseCustomLabel{ false };
-        winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode m_ViewMode{ Microsoft::Windows::Storage::Pickers::PickerViewMode::List };
-        int m_FilterTypeIndex{ 0 };
-        int m_SettingsIdentifierIndex{ 0 };
-        int m_PickerLocationIdIndex{ 0 };
-        int m_PickerTypeIndex{ 0 };
-        bool m_MultipleSelect{ false };
-
-
-        // using this template approach helps us ensure use same logic on compatible user facing API
-        template<typename TPicker, typename TPickerLocationId> void SetCommonPickerOptions(TPicker picker)
-        {
-            if (m_isUseCustomLabel)
-            {
-                picker.CommitButtonText(customLabelBox().Text());
-            }
-            switch (m_SettingsIdentifierIndex)
-            {
-            case 1:
-                picker.SettingsIdentifier(L"Identifier1");
-                break;
-            case 2:
-                picker.SettingsIdentifier(L"Identifier2");
-                break;
-            default:
-                picker.SettingsIdentifier({});
-                break;
-            }
-            switch (m_PickerLocationIdIndex)
-            {
-            case 1:
-                picker.SuggestedStartLocation(TPickerLocationId::DocumentsLibrary);
-                break;
-            case 2:
-                picker.SuggestedStartLocation(TPickerLocationId::Desktop);
-                break;
-            default:
-                break;
-            }
-        }
-
-        template<typename TPicker, typename TPickerLocationId> void SetOpenPickerOptions(TPicker picker)
-        {
-            SetCommonPickerOptions<TPicker, TPickerLocationId>(picker);
-            switch (m_FilterTypeIndex)
-            {
-            case 1:
-                picker.FileTypeFilter().Append(L".jpg");
-                picker.FileTypeFilter().Append(L".png");
-                break;
-            case 2:
-                picker.FileTypeFilter().Append(L".jpg");
-                picker.FileTypeFilter().Append(L".png");
-                picker.FileTypeFilter().Append(L".json");
-                break;
-            default:
-                picker.FileTypeFilter().Append(L"*");
-                break;
-            }
-        }
-
-        template<typename TPicker, typename TPickerLocationId> void SetSavePickerOptions(TPicker picker)
-        {
-            SetCommonPickerOptions<TPicker, TPickerLocationId>(picker);
-            picker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<hstring>({ L".txt" }));
-        }
     };
 }
 

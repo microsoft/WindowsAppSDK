@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "FileSavePicker.h"
-#include "Microsoft.Windows.Storage.Pickers.FileSavePicker.g.cpp"
+#include "FileSavePicker.g.cpp"
 #include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>

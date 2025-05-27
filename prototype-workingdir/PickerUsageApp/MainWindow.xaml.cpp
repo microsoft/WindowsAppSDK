@@ -3,382 +3,894 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
+
+#include <cwctype>
 #include <string>
 #include <shobjidl.h>
 #include <microsoft.ui.xaml.window.h>
 #include <winrt/Windows.UI.Popups.h>
+#include <winrt/Windows.Data.Json.h>
 
 #include <fstream>
-#include <string>
+#include <filesystem>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
-//using namespace Windows::Foundation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace winrt::PickerUsageApp::implementation
 {
-    Windows::Storage::Pickers::PickerViewMode Convert(Microsoft::Windows::Storage::Pickers::PickerViewMode viewMode)
+    // Helper Methods
+    void MainWindow::LogResult(hstring const& message)
     {
-        switch (viewMode)
+        auto now = std::chrono::system_clock::now();
+        auto time = std::chrono::system_clock::to_time_t(now);
+        std::tm localTime;
+        localtime_s(&localTime, &time);
+
+        std::wstringstream timestamp;
+        timestamp << L"[" << std::put_time(&localTime, L"%H:%M:%S") << L"] ";
+
+        hstring currentText = ResultsTextBlock().Text();
+        ResultsTextBlock().Text(timestamp.str() + message + L"\n" + currentText);
+    }
+
+    winrt::Windows::Storage::Pickers::PickerLocationId MainWindow::GetSelectedLocation()
+    {
+        int selectedIndex = StartLocationComboBox().SelectedIndex();
+        switch (selectedIndex)
         {
-        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List:
-            return Windows::Storage::Pickers::PickerViewMode::List;
-        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail:
-            return Windows::Storage::Pickers::PickerViewMode::Thumbnail;
-        default:
-            return Windows::Storage::Pickers::PickerViewMode::List;
+        case 0: return winrt::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary;
+        case 1: return winrt::Windows::Storage::Pickers::PickerLocationId::ComputerFolder;
+        case 2: return winrt::Windows::Storage::Pickers::PickerLocationId::Desktop;
+        case 3: return winrt::Windows::Storage::Pickers::PickerLocationId::Downloads;
+        case 4: return winrt::Windows::Storage::Pickers::PickerLocationId::HomeGroup;
+        case 5: return winrt::Windows::Storage::Pickers::PickerLocationId::MusicLibrary;
+        case 6: return winrt::Windows::Storage::Pickers::PickerLocationId::PicturesLibrary;
+        case 7: return winrt::Windows::Storage::Pickers::PickerLocationId::VideosLibrary;
+        case 8: return winrt::Windows::Storage::Pickers::PickerLocationId::Objects3D;
+        case 9: return winrt::Windows::Storage::Pickers::PickerLocationId::Unspecified;
+        default: throw hresult_invalid_argument(L"Invalid location selected");
         }
     }
 
-    winrt::Windows::Foundation::IAsyncAction MainWindow::SDKClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
+    winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId MainWindow::GetSelectedNewLocationId()
     {
-        labelBlock().Text(L"");
-        hstring message{};
+        int selectedIndex = StartLocationComboBox().SelectedIndex();
+        switch (selectedIndex)
+        {
+        case 0: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary;
+        case 1: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::ComputerFolder;
+        case 2: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Desktop;
+        case 3: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads;
+        case 4: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::HomeGroup;
+        case 5: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary;
+        case 6: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::PicturesLibrary;
+        case 7: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::VideosLibrary;
+        case 8: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Objects3D;
+        case 9: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Unspecified;
+        default: throw hresult_invalid_argument(L"Invalid location selected");
+        }
+    }
+
+    winrt::Windows::Storage::Pickers::PickerViewMode MainWindow::GetSelectedViewMode()
+    {
+        int selectedIndex = ViewModeComboBox().SelectedIndex();
+        switch (selectedIndex)
+        {
+        case 0: return winrt::Windows::Storage::Pickers::PickerViewMode::List;
+        case 1: return winrt::Windows::Storage::Pickers::PickerViewMode::Thumbnail;
+        default: throw hresult_invalid_argument(L"Invalid view mode selected");
+        }
+    }
+
+    winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode MainWindow::GetSelectedNewViewMode()
+    {
+        int selectedIndex = ViewModeComboBox().SelectedIndex();
+        switch (selectedIndex)
+        {
+        case 0: return winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List;
+        case 1: return winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail;
+        default: throw hresult_invalid_argument(L"Invalid view mode selected");
+        }
+    }
+
+    std::vector<hstring> MainWindow::GetFileFilters()
+    {
+        std::vector<hstring> filters;
+        hstring input = FileTypeFilterInput().Text();
+        
+        if (input.empty())
+        {
+            filters.push_back(L"*");
+            return filters;
+        }
+
+        std::wstring inputStr = input.c_str();
+        std::wstringstream ss(inputStr);
+        std::wstring filter;
+        while (std::getline(ss, filter, L','))
+        {
+            if (!filter.empty())
+            {
+                // Trim whitespace
+                filter.erase(0, filter.find_first_not_of(L' '));
+                filter.erase(filter.find_last_not_of(L' ') + 1);
+                if (!filter.empty())
+                {
+                    filters.push_back(filter.c_str());
+                }
+            }
+        }
+
+        return filters;
+    }
+
+    // FileOpenPicker Tests
+    winrt::Windows::Foundation::IAsyncAction MainWindow::UwpPickSingleFile_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto lifetime = get_strong();
         try
         {
-            switch (m_PickerTypeIndex)
+            auto picker = winrt::Windows::Storage::Pickers::FileOpenPicker();
+            // Initialize UWP picker
+            auto hwnd = GetWindowHandle();
+            auto initializeWithWindow = picker.as<IInitializeWithWindow>();
+            initializeWithWindow->Initialize(hwnd);
+
+            picker.FileTypeFilter().Clear();
+            if (FileTypeFilterCheckBox().IsChecked().Value())
             {
-            case 0:
-                message = co_await  OpenFileSDKClick(sender, args);
-                break;
-            case 1:
-                message = co_await  SaveFileSDKClick();
-                break;
-            case 2:
-                message = co_await  OpenFolderSDKClick();
-                break;
-            default:
-                message = L"Unsupported Picker Type";
-                break;
+                auto filters = GetFileFilters();
+                for (const auto& filter : filters)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                }
+            }
+            else
+            {
+                picker.FileTypeFilter().Append(L"*");
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (ViewModeCheckBox().IsChecked().Value())
+            {
+                picker.ViewMode(GetSelectedViewMode());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedLocation());
+            }
+
+            auto file = co_await picker.PickSingleFileAsync();
+            if (file != nullptr)
+            {
+                std::wstringstream ss;
+                ss << L"UWP FileOpenPicker - PickSingleFileAsync:\nFile: " << file.Name().c_str() 
+                   << L"\nPath: " << file.Path().c_str();
+                LogResult(winrt::hstring{ss.str()});
+            }
+            else
+            {
+                LogResult(L"UWP FileOpenPicker - PickSingleFileAsync: Operation cancelled");
             }
         }
-        catch (winrt::hresult_error const& ex_)
+        catch (hresult_error const& ex)
         {
-            message = ex_.message();
+            std::wstringstream ss;
+            ss << L"Error in UWP FileOpenPicker: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
         }
-        labelBlock().Text(message);
     }
 
-    winrt::Windows::Foundation::IAsyncAction MainWindow::UWPClick(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
+    winrt::Windows::Foundation::IAsyncAction MainWindow::NewPickSingleFile_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        labelBlock().Text(L"");
-        hstring message{};
+        auto lifetime = get_strong();
         try
         {
-            switch (m_PickerTypeIndex)
-            {
-            case 0:
-                message = co_await OpenFileUWPClick(sender, args);
-                break;
-            case 1:
-                message = co_await SaveFileUWPClick();
-                break;
-            case 2:
-                message = co_await OpenFolderUWPClick();
-                break;
+            // Initialize new picker with AppWindow.Id
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker(this->AppWindow().Id());
 
-            default:
-                message = L"Unsupported Picker Type";
-                break;
+            picker.FileTypeFilter().Clear();
+            if (FileTypeFilterCheckBox().IsChecked().Value())
+            {
+                auto filters = GetFileFilters();
+                for (const auto& filter : filters)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                }
+            }
+            else
+            {
+                picker.FileTypeFilter().Append(L"*");
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (ViewModeCheckBox().IsChecked().Value())
+            {
+                picker.ViewMode(GetSelectedNewViewMode());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedNewLocationId());
+            }
+
+            auto result = co_await picker.PickSingleFileAsync();
+            if (result != nullptr)
+            {
+                std::wstringstream ss;
+                ss << L"New FileOpenPicker - PickSingleFileAsync:\nFile: " 
+                   << std::filesystem::path(result.Path().c_str()).filename().c_str()
+                   << L"\nPath: " << result.Path().c_str();
+                LogResult(winrt::hstring{ss.str()});
+            }
+            else
+            {
+                LogResult(L"New FileOpenPicker - PickSingleFileAsync: Operation cancelled");
             }
         }
-        catch (winrt::hresult_error const& ex_)
+        catch (hresult_error const& ex)
         {
-            message = ex_.message();
-        }
-        labelBlock().Text(message);
-    }
-
-    Windows::Foundation::IAsyncOperation<hstring> MainWindow::BigButtonClick_SavePicker(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
-    {
-        winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker{ AppWindow().Id() };
-
-        picker.CommitButtonText(L"Choose selected files");
-        picker.SuggestedFileName(L"HelloDevelopers");
-        picker.FileTypeChoices().Insert(L"Documents", single_threaded_vector<hstring>({ L".txt", L".doc", L".docx", L".pdf"}));
-        picker.FileTypeChoices().Insert(L"Pictures", single_threaded_vector<hstring>({ L".jpg", L"jpeg", L".png", L".bmp"}));
-        //picker.FileTypeChoices().Insert(L"All Files", single_threaded_vector<hstring>({ L".*" }));
-
-        auto& file = co_await picker.PickSaveFileAsync();
-        if (file != nullptr)
-        {
-            std::ifstream fileReader(file.Path().c_str());
-            std::string text((std::istreambuf_iterator<char>(fileReader)), std::istreambuf_iterator<char>());
-            winrt::hstring hText = winrt::to_hstring(text);
-
-            co_return hText;
-        }
-        else
-        {
-            // error handling;
+            std::wstringstream ss;
+            ss << L"Error in New FileOpenPicker: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
         }
     }
 
-    Windows::Foundation::IAsyncOperation<hstring> MainWindow::BigButtonClick_OpenPicker(IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args)
+    winrt::Windows::Foundation::IAsyncAction MainWindow::UwpPickMultipleFiles_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ AppWindow().Id() };
-
-        picker.CommitButtonText(L"Choose selected files");
- /*       picker.FileTypeFilter().Append(L".txt");
-        picker.FileTypeFilter().Append(L".doc");
-        picker.FileTypeFilter().Append(L".pdf");*/
-
-        // Pick multiple files
-        picker.ViewMode(PickerViewMode::List);
-        auto& file = co_await picker.PickSingleFileAsync();
-        if (file != nullptr)
+        auto lifetime = get_strong();
+        try
         {
-            std::ifstream fileReader(file.Path().c_str());
-            std::string text((std::istreambuf_iterator<char>(fileReader)), std::istreambuf_iterator<char>());
-            winrt::hstring hText = winrt::to_hstring(text);
+            auto picker = winrt::Windows::Storage::Pickers::FileOpenPicker();
+            // Initialize UWP picker
+            auto hwnd = GetWindowHandle();
+            auto initializeWithWindow = picker.as<IInitializeWithWindow>();
+            initializeWithWindow->Initialize(hwnd);
 
-            co_return hText;
+            picker.FileTypeFilter().Clear();
+            if (FileTypeFilterCheckBox().IsChecked().Value())
+            {
+                auto filters = GetFileFilters();
+                for (const auto& filter : filters)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                }
+            }
+            else
+            {
+                picker.FileTypeFilter().Append(L"*");
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (ViewModeCheckBox().IsChecked().Value())
+            {
+                picker.ViewMode(GetSelectedViewMode());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedLocation());
+            }
+
+            auto files = co_await picker.PickMultipleFilesAsync();
+            if (files != nullptr && files.Size() > 0)
+            {
+                std::wstringstream ss;
+                ss << L"UWP FileOpenPicker - PickMultipleFilesAsync: " << files.Size() << L" files\n";
+                for (auto const& file : files)
+                {
+                    ss << L"- " << file.Name().c_str() << L": " << file.Path().c_str() << L"\n";
+                }
+                LogResult(winrt::hstring{ss.str()});
+            }
+            else
+            {
+                LogResult(L"UWP FileOpenPicker - PickMultipleFilesAsync: Operation cancelled or no files selected");
+            }
         }
-        else
+        catch (hresult_error const& ex)
         {
-            // error handling;
+            std::wstringstream ss;
+            ss << L"Error in UWP PickMultipleFilesAsync: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
         }
-
-        //auto& files = co_await picker.PickMultipleFilesAsync();
-        //winrt::hstring names = L"";
-        //for (auto& file : files)
-        //{
-        //    names = names + file.Path() + L"\n";
-        //}
-        //co_return names;
     }
 
-    Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFileUWPClick(IInspectable const&, RoutedEventArgs const&)
+    winrt::Windows::Foundation::IAsyncAction MainWindow::NewPickMultipleFiles_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        auto windowNative = this->m_inner.as<IWindowNative>();
-        HWND hWnd = nullptr;
-        check_hresult(windowNative->get_WindowHandle(&hWnd));
-
-        winrt::Windows::Storage::Pickers::FileOpenPicker picker{};
-
-        picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
-        SetOpenPickerOptions<winrt::Windows::Storage::Pickers::FileOpenPicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
-        picker.ViewMode(Convert(m_ViewMode));
-
-        if (!m_MultipleSelect)
+        auto lifetime = get_strong();
+        try
         {
-            auto& file = co_await picker.PickSingleFileAsync();
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker(this->AppWindow().Id());
+            
+            picker.FileTypeFilter().Clear();
+            if (FileTypeFilterCheckBox().IsChecked().Value())
+            {
+                auto filters = GetFileFilters();
+                for (const auto& filter : filters)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                }
+            }
+            else
+            {
+                picker.FileTypeFilter().Append(L"*");
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (ViewModeCheckBox().IsChecked().Value())
+            {
+                picker.ViewMode(GetSelectedNewViewMode());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedNewLocationId());
+            }
+
+            auto results = co_await picker.PickMultipleFilesAsync();
+            if (results != nullptr && results.Size() > 0)
+            {
+                std::wstringstream ss;
+                ss << L"New FileOpenPicker - PickMultipleFilesAsync: " << results.Size() << L" files\n";
+                for (auto const& result : results)
+                {
+                    ss << L"- " << std::filesystem::path(result.Path().c_str()).filename().c_str() 
+                       << L": " << result.Path().c_str() << L"\n";
+                }
+                LogResult(winrt::hstring{ss.str()});
+            }
+            else
+            {
+                LogResult(L"New FileOpenPicker - PickMultipleFilesAsync: Operation cancelled or no files selected");
+            }
+        }
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in New PickMultipleFilesAsync: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
+        }
+    }
+
+    winrt::Windows::Foundation::IAsyncAction MainWindow::UwpFileTypeFilter_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto lifetime = get_strong();
+        try
+        {
+            auto picker = winrt::Windows::Storage::Pickers::FileOpenPicker();
+            auto hwnd = GetWindowHandle();
+            auto initializeWithWindow = picker.as<IInitializeWithWindow>();
+            initializeWithWindow->Initialize(hwnd);
+
+            picker.FileTypeFilter().Clear();
+            if (FileTypeFilterCheckBox().IsChecked().Value())
+            {
+                auto filters = GetFileFilters();
+                for (const auto& filter : filters)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                }
+            }
+            else
+            {
+                picker.FileTypeFilter().Append(L"*");
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (ViewModeCheckBox().IsChecked().Value())
+            {
+                picker.ViewMode(GetSelectedViewMode());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedLocation());
+            }
+
+            auto file = co_await picker.PickSingleFileAsync();
             if (file != nullptr)
             {
-                co_return file.Path();
+                std::wstringstream ss;
+                ss << L"UWP FileOpenPicker with FileTypeFilter: ";
+                
+                auto filters = GetFileFilters();
+                for (size_t i = 0; i < filters.size(); ++i) {
+                    if (i > 0) ss << L", ";
+                    ss << filters[i].c_str();
+                }
+                
+                ss << L"\nFile: " << file.Name().c_str() << L"\nPath: " << file.Path().c_str();
+                LogResult(winrt::hstring{ss.str()});
             }
-        }
-        else
-        {
-            auto& files = co_await picker.PickMultipleFilesAsync();
-            winrt::hstring names = L"";
-            for (auto& file : files)
+            else
             {
-                names = names + file.Path() + L"\n";
+                std::wstringstream ss;
+                ss << L"UWP FileOpenPicker with FileTypeFilter: ";
+                
+                auto filters = GetFileFilters();
+                for (size_t i = 0; i < filters.size(); ++i) {
+                    if (i > 0) ss << L", ";
+                    ss << filters[i].c_str();
+                }
+                
+                ss << L"\nOperation cancelled";
+                LogResult(winrt::hstring{ss.str()});
             }
-            co_return names;
         }
-        co_return L"no selection";
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in UWP FileTypeFilter: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
+        }
     }
 
-    Windows::Foundation::IAsyncOperation<hstring> MainWindow::SaveFileUWPClick()
+    winrt::Windows::Foundation::IAsyncAction MainWindow::NewFileTypeFilter_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        auto windowNative = this->m_inner.as<IWindowNative>();
-        HWND hWnd = nullptr;
-        check_hresult(windowNative->get_WindowHandle(&hWnd));
-
-        winrt::Windows::Storage::Pickers::FileSavePicker picker{};
-
-        picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
-        SetSavePickerOptions<winrt::Windows::Storage::Pickers::FileSavePicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
-
-        if (!m_MultipleSelect)
+        auto lifetime = get_strong();
+        try
         {
-            auto& file = co_await picker.PickSaveFileAsync();
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker(this->AppWindow().Id());
+
+            picker.FileTypeFilter().Clear();
+            if (FileTypeFilterCheckBox().IsChecked().Value())
+            {
+                auto filters = GetFileFilters();
+                for (const auto& filter : filters)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                }
+            }
+            else
+            {
+                picker.FileTypeFilter().Append(L"*");
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (ViewModeCheckBox().IsChecked().Value())
+            {
+                picker.ViewMode(GetSelectedNewViewMode());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedNewLocationId());
+            }
+
+            auto result = co_await picker.PickSingleFileAsync();
+            if (result != nullptr)
+            {
+                std::wstringstream ss;
+                ss << L"New FileOpenPicker with FileTypeFilter: ";
+                
+                auto filters = GetFileFilters();
+                for (size_t i = 0; i < filters.size(); ++i) {
+                    if (i > 0) ss << L", ";
+                    ss << filters[i].c_str();
+                }
+                
+                ss << L"\nFile: " << std::filesystem::path(result.Path().c_str()).filename().c_str() 
+                   << L"\nPath: " << result.Path().c_str();
+                LogResult(winrt::hstring{ss.str()});
+            }
+            else
+            {
+                std::wstringstream ss;
+                ss << L"New FileOpenPicker with FileTypeFilter: ";
+                
+                auto filters = GetFileFilters();
+                for (size_t i = 0; i < filters.size(); ++i) {
+                    if (i > 0) ss << L", ";
+                    ss << filters[i].c_str();
+                }
+                
+                ss << L"\nOperation cancelled";
+                LogResult(winrt::hstring{ss.str()});
+            }
+        }
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in New FileTypeFilter: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
+        }
+    }
+
+    // FileSavePicker Tests
+    winrt::Windows::Foundation::IAsyncAction MainWindow::UwpFileTypeChoices_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto lifetime = get_strong();
+        try
+        {
+            auto picker = winrt::Windows::Storage::Pickers::FileSavePicker();
+            auto hwnd = GetWindowHandle();
+            auto initializeWithWindow = picker.as<IInitializeWithWindow>();
+            initializeWithWindow->Initialize(hwnd);
+
+            if (SuggestedFileNameCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedFileName(SuggestedFileNameInput().Text());
+            }
+
+            if (DefaultFileExtensionCheckBox().IsChecked().Value())
+            {
+                picker.DefaultFileExtension(DefaultFileExtensionInput().Text());
+            }
+
+            picker.FileTypeChoices().Clear();
+            if (FileTypeChoicesCheckBox().IsChecked().Value())
+            {
+                hstring choicesJson = FileTypeChoicesInput().Text();
+                if (!choicesJson.empty())
+                {
+                    try {
+                        auto jsonValue = winrt::Windows::Data::Json::JsonObject::Parse(choicesJson);
+                        for (auto const& pair : jsonValue)
+                        {
+                            auto key = pair.Key();
+                            auto values = pair.Value().GetArray();
+                            
+                            winrt::Windows::Foundation::Collections::IVector<hstring> extensions = 
+                                winrt::single_threaded_vector<hstring>();
+                            
+
+                            for (auto const& value : values)
+                            {
+                                extensions.Append(value.GetString());
+                            }
+                            
+                            picker.FileTypeChoices().Insert(key, extensions);
+                        }
+                    }
+                    catch (...) {
+                        LogResult(L"Error parsing JSON file type choices");
+                    }
+                }
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedLocation());
+            }
+
+            auto file = co_await picker.PickSaveFileAsync();
             if (file != nullptr)
             {
-                co_return file.Path();
+                std::wstringstream ss;
+                ss << L"UWP FileSavePicker with FileTypeChoices\nFile: " << file.Name().c_str() 
+                   << L"\nPath: " << file.Path().c_str();
+                LogResult(winrt::hstring{ss.str()});
+            }
+            else
+            {
+                LogResult(L"UWP FileSavePicker with FileTypeChoices\nOperation cancelled");
             }
         }
-        else
+        catch (hresult_error const& ex)
         {
-            co_return L"File Save Picker does not support multi selection";
+            std::wstringstream ss;
+            ss << L"Error in UWP FileTypeChoices: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
         }
-        co_return L"no selection";
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFolderUWPClick()
+    winrt::Windows::Foundation::IAsyncAction MainWindow::NewFileTypeChoices_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        auto windowNative = this->m_inner.as<IWindowNative>();
-        HWND hWnd = nullptr;
-        check_hresult(windowNative->get_WindowHandle(&hWnd));
-
-        winrt::Windows::Storage::Pickers::FolderPicker picker{};
-
-        picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
-        SetOpenPickerOptions<winrt::Windows::Storage::Pickers::FolderPicker, winrt::Windows::Storage::Pickers::PickerLocationId>(picker);
-        picker.ViewMode(Convert(m_ViewMode));
-
-        if (!m_MultipleSelect)
+        auto lifetime = get_strong();
+        try
         {
-            auto& folder = co_await picker.PickSingleFolderAsync();
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker(this->AppWindow().Id());
+
+            if (SuggestedFileNameCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedFileName(SuggestedFileNameInput().Text());
+            }
+
+            if (DefaultFileExtensionCheckBox().IsChecked().Value())
+            {
+                picker.DefaultFileExtension(DefaultFileExtensionInput().Text());
+            }
+
+            picker.FileTypeChoices().Clear();
+            if (FileTypeChoicesCheckBox().IsChecked().Value())
+            {
+                hstring choicesJson = FileTypeChoicesInput().Text();
+                if (!choicesJson.empty())
+                {
+                    try {
+                        auto jsonValue = winrt::Windows::Data::Json::JsonObject::Parse(choicesJson);
+                        for (auto const& pair : jsonValue)
+                        {
+                            auto key = pair.Key();
+                            auto values = pair.Value().GetArray();
+                            
+                            winrt::Windows::Foundation::Collections::IVector<hstring> extensions = 
+                                winrt::single_threaded_vector<hstring>();
+                            
+
+                            for (auto const& value : values)
+                            {
+                                extensions.Append(value.GetString());
+                            }
+                            
+                            picker.FileTypeChoices().Insert(key, extensions);
+                        }
+                    }
+                    catch (...) {
+                        LogResult(L"Error parsing JSON file type choices");
+                    }
+                }
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedNewLocationId());
+            }
+
+            auto result = co_await picker.PickSaveFileAsync();
+            if (result != nullptr)
+            {
+                std::wstringstream ss;
+                ss << L"New FileSavePicker with FileTypeChoices\nFile: " 
+                   << std::filesystem::path(result.Path().c_str()).filename().c_str() 
+                   << L"\nPath: " << result.Path().c_str();
+                LogResult(winrt::hstring{ss.str()});
+            }
+            else
+            {
+                LogResult(L"New FileSavePicker with FileTypeChoices\nOperation cancelled");
+            }
+        }
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in New FileTypeChoices: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
+        }
+    }
+
+    // FolderPicker Tests
+    winrt::Windows::Foundation::IAsyncAction MainWindow::UwpPickFolder_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto lifetime = get_strong();
+        try
+        {
+            auto picker = winrt::Windows::Storage::Pickers::FolderPicker();
+            auto hwnd = GetWindowHandle();
+            auto initializeWithWindow = picker.as<IInitializeWithWindow>();
+            initializeWithWindow->Initialize(hwnd);
+
+            picker.FileTypeFilter().Clear();
+            if (FileTypeFilterCheckBox().IsChecked().Value())
+            {
+                auto filters = GetFileFilters();
+                for (const auto& filter : filters)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                }
+            }
+            else
+            {
+                picker.FileTypeFilter().Append(L"*");
+            }
+
+            if (CommitButtonCheckBox().IsChecked().Value())
+            {
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (ViewModeCheckBox().IsChecked().Value())
+            {
+                picker.ViewMode(GetSelectedViewMode());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedLocation());
+            }
+
+            auto folder = co_await picker.PickSingleFolderAsync();
             if (folder != nullptr)
             {
-                co_return folder.Path();
+                std::wstringstream ss;
+                ss << L"UWP FolderPicker - PickSingleFolderAsync:\nFolder: " << folder.Name().c_str() 
+                   << L"\nPath: " << folder.Path().c_str();
+                LogResult(winrt::hstring{ss.str()});
             }
-        }
-        else
-        {
-            co_return L"Folder Picker does not support multi selection";
-        }
-        co_return L"no selection";
-    }
-
-    Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFileSDKClick(IInspectable const&, RoutedEventArgs const&)
-    {
-        auto id = AppWindow().Id();
-        winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ id };
-
-        SetOpenPickerOptions<winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId>(picker);
-        picker.ViewMode(m_ViewMode);
-        if (!m_MultipleSelect)
-        {
-            auto& file = co_await picker.PickSingleFileAsync();
-            if (file != nullptr)
+            else
             {
-                co_return file.Path();
+                LogResult(L"UWP FolderPicker - PickSingleFolderAsync: Operation cancelled");
             }
         }
-        else
+        catch (hresult_error const& ex)
         {
-            auto& files = co_await picker.PickMultipleFilesAsync();
-            winrt::hstring names = L"";
-            for (auto& file : files)
+            std::wstringstream ss;
+            ss << L"Error in UWP FolderPicker: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
+        }
+    }
+
+    winrt::Windows::Foundation::IAsyncAction MainWindow::NewPickFolder_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto lifetime = get_strong();
+        try
+        {
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FolderPicker(this->AppWindow().Id());
+            
+            picker.FileTypeFilter().Clear();
+            if (FileTypeFilterCheckBox().IsChecked().Value())
             {
-                names = names + file.Path() + L"\n";
+                auto filters = GetFileFilters();
+                for (const auto& filter : filters)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                }
             }
-            co_return names;
-        }
-        co_return L"no selection";
-    }
-
-    Windows::Foundation::IAsyncOperation<hstring> MainWindow::SaveFileSDKClick()
-    {
-        auto id = AppWindow().Id();
-        winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker{ id };
-
-        SetSavePickerOptions<winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId>(picker);
-        if (!m_MultipleSelect)
-        {
-            auto& file = co_await picker.PickSaveFileAsync();
-            if (file != nullptr)
+            else
             {
-                co_return file.Path();
+                picker.FileTypeFilter().Append(L"*");
             }
-        }
-        else
-        {
-            co_return L"FileSavePicker does not support multi selection";
-        }
-        co_return L"no selection";
-    }
-
-    winrt::Windows::Foundation::IAsyncOperation<hstring> MainWindow::OpenFolderSDKClick()
-    {
-        auto id = AppWindow().Id();
-        winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker{ id };
-
-        SetOpenPickerOptions<winrt::Microsoft::Windows::Storage::Pickers::FolderPicker, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId>(picker);
-        picker.ViewMode(m_ViewMode);
-        if (!m_MultipleSelect)
-        {
-            auto& folder = co_await picker.PickSingleFolderAsync();
-            if (folder != nullptr)
+            
+            if (CommitButtonCheckBox().IsChecked().Value())
             {
-                co_return folder.Path();
+                picker.CommitButtonText(CommitButtonTextInput().Text());
+            }
+
+            if (ViewModeCheckBox().IsChecked().Value())
+            {
+                picker.ViewMode(GetSelectedNewViewMode());
+            }
+
+            if (SettingsIdCheckBox().IsChecked().Value())
+            {
+                picker.SettingsIdentifier(SettingsIdInput().Text());
+            }
+
+            if (SuggestedStartLocationCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartLocation(GetSelectedNewLocationId());
+            }
+
+            auto result = co_await picker.PickSingleFolderAsync();
+            if (result != nullptr)
+            {
+                std::wstringstream ss;
+                ss << L"New FolderPicker - PickSingleFolderAsync:\nFolder: " 
+                   << std::filesystem::path(result.Path().c_str()).filename().c_str() 
+                   << L"\nPath: " << result.Path().c_str();
+                LogResult(winrt::hstring{ss.str()});
+            }
+            else
+            {
+                LogResult(L"New FolderPicker - PickSingleFolderAsync: Operation cancelled");
             }
         }
-        else
+        catch (hresult_error const& ex)
         {
-            co_return L"Folder multiple selection is not supported";
+            std::wstringstream ss;
+            ss << L"Error in New FolderPicker: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
         }
-        co_return L"no selection";
     }
-}
 
-
-void winrt::PickerUsageApp::implementation::MainWindow::UIFronzenTestClick(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-{
-    counterBlock().Text(std::to_wstring(count));
-    count++;
-}
-
-
-void winrt::PickerUsageApp::implementation::MainWindow::toggleCustomLableClick(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-{
-    m_isUseCustomLabel = !m_isUseCustomLabel;
-    if (m_isUseCustomLabel)
+    // Test any code
+    winrt::Windows::Foundation::IAsyncAction MainWindow::TestAnyCode_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        useCustomLabelToggle().Content(box_value(L"Disable"));
-        customLabelBox().Visibility(Visibility::Visible);
+        auto lifetime = get_strong();
+        try
+        {
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker(this->AppWindow().Id());
+            picker.FileTypeFilter().Append(L"");
+
+            LogResult(L"Test code executed successfully");
+        }
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in test code: " << ex.message().c_str();
+            LogResult(winrt::hstring{ss.str()});
+        }
+
+        co_return;
     }
-    else
+
+    // Helper function to get window handle
+    HWND MainWindow::GetWindowHandle()
     {
-        useCustomLabelToggle().Content(box_value(L"Enable"));
-        customLabelBox().Visibility(Visibility::Collapsed);
+        HWND hWnd = nullptr;
+        // m_inner is the implementation's inner object, typically available in WinRT C++/WinUI3
+        auto windowNative = this->m_inner.as<IWindowNative>();
+        if (windowNative)
+        {
+            check_hresult(windowNative->get_WindowHandle(&hWnd));
+        }
+        return hWnd;
     }
-}
 
-
-void winrt::PickerUsageApp::implementation::MainWindow::ViewModeSelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e)
-{
-    auto radioButtons = sender.as<Microsoft::UI::Xaml::Controls::RadioButtons>();
-    auto selectedIndex = radioButtons.SelectedIndex();
-    switch (selectedIndex)
-    {
-    case 0:
-        m_ViewMode = Microsoft::Windows::Storage::Pickers::PickerViewMode::List;
-        break;
-    case 1:
-        m_ViewMode = Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail;
-        break;
-    default:
-        break;
-    }
-}
-
-
-void winrt::PickerUsageApp::implementation::MainWindow::FilterTypeSelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e)
-{
-    auto radioButtons = sender.as<Microsoft::UI::Xaml::Controls::RadioButtons>();
-
-    m_FilterTypeIndex = radioButtons.SelectedIndex();
-}
-
-
-void winrt::PickerUsageApp::implementation::MainWindow::SettingsIdentifierChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e)
-{
-    auto radioButtons = sender.as<Microsoft::UI::Xaml::Controls::RadioButtons>();
-    m_SettingsIdentifierIndex = radioButtons.SelectedIndex();
-}
-
-void winrt::PickerUsageApp::implementation::MainWindow::PickerLocationIdChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e)
-{
-    auto radioButtons = sender.as<Microsoft::UI::Xaml::Controls::RadioButtons>();
-    m_PickerLocationIdIndex = radioButtons.SelectedIndex();
-}
-
-
-void winrt::PickerUsageApp::implementation::MainWindow::MultiSelectToggled(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-{
-    m_MultipleSelect = sender.as<Microsoft::UI::Xaml::Controls::ToggleSwitch>().IsOn();
-}
-
-void winrt::PickerUsageApp::implementation::MainWindow::PickerTypeChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-{
-    m_PickerTypeIndex = sender.as<Microsoft::UI::Xaml::Controls::RadioButtons>().SelectedIndex();
 }
