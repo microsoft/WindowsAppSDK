@@ -1,10 +1,6 @@
 # This file has been adapted to use as a non-OneBranch PR validation yml in the WindowsAppSDK Foundation repository
 # Prior to 1.4, this file was used to build official release builds. This role has been moved to WindowsAppSDK-Foundation-Release.yml
 
-name: $(version)
-
-trigger: none
-
 parameters:
 - name: runStaticAnalysis
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"

@@ -1,3 +1,7 @@
+name: $(version)
+
+trigger: none
+
 extends:
   template: AzurePipelinesTemplates/ProjectReunion-BuildFoundation-base.yml@self
   parameters:
