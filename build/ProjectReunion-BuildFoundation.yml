@@ -2,6 +2,17 @@ name: $(version)
 
 trigger: none
 
+resources:
+  repositories:
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKConfigSourceBranch
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: ${{ variables['mySourceBranch'] }}
+      
 extends:
   template: AzurePipelinesTemplates/ProjectReunion-BuildFoundation-base.yml@self
   parameters:
