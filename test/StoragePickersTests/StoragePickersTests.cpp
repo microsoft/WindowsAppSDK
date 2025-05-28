@@ -2,13 +2,9 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "AssemblyInfo.h"
 
 #include <FrameworkUdk/Containment.h>
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
-#include <TerminalVelocityFeatures-StoragePickers.h>
-
-#include "..\..\dev\Interop\StoragePickers\PickerCommon.h"
 
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -58,84 +54,84 @@ namespace Test::StoragePickersTests
             ::Test::Bootstrap::CleanupBootstrap();
             return true;
         }
-        // The unit tests will be updated,first test might is there for testing purpose locally.
-        // Focusing solely on functional tests for now.
+       // The unit tests will be updated,first test might is there for testing purpose locally.
+       // Focusing solely on functional tests for now.
 
-        // Commenting out this test as it is an E2E scenario test that requires UI automation for pipeline execution.
-        /*
+       // Commenting out this test as it is an E2E scenario test that requires UI automation for pipeline execution.
+       /*
 
-         TEST_METHOD(FileOpenPicker_ShouldPickFile)
-         {
-             try
-             {
-                 auto parentWindow = ::GetForegroundWindow();
-                 winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
-                 winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ windowId };
-                 picker.FileTypeFilter().Append(L"*");
-                 // Act
-                 auto operation = picker.PickSingleFileAsync();
-                 auto file = operation.get();
-                 auto path = file.Path();
-                 // Assert
-                 if (file != nullptr)
-                 {
-                     Log::Comment(L"File open was successful");
-                 }
-                 else
-                 {
-                     Log::Error(L"File open canceled.");
-                 }
-             }
-             catch (const winrt::hresult_error& ex)
-             {
-                 Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
-                 VERIFY_FAIL(L"Exception occurred during file open picker.");
-             }
-             catch (const std::exception& ex)
-             {
-                 Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
-                 VERIFY_FAIL(L"Standard exception occurred during file open picker.");
-             }
-         }
+        TEST_METHOD(FileOpenPicker_ShouldPickFile)
+        {
+            try
+            {
+                auto parentWindow = ::GetForegroundWindow();
+                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ windowId };
+                picker.FileTypeFilter().Append(L"*");
+                // Act
+                auto operation = picker.PickSingleFileAsync();
+                auto file = operation.get();
+                auto path = file.Path();
+                // Assert
+                if (file != nullptr)
+                {
+                    Log::Comment(L"File open was successful");
+                }
+                else
+                {
+                    Log::Error(L"File open canceled.");
+                }
+            }
+            catch (const winrt::hresult_error& ex)
+            {
+                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
+                VERIFY_FAIL(L"Exception occurred during file open picker.");
+            }
+            catch (const std::exception& ex)
+            {
+                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
+                VERIFY_FAIL(L"Standard exception occurred during file open picker.");
+            }
+        }
 
-         TEST_METHOD(FileSavePicker_ShouldCreateNewFile)
-         {
-             try
-             {
-                 auto parentWindow = ::GetForegroundWindow();
-                 winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
-                 winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker savePicker(windowId);
-                 //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
-                 savePicker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
-                 savePicker.SuggestedFileName(L"test.txt");
-                 // Act
-                 auto fileOperation = savePicker.PickSaveFileAsync();
-                 auto file = fileOperation.get();
-                 auto path = file.Path();
+        TEST_METHOD(FileSavePicker_ShouldCreateNewFile)
+        {
+            try
+            {
+                auto parentWindow = ::GetForegroundWindow();
+                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker savePicker(windowId);
+                //savePicker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+                savePicker.FileTypeChoices().Insert(L"Plain Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+                savePicker.SuggestedFileName(L"test.txt");
+                // Act
+                auto fileOperation = savePicker.PickSaveFileAsync();
+                auto file = fileOperation.get();
+                auto path = file.Path();
 
-                 // Assert
-                 if (file != nullptr)
-                 {
-                     Log::Comment(L"File save was successful.");
-                 }
-                 else
-                 {
-                     Log::Error(L"File save failed or was canceled.");
-                 }
-             }
-             catch (const winrt::hresult_error& ex)
-             {
-                 Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
-                 VERIFY_FAIL(L"Exception occurred during file save picker.");
-             }
-             catch (const std::exception& ex)
-             {
-                 Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
-                 VERIFY_FAIL(L"Standard exception occurred during file save picker.");
-             }
-         }
+                // Assert
+                if (file != nullptr)
+                {
+                    Log::Comment(L"File save was successful.");
+                }
+                else
+                {
+                    Log::Error(L"File save failed or was canceled.");
+                }
+            }
+            catch (const winrt::hresult_error& ex)
+            {
+                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
+                VERIFY_FAIL(L"Exception occurred during file save picker.");
+            }
+            catch (const std::exception& ex)
+            {
+                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
+                VERIFY_FAIL(L"Standard exception occurred during file save picker.");
+            }
+        }
 
-        */
+       */
 
 
         TEST_METHOD(VerifyFileOpenPickerOptionsAreReadCorrectly)

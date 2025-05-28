@@ -5,7 +5,6 @@
 
 #include <FrameworkUdk/Containment.h>
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
-#include <TerminalVelocityFeatures-StoragePickers.h>
 
 #include "..\..\dev\Interop\StoragePickers\PickerCommon.h"
 
