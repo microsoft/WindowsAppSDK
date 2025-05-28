@@ -7,12 +7,6 @@ parameters:
   type: boolean
   default: true
 
-variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
-- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-- template: WindowsAppSDK-SetSourceBranchVariableForConfigRepo.yml@WindowsAppSDKConfig
-
 stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
 
