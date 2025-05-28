@@ -286,6 +286,9 @@
     <ProjectReference Include="..\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
       <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\MRTCore\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj">
+      <Project>{9b3b03bc-1bc0-43ea-b3ff-d5214f3cf5cf}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">
       <Project>{bf3fced0-cadb-490a-93a7-4d90e1f45ab0}</Project>
     </ProjectReference>
