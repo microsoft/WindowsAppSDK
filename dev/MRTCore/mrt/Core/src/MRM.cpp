@@ -29,7 +29,7 @@ typedef struct _MrmObjects
 
 constexpr wchar_t ResourceUriPrefix[] = L"ms-resource://";
 constexpr unsigned int ResourceUriPrefixLength = ARRAYSIZE(ResourceUriPrefix) - 1;
-constexpr wchar_t c_defaultPriFilename[] = L"resources.pri";
+constexpr wchar_t ResourcesPriFileName[] = L"resources.pri";
 
 #define INDEX_RESOURCE_ID -1
 #define INDEX_RESOURCE_URI -2
@@ -969,96 +969,119 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
 {
     *filePath = nullptr;
 
-    wil::unique_cotaskmem_string path;
-    RETURN_IF_FAILED(wil::GetModuleFileNameW(nullptr, path));
+    wil::unique_cotaskmem_string exeDir;
+    RETURN_IF_FAILED(wil::GetModuleFileNameW(nullptr, exeDir));
+    PCWSTR exeName = wil::find_last_path_segment(exeDir.get());
+    wchar_t modulePriFileName[MAX_PATH];
+    RETURN_IF_FAILED(StringCchCopyW(modulePriFileName, ARRAYSIZE(modulePriFileName), *exeName ? exeName : exeDir.get()));
+    RETURN_IF_FAILED(PathCchRenameExtension(modulePriFileName, ARRAYSIZE(modulePriFileName), L"pri"));
+    size_t exeDirCount;
+    RETURN_IF_FAILED(StringCchLengthW(exeDir.get(), STRSAFE_MAX_CCH, &exeDirCount));
+    RETURN_IF_FAILED(SizeTAdd(exeDirCount, 1, &exeDirCount));
+    RETURN_IF_FAILED(PathCchRemoveFileSpec(exeDir.get(), exeDirCount));
 
-    PCWSTR name = wil::find_last_path_segment(path.get());
-    wchar_t moduleFilename[MAX_PATH];
-    RETURN_IF_FAILED(StringCchCopyW(moduleFilename, ARRAYSIZE(moduleFilename), *name ? name : path.get()));
-
-    size_t length;
-    RETURN_IF_FAILED(StringCchLengthW(path.get(), STRSAFE_MAX_CCH, &length));
-
-    size_t bufferCount;
-    RETURN_IF_FAILED(SizeTAdd(length, 1, &bufferCount));
-
-    RETURN_IF_FAILED(PathCchRemoveFileSpec(path.get(), bufferCount));
-
-    std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> finalPath(nullptr, MrmFreeResource);
-
-    PCWSTR filenameToUse = filename;
+    enum SearchPass
+    {
+        exeDirForFileName,
+        ParentPathForFileName,
+        BaseDirForResourcesPri,
+        BaseDirForModulePri,
+        exeDirForResourcesPri,
+        exeDirForModulePri,
+        Final,
+    };
+    SearchPass searchStart = SearchPass::exeDirForFileName;
+    wil::unique_cotaskmem_string baseDir;
+    size_t baseDirCount{};
     if (filename == nullptr || *filename == L'\0')
     {
-        wil::unique_cotaskmem_string baseDir;
+        searchStart = SearchPass::exeDirForResourcesPri;
         if (SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)) && baseDir)
         {
-            path.swap(baseDir);
-            RETURN_IF_FAILED(StringCchLengthW(path.get(), STRSAFE_MAX_CCH, &length));
-            RETURN_IF_FAILED(SizeTAdd(length, 1, &bufferCount));
+            searchStart = SearchPass::BaseDirForResourcesPri;
+            RETURN_IF_FAILED(StringCchLengthW(baseDir.get(), STRSAFE_MAX_CCH, &baseDirCount));
+            RETURN_IF_FAILED(SizeTAdd(baseDirCount, 1, &baseDirCount));
         }
-        filenameToUse = c_defaultPriFilename;
     }
 
-    // Will build the path at most twice.
     // If filename is provided:
     //   - search under exe path
-    //   - if not exist, search parent path
+    //   - search parent path
     // If filename is not provided:
-    //   - search under exe path (or baseDir) with default name (resources.pri)
-    //   - if not exist, search under exe path (or baseDir) with [modulename].pri
-    for (int i = 0; i < 2; i++)
+    //   - if baseDir exists
+    //      - search under baseDir for resources.pri
+    //      - search under baseDir for [modulename].pri
+    //   - if exeDir != baseDir
+    //      - search under exeDir for resources.pri
+    //      - search under exeDir for [modulename].pri
+    for (SearchPass pass = searchStart; pass < SearchPass::Final; pass = SearchPass(pass+1))
     {
-        size_t lengthOfName;
-        RETURN_IF_FAILED(StringCchLengthW(filenameToUse, STRSAFE_MAX_CCH, &lengthOfName));
+        PWSTR searchDir{};
+        size_t searchDirCount{};
+        PCWSTR searchFilename{};
 
-        // We over-allocate a little bit so that we don't have to calculate the path length each time.
-        RETURN_IF_FAILED(SizeTAdd(bufferCount, lengthOfName, &length));
+        switch(pass)
+        {
+            // Search, given FileName
+            case SearchPass::exeDirForFileName:
+                searchDir = exeDir.get();
+                searchDirCount = exeDirCount;
+                searchFilename = filename;
+                break;
+            case SearchPass::ParentPathForFileName:
+                // move to parent folder of previous search
+                RETURN_IF_FAILED(PathCchRemoveFileSpec(searchDir, searchDirCount));
+                pass = SearchPass::Final;
+                break;
 
-        size_t size;
-        RETURN_IF_FAILED(SizeTMult(length, sizeof(wchar_t), &size));
+            // Search, given no FileName
+            case SearchPass::BaseDirForResourcesPri:
+                searchDir = baseDir.get();
+                searchDirCount = baseDirCount;
+                searchFilename = ResourcesPriFileName;
+                break;
+            case SearchPass::BaseDirForModulePri:
+                // Change to [modulename].pri
+                searchFilename = modulePriFileName;
+                break;
+            case SearchPass::exeDirForResourcesPri:
+                searchDir = exeDir.get();
+                searchDirCount = exeDirCount;
+                searchFilename = ResourcesPriFileName;
+                break;
+            case SearchPass::exeDirForModulePri:
+                searchFilename = modulePriFileName;
+                pass = SearchPass::Final;
+                break;
+        }
 
-        PWSTR rawOutputPath = reinterpret_cast<PWSTR>(MrmAllocateBuffer(size));
-        RETURN_IF_NULL_ALLOC(rawOutputPath);
+        size_t searchFilenameCount;
+        RETURN_IF_FAILED(StringCchLengthW(searchFilename, STRSAFE_MAX_CCH, &searchFilenameCount));
 
-        std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> outputPath(rawOutputPath, MrmFreeResource);
+        size_t searchPathCount;
+        RETURN_IF_FAILED(SizeTAdd(searchDirCount, searchFilenameCount, &searchPathCount));
+
+        size_t bufferByteSize;
+        RETURN_IF_FAILED(SizeTMult(searchPathCount, sizeof(wchar_t), &bufferByteSize));
+        PWSTR outputPathBuffer = reinterpret_cast<PWSTR>(MrmAllocateBuffer(bufferByteSize));
+        RETURN_IF_NULL_ALLOC(outputPathBuffer);
+
+        std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> outputPath(outputPathBuffer, MrmFreeResource);
         RETURN_IF_FAILED(PathCchCombineEx(
             outputPath.get(),
-            length,
-            path.get(),
-            filenameToUse,
+            searchPathCount,
+            searchDir,
+            searchFilename,
             PATHCCH_ALLOW_LONG_PATHS));
 
         DWORD attributes = GetFileAttributes(outputPath.get());
-
         if ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
         {
             // The file exists. Done.
-            finalPath.swap(outputPath);
-            break;
-        }
-
-        if (i == 0)
-        {
-            // The filename in the first iteration (the file under module path) will be returned if no file is found
-            // in all iterations.
-            finalPath.swap(outputPath);
-
-            // Prep for second iteration
-            if (filename == nullptr || *filename == L'\0')
-            {
-                // Change to [modulename].pri
-                RETURN_IF_FAILED(PathCchRenameExtension(moduleFilename, ARRAYSIZE(moduleFilename), L"pri"));
-                filenameToUse = moduleFilename;
-            }
-            else
-            {
-                // move to parent folder
-                RETURN_IF_FAILED(PathCchRemoveFileSpec(path.get(), bufferCount));
-            }
+            *filePath = outputPath.release();
+            return S_OK;
         }
     }
 
-    *filePath = finalPath.release();
-
-    return S_OK;
+    return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
 }
