@@ -14,6 +14,6 @@ resources:
       ref: ${{ variables['mySourceBranch'] }}
 
 extends:
-  template: ProjectReunion-BuildFoundation-base.yml@self
+  template: ProjectReunion-BuildFoundation-base.yml
   parameters:
     runStaticAnalysis: false
