@@ -13,7 +13,13 @@ resources:
       name: ProjectReunion/WindowsAppSDKConfig
       ref: ${{ variables['mySourceBranch'] }}
 
-extends:
-  template: ProjectReunion-BuildFoundation-base.yml
+variables:
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: WindowsAppSDK-SetSourceBranchVariableForConfigRepo.yml@WindowsAppSDKConfig
+
+stages:
+- template: ProjectReunion-BuildFoundation-base.yml
   parameters:
     runStaticAnalysis: false
