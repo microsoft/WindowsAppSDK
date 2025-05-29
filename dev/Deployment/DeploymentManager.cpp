@@ -543,6 +543,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
         for (auto package : c_targetPackages)
         {
+            auto isSingleton{ false };
+            if (CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL)
+            {
+                isSingleton = true;
+            }
+
             initializeActivity.Reset();
             initializeActivity.SetCurrentResourceId(package.identifier);
 
@@ -567,19 +573,19 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             // If the current application has runFullTrust capability, then Deploy the target package in a Breakaway process.
             // Otherwise, call PackageManager API to deploy the target package.
+             // The Singleton package will always set true for forceDeployment and the running process will be terminated to update the package.
             if (initializeActivity.GetIsFullTrustPackage())
             {
 
-                RETURN_IF_FAILED(AddOrRegisterPackageInBreakAwayProcess(packagePath, useExistingPackageIfHigherVersion, forceDeployment));
+                RETURN_IF_FAILED(AddOrRegisterPackageInBreakAwayProcess(packagePath, useExistingPackageIfHigherVersion, forceDeployment || isSingleton));
             }
             else
             {
-                RETURN_IF_FAILED(AddOrRegisterPackage(packagePath, useExistingPackageIfHigherVersion, forceDeployment));
+                RETURN_IF_FAILED(AddOrRegisterPackage(packagePath, useExistingPackageIfHigherVersion, forceDeployment || isSingleton));
             }
 
-            // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
-            if (forceDeployment &&
-                CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL)
+            // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.
+            if (isSingleton)
             {
                 // wil callback is set up to log telemetry events for Push Notifications LRP.
                 LOG_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Notifications LRP failed in all 3 attempts.");
