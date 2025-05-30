@@ -138,7 +138,19 @@ namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem)
     {
         wil::unique_cotaskmem_string filePath;
-        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
+        auto hr = shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put());
+
+        // Returns the item's file system path if it has one
+        if (FAILED(hr))
+        {
+            /* Only items that report SFGAO_FILESYSTEM have a file system path.
+               When an item does not have a file system path, for instance, "This PC",
+               the call to IShellItem::GetDisplayName(SIGDN_FILESYSPATH, [out] LPWSTR *ppszName ) will fail.
+               In this case, we return an empty string.
+            */
+            return winrt::hstring{};
+        }
+
         return winrt::hstring{ filePath.get() };
     }
 
