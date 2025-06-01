@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <Windows.h>
+#include <windows.h>
 #include <Pathcch.h>
 #include "wil/win32_helpers.h"
 #include "wil/filesystem.h"
@@ -255,7 +255,7 @@ static HRESULT LoadResourceCandidate(
         wchar_t rootResourceMap[256] = {};
         unsigned int relativeIdIndex = 0;
         RETURN_IF_FAILED(GetRootAndRelativeIdFromUri(resourceIdOrUri, rootResourceMap, ARRAYSIZE(rootResourceMap), &relativeIdIndex));
-        
+
         const wchar_t* relativeResourceId = &resourceIdOrUri[relativeIdIndex];
         if (relativeResourceId[0] == L'\0')
         {
@@ -686,12 +686,12 @@ STDAPI MrmGetChildResourceMap(
     if (IsResourceUri(childResourceMapName))
     {
         // If a full URI is passed in, we will respect the URI instead of trying to get the child map.
-        
+
         // Root resource maps are the authority of the URI, and are limited to 255 characters.
         wchar_t rootResourceMap[256] = {};
         unsigned int relativeIdIndex = 0;
         RETURN_IF_FAILED(GetRootAndRelativeIdFromUri(childResourceMapName, rootResourceMap, ARRAYSIZE(rootResourceMap), &relativeIdIndex));
-        
+
         const IResourceMapBase* internalRootResourceMap;
         if (rootResourceMap[0] == L'\0')
         {
