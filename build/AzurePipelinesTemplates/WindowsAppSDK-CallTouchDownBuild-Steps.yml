@@ -32,4 +32,10 @@ steps:
     resourceFilePath: ${{ parameters.ResourceFilePath }}
     appendRelativeDir: true
     cultureMappingType: 'None'
-    gitAction: ${{ parameters.GitAction }}
+    outputDirectoryRoot: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishPipelineArtifact@1
+  condition: succeededOrFailed()
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: 'LocalizedFiles'
