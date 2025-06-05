@@ -10,6 +10,7 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
+#include "PickerLocalization.h" 
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -73,7 +74,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
+        PickerCommon::UpdateAllTextLocalization(parameters);
         CaptureParameters(parameters);
+        
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);

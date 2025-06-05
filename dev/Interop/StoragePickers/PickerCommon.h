@@ -27,6 +27,7 @@ namespace PickerCommon {
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId PickerLocationId;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
+        winrt::hstring AllFilesText{};
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
     };

@@ -26,11 +26,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)PickerCommon.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PickerLolalization.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PickFileResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PickFolderResult.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)PickerCommon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PickerLocalization.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PickFileResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PickFolderResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StoragePickersTelemetry.h" />
@@ -57,5 +59,8 @@
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)Microsoft.Windows.Storage.Pickers.idl" />
   </ItemGroup>
-
+  <ItemGroup>
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\zh-CN\StoragePickers.resw" />
+  </ItemGroup>
 </Project>
