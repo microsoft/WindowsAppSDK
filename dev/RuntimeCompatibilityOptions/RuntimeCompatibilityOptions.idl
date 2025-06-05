@@ -28,6 +28,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         ActivateDirectManipulationManager_CheckCanInit = 56997009,
         DwmCoreI_OptimizeFirstFrameLatency = 57345278,
         InputStateManager_PenInputCrashX86 = 57003641,
+
+        // 1.7.3
+        ApplicationDataProvider_ReentrancyProtection = 57688028,
+        InputPointerSource_FlushReentrancyCrash = 57705537,
+        WindowChrome_SetTitleBarCrash = 57693465,
     };
 
     /// Represents a version of the Windows App Runtime.
