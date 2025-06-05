@@ -9,6 +9,7 @@
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
+#include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
@@ -65,7 +66,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
-        parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
+        parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
@@ -81,7 +82,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         //ResourceManager manager = factory.CreateInstance(priPath);
 
         // TODO: remove get strong reference when telementry is safe stop
-        auto lifetime { get_strong() };
+        auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
 
@@ -133,7 +134,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> > FileOpenPicker::PickMultipleFilesAsync()
     {
         // TODO: remove get strong reference when telementry is safe stop
-        auto lifetime { get_strong() };
+        auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickMultipleFile::Start(m_telemetryHelper) };
 

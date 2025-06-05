@@ -21,7 +21,7 @@ steps:
     git config --global user.email "DoNotEmailThis@dev.null.microsoft.com"
     git config --global user.name "TDBuild"
 
-- task: TouchdownBuildTask@4
+- task: TouchdownBuildTask@5
   inputs:
     environment: 'PRODEXT'
     teamId: ${{ parameters.TeamID }}
@@ -32,4 +32,10 @@ steps:
     resourceFilePath: ${{ parameters.ResourceFilePath }}
     appendRelativeDir: true
     cultureMappingType: 'None'
-    gitAction: ${{ parameters.GitAction }}
+    outputDirectoryRoot: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishPipelineArtifact@1
+  condition: succeededOrFailed()
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: 'LocalizedFiles'
