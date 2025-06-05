@@ -12,8 +12,7 @@
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
-#include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
-#include <iostream>
+#include "PickerLocalization.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -71,13 +70,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
-        hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
-        hstring resourceName = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
-        auto factory = winrt::get_activation_factory<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager, winrt::Microsoft::Windows::ApplicationModel::Resources::IResourceManagerFactory>();
-        winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager = factory.CreateInstance(priPath);
-        std::cout << "test output direct compile with res" << std::endl;
-        std::wcout << manager.MainResourceMap().GetValue(resourceName).ValueAsString().c_str() << std::endl;
-        auto text = manager.MainResourceMap().GetValue(resourceName).ValueAsString();
+        //hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
+        //hstring resourceName = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
+        //auto factory = winrt::get_activation_factory<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager, winrt::Microsoft::Windows::ApplicationModel::Resources::IResourceManagerFactory>();
+        //winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager = factory.CreateInstance(priPath);
+        //std::cout << "test output direct compile with res" << std::endl;
+        //std::wcout << manager.MainResourceMap().GetValue(resourceName).ValueAsString().c_str() << std::endl;
+        //auto text = manager.MainResourceMap().GetValue(resourceName).ValueAsString();
         //auto factory = winrt::get_activation_factory<ResourceManager, IResourceManagerFactory>();
         //ResourceManager manager = factory.CreateInstance(priPath);
 
@@ -87,9 +86,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
+        PickerCommon::UpdateAllTextLocalization(parameters);
 
         CaptureParameters(parameters);
-        parameters.CommitButtonText = text;
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
@@ -140,6 +139,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         // capture parameters to avoid using get strong referece of picker
         PickerCommon::PickerParameters parameters{};
+        PickerCommon::UpdateAllTextLocalization(parameters);
         CaptureParameters(parameters);
 
         auto cancellationToken = co_await winrt::get_cancellation_token();

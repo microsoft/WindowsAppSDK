@@ -171,13 +171,13 @@ namespace PickerCommon {
         if (filters.Size() == 0)
         {
             // when filters not defined, set filter to All Files *.*
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(L"*");
         }
         else if (filters.Size() == 1 && allFilesExtensionList == L"*")
         {
             // when there're only one filter "*", set filter to All Files *.* (override the values pushed above)
-            FileTypeFilterData[0] = L"";
+            FileTypeFilterData[0] = AllFilesText;
             FileTypeFilterData[1] = L"*";
             resultSize = 1;
         }
@@ -215,7 +215,7 @@ namespace PickerCommon {
         if (filters.Size() == 0)
         {
             // when filters not defined, set filter to All Files *.*
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(L"*");
             resultSize = 1;
         }

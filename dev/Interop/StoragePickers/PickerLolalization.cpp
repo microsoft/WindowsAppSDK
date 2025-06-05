@@ -4,7 +4,7 @@
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
 #include <iostream>
 
-namespace PickerLocalization {
+namespace PickerCommon {
     void UpdateAllTextLocalization(PickerCommon::PickerParameters& parameter)
     {
         winrt::hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
