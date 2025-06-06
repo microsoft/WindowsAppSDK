@@ -59,7 +59,6 @@ namespace Test::StoragePickersTests
 
        // Commenting out this test as it is an E2E scenario test that requires UI automation for pipeline execution.
        /*
-
         TEST_METHOD(FileOpenPicker_ShouldPickFile)
         {
             try
@@ -131,7 +130,7 @@ namespace Test::StoragePickersTests
             }
         }
 
-       */
+        */
 
 
         TEST_METHOD(VerifyFileOpenPickerOptionsAreReadCorrectly)

@@ -14,6 +14,8 @@
     <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
     <MicrosoftWinAppSDKEngCommonPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WinAppSDK.EngCommon"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWinAppSDKEngCommonPackageVersion>
     <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKBasePackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WindowsAppSDK.Base"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WindowsAppSDK.InteractiveExperiences"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
     <MicrosoftWindowsCsWinRTPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.CsWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCsWinRTPackageVersion>
 
     <!-- Dependencies: Manual -->
