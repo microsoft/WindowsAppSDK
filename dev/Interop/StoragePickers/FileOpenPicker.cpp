@@ -70,16 +70,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
-        //hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
-        //hstring resourceName = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
-        //auto factory = winrt::get_activation_factory<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager, winrt::Microsoft::Windows::ApplicationModel::Resources::IResourceManagerFactory>();
-        //winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager = factory.CreateInstance(priPath);
-        //std::cout << "test output direct compile with res" << std::endl;
-        //std::wcout << manager.MainResourceMap().GetValue(resourceName).ValueAsString().c_str() << std::endl;
-        //auto text = manager.MainResourceMap().GetValue(resourceName).ValueAsString();
-        //auto factory = winrt::get_activation_factory<ResourceManager, IResourceManagerFactory>();
-        //ResourceManager manager = factory.CreateInstance(priPath);
-
         // TODO: remove get strong reference when telementry is safe stop
         auto lifetime{ get_strong() };
 

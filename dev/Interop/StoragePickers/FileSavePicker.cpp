@@ -16,6 +16,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
+#include "PickerLocalization.h"
 #include "PickFileResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
@@ -97,7 +98,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
+        PickerCommon::UpdateAllTextLocalization(paramters);
+
         CaptureParameters(parameters);
+
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedSaveFile = m_suggestedSaveFile;
         auto suggestedFileName = m_suggestedFileName;
