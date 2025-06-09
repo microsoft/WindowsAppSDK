@@ -133,7 +133,8 @@ function Run-TaefTest
     $testFolder = Split-Path -parent $test.TestDef
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
-    & $tePath $dllFile $test.Parameters
+    $teLogPathFrom = (Join-Path $OutputFolder "Te.wtl")
+    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogPathFrom $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution
 }
 
 function Run-PowershellTest
