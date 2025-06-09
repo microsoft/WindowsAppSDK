@@ -1,18 +1,16 @@
 - [1. Decimal](#1-decimal)
 - [2. Common Decimal Representation](#2-common-decimal-representation)
 - [3. Examples](#3-examples)
-- [4. C#](#4-c)
-- [5. C++](#5-c)
-- [6. WinRT](#6-winrt)
+- [4. C# Example](#4-c-example)
+- [5. C++ Example](#5-c-example)
+- [6. WinRT Example](#6-winrt-example)
 - [7. WinRT API](#7-winrt-api)
 - [8. C++ API](#8-c-api)
   - [8.1. decimal.h](#81-decimalh)
-  - [8.2. decimalcppwinmrt.h](#82-decimalcppwinrth)
+  - [8.2. decimalcppwinrt.h](#82-decimalcppwinrth)
 - [9. C# API](#9-c-api)
 
 # 1. Decimal
-
-THIS FEATURE IS CURRENTLY EXPERIMENTAL.
 
 This feature provides a common decimal representation and aids for use within and across programming languages.
 
@@ -97,7 +95,7 @@ z == -1540
 
 and the process exit code is -1540.
 
-# 3.1. C# Example
+# 4. C# Example
 
 NOTE: This example uses [C#'s Decimal support](https://learn.microsoft.com/dotnet/api/system.decimal)
 providing the canonical reference for examples in other languages.
@@ -132,7 +130,7 @@ class Program
 }
 ```
 
-# 3.2. C++ Example
+# 5. C++ Example
 
 This program illustrates the reference example using Windows App SDK's C++ decimal class.
 
@@ -163,7 +161,7 @@ int main()
 }
 ```
 
-# 3.3. WinRT Example
+# 6. WinRT Example
 
 This program illustrates the reference example using Windows App SDK's WinRT `DecimalValue` struct and `DecimalHelper` runtimeclass.
 
@@ -203,7 +201,7 @@ int main()
 }
 ```
 
-# 4. WinRT API
+# 7. WinRT API
 
 Windows App SDK provides a `DecimalHelper` WinRT runtimeclass in addition to the `DecimalValue` structure.
 
@@ -354,7 +352,7 @@ namespace Microsoft.Windows.Foundation
 }
 ```
 
-# 5. C++ API
+# 8. C++ API
 
 Windows App SDK provides a native language decimal data type for C++ as the
 `Microsoft::Windows::Foundation::decimal` class in `decimal.h`. This class has the following features:
@@ -372,7 +370,7 @@ Windows App SDK provides a native language decimal data type for C++ as the
 
 Errors are expressed via thrown exceptions e.g. `decimal{1} / decimal{0}` will throw a divide-by-zero exception
 
-## 5.1. decimal.h
+## 8.1. decimal.h
 
 ```c++
 #if !defined(__WindowsAppSDK_Microsoft_Windows_Foundation_decimal_)
@@ -865,7 +863,7 @@ public:
 #endif // !defined(__WindowsAppSDK_Microsoft_Windows_Foundation_decimal_)
 ```
 
-## 5.2. decimalcppwinrt.h
+## 8.2. decimalcppwinrt.h
 
 This header provides C++/WinRT and Windows App SDK's DecimalValue integration.
 
@@ -975,7 +973,7 @@ inline winrt::Microsoft::Windows::Foundation::DecimalValue to_DecimalValue(::Mic
 #endif // defined(WINRT_Microsoft_Windows_Foundation_H) && defined(__WindowsAppSDK_Microsoft_Windows_Foundation_decimal_) && !defined(__WINDOWSAPPSDK_CPP_M_W_F_DECIMAL_)
 ```
 
-# 6. C# API
+# 9. C# API
 
 C# provides rich support via its [Decimal struct](https://learn.microsoft.com/dotnet/api/system.decimal).
 Windows App SDK adds a small C# API in an assembly for interop with `DecimalValue`.
