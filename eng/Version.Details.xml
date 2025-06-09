@@ -47,6 +47,10 @@
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>b430accfb06428e6d5f4a4306f6acd07c84fc7d6</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.8.0-main.20250602.0">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
+      <Sha>1251b90bd98ecb04d3a0b65bf1d3a7f6dce1bcf9</Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
     <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.6.240418">

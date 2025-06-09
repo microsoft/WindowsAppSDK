@@ -17,6 +17,7 @@
     <MicrosoftWindowsAppSDKBasePackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WindowsAppSDK.Base"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKBasePackageVersion>
     <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WindowsAppSDK.InteractiveExperiences"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
     <MicrosoftWindowsCsWinRTPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.CsWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCsWinRTPackageVersion>
+    <MicrosoftWindowsSDKBuildToolsMSIXPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.SDK.BuildTools.MSIX"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsSDKBuildToolsMSIXPackageVersion>
 
     <!-- Dependencies: Manual -->
     <MicrosoftBuildTasksGitVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Build.Tasks.Git"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftBuildTasksGitVersion>
