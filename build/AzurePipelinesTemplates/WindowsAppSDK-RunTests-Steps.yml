@@ -168,3 +168,9 @@ steps:
         -Configuration "${{ parameters.buildConfiguration }}"
         -Test
         -List
+
+  - task: PublishPipelineArtifact@1
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)'
