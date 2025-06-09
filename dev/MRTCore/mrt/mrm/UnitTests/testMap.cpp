@@ -21,9 +21,12 @@ TestResourceMap::TestResourceMap() :
     m_build(),
     m_pPriBuilder(nullptr),
     m_pMapBuilder(nullptr),
+    m_pSchemaBuilder(nullptr),
     m_pMap(nullptr),
+    m_pTestDI(nullptr)
     m_pMyMapBuilder(nullptr),
     m_pMySchemaBuilder(nullptr),
+    m_testDI(),
     m_pBaselinePri(nullptr),
     m_expectedFinalizeResult(0),
     m_expectedFinalizeReturn(true),
