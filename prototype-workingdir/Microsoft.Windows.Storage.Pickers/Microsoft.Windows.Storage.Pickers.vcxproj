@@ -117,6 +117,7 @@
     <ClInclude Include="PickFolderResult.h" />
     <ClInclude Include="StoragePickersTelemetry.h" />
     <ClInclude Include="StoragePickersTelemetryHelper.h" />
+    <ClInclude Include="SuggestedSaveFile.h" />
     <ClInclude Include="TelemetryHelper.h" />
     <ClInclude Include="TerminalVelocityFeatures-StoragePickers.h" />
   </ItemGroup>
@@ -131,6 +132,7 @@
     <ClCompile Include="PickerCommon.cpp" />
     <ClCompile Include="PickFileResult.cpp" />
     <ClCompile Include="PickFolderResult.cpp" />
+    <ClCompile Include="SuggestedSaveFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Microsoft_Windows_Storage_Pickers.def" />

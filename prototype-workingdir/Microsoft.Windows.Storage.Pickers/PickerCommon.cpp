@@ -6,6 +6,7 @@
 #include <wil/resource.h>
 #include "ShObjIdl.h"
 #include <KnownFolders.h>
+#include <filesystem>
 
 
 namespace {
@@ -248,5 +249,46 @@ namespace PickerCommon {
         }
 
         check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+
+
+        // Handle SuggestedSaveFile - extract directory and filename parts
+        winrt::hstring fileNameToSet;
+        if (!IsHStringNullOrEmpty(SuggestedFileName))
+        {
+            winrt::hstring fileNameToSet = SuggestedFileName;
+        }
+        
+        if (SuggestedSaveFile != nullptr)
+        {
+            auto suggestedPath = std::filesystem::path{ SuggestedSaveFile.Path().c_str() };
+            if (!suggestedPath.empty())
+            {
+                // Set the directory of SuggestedSaveFile as the starting location of save picker Dialog
+                auto dirPath = suggestedPath.parent_path();
+                if (!dirPath.empty())
+                {
+                    winrt::com_ptr<IShellItem> shellItem;
+                    HRESULT hr = SHCreateItemFromParsingName(dirPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
+                    if (SUCCEEDED(hr))
+                    {
+                        check_hresult(dialog->SetFolder(shellItem.get()));
+                    }
+                }
+
+                // Extract filename and use it (takes precedence over SuggestedFileName)
+                std::wstring fileName = suggestedPath.filename().wstring();
+                if (!fileName.empty())
+                {
+                    fileNameToSet = winrt::hstring(fileName);
+                }
+            }
+        }
+
+        // Set the filename (either from SuggestedSaveFile or SuggestedFileName)
+        if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
+        {
+            check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
+        }
+
     }
 }

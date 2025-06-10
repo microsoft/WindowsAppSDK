@@ -865,16 +865,65 @@ namespace winrt::PickerUsageApp::implementation
         auto lifetime = get_strong();
         try
         {
-            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker(this->AppWindow().Id());
-            picker.FileTypeFilter().Append(L"");
+            // test assigning SuggestedSaveFile from SDK picker picked file.
+            auto openPicker = winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker(this->AppWindow().Id());
 
-            LogResult(L"Test code executed successfully");
+            auto savePicker = winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker(this->AppWindow().Id());
+
+            auto & f1 = co_await openPicker.PickSingleFileAsync();
+            auto & f2 = co_await openPicker.PickSingleFileAsync();
+
+            savePicker.SuggestedSaveFile(winrt::Microsoft::Windows::Storage::Pickers::SuggestedSaveFile{ f1.Path() });
+
+            auto result = co_await savePicker.PickSaveFileAsync();
+
+            std::wstringstream ss;
+            ss << L"Picked save file: "
+                << std::filesystem::path(result.Path().c_str()).filename().c_str()     // .parent_path() can be used for getting the folder.
+                << L"\nPath: " << result.Path().c_str() << L"\n"
+                << L"Success test assigning SuggestedSaveFile from SDK picker picked file.\n\n";
+
+            LogResult(winrt::hstring{ ss.str() });
         }
         catch (hresult_error const& ex)
         {
             std::wstringstream ss;
             ss << L"Error in test code: " << ex.message().c_str();
             LogResult(winrt::hstring{ss.str()});
+        }
+
+        try
+        {
+            // test assigning SuggestedSaveFile from UWP methods.
+            auto openPicker = winrt::Windows::Storage::Pickers::FileOpenPicker();
+            auto hwnd = GetWindowHandle();
+            auto initializeWithWindow = openPicker.as<IInitializeWithWindow>();
+            initializeWithWindow->Initialize(hwnd);
+            openPicker.FileTypeFilter().Append(L"*");
+
+            auto savePicker = winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker(this->AppWindow().Id());
+
+            auto & f1 = co_await openPicker.PickSingleFileAsync();
+            auto & f2 = co_await openPicker.PickSingleFileAsync();
+
+            savePicker.SuggestedSaveFile(winrt::Microsoft::Windows::Storage::Pickers::SuggestedSaveFile{ f1.Path() });
+            savePicker.SuggestedFileName(L"MyFile.txt");
+
+            auto result = co_await savePicker.PickSaveFileAsync();
+
+            std::wstringstream ss;
+            ss << L"Picked save file: "
+                << std::filesystem::path(result.Path().c_str()).filename().c_str()     // .parent_path() can be used for getting the folder.
+                << L"\nPath: " << result.Path().c_str() << L"\n"
+                << L"Success test assigning SuggestedSaveFile from SDK picker picked file.\n\n";
+
+            LogResult(winrt::hstring{ ss.str() });
+        }
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in test code: " << ex.message().c_str();
+            LogResult(winrt::hstring{ ss.str() });
         }
 
         co_return;
