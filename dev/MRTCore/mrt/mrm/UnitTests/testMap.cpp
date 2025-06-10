@@ -23,7 +23,7 @@ TestResourceMap::TestResourceMap() :
     m_pMapBuilder(nullptr),
     m_pSchemaBuilder(nullptr),
     m_pMap(nullptr),
-    m_pTestDI(nullptr)
+    m_pTestDI(nullptr),
     m_pMyMapBuilder(nullptr),
     m_pMySchemaBuilder(nullptr),
     m_testDI(),
