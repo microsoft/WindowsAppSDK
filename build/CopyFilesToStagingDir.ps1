@@ -42,6 +42,7 @@ PublishFile $OverrideDir\PushNotifications-Override.json $FullPublishDir\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll $FullPublishDir\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask\
 PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.pdb $FullPublishDir\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask\
 PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.lib $FullPublishDir\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask\
