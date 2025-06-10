@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "FileSavePicker.h"
-#include "Microsoft.Windows.Storage.Pickers.FileSavePicker.g.cpp"
+#include "FileSavePicker.g.cpp"
 #include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>
@@ -62,11 +62,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         m_defaultFileExtension = value;
     }
-    winrt::Windows::Storage::StorageFile FileSavePicker::SuggestedSaveFile()
+    winrt::Microsoft::Windows::Storage::Pickers::ISuggestedSaveFile FileSavePicker::SuggestedSaveFile()
     {
         return m_suggestedSaveFile;
     }
-    void FileSavePicker::SuggestedSaveFile(winrt::Windows::Storage::StorageFile const& value)
+    void FileSavePicker::SuggestedSaveFile(winrt::Microsoft::Windows::Storage::Pickers::ISuggestedSaveFile const& value)
     {
         m_suggestedSaveFile = value;
     }
@@ -86,6 +86,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
+        parameters.SuggestedFileName = m_suggestedFileName;
+        parameters.SuggestedSaveFile = m_suggestedSaveFile;
         parameters.CaptureFilterSpec(m_fileTypeChoices.GetView());
     }
 
@@ -131,18 +133,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_STRICTFILETYPES));
 
-        if (!PickerCommon::IsHStringNullOrEmpty(suggestedFileName))
-        {
-            check_hresult(dialog->SetFileName(suggestedFileName.c_str()));
-        }
-
-        if (suggestedSaveFile != nullptr)
-        {
-            winrt::com_ptr<IShellItem> shellItem;
-            check_hresult(SHCreateItemFromParsingName(suggestedSaveFile.Path().c_str(), nullptr, IID_PPV_ARGS(shellItem.put())));
-            check_hresult(dialog->SetSaveAsItem(shellItem.get()));
-        }
-
         {
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr))
@@ -181,4 +171,3 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         co_return result;
     }
 }
-
