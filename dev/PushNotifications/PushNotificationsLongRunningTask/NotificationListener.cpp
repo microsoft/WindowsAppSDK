@@ -80,3 +80,14 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnToastNotificationReceiv
     return S_OK;
 }
 CATCH_RETURN()
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationListener::GetAppProcessName(
+    _Out_ HSTRING* appProcessName) noexcept try
+{
+    *appProcessName = (m_processName.empty() ?
+        wil::unique_hstring() :
+        wil::make_unique_string<wil::unique_hstring>(m_processName.c_str())).release();
+    
+    return S_OK;
+}
+CATCH_RETURN()

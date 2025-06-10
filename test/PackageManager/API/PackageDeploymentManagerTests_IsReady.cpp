@@ -27,6 +27,7 @@ namespace Test::PackageManager::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            ::TD::DumpExecutionContext();
             if (!::WindowsVersion::IsWindows10_20H1OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
@@ -69,7 +70,7 @@ namespace Test::PackageManager::Tests
             }
         }
 
-        TEST_METHOD(IsPackageReady_NoSuchPackage_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_NoSuchPackage_No)
         {
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -78,7 +79,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(c_packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_NotInstalled_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_NotInstalled_No)
         {
             RemovePackage_Red();
 
@@ -89,7 +90,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_Registered_Yes)
+        TEST_METHOD(IsPackageReady_PackageFullName_Registered_Yes)
         {
             AddPackage_Red();
 
@@ -100,7 +101,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_OlderRegistered_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_OlderRegistered_No)
         {
             AddPackage_Red();
 
@@ -111,7 +112,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_NewerRegistered_Yes)
+        TEST_METHOD(IsPackageReady_PackageFullName_NewerRegistered_Yes)
         {
             AddPackage_Redder();
 
@@ -122,6 +123,22 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(packageFullName));
 
             RemovePackage_Redder();
+        }
+
+        TEST_METHOD(IsPackageReady_PackageFamilyName_InvalidParameter)
+        {
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            try
+            {
+                PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
+                packageDeploymentManager.IsPackageReady(c_packageFamilyName);
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
         }
 
         TEST_METHOD(IsPackageSetReady_InvalidParameter)
@@ -389,6 +406,41 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(green);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+    };
+
+    class PackageDeploymentManagerTests_IsReady_Elevated : PackageDeploymentManagerTests_Base
+    {
+    public:
+        BEGIN_TEST_CLASS(PackageDeploymentManagerTests_IsReady_Elevated)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassSetup)
+        {
+            ::TD::DumpExecutionContext();
+            if (!::WindowsVersion::IsWindows10_20H1OrGreater())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
+                return true;
+            }
+            RemovePackage_Blue();
+            RemovePackage_Green();
+            RemovePackage_Redder();
+            RemovePackage_Red();
+            ::TB::Setup();
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassCleanup)
+        {
+            RemovePackage_Blue();
+            RemovePackage_Green();
+            RemovePackage_Redder();
+            RemovePackage_Red();
+            ::TB::Cleanup();
+            return true;
         }
 
         TEST_METHOD(IsPackageSetReady_N_No_NotAllPackageStatusOK)

@@ -43,7 +43,11 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                 }
                 else
                 {
-                    WindowsAppRuntimeInstaller_WriteEventWithActivity("FailureLog");
+                    WindowsAppRuntimeInstaller_WriteEventWithActivity(
+                        "FailureLog",
+                        _GENERIC_PARTB_FIELDS_ENABLED,
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
                 }
                 installActivityContext.LogInstallerFailureEvent(failure.hr);
                 break;
@@ -52,9 +56,10 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
             {
                 WindowsAppRuntimeInstaller_WriteEventWithActivity(
                     "Exception",
-                    TraceLoggingCountedWideString(
-                        installActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                    _GENERIC_PARTB_FIELDS_ENABLED,
+                    WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentResource"),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
                 // Don't stop the Install activity here. Instead, give the Installer main a chance to Stop the Activity before returning error to the caller.
                 // Hence, save the wil failure info here for later use.
@@ -65,9 +70,10 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
             {
                 WindowsAppRuntimeInstaller_WriteEventWithActivity(
                     "FailFast",
-                    TraceLoggingCountedWideString(
-                        installActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                    _GENERIC_PARTB_FIELDS_ENABLED,
+                    WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentResource"),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
                 installActivityContext.GetActivity().StopWithResult(
                     failure.hr,
@@ -89,9 +95,10 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
             {
                 WindowsAppRuntimeInstaller_WriteEventWithActivity(
                     "FailureReturn",
-                    TraceLoggingCountedWideString(
-                        installActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                    _GENERIC_PARTB_FIELDS_ENABLED,
+                    WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentResource"),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
                 // If this is due to CATCH_RETURN(), we want to keep the failure info from THROW* and not overwrite that from RETURN*
                 if (!(installActivityContext.GetLastFailure().type == wil::FailureType::Exception &&

@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation and Contributors.
 # Licensed under the MIT License.
 
-# This scripts overrides AssemblyInfo.cs and AssemblyInfo.ver in eng/common/VersionInfo.
+# This script overrides AssemblyInfo.cs, AssemblyInfo.ver, and AssemblyInfo.h in build/VersionInfo.
 # The parameters ProductMajor and ProductMinor version will be used in the overwrite 
 # for the ProductVersion field
 
@@ -137,3 +137,23 @@ Write-Verbose $assemblyInfoVer
 $assemblyInfoVerPath = "$scriptFullPath/AssemblyInfo.ver"
 Write-Verbose "Writing $assemblyInfoVerPath..."
 [System.IO.File]::WriteAllLines($assemblyInfoVerPath, $assemblyInfoVer, $utf8NoBomEncoding)
+
+# Generating AssemblyInfo.h override
+$assemblyInfoH = @"
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#ifndef WINDOWSAPPSDK_RELEASE_MAJOR
+#define WINDOWSAPPSDK_RELEASE_MAJOR     $ProductMajor
+#endif
+
+#ifndef WINDOWSAPPSDK_RELEASE_MINOR
+#define WINDOWSAPPSDK_RELEASE_MINOR     $ProductMinor
+#endif
+"@
+
+Write-Verbose $assemblyInfoH
+$assemblyInfoHPath = "$scriptFullPath/AssemblyInfo.h"
+Write-Verbose "Writing $assemblyInfoHPath..."
+[System.IO.File]::WriteAllLines($assemblyInfoHPath, $assemblyInfoH, $utf8NoBomEncoding)
+

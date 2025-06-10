@@ -1,0 +1,157 @@
+<doc>
+  <assembly>
+    <name>Microsoft.Windows.Storage.Projection</name>
+  </assembly>
+  <members>
+    <member name="T:Microsoft.Windows.Storage.ApplicationData">
+      <summary>Provides access to the application data store.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.ClearAsync(Microsoft.Windows.Storage.ApplicationDataLocality)">
+      <summary>Removes all data from the specified data store asynchronously.</summary>
+      <param name="locality">The data store type to remove data from.</param>
+      <returns>Returns an IAsyncAction object that's used to track the asynchronous operation.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.ClearPublisherCacheFolderAsync(System.String)">
+      <summary>Clears the files and subfolders from the specified subfolder of the shared storage folder for the publisher asynchronously.</summary>
+      <param name="folderName">The name of the subfolder to clear.</param>
+      <returns>Returns an IAsyncAction object that's used to track the asynchronous operation.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.Close">
+      <summary>Closes the current instance of ApplicationData.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.Dispose">
+      <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.GetDefault">
+      <summary>Gets an instance of ApplicationData for the current user.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.GetForPackageFamily(System.String)">
+      <summary>Get an instance of ApplicationData for the specified package family for the current user.</summary>
+      <param name="packageFamilyName">
+      </param>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.GetForUser(Windows.System.User)">
+      <summary>Get an instance of ApplicationData for the specified user.</summary>
+      <param name="user">The user for which to get the ApplicationData instance.</param>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.GetPublisherCacheFolder(System.String)">
+      <summary>Gets the specified subfolder of the shared data store for the publisher of the app.</summary>
+      <param name="folderName">The name of the subfolder to get.</param>
+      <returns>Returns a StorageFolder object that represents the specified subfolder of the shared data store for the publisher of the app.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationData.GetPublisherCachePath(System.String)">
+      <summary>Gets the specified path of the shared data store for the publisher of the app.</summary>
+      <param name="folderName">The name of the folder to get the path for.</param>
+      <returns>Returns a string value that represents the path of the shared data store for the publisher of the app.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.IsMachinePathSupported">
+      <summary>A value that indicates whether the package family supports the machine data store.</summary>
+      <returns>Returns true if the package family supports the machine data store, otherwise false.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.LocalCacheFolder">
+      <summary>A StorageFolder for the local cache data store, which is not included in backup and restore operations.</summary>
+      <returns>Returns a StorageFolder for the local cache data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.LocalCachePath">
+      <summary>A string value that represents the path for the local cache data store not included in backup and restore operations.</summary>
+      <returns>Returns the path for the local cache data store not included in backup and restore operations.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.LocalFolder">
+      <summary>A StorageFolder for the local data store. This location is backed up to the cloud.</summary>
+      <returns>Returns a StorageFolder for the local data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.LocalPath">
+      <summary>A string value that represents the path for the local data store. This location is backed up to the cloud.</summary>
+      <returns>Returns the path for the local data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.LocalSettings">
+      <summary>An ApplicationDataContainer for the local data store.</summary>
+      <returns>Returns the settings container from the local data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.MachineFolder">
+      <summary>A StorageFolder for the machine data store.</summary>
+      <returns>Returns a StorageFolder for the machine data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.MachinePath">
+      <summary>A value that represents the path for the machine data store.</summary>
+      <returns>Returns the path for the machine data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.SharedLocalFolder">
+      <summary>A StorageFolder for the shared data store.</summary>
+      <returns>Returns a StorageFolder for the shared data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.SharedLocalPath">
+      <summary>A string value that represents the path for the shared data store.</summary>
+      <returns>Returns the path for the shared data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.TemporaryFolder">
+      <summary>A StorageFolder for the temporary data store.</summary>
+      <returns>Returns a StorageFolder for the temporary data store.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationData.TemporaryPath">
+      <summary>A string value that represents the path for the temporary data store.</summary>
+      <returns>Returns the path for the temporary data store.</returns>
+    </member>
+    <member name="T:Microsoft.Windows.Storage.ApplicationDataContainer">
+      <summary>Represents a container for settings. The methods and properties of this class support creating, deleting, enumerating, and traversing the container hierarchy.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationDataContainer.Close">
+      <summary>Closes the current settings container.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationDataContainer.CreateContainer(System.String,Microsoft.Windows.Storage.ApplicationDataCreateDisposition)">
+      <summary>Create or open the specified settings container in the settings container.</summary>
+      <param name="name">The name of the settings container to create or open.</param>
+      <param name="disposition">The ApplicationDataCreateDisposition behavior to use when the container is created or opened.</param>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationDataContainer.DeleteContainer(System.String)">
+      <summary>Deletes the specified settings container, its subcontainers, and all settings in the hierarchy.</summary>
+      <param name="name">The name of the settings container to delete.</param>
+    </member>
+    <member name="M:Microsoft.Windows.Storage.ApplicationDataContainer.Dispose">
+      <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationDataContainer.Containers">
+      <summary>Gets the child settings containers of the current settings container.</summary>
+      <returns>The child settings containers of the current settings container.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationDataContainer.Locality">
+      <summary>Gets the type of the application data store that's associated with the settings container.</summary>
+      <returns>The ApplicationDataLocality type of the application data store that's associated with the settings container.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationDataContainer.Name">
+      <summary>Gets the name of the current settings container.</summary>
+      <returns>The name of the current settings container.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.Storage.ApplicationDataContainer.Values">
+      <summary>Gets an object that represents the settings in the settings container.</summary>
+      <returns>An object that represents the settings in the settings container.</returns>
+    </member>
+    <member name="T:Microsoft.Windows.Storage.ApplicationDataCreateDisposition">
+      <summary>Specifies options for creating application data containers or returning existing containers.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Storage.ApplicationDataCreateDisposition.Always">
+      <summary>Always returns the specified container. Creates the container if it doesn't exist.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Storage.ApplicationDataCreateDisposition.Existing">
+      <summary>Returns the specified container only if it already exists. Raises an exception of type System.Exception if the specified container doesn't exist.</summary>
+    </member>
+    <member name="T:Microsoft.Windows.Storage.ApplicationDataLocality">
+      <summary>Specifies the type of data store.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Storage.ApplicationDataLocality.Local">
+      <summary>The data resides in the local application data store.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Storage.ApplicationDataLocality.LocalCache">
+      <summary>The data resides in the local cache for the application data store.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Storage.ApplicationDataLocality.Machine">
+      <summary>The data resides in a machine-specific application data store.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Storage.ApplicationDataLocality.SharedLocal">
+      <summary>The data resides in the shared local application data store.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Storage.ApplicationDataLocality.Temporary">
+      <summary>The data resides in the temporary application data store.</summary>
+    </member>
+  </members>
+</doc>

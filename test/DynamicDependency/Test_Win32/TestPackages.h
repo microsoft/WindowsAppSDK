@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 namespace Test::Packages
@@ -37,7 +37,7 @@ namespace FrameworkWidgets
 #else
 #   error "Unknown processor architecture"
 #endif
-#define TEST_PACKAGE_DDLM_NAME          TEST_PACKAGE_DDLM_NAMEPREFIX L"-" TEST_PACKAGE_DDLM_VERSION L"-" TEST_PACKAGE_DDLM_ARCHITECTURE
+#define TEST_PACKAGE_DDLM_NAME          TEST_PACKAGE_DDLM_NAMEPREFIX L"." TEST_PACKAGE_DDLM_VERSION L"-" TEST_PACKAGE_DDLM_ARCHITECTURE
 #define TEST_PACKAGE_DDLM_PUBLISHERID   L"8wekyb3d8bbwe"
 #define TEST_PACKAGE_DDLM_FAMILYNAME    TEST_PACKAGE_DDLM_NAME L"_" TEST_PACKAGE_DDLM_PUBLISHERID
 #define TEST_PACKAGE_DDLM_FULLNAME      TEST_PACKAGE_DDLM_NAME L"_" TEST_PACKAGE_DDLM_VERSION L"_" TEST_PACKAGE_DDLM_ARCHITECTURE L"__" TEST_PACKAGE_DDLM_PUBLISHERID
@@ -73,7 +73,7 @@ namespace DynamicDependencyLifetimeManagerGC
     constexpr PCWSTR c_PackagePublisherId = TEST_PACKAGE_DDLM_PUBLISHERID;
 }
 
-#define TEST_PACKAGE_DDLMGC1000_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L"-1.0.0.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
+#define TEST_PACKAGE_DDLMGC1000_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L".1.0.0.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
 namespace DynamicDependencyLifetimeManagerGC1000
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManagerGC1000";
@@ -99,7 +99,7 @@ namespace DynamicDependencyLifetimeManagerGC1000
     constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
-#define TEST_PACKAGE_DDLMGC1010_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L"-1.0.1.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
+#define TEST_PACKAGE_DDLMGC1010_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L".1.0.1.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
 namespace DynamicDependencyLifetimeManagerGC1010
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManagerGC1010";
@@ -129,8 +129,8 @@ namespace WindowsAppRuntimeFramework
 {
     constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
     constexpr PCWSTR c_PackageNamePrefix = L"Microsoft.WindowsAppRuntime.Framework";
-    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework-4.1_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.Framework-4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework.4.1_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.Framework.4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
     constexpr const PACKAGE_VERSION GetPackageVersion()
     {
         PACKAGE_VERSION version{};
@@ -153,8 +153,8 @@ namespace DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore-4.1_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore-4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
 }
 namespace WindowsAppRuntimeMain = DynamicDependencyDataStore;
 

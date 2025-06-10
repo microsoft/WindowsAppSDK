@@ -5,7 +5,6 @@
 #include "CameraCaptureUIPhotoCaptureSettings.h"
 #include "CameraCaptureUIVideoCaptureSettings.h"
 #include "TelemetryHelper.h"
-#include <TerminalVelocityFeatures-CameraCaptureUI.h>
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
@@ -20,7 +19,6 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         CameraCaptureUI(winrt::Microsoft::UI::WindowId const& windowId) :
             m_windowId(windowId)
         {
-            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Media::Capture::Feature_CameraCaptureUI::IsEnabled());
         }
 
         Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoCaptureSettings PhotoSettings()

@@ -105,6 +105,12 @@
   <ItemGroup>
     <ClCompile Include="$(OutDir)\..\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cpp" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
+  </PropertyGroup>
+  <Import Project="$(RepoRoot)\test\test.autoinitializer.Native.targets" />
+
   <ItemGroup>
     <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime">
       <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd</HintPath>

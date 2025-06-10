@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+      <DefineConstants Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP</DefineConstants>
+      <DefineConstants Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER</DefineConstants>
+      <DefineConstants Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT</DefineConstants>
+      <DefineConstants Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY</DefineConstants>
+  </PropertyGroup>
+
+  <!-- "BeforeCompile" is used here to ensure this happens at the same time as possible codegen from WindowsAppSdkCompatibilitySetterTarget -->
+  <Target Name="WindowsAppRuntimeAutoInitializer" BeforeTargets="BeforeCompile">
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppRuntimeAutoInitializer.cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>

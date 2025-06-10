@@ -8,6 +8,7 @@
 namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
+namespace TD = ::Test::Diagnostics;
 
 static const winrt::hstring null_hstring;
 
@@ -27,9 +28,10 @@ namespace Test::ApplicationData::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            ::TD::DumpExecutionContext();
             if (!::WindowsVersion::IsWindows11_21H2OrGreater())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires Win11 >= 21H2 (SV1). Skipping tests");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ApplicationData requires Win11 >= 21H2 (SV1). Skipping tests");
                 return true;
             }
 

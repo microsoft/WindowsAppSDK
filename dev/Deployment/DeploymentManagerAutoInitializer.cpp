@@ -24,15 +24,8 @@
 
 namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentManager
 {
-    struct AutoInitialize
+    namespace AutoInitialize
     {
-        AutoInitialize()
-        {
-            Initialize();
-        }
-
-        ~AutoInitialize() = default;
-
         static ::winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions Options()
         {
             ::winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options;
@@ -50,7 +43,8 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentMan
             return options;
         }
 
-        static void Initialize()
+        // Called by WindowsAppRuntimeAutoInitializer.cpp
+        void Initialize()
         {
             auto options{ Options() };
             auto deploymentResult{ ::winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentManager::Initialize(options) };
@@ -61,5 +55,4 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentMan
             }
         }
     };
-    static AutoInitialize g_autoInitialize;
 }

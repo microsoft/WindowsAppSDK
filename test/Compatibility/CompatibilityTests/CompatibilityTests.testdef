@@ -1,0 +1,11 @@
+﻿{
+    "Tests": [
+        {
+            "Description": "CompatibilityOptions tests (x86 not currently enabled)",
+            "Filename": "CompatibilityTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}

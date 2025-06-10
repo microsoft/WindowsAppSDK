@@ -24,6 +24,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
         m_name = name;
     }
 
+    void BackgroundTaskBuilder::TaskGroup(winrt::BackgroundTaskRegistrationGroup TaskGroup)
+    {
+        m_builder.TaskGroup(TaskGroup);
+    }
+
+    winrt::BackgroundTaskRegistrationGroup BackgroundTaskBuilder::TaskGroup()
+    {
+        return m_builder.TaskGroup();
+    }
+
     void BackgroundTaskBuilder::SetTrigger(winrt::IBackgroundTrigger trigger)
     {
         m_builder.SetTrigger(trigger);

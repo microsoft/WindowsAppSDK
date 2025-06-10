@@ -4,6 +4,9 @@
     [String]$DestinationFolder
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $overrideHeaderName = "windowsappruntime_definitions_override.h"
 
 # Mapping of filenames to identifiers

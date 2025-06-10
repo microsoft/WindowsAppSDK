@@ -119,8 +119,7 @@ Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.Window
 # Build Windows App SDK package (with actual contents, i.e. not metapackage)
 #
 
-$nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
-$NugetCmdLine = "$nugetExe pack WindowsAppSDK.nuspec $NugetArgs -version $version"
+$NugetCmdLine = "nuget pack WindowsAppSDK.nuspec $NugetArgs -version $version"
 Write-Host 'Building Windows SDK package'
 Write-Host $NugetCmdLine
 Invoke-Expression $NugetCmdLine
@@ -137,8 +136,7 @@ Write-Host
 
 ConfigureNugetCommandLine("Microsoft.WindowsAppSDK.MetaPackage")
 
-$nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
-$NugetCmdLine = "$nugetExe pack WindowsAppSDKMetaPackage.nuspec $NugetArgs -version $version"
+$NugetCmdLine = "nuget pack WindowsAppSDKMetaPackage.nuspec $NugetArgs -version $version"
 Write-Host 'Building Windows App SDK Meta Package'
 Write-Host $NugetCmdLine
 Invoke-Expression $NugetCmdLine

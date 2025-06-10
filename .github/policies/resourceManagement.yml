@@ -224,6 +224,47 @@ configuration:
       - addLabel:
           label: needs-author-feedback
 
+    # /feedbackHub_WAIF
+    - description: >-
+          Triggers:
+          * /feedbackhubWAIF
+          * /feedbackHubWAIF
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/feedback[H|h]ubWAIF'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              Hi @${issueAuthor}. Could you please submit this issue through Feedback Hub (press [Windows key]+[F])? Once you've done that, share the link here so we can track your issue more effectively on our end.
+
+              When submitting, please select "Developer Platform" as the category and "Windows AI Foundry" as the sub-category.
+
+              Follow these steps:
+              1. Open Feedback Hub using [Windows key]+[F]
+              2. Make sure you're signed in
+              3. When entering your bug details, please start your title with "[Windows AI APIs]"
+              4. Choose "Developer Platform" as the category and "Windows AI Foundry" as the sub-category
+              5. Under "Add more details", select "Recreate my problem"
+              6. Start the recording, show us the issue with your app or sample, then stop recording
+              7. Include as many details as you can about how to reproduce the issue
+              8. Submit your feedback
+
+              Thanks for helping us improve!
+
+      - removeLabel:
+          label: needs-triage
+      - removeLabel:
+          label: needs-assignee-attention
+      - addLabel:
+          label: needs-author-feedback
+
 
 
 onFailure: 

@@ -66,7 +66,10 @@ param(
         [Switch]$Test,
 
         [Parameter(Mandatory=$false)]
-        [Switch]$List
+        [Switch]$List,
+
+        [Parameter(Mandatory=$false)]
+        [Switch]$ShowSystemInfo=$true
 )
 
 $StartTime = Get-Date
@@ -173,6 +176,44 @@ function Run-Tests
             Write-Host "Test is disabled. Not running."
         }
     }
+}
+
+function Get-SystemInfo
+{
+    $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
+    $productname = $(Get-Item -Path $regkey).GetValue('ProductName')
+    $displayversion = $(Get-Item -Path $regkey).GetValue('DisplayVersion')
+    $currentmajor = $(Get-Item -Path $regkey).GetValue('CurrentMajorVersionNumber')
+    $currentminor = $(Get-Item -Path $regkey).GetValue('CurrentMinorVersionNumber')
+    $currentbuild = $(Get-Item -Path $regkey).GetValue('CurrentBuild')
+    Write-Host "Product         : $($productname) $($displayversion) $($currentmajor).$($currentminor).$($currentbuild)"
+
+    $installationtype = $(Get-Item -Path $regkey).GetValue('InstallationType')
+    Write-Host "InstallationType: $($installationtype)"
+
+    $editionid = $(Get-Item -Path $regkey).GetValue('EditionId')
+    $compositioneditionid = $(Get-Item -Path $regkey).GetValue('CompositionEditionID')
+    if ($editionid -eq $compositioneditionid)
+    {
+        Write-Host "Edition         : $($editionid)"
+    }
+    else
+    {
+        Write-Host "Edition         : $($editionid) [$($compositioneditionid)]"
+    }
+
+    $buildlabex = $(Get-Item -Path $regkey).GetValue('BuildLabEx')
+    Write-Host "Build           : $($buildlabex)"
+
+    $lcuver = $(Get-Item -Path $regkey).GetValue('LCUVer')
+    Write-Host "LCU Version     : $($lcuver)"
+
+    Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
+}
+
+if ($ShowSystemInfo -eq $true)
+{
+    Get-SystemInfo
 }
 
 if ($List -eq $true)

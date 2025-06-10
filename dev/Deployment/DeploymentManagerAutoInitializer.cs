@@ -24,7 +24,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager
 {
     class AutoInitialize
     {
-        [global::System.Runtime.CompilerServices.ModuleInitializer]
+        // Called by WindowsAppRuntimeAutoInitializer.cs
         internal static void AccessWindowsAppSDK()
         {
             var options = Options;

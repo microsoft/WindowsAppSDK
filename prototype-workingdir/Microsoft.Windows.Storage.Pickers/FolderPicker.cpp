@@ -8,6 +8,7 @@
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
+#include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
 
@@ -61,7 +62,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
-        parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
+        parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
 
 
@@ -85,10 +86,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             co_return nullptr;
         }
 
-        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CONTEXT_ALL);
+        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
         parameters.ConfigureDialog(dialog);
-        dialog->SetOptions(FOS_PICKFOLDERS);
+        dialog->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
 
         {
             auto hr = dialog->Show(parameters.HWnd);

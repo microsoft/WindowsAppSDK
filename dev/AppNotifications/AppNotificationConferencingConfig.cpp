@@ -5,6 +5,8 @@
 #include "AppNotificationConferencingConfig.h"
 #include "Microsoft.Windows.AppNotifications.AppNotificationConferencingConfig.g.cpp"
 #include <IsWindowsVersion.h>
+#include "TerminalVelocityFeatures-CallingPreviewSupport.h"
+#include <frameworkudk/wnpnotifications.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
@@ -41,10 +43,23 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         m_audioOutputDeviceId = value;
     }
 
-    ///Checks if the calling preview feature is supported on the current OS version
-    ///TO DO - This method needs implementation on framework UDK, for now it always returns false
+    //Checks if the calling preview feature is supported on the current OS version
+    bool AppNotificationConferencingConfig::IsCallingPreviewSupported()
+    {
+        BOOL isSupported{};
+        THROW_IF_FAILED(WnpNotifications_IsCallingPreviewSupported(&isSupported));
+        return isSupported;
+    }
+}
+
+// This function (not in the "implementation" namespace) is not defined when the feature is disabled,
+// resulting in a linker error. Define the function for that scenario.
+#if WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_CALLINGPREVIEWSUPPORT_FEATURE_CALLINGPREVIEWSUPPORT_ENABLED != 1
+namespace winrt::Microsoft::Windows::AppNotifications
+{
     bool AppNotificationConferencingConfig::IsCallingPreviewSupported()
     {
         return false;
     }
 }
+#endif

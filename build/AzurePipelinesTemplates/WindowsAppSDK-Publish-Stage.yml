@@ -8,8 +8,10 @@ parameters:
 stages:
 - stage: Publish
   dependsOn:
-  - Test
-  - Pack
+  - Test_x86
+  - Test_x64
+  - Test_arm64
+  - StaticValidationTest
   condition: not(failed())
   jobs:
   # Publish

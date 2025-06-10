@@ -21,6 +21,9 @@ extends:
   parameters:
     platform:
       name: 'windows_undocked' # windows undocked
+    featureFlags:
+      WindowsHostVersion:
+        Network: R1
 
     stages:
     - stage: PackageDevCheck

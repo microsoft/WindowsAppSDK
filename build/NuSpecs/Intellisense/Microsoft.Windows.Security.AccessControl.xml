@@ -1,0 +1,33 @@
+<doc>
+  <assembly>
+    <name>Microsoft.Windows.Security.AccessControl</name>
+  </assembly>
+  <members>
+    <member name="T:Microsoft.Windows.Security.AccessControl.AppContainerNameAndAccess">
+      <summary>A struct that holds a Package Family Name (PFN) and access mask.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Security.AccessControl.AppContainerNameAndAccess.accessMask">
+      <summary>The access control rights to be applied to the app container.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.Security.AccessControl.AppContainerNameAndAccess.appContainerName">
+      <summary>Specifies the Package Family Name (PFN).</summary>
+    </member>
+    <member name="T:Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers">
+      <summary>Contains helper methods that ease and streamline named object sharing between packaged apps and Win32 applications.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers.GetSddlForAppContainerNames(Microsoft.Windows.Security.AccessControl.AppContainerNameAndAccess[],System.String,System.UInt32)">
+      <summary>Get the security descriptor definition language (SDDL) for the specified Package Family Names (PFNs).</summary>
+      <param name="accessRequests">An array of AppContainerNameAndAccess structs that specify the PFNs and access rights.</param>
+      <param name="principalStringSid">The security identifier (SID) of the principal. This parameter is optional and can be null.</param>
+      <param name="principalAccessMask">The access rights for the principal.</param>
+      <returns>Returns the SDDL string.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers.GetSecurityDescriptorBytesFromAppContainerNames(Microsoft.Windows.Security.AccessControl.AppContainerNameAndAccess[],System.String,System.UInt32)">
+      <summary>Gets the security descriptor for the specified Package Family Names (PFNs).</summary>
+      <param name="accessRequests">An array of AppContainerNameAndAccess structs that specify the PFNs and access rights.</param>
+      <param name="principalStringSid">The security identifier (SID) of the principal. This parameter is optional and can be null.</param>
+      <param name="principalAccessMask">The access rights for the principal.</param>
+      <returns>Returns the security descriptor as a byte array.</returns>
+    </member>
+  </members>
+</doc>

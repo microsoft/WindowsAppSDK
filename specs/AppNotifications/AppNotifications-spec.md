@@ -353,6 +353,175 @@ winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
 }
 ```
 
+## Enhanced UX Notification for Video and Audio Call
+The Enhanced UI for Calling Notifications introduces a series of design improvements aimed at making video call notifications clearer, more interactive, and user-friendly. This feature is designed to increase the likelihood of users responding to calls promptly and efficiently by optimizing how notifications are presented and interacted with. We are adding improvements below to video calling UI/UX.  
+ 
+### Interactive Elements: 
+
+- Quick Actions: Integrated buttons for mic and camera to allow users to manage their audio device and camera directly from the notification without needing to switch apps or windows. 
+ 
+- Live camera feed preview: Users can view a live feed of themselves when they make/receive a video call. This will help users be better prepared for video calls and also potentially avoid embarrassing situations.
+
+A screenshot of a Audio and video call
+
+![Notification Progress](Enhanced_ux_video_call_Notifications.png)
+
+#### Screenshot 1 
+Displays an example of Audio Call with new element as the setting button on click of that buttons it should show devices list for Audio Input and Output Devices. 
+#### Screenshot 2 and 3
+Displays an example of Audio Call with 2 new elements - Camera Preview and Setting Button. Setting button click shows devices list for Audio Input and Output Devices. 
+
+> Note
+>  - If the camera device is changed, then the camera preview element should also display the selected device preview. 
+>  - The camera preview would be displayed locally on the user machine and camera feed data on notification toast is not sent to app/caller.
+>  - The preview will shown only after verifying camera access permissions for both the app and notifications.
+  
+### Sample Code using notification builder (C++)
+```cpp
+void SendVideoCallNotification()  
+{  
+    winrt::AppNotification notification =   
+    AppNotificationBuilder()
+    .SetScenario(AppNotificationScenario::IncomingCall) 
+    .AddText(L"Jill Bender", AppNotificationTextProperties().SetMaxLines(1)) 
+    .AddText(L"Incoming Video Call", AppNotificationTextProperties().SetMaxLines(1)) 
+    .AddCameraPreview()                                                              /*NEW API*/
+    .AddButton(AppNotificationButton() 
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Setting.png)")) 
+        .SetSettingType(AppNotificationButtonSettingStyle::VideoCallConfig))                      /*NEW API*/
+    .AddButton(AppNotificationButton() 
+        .AddArgument(L"action", L"acceptCall") 
+        .AddArgument(L"threadId", L"92187") 
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Accept.png)")) 
+        .SetButtonStyle(AppNotificationButtonStyle::Success)) 
+    .AddButton(AppNotificationButton()
+        .AddArgument(L"action", L"declineCall") 
+        .AddArgument(L"threadId", L"92187") 
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Decline.png)")) 
+        .SetButtonStyle(AppNotificationButtonStyle::Critical)) 
+    .AddButton(AppNotificationButton() 
+        .AddArgument(L"action", L"message") 
+        .AddArgument(L"threadId", L"92187") 
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Message.png)"))) 
+    .BuildNotification();
+
+    if(winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) /*NEW API*/
+    {     
+       // Assign Devices Data values for the video call notification
+       winrt::AppNotificationConferencingConfig conferencingConfig;                       /*NEW API*/
+
+       conferencingConfig.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");                            /*NEW API*/
+       conferencingConfig.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");      /*NEW API*/
+       conferencingConfig.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");     /*NEW API*/
+       notification.ConferencingConfig(conferencingConfig); /*NEW API*/
+    } 
+
+    winrt::AppNotificationManager::Default().Show(notification);  
+}
+```
+### Sample Code using payload xml (C++)
+```cpp
+// Send video call notification  
+void SendVideoCallNotification()  
+{  
+    winrt::hstring payload =  LR"( 
+<toast scenario="incomingCall" useButtonStyle="true">  
+    <visual>  
+        <binding template="ToastGeneric">  
+            <text hint-maxLines="1">Jill Bender</text>  
+            <text hint-maxLines="1">Incoming Video Call</text>  
+           <cameraPreview/>  /*NEW TAG*/
+      </binding> 
+    </visual> 
+    <actions>  
+        <action  
+          content=""  
+          imageUri="Assets/Icons/Setting.png"  
+          settingType="videoDevices”      /*NEW TAG*/
+          arguments=""/>   
+        <action  
+          content=""  
+          imageUri="Assets/Icons/Accept.png"  
+         hint-buttonStyle="Success"  
+          activationType="background"  
+          arguments="action=reply&amp;threadId=92187"/>  
+        <action  
+          content=""  
+          imageUri="Assets/Icons/Decline.png"  
+          activationType="background"  
+          hint-buttonStyle="Critical"  
+          arguments="action=reply&amp;threadId=92187"/>  
+         <action  
+          content=""  
+          imageUri="Assets/Icons/Message.png"  
+          activationType="background"  
+          arguments="action=reply&amp;threadId=92187"/>  
+    </actions>  
+</toast> 
+)”  
+
+    winrt::AppNotification notification(payload);  
+
+    if(winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) /*NEW API*/
+    {     
+       // Assign Devices Data values for the video call notification  
+       winrt::AppNotificationConferencingConfig conferencingConfig;                       /*NEW API*/
+       conferencingConfig.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");  /*NEW API*/
+       conferencingConfig.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  /*NEW API*/
+       conferencingConfig.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  /*NEW API*/
+
+       notification.ConferencingConfig(conferencingConfig); /*NEW API*/
+    } 
+
+     winrt::AppNotificationManager::Default().Show(notification);  
+} 
+```
+### Sample code for getting user selection on the Application code (C++)
+ - Contoso Calling App will get the selected device ids from User B from below invoke API on any button clicked accept/ decline/ message
+```cpp
+//Example playload
+//<toast >
+//  <visual>
+//      <binding template="ToastGeneric">
+//          <text hint-maxLines="1">Jill Bender</text>
+//      </binding>
+//  </visual>
+//  <actions>
+//        <action  
+//          content=""  
+//          imageUri="Assets/Icons/Setting.png"  
+//          settingType="VideoDevices”  // New Property
+//          arguments=""/>   
+ //       <action  
+ //         content=""  
+  //        imageUri="Assets/Icons/Accept.png"  
+ //        hint-buttonStyle="Success"  
+ //         activationType="background"  
+ //         arguments="action=accept"/> 
+//  </actions>
+//</toast>
+
+void ProcessNotificationArgs(const winrt::AppNotificationActivatedEventArgs& notificationActivatedEventArgs)
+{
+    // If the user clicks on a toast, the code will need to launch the chat thread window
+    if (std::wstring(notificationActivatedEventArgs.Argument().c_str()).find(L"openThread") != std::wstring::npos)
+    {
+        GenerateChatThreadWindow();
+    }
+    else // If the user responds to a notification by clicking a accept button in the toast, we will need to initiate call to the other user
+    if (std::wstring(notificationActivatedEventArgs.Argument().c_str()).find(L"accept") != std::wstring::npos)
+    {
+        auto input = notificationActivatedEventArgs.UserInput(); // Below 3 User Input key-values would be provided from OS 
+        auto selectedCameraDeviceId  = input.Lookup(L"videoDeviceId");
+        auto selectedMicrophoneDeviceId  = input.Lookup(L"audioInputDeviceId");
+        auto selectedSpeakerDeviceId  = input.Lookup(L"audioOutputDeviceId");
+
+        // Process the selected device ids and launch video / audio call 
+        ActivateCallToUser(selectedCameraDeviceId  , selectedMicrophoneDeviceId  , selectedSpeakerDeviceId  );
+    }
+}
+```
+
 # Remarks
 
 ## Registration
@@ -485,6 +654,28 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets or sets whether a Notification's pop-up UI is displayed on the user's screen.
         Boolean SuppressDisplay;
+
+        // Gets or sets the Notification Device Data
+        AppNotificationConferencingConfig conferencingConfig;
+    }
+
+    // The Notification Device Data
+    runtimeclass AppNotificationConferencingConfig
+    {
+        // Initializes a new Instance of NotificationDevicesData
+        AppNotificationConferencingConfig();
+
+        // Checks if Video or Audio Calling is supported
+        static Boolean IsCallingPreviewSupported();
+
+        // Gets or sets the Video Device Id
+        String VideoDeviceId;
+
+        // Gets or sets the Microphone Device Id
+        String AudioInputDeviceId;
+
+        // Gets or sets the Speaker Device Id
+        String AudioOutputDeviceId;
     }
 
     // The manager class which encompasses all App Notification API Functionality

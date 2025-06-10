@@ -18,8 +18,8 @@ or via the browser:
 
 **NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
 
-2. Windows 11 SDK 10.0.26100.0 (24H2)
-   a. Browse to https://go.microsoft.com/fwlink/?linkid=2272610
+2. Windows 11 SDK 10.0.26100.2454 (24H2)
+   a. Browse to https://go.microsoft.com/fwlink/?linkid=2300556
    b. Save the offered download `winsdksetup.exe`
    c. Run winsdksetup.exe
 
@@ -83,10 +83,12 @@ harmless if your configuration is current with no changes needed.
 
 # Tada!
 
-Now you're ready to load `WindowsAppSDK.sln` and start development!
+Now you're ready to load `WindowsAppRuntime.sln` and start development!
 
 Some tips:
 
+* If VS starts in a configuration of `Any CPU`, switch to a specific architecture like `x64`
+  to successfully build.
 * Build everything in VS via the Build menu's `Build Solution` or `Rebuild Solution`
 * Right-click on individual projects in Solution Explorer to only build select projects.
   Dependencies and Build Order should be defined to build prerequisites (if necessary) for the

@@ -12,9 +12,5 @@
     <name>Feature_CameraCaptureUI</name>
     <description>CameraCaptureUI for the WindowsAppRuntime</description>
     <state>AlwaysEnabled</state>
-    <alwaysDisabledChannelTokens>
-      <channelToken>Preview</channelToken>
-      <channelToken>Stable</channelToken>
-    </alwaysDisabledChannelTokens>
   </feature>
 </features>
