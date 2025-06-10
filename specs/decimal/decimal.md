@@ -100,7 +100,7 @@ and the process exit code is -1540.
 NOTE: This example uses [C#'s Decimal support](https://learn.microsoft.com/dotnet/api/system.decimal)
 providing the canonical reference for examples in other languages.
 
-```c++
+```c#
 Using System;
 Using System.IO;
 
@@ -373,10 +373,20 @@ Errors are expressed via thrown exceptions e.g. `decimal{1} / decimal{0}` will t
 ## 8.1. decimal.h
 
 ```c++
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #if !defined(__WindowsAppSDK_Microsoft_Windows_Foundation_decimal_)
 #define __WindowsAppSDK_Microsoft_Windows_Foundation_decimal_
 
+#include <winnls.h>
 #include <oleauto.h>
+
+#include <string>
+
+#include <wil/cppwinrt.h>
+#include <wil/resource.h>
+#include <wil/result_macros.h>
 
 #if !defined(_VC_NODEFAULTLIB)
 #pragma comment(linker, "/defaultlib:oleaut32.lib")
@@ -491,6 +501,12 @@ public:
     /// @note localeName="" for the user default locale.
     static decimal from_string(const std::string& source, const std::string& localeName);
 
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName=NULL for the invariant locale.
+    /// @note localeName="" for the user default locale.
+    static decimal from_string(const std::string& source, const PCSTR localeName);
+
     /// Parse the string using the user's default locale.
     static bool try_from_string(const std::string& source, decimal& value);
 
@@ -499,6 +515,9 @@ public:
 
     /// Parse the string using the specified locale.
     static bool try_from_string(const std::string& source, const std::string& localeName, decimal& value);
+
+    /// Parse the string using the specified locale.
+    static bool try_from_string(const std::string& source, PCSTR localeName, decimal& value);
 
 public:
     /// Parse the string using the user's default locale.
@@ -513,11 +532,20 @@ public:
     /// @note localeName="" for the user default locale.
     static decimal from_string_view(const std::string_view& source, const std::string_view& localeName);
 
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName=NULL for the invariant locale.
+    /// @note localeName="" for the user default locale.
+    static decimal from_string_view(const std::string_view& source, PCSTR localeName);
+
     /// Parse the string using the user's default locale.
     static bool try_from_string_view(const std::string_view& source, decimal& value);
 
     /// Parse the string using the invariant locale.
     static bool try_from_string_view_invariant(const std::string_view& source, decimal& value);
+
+    /// Parse the string using the specified locale.
+    static bool try_from_string_view(const std::string_view& source, const std::string_view& localeName, decimal& value)
 
     /// Parse the string using the specified locale.
     static bool try_from_string_view(const std::string_view& source, const std::string_view& localeName, decimal& value);
@@ -535,6 +563,12 @@ public:
     /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
     static decimal from_wstring(const std::wstring& source, const std::wstring& localeName);
 
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    static decimal from_wstring(const std::wstring& source, const std::wstring& localeName);
+
     /// Parse the string using the user's default locale.
     static bool try_from_wstring(const std::wstring& source, decimal& value);
 
@@ -543,6 +577,9 @@ public:
 
     /// Parse the string using the specified locale.
     static bool try_from_wstring(const std::wstring& source, const std::wstring& localeName, decimal& value);
+
+    /// Parse the string using the specified locale.
+    static bool try_from_wstring(const std::wstring& source, PCWSTR localeName, decimal& value);
 
 public:
     /// Parse the string using the user's default locale.
@@ -557,6 +594,12 @@ public:
     /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
     static decimal from_wstring_view(const std::wstring_view& source, const std::wstring_view& localeName);
 
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    static decimal from_wstring_view(const std::wstring_view& source, PCWSTR localeName);
+
     /// Parse the string using the user's default locale.
     static bool try_from_wstring_view(const std::wstring_view& source, decimal& value);
 
@@ -566,70 +609,71 @@ public:
     /// Parse the string using the specified locale.
     static bool try_from_wstring_view(const std::wstring_view& source, const std::wstring_view& localeName, decimal& value);
 
+    /// Parse the string using the specified locale.
+    static bool try_from_wstring_view(const std::wstring_view& source, PCWSTR localeName, decimal& value);
+
 public:
-#if defined(__hstring_h__)
+#if defined(__hstring_h__) && defined(__WINSTRING_H_)
     /// Parse the string using the user's default locale.
     static decimal from_HSTRING(const HSTRING& source);
-#endif // defined(__hstring_h__)
 
-#if defined(__hstring_h__)
     /// Parse the string using the invariant locale.
     static decimal from_HSTRING_invariant(const HSTRING& source);
-#endif // defined(__hstring_h__)
 
-#if defined(__hstring_h__)
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
     /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
     /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
     static decimal from_HSTRING(const HSTRING& source, const HSTRING& localeName);
-#endif // defined(__hstring_h__)
 
-#if defined(__hstring_h__)
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    static decimal from_HSTRING(const HSTRING& source, const HSTRING& localeName);
+
     /// Parse the string using the user's default locale.
     static bool try_from_HSTRING(const HSTRING& source, decimal& value);
-#endif // defined(__hstring_h__)
 
-#if defined(__hstring_h__)
     /// Parse the string using the invariant locale.
     static bool try_from_HSTRING_invariant(const HSTRING& source, decimal& value);
-#endif // defined(__hstring_h__)
 
-#if defined(__hstring_h__)
     /// Parse the string using the specified locale.
     static bool try_from_HSTRING(const HSTRING& source, const HSTRING& localeName, decimal& value);
-#endif // defined(__hstring_h__)
+
+    /// Parse the string using the specified locale.
+    static bool try_from_HSTRING(const HSTRING& source, PCWSTR localeName, decimal& value);
+#endif // defined(__hstring_h__) && defined(__WINSTRING_H_)
 
 public:
 #if defined(WINRT_BASE_H)
     /// Parse the string using the user's default locale.
     static decimal from_hstring(const winrt::hstring& source);
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
     /// Parse the string using the invariant locale.
     static decimal from_hstring_invariant(const winrt::hstring& source);
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
     /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
     /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
     static decimal from_hstring(const winrt::hstring& source, const winrt::hstring& localeName);
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    static decimal from_hstring(const winrt::hstring& source, PCWSTR localeName);
+
     /// Parse the string using the user's default locale.
     static bool try_from_hstring(const winrt::hstring& source, decimal& value);
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
     /// Parse the string using the invariant locale.
     static bool try_from_hstring_invariant(const winrt::hstring& source, decimal& value);
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
+    /// Parse the string using the specified locale.
+    static bool try_from_hstring(const winrt::hstring& source, const winrt::hstring& localeName, decimal& value)
+
     /// Parse the string using the specified locale.
     static bool try_from_hstring(const winrt::hstring& source, const winrt::hstring& localeName, decimal& value);
 #endif // defined(WINRT_BASE_H)
@@ -717,36 +761,24 @@ public:
     std::wstring to_wstring(PCWSTR localeName) const;
 
 public:
-#if defined(__hstring_h__)
+#if defined(__hstring_h__) && defined(__WINSTRING_H_)
     HSTRING to_HSTRING() const;
-#endif // defined(__hstring_h__)
 
-#if defined(__hstring_h__)
     HSTRING to_HSTRING_invariant() const;
-#endif // defined(__hstring_h__)
 
-#if defined(__hstring_h__)
     HSTRING to_HSTRING(const HSTRING& localeName) const;
-#endif // defined(__hstring_h__)
 
-#if defined(__hstring_h__)
     HSTRING to_HSTRING(PCWSTR localeName) const;
-#endif // defined(__hstring_h__)
+#endif // defined(__hstring_h__) && defined(__WINSTRING_H_)
 
 public:
 #if defined(WINRT_BASE_H)
     winrt::hstring to_hstring() const;
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
     winrt::hstring to_hstring_invariant() const;
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
     winrt::hstring to_hstring(const winrt::hstring& localeName) const;
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
     winrt::hstring to_hstring(PCWSTR localeName) const;
 #endif // defined(WINRT_BASE_H)
 
