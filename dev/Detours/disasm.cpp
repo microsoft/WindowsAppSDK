@@ -334,7 +334,9 @@ CDetourDis::CDetourDis(_Out_opt_ PBYTE *ppbTarget, _Out_opt_ LONG *plExtra)
     m_bF3 = FALSE;
     m_bVex = FALSE;
     m_bEvex = FALSE;
-    m_nSegmentOverride = 0;
+    m_lScratchExtra = 0;
+    m_pbScratchTarget = nullptr;
+    memset(m_rbScratchDst, 0, sizeof(m_rbScratchDst));
 
     m_ppbTarget = ppbTarget ? ppbTarget : &m_pbScratchTarget;
     m_plExtra = plExtra ? plExtra : &m_lScratchExtra;
@@ -3966,6 +3968,7 @@ BYTE CDetourDis::PureCopy32(BYTE* pSource, BYTE* pDest)
 CDetourDis::CDetourDis()
 {
     m_pbTarget = (PBYTE)DETOUR_INSTRUCTION_TARGET_NONE;
+    memset(m_rbScratchDst, 0, sizeof(m_rbScratchDst));
 }
 
 PBYTE CDetourDis::CopyInstruction(PBYTE pDst,

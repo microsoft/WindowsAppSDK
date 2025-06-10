@@ -42,7 +42,7 @@ stages:
         ${{ format('Release_{0}', parameters.buildPlatform) }}:
           ${{ if ne(parameters.buildPlatform, 'arm64') }}:
             buildPlatform: ${{ parameters.buildPlatform }}
-            buildConfiguration: 'release'
+            buildConfiguration: 'Release'
             normalizedConfiguration: 'fre'
             PGOBuildMode: 'Optimize'
           ${{ else }}:
