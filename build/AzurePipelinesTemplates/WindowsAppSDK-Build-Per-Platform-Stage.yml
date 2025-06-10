@@ -47,7 +47,7 @@ stages:
             PGOBuildMode: 'Optimize'
           ${{ else }}:
             buildPlatform: ${{ parameters.buildPlatform }}
-            buildConfiguration: 'release'
+            buildConfiguration: 'Release'
             normalizedConfiguration: 'fre'
     variables:
       - name: ob_outputDirectory
