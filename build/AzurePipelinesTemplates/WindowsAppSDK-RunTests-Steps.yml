@@ -172,5 +172,5 @@ steps:
   - task: PublishPipelineArtifact@1
     condition: succeededOrFailed()
     inputs:
-      targetPath: '$(Build.SourcesDirectory)'
+      targetPath: '$(Build.SourcesDirectory)\TestOutput'
       artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)'

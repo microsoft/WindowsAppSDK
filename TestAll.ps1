@@ -133,8 +133,11 @@ function Run-TaefTest
     $testFolder = Split-Path -parent $test.TestDef
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
-    $teLogPathFrom = (Join-Path $OutputFolder "Te.wtl")
-    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogPathFrom $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution
+
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$env:Build_Platform\Te.wtl")
+    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$env:Build_Platform")
+
+    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution
 }
 
 function Run-PowershellTest
@@ -224,7 +227,40 @@ if ($List -eq $true)
 
 if ($Test -eq $true)
 {
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$env:Build_Platform\Te.wtl")
+    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$env:Build_Platform")
+    remove-item -Path $teLogFile -ErrorAction Ignore
+    remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
+
     Run-Tests
+
+    if (Test-Path -Path $teLogFile) {
+        # # Add types needed for ConvertWttLogToXUnit.ps1
+        # Add-Type -Language CSharp -ReferencedAssemblies System.Xml,System.Xml.Linq,System.Runtime.Serialization,System.Runtime.Serialization.Json (Get-Content (Join-Path $testPath "HelixTestHelpers.cs") -Raw)
+
+        # # Generate XUnit output for ADO
+        # $testNamePrefix = $config+$env:Build_Platform+$ImageName
+        # $xunitFileName = "testResults-"+$testNamePrefix+".xml"
+        # Push-Location $testPath
+
+        # # Convert te.wtl to xunit format which is a format that Azure Pipelines can parse
+        # $testResultParser = [HelixTestHelpers.TestResultParser]::new($testNamePrefix)
+        # $XUnitOutputPath = (Join-Path (Get-Location) $xunitFileName)
+        # $useRetryLogic = $false
+        # $WttInputPath = (Join-Path (Get-Location) "Te.wtl")
+        # $testResultParser.ConvertWttLogToXUnitLog($WttInputPath, $null, $null, $null, $XUnitOutputPath, 0, $useRetryLogic)
+
+        # # Display the contents of testResults xml file:
+        # Get-Content $xunitFileName
+
+        # Pop-Location
+
+        Write-Host "Test results written to '$teLogFile'"
+
+        # copy test results
+        New-Item -ItemType Directory -Path $teLogPathTo -Force
+        copy-item -Path $teLogFile -Destination $teLogPathTo -Force
+    }
 }
 
 $TotalTime = (Get-Date)-$StartTime
