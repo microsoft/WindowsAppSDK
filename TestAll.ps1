@@ -134,8 +134,8 @@ function Run-TaefTest
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
 
-    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$env:Build_Platform\Te.wtl")
-    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$env:Build_Platform")
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
+    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
 
     & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution
 }
@@ -227,8 +227,8 @@ if ($List -eq $true)
 
 if ($Test -eq $true)
 {
-    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$env:Build_Platform\Te.wtl")
-    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$env:Build_Platform")
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
+    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
     remove-item -Path $teLogFile -ErrorAction Ignore
     remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
 
@@ -239,7 +239,7 @@ if ($Test -eq $true)
         # Add-Type -Language CSharp -ReferencedAssemblies System.Xml,System.Xml.Linq,System.Runtime.Serialization,System.Runtime.Serialization.Json (Get-Content (Join-Path $testPath "HelixTestHelpers.cs") -Raw)
 
         # # Generate XUnit output for ADO
-        # $testNamePrefix = $config+$env:Build_Platform+$ImageName
+        # $testNamePrefix = $config+$Platform+$ImageName
         # $xunitFileName = "testResults-"+$testNamePrefix+".xml"
         # Push-Location $testPath
 
