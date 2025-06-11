@@ -6,14 +6,13 @@ variables:
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildOutputDir
   value: $(Build.SourcesDirectory)\BuildOutput
-- template: WindowsAppSDK-SetSourceBranchVariableForConfigRepo.yml@WindowsAppSDKConfig
 
 resources:
   repositories:
     - repository: WindowsAppSDKConfigSourceBranch
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: ${{ variables['mySourceBranch'] }}
+      ref: refs/heads/release/1.8-stable
 
 jobs:
 - job: PreChecks
