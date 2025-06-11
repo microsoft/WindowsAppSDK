@@ -38,7 +38,6 @@ variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-- template: WindowsAppSDK-SetSourceBranchVariableForConfigRepo.yml@WindowsAppSDKConfig
 
 resources:
   repositories:
@@ -53,7 +52,7 @@ resources:
     - repository: WindowsAppSDKConfigSourceBranch
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: ${{ variables['mySourceBranch'] }}
+      ref: refs/heads/main
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
