@@ -131,7 +131,7 @@ public:
 
 // In the future, if the project includes multiple modules and threads, we could log that data as well from FailureInfo
 // In the future and on need basis, we could log call stack as well
-#define MddBootstrap_WriteEventWithActivity(_eventname_,_activityId_,...) TraceLoggingWriteActivity(\
+#define MddBootstrap_WriteEventWithActivity(_eventname_,_activityId_) TraceLoggingWriteActivity(\
         WindowsAppRuntimeBootstrap_TraceLogger::Provider(),\
         _eventname_,\
         _activityId_,\
@@ -142,5 +142,4 @@ public:
         TraceLoggingValue(failure.uLineNumber,"Line"),\
         TraceLoggingValue(failure.pszModule, "Module"),\
         TraceLoggingValue(failure.pszMessage,"Message"),\
-        _GENERIC_PARTB_FIELDS_ENABLED,\
-        __VA_ARGS__)
+        _GENERIC_PARTB_FIELDS_ENABLED)
