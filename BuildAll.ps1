@@ -104,7 +104,6 @@ Try {
         {
             $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
         }
-        # $env:BUILD_BUILDNUMBER = "1.8.0-20250609.0"
         Write-Host "BuildNumber : " $env:BUILD_BUILDNUMBER
         $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
         $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
@@ -156,7 +155,7 @@ Try {
                 write-host "Building WindowsAppRuntime.sln for configuration $configurationToRun and platform:$platformToRun"
                 & $msBuildPath /restore `
                                 WindowsAppRuntime.sln `
-                                "/p:Configuration=$configurationToRun" `
+                                /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
