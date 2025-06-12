@@ -1,10 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
-    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">
+      $(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
     <ItemsProjectGuid>{a39e7b2f-5f67-47dd-8443-531d095ca7f3}</ItemsProjectGuid>
   </PropertyGroup>
+  <!-- <ItemGroup>
+    <Reference Include="Microsoft.Windows.ApplicationModel.Resources">
+      <HintPath>$(MSBuildThisFileDirectory)Microsoft.Windows.ApplicationModel.Resources.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.Globalization">
+      <HintPath>$(MSBuildThisFileDirectory)Microsoft.Windows.Globalization.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup> -->
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
@@ -15,7 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)PickerCommon.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PickerLolalization.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PickerLocalization.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PickFileResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PickFolderResult.cpp" />
   </ItemGroup>
@@ -64,4 +75,4 @@
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\zh-CN\StoragePickers.resw" />
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\zh-TW\StoragePickers.resw" />
   </ItemGroup>
-  </Project>
+</Project>
