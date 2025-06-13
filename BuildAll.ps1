@@ -155,7 +155,8 @@ Try {
                 write-host "Building WindowsAppRuntime.sln for configuration $configurationToRun and platform:$platformToRun"
                 & $msBuildPath /restore `
                                 WindowsAppRuntime.sln `
-                                /p:Configuration=$configurationToRun,Platform=$platformToRun `
+                                /p:Configuration=$configurationToRun `
+                                /p:Platform=$platformToRun `
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
@@ -204,7 +205,8 @@ Try {
                 {
                     write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
                     & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
-                                    /p:Configuration=$configurationToRun,Platform=$platformToRun `
+                                    /p:Configuration=$configurationToRun `
+                                    /p:Platform=$platformToRun `
                                     /p:PGOBuildMode=$PGOBuildMode `
                                     /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationToRun.binlog"
 
@@ -223,7 +225,7 @@ Try {
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
         # build and restore AnyCPU
-        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
+        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
@@ -433,6 +435,7 @@ Try {
                     'native\Microsoft.Windows.ApplicationModel.Resources.dll',
                     'native\Microsoft.WindowsAppRuntime.dll',
                     'native\Microsoft.WindowsAppRuntime.Insights.Resource.dll',
+                    'native\Microsoft.WindowsAppRuntime.pri',
                     'native\MRM.dll',
                     'native\PushNotificationsLongRunningTask.ProxyStub.dll',
                     'native\RestartAgent.exe') `
