@@ -1014,12 +1014,11 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     //   - if exeDir != baseDir
     //      - search under exeDir for resources.pri
     //      - search under exeDir for [modulename].pri
+    PWSTR searchDir{};
+    size_t searchDirCount{};
+    PCWSTR searchFilename{};
     for (SearchPass pass = searchStart; pass < SearchPass::Final; pass = SearchPass(pass+1))
     {
-        PWSTR searchDir{};
-        size_t searchDirCount{};
-        PCWSTR searchFilename{};
-
         switch(pass)
         {
             // Search, given FileName
