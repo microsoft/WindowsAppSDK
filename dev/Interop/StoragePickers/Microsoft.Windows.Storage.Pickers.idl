@@ -27,7 +27,7 @@ namespace Microsoft.Windows.Storage.Pickers
     };
 
     [feature(Feature_StoragePickers)]
-    runtimeclass PickFileResult 
+    runtimeclass PickFileResult
     {
         String Path { get; };
     }
@@ -39,9 +39,9 @@ namespace Microsoft.Windows.Storage.Pickers
     }
 
     [feature(Feature_StoragePickers)]
-    runtimeclass SuggestedSaveFile : ISuggestedSaveFile
+    [default_interface]
+    runtimeclass SuggestedSaveFile : [default] ISuggestedSaveFile
     {
-        String Path { get; set; };
         SuggestedSaveFile(String path);
     }
 

@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "FileSavePicker.h"
-#include "FileSavePicker.g.cpp"
+#include "Microsoft.Windows.Storage.Pickers.FileSavePicker.g.cpp"
 #include "StoragePickersTelemetry.h"
 #include <windows.h>
 #include <shobjidl.h>
@@ -17,6 +17,7 @@
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
+#include "SuggestedSaveFile.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -117,6 +118,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
         parameters.ConfigureDialog(dialog);
+        parameters.ConfigureFileSaveDialog(dialog);
 
         if (!PickerCommon::IsHStringNullOrEmpty(defaultFileExtension))
         {

@@ -5,7 +5,6 @@
 #include "ShObjIdl.h"
 #include "winrt/base.h"
 #include "winrt/Microsoft.Windows.Storage.Pickers.h"
-#include "SuggestedSaveFile.h"
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>
@@ -33,5 +32,6 @@ namespace PickerCommon {
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
+        void ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog);
     };
 }

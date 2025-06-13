@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "SuggestedSaveFile.h"
-#include "SuggestedSaveFile.g.cpp"
+#include "Microsoft.Windows.Storage.Pickers.SuggestedSaveFile.g.cpp"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {

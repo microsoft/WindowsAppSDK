@@ -5,8 +5,8 @@
 #include "PickerCommon.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
+#include "shobjidl_core.h"
 #include <KnownFolders.h>
-#include <filesystem>
 
 
 namespace {
@@ -249,46 +249,26 @@ namespace PickerCommon {
         }
 
         check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+    }
 
-
-        // Handle SuggestedSaveFile - extract directory and filename parts
-        winrt::hstring fileNameToSet;
-        if (!IsHStringNullOrEmpty(SuggestedFileName))
+    /// <summary>
+    /// Configure the FileSaveDialog, this is only for FileSavePicker.
+    /// </summary>
+    /// <param name="dialog"></param>
+    void PickerParameters::ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog)
+    {
+        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedFileName))
         {
-            winrt::hstring fileNameToSet = SuggestedFileName;
+            check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
         }
-        
+
         if (SuggestedSaveFile != nullptr)
         {
-            auto suggestedPath = std::filesystem::path{ SuggestedSaveFile.Path().c_str() };
-            if (!suggestedPath.empty())
-            {
-                // Set the directory of SuggestedSaveFile as the starting location of save picker Dialog
-                auto dirPath = suggestedPath.parent_path();
-                if (!dirPath.empty())
-                {
-                    winrt::com_ptr<IShellItem> shellItem;
-                    HRESULT hr = SHCreateItemFromParsingName(dirPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
-                    if (SUCCEEDED(hr))
-                    {
-                        check_hresult(dialog->SetFolder(shellItem.get()));
-                    }
-                }
+            winrt::com_ptr<IShellItem> shellItem;
+            check_hresult(SHCreateItemFromParsingName(SuggestedSaveFile.Path().c_str(), nullptr, IID_PPV_ARGS(shellItem.put())));
 
-                // Extract filename and use it (takes precedence over SuggestedFileName)
-                std::wstring fileName = suggestedPath.filename().wstring();
-                if (!fileName.empty())
-                {
-                    fileNameToSet = winrt::hstring(fileName);
-                }
-            }
+            // By design the SuggestedSaveFile's name takes precedence over the SuggesetedFileName.
+            check_hresult(dialog->SetSaveAsItem(shellItem.get()));
         }
-
-        // Set the filename (either from SuggestedSaveFile or SuggestedFileName)
-        if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
-        {
-            check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
-        }
-
     }
 }

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #pragma once
-#include "FileSavePicker.g.h"
+#include "Microsoft.Windows.Storage.Pickers.FileSavePicker.g.h"
 #include "PickerCommon.h"
 #include "StoragePickersTelemetryHelper.h"
 

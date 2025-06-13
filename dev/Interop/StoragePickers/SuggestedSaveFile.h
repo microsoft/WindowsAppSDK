@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #pragma once
-#include "SuggestedSaveFile.g.h"
+#include "Microsoft.Windows.Storage.Pickers.SuggestedSaveFile.g.h"
 #include "PickerCommon.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
