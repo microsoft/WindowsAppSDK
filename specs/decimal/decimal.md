@@ -453,8 +453,8 @@ public:
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT ("!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT ("") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT ("") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_string(PCSTR source, PCSTR localeName);
 
     /// Parse the string using the user's default locale.
@@ -475,8 +475,8 @@ public:
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_string(PCWSTR source, PCWSTR localeName);
 
     /// Parse the string using the user's default locale.
@@ -497,14 +497,14 @@ public:
 
     /// Parse the string using the specified locale.
     /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName=NULL for the invariant locale.
-    /// @note localeName="" for the user default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
     static decimal from_string(const std::string& source, const std::string& localeName);
 
     /// Parse the string using the specified locale.
     /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName=NULL for the invariant locale.
-    /// @note localeName="" for the user default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
     static decimal from_string(const std::string& source, const PCSTR localeName);
 
     /// Parse the string using the user's default locale.
@@ -528,14 +528,14 @@ public:
 
     /// Parse the string using the specified locale.
     /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName=NULL for the invariant locale.
-    /// @note localeName="" for the user default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
     static decimal from_string_view(const std::string_view& source, const std::string_view& localeName);
 
     /// Parse the string using the specified locale.
     /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName=NULL for the invariant locale.
-    /// @note localeName="" for the user default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
     static decimal from_string_view(const std::string_view& source, PCSTR localeName);
 
     /// Parse the string using the user's default locale.
@@ -559,14 +559,14 @@ public:
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_wstring(const std::wstring& source, const std::wstring& localeName);
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_wstring(const std::wstring& source, const std::wstring& localeName);
 
     /// Parse the string using the user's default locale.
@@ -590,14 +590,14 @@ public:
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_wstring_view(const std::wstring_view& source, const std::wstring_view& localeName);
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_wstring_view(const std::wstring_view& source, PCWSTR localeName);
 
     /// Parse the string using the user's default locale.
@@ -622,14 +622,14 @@ public:
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_HSTRING(const HSTRING& source, const HSTRING& localeName);
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_HSTRING(const HSTRING& source, const HSTRING& localeName);
 
     /// Parse the string using the user's default locale.
@@ -655,14 +655,14 @@ public:
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_hstring(const winrt::hstring& source, const winrt::hstring& localeName);
 
     /// Parse the string using the specified locale.
     /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_INVARIANT (NULL) for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (L"") for the user default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
     static decimal from_hstring(const winrt::hstring& source, PCWSTR localeName);
 
     /// Parse the string using the user's default locale.
