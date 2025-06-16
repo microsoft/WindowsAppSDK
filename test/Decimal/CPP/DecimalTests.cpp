@@ -384,7 +384,7 @@ namespace Test::Decimal::Tests
 
         TEST_METHOD(from_string_view)
         {
-            const std::string data{ "-12.345" };
+            const std::string_view data{ "-12.345" };
             const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view(data) };
             const auto to{ object.to_string() };
             VERIFY_ARE_EQUAL(data, to);
@@ -392,7 +392,7 @@ namespace Test::Decimal::Tests
 
         TEST_METHOD(from_string_view_invariant)
         {
-            const std::string data{ "-12.345" };
+            const std::string_view data{ "-12.345" };
             const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view_invariant(data) };
             const auto to{ object.to_string_invariant() };
             VERIFY_ARE_EQUAL(data, to);
@@ -400,10 +400,46 @@ namespace Test::Decimal::Tests
 
         TEST_METHOD(from_string_view_localename_system)
         {
-            const std::string data{ "-12.345" };
+            const std::string_view data{ "-12.345" };
             const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view(data, std::string("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
             const auto to{ object.to_string(std::string("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
             VERIFY_ARE_EQUAL(data, to);
+        }
+
+        TEST_METHOD(from_string_view_not_nullterminated)
+        {
+            const std::string rawData{ "-12.345" };
+            const std::string_view data(rawData.c_str(), rawData.length() - 1);
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view(data) };
+            const auto to{ object.to_string() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            const std::string toAsString(to.c_str(), 0, to.length() - 1);
+            VERIFY_ARE_NOT_EQUAL(0, strcmp(rawData.c_str(), toAsString.c_str()), std::format("'{}' != '{}'", data, toAsString.c_str()).c_str());
+        }
+
+        TEST_METHOD(from_string_view_invariant_not_nullterminated)
+        {
+            const std::string rawData{ "-12.345" };
+            const std::string_view data(rawData.c_str(), rawData.length() - 1);
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view_invariant(data) };
+            const auto to{ object.to_string() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            const std::string toAsString(to.c_str(), 0, to.length() - 1);
+            VERIFY_ARE_NOT_EQUAL(0, strcmp(rawData.c_str(), toAsString.c_str()), std::format("'{}' != '{}'", data, toAsString.c_str()).c_str());
+        }
+
+        TEST_METHOD(from_string_view_localename_system_not_nullterminated)
+        {
+            const std::string rawData{ "-12.345" };
+            const std::string_view data(rawData.c_str(), rawData.length() - 1);
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view(data, std::string_view("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
+            const auto to{ object.to_string() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            const std::string toAsString(to.c_str(), 0, to.length() - 1);
+            VERIFY_ARE_NOT_EQUAL(0, strcmp(rawData.c_str(), toAsString.c_str()), std::format("'{}' != '{}'", data, toAsString.c_str()).c_str());
         }
 
         TEST_METHOD(from_to_wstring)
@@ -452,6 +488,42 @@ namespace Test::Decimal::Tests
             const auto object{ Microsoft::Windows::Foundation::decimal::from_wstring_view(data, LOCALE_NAME_SYSTEM_DEFAULT) };
             const auto to{ object.to_wstring(std::wstring(LOCALE_NAME_SYSTEM_DEFAULT)) };
             VERIFY_ARE_EQUAL(data, to);
+        }
+
+        TEST_METHOD(from_wstring_view_not_nullterminated)
+        {
+            const std::wstring rawData{ L"-12.345" };
+            const std::wstring_view data(rawData.c_str(), rawData.length() - 1);
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wstring_view(data) };
+            const auto to{ object.to_wstring() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            const std::wstring toAsString(to.c_str(), 0, to.length() - 1);
+            VERIFY_ARE_NOT_EQUAL(0, wcscmp(rawData.c_str(), toAsString.c_str()), std::format(L"'{}' != '{}'", data, toAsString.c_str()).c_str());
+        }
+
+        TEST_METHOD(from_wstring_view_invariant_not_nullterminated)
+        {
+            const std::wstring rawData{ L"-12.345" };
+            const std::wstring_view data(rawData.c_str(), rawData.length() - 1);
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wstring_view_invariant(data) };
+            const auto to{ object.to_wstring() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            const std::wstring toAsString(to.c_str(), 0, to.length() - 1);
+            VERIFY_ARE_NOT_EQUAL(0, wcscmp(rawData.c_str(), toAsString.c_str()), std::format(L"'{}' != '{}'", data, toAsString.c_str()).c_str());
+        }
+
+        TEST_METHOD(from_wstring_view_localename_system_not_nullterminated)
+        {
+            const std::wstring rawData{ L"-12.345" };
+            const std::wstring_view data(rawData.c_str(), rawData.length() - 1);
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wstring_view(data, std::wstring_view(L"x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
+            const auto to{ object.to_wstring() };
+            VERIFY_ARE_EQUAL(data, to);
+
+            const std::wstring toAsString(to.c_str(), 0, to.length() - 1);
+            VERIFY_ARE_NOT_EQUAL(0, wcscmp(rawData.c_str(), toAsString.c_str()), std::format(L"'{}' != '{}'", data, toAsString.c_str()).c_str());
         }
 
         TEST_METHOD(from_to_HSTRING)
