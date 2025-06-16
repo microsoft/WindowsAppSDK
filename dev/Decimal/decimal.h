@@ -574,7 +574,7 @@ public:
     }
 
 public:
-#if defined(__hstring_h__) && defined(__WINSTRING_H_) //TODO defined(__IInspectable_INTERFACE_DEFINED__)
+#if defined(__hstring_h__) && defined(__WINSTRING_H_)
     /// Parse the string using the user's default locale.
     static decimal from_HSTRING(const HSTRING& source)
     {
@@ -628,7 +628,7 @@ public:
     {
         return try_from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), localeName, value);
     }
-#endif // defined(__hstring_h__) && defined(__WINSTRING_H_) //TODO defined(__IInspectable_INTERFACE_DEFINED__)
+#endif // defined(__hstring_h__) && defined(__WINSTRING_H_)
 
 public:
 #if defined(WINRT_BASE_H)
@@ -951,7 +951,7 @@ public:
     }
 
 public:
-#if defined(__hstring_h__) && defined(__WINSTRING_H_) //TODO defined(__IInspectable_INTERFACE_DEFINED__)
+#if defined(__hstring_h__) && defined(__WINSTRING_H_)
     HSTRING to_HSTRING() const
     {
         const auto bstr{ to_bstr_with_locale(LOCALE_USER_DEFAULT) };
@@ -980,7 +980,7 @@ public:
         THROW_IF_FAILED(::WindowsCreateString(bstr.get(), ::SysStringLen(bstr.get()), &hstring));
         return hstring;
     }
-#endif // defined(__hstring_h__) && defined(__WINSTRING_H_) //TODO defined(__IInspectable_INTERFACE_DEFINED__)
+#endif // defined(__hstring_h__) && defined(__WINSTRING_H_)
 
 public:
 #if defined(WINRT_BASE_H)

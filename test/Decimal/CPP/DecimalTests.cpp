@@ -7,6 +7,19 @@
 
 #include <decimal.h>
 
+// Verify HSTRING needed support
+#if !defined(__hstring_h__)
+#error "__hstring_h_ not defined"
+#endif // defined(__hstring_h__)
+#if !defined(__WINSTRING_H_)
+#error "__WINSTRING_H_ not defined"
+#endif // !defined(__WINSTRING_H_)
+
+// Verify winrt::hstring HSTRING needed support
+#if !defined(WINRT_BASE_H)
+#error "__WINSTRING_H_ not defined"
+#endif // !defined(WINRT_BASE_H)
+
 namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -54,6 +67,57 @@ namespace WEX::TestExecution
         static bool IsNull(Microsoft::Windows::Foundation::decimal const& /*object*/)
         {
             return false;
+        }
+    };
+}
+
+namespace WEX::TestExecution
+{
+    // Teach TAEF how to format an HSTRING
+    template <>
+    class VerifyOutputTraits<HSTRING>
+    {
+    public:
+        static WEX::Common::NoThrowString ToString(HSTRING const& value)
+        {
+            return WEX::Common::NoThrowString().Format(L"\"%s\"", ::WindowsGetStringRawBuffer(value, nullptr));
+        }
+    };
+
+    // Teach TAEF how to compare a HSTRING
+    template <>
+    class VerifyCompareTraits<HSTRING, HSTRING>
+    {
+    public:
+        static bool AreEqual(HSTRING const& expected, HSTRING const& actual)
+        {
+            return compare(expected, actual) == 0;
+        }
+
+        static bool AreSame(HSTRING const& expected, HSTRING const& actual)
+        {
+            return &expected == &actual;
+        }
+
+        static bool IsLessThan(HSTRING const& expectedLess, HSTRING const& expectedGreater)
+        {
+            return compare(expectedLess, expectedGreater) < 0;
+        }
+
+        static bool IsGreaterThan(HSTRING const& expectedGreater, HSTRING const& expectedLess)
+        {
+            return compare(expectedGreater, expectedLess) > 0;
+        }
+
+        static bool IsNull(HSTRING const& /*object*/)
+        {
+            return false;
+        }
+    private:
+        static int compare(HSTRING const& left, HSTRING const& right)
+        {
+            return CompareStringOrdinal(::WindowsGetStringRawBuffer(left, nullptr), -1,
+                                        ::WindowsGetStringRawBuffer(right, nullptr), -1, FALSE) - CSTR_EQUAL;
         }
     };
 }
@@ -390,7 +454,6 @@ namespace Test::Decimal::Tests
             VERIFY_ARE_EQUAL(data, to);
         }
 
-#if defined(__hstring_h__)
         TEST_METHOD(from_to_HSTRING)
         {
             PCWSTR rawData{ L"-12.345" };
@@ -403,9 +466,7 @@ namespace Test::Decimal::Tests
             ::WindowsDeleteString(data);
             ::WindowsDeleteString(to);
         }
-#endif // defined(__hstring_h_)
 
-#if defined(__hstring_h__)
         TEST_METHOD(from_to_HSTRING_invariant)
         {
             PCWSTR rawData{ L"-12.345" };
@@ -418,9 +479,7 @@ namespace Test::Decimal::Tests
             WindowsDeleteString(data);
             WindowsDeleteString(to);
         }
-#endif // defined(__hstring_h_)
 
-#if defined(__hstring_h__)
         TEST_METHOD(from_to_HSTRING_localename_system)
         {
             PCWSTR rawData{ L"-12.345" };
@@ -433,9 +492,7 @@ namespace Test::Decimal::Tests
             WindowsDeleteString(data);
             WindowsDeleteString(to);
         }
-#endif // defined(__hstring_h_)
 
-#if defined(WINRT_BASE_H)
         TEST_METHOD(from_to_hstring)
         {
             const winrt::hstring data{ L"-12.345" };
@@ -443,9 +500,7 @@ namespace Test::Decimal::Tests
             const auto to{ object.to_hstring() };
             VERIFY_ARE_EQUAL(data, to);
         }
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
         TEST_METHOD(from_to_hstring_invariant)
         {
             const winrt::hstring data{ L"-12.345" };
@@ -453,9 +508,7 @@ namespace Test::Decimal::Tests
             const auto to{ object.to_hstring_invariant() };
             VERIFY_ARE_EQUAL(data, to);
         }
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
         TEST_METHOD(from_to_hstring_localename_system)
         {
             const winrt::hstring data{ L"-12.345" };
@@ -463,7 +516,6 @@ namespace Test::Decimal::Tests
             const auto to{ object.to_hstring(LOCALE_NAME_SYSTEM_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to);
         }
-#endif // defined(WINRT_BASE_H)
 
         TEST_METHOD(compare_bool)
         {
