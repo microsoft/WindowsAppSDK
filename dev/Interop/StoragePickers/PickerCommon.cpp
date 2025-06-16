@@ -7,6 +7,7 @@
 #include "ShObjIdl.h"
 #include <KnownFolders.h>
 
+
 namespace {
 
     GUID HashHStringToGuid(winrt::hstring const& input)
@@ -92,8 +93,24 @@ namespace {
         return defaultFolder;
     }
 
+}
 
-    winrt::hstring FormatExtensionWithWildcard(winrt::hstring extension)
+namespace PickerCommon {
+    using namespace winrt;
+
+    bool IsHStringNullOrEmpty(winrt::hstring value)
+    {
+        return value.empty();
+    }
+
+    winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem)
+    {
+        wil::unique_cotaskmem_string filePath;
+        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
+        return winrt::hstring{ filePath.get() };
+    }
+
+    winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
     {
         if (!extension.empty() && extension[0] == L'*')
         {
@@ -105,7 +122,7 @@ namespace {
         }
     }
 
-    winrt::hstring JoinExtensions(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> extensions)
+    winrt::hstring PickerParameters::JoinExtensions(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> extensions)
     {
         winrt::hstring result;
         bool first = true;
@@ -123,47 +140,25 @@ namespace {
         }
         return result;
     }
-}
-
-
-namespace PickerCommon {
-
-    using namespace winrt;
-
-    bool IsHStringNullOrEmpty(winrt::hstring value)
-    {
-        return value.empty();
-    }
-
-    winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem)
-    {
-        wil::unique_cotaskmem_string filePath;
-        check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
-        return winrt::hstring{ filePath.get() };
-    }
 
     /// <summary>
     /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type, for FileOpenPicker
     /// </summary>
-    /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
     /// <param name="filters">winrt style filters</param>
-    /// <returns>result Coomon Item Dialog style filters, note only raw pointers here,
-    /// they are valid up to lifetime of buffer
-    /// </returns>
-    std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
+    void PickerParameters::CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
-        size_t resultSize = filters.Size() + 1;
-        buffer.clear();
-        buffer.reserve(resultSize * static_cast<size_t>(2));
+        size_t resultSize = filters.Size() + 1;   // A vector input will have unioned All Files category appended.
+        FileTypeFilterData.clear();
+        FileTypeFilterData.reserve(resultSize * static_cast<size_t>(2));
 
         std::wstring allFilesExtensionList;
+        allFilesExtensionList.reserve(resultSize * 8); // a typical extension takes 6-7 chars, like "*.txt;" and "*.docx;"
         for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
-            buffer.push_back(L"");
-            buffer.push_back(ext);
+            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(ext);
 
-            allFilesExtensionList.reserve(allFilesExtensionList.length() + ext.size() + 1);
             allFilesExtensionList += ext;
             allFilesExtensionList += L";";
         }
@@ -176,61 +171,61 @@ namespace PickerCommon {
         if (filters.Size() == 0)
         {
             // when filters not defined, set filter to All Files *.*
-            buffer.push_back(L"");
-            buffer.push_back(L"*");
+            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(L"*");
         }
         else if (filters.Size() == 1 && allFilesExtensionList == L"*")
         {
             // when there're only one filter "*", set filter to All Files *.* (override the values pushed above)
-            buffer[0] = L"";
-            buffer[1] = L"*";
+            FileTypeFilterData[0] = L"";
+            FileTypeFilterData[1] = L"*";
             resultSize = 1;
         }
         else
         {
-            buffer.push_back(L"");
-            buffer.push_back(allFilesExtensionList.c_str());
+            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(allFilesExtensionList.c_str());
         }
 
-        std::vector<COMDLG_FILTERSPEC> result{ resultSize };
+        FileTypeFilterPara.clear();
+        FileTypeFilterPara.reserve(resultSize);
         for (size_t i = 0; i < resultSize; i++)
         {
-            result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
+            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
-
-        return result;
     }
 
     /// <summary>
     /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type, for FileSavePicker
     /// </summary>
-    /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
     /// <param name="filters">winrt style filters</param>
-    /// <returns>result Coomon Item Dialog style filters, note only raw pointers here,
-    /// they are valid up to lifetime of buffer
-    /// </returns>
-    std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> filters)
+    void PickerParameters::CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> filters)
     {
-        std::vector<COMDLG_FILTERSPEC> result(filters.Size());
-        buffer.clear();
-        buffer.reserve(filters.Size() * static_cast<size_t>(2));
+        size_t resultSize = filters.Size();
+        FileTypeFilterData.clear();
+        FileTypeFilterData.reserve(filters.Size() * static_cast<size_t>(2));
 
         for (const auto& filter : filters)
         {
-            buffer.push_back(filter.Key());
+            FileTypeFilterData.push_back(filter.Key());
             auto extensionList = JoinExtensions(filter.Value().GetView());
-            buffer.push_back(extensionList);
-        }
-        for (size_t i = 0; i < filters.Size(); i++)
-        {
-            result.at(i) = { buffer.at(i * 2).c_str(), buffer.at(i * 2 + 1).c_str() };
+            FileTypeFilterData.push_back(extensionList);
         }
 
-        if (result.empty())
+        if (filters.Size() == 0)
         {
-            result.push_back({ L"", L"*.*" });
+            // when filters not defined, set filter to All Files *.*
+            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(L"*");
+            resultSize = 1;
         }
-        return result;
+
+        FileTypeFilterPara.clear();
+        FileTypeFilterPara.reserve(resultSize);
+        for (size_t i = 0; i < resultSize; i++)
+        {
+            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
+        }
     }
 
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
