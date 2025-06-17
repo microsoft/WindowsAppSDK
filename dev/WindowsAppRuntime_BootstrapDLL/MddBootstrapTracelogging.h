@@ -136,6 +136,7 @@ public:
         _eventname_,\
         _activityId_,\
         nullptr,\
+        _GENERIC_PARTB_FIELDS_ENABLED,\
         TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
         TraceLoggingValue(failure.hr, "HResult"),\
         TraceLoggingValue(failure.pszFile, "File"),\
