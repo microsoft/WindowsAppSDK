@@ -4,6 +4,7 @@
 #pragma once
 
 #include "pch.h"
+#include <WindowsAppRuntimeInsights.h>
 
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
 
