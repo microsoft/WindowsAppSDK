@@ -4,7 +4,27 @@
 #pragma once
 
 #include "pch.h"
-#include <WindowsAppRuntimeInsights.h>
+
+#if __has_include("WindowsAppSDK-VersionInfo.h")
+#include "WindowsAppSDK-VersionInfo.h"
+#endif
+
+#if defined(__WINDOWSAPPSDK_VERSIONINFO_H__)
+#define TOSTRING_HELPER(x) #x
+#define TOSTRING(x) TOSTRING_HELPER(x)
+#define WINDOWSAPPSDK_RELEASE_VERSION TOSTRING(WINDOWSAPPSDK_RELEASE_MAJOR.WINDOWSAPPSDK_RELEASE_MINOR.WINDOWSAPPSDK_RELEASE_PATCH)
+#else
+#define WINDOWSAPPSDK_RELEASE_VERSION "0.0.0"
+#define WINDOWSAPPSDK_RELEASE_CHANNEL "dev"
+#define WINDOWSAPPSDK_RELEASE_CHANNEL_W L"dev"
+#endif
+_GENERIC_PARTB_FIELDS_ENABLED
+#define _GENERIC_PARTB_FIELDS_ENABLED \
+            TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
+            TraceLoggingString(WINDOWSAPPSDK_RELEASE_VERSION, "Version"), \
+            TraceLoggingString(WINDOWSAPPSDK_RELEASE_CHANNEL, "WindowsAppSDKChannel"), \
+            TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
+            TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
 
@@ -137,11 +157,11 @@ public:
         _eventname_,\
         _activityId_,\
         nullptr,\
-        _GENERIC_PARTB_FIELDS_ENABLED,\
         TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
         TraceLoggingValue(failure.hr, "HResult"),\
         TraceLoggingValue(failure.pszFile, "File"),\
         TraceLoggingValue(failure.uLineNumber,"Line"),\
         TraceLoggingValue(failure.pszModule, "Module"),\
         TraceLoggingValue(failure.pszMessage,"Message"),\
+        _GENERIC_PARTB_FIELDS_ENABLED,\
         __VA_ARGS__)
