@@ -3,7 +3,7 @@
 
 ## 1. Overview
 
-This document proposes a change to the `Microsoft.Storage.Pickers.FileSavePicker.SuggestedSaveFile` 
+This document proposes a change to the `Microsoft.Windows.Storage.Pickers.FileSavePicker.SuggestedSaveFile` 
 property. We aim to change its current type from the UWP `StorageFile` to a new class, 
 `SuggestedSaveFile`. This new class will be created via a static factory method and will not expose 
 the public `Path` property.
@@ -41,14 +41,14 @@ We propose the following:
     encapsulated and not exposed as a public property.
 
 1.  **Update `FileSavePicker`:** Change the type of the `SuggestedSaveFile` property from 
-    `Windows.Storage.StorageFile` to `Microsoft.Storage.Pickers.SuggestedSaveFile`.
+    `Windows.Storage.StorageFile` to `Microsoft.Windows.Storage.Pickers.SuggestedSaveFile`.
 
 ## 4. Detailed Design
 
 The `SuggestedSaveFile` class will provide the necessary information for a suggested save file.
 
 ```cs
-namespace Microsoft.Storage.Pickers {
+namespace Microsoft.Windows.Storage.Pickers {
     runtimeclass SuggestedSaveFile {
         // Constructor is not public
         static SuggestedSaveFile CreateFromPath(String path);
