@@ -98,7 +98,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
-        PickerCommon::UpdateAllTextLocalization(parameters);
+        parameters.AllFilesText = PickerCommon::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 
         CaptureParameters(parameters);
 

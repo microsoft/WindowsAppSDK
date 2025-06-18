@@ -5,6 +5,6 @@
 #include "PickerCommon.h"
 
 namespace PickerCommon {
-    void UpdateAllTextLocalization(PickerCommon::PickerParameters& parameter);
+    winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key);
 }
 

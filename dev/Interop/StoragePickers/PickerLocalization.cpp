@@ -13,12 +13,10 @@
 
 namespace PickerCommon {
     const winrt::hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
-    const winrt::hstring resourceName = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
-    void UpdateAllTextLocalization(PickerCommon::PickerParameters& parameter)
+    winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key)
     {
         winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
-        auto text = manager.MainResourceMap().GetValue(resourceName).ValueAsString();
-        parameter.AllFilesText = text;
+        return manager.MainResourceMap().GetValue(key).ValueAsString();
     }
 }
 

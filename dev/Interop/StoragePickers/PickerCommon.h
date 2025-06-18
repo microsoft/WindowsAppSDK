@@ -11,9 +11,10 @@
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
+    const winrt::hstring AllFilesLocalizationKey = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
-
+    
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;
