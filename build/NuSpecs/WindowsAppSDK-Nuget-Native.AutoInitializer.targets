@@ -2,14 +2,21 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <PropertyGroup>
+    <AutoInitializerPreprocessorDefinitions>
+        $(AutoInitializerPreprocessorDefinitions);
+        $(WindowsAppSdkBootstrapInitialize)=='true' ? MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP : ;
+        $(WindowsAppSdkDeploymentManagerInitialize)=='true' ? MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER : ;
+        $(WindowsAppSdkUndockedRegFreeWinRTInitialize)=='true' ? MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT : ;
+        $(WindowsAppSdkCompatibilityInitialize)=='true' ? MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY : ;
+    </AutoInitializerPreprocessorDefinitions>
+</PropertyGroup>
+
   <Target Name="WindowsAppRuntimeAutoInitializer">
     <ItemGroup>
       <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions>$(AutoInitializerPreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       </ClCompile>
     </ItemGroup>
   </Target>
