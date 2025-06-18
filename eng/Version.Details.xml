@@ -35,9 +35,9 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>f52676312ebf1d66ef59731feb4fad29a713a897</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.ProjectReunion.WinUI.TransportPackage" Version="3.0.0-zmain.250527.0-nightly">
-      <Uri>https://dev.azure.com/microsoft/WinUI/_git/microsoft-ui-xaml-lift</Uri>
-      <Sha>0a292a654318548b1ece09a93a30d4191419df28</Sha>
+    <Dependency Name="Microsoft.WindowsAppSDK.UndockedDEH.TransportPackage" Version="1.8.0-main.20250519.0">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
+      <Sha>3b9b30dee9b3ae7a70d32c81a58d0eb7eee0c1fa</Sha>
     </Dependency>
     <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.9.0-CI-26108.1809.250610-1400.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>

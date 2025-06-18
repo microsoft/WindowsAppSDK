@@ -168,6 +168,13 @@ steps:
     Contents: Microsoft.Taef.*\**
     TargetFolder: '$(ob_outputDirectory)\redist'
 
+- task: CopyFiles@2
+  displayName: Test task
+  condition: always()
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\'
+    TargetFolder: '$(ob_outputDirectory)\test'
+
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
     condition: always()
