@@ -49,8 +49,8 @@ The `SuggestedSaveFile` class will provide the necessary information for a sugge
 
 ```cs
 namespace Microsoft.Windows.Storage.Pickers {
+    // Constructor is not public
     runtimeclass SuggestedSaveFile {
-        // Constructor is not public
         static SuggestedSaveFile CreateFromPath(String path);
     }
 
@@ -274,6 +274,14 @@ This section discusses the optimal design for `SuggestedSaveFile` itself.
         Removing the Path property reduces cognitive overhead and potential misuse while 
         maintaining full functionality.
 
+*   **8.2.4 Accessing Internal State from the Implementation**
+
+    **[TODO] Problem:** 
+    The `SuggestedSaveFile` object is created by the developer (e.g., in C#) and passed back to our 
+    C++ SDK. Since the `Path` property is not exposed in the ABI, how can our C++ implementation 
+    retrieve the path value from the `SuggestedSaveFile` object it receives? 
+    In other words, how do we convert the `SuggestedSaveFile` object received from WinRT back to the 
+    internal object that can access the private path value?
 
 ### 8.3 Overall API Usability
 
