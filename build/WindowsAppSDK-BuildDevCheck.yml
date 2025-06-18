@@ -6,7 +6,7 @@ parameters:
   default: true
 
 variables:
-- template: ${{variables['System.DefaultWorkingDirectory']}}\build\WindowsAppSDK-Versions.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKConfig
 - template: ${{variables['System.DefaultWorkingDirectory']}}\build\WindowsAppSDK-CommonVariables.yml
 
 resources:

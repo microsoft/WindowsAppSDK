@@ -185,7 +185,7 @@ stages:
           }
 
           $buildType = '$(channel)'
-          $majorMinorPatchRev = '$(major).$(minor).$(versionMinDate)'
+          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).$(versionMinDate)'
           $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
           $version = $majorMinorPatchRev + '-' + $buildType
 
@@ -194,7 +194,7 @@ stages:
 
           if ('${{ parameters.IsOfficial }}' -eq 'true')
           {
-            $versionTag = '$(versionTag)'
+            $versionTag = '$(VersionTag)'
             Write-Host "VersionTag: " $versionTag
             if ($buildType -ne "stable" -and -not $versionTag.StartsWith($buildType))
             {
