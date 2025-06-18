@@ -6,6 +6,7 @@
 #include "M.W.F.DecimalHelper.h"
 #include "Microsoft.Windows.Foundation.DecimalHelper.g.cpp"
 
+
 #include "decimal.h"
 #include "decimalcppwinrt.h"
 
@@ -51,21 +52,47 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return to_DecimalValue(::Microsoft::Windows::Foundation::decimal(value));
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::FromString(hstring const& value)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::FromString(hstring const& source)
     {
-        return to_DecimalValue(::Microsoft::Windows::Foundation::decimal(value));
+        return to_DecimalValue(::Microsoft::Windows::Foundation::decimal::from_hstring(source));
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::FromStringWithSystemDefaultLocale(hstring const& value)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::FromStringInvariant(hstring const& source)
     {
-        return to_DecimalValue(::Microsoft::Windows::Foundation::decimal(value));
+        return to_DecimalValue(::Microsoft::Windows::Foundation::decimal::from_hstring_invariant(source));
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::FromStringWithUserDefaultLocale(hstring const& value)
+    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::FromString(hstring const& source, hstring const& localeName)
     {
-        return to_DecimalValue(::Microsoft::Windows::Foundation::decimal(value));
+        return to_DecimalValue(::Microsoft::Windows::Foundation::decimal::from_hstring(source, localeName));
     }
-    winrt::Microsoft::Windows::Foundation::DecimalValue DecimalHelper::FromStringWithThreadLocale(hstring const& value)
+    bool DecimalHelper::TryFromString(hstring const& source, winrt::Microsoft::Windows::Foundation::DecimalValue& value)
     {
-        return to_DecimalValue(::Microsoft::Windows::Foundation::decimal(value));
+        ::Microsoft::Windows::Foundation::decimal decimal;
+        if (!::Microsoft::Windows::Foundation::decimal::try_from_hstring(source, decimal))
+        {
+            return false;
+        }
+        value = to_DecimalValue(decimal);
+        return true;
+    }
+    bool DecimalHelper::TryFromStringInvariant(hstring const& source, winrt::Microsoft::Windows::Foundation::DecimalValue& value)
+    {
+        ::Microsoft::Windows::Foundation::decimal decimal;
+        if (!::Microsoft::Windows::Foundation::decimal::try_from_hstring_invariant(source, decimal))
+        {
+            return false;
+        }
+        value = to_DecimalValue(decimal);
+        return true;
+    }
+    bool DecimalHelper::TryFromString(hstring const& source, hstring const& localeName, winrt::Microsoft::Windows::Foundation::DecimalValue& value)
+    {
+        ::Microsoft::Windows::Foundation::decimal decimal;
+        if (!::Microsoft::Windows::Foundation::decimal::try_from_hstring(source, localeName, decimal))
+        {
+            return false;
+        }
+        value = to_DecimalValue(decimal);
+        return true;
     }
     bool DecimalHelper::ToBoolean(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
     {
@@ -111,17 +138,13 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return winrt::Microsoft::Windows::Foundation::to_decimal(value).to_hstring();
     }
-    hstring DecimalHelper::ToStringWithSystemDefaultLocale(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+    hstring DecimalHelper::ToStringInvariant(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
     {
-        return winrt::Microsoft::Windows::Foundation::to_decimal(value).to_hstring(LOCALE_SYSTEM_DEFAULT);
+        return winrt::Microsoft::Windows::Foundation::to_decimal(value).to_hstring_invariant();
     }
-    hstring DecimalHelper::ToStringWithUserDefaultLocale(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+    hstring DecimalHelper::ToString(winrt::Microsoft::Windows::Foundation::DecimalValue const& value, winrt::hstring const&  localeName)
     {
-        return winrt::Microsoft::Windows::Foundation::to_decimal(value).to_hstring(LOCALE_USER_DEFAULT);
-    }
-    hstring DecimalHelper::ToStringWithThreadLocale(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
-    {
-        return winrt::Microsoft::Windows::Foundation::to_decimal(value).to_hstring(GetThreadLocale());
+        return winrt::Microsoft::Windows::Foundation::to_decimal(value).to_hstring(localeName);
     }
     bool DecimalHelper::Equals(winrt::Microsoft::Windows::Foundation::DecimalValue const& left, winrt::Microsoft::Windows::Foundation::DecimalValue const& right)
     {
@@ -135,7 +158,11 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return winrt::Microsoft::Windows::Foundation::is_valid(value);
     }
-    uint32_t DecimalHelper::Scale(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+    bool DecimalHelper::IsInteger(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+    {
+        return winrt::Microsoft::Windows::Foundation::is_integer(value);
+    }
+    uint8_t DecimalHelper::Scale(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
     {
         return value.Scale;
     }
@@ -143,7 +170,7 @@ namespace winrt::Microsoft::Windows::Foundation::implementation
     {
         return ((value.Lo64 == 0) && (value.Hi32 == 0)) ? 0 : (value.Sign != 0 ? -1 : 1);
     }
-    uint32_t DecimalHelper::MaxScale()
+    uint8_t DecimalHelper::MaxScale()
     {
         return ::Microsoft::Windows::Foundation::decimal::max_scale();
     }

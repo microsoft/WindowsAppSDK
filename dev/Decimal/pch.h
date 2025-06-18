@@ -14,3 +14,5 @@
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
+
+#include <microsoft.utf8.h>

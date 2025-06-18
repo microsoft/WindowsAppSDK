@@ -16,6 +16,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)decimal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.DecimalHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>

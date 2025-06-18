@@ -4,9 +4,14 @@
 #if !defined(__WindowsAppSDK_Microsoft_Windows_Foundation_decimal_)
 #define __WindowsAppSDK_Microsoft_Windows_Foundation_decimal_
 
+#include <winnls.h>
+#include <oleauto.h>
+
 #include <string>
 
-#include <oleauto.h>
+#include <wil/cppwinrt.h>
+#include <wil/resource.h>
+#include <wil/result_macros.h>
 
 #if !defined(_VC_NODEFAULTLIB)
 #pragma comment(linker, "/defaultlib:oleaut32.lib")
@@ -89,11 +94,6 @@ public:
         THROW_IF_FAILED(::VarDecFromUI4(value ? 1 : 0, &m_decimal));
     }
 
-    decimal(char value)
-    {
-        THROW_IF_FAILED(::VarDecFromI1(value, &m_decimal));
-    }
-
     decimal(std::int16_t value)
     {
         THROW_IF_FAILED(::VarDecFromI2(value, &m_decimal));
@@ -149,86 +149,685 @@ public:
         THROW_IF_FAILED(::VarDecFromUI4(value, &m_decimal));
     }
 
-    decimal(PCWSTR value)
+private:
+    static std::unique_ptr<WCHAR[]> to_wide_string(PCSTR source)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value, LOCALE_INVARIANT, 0, &m_decimal));
+        if (!source)
+        {
+            return std::make_unique<WCHAR[]>(0);
+        }
+
+        const auto lengthIncludingNullTerminator{ ::MultiByteToWideChar(CP_ACP, 0, source, -1, nullptr, 0) };
+        THROW_IF_WIN32_BOOL_FALSE(lengthIncludingNullTerminator);
+
+        std::unique_ptr<WCHAR[]> s{ std::make_unique<WCHAR[]>(lengthIncludingNullTerminator) };
+
+        THROW_IF_WIN32_BOOL_FALSE(::MultiByteToWideChar(CP_ACP, 0, source, -1, s.get(), lengthIncludingNullTerminator));
+        s[lengthIncludingNullTerminator - 1] = L'\0';
+        return s;
+    }
+
+    static std::unique_ptr<char[]> to_narrow_string(PCWSTR source)
+    {
+        if (!source)
+        {
+            return std::make_unique<char[]>(0);
+        }
+
+        const auto lengthIncludingNullTerminator{ ::WideCharToMultiByte(CP_ACP, 0, source, -1, nullptr, 0, nullptr, nullptr) };
+        THROW_IF_WIN32_BOOL_FALSE(lengthIncludingNullTerminator);
+
+        std::unique_ptr<char[]> s{ std::make_unique<char[]>(lengthIncludingNullTerminator) };
+
+        THROW_IF_WIN32_BOOL_FALSE(::WideCharToMultiByte(CP_ACP, 0, source, -1, s.get(), lengthIncludingNullTerminator, nullptr, nullptr));
+        s[lengthIncludingNullTerminator - 1] = '\0';
+        return s;
+    }
+
+private:
+    static decimal from_string_with_locale(PCSTR source, const LCID localeId)
+    {
+        const auto sourceAsWideString{ to_wide_string(source) };
+        return from_string_with_locale(sourceAsWideString.get(), localeId);
+    }
+
+    static decimal from_string_with_locale(PCSTR source, PCSTR localeName)
+    {
+        const auto sourceAsWideString{ to_wide_string(source) };
+        const auto localeNameAsWideString{ to_wide_string(localeName) };
+        return from_string_with_locale(sourceAsWideString.get(), localeNameAsWideString.get());
+    }
+
+    static bool try_from_string_with_locale(PCSTR source, const LCID localeId, decimal& value)
+    {
+        const auto sourceAsWideString{ to_wide_string(source) };
+        return try_from_string_with_locale(sourceAsWideString.get(), localeId, value);
+    }
+
+    static bool try_from_string_with_locale(PCSTR source, PCSTR localeName, decimal& value)
+    {
+        const auto sourceAsWideString{ to_wide_string(source) };
+        const auto localeNameAsWideString{ to_wide_string(localeName) };
+        return try_from_string_with_locale(sourceAsWideString.get(), localeNameAsWideString.get(), value);
+    }
+
+public:
+    /// Parse the string using the user's default locale.
+    static decimal from_string(PCSTR source)
+    {
+        return from_string_with_locale(source, LOCALE_USER_DEFAULT);
+    }
+
+    /// Parse the string using the invariant locale.
+    static decimal from_string_invariant(PCSTR source)
+    {
+        return from_string_with_locale(source, LOCALE_INVARIANT);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT ("!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_INVARIANT ("") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_string(PCSTR source, PCSTR localeName)
+    {
+        return from_string_with_locale(source, localeName);
+    }
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_string(PCSTR source, decimal& value)
+    {
+        return try_from_string_with_locale(source, LOCALE_USER_DEFAULT, value);
+    }
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_string_invariant(PCSTR source, decimal& value)
+    {
+        return try_from_string_with_locale(source, LOCALE_INVARIANT, value);
+    }
+
+    /// Parse the string using the specified locale.
+    static bool try_from_string(PCSTR source, PCSTR localeName, decimal& value)
+    {
+        return try_from_string_with_locale(source, localeName, value);
+    }
+
+private:
+    static LCID to_lcid(PCWSTR localeName)
+    {
+        const LCID lcid{ ::LocaleNameToLCID(localeName, 0) };
+        THROW_LAST_ERROR_IF_MSG(lcid == 0, "%ls", localeName);
+        return lcid;
+    }
+
+    static bool try_to_lcid(PCWSTR localeName, LCID& lcid)
+    {
+        lcid = ::LocaleNameToLCID(localeName, 0);
+        if (lcid == 0)
+        {
+            std::ignore = LOG_LAST_ERROR_MSG("%ls", localeName);
+            return false;
+        }
+        return true;
+    }
+
+private:
+    static decimal from_string_with_locale(PCWSTR source, const LCID localeId)
+    {
+        decimal value;
+        THROW_IF_FAILED(::VarDecFromStr(source, localeId, 0, &value.m_decimal));
 
         // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
         // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
+        value.m_decimal.wReserved = 0;
+
+        return value;
     }
 
-    decimal(PCWSTR value, const LCID locale)
+    static decimal from_string_with_locale(PCWSTR source, PCWSTR localeName)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value, locale, 0, &m_decimal));
+        return from_string_with_locale(source, to_lcid(localeName));
+    }
+
+    static bool try_from_string_with_locale(PCWSTR source, const LCID localeId, decimal& value)
+    {
+        const HRESULT hr{ ::VarDecFromStr(source, localeId, 0, &value.m_decimal) };
+        if (FAILED(hr))
+        {
+            return false;
+        }
 
         // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
-        // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
+        // Make sure it's always zero to avoid inconsistent results by others using the source
+        value.m_decimal.wReserved = 0;
+
+        return true;
     }
 
-    decimal(const std::wstring& value)
+    static bool try_from_string_with_locale(PCWSTR source, PCWSTR localeName, decimal& value)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), LOCALE_INVARIANT, 0, &m_decimal));
-
-        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
-        // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
+        LCID lcid{};
+        if (!try_to_lcid(localeName, lcid))
+        {
+            return false;
+        }
+        return try_from_string_with_locale(source, lcid, value);
     }
 
-    decimal(const std::wstring& value, const LCID locale)
+public:
+    /// Parse the string using the user's default locale.
+    static decimal from_string(PCWSTR source)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), locale, 0, &m_decimal));
-
-        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
-        // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
+        return from_string_with_locale(source, LOCALE_USER_DEFAULT);
     }
 
-#if defined(__WINSTRING_H_)
-    decimal(const HSTRING& value)
+    /// Parse the string using the invariant locale.
+    static decimal from_string_invariant(PCWSTR source)
     {
-        THROW_IF_FAILED(::VarDecFromStr(::WindowsGetStringRawBuffer(value, nullptr), LOCALE_INVARIANT, 0, &m_decimal));
-
-        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
-        // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
+        return from_string_with_locale(source, LOCALE_INVARIANT);
     }
-#endif // defined(__WINSTRING_H_)
 
-#if defined(__WINSTRING_H_)
-    decimal(const HSTRING& value, const LCID locale)
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_string(PCWSTR source, PCWSTR localeName)
     {
-        THROW_IF_FAILED(::VarDecFromStr(::WindowsGetStringRawBuffer(value, nullptr), locale, 0, &m_decimal));
-
-        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
-        // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
+        return from_string_with_locale(source, localeName);
     }
-#endif // defined(__WINSTRING_H_)
 
+    /// Parse the string using the user's default locale.
+    static bool try_from_string(PCWSTR source, decimal& value)
+    {
+        return try_from_string_with_locale(source, LOCALE_USER_DEFAULT, value);
+    }
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_string_invariant(PCWSTR source, decimal& value)
+    {
+        return try_from_string_with_locale(source, LOCALE_INVARIANT, value);
+    }
+
+    /// Parse the string using the specified locale.
+    static bool try_from_string(PCWSTR source, PCWSTR localeName, decimal& value)
+    {
+        return try_from_string_with_locale(source, localeName, value);
+    }
+
+public:
+    /// Parse the string using the user's default locale.
+    static decimal from_string(const std::string& source)
+    {
+        return from_string_with_locale(source.c_str(), LOCALE_USER_DEFAULT);
+    }
+
+    /// Parse the string using the invariant locale.
+    static decimal from_string_invariant(const std::string& source)
+    {
+        return from_string_with_locale(source.c_str(), LOCALE_INVARIANT);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
+    static decimal from_string(const std::string& source, const std::string& localeName)
+    {
+        return from_string_with_locale(source.c_str(), localeName.c_str());
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
+    static decimal from_string(const std::string& source, const PCSTR localeName)
+    {
+        return from_string_with_locale(source.c_str(), localeName);
+    }
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_string(const std::string& source, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), LOCALE_USER_DEFAULT, value);
+    }
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_string_invariant(const std::string& source, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), LOCALE_INVARIANT, value);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
+    static bool try_from_string(const std::string& source, const std::string& localeName, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), localeName.c_str(), value);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
+    static bool try_from_string(const std::string& source, PCSTR localeName, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), localeName, value);
+    }
+
+private:
+    static decimal from_string_view_with_locale(const std::string_view& source, const LCID localeId)
+    {
+        if (source.data()[source.size()] == '\0')
+        {
+            return from_string_with_locale(source.data(), localeId);
+        }
+        else
+        {
+            const std::string sourceAsNullTerminatedString(source.data(), 0, source.size());
+            return from_string_with_locale(sourceAsNullTerminatedString.c_str(), localeId);
+        }
+    }
+
+    static decimal from_string_view_with_locale(const std::string_view& source, PCSTR localeName)
+    {
+        const auto localeNameAsWideString{ to_wide_string(localeName) };
+        return from_string_view_with_locale(source, to_lcid(localeNameAsWideString.get()));
+    }
+
+    static bool try_from_string_view_with_locale(const std::string_view& source, const LCID localeId, decimal& value)
+    {
+        if (source.data()[source.size()] == '\0')
+        {
+            return try_from_string_with_locale(source.data(), localeId, value);
+        }
+        else
+        {
+            const std::string sourceAsNullTerminatedString(source.data(), 0, source.size());
+            return try_from_string_with_locale(sourceAsNullTerminatedString.c_str(), localeId, value);
+        }
+    }
+
+    static bool try_from_string_view_with_locale(const std::string_view& source, PCSTR localeName, decimal& value)
+    {
+        const auto localeNameAsWideString{ to_wide_string(localeName) };
+        return try_from_string_view_with_locale(source, to_lcid(localeNameAsWideString.get()), value);
+    }
+
+public:
+    /// Parse the string using the user's default locale.
+    static decimal from_string_view(const std::string_view& source)
+    {
+        return from_string_view_with_locale(source, LOCALE_USER_DEFAULT);
+    }
+
+    /// Parse the string using the invariant locale.
+    static decimal from_string_view_invariant(const std::string_view& source)
+    {
+        return from_string_view_with_locale(source, LOCALE_INVARIANT);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
+    static decimal from_string_view(const std::string_view& source, const std::string_view& localeName)
+    {
+        if (localeName.data()[localeName.size()] == '\0')
+        {
+            return from_string_view(source, localeName.data());
+        }
+        else
+        {
+            const std::string localeNameAsNullTerminatedString(localeName.data(), 0, localeName.size());
+            return from_string_view(source, localeNameAsNullTerminatedString.c_str());
+        }
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
+    static decimal from_string_view(const std::string_view& source, PCSTR localeName)
+    {
+        if (source.data()[source.size()] == '\0')
+        {
+            return from_string_with_locale(source.data(), localeName);
+        }
+        else
+        {
+            const std::string sourceAsNullTerminatedString(source.data(), 0, source.size());
+            return from_string_with_locale(sourceAsNullTerminatedString.c_str(), localeName);
+        }
+    }
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_string_view(const std::string_view& source, decimal& value)
+    {
+        return try_from_string_view_with_locale(source, LOCALE_USER_DEFAULT, value);
+    }
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_string_view_invariant(const std::string_view& source, decimal& value)
+    {
+        return try_from_string_view_with_locale(source, LOCALE_INVARIANT, value);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
+    static bool try_from_string_view(const std::string_view& source, const std::string_view& localeName, decimal& value)
+    {
+        if (localeName.data()[localeName.size()] == '\0')
+        {
+            return try_from_string_view(source, localeName.data(), value);
+        }
+        else
+        {
+            const std::string localeNameAsNullTerminatedString(localeName.data(), 0, localeName.size());
+            return try_from_string_view(source, localeNameAsNullTerminatedString.c_str(), value);
+        }
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName="!x-sys-default-locale" for the system default locale.
+    /// @note localeName="" for the invariant locale.
+    /// @note localeName=NULL for the user default locale.
+    static bool try_from_string_view(const std::string_view& source, PCSTR localeName, decimal& value)
+    {
+        if (source.data()[source.size()] == '\0')
+        {
+            return try_from_string_with_locale(source.data(), localeName, value);
+        }
+        else
+        {
+            const std::string sourceAsNullTerminatedString(source.data(), 0, source.size());
+            return try_from_string_with_locale(sourceAsNullTerminatedString.c_str(), localeName, value);
+        }
+    }
+
+public:
+    /// Parse the string using the user's default locale.
+    static decimal from_wstring(const std::wstring& source)
+    {
+        return from_string_with_locale(source.c_str(), LOCALE_USER_DEFAULT);
+    }
+
+    /// Parse the string using the invariant locale.
+    static decimal from_wstring_invariant(const std::wstring& source)
+    {
+        return from_string_with_locale(source.c_str(), LOCALE_INVARIANT);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_wstring(const std::wstring& source, const std::wstring& localeName)
+    {
+        return from_string_with_locale(source.c_str(), localeName.c_str());
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_wstring(const std::wstring& source, PCWSTR localeName)
+    {
+        return from_string_with_locale(source.c_str(), localeName);
+    }
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_wstring(const std::wstring& source, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), LOCALE_USER_DEFAULT, value);
+    }
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_wstring_invariant(const std::wstring& source, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), LOCALE_INVARIANT, value);
+    }
+
+    /// Parse the string using the specified locale.
+    static bool try_from_wstring(const std::wstring& source, const std::wstring& localeName, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), localeName.c_str(), value);
+    }
+
+    /// Parse the string using the specified locale.
+    static bool try_from_wstring(const std::wstring& source, PCWSTR localeName, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), localeName, value);
+    }
+
+private:
+    static decimal from_string_view_with_locale(const std::wstring_view& source, const LCID localeId)
+    {
+        if (source.data()[source.size()] == L'\0')
+        {
+            return from_string_with_locale(source.data(), localeId);
+        }
+        else
+        {
+            const std::wstring sourceAsNullTerminatedString(source.data(), 0, source.size());
+            return from_string_with_locale(sourceAsNullTerminatedString.c_str(), localeId);
+        }
+    }
+
+    static decimal from_string_view_with_locale(const std::wstring_view& source, PCWSTR localeName)
+    {
+        return from_string_view_with_locale(source, to_lcid(localeName));
+    }
+
+public:
+    /// Parse the string using the user's default locale.
+    static decimal from_wstring_view(const std::wstring_view& source)
+    {
+        return from_string_view_with_locale(source, LOCALE_USER_DEFAULT);
+    }
+
+    /// Parse the string using the invariant locale.
+    static decimal from_wstring_view_invariant(const std::wstring_view& source)
+    {
+        return from_string_view_with_locale(source, LOCALE_INVARIANT);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_wstring_view(const std::wstring_view& source, const std::wstring_view& localeName)
+    {
+        if (localeName.data()[localeName.size()] == L'\0')
+        {
+            return from_wstring_view(source, localeName.data());
+        }
+        else
+        {
+            const std::wstring localeNameAsNullTerminatedString(localeName.data(), 0, localeName.size());
+            return from_wstring_view(source, localeNameAsNullTerminatedString.c_str());
+        }
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_wstring_view(const std::wstring_view& source, PCWSTR localeName)
+    {
+        if (source.data()[source.size()] == L'\0')
+        {
+            return from_string_with_locale(source.data(), localeName);
+        }
+        else
+        {
+            const std::wstring sourceAsNullTerminatedString(source.data(), 0, source.size());
+            return from_string_with_locale(sourceAsNullTerminatedString.c_str(), localeName);
+        }
+    }
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_wstring_view(const std::wstring_view& source, decimal& value)
+    {
+        return try_from_string_with_locale(source.data(), LOCALE_USER_DEFAULT, value);
+    }
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_wstring_view_invariant(const std::wstring_view& source, decimal& value)
+    {
+        return try_from_string_with_locale(source.data(), LOCALE_INVARIANT, value);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static bool try_from_wstring_view(const std::wstring_view& source, const std::wstring_view& localeName, decimal& value)
+    {
+        if (localeName.data()[localeName.size()] == L'\0')
+        {
+            return try_from_wstring_view(source, localeName.data(), value);
+        }
+        else
+        {
+            const std::wstring localeNameAsNullTerminatedString(localeName.data(), 0, localeName.size());
+            return try_from_wstring_view(source, localeNameAsNullTerminatedString.c_str(), value);
+        }
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static bool try_from_wstring_view(const std::wstring_view& source, PCWSTR localeName, decimal& value)
+    {
+        if (source.data()[source.size()] == L'\0')
+        {
+            return try_from_string_with_locale(source.data(), localeName, value);
+        }
+        else
+        {
+            const std::wstring sourceAsNullTerminatedString(source.data(), 0, source.size());
+            return try_from_string_with_locale(sourceAsNullTerminatedString.c_str(), localeName, value);
+        }
+    }
+
+public:
+#if defined(__hstring_h__) && defined(__WINSTRING_H_)
+    /// Parse the string using the user's default locale.
+    static decimal from_HSTRING(const HSTRING& source)
+    {
+        return from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), static_cast<LCID>(LOCALE_USER_DEFAULT));
+    }
+
+    /// Parse the string using the invariant locale.
+    static decimal from_HSTRING_invariant(const HSTRING& source)
+    {
+        return from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), LOCALE_INVARIANT);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_HSTRING(const HSTRING& source, const HSTRING& localeName)
+    {
+        return from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), ::WindowsGetStringRawBuffer(localeName, nullptr));
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_HSTRING(const HSTRING& source, PCWSTR localeName)
+    {
+        return from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), localeName);
+    }
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_HSTRING(const HSTRING& source, decimal& value)
+    {
+        return try_from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), LOCALE_USER_DEFAULT, value);
+    }
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_HSTRING_invariant(const HSTRING& source, decimal& value)
+    {
+        return try_from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), LOCALE_INVARIANT, value);
+    }
+
+    /// Parse the string using the specified locale.
+    static bool try_from_HSTRING(const HSTRING& source, const HSTRING& localeName, decimal& value)
+    {
+        return try_from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), ::WindowsGetStringRawBuffer(localeName, nullptr), value);
+    }
+
+    /// Parse the string using the specified locale.
+    static bool try_from_HSTRING(const HSTRING& source, PCWSTR localeName, decimal& value)
+    {
+        return try_from_string_with_locale(::WindowsGetStringRawBuffer(source, nullptr), localeName, value);
+    }
+#endif // defined(__hstring_h__) && defined(__WINSTRING_H_)
+
+public:
 #if defined(WINRT_BASE_H)
-    decimal(const winrt::hstring& value)
+    /// Parse the string using the user's default locale.
+    static decimal from_hstring(const winrt::hstring& source)
     {
-        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), LOCALE_INVARIANT, 0, &m_decimal));
+        return from_string_with_locale(source.c_str(), LOCALE_USER_DEFAULT);
+    }
 
-        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
-        // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
+    /// Parse the string using the invariant locale.
+    static decimal from_hstring_invariant(const winrt::hstring& source)
+    {
+        return from_string_with_locale(source.c_str(), LOCALE_INVARIANT);
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_hstring(const winrt::hstring& source, const winrt::hstring& localeName)
+    {
+        return from_string_with_locale(source.c_str(), localeName.c_str());
+    }
+
+    /// Parse the string using the specified locale.
+    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
+    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
+    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
+    static decimal from_hstring(const winrt::hstring& source, PCWSTR localeName)
+    {
+        return from_string_with_locale(source.c_str(), localeName);
+    }
+
+    /// Parse the string using the user's default locale.
+    static bool try_from_hstring(const winrt::hstring& source, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), LOCALE_USER_DEFAULT, value);
+    }
+
+    /// Parse the string using the invariant locale.
+    static bool try_from_hstring_invariant(const winrt::hstring& source, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), LOCALE_INVARIANT, value);
+    }
+
+    /// Parse the string using the specified locale.
+    static bool try_from_hstring(const winrt::hstring& source, const winrt::hstring& localeName, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), localeName.c_str(), value);
+    }
+
+    /// Parse the string using the specified locale.
+    static bool try_from_hstring(const winrt::hstring& source, PCWSTR localeName, decimal& value)
+    {
+        return try_from_string_with_locale(source.c_str(), localeName, value);
     }
 #endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
-    decimal(const winrt::hstring& value, const LCID locale)
-    {
-        THROW_IF_FAILED(::VarDecFromStr(value.c_str(), locale, 0, &m_decimal));
-
-        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
-        // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
-    }
-#endif // defined(WINRT_BASE_H)
-
+public:
     decimal& operator=(const decimal& value)
     {
         if (&value != this)
@@ -271,12 +870,6 @@ public:
         // But decimal(true) would be expected to be 1 (not -1)
         // So we intentionally ignore VarDecFromBool() and set decimal(bool) == 0 or 1
         THROW_IF_FAILED(::VarDecFromUI4(value ? 1 : 0, &m_decimal));
-        return *this;
-    }
-
-    decimal& operator=(char value)
-    {
-        THROW_IF_FAILED(::VarDecFromI1(value, &m_decimal));
         return *this;
     }
 
@@ -346,36 +939,6 @@ public:
         return *this;
     }
 
-    decimal& operator=(PCWSTR value)
-    {
-        THROW_IF_FAILED(::VarDecFromStr(value, LOCALE_INVARIANT, 0, &m_decimal));
-
-        // VarDecFromStr() sets the result from a local variable that doesn't initialize DECIMAL.wReserved :-(
-        // Make sure it's always zero to avoid inconsistent results by others using the value
-        m_decimal.wReserved = 0;
-
-        return *this;
-    }
-
-    decimal& operator=(const std::wstring& value)
-    {
-        return operator=(value.c_str());
-    }
-
-#if defined(__WINSTRING_H_)
-    decimal& operator=(const HSTRING& value)
-    {
-        return operator=(::WindowsGetStringRawBuffer(value, nullptr));
-    }
-#endif // defined(__WINSTRING_H_)
-
-#if defined(WINRT_BASE_H)
-    decimal& operator=(const winrt::hstring& value)
-    {
-        return operator=(value.c_str());
-    }
-#endif // defined(WINRT_BASE_H)
-
     const DECIMAL& to_decimal() const
     {
         // Treat all values != 0 as true (good)
@@ -386,13 +949,6 @@ public:
     {
         // Treat values != 0 as true
         return (m_decimal.Lo64 != 0) || (m_decimal.Hi32 != 0);
-    }
-
-    char to_char() const
-    {
-        char value{};
-        THROW_IF_FAILED(::VarI1FromDec(const_cast<DECIMAL*>(&m_decimal), &value));
-        return value;
     }
 
     std::int16_t to_int16() const
@@ -468,52 +1024,128 @@ public:
         return value;
     }
 
-    std::wstring to_string() const
-    {
-        return to_string(LOCALE_INVARIANT);
-    }
-
-    std::wstring to_string(const LCID locale) const
+private:
+    wil::unique_bstr to_bstr_with_locale(const LCID lcid) const
     {
         wil::unique_bstr bstr;
-        THROW_IF_FAILED(::VarBstrFromDec(&m_decimal, locale, 0, wil::out_param(bstr)));
-        return std::wstring{ bstr.get() };
+        THROW_IF_FAILED(::VarBstrFromDec(&m_decimal, lcid, 0, wil::out_param(bstr)));
+        return bstr;
     }
 
-#if defined(__WINSTRING_H_)
+    wil::unique_bstr to_bstr_with_locale(PCWSTR localeName) const
+    {
+        return to_bstr_with_locale(to_lcid(localeName));
+    }
+
+public:
+    // Format the string using the user's default locale.
+    std::string to_string() const
+    {
+        const auto bstr{ to_bstr_with_locale(LOCALE_USER_DEFAULT) };
+        return std::string{ to_narrow_string(bstr.get()).get() };
+    }
+
+    // Format the string using the invariant locale.
+    std::string to_string_invariant() const
+    {
+        const auto bstr{ to_bstr_with_locale(LOCALE_INVARIANT) };
+        return std::string{ to_narrow_string(bstr.get()).get() };
+    }
+
+    // Format the string using the specified locale.
+    std::string to_string(PCSTR localeName) const
+    {
+        const auto bstr{ to_bstr_with_locale(to_wide_string(localeName).get()) };
+        return std::string{ to_narrow_string(bstr.get()).get() };
+    }
+
+    // Format the string using the specified locale.
+    std::string to_string(const std::string& localeName) const
+    {
+        return to_string(localeName.c_str());
+    }
+
+public:
+    // Format the string using the user's default locale.
+    std::wstring to_wstring() const
+    {
+        return std::wstring{ to_bstr_with_locale(LOCALE_USER_DEFAULT).get() };
+    }
+
+    // Format the string using the invariant locale.
+    std::wstring to_wstring_invariant() const
+    {
+        return std::wstring{ to_bstr_with_locale(LOCALE_INVARIANT).get() };
+    }
+
+    // Format the string using the specified locale.
+    std::wstring to_wstring(const std::wstring& localeName) const
+    {
+        return std::wstring{ to_bstr_with_locale(localeName.c_str()).get() };
+    }
+
+    // Format the string using the specified locale.
+    std::wstring to_wstring(PCWSTR localeName) const
+    {
+        return std::wstring{ to_bstr_with_locale(localeName).get() };
+    }
+
+public:
+#if defined(__hstring_h__) && defined(__WINSTRING_H_)
     HSTRING to_HSTRING() const
     {
-        return to_HSTRING(LOCALE_INVARIANT);
-    }
-#endif // defined(__WINSTRING_H_)
-
-#if defined(__WINSTRING_H_)
-    HSTRING to_HSTRING(const LCID locale) const
-    {
-        wil::unique_bstr bstr;
-        THROW_IF_FAILED(::VarBstrFromDec(&m_decimal, locale, 0, wil::out_param(bstr)));
+        const auto bstr{ to_bstr_with_locale(LOCALE_USER_DEFAULT) };
         HSTRING hstring{};
         THROW_IF_FAILED(::WindowsCreateString(bstr.get(), ::SysStringLen(bstr.get()), &hstring));
         return hstring;
     }
-#endif // defined(__WINSTRING_H_)
 
+    HSTRING to_HSTRING_invariant() const
+    {
+        const auto bstr{ to_bstr_with_locale(LOCALE_INVARIANT) };
+        HSTRING hstring{};
+        THROW_IF_FAILED(::WindowsCreateString(bstr.get(), ::SysStringLen(bstr.get()), &hstring));
+        return hstring;
+    }
+
+    HSTRING to_HSTRING(const HSTRING& localeName) const
+    {
+        return to_HSTRING(::WindowsGetStringRawBuffer(localeName, nullptr));
+    }
+
+    HSTRING to_HSTRING(PCWSTR localeName) const
+    {
+        const auto bstr{ to_bstr_with_locale(localeName) };
+        HSTRING hstring{};
+        THROW_IF_FAILED(::WindowsCreateString(bstr.get(), ::SysStringLen(bstr.get()), &hstring));
+        return hstring;
+    }
+#endif // defined(__hstring_h__) && defined(__WINSTRING_H_)
+
+public:
 #if defined(WINRT_BASE_H)
     winrt::hstring to_hstring() const
     {
-        return to_hstring(LOCALE_INVARIANT);
+        return winrt::hstring{ to_bstr_with_locale(LOCALE_USER_DEFAULT).get() };
     }
-#endif // defined(WINRT_BASE_H)
 
-#if defined(WINRT_BASE_H)
-    winrt::hstring to_hstring(const LCID locale) const
+    winrt::hstring to_hstring_invariant() const
     {
-        wil::unique_bstr bstr;
-        THROW_IF_FAILED(::VarBstrFromDec(&m_decimal, locale, 0, wil::out_param(bstr)));
-        return winrt::hstring{ bstr.get() };
+        return winrt::hstring{ to_bstr_with_locale(LOCALE_INVARIANT).get() };
+    }
+
+    winrt::hstring to_hstring(const winrt::hstring& localeName) const
+    {
+        return to_hstring(localeName.c_str());
+    }
+
+    winrt::hstring to_hstring(PCWSTR localeName) const
+    {
+        return winrt::hstring{ to_bstr_with_locale(localeName).get() };
     }
 #endif // defined(WINRT_BASE_H)
 
+public:
     bool operator==(const decimal& value) const
     {
         return compare(value) == 0;
@@ -584,12 +1216,6 @@ public:
         return ::compare(m_decimal, value);
     }
 
-    /// Return true if this is valid.
-    bool is_valid()
-    {
-        return is_valid(m_decimal);
-    }
-
     /// Return true if value is valid.
     static constexpr bool is_valid(const DECIMAL& value)
     {
@@ -597,9 +1223,22 @@ public:
         return (value.scale <= max_scale()) && ((value.sign & ~sign_is_negative) == 0);
     }
 
+    /// Return true if this is an integral number.
+    bool is_integer() const
+    {
+        return m_decimal.scale == 0;
+    }
+
+    /// Return true if value is an integral number.
+    static constexpr bool is_integer(const DECIMAL& value)
+    {
+        validate(value);
+        return value.scale == 0;
+    }
+
     /// Return the scaling factor of the value (the number of decimal digits).
     /// @return the scaling factor, ranging from 0 to max_scale().
-    std::uint32_t scale() const
+    std::uint8_t scale() const
     {
         return m_decimal.scale;
     }
@@ -612,7 +1251,7 @@ public:
     }
 
     /// Return the maximum scaling factor
-    static constexpr std::uint32_t max_scale()
+    static constexpr std::uint8_t max_scale()
     {
         return 28;
     }
