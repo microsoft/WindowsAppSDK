@@ -6,9 +6,9 @@
 #include <StoragePickersTelemetryHelper.h>
 
 DECLARE_TRACELOGGING_CLASS(StoragePickersTelemetryProvider,
-    "Microsoft.WindowsAppSDK.StoragePickersTelemetry",
-    // {6ddc5826-bf0a-522e-cc84-0e70eda439ed}
-    (0x6ddc5826,0xbf0a,0x522e,0xcc,0x84,0x0e,0x70,0xed,0xa4,0x39,0xed));
+    "Microsoft.WindowsAppSDK.Storage_PickersTelemetry",
+    // {89a94de3-f004-5feb-7332-1cf297e987af}
+    (0x89a94de3,0xf004,0x5feb,0x73,0x32,0x1c,0xf2,0x97,0xe9,0x87,0xaf));
 
 class StoragePickersTelemetry : public wil::TraceLoggingProvider
 {
