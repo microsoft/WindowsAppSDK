@@ -169,11 +169,19 @@ steps:
     TargetFolder: '$(ob_outputDirectory)\redist'
 
 - task: CopyFiles@2
-  displayName: Test task
+  displayName: Stage WinUI Helix Helpers files for publish
   condition: always()
   inputs:
-    SourceFolder: '$(build.SourcesDirectory)\'
-    TargetFolder: '$(ob_outputDirectory)\test'
+    SourceFolder: '$(build.SourcesDirectory)\packages'
+    Contents: Microsoft.Internal.WinUI.Helix.*\**
+    TargetFolder: '$(ob_outputDirectory)\BuildOutput\HelixHelpers'
+
+# - task: CopyFiles@2
+#   displayName: Test task
+#   condition: always()
+#   inputs:
+#     SourceFolder: '$(build.SourcesDirectory)\'
+#     TargetFolder: '$(ob_outputDirectory)\test'
 
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
