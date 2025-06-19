@@ -80,8 +80,8 @@ steps:
   inputs:
     filePath: '$(Build.SourcesDirectory)\build\VersionInfo\GenerateVersionInfo.ps1'
     arguments: >
-      -ProductMajor "$(major)"
-      -ProductMinor "$(minor)"
+      -ProductMajor "$(MajorVersion)"
+      -ProductMinor "$(MinorVersion)"
 
 - task: PowerShell@2
   displayName: 'Download dotnet installer'

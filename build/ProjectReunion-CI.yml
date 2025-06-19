@@ -2,7 +2,7 @@
 name: $(version)
 
 variables:
-- template: WindowsAppSDK-Versions.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKConfig
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildOutputDir
   value: $(Build.SourcesDirectory)\BuildOutput
