@@ -235,6 +235,9 @@ if ($Test -eq $true)
     Run-Tests
 
     if (Test-Path -Path $teLogFile) {
+        $filePath = Get-ChildItem -Path (Join-Path $env:Build_SourcesDirectory "redist\Microsoft.Internal.WinUI.Helix.*\HelixTestHelpers.cs") -File | Select-Object -First 1
+        Write-Host "Found HelixTestHelpers.cs at $($filePath.FullName)"
+
         # # Add types needed for ConvertWttLogToXUnit.ps1
         # Add-Type -Language CSharp -ReferencedAssemblies System.Xml,System.Xml.Linq,System.Runtime.Serialization,System.Runtime.Serialization.Json (Get-Content (Join-Path $testPath "HelixTestHelpers.cs") -Raw)
 
