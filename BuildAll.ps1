@@ -562,12 +562,9 @@ Try {
         $publicNuspec.package.metadata.version = $ComponentPackageVersion
 
         # Update dependency versions in the nuspec
-        $versionDetailsPath = ".\eng\Version.Details.xml"
-        [xml]$buildConfig = Get-Content -Path $versionDetailsPath
-
         foreach ($dependency in $publicNuspec.package.metadata.dependencies.dependency)
         {
-            $buildDependency = $buildConfig.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
+            $buildDependency = $versionDetailsPath.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
             if (-not($buildDependency))
             {
                 write-host "ERROR: NuGet package dependency $($dependency.Id) not found."
