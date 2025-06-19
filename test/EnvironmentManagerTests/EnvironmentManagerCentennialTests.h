@@ -9,6 +9,7 @@
 namespace WindowsAppSDKEnvironmentManagerTests
 {
     class EnvironmentManagerCentennialTests {
+        EnvironmentManagerCentennialTests() = default;
         BEGIN_TEST_CLASS(EnvironmentManagerCentennialTests)
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
