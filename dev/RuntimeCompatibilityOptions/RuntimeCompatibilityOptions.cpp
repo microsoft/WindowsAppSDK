@@ -6,6 +6,7 @@
 #include "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions.g.cpp"
 #include "AssemblyInfo.h"
 #include <FrameworkUdk/Containment.h>
+#include "RuntimeCompatibilityOptions_TraceLogger.h"
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
