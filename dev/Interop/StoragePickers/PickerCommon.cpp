@@ -7,6 +7,7 @@
 #include "ShObjIdl.h"
 #include "shobjidl_core.h"
 #include <KnownFolders.h>
+#include <filesystem>
 
 
 namespace {
@@ -257,18 +258,43 @@ namespace PickerCommon {
     /// <param name="dialog"></param>
     void PickerParameters::ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog)
     {
-        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedFileName))
+        winrt::hstring fileNameToSet;
+        if (!IsHStringNullOrEmpty(SuggestedFileName))
         {
-            check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
+            fileNameToSet = SuggestedFileName;
+        }
+        
+        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
+        {
+            auto suggestedPath = std::filesystem::path{ SuggestedSaveFilePath.c_str() };
+            if (!suggestedPath.empty())
+            {
+                // Set the directory of SuggestedSaveFile as the starting location of save picker Dialog
+                auto dirPath = suggestedPath.parent_path();
+                if (!dirPath.empty())
+                {
+                    winrt::com_ptr<IShellItem> shellItem;
+                    HRESULT hr = SHCreateItemFromParsingName(dirPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
+                    if (SUCCEEDED(hr))
+                    {
+                        check_hresult(dialog->SetFolder(shellItem.get()));
+                    }
+                }
+
+                // Extract filename and use it (takes precedence over SuggestedFileName)
+                std::wstring fileName = suggestedPath.filename().wstring();
+                if (!fileName.empty())
+                {
+                    fileNameToSet = winrt::hstring(fileName);
+                }
+            }
         }
 
-        if (SuggestedSaveFile != nullptr)
+        // Set the filename (either from SuggestedSaveFile or SuggestedFileName)
+        if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
         {
-            winrt::com_ptr<IShellItem> shellItem;
-            check_hresult(SHCreateItemFromParsingName(SuggestedSaveFile.Path().c_str(), nullptr, IID_PPV_ARGS(shellItem.put())));
-
-            // By design the SuggestedSaveFile's name takes precedence over the SuggesetedFileName.
-            check_hresult(dialog->SetSaveAsItem(shellItem.get()));
+            check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
         }
+
     }
 }

@@ -106,7 +106,6 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileOpenPicker" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileSavePicker" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FolderPicker" ThreadingModel="both" />
-            <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.SuggestedSaveFile" ThreadingModel="both" />
 
             <!-- RuntimeCompatibilityOptions -->
             <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions" ThreadingModel="both" />

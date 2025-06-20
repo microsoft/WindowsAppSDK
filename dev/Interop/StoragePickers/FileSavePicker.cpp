@@ -17,7 +17,6 @@
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
-#include "SuggestedSaveFile.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -63,13 +62,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         m_defaultFileExtension = value;
     }
-    winrt::Microsoft::Windows::Storage::Pickers::ISuggestedSaveFile FileSavePicker::SuggestedSaveFile()
+    hstring FileSavePicker::SuggestedSaveFilePath()
     {
-        return m_suggestedSaveFile;
+        return m_suggestedSaveFilePath;
     }
-    void FileSavePicker::SuggestedSaveFile(winrt::Microsoft::Windows::Storage::Pickers::ISuggestedSaveFile const& value)
+    void FileSavePicker::SuggestedSaveFilePath(hstring const& value)
     {
-        m_suggestedSaveFile = value;
+        m_suggestedSaveFilePath = value;
     }
     hstring FileSavePicker::SuggestedFileName()
     {
@@ -88,7 +87,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.SuggestedFileName = m_suggestedFileName;
-        parameters.SuggestedSaveFile = m_suggestedSaveFile;
+        parameters.SuggestedSaveFilePath = m_suggestedSaveFilePath;
         parameters.CaptureFilterSpec(m_fileTypeChoices.GetView());
     }
 
@@ -102,7 +101,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
         auto defaultFileExtension = m_defaultFileExtension;
-        auto suggestedSaveFile = m_suggestedSaveFile;
+        auto suggestedSaveFilePath = m_suggestedSaveFilePath;
         auto suggestedFileName = m_suggestedFileName;
         auto fileTypeChoices = m_fileTypeChoices;
 

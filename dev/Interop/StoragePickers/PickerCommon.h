@@ -23,7 +23,7 @@ namespace PickerCommon {
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
 
         winrt::hstring SuggestedFileName;
-        winrt::Microsoft::Windows::Storage::Pickers::ISuggestedSaveFile SuggestedSaveFile;
+        winrt::hstring SuggestedSaveFilePath;
 
         winrt::hstring FormatExtensionWithWildcard(winrt::hstring extension);
         winrt::hstring JoinExtensions(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> extensions);
