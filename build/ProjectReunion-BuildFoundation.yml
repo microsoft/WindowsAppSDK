@@ -19,7 +19,7 @@ resources:
     - repository: WindowsAppSDKConfigSourceBranch
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      ref: refs/heads/user/haonantang/convert2xunit
 
 stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
