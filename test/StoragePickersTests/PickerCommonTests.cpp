@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include <wil/cppwinrt.h>
 
 #include <FrameworkUdk/Containment.h>
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
@@ -192,6 +193,45 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
+        }
+
+        TEST_METHOD(VerifyFileSaveDialog_SuggestedFileNameWorksWhenSuggestedSaveFilePathNotSet)
+        {
+            // Arrange.
+            PickerParameters parameters{};
+            parameters.SuggestedFileName = L"MyFile1.txt";
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureFileSaveDialog(dialog);
+
+            // Assert.
+            wil::unique_cotaskmem_string fileName{};
+            dialog->GetFileName(fileName.put());
+            VERIFY_ARE_EQUAL(L"MyFile1.txt", std::wstring(fileName.get()));
+        }
+
+        TEST_METHOD(VerifyFileSaveDialog_WhenSuggestedSaveFilePathTakesPrecedenceOverSuggestedFileName)
+        {
+            // Arrange.
+            PickerParameters parameters{};
+            parameters.SuggestedSaveFilePath = L"C:\\temp\\MyFile2.txt";
+            parameters.SuggestedFileName = L"MyFile1.txt";
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureFileSaveDialog(dialog);
+
+            // Assert.
+            winrt::com_ptr<IShellItem> folderItem{};
+            dialog->GetFolder(folderItem.put());
+            wil::unique_cotaskmem_string dialogFolder{};
+            folderItem->GetDisplayName(SIGDN_FILESYSPATH, dialogFolder.put());
+            VERIFY_ARE_EQUAL(L"C:\\temp", std::wstring(dialogFolder.get()));
+
+            wil::unique_cotaskmem_string fileName{};
+            dialog->GetFileName(fileName.put());
+            VERIFY_ARE_EQUAL(L"MyFile2.txt", std::wstring(fileName.get()));
         }
     };
 }

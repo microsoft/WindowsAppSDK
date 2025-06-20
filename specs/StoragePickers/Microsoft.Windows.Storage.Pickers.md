@@ -92,7 +92,7 @@ namespace Microsoft.Windows.Storage.Pickers
         string SettingsIdentifier;
         string DefaultFileExtension;
         string SuggestedFileName;
-        Windows.Storage.StorageFile SuggestedSaveFile;
+        string SuggestedSaveFilePath;
         IMap<string, IVector<string>> FileTypeChoices{ get; };
 
         PickerLocationId SuggestedStartLocation;

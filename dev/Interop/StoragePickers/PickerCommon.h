@@ -22,6 +22,9 @@ namespace PickerCommon {
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
 
+        winrt::hstring SuggestedFileName;
+        winrt::hstring SuggestedSaveFilePath;
+
         winrt::hstring FormatExtensionWithWildcard(winrt::hstring extension);
         winrt::hstring JoinExtensions(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> extensions);
 
@@ -29,5 +32,6 @@ namespace PickerCommon {
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
+        void ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog);
     };
 }

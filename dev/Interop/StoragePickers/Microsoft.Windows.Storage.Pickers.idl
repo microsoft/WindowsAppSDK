@@ -27,7 +27,7 @@ namespace Microsoft.Windows.Storage.Pickers
     };
 
     [feature(Feature_StoragePickers)]
-    runtimeclass PickFileResult 
+    runtimeclass PickFileResult
     {
         String Path { get; };
     }
@@ -57,7 +57,7 @@ namespace Microsoft.Windows.Storage.Pickers
         String CommitButtonText;
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
         String DefaultFileExtension;
-        Windows.Storage.StorageFile SuggestedSaveFile;
+        String SuggestedSaveFilePath;
         String SuggestedFileName;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
