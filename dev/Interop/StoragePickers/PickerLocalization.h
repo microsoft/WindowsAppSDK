@@ -4,7 +4,7 @@
 #pragma once
 #include "PickerCommon.h"
 
-namespace PickerCommon {
+namespace PickerLocalization {
     winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key);
 }
 

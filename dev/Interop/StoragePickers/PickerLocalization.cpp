@@ -11,11 +11,11 @@
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
 #include <iostream>
 
-namespace PickerCommon {
+namespace PickerLocalization {
     const winrt::hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
     winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key)
     {
-        winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
+        auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
         return manager.MainResourceMap().GetValue(key).ValueAsString();
     }
 }
