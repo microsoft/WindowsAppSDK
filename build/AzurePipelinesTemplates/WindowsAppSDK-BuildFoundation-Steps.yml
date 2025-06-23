@@ -108,6 +108,7 @@ steps:
         !**\*Demoapp*\**
         !**\*Demopackage\**
         !**\HelloWorldAdvancedC*\**        
+        !**\DecimalCalculator_C*\**
         !**\arm\**        
         !**\arm64\**     
         !**\te.*exe

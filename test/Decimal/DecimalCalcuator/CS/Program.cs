@@ -14,58 +14,91 @@ namespace Microsoft.Windows.Foundation
                 Help();
             }
 
-            string op = args[0];
-            System.Decimal left = System.Decimal.Parse(args[1]);
-            System.Decimal right = (args.Length >= 3 ? System.Decimal.Parse(args[2]) : new System.Decimal(0));
-            string expected = (args.Length >= 4 ? args[3] : null);
-            System.Decimal result = new System.Decimal(0);
-            if (args.Length == 3)
+            decimal? expected = null;
+
+            int index = 0;
+            string op = args[index++];
+            if ((op.Length > 0) && (op[0] == ':'))
             {
-                // NOTE: Decimal unary operators not supported by C#: ! ~
-                switch (op)
+                expected = System.Decimal.Parse(op.Substring(1));
+                if (args.Length < 3)
                 {
-                    case "+":      result = +left; Output($"{op}{left} = {result}"); break;
-                    case "-":      result = -left; Output($"{op}{left} = {result}"); break;
-                    case "++":     result = ++left; Output($"{op}{left} = {result}"); break;
-                    case "--":     result = --left; Output($"{op}{left} = {result}"); break;
-                    case "int32":  expected = null; Console.WriteLine($"{op} {left} = {(int)left}"); break;
-                    case "int64":  expected = null; Console.WriteLine($"{op} {left} = {(long)left}"); break;
-                    case "uint32": expected = null; Console.WriteLine($"{op} {left} = {(uint)left}"); break;
-                    case "uint64": expected = null; Console.WriteLine($"{op} {left} = {(ulong)left}"); break;
-                    case "float":  expected = null; Console.WriteLine($"{op} {left} = {(float)left}"); break;
-                    case "double": expected = null; Console.WriteLine($"{op} {left} = {(double)left}"); break;
-                    default:   UnknownOperator($"{op} {left}"); break;
+                    Help();
                 }
+                op = args[index++];
             }
-            else if (args.Length == 4)
+            if (!IsValidOperator(op))
             {
-                // NOTE: Decimal unary operators not supported by C#: << >> >>> & | ^
-                switch (op)
-                {
-                    case "+":   result = left + right; Output($"{left} {op} {right} = {result}"); break;
-                    case "-":   result = left - right; Output($"{left} {op} {right} = {result}"); break;
-                    case "*":   result = left * right; Output($"{left} {op} {right} = {result}"); break;
-                    case "/":   result = left / right; Output($"{left} {op} {right} = {result}"); break;
-                    case "%":   result = left % right; Output($"{left} {op} {right} = {result}"); break;
-                    case "mod": result = left % right; Output($"{left} {op} {right} = {result}"); break;
-                    case "==":  expected = null; Console.WriteLine($"{left} {op} {right} = {left == right}"); break;
-                    case "!=":  expected = null; Console.WriteLine($"{left} {op} {right} = {left != right}"); break;
-                    case "<":   expected = null; Console.WriteLine($"{left} {op} {right} = {left < right}"); break;
-                    case "<=":  expected = null; Console.WriteLine($"{left} {op} {right} = {left <= right}"); break;
-                    case ">":   expected = null; Console.WriteLine($"{left} {op} {right} = {left > right}"); break;
-                    case ">=":  expected = null; Console.WriteLine($"{left} {op} {right} = {left >= right}"); break;
-                    default:    UnknownOperator($"{op} {left} {right}"); break;
-                }
+                UnknownOperator($"{op}");
             }
-            else
+
+            System.Decimal left = System.Decimal.Parse(args[index++]);
+            System.Decimal? mid = null;
+            System.Decimal? right = (args.Length > index ? System.Decimal.Parse(args[index++]) : null);
+            if (op == "clamp")
+            {
+                mid = right;
+                right = (args.Length > index ? System.Decimal.Parse(args[index++]) : null);
+            }
+            Object result = Calculate(op, left, mid, right);
+            if (result == null)
             {
                 Help();
             }
             if (expected != null)
             {
-                System.Decimal expectedValue = System.Decimal.Parse(expected);
-                Console.WriteLine($"==> {result} == {expectedValue} = {expectedValue == result}");
+                if (result is decimal)
+                {
+                    Console.WriteLine($"==> {result} == {expected} = {expected == (decimal)result}");
+                }
+                else if (result is bool)
+                {
+                    bool dexpected = (((decimal)expected) != 0);
+                    Console.WriteLine($"==> {result} == {expected} = {dexpected == (bool)result}");
+                }
             }
+        }
+
+        private static Object Calculate(string op, decimal left, decimal? mid, decimal? right)
+        {
+            // NOTE: Decimal unary operators not supported by C#: ! ~
+            // NOTE: Decimal binary operators not supported by C#: << >> >>> & | ^
+            switch (op)
+            {
+                case "+":        { if (right == null)
+                                   { var result = +left; Output($"{op}{left} = {result}"); return result; }
+                                   else
+                                   { var result = left + right; Output($"{left} {op} {right} = {result}"); return result; }
+                                 }
+                case "-":        { if (right == null)
+                                   { var result = -left; Output($"{op}{left} = {result}"); return result; }
+                                   else
+                                   { var result = left - right; Output($"{left} {op} {right} = {result}"); return result; }
+                                 }
+                case "++":       { var result = ++left; Output($"{op}{left} = {result}"); return result; }
+                case "--":       { var result = --left; Output($"{op}{left} = {result}"); return result; }
+                case "int32":    { var result = (int)left; Output($"{op} {left} = {result}"); return result; }
+                case "int64":    { var result = (long)left; Output($"{op} {left} = {result}"); return result; }
+                case "uint32":   { var result = (uint)left; Output($"{op} {left} = {result}"); return result; }
+                case "uint64":   { var result = (ulong)left; Output($"{op} {left} = {result}"); return result; }
+                case "float":    { var result = (float)left; Output($"{op} {left} = {result}"); return result; }
+                case "double":   { var result = (double)left; Output($"{op} {left} = {result}"); return result; }
+                case "truncate": { var result = Math.Truncate(left); Output($"{op} {left} = {result}"); return result; }
+                case "floor":    { var result = Math.Floor(left); Output($"{op} {left} = {result}"); return result; }
+                case "ceiling":  { var result = Math.Ceiling(left); Output($"{op} {left} = {result}"); return result; }
+                case "*":        { var result = left * right; Output($"{left} {op} {right} = {result}"); return result; }
+                case "/":        { var result = left / right; Output($"{left} {op} {right} = {result}"); return result; }
+                case "%":        { var result = left % right; Output($"{left} {op} {right} = {result}"); return result; }
+                case "mod":      { var result = left % right; Output($"{left} {op} {right} = {result}"); return result; }
+                case "==":       { var result = (left == right); Output($"{left} {op} {right} = {left == right}"); return result; }
+                case "!=":       { var result = (left != right); Output($"{left} {op} {right} = {left != right}"); return result; }
+                case "<":        { var result = (left < right); Output($"{left} {op} {right} = {left < right}"); return result; }
+                case "<=":       { var result = (left <= right); Output($"{left} {op} {right} = {left <= right}"); return result; }
+                case ">":        { var result = (left > right); Output($"{left} {op} {right} = {left > right}"); return result; }
+                case ">=":       { var result = (left >= right); Output($"{left} {op} {right} = {left >= right}"); return result; }
+                case "clamp":    { var result = Math.Clamp(left, (Decimal)mid, (Decimal)right); Output($"{op} {left} {mid} {right} = {result}"); return result; }
+            }
+            return null;
         }
 
         private static void Output(string evaluation)
@@ -79,14 +112,34 @@ namespace Microsoft.Windows.Foundation
             Environment.Exit(2);
         }
 
+        private static string[] operators = new string[]{
+            "+", "-", "++", "--", "int32", "int64", "uint32", "uint64", "float", "double", "truncate", "floor", "ceiling",
+            "+", "-", "*", "/", "%", "mod", "==", "!=", "<", "<=", ">", ">=",
+            "clamp"
+        };
+        private static bool IsValidOperator(string op)
+        {
+            foreach (string oper in operators)
+            {
+                if (op == oper)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static void Help()
         {
-            Console.WriteLine("Usage:  DecimalCalculator_CS.exe <operator> <left> [<right>]\n" +
+            Console.WriteLine("Usage:  DecimalCalculator_CS.exe [:expected] <operator> <left> [[<mid>] <right>]\n" +
                               "where\n" +
-                              "    operator =  unary: + - ++ -- int32 int64 uint32 uint32 float double\n" +
+                              "    operator =  unary: + - ++ -- int32 int64 uint32 uint32 float double truncate floor ceiling\n" +
                               "               binary: + - * / % mod == != < <= > >=\n" +
+                              "              ternary: clamp\n" +
                               "        left = decimal value\n" +
-                              "       right = decimal value");
+                              "         mid = decimal value\n" +
+                              "       right = decimal value\n" +
+                              "    expected = extended result");
             Environment.Exit(1);
         }
     }

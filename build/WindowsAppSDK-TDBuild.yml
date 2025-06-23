@@ -24,4 +24,5 @@ jobs:
       ResourceFilePath: |
         dev\VSIX\Extension\Cpp\Common\VSPackage.resx
         dev\VSIX\Extension\Cs\Common\VSPackage.resx
+        dev\Interop\StoragePickers\Strings\StoragePickers.resw
       teamId: $(TdBuildTeamIDVSIX)

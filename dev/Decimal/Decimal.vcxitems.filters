@@ -11,15 +11,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.F.Decimal.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.F.DecimalHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.Decimal.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)decimal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.DecimalTelemetry.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.F.DecimalHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h">

@@ -101,7 +101,7 @@
     <Import Project="..\VersionInfo\VersionInfo.vcxitems" Label="VersionInfo" />
     <Import Project="..\PackageManager\API\PackageManager.vcxitems" Label="Shared" />
     <Import Project="..\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems" Label="Shared" />
-    <Import Project="..\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems"/>
+    <Import Project="..\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems" />
     <Import Project="..\Notifications\BadgeNotifications\BadgeNotifications.vcxitems" Label="BadgeNotifications" />
     <Import Project="..\Notifications\BaseNotifications\BaseNotifications.vcxitems" Label="BaseNotifications" />
     <Import Project="..\RuntimeCompatibilityOptions\RuntimeCompatibilityOptions.vcxitems" Label="Shared" />
