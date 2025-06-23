@@ -81,6 +81,12 @@ constexpr bool is_valid(winrt::Microsoft::Windows::Foundation::DecimalValue cons
     return ::Microsoft::Windows::Foundation::decimal::is_valid(to_DECIMAL(value));
 }
 
+/// Return true if value is an integral number.
+constexpr bool is_integer(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
+{
+    return ::Microsoft::Windows::Foundation::decimal::is_integer(to_DECIMAL(value));
+}
+
 /// Return value as a C++ decimal object.
 inline ::Microsoft::Windows::Foundation::decimal to_decimal(winrt::Microsoft::Windows::Foundation::DecimalValue const& value)
 {

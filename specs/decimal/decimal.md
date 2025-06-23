@@ -259,6 +259,9 @@ namespace Microsoft.Windows.Foundation
         /// Return true if the value is valid.
         static Boolean IsValid(DecimalValue value);
 
+        /// Return true if value is an integral number.
+        static Boolean IsInteger(DecimalValue value);
+
         /// Return the scaling factor of the value (the number of decimal digits).
         /// @return the scaling factor, ranging from 0 to max_scale().
         static UInt32 Scale(DecimalValue value);
@@ -322,7 +325,8 @@ Windows App SDK provides a native language decimal data type for C++ as the
 `Microsoft::Windows::Foundation::decimal` class in `decimal.h`. This class has the following features:
 
 * Constructor and assignment (operator=) overloads to define a decimal object from various data types
-* to_xxx() methods converting a decimal object's value to various data types
+* to_xxx() methods converting a decimal object's value to various string data types
+* [try]_from_xxx() methods converting a decimal object's value from various string data types
 * Relational operations: `compare()` `==` `!=` `<` `<=` `>` `>=`
 * Unary operations: + - ++ --
 * Binary operations: + += - -= * *= / /= % %=
