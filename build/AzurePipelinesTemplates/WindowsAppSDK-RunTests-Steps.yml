@@ -7,6 +7,7 @@ parameters:
 
 steps:
   - checkout: self
+    path: '$(Build.SourcesDirectory)'
 
   - task: PowerShell@2
     displayName: '[tmp] echo variables at top'
