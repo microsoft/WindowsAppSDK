@@ -3,6 +3,8 @@
 
 #include "pch.h"
 
+#include <wil/stl.h>
+
 #include <winstring.h>
 
 #include <decimal.h>
@@ -442,6 +444,30 @@ namespace Test::Decimal::Tests
             VERIFY_ARE_NOT_EQUAL(0, strcmp(rawData.c_str(), toAsString.c_str()), std::format("'{}' != '{}'", data, toAsString.c_str()).c_str());
         }
 
+        TEST_METHOD(from_zstring_view)
+        {
+            const wil::zstring_view data{ "-12.345" };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_zstring_view(data) };
+            const auto to{ object.to_string() };
+            VERIFY_ARE_EQUAL(data, to);
+        }
+
+        TEST_METHOD(from_zstring_view_invariant)
+        {
+            const wil::zstring_view data{ "-12.345" };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_zstring_view_invariant(data) };
+            const auto to{ object.to_string_invariant() };
+            VERIFY_ARE_EQUAL(data, to);
+        }
+
+        TEST_METHOD(from_zstring_view_localename_system)
+        {
+            const wil::zstring_view data{ "-12.345" };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_zstring_view(data, wil::string("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
+            const auto to{ object.to_string(wil::string("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
+            VERIFY_ARE_EQUAL(data, to);
+        }
+
         TEST_METHOD(from_to_wstring)
         {
             const std::wstring data{ L"-12.345" };
@@ -524,6 +550,30 @@ namespace Test::Decimal::Tests
 
             const std::wstring toAsString(to.c_str(), 0, to.length() - 1);
             VERIFY_ARE_NOT_EQUAL(0, wcscmp(rawData.c_str(), toAsString.c_str()), std::format(L"'{}' != '{}'", data, toAsString.c_str()).c_str());
+        }
+
+        TEST_METHOD(from_wzwstring_view)
+        {
+            const wil::wstring data{ L"-12.345" };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wzwstring_view(data) };
+            const auto to{ object.to_wstring() };
+            VERIFY_ARE_EQUAL(data, to);
+        }
+
+        TEST_METHOD(from_wzwstring_view_invariant)
+        {
+            const wil::wstring data{ L"-12.345" };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wzwstring_view_invariant(data) };
+            const auto to{ object.to_wstring_invariant() };
+            VERIFY_ARE_EQUAL(data, to);
+        }
+
+        TEST_METHOD(from_wzwstring_view_localename_system)
+        {
+            const wil::wstring data{ L"-12.345" };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wzwstring_view(data, LOCALE_NAME_SYSTEM_DEFAULT) };
+            const auto to{ object.to_wstring(wil::wstring(LOCALE_NAME_SYSTEM_DEFAULT)) };
+            VERIFY_ARE_EQUAL(data, to);
         }
 
         TEST_METHOD(from_to_HSTRING)
