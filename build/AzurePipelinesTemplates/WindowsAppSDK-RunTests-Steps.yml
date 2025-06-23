@@ -190,6 +190,8 @@ steps:
         -Test
         -List
 
+  - checkout: WindowsAppSDKConfig
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
     parameters:
       WttInputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
