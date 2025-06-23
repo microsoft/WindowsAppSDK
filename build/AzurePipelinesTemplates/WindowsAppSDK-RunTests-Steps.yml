@@ -6,6 +6,25 @@ parameters:
   testLocale: ''
 
 steps:
+  - task: PowerShell@2
+    displayName: '[tmp] echo variables at top'
+    inputs:
+      targetType: 'inline'
+      script: |
+        function Show-Tree {
+          param (
+            [string]$Path = ".",
+            [int]$Indent = 0
+          )
+          Get-ChildItem -Path $Path | ForEach-Object {
+            Write-Host (" " * $Indent) + "|-- " + $_.Name
+            if ($_.PSIsContainer) {
+              Show-Tree -Path $_.FullName -Indent ($Indent + 4)
+            }
+          }
+        }
+        Show-Tree "$(Build.SourcesDirectory)"
+
   - task: powershell@2
     displayName: 'DevCheck: Setup/Verify development environment'
     inputs:
