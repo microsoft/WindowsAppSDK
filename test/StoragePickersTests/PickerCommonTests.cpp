@@ -211,7 +211,7 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(L"MyFile1.txt", std::wstring(fileName.get()));
         }
 
-        TEST_METHOD(VerifyFileSaveDialog_WhenSuggestedSaveFilePathTakesPrecedenceOverSuggestedFileName)
+        TEST_METHOD(VerifyFileSaveDialog_SuggestedSaveFilePathTakesPrecedenceOverSuggestedFileName)
         {
             // Arrange.
             PickerParameters parameters{};

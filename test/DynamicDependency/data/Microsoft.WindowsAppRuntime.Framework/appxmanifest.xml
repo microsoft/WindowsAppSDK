@@ -153,7 +153,6 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileOpenPicker" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileSavePicker" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FolderPicker" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.SuggesteeSaveFile" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
