@@ -1,0 +1,16 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <TerminalVelocityFeatures-PackageRuntime.h>
+
+namespace Microsoft.Windows.ApplicationModel
+{
+    [contractversion(1)]
+    apicontract PackageRuntimeContract{};
+
+    [contract(PackageRuntimeContract, 1)]
+    runtimeclass Package
+    {
+        static String FindPackageFile(String PackageFullName, String filename);
+    };
+}

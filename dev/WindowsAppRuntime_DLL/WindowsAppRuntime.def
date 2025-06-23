@@ -29,3 +29,5 @@ EXPORTS
     WindowsAppRuntime_VersionInfo_TestInitialize
 
     WindowsAppRuntime_EnsureIsLoaded
+
+    FindPackageFile
