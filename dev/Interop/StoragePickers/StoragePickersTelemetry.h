@@ -15,7 +15,7 @@ class StoragePickersTelemetry : public wil::TraceLoggingProvider
     IMPLEMENT_TELEMETRY_CLASS(StoragePickersTelemetry, StoragePickersTelemetryProvider);
 
 public:
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(FileOpenPickerPickSingleFile, PDT_ProductAndServicePerformance);
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(FileOpenPickerPickSingleFile, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
         {
             TraceLoggingClassWriteStart(
@@ -43,7 +43,7 @@ public:
         CATCH_LOG()
     END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(FileOpenPickerPickMultipleFile, PDT_ProductAndServicePerformance);
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(FileOpenPickerPickMultipleFile, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
         {
             TraceLoggingClassWriteStart(
@@ -71,7 +71,7 @@ public:
         CATCH_LOG()
     END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(FileSavePickerPickSingleFile, PDT_ProductAndServicePerformance);
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(FileSavePickerPickSingleFile, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
         {
             TraceLoggingClassWriteStart(
@@ -98,7 +98,7 @@ public:
         CATCH_LOG()
     END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(FolderPickerPickSingleFolder, PDT_ProductAndServicePerformance);
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(FolderPickerPickSingleFolder, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
         {
             TraceLoggingClassWriteStart(
