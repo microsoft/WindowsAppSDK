@@ -6,6 +6,8 @@ parameters:
   testLocale: ''
 
 steps:
+  - checkout: self
+
   - task: PowerShell@2
     displayName: '[tmp] echo variables at top'
     inputs:
