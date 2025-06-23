@@ -21,7 +21,7 @@ runtimeclass FileSavePicker
     string SettingsIdentifier;
     string DefaultFileExtension;
     string SuggestedFileName;
-    Microsoft.Windows.Storage.Pickers.SuggestedSaveFile SuggestedSaveFile;
+    string SuggestedSaveFilePath;
     IMap<string, IVector<string>> FileTypeChoices{ get; };
 
     PickerLocationId SuggestedStartLocation;
