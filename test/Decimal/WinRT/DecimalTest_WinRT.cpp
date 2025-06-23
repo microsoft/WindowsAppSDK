@@ -178,27 +178,19 @@ namespace Test::DecimalValue::Tests
             VERIFY_ARE_EQUAL(data, to);
         }
 
+        TEST_METHOD(from_to_string_invariant)
+        {
+            const std::wstring data{ L"-12.345" };
+            const auto decimalValue{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromStringInvariant(data) };
+            const auto to{ winrt::Microsoft::Windows::Foundation::DecimalHelper::ToStringInvariant(decimalValue) };
+            VERIFY_ARE_EQUAL(data, to);
+        }
+
         TEST_METHOD(from_to_string_locale_system_default)
         {
             const winrt::hstring data{ L"-12.345" };
-            const auto decimalValue{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromStringWithSystemDefaultLocale(data) };
-            const auto to{ winrt::Microsoft::Windows::Foundation::DecimalHelper::ToStringWithSystemDefaultLocale(decimalValue) };
-            VERIFY_ARE_EQUAL(data, to);
-        }
-
-        TEST_METHOD(from_to_string_locale_user_default)
-        {
-            const winrt::hstring data{ L"-12.345" };
-            const auto decimalValue{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromStringWithUserDefaultLocale(data) };
-            const auto to{ winrt::Microsoft::Windows::Foundation::DecimalHelper::ToStringWithUserDefaultLocale(decimalValue) };
-            VERIFY_ARE_EQUAL(data, to);
-        }
-
-        TEST_METHOD(from_to_string_locale_thread)
-        {
-            const winrt::hstring data{ L"-12.345" };
-            const auto decimalValue{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromStringWithThreadLocale(data) };
-            const auto to{ winrt::Microsoft::Windows::Foundation::DecimalHelper::ToStringWithThreadLocale(decimalValue) };
+            const auto decimalValue{ winrt::Microsoft::Windows::Foundation::DecimalHelper::FromString(data, LOCALE_NAME_SYSTEM_DEFAULT) };
+            const auto to{ winrt::Microsoft::Windows::Foundation::DecimalHelper::ToString(decimalValue, LOCALE_NAME_SYSTEM_DEFAULT) };
             VERIFY_ARE_EQUAL(data, to);
         }
 
