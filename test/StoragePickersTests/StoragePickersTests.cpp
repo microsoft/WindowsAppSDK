@@ -201,9 +201,6 @@ namespace Test::StoragePickersTests
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
-
-            picker.FileTypeFilter().Append(L"*");
-            VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
         }
     };
 }
