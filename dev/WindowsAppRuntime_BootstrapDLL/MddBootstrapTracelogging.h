@@ -86,7 +86,7 @@ public:
         TraceLoggingClassWriteStart(Shutdown,
             _GENERIC_PARTB_FIELDS_ENABLED,
             TraceLoggingValue(initializationCount, "initializationCount"),
-            TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName")));
+            TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"));
     }
     void StopWithResult(
         HRESULT hresult,
