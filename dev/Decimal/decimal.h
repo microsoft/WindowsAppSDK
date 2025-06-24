@@ -547,69 +547,6 @@ public:
     }
 
 public:
-#if defined(__WIL_STL_INCLUDED)
-    /// Parse the string using the user's default locale.
-    static decimal from_zstring_view(const std::zstring_view& source)
-    {
-        return from_string_view_with_locale(source.c_str(), LOCALE_USER_DEFAULT);
-    }
-
-    /// Parse the string using the invariant locale.
-    static decimal from_zstring_view_invariant(const std::zstring_view& source)
-    {
-        return from_string_view_with_locale(source.c_str(), LOCALE_INVARIANT);
-    }
-
-    /// Parse the string using the specified locale.
-    /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName="" for the invariant locale.
-    /// @note localeName=NULL for the user default locale.
-    static decimal from_zstring_view(const std::zstring_view& source, const std::zstring_view& localeName)
-    {
-        return from_string_view(source.c_str(), localeName.c_str());
-    }
-
-    /// Parse the string using the specified locale.
-    /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName="" for the invariant locale.
-    /// @note localeName=NULL for the user default locale.
-    static decimal from_zstring_view(const std::zstring_view& source, PCSTR localeName)
-    {
-        return from_string_with_locale(source.c_str(), localeName);
-    }
-
-    /// Parse the string using the user's default locale.
-    static bool try_from_zstring_view(const std::zstring_view& source, decimal& value)
-    {
-        return try_from_string_view_with_locale(source.c_str(), LOCALE_USER_DEFAULT, value);
-    }
-
-    /// Parse the string using the invariant locale.
-    static bool try_from_zstring_view_invariant(const std::zstring_view& source, decimal& value)
-    {
-        return try_from_string_view_with_locale(source.c_str(), LOCALE_INVARIANT, value);
-    }
-
-    /// Parse the string using the specified locale.
-    /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName="" for the invariant locale.
-    /// @note localeName=NULL for the user default locale.
-    static bool try_from_zstring_view(const std::zstring_view& source, const std::zstring_view& localeName, decimal& value)
-    {
-        return try_from_string_view(source.c_str(), localeName.c_str(), value);
-    }
-
-    /// Parse the string using the specified locale.
-    /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName="" for the invariant locale.
-    /// @note localeName=NULL for the user default locale.
-    static bool try_from_zstring_view(const std::zstring_view& source, PCSTR localeName, decimal& value)
-    {
-        return try_from_string_with_locale(source.c_str(), localeName, value);
-    }
-#endif // defined(__WIL_STL_INCLUDED)
-
-public:
     /// Parse the string using the user's default locale.
     static decimal from_wstring(const std::wstring& source)
     {
@@ -775,69 +712,6 @@ public:
             return try_from_string_with_locale(sourceAsNullTerminatedString.c_str(), localeName, value);
         }
     }
-
-public:
-#if defined(__WIL_STL_INCLUDED)
-    /// Parse the string using the user's default locale.
-    static decimal from_zwstring_view(const wil::zwstring_view& source)
-    {
-        return from_string_view_with_locale(source.c_str(), LOCALE_USER_DEFAULT);
-    }
-
-    /// Parse the string using the invariant locale.
-    static decimal from_zwstring_view_invariant(const wil::zwstring_view& source)
-    {
-        return from_string_view_with_locale(source.c_str(), LOCALE_INVARIANT);
-    }
-
-    /// Parse the string using the specified locale.
-    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
-    static decimal from_zwstring_view(const wil::zwstring_view& source, const wil::zwstring_view& localeName)
-    {
-        return from_zwstring_view(source.c_str(), localeName.c_str());
-    }
-
-    /// Parse the string using the specified locale.
-    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
-    static decimal from_zwstring_view(const wil::zwstring_view& source, PCWSTR localeName)
-    {
-        return from_string_with_locale(source.c_str(), localeName);
-    }
-
-    /// Parse the string using the user's default locale.
-    static bool try_from_zwstring_view(const wil::zwstring_view& source, decimal& value)
-    {
-        return try_from_string_with_locale(source.c_str(), LOCALE_USER_DEFAULT, value);
-    }
-
-    /// Parse the string using the invariant locale.
-    static bool try_from_zwstring_view_invariant(const wil::zwstring_view& source, decimal& value)
-    {
-        return try_from_string_with_locale(source.c_str(), LOCALE_INVARIANT, value);
-    }
-
-    /// Parse the string using the specified locale.
-    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
-    static bool try_from_zwstring_view(const wil::zwstring_view& source, const wil::zwstring_view& localeName, decimal& value)
-    {
-        return try_from_zwstring_view(source.c_str(), localeName.c_str(), value);
-    }
-
-    /// Parse the string using the specified locale.
-    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
-    static bool try_from_zwstring_view(const wil::zwstring_view& source, PCWSTR localeName, decimal& value)
-    {
-        return try_from_string_with_locale(source.c_str(), localeName, value);
-    }
-#endif // defined(__WIL_STL_INCLUDED)
 
 public:
 #if defined(__hstring_h__) && defined(__WINSTRING_H_)

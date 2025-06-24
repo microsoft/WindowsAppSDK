@@ -447,7 +447,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(from_zstring_view)
         {
             const wil::zstring_view data{ "-12.345" };
-            const auto object{ Microsoft::Windows::Foundation::decimal::from_zstring_view(data) };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view(data) };
             const auto to{ object.to_string() };
             VERIFY_ARE_EQUAL(data, to);
         }
@@ -455,7 +455,7 @@ namespace Test::Decimal::Tests
         TEST_METHOD(from_zstring_view_invariant)
         {
             const wil::zstring_view data{ "-12.345" };
-            const auto object{ Microsoft::Windows::Foundation::decimal::from_zstring_view_invariant(data) };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view_invariant(data) };
             const auto to{ object.to_string_invariant() };
             VERIFY_ARE_EQUAL(data, to);
         }
@@ -463,8 +463,8 @@ namespace Test::Decimal::Tests
         TEST_METHOD(from_zstring_view_localename_system)
         {
             const wil::zstring_view data{ "-12.345" };
-            const auto object{ Microsoft::Windows::Foundation::decimal::from_zstring_view(data, wil::string("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
-            const auto to{ object.to_string(wil::string("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_string_view(data, std::string("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
+            const auto to{ object.to_string(std::string("x-sys-default-locale" /*LOCALE_NAME_SYSTEM_DEFAULT*/)) };
             VERIFY_ARE_EQUAL(data, to);
         }
 
@@ -552,28 +552,31 @@ namespace Test::Decimal::Tests
             VERIFY_ARE_NOT_EQUAL(0, wcscmp(rawData.c_str(), toAsString.c_str()), std::format(L"'{}' != '{}'", data, toAsString.c_str()).c_str());
         }
 
-        TEST_METHOD(from_wzwstring_view)
+        TEST_METHOD(from_zwstring_view)
         {
-            const wil::wstring data{ L"-12.345" };
-            const auto object{ Microsoft::Windows::Foundation::decimal::from_wzwstring_view(data) };
+            const std::wstring rawData{ L"-12.345" };
+            const wil::zwstring_view data{ rawData };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wstring_view(data) };
             const auto to{ object.to_wstring() };
-            VERIFY_ARE_EQUAL(data, to);
+            VERIFY_ARE_EQUAL(rawData, to);
         }
 
-        TEST_METHOD(from_wzwstring_view_invariant)
+        TEST_METHOD(from_zwstring_view_invariant)
         {
-            const wil::wstring data{ L"-12.345" };
-            const auto object{ Microsoft::Windows::Foundation::decimal::from_wzwstring_view_invariant(data) };
+            const std::wstring rawData{ L"-12.345" };
+            const wil::zwstring_view data{ rawData };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wstring_view_invariant(data) };
             const auto to{ object.to_wstring_invariant() };
-            VERIFY_ARE_EQUAL(data, to);
+            VERIFY_ARE_EQUAL(rawData, to);
         }
 
-        TEST_METHOD(from_wzwstring_view_localename_system)
+        TEST_METHOD(from_zwstring_view_localename_system)
         {
-            const wil::wstring data{ L"-12.345" };
-            const auto object{ Microsoft::Windows::Foundation::decimal::from_wzwstring_view(data, LOCALE_NAME_SYSTEM_DEFAULT) };
-            const auto to{ object.to_wstring(wil::wstring(LOCALE_NAME_SYSTEM_DEFAULT)) };
-            VERIFY_ARE_EQUAL(data, to);
+            const std::wstring rawData{ L"-12.345" };
+            const wil::zwstring_view data{ rawData };
+            const auto object{ Microsoft::Windows::Foundation::decimal::from_wstring_view(data, LOCALE_NAME_SYSTEM_DEFAULT) };
+            const auto to{ object.to_wstring(std::wstring(LOCALE_NAME_SYSTEM_DEFAULT)) };
+            VERIFY_ARE_EQUAL(rawData, to);
         }
 
         TEST_METHOD(from_to_HSTRING)
