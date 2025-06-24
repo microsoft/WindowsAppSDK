@@ -35,8 +35,7 @@ public:
             TraceLoggingValue(isPackagedProcess, "isPackagedProcess"),
             TraceLoggingValue(isFullTrustPackage, "isFullTrustPackage"),
             TraceLoggingValue(integrityLevel, "integrityLevel"),
-            TraceLoggingValue(isRepair, "isRepairAPI"),
-            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+            TraceLoggingValue(isRepair, "isRepairAPI"));
     }
     void StopWithResult(
         HRESULT hresult,
@@ -72,8 +71,7 @@ public:
                 TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
                 TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
                 TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"),
-                TraceLoggingValue(useExistingPackageIfHigherVersion, "useExistingPackageIfHigherVersion"),
-                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+                TraceLoggingValue(useExistingPackageIfHigherVersion, "useExistingPackageIfHigherVersion"));
         }
         else
         {
