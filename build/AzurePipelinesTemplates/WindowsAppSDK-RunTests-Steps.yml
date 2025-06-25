@@ -9,6 +9,14 @@ steps:
   - checkout: self
     path: s
 
+  - checkout: WindowsAppSDKConfig
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      WttInputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
+      xunitOutputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\TestResults\result.xml'
+      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_$(Agent.JobName)'
+
   - task: PowerShell@2
     displayName: '[tmp] echo variables at top'
     inputs:
@@ -190,14 +198,6 @@ steps:
         -Configuration "${{ parameters.buildConfiguration }}"
         -Test
         -List
-
-  - checkout: WindowsAppSDKConfig
-
-  - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
-    parameters:
-      WttInputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
-      xunitOutputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\TestResults\result.xml'
-      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_$(Agent.JobName)'
 
   - task: PublishPipelineArtifact@1
     condition: succeededOrFailed()
