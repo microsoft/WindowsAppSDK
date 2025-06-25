@@ -9,9 +9,7 @@
 #include "PickerLocalization.h"
 #include <winrt\base.h>
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
-#include <iostream>
 #include "StoragePickersTelemetry.h"
-#include <stdexcept>
 
 namespace PickerLocalization {
     const winrt::hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
@@ -21,13 +19,11 @@ namespace PickerLocalization {
         try
         {
             auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
-            throw new std::invalid_argument("localization error");
             return manager.MainResourceMap().GetValue(key).ValueAsString();
         }
         catch (...)
         {
             StoragePickersTelemetry::StoragePickerLocalizationLookupError(key.c_str());
-            std::cout << "error test" << std::endl;
             return fallback;
         }
     }
