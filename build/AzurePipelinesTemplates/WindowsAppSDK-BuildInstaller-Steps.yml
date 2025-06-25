@@ -187,7 +187,11 @@ steps:
   inputs:
     targetType: "inline"
     script: |
-      $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Packages*'
+      $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Runtimes*'
+      if ($srcWinAppSDKNupkgPath -eq $null)
+      {
+        $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Packages*'
+      }
       if ($srcWinAppSDKNupkgPath -eq $null)
       {
         $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*'
