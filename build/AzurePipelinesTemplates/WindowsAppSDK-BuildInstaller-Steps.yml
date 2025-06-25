@@ -190,6 +190,10 @@ steps:
       $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Runtimes*'
       if ($srcWinAppSDKNupkgPath -eq $null)
       {
+        $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Packages*'
+      }
+      if ($srcWinAppSDKNupkgPath -eq $null)
+      {
         $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*'
       }
       Copy-Item -Force $srcWinAppSDKNupkgPath.FullName '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\'
