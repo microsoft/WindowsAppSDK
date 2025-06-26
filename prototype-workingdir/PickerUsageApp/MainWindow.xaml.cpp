@@ -803,19 +803,19 @@ namespace winrt::PickerUsageApp::implementation
         {
             auto picker = winrt::Microsoft::Windows::Storage::Pickers::FolderPicker(this->AppWindow().Id());
             
-            picker.FileTypeFilter().Clear();
-            if (FileTypeFilterCheckBox().IsChecked().Value())
-            {
-                auto filters = GetFileFilters();
-                for (const auto& filter : filters)
-                {
-                    picker.FileTypeFilter().Append(filter);
-                }
-            }
-            else
-            {
-                picker.FileTypeFilter().Append(L"*");
-            }
+            //picker.FileTypeFilter().Clear();
+            //if (FileTypeFilterCheckBox().IsChecked().Value())
+            //{
+            //    auto filters = GetFileFilters();
+            //    for (const auto& filter : filters)
+            //    {
+            //        picker.FileTypeFilter().Append(filter);
+            //    }
+            //}
+            //else
+            //{
+            //    picker.FileTypeFilter().Append(L"*");
+            //}
             
             if (CommitButtonCheckBox().IsChecked().Value())
             {
@@ -865,8 +865,8 @@ namespace winrt::PickerUsageApp::implementation
         auto lifetime = get_strong();
         try
         {
-            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker(this->AppWindow().Id());
-            picker.FileTypeFilter().Append(L"");
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker(this->AppWindow().Id());
+            picker.SuggestedSaveFilePath(L"C:\\temp3\\MyFile.txt");
 
             LogResult(L"Test code executed successfully");
         }

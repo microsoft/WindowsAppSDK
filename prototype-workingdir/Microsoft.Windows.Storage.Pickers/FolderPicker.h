@@ -85,8 +85,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring CommitButtonText();
         void CommitButtonText(hstring const& value);
 
-        winrt::Windows::Foundation::Collections::IVector<hstring> FileTypeFilter();
-
         winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> PickSingleFolderAsync();
 
     private:
@@ -100,8 +98,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         // Static member to persist folder context across instances
         static winrt::com_ptr<IShellItem> s_lastBrowsedFolder;
-
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);
     };

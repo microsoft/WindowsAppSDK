@@ -53,10 +53,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         m_commitButtonText = value;
     }
-    winrt::Windows::Foundation::Collections::IVector<hstring> FolderPicker::FileTypeFilter()
-    {
-        return m_fileTypeFilter;
-    }
 
     void FolderPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {
@@ -64,7 +60,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
-        parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
     }
 
 
