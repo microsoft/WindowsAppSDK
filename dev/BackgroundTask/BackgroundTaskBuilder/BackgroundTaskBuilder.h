@@ -10,7 +10,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
 {
     struct BackgroundTaskBuilder : BackgroundTaskBuilderT<BackgroundTaskBuilder>
     {
-        BackgroundTaskBuilder()
+        BackgroundTaskBuilder(): m_taskEntryPointClsid{}
         {
             THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::Background::Feature_BackgroundTask::IsEnabled());
         }

@@ -14,7 +14,7 @@ using namespace winrt::Windows::Foundation::Collections;
 
 namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
 {
-    TokenResponse::TokenResponse(const json::JsonObject& jsonObject)
+    TokenResponse::TokenResponse(const json::JsonObject& jsonObject): m_expiresIn(0.0)
     {
         std::map<winrt::hstring, IJsonValue> additionalParams;
 
