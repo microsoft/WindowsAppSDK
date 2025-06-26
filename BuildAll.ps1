@@ -306,7 +306,7 @@ Try {
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
 
-            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.lib" -destination "$BasePath\lib\win10-$platformToRun" -force
+            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.lib" -destination "$BasePath\lib\native\$platformToRun" -force
 
             if($platformToRun -eq "x86")
             {

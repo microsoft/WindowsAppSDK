@@ -160,8 +160,8 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeInsights.h $
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Security.AccessControl.h $NugetDir\include\
 #
 # Libraries (*.lib)
-PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.lib $NugetDir\lib\win10-$Platform
-PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $NugetDir\lib\win10-$Platform
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.lib $NugetDir\lib\native\$Platform
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $NugetDir\lib\native\$Platform
 #
 # MSIX Framework package - DLLs/EXEs
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $NugetDir\runtimes\win10-$Platform\native
