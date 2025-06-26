@@ -1,6 +1,7 @@
 parameters:
   buildPlatform: ''
   buildConfiguration: ''
+  ImageName: ''
   TaefSelect: '*'
   BinaryCompatSwitch: ''
   testLocale: ''
@@ -195,12 +196,34 @@ steps:
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
     parameters:
-      WttInputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
-      xunitOutputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\result.xml'
-      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_$(Agent.JobName)'
+      WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
+      xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
+      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish test results'
+    condition: always()
+    inputs:
+      testResultsFormat: xUnit
+      testResultsFiles: testResults-*.xml
+      searchFolder: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+      testRunTitle: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)'
+      buildPlatform: ${{ parameters.buildPlatform }}
+      buildConfiguration: ${{ parameters.buildConfiguration }}
+
+  # Edit the artifactAttempt variable when the job has failed, so that the artifact name can be unique.
+  - task: PowerShell@2
+    displayName: Edit the artifactAttempt variable when the job has failed
+    condition: failed()
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "##vso[task.setvariable variable=artifactAttempt]_$(System.JobAttempt)"
 
   - task: PublishPipelineArtifact@1
     condition: succeededOrFailed()
     inputs:
-      targetPath: '$(Build.SourcesDirectory)'
-      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)'
+      targetPath: '$(Build.SourcesDirectory)\TestOutput'
+      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
