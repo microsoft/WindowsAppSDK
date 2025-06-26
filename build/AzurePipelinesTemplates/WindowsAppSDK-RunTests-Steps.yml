@@ -196,7 +196,7 @@ steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
     parameters:
       WttInputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
-      xunitOutputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\TestResults\result.xml'
+      xunitOutputPath: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\result.xml'
       TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_$(Agent.JobName)'
 
   - task: PublishPipelineArtifact@1
