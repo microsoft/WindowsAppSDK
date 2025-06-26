@@ -235,34 +235,13 @@ if ($Test -eq $true)
     Run-Tests
 
     if (Test-Path -Path $teLogFile) {
-        # $filePath = Get-ChildItem -Path (Join-Path $env:Build_SourcesDirectory "redist\Microsoft.Internal.WinUI.Helix.*\HelixTestHelpers.cs") -File | Select-Object -First 1
-        # Write-Host "Found HelixTestHelpers.cs at $($filePath.FullName)"
-
-        # # Add types needed for ConvertWttLogToXUnit.ps1
-        # Add-Type -Language CSharp -ReferencedAssemblies System.Xml,System.Xml.Linq,System.Runtime.Serialization,System.Runtime.Serialization.Json (Get-Content (Join-Path $testPath "HelixTestHelpers.cs") -Raw)
-
-        # # Generate XUnit output for ADO
-        # $testNamePrefix = $config+$Platform+$ImageName
-        # $xunitFileName = "testResults-"+$testNamePrefix+".xml"
-        # Push-Location $testPath
-
-        # # Convert te.wtl to xunit format which is a format that Azure Pipelines can parse
-        # $testResultParser = [HelixTestHelpers.TestResultParser]::new($testNamePrefix)
-        # $XUnitOutputPath = (Join-Path (Get-Location) $xunitFileName)
-        # $useRetryLogic = $false
-        # $WttInputPath = (Join-Path (Get-Location) "Te.wtl")
-        # $testResultParser.ConvertWttLogToXUnitLog($WttInputPath, $null, $null, $null, $XUnitOutputPath, 0, $useRetryLogic)
-
-        # # Display the contents of testResults xml file:
-        # Get-Content $xunitFileName
-
-        # Pop-Location
-
         Write-Host "Test results written to '$teLogFile'"
 
         # copy test results
         New-Item -ItemType Directory -Path $teLogPathTo -Force
         copy-item -Path $teLogFile -Destination $teLogPathTo -Force
+
+        Write-Host "Test results copied to '$teLogPathTo'"
     }
 }
 
