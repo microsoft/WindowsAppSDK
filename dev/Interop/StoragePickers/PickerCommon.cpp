@@ -2,12 +2,14 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include "shellapi.h"
 #include "PickerCommon.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
 #include "shobjidl_core.h"
 #include <KnownFolders.h>
 #include <filesystem>
+#include <format>
 
 
 namespace {
@@ -269,7 +271,8 @@ namespace PickerCommon {
             auto suggestedPath = std::filesystem::path{ SuggestedSaveFilePath.c_str() };
             if (!suggestedPath.empty())
             {
-                // Set the directory of SuggestedSaveFile as the starting location of save picker Dialog
+                // Force the directory of SuggestedSaveFilePath (if exist)
+                //      to be the starting location of save picker Dialog
                 auto dirPath = suggestedPath.parent_path();
                 if (!dirPath.empty())
                 {
@@ -278,6 +281,17 @@ namespace PickerCommon {
                     if (SUCCEEDED(hr))
                     {
                         check_hresult(dialog->SetFolder(shellItem.get()));
+                    }
+                    else
+                    {
+                        // The messagebox won't block user from using the FileSavePicker Dialog.
+                        // TODO: the message and label here needs globalization.
+                        MessageBoxW(
+                            nullptr,
+                            std::format(L"{} is unavailable. If the location is on this PC, make sure the device or drive is connected or the disc is inserted, and then try again. If the location is on a network, make sure you\x2019re connected to the network or Internet, and then try again. If the location still can\x2019t be found, it might have been moved or deleted.",
+                                dirPath.c_str()).c_str(),
+                            L"Location is not available",
+                            MB_OK | MB_ICONWARNING);
                     }
                 }
 
@@ -290,7 +304,7 @@ namespace PickerCommon {
             }
         }
 
-        // Set the filename (either from SuggestedSaveFile or SuggestedFileName)
+        // Set the filename (either from SuggestedSaveFilePath or SuggestedFileName)
         if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
         {
             check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
