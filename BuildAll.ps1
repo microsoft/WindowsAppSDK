@@ -306,7 +306,7 @@ Try {
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
 
-            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.lib" -destination "$BasePath\lib\native\$platformToRun" -force
+            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.lib" -destination "$BasePath\lib\win10-$platformToRun" -force
 
             if($platformToRun -eq "x86")
             {
@@ -424,7 +424,7 @@ Try {
         {
             build\Scripts\RobocopyWrapper.ps1 `
                 -Source "$PSScriptRoot\$BasePath\lib\win10-$platformToRun" `
-                -dest "$ComponentBasePath\lib\win-$platformToRun"
+                -dest "$ComponentBasePath\lib\native\$platformToRun"
 
             build\scripts\CopyContents.ps1 `
                 -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
@@ -443,8 +443,8 @@ Try {
         if ($platform.Split(",") -contains "x64")
         {
             build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\lib\win-x64" `
-                -dest "$ComponentBasePath\lib\win-arm64ec"
+                -Source "$ComponentBasePath\lib\native\x64" `
+                -dest "$ComponentBasePath\lib\native\arm64ec"
 
             build\Scripts\RobocopyWrapper.ps1 `
                 -Source "$ComponentBasePath\runtimes\win-x64" `
