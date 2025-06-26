@@ -124,4 +124,6 @@ public:
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
+
+    DEFINE_TRACELOGGING_EVENT_STRING(StoragePickerLocalizationLookupError, localizationKey);
 };
