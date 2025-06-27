@@ -119,5 +119,11 @@
   </resheader>
   <data name="All Files" xml:space="preserve">
     <value>All Files</value>
+  </data> 
+  <data name="Path Not Exists Title" xml:space="preserve">
+    <value>Location is not available</value>
+  </data>
+  <data name="Path Not Exists Message" xml:space="preserve">
+    <value>This location is unavailable. If the location is on this PC, make sure the device or drive is connected or the disc is inserted, and then try again. If the location is on a network, make sure you\x2019re connected to the network or Internet, and then try again. If the location still can\x2019t be found, it might have been moved or deleted.\x0d\x0a\x0d\x0a</value>
   </data>
 </root>
