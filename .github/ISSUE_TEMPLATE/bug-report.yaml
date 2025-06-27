@@ -53,8 +53,9 @@ body:
       multiple: true
       options:
         - "Insider Build (xxxxx)"
-        - "Windows 11 version 24H2 (22621, October 2024 Update)"
-        - "Windows 11 version 23H2 (22631, November 2023 Update)"
+        - "Windows 11 version 24H2 LTSC (26100, June Update)"
+        - "Windows 11 version 24H2 (26100, June 2025 Update)"
+        - "Windows 11 version 23H2 (22631, June 2025 Update)"
         - "Windows 11 version 22H2 (22621, 2022 Update)"
         - "Windows 11 version 21H2 (22000)"
         - "Windows 10 version 22H2 (19045, 2022 Update)"
