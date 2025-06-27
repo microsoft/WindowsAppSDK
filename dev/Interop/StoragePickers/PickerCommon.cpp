@@ -287,7 +287,7 @@ namespace PickerCommon {
                         // The messagebox won't block user from using the FileSavePicker Dialog.
                         // TODO: the message and label here needs globalization.
                         MessageBoxW(
-                            nullptr,
+                            this->HWnd,
                             std::format(L"{} is unavailable. If the location is on this PC, make sure the device or drive is connected or the disc is inserted, and then try again. If the location is on a network, make sure you\x2019re connected to the network or Internet, and then try again. If the location still can\x2019t be found, it might have been moved or deleted.",
                                 dirPath.c_str()).c_str(),
                             L"Location is not available",
