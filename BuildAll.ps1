@@ -426,7 +426,7 @@ Try {
         {
             build\Scripts\RobocopyWrapper.ps1 `
                 -Source "$PSScriptRoot\$BasePath\lib\win10-$platformToRun" `
-                -dest "$ComponentBasePath\lib\win-$platformToRun"
+                -dest "$ComponentBasePath\lib\native\$platformToRun"
 
             build\scripts\CopyContents.ps1 `
                 -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
@@ -446,8 +446,8 @@ Try {
         if ($platform.Split(",") -contains "x64")
         {
             build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\lib\win-x64" `
-                -dest "$ComponentBasePath\lib\win-arm64ec"
+                -Source "$ComponentBasePath\lib\native\x64" `
+                -dest "$ComponentBasePath\lib\native\arm64ec"
 
             build\Scripts\RobocopyWrapper.ps1 `
                 -Source "$ComponentBasePath\runtimes\win-x64" `
