@@ -6,7 +6,7 @@
   <PropertyGroup>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>
-    <_MrtLibFolder>$(MSBuildThisFileDirectory)..\..\lib\win-$(_MrtCoreRuntimeIdentifier)</_MrtLibFolder>
+    <_MrtLibFolder>$(MSBuildThisFileDirectory)..\..\lib\native\$(_MrtCoreRuntimeIdentifier)</_MrtLibFolder>
     <_MrtLibFolder Condition="'$(WindowsAppSDKAggregatePackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\lib\win10-$(_MrtCoreRuntimeIdentifier)</_MrtLibFolder>
 
     <!-- Set DefaultLanguage so that Multilingual Application Toolkit can be enabled when applicable -->
