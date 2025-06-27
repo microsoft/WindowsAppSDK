@@ -22,6 +22,33 @@ resources:
       ref: refs/heads/main
 
 stages:
+- stage: test stage
+  displayName: 'test stage'
+  jobs:
+  - job: test job
+    displayName: 'test job'
+    pool:
+      type: windows
+      isCustom: true
+      name: WinAppSDK-Test-Pool
+      demands: ImageOverride -equals WinAppSDK-Test-Pool
+    steps:
+    - task: PublishTestResults@2
+      displayName: 'test publish'
+      condition: always()
+      inputs:
+        testResultsFormat: xUnit
+        testResultsFiles: test.xml
+        searchFolder: '$(Build.SourcesDirectory)\test'
+        mergeTestResults: true
+        failTaskOnFailedTests: true
+        testRunTitle: 'test'
+        buildPlatform: x64
+        buildConfiguration: release
+
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Steps.yml@self
+
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml@self
