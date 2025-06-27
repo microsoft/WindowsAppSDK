@@ -22,11 +22,11 @@ resources:
       ref: refs/heads/main
 
 stages:
-- stage: test stage
-  displayName: 'test stage'
+- stage: teststage
+  displayName: 'testStage'
   jobs:
-  - job: test job
-    displayName: 'test job'
+  - job: testjob
+    displayName: 'testJob'
     pool:
       type: windows
       isCustom: true
