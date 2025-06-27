@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WindowsPerformanceRecorder Version="1.0" Author="Microsoft Corporation" Copyright="Microsoft Corporation" Company="Microsoft Corporation">
+  <Profiles>
+    <SystemCollector Id="SystemCollector" Name="NT Kernel Logger">
+        <BufferSize Value="1024"/>
+        <Buffers Value="32"/>
+    </SystemCollector>
+
+    <EventCollector Id="EventCollector_WDGDEPAdex" Name="WDGDEPAdexCollector">
+      <BufferSize Value="256" />
+      <Buffers Value="32" />
+    </EventCollector>
+
+    <SystemProvider Id="SystemProviderVerbose">
+      <Keywords>
+        <Keyword Value="ProcessThread"/>
+        <Keyword Value="Loader"/>
+      </Keywords>
+    </SystemProvider>
+
+    <!-- <EventProvider Id="Microsoft.Windows.AppXDeploymentServer" Name="fe762fb1-341a-4dd4-b399-be1868b3d918" Stack="true"> -->
+    <EventProvider Id="Microsoft.Windows.AppXDeploymentServer" Name="fe762fb1-341a-4dd4-b399-be1868b3d918">
+    </EventProvider>
+
+    <Profile Id="WDGDEPAdex.Verbose.File" Name="WDGDEPAdex" Description="Microsoft-Windows-WDG-Adex" LoggingMode="File" DetailLevel="Verbose">
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector">
+            <SystemProviderId Value="SystemProviderVerbose"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WDGDEPAdex">
+          <EventProviders>
+            <!-- WPRP puts EventProviderId elements before EventProvider elements -->
+            <EventProviderId Value="Microsoft.Windows.AppXDeploymentServer"/>
+
+            <!-- Unless otherwise specified, WPR captures with keywords 0xFFFFFFFFFFFF and level 0xFF, which is 'everything' -->
+            <!-- WPP providers are special and need to explicitly specify keyword -->
+
+            <EventProvider Id="Microsoft.Windows.AppXDeploymentExtensions" Name="d9e5f8fb-06b1-4796-8fa8-abb07f4fc662"/>
+            <EventProvider Id="Microsoft.Windows.AppXDeploymentClient.WPP" Name="8FD4B82B-602F-4470-8577-CBB56F702EBF">
+              <Keywords>
+                <Keyword Value="0xFFFFFFFFFFFF"/>
+              </Keywords>
+            </EventProvider>
+            <EventProvider Id="Microsoft.Windows.AppXDeploymentClient" Name="b89fa39d-0d71-41c6-ba55-effb40eb2098"/>
+
+            <EventProvider Id="Microsoft-Windows-AppxPackagingOM" Name="BA723D81-0D0C-4F1E-80C8-54740F508DDF"/>
+            <EventProvider Id="Microsoft.Windows.AppxPackaging" Name="fe0ab4b4-19b6-485b-89bb-60fd931fdd56"/>
+
+            <!-- Deployment server has both tracelogging & manifested. Note the BA44.. is WPP and many not show in WPA -->
+            <EventProvider Id="Microsoft.Windows.AppXDeployment.Server" Name="3F471139-ACB7-4A01-B7A7-FF5DA4BA2D43"/>
+            <EventProvider Id="Microsoft.Windows.AppXDeploymentServer.WPP" Name="BA44067A-3C4B-459C-A8F6-18F0D3CF0870">
+              <Keywords>
+                <Keyword Value="0xFFFFFFFFFFFF"/>
+              </Keywords>
+            </EventProvider>
+            <EventProvider Id="Microsoft-Windows-AppXDeploymentFallback" Name="aa1b41d3-d193-4660-9b47-dd701ba55841"/>
+            <EventProvider Id="Microsoft-Windows-AppXDeployment" Name="8127F6D4-59F9-4abf-8952-3E3A02073D5F"/>
+
+            <EventProvider Id="Microsoft.Windows.AppModel.TileDataModel" Name="594bf743-ce2e-48ee-83ee-3d50a0add692"/>
+            <EventProvider Id="Microsoft.Windows.AppModel.Tiles" Name="98CCAAD9-6464-48D7-9A66-C13718226668"/>
+
+            <!-- StateRepository has manifested & tracelogging events -->
+            <EventProvider Id="Microsoft.Windows.StateRepository" Name="89592015-D996-4636-8F61-066B5D4DD739"/>
+            <EventProvider Id="Microsoft.Windows.StateRepository.Common" Name="1ded4f74-5def-425d-ae55-4fd4e9bbe0a7"/>
+            <EventProvider Id="Microsoft.Windows.StateRepository.Client" Name="a89336e8-e6cf-485c-9c6a-ddb6614f278a"/>
+            <EventProvider Id="Microsoft.Windows.StateRepository.Broker" Name="312326fa-036d-4888-bc77-c3de2ff9ae06"/>
+            <EventProvider Id="Microsoft.Windows.StateRepository.Service" Name="551ff9b3-0b7e-4408-b008-0068c8da2ff1"/>
+            <EventProvider Id="Microsoft.Windows.StateRepository.Tools" Name="7237c668-b9a2-4fbd-9987-87d4502b9e00"/>
+            <EventProvider Id="Microsoft.Windows.StateRepository.Upgrade" Name="80a49605-87cb-4480-be97-d6ccb3dde5f2"/>
+
+            <EventProvider Id="Microsoft-OneCore-AppModel-Autologger" Name="3C42000F-CC27-48C3-A005-48F6E38B131F"/>
+            <EventProvider Id="Microsoft-WindowsPhone-AppPlatProvider-Test1" Name="1230dd62-03b6-4a26-92f5-06374d678571"/>
+            <EventProvider Id="Microsoft-WindowsPhone-AppPlatProvider-Test2" Name="EB65A492-86C0-406A-BACE-9912D595BD69"/>
+
+            <!-- State and ApplicationData -->
+            <EventProvider Id="Microsoft.Windows.AppModel.Runtime" Name="F1EF270A-0D32-4352-BA52-DBAB41E1D859"/>
+            <EventProvider Id="Microsoft.Windows.AppModel.State" Name="BFF15E13-81BF-45EE-8B16-7CFEAD00DA86"/>
+            <EventProvider Id="Microsoft.Windows.AppModel.StateManagerTelemetry" Name="41B5F6E6-F53C-4645-A991-135C2011C074" />
+            <EventProvider Id="Microsoft-Windows-Roaming" Name="5B5AB841-7D2E-4A95-BB4F-095CDF66D8F0"/>
+            <EventProvider Id="Microsoft-Windows-SettingMonitor" Name="c1779399-4943-4610-83ec-cace7da7c2df"/>
+            <EventProvider Id="Microsoft-Windows-SettingSyncCore" Name="83D6E83B-900B-48a3-9835-57656B6F6474"/>
+            <EventProvider Id="Microsoft-Windows-StateManager" Name="BFF15E13-81BF-45EE-8B16-7CFEAD00DA86"/>
+
+            <!-- CoreUIComponents has manifested events -->
+            <EventProvider Id="Microsoft-WindowsPhone-CoreUIComponents" Name="a0b7550f-4e9a-4f03-ad41-b8042d06a2f7"/>
+
+            <!-- COM -->
+            <EventProvider Id="ComBaseTraceLoggingProvider" Name="1aff6089-e863-4d36-bdfd-3581f07440be"/>
+
+            <!-- CLIP -->
+            <EventProvider Id="Microsoft-Client-Licensing-Platform-Instrumentation" Name="B6CC0D55-9ECC-49A8-B929-2B9022426F2A"/>
+            <EventProvider Id="Microsoft.Windows.LicenseManager.Telemetry" Name="AF9F58EC-0C04-4BE9-9EB5-55FF6DBE72D7"/>
+            <EventProvider Id="ClipSvcProvider" Name="6AF9E939-1D95-430A-AFA3-7526FADEE37D">
+              <Keywords>
+                <Keyword Value="0x4000000000000000"/>
+              </Keywords>
+            </EventProvider>
+
+            <!-- Activation Execution -->
+            <EventProvider Id="Microsoft.Windows.ResourceManager.Info" Name="4180c4f7-e238-5519-338f-ec214f0b49aa" />
+            <EventProvider Id="Microsoft.Windows.ResourceManager.Verbose" Name="4180c4f7-e238-5519-338f-ec214f0b49aa" />
+            <EventProvider Id="Microsoft-WindowsPhone-ExecManLogPublisher" Name="82c8ad90-5f3c-11be-bd9a-85bb5f50dfa4" />
+            <EventProvider Id="Microsoft.Windows.BackgroundManager" Name="1941f2b9-0939-5d15-d529-cd333c8fed83" />
+            <EventProvider Id="Microsoft.Windows.BrokerInfrastructure" Name="63b6c2d2-0440-44de-a674-aa51a251b123" />
+            <EventProvider Id="Microsoft-Windows-ProcessStateManager" Name="D49918CF-9489-4BF1-9D7B-014D864CF71F" />
+            <EventProvider Id="Microsoft-Windows-AppModel-Exec" Name="EB65A492-86C0-406A-BACE-9912D595BD69" />
+            <EventProvider Id="Microsoft.Windows.AppLifeCycle" Name="EF00584A-2655-462C-BC24-E7DE630E7FBF" />
+            <EventProvider Id="Microsoft.Windows.ResourcePolicy" Name="969e8d6b-df02-56e3-a058-ec3bef103534" />
+            <EventProvider Id="Microsoft.Windows.ProcessStateManager" Name="0001376b-930d-50cd-2b29-491ca938cd54" />
+            <EventProvider Id="Microsoft.Windows.ProcessLifetimeManager" Name="072665fb-8953-5a85-931d-d06aeab3d109" />
+            <EventProvider Id="Microsoft.Windows.ForegroundManager" Name="aa6f6a10-8a13-417d-8799-52361684bd76" />
+            <EventProvider Id="Microsoft.Windows.ActivationManager" Name="cf7f94b3-08dc-5257-422f-497d7dc86ab3" />
+            <EventProvider Id="Microsoft.Windows.Application.Service" Name="ac01ece8-0b79-5cdb-9615-1b6a4c5fc871" />
+            <EventProvider Id="Activation" Name="cf7f94b3-08dc-5257-422f-497d7dc86ab3" />
+            <EventProvider Id="Microsoft.Windows.ApplicationModel.DesktopAppx" Name="5526aed1-f6e5-5896-cbf0-27d9f59b6be7" />
+            <EventProvider Id="Microsoft.Windows.Desktop.Shell.ViewManagerInterop" Name="15322370-3694-59f5-f979-0c7a918b81da" />
+            <EventProvider Id="ViewManagerInterop" Name="D75DF9F1-5F3D-49D0-9D15-2A55BD1C012E" />
+            <EventProvider Id="Microsoft.Windows.Shell.UwpWindowLifecycleManagement" Name="a27b9863-9b2c-4f89-84fc-7d98bf921da1" />
+            <EventProvider Id="Microsoft.OneCore.WindowManagement" Name="cf5838d7-9fdc-5907-a62c-abd41de9d862" />
+            <EventProvider Id="Microsoft.OneCore.WindowManagementApi" Name="329cc1e5-3d02-4c6f-b411-0299be591cd7" />
+
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+  </Profiles>
+</WindowsPerformanceRecorder>
