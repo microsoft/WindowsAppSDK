@@ -59,6 +59,8 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Common
 // Use init_seg(lib) to ensure this static object is initialized during the "lib" phase,
 // which occurs before user-defined static objects. This guarantees that WindowsAppRuntime
 // auto-initialization completes before any application static globals that might depend on it.
+#pragma warning(disable : 4073)
 #pragma init_seg(lib)
     static AutoInitialize g_autoInitialize;
+#pragma warning(default : 4073)
 }
