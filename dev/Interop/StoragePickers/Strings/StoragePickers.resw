@@ -120,4 +120,7 @@
   <data name="All Files" xml:space="preserve">
     <value>All Files</value>
   </data>
+  <data name="Location Not Available Message" xml:space="preserve">
+    <value>{} is unavailable. If the location is on this PC, make sure the device or drive is connected or the disc is inserted, and then try again. If the location is on a network, make sure you\x2019re connected to the network or Internet, and then try again. If the location still can\x2019t be found, it might have been moved or deleted.</value>
+  </data>
 </root>
