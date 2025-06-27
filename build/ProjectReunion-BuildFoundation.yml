@@ -31,7 +31,7 @@ stages:
       type: windows
       isCustom: true
       name: 'WinAppSDK-Test-Pool'
-      demands: ImageOverride -equals 'WinAppSDK-Test-Pool'
+      demands: ImageOverride -equals 'Windows.Server.2025.DataCenter'
     steps:
     - task: PublishTestResults@2
       displayName: 'test publish'
