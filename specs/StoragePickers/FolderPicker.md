@@ -19,7 +19,6 @@ runtimeclass FolderPicker
     FolderPicker(Microsoft.UI.WindowId windowId);
 
     string CommitButtonText;
-    IVector<string> FileTypeFilter{ get; };
 
     PickerLocationId SuggestedStartLocation;
     PickerViewMode ViewMode;

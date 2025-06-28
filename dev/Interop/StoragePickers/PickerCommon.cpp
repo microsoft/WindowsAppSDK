@@ -2,10 +2,14 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include "shellapi.h"
 #include "PickerCommon.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
+#include "shobjidl_core.h"
 #include <KnownFolders.h>
+#include <filesystem>
+#include <format>
 
 
 namespace {
@@ -248,5 +252,63 @@ namespace PickerCommon {
         }
 
         check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+    }
+
+    /// <summary>
+    /// Configure the FileSaveDialog, this is only for FileSavePicker.
+    /// </summary>
+    /// <param name="dialog"></param>
+    void PickerParameters::ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog)
+    {
+        winrt::hstring fileNameToSet;
+        if (!IsHStringNullOrEmpty(SuggestedFileName))
+        {
+            fileNameToSet = SuggestedFileName;
+        }
+        
+        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
+        {
+            auto suggestedPath = std::filesystem::path{ SuggestedSaveFilePath.c_str() };
+            if (!suggestedPath.empty())
+            {
+                // Force the directory of SuggestedSaveFilePath (if exist)
+                //      to be the starting location of save picker Dialog
+                auto dirPath = suggestedPath.parent_path();
+                if (!dirPath.empty())
+                {
+                    winrt::com_ptr<IShellItem> shellItem;
+                    HRESULT hr = SHCreateItemFromParsingName(dirPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
+                    if (SUCCEEDED(hr))
+                    {
+                        check_hresult(dialog->SetFolder(shellItem.get()));
+                    }
+                    else
+                    {
+                        // The messagebox won't block user from using the FileSavePicker Dialog.
+                        // TODO: the message and label here needs globalization.
+                        MessageBoxW(
+                            this->HWnd,
+                            std::format(L"{} is unavailable. If the location is on this PC, make sure the device or drive is connected or the disc is inserted, and then try again. If the location is on a network, make sure you\x2019re connected to the network or Internet, and then try again. If the location still can\x2019t be found, it might have been moved or deleted.",
+                                dirPath.c_str()).c_str(),
+                            L"Location is not available",
+                            MB_OK | MB_ICONWARNING);
+                    }
+                }
+
+                // Extract filename and use it (takes precedence over SuggestedFileName)
+                std::wstring fileName = suggestedPath.filename().wstring();
+                if (!fileName.empty())
+                {
+                    fileNameToSet = winrt::hstring(fileName);
+                }
+            }
+        }
+
+        // Set the filename (either from SuggestedSaveFilePath or SuggestedFileName)
+        if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
+        {
+            check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
+        }
+
     }
 }

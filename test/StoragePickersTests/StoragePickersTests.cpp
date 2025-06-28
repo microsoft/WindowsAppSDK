@@ -172,6 +172,9 @@ namespace Test::StoragePickersTests
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
 
+            picker.SuggestedSaveFilePath(L"C:\\temp\\MyFile1.txt");
+            VERIFY_ARE_EQUAL(picker.SuggestedSaveFilePath(), L"C:\\temp\\MyFile1.txt");
+
             auto filters = winrt::single_threaded_vector<winrt::hstring>();
             filters.Append(L"*");
             picker.FileTypeChoices().Insert(L"All Files", filters);
@@ -198,9 +201,6 @@ namespace Test::StoragePickersTests
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
-
-            picker.FileTypeFilter().Append(L"*");
-            VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
         }
     };
 }
