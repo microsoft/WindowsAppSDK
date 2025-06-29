@@ -27,3 +27,4 @@
 #include <winrt/Windows.System.h>
 
 #include <appmodel.identity.h>
+#include <microsoft.foundation.string.h>

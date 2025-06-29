@@ -7,9 +7,11 @@
 
 namespace winrt::Microsoft::Windows::ApplicationModel::implementation
 {
-    struct Package : PackageT<Package>
+    struct Package
     {
-        static winrt::hstring FindPackageFile(winrt::hstring const& PackageFullName, winrt::hstring const& filename);
+        Package() = default;
+
+        static hstring FindPackageFile(hstring const& packageFullName, hstring const& filename);
     };
 }
 namespace winrt::Microsoft::Windows::ApplicationModel::factory_implementation

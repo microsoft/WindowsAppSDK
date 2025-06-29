@@ -91,7 +91,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
         parameters.ConfigureDialog(dialog);
-        check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
+        check_hresult(dialog->SetFileTypeIndex(static_cast<UINT>(parameters.FileTypeFilterPara.size())));
 
         {
             auto hr = dialog->Show(parameters.HWnd);
@@ -144,7 +144,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
         parameters.ConfigureDialog(dialog);
-        check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
+        check_hresult(dialog->SetFileTypeIndex(static_cast<UINT>(parameters.FileTypeFilterPara.size())));
 
         FILEOPENDIALOGOPTIONS dialogOptions;
         check_hresult(dialog->GetOptions(&dialogOptions));

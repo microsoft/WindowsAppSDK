@@ -43,7 +43,7 @@ inline std::wstring GetPackagePath(PCWSTR packageFullName, PackagePathType packa
     // as an optimization and fallback to dynamic allocation if need be
     WCHAR path[MAX_PATH]{};
     UINT32 pathLength{ ARRAYSIZE(path) };
-    const auto rc{ ::GetPackagePathByFullName2(packageFullName, packageInfoType, &pathLength, path) };
+    const auto rc{ ::GetPackagePathByFullName2(packageFullName, packagePathType, &pathLength, path) };
     if (rc == ERROR_SUCCESS)
     {
         return std::wstring{ path };
@@ -56,7 +56,7 @@ inline std::wstring GetPackagePath(PCWSTR packageFullName, PackagePathType packa
     // It's bigger than a breadbox. Allocate memory
     std::unique_ptr<WCHAR[]> pathBuffer{ std::make_unique<WCHAR[]>(pathLength) };
     THROW_IF_NULL_ALLOC(pathBuffer);
-    THROW_IF_WIN32_ERROR(::GetPackagePathByFullName2(packageFullName, packageInfoType, &pathLength, pathBuffer.get()));
+    THROW_IF_WIN32_ERROR(::GetPackagePathByFullName2(packageFullName, packagePathType, &pathLength, pathBuffer.get()));
     return std::wstring(pathBuffer.get());
 }
 

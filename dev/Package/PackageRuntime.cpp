@@ -5,7 +5,6 @@
 
 #include "PackageRuntime.h"
 
-
 namespace appmodel
 {
 inline std::wstring get_package_path(PCWSTR packageFullName, PackagePathType packagePathType)
@@ -14,7 +13,7 @@ inline std::wstring get_package_path(PCWSTR packageFullName, PackagePathType pac
     // as an optimization and fallback to dynamic allocation if need be
     WCHAR path[MAX_PATH]{};
     uint32_t pathLength{ ARRAYSIZE(path) };
-    const auto rc{ ::GetPackagePathByFullName2(packageFullName, packageInfoType, &pathLength, path) };
+    const auto rc{ ::GetPackagePathByFullName2(packageFullName, packagePathType, &pathLength, path) };
     if (rc == ERROR_SUCCESS)
     {
         return path;
@@ -35,11 +34,6 @@ inline std::wstring get_package_path(PCWSTR packageFullName, PackagePathType pac
     return std::wstring{ pathBuffer.get() };
 }
 
-inline std::wstring get_package_path(PCWSTR packageFullName)
-{
-    return get_package_path(packageFullName, PackagePathType_Install);
-}
-
 inline std::filesystem::path get_package_file(
     PCWSTR packageFullName,
     PCWSTR filename,
@@ -48,7 +42,7 @@ inline std::filesystem::path get_package_file(
     std::filesystem::path absoluteFilename;
 
     auto packagePath{ appmodel::get_package_path(packageFullName, packagePathType) };
-    if (!path.empty())
+    if (!packagePath.empty())
     {
         absoluteFilename = packagePath;
         absoluteFilename /= filename;
@@ -64,7 +58,7 @@ inline std::filesystem::path get_package_file(
     PCWSTR packageFullName,
     PCWSTR filename)
 {
-    auto path{ get_package_file(packageFullName, filename, PackagePathType_External) };
+    auto path{ get_package_file(packageFullName, filename, PackagePathType_EffectiveExternal) };
     if (path.empty())
     {
         path = get_package_file(packageFullName, filename, PackagePathType_Mutable);
@@ -84,11 +78,11 @@ STDAPI FindPackageFile(
 {
     *packageFile = nullptr;
 
-    RETURN_HR_IF(E_INVALIDARG, !filename || (filename[0] == L'\0'));
+    RETURN_HR_IF(E_INVALIDARG, ::Microsoft::Foundation::String::IsNullOrEmpty(filename));
 
     // If packageFullName = NULL or "" use the caller's package identity
     WCHAR packageFullNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
-    if (!packageFullName || (packageFullName[0] == L'\0'))
+    if (::Microsoft::Foundation::String::IsNullOrEmpty(packageFullName))
     {
         uint32_t packageFullNameBufferLength{ ARRAYSIZE(packageFullNameBuffer) };
         THROW_IF_FAILED(::GetCurrentPackageFullName(&packageFullNameBufferLength, packageFullNameBuffer));

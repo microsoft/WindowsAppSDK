@@ -11,6 +11,6 @@ namespace Microsoft.Windows.ApplicationModel
     [contract(PackageRuntimeContract, 1)]
     runtimeclass Package
     {
-        static String FindPackageFile(String PackageFullName, String filename);
+        static String FindPackageFile(String packageFullName, String filename);
     };
 }

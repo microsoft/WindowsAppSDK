@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{7cf52890-56fa-47e2-84fb-68ee274324b6}</ItemsProjectGuid>
+    <ItemsProjectGuid>{3D652B4A-AC29-4BA2-A2CA-2ACC08EAD1E9}</ItemsProjectGuid>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -21,6 +21,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.A.Package.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageRuntime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageTelemetry.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)Package.idl" />
