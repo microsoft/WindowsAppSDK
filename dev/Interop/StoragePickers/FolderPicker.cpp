@@ -8,8 +8,10 @@
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
+#include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
+#include "PickerLocalization.h" 
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -61,7 +63,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.CommitButtonText = m_commitButtonText;
         parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
-        parameters.FileTypeFilterPara = PickerCommon::CaptureFilterSpec(parameters.FileTypeFilterData, m_fileTypeFilter.GetView());
+        parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
 
 
@@ -73,8 +75,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
-        CaptureParameters(parameters);
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 
+        CaptureParameters(parameters);
+        
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();

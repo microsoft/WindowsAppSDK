@@ -262,7 +262,8 @@ namespace WindowsAppRuntimeInstaller
         const ProcessorArchitecture& systemArchitecture, const std::wstring& applicableSingletonResourceID)
     {
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
-        const auto forceDeployment{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) };
+        auto isSingleton{ CompareStringOrdinal(resource.id.c_str(), static_cast<int>(resource.id.size()), applicableSingletonResourceID.c_str(), static_cast<int>(applicableSingletonResourceID.size()), TRUE) == CSTR_EQUAL };
+        const auto forceDeployment{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) || isSingleton };
         auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
 
         installActivityContext.SetInstallStage(InstallStage::GetPackageProperties);
@@ -352,7 +353,8 @@ namespace WindowsAppRuntimeInstaller
         {
            installActivityContext.SetInstallStage(InstallStage::RegisterPackage);
 
-            // Re-register higher version of the package that is already installed.
+           // Re-register higher version of the package that is already installed.
+           // The Singleton package will always set true for forceDeployment and the running process will be terminated to update the package.
            hrDeploymentResult = RegisterPackage(installActivityContext, installActivityContext.GetExistingPackageIfHigherVersion().c_str(), forceDeployment);
 
            // Clear the package higher version after it has been re-registered 
@@ -372,6 +374,7 @@ namespace WindowsAppRuntimeInstaller
 
             // Add-or-Stage the package
             Uri packageUri{ packageFilename };
+            // The Singleton package will always set true for forceDeployment and the running process will be terminated to update the package.
             hrDeploymentResult = AddOrStagePackage(installActivityContext, packageUri, packageProperties, forceDeployment);
         }
         if (!quiet)
@@ -381,13 +384,10 @@ namespace WindowsAppRuntimeInstaller
         }
         THROW_IF_FAILED(hrDeploymentResult);
 
-        // If successful install is for Singleton package, restart Push Notifications Long Running Platform when ForceDeployment option is applied.
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment))
+        // If successful install is for Singleton package, restart Push Notifications Long Running Platform always.
+        if (isSingleton)
         {
-            if (CompareStringOrdinal(resource.id.c_str(), static_cast<int>(resource.id.size()), applicableSingletonResourceID.c_str(), static_cast<int>(applicableSingletonResourceID.size()), TRUE) == CSTR_EQUAL)
-            {
-                RestartPushNotificationsLRP();
-            }
+            RestartPushNotificationsLRP();
         }
 
         // Framework provisioning is not supported by the PackageManager ProvisionPackageForAllUsersAsync API.

@@ -2,21 +2,16 @@
 // Licensed under the MIT License.
 
 #pragma once
-#include "pch.h"
 #include "ShObjIdl.h"
-#include "wil/cppwinrt.h"
 #include "winrt/base.h"
 #include "winrt/Microsoft.Windows.Storage.Pickers.h"
-#include "TerminalVelocityFeatures-StoragePickers.h"
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
-
-    std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);
-    std::vector<COMDLG_FILTERSPEC> CaptureFilterSpec(std::vector<winrt::hstring>& buffer, winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
+    const winrt::hstring AllFilesLocalizationKey = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
 
@@ -27,6 +22,13 @@ namespace PickerCommon {
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId PickerLocationId;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
+        winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
+
+        winrt::hstring FormatExtensionWithWildcard(winrt::hstring extension);
+        winrt::hstring JoinExtensions(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> extensions);
+
+        void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);
+        void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
     };

@@ -44,7 +44,7 @@ namespace Microsoft.Windows.Foundation
         }
 
         /// Return a C# Decimal object.
-        public static decimal FromDecimalValue(this decimal d, Microsoft.Windows.Foundation.DecimalValue value)
+        public static decimal ToDecimal(this decimal d, Microsoft.Windows.Foundation.DecimalValue value)
         {
             int low32 = (int)(value.Lo64 & 0x00000000FFFFFFFF);
             int mid32 = (int)((value.Lo64 >> 32) & 0x00000000FFFFFFFF);
