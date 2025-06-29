@@ -12,7 +12,7 @@ resources:
     - repository: WindowsAppSDKConfigSourceBranch
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      ref: refs/heads/release/1.8-stable
 
 jobs:
 - job: PreChecks
