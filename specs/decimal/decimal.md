@@ -521,37 +521,6 @@ public:
 
 public:
     /// Parse the string using the user's default locale.
-    static decimal from_string_view(const std::string_view& source);
-
-    /// Parse the string using the invariant locale.
-    static decimal from_string_view_invariant(const std::string_view& source);
-
-    /// Parse the string using the specified locale.
-    /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName="" for the invariant locale.
-    /// @note localeName=NULL for the user default locale.
-    static decimal from_string_view(const std::string_view& source, const std::string_view& localeName);
-
-    /// Parse the string using the specified locale.
-    /// @note localeName="!x-sys-default-locale" for the system default locale.
-    /// @note localeName="" for the invariant locale.
-    /// @note localeName=NULL for the user default locale.
-    static decimal from_string_view(const std::string_view& source, PCSTR localeName);
-
-    /// Parse the string using the user's default locale.
-    static bool try_from_string_view(const std::string_view& source, decimal& value);
-
-    /// Parse the string using the invariant locale.
-    static bool try_from_string_view_invariant(const std::string_view& source, decimal& value);
-
-    /// Parse the string using the specified locale.
-    static bool try_from_string_view(const std::string_view& source, const std::string_view& localeName, decimal& value)
-
-    /// Parse the string using the specified locale.
-    static bool try_from_string_view(const std::string_view& source, const std::string_view& localeName, decimal& value);
-
-public:
-    /// Parse the string using the user's default locale.
     static decimal from_wstring(const std::wstring& source);
 
     /// Parse the string using the invariant locale.
@@ -580,37 +549,6 @@ public:
 
     /// Parse the string using the specified locale.
     static bool try_from_wstring(const std::wstring& source, PCWSTR localeName, decimal& value);
-
-public:
-    /// Parse the string using the user's default locale.
-    static decimal from_wstring_view(const std::wstring_view& source);
-
-    /// Parse the string using the invariant locale.
-    static decimal from_wstring_view_invariant(const std::wstring_view& source);
-
-    /// Parse the string using the specified locale.
-    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
-    static decimal from_wstring_view(const std::wstring_view& source, const std::wstring_view& localeName);
-
-    /// Parse the string using the specified locale.
-    /// @note localeName=LOCALE_NAME_SYSTEM_DEFAULT (L"!x-sys-default-locale") for the system default locale.
-    /// @note localeName=LOCALE_NAME_INVARIANT (L"") for the invariant locale.
-    /// @note localeName=LOCALE_NAME_USER_DEFAULT (NULL) for the user default locale.
-    static decimal from_wstring_view(const std::wstring_view& source, PCWSTR localeName);
-
-    /// Parse the string using the user's default locale.
-    static bool try_from_wstring_view(const std::wstring_view& source, decimal& value);
-
-    /// Parse the string using the invariant locale.
-    static bool try_from_wstring_view_invariant(const std::wstring_view& source, decimal& value);
-
-    /// Parse the string using the specified locale.
-    static bool try_from_wstring_view(const std::wstring_view& source, const std::wstring_view& localeName, decimal& value);
-
-    /// Parse the string using the specified locale.
-    static bool try_from_wstring_view(const std::wstring_view& source, PCWSTR localeName, decimal& value);
 
 public:
 #if defined(__hstring_h__) && defined(__WINSTRING_H_)
