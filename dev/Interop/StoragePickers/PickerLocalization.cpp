@@ -9,7 +9,7 @@
 #include "PickerLocalization.h"
 #include <winrt\base.h>
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
-#include <iostream>
+#include "StoragePickersTelemetry.h"
 
 namespace PickerLocalization {
     const winrt::hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
