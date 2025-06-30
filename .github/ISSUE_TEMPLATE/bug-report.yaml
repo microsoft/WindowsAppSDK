@@ -7,6 +7,7 @@ body:
     attributes:
       value: |
         For bugs related to WinUI, please open a bug on the [Microsoft.UI.Xaml repository](https://github.com/microsoft/microsoft-ui-xaml)
+        Please provide the title, description, and reproduction steps in English. Thank you!
   - type: textarea
     validations:
       required: true
