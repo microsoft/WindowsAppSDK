@@ -49,7 +49,7 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.WindowAppSDK.Version" Version="1.8.0">
+    <Dependency Name="Microsoft.WindowsAppSDK.Version" Version="1.8.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKConfig</Uri>
       <Sha>7425c8ed21b96fcc72bf04bd17a4f1d2ee870fc4</Sha>
     </Dependency>
