@@ -74,241 +74,713 @@
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.CameraCaptureUITests::APITests::VerifyRequestedVideoFormatsAreReadCorrectly" type="CameraCaptureUITests::APITests" method="VerifyRequestedVideoFormatsAreReadCorrectly" time="0.001" result="Pass" />
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.CameraCaptureUITests::APITests::VerifyMaxVideoResolutionValues" type="CameraCaptureUITests::APITests" method="VerifyMaxVideoResolutionValues" time="0.001" result="Pass" />
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.CameraCaptureUITests::APITests::VerifyMaxPhotoResolutionValues" type="CameraCaptureUITests::APITests" method="VerifyMaxPhotoResolutionValues" time="0.002" result="Pass" />
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor" type="Test::Decimal::Tests::DecimalTests" method="ctor" time="0.061" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_assign_move" type="Test::Decimal::Tests::DecimalTests" method="ctor_assign_move" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_decimal" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_decimal" time="0.044" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_bool" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_bool" time="0.061" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_int16" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_int16" time="0.069999999999999993" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_int32" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_int32" time="0.059" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_int64" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_int64" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_uint8" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_uint8" time="0.044" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_uint16" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_uint16" time="0.06699999999999999" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_uint32" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_uint32" time="0.072" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_uint64" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_uint64" time="0.049999999999999996" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_float" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_float" time="0.045" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_double" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_double" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_long" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_long" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_ulong" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_ulong" time="0.048" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_pcwstr" type="Test::Decimal::Tests::DecimalTests" method="from_pcwstr" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_invariant_pcwstr" type="Test::Decimal::Tests::DecimalTests" method="from_invariant_pcwstr" time="0.061" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_pcwstr_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_pcwstr_localename_system" time="0.063" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_string" type="Test::Decimal::Tests::DecimalTests" method="from_to_string" time="0.063" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_string_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_to_string_invariant" time="0.092" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_string_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_to_string_localename_system" time="0.062" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view" type="Test::Decimal::Tests::DecimalTests" method="from_string_view" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_invariant" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_localename_system" time="0.06" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_not_nullterminated" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_invariant_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_invariant_not_nullterminated" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_localename_system_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_localename_system_not_nullterminated" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_wstring" type="Test::Decimal::Tests::DecimalTests" method="from_to_wstring" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_wstring_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_to_wstring_invariant" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_wstring_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_to_wstring_localename_system" time="0.055999999999999994" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view" time="0.053" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_invariant" time="0.043" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_localename_system" time="0.048" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_not_nullterminated" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_invariant_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_invariant_not_nullterminated" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_localename_system_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_localename_system_not_nullterminated" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_HSTRING" type="Test::Decimal::Tests::DecimalTests" method="from_to_HSTRING" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_HSTRING_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_to_HSTRING_invariant" time="0.063" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_HSTRING_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_to_HSTRING_localename_system" time="0.048" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_hstring" type="Test::Decimal::Tests::DecimalTests" method="from_to_hstring" time="0.09" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_hstring_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_to_hstring_invariant" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_hstring_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_to_hstring_localename_system" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_bool" type="Test::Decimal::Tests::DecimalTests" method="compare_bool" time="0.063" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_int16" type="Test::Decimal::Tests::DecimalTests" method="compare_int16" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_int32" type="Test::Decimal::Tests::DecimalTests" method="compare_int32" time="0.066" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_int64" type="Test::Decimal::Tests::DecimalTests" method="compare_int64" time="0.044" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_uint8" type="Test::Decimal::Tests::DecimalTests" method="compare_uint8" time="0.048" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_uint16" type="Test::Decimal::Tests::DecimalTests" method="compare_uint16" time="0.045" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_uint32" type="Test::Decimal::Tests::DecimalTests" method="compare_uint32" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_uint64" type="Test::Decimal::Tests::DecimalTests" method="compare_uint64" time="0.062" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_float" type="Test::Decimal::Tests::DecimalTests" method="compare_float" time="0.066" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_double" type="Test::Decimal::Tests::DecimalTests" method="compare_double" time="0.044" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_long" type="Test::Decimal::Tests::DecimalTests" method="compare_long" time="0.065" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_ulong" type="Test::Decimal::Tests::DecimalTests" method="compare_ulong" time="0.045" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_string" type="Test::Decimal::Tests::DecimalTests" method="compare_string" time="0.064" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_decimal" type="Test::Decimal::Tests::DecimalTests" method="compare_decimal" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_pos" type="Test::Decimal::Tests::DecimalTests" method="operator_pos" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::is_valid" type="Test::Decimal::Tests::DecimalTests" method="is_valid" time="0.061" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::scale" type="Test::Decimal::Tests::DecimalTests" method="scale" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::sign" type="Test::Decimal::Tests::DecimalTests" method="sign" time="0.045" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::min_max" type="Test::Decimal::Tests::DecimalTests" method="min_max" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_neg" type="Test::Decimal::Tests::DecimalTests" method="operator_neg" time="0.048" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::abs" type="Test::Decimal::Tests::DecimalTests" method="abs" time="0.048" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::truncate" type="Test::Decimal::Tests::DecimalTests" method="truncate" time="0.045" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::floor" type="Test::Decimal::Tests::DecimalTests" method="floor" time="0.064" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ceil" type="Test::Decimal::Tests::DecimalTests" method="ceil" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::clamp" type="Test::Decimal::Tests::DecimalTests" method="clamp" time="0.049999999999999996" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_increment" type="Test::Decimal::Tests::DecimalTests" method="operator_increment" time="0.061" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_decrement" type="Test::Decimal::Tests::DecimalTests" method="operator_decrement" time="0.045" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_add" type="Test::Decimal::Tests::DecimalTests" method="operator_add" time="0.062" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_subtract" type="Test::Decimal::Tests::DecimalTests" method="operator_subtract" time="0.06699999999999999" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_multiply" type="Test::Decimal::Tests::DecimalTests" method="operator_multiply" time="0.06" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_divide" type="Test::Decimal::Tests::DecimalTests" method="operator_divide" time="0.044" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_mod" type="Test::Decimal::Tests::DecimalTests" method="operator_mod" time="0.065" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_round" type="Test::Decimal::Tests::DecimalTests" method="operator_round" time="0.045" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::math" type="Test::Decimal::Tests::DecimalTests" method="math" time="0.062" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_bool" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_bool" time="0.044" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_int16" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_int16" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_int32" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_int32" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_int64" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_int64" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_uint8" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_uint8" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_uint16" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_uint16" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_uint32" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_uint32" time="0.049999999999999996" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_uint64" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_uint64" time="0.062" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_single" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_single" time="0.061" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_double" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_double" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_string" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_string" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_string_invariant" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_string_invariant" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_string_locale_system_default" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_string_locale_system_default" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_bool" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_bool" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_int16" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_int16" time="0.063" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_int32" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_int32" time="0.065" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_int64" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_int64" time="0.06" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_uint8" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_uint8" time="0.063" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_uint16" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_uint16" time="0.062" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_uint32" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_uint32" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_uint64" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_uint64" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_float" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_float" time="0.06" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_double" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_double" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_string" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_string" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_decimal" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_decimal" time="0.063" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::is_valid" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="is_valid" time="0.09" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::scale" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="scale" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::sign" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="sign" time="0.064" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::min_max" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="min_max" time="0.059" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::negate" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="negate" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::abs" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="abs" time="0.064" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::truncate" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="truncate" time="0.062" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::floor" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="floor" time="0.062" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::ceiling" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="ceiling" time="0.045" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::clamp" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="clamp" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_add" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_add" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_subtract" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_subtract" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_multiply" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_multiply" time="0.047" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_divide" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_divide" time="0.063" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_mod" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_mod" time="0.046" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_round" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_round" time="0.048999999999999995" result="Warning">
-      </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::math" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="math" time="0.061" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor" type="Test::Decimal::Tests::DecimalTests" method="ctor" time="0.061" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_assign_move" type="Test::Decimal::Tests::DecimalTests" method="ctor_assign_move" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_decimal" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_decimal" time="0.044" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_bool" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_bool" time="0.061" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_int16" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_int16" time="0.069999999999999993" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_int32" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_int32" time="0.059" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_int64" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_int64" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_uint8" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_uint8" time="0.044" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_uint16" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_uint16" time="0.06699999999999999" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_uint32" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_uint32" time="0.072" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_uint64" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_uint64" time="0.049999999999999996" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_float" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_float" time="0.045" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_double" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_double" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_long" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_long" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_ulong" type="Test::Decimal::Tests::DecimalTests" method="ctor_to_assign_ulong" time="0.048" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_pcwstr" type="Test::Decimal::Tests::DecimalTests" method="from_pcwstr" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_invariant_pcwstr" type="Test::Decimal::Tests::DecimalTests" method="from_invariant_pcwstr" time="0.061" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_pcwstr_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_pcwstr_localename_system" time="0.063" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_string" type="Test::Decimal::Tests::DecimalTests" method="from_to_string" time="0.063" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_string_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_to_string_invariant" time="0.092" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_string_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_to_string_localename_system" time="0.062" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view" type="Test::Decimal::Tests::DecimalTests" method="from_string_view" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_invariant" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_localename_system" time="0.06" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_not_nullterminated" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_invariant_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_invariant_not_nullterminated" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_string_view_localename_system_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_string_view_localename_system_not_nullterminated" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_wstring" type="Test::Decimal::Tests::DecimalTests" method="from_to_wstring" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_wstring_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_to_wstring_invariant" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_wstring_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_to_wstring_localename_system" time="0.055999999999999994" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view" time="0.053" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_invariant" time="0.043" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_localename_system" time="0.048" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_not_nullterminated" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_invariant_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_invariant_not_nullterminated" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_wstring_view_localename_system_not_nullterminated" type="Test::Decimal::Tests::DecimalTests" method="from_wstring_view_localename_system_not_nullterminated" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_HSTRING" type="Test::Decimal::Tests::DecimalTests" method="from_to_HSTRING" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_HSTRING_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_to_HSTRING_invariant" time="0.063" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_HSTRING_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_to_HSTRING_localename_system" time="0.048" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_hstring" type="Test::Decimal::Tests::DecimalTests" method="from_to_hstring" time="0.09" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_hstring_invariant" type="Test::Decimal::Tests::DecimalTests" method="from_to_hstring_invariant" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_to_hstring_localename_system" type="Test::Decimal::Tests::DecimalTests" method="from_to_hstring_localename_system" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_bool" type="Test::Decimal::Tests::DecimalTests" method="compare_bool" time="0.063" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_int16" type="Test::Decimal::Tests::DecimalTests" method="compare_int16" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_int32" type="Test::Decimal::Tests::DecimalTests" method="compare_int32" time="0.066" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_int64" type="Test::Decimal::Tests::DecimalTests" method="compare_int64" time="0.044" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_uint8" type="Test::Decimal::Tests::DecimalTests" method="compare_uint8" time="0.048" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_uint16" type="Test::Decimal::Tests::DecimalTests" method="compare_uint16" time="0.045" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_uint32" type="Test::Decimal::Tests::DecimalTests" method="compare_uint32" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_uint64" type="Test::Decimal::Tests::DecimalTests" method="compare_uint64" time="0.062" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_float" type="Test::Decimal::Tests::DecimalTests" method="compare_float" time="0.066" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_double" type="Test::Decimal::Tests::DecimalTests" method="compare_double" time="0.044" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_long" type="Test::Decimal::Tests::DecimalTests" method="compare_long" time="0.065" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_ulong" type="Test::Decimal::Tests::DecimalTests" method="compare_ulong" time="0.045" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_string" type="Test::Decimal::Tests::DecimalTests" method="compare_string" time="0.064" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::compare_decimal" type="Test::Decimal::Tests::DecimalTests" method="compare_decimal" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_pos" type="Test::Decimal::Tests::DecimalTests" method="operator_pos" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::is_valid" type="Test::Decimal::Tests::DecimalTests" method="is_valid" time="0.061" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::scale" type="Test::Decimal::Tests::DecimalTests" method="scale" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::sign" type="Test::Decimal::Tests::DecimalTests" method="sign" time="0.045" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::min_max" type="Test::Decimal::Tests::DecimalTests" method="min_max" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_neg" type="Test::Decimal::Tests::DecimalTests" method="operator_neg" time="0.048" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::abs" type="Test::Decimal::Tests::DecimalTests" method="abs" time="0.048" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::truncate" type="Test::Decimal::Tests::DecimalTests" method="truncate" time="0.045" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::floor" type="Test::Decimal::Tests::DecimalTests" method="floor" time="0.064" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ceil" type="Test::Decimal::Tests::DecimalTests" method="ceil" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::clamp" type="Test::Decimal::Tests::DecimalTests" method="clamp" time="0.049999999999999996" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_increment" type="Test::Decimal::Tests::DecimalTests" method="operator_increment" time="0.061" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_decrement" type="Test::Decimal::Tests::DecimalTests" method="operator_decrement" time="0.045" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_add" type="Test::Decimal::Tests::DecimalTests" method="operator_add" time="0.062" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_subtract" type="Test::Decimal::Tests::DecimalTests" method="operator_subtract" time="0.06699999999999999" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_multiply" type="Test::Decimal::Tests::DecimalTests" method="operator_multiply" time="0.06" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_divide" type="Test::Decimal::Tests::DecimalTests" method="operator_divide" time="0.044" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_mod" type="Test::Decimal::Tests::DecimalTests" method="operator_mod" time="0.065" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::operator_round" type="Test::Decimal::Tests::DecimalTests" method="operator_round" time="0.045" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::math" type="Test::Decimal::Tests::DecimalTests" method="math" time="0.062" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_bool" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_bool" time="0.044" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_int16" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_int16" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_int32" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_int32" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_int64" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_int64" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_uint8" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_uint8" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_uint16" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_uint16" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_uint32" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_uint32" time="0.049999999999999996" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_uint64" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_uint64" time="0.062" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_single" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_single" time="0.061" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_double" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_double" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_string" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_string" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_string_invariant" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_string_invariant" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::from_to_string_locale_system_default" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="from_to_string_locale_system_default" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_bool" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_bool" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_int16" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_int16" time="0.063" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_int32" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_int32" time="0.065" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_int64" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_int64" time="0.06" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_uint8" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_uint8" time="0.063" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_uint16" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_uint16" time="0.062" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_uint32" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_uint32" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_uint64" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_uint64" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_float" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_float" time="0.06" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_double" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_double" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_string" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_string" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::compare_decimal" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="compare_decimal" time="0.063" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::is_valid" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="is_valid" time="0.09" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::scale" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="scale" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::sign" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="sign" time="0.064" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::min_max" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="min_max" time="0.059" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::negate" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="negate" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::abs" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="abs" time="0.064" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::truncate" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="truncate" time="0.062" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::floor" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="floor" time="0.062" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::ceiling" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="ceiling" time="0.045" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::clamp" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="clamp" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_add" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_add" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_subtract" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_subtract" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_multiply" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_multiply" time="0.047" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_divide" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_divide" time="0.063" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_mod" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_mod" time="0.046" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::operator_round" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="operator_round" time="0.048999999999999995" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
+      </test>
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::DecimalValue::Tests::DecimalTest_WinRT::math" type="Test::DecimalValue::Tests::DecimalTest_WinRT" method="math" time="0.061" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: ]]></message>
+        </failure>
       </test>
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.UnitTests::StaticAtomPoolUnitTests::New_ParamChecks" type="UnitTests::StaticAtomPoolUnitTests" method="New_ParamChecks" time="0.002" result="Pass" />
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.UnitTests::StaticAtomPoolUnitTests::SimpleTests#SimpleCaseSensitive" type="UnitTests::StaticAtomPoolUnitTests" method="SimpleTests#SimpleCaseSensitive" time="0.011" result="Pass" />
@@ -598,55 +1070,155 @@
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.UnitTest::BasicTest::InvalidResource" type="UnitTest::BasicTest" method="InvalidResource" time="0.001" result="Pass" />
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.UnitTest::BasicTest::RepeatedCalls" type="UnitTest::BasicTest" method="RepeatedCalls" time="0.028999999999999998" result="Pass" />
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.UnitTest::BasicTest::RepeatedInits" type="UnitTest::BasicTest" method="RepeatedInits" time="0.11399999999999999" result="Pass" />
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.UnitTest::BasicTest::GetFilePath" type="UnitTest::BasicTest" method="GetFilePath" time="0.061" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.UnitTest::BasicTest::GetFilePath" type="UnitTest::BasicTest" method="GetFilePath" time="0.061" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Error]: AreEqual(MrmGetFilePathFromName(L"something.pri", &path), S_OK) - Values (-2147024894, 0) [File \dev\MRTCore\mrt\Core\UnitTests\MrmTests.cpp Line: 687]]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetStringTest" type="ManagedTest.ResourceLoaderTest" method="GetStringTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetStringTest" type="ManagedTest.ResourceLoaderTest" method="GetStringTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetStringTest_NonDefaultNamespace" type="ManagedTest.ResourceLoaderTest" method="GetStringTest_NonDefaultNamespace" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetStringTest_NonDefaultNamespace" type="ManagedTest.ResourceLoaderTest" method="GetStringTest_NonDefaultNamespace" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetStringForUriTest" type="ManagedTest.ResourceLoaderTest" method="GetStringForUriTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetStringForUriTest" type="ManagedTest.ResourceLoaderTest" method="GetStringForUriTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetStringForUriTest_ImplicitRootNamespace" type="ManagedTest.ResourceLoaderTest" method="GetStringForUriTest_ImplicitRootNamespace" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetStringForUriTest_ImplicitRootNamespace" type="ManagedTest.ResourceLoaderTest" method="GetStringForUriTest_ImplicitRootNamespace" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetDefaultResourceFilePathTest" type="ManagedTest.ResourceLoaderTest" method="GetDefaultResourceFilePathTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.GetDefaultResourceFilePathTest" type="ManagedTest.ResourceLoaderTest" method="GetDefaultResourceFilePathTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.ReturnSameResultAsResourceManager" type="ManagedTest.ResourceLoaderTest" method="ReturnSameResultAsResourceManager" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceLoaderTest.ReturnSameResultAsResourceManager" type="ManagedTest.ResourceLoaderTest" method="ReturnSameResultAsResourceManager" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ValueAsStringTest_StringResource_Succeeds" type="ManagedTest.ResourceManagerTest" method="ValueAsStringTest_StringResource_Succeeds" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ValueAsStringTest_StringResource_Succeeds" type="ManagedTest.ResourceManagerTest" method="ValueAsStringTest_StringResource_Succeeds" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ValueAsStringTest_FileResource_Succeeds" type="ManagedTest.ResourceManagerTest" method="ValueAsStringTest_FileResource_Succeeds" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ValueAsStringTest_FileResource_Succeeds" type="ManagedTest.ResourceManagerTest" method="ValueAsStringTest_FileResource_Succeeds" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ValueAsBlobTest_Succeeds" type="ManagedTest.ResourceManagerTest" method="ValueAsBlobTest_Succeeds" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ValueAsBlobTest_Succeeds" type="ManagedTest.ResourceManagerTest" method="ValueAsBlobTest_Succeeds" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.GetKindTest" type="ManagedTest.ResourceManagerTest" method="GetKindTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.GetKindTest" type="ManagedTest.ResourceManagerTest" method="GetKindTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.GetSubtreeTest" type="ManagedTest.ResourceManagerTest" method="GetSubtreeTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.GetSubtreeTest" type="ManagedTest.ResourceManagerTest" method="GetSubtreeTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.TryGetSubtreeTest" type="ManagedTest.ResourceManagerTest" method="TryGetSubtreeTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.TryGetSubtreeTest" type="ManagedTest.ResourceManagerTest" method="TryGetSubtreeTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.SubtreeNotFoundTest" type="ManagedTest.ResourceManagerTest" method="SubtreeNotFoundTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.SubtreeNotFoundTest" type="ManagedTest.ResourceManagerTest" method="SubtreeNotFoundTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ResourceNotFoundTest" type="ManagedTest.ResourceManagerTest" method="ResourceNotFoundTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ResourceNotFoundTest" type="ManagedTest.ResourceManagerTest" method="ResourceNotFoundTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.DefaultResourceManagerTest" type="ManagedTest.ResourceManagerTest" method="DefaultResourceManagerTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.DefaultResourceManagerTest" type="ManagedTest.ResourceManagerTest" method="DefaultResourceManagerTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.NoResourceFileTest" type="ManagedTest.ResourceManagerTest" method="NoResourceFileTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.NoResourceFileTest" type="ManagedTest.ResourceManagerTest" method="NoResourceFileTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ResourceEnumTest" type="ManagedTest.ResourceManagerTest" method="ResourceEnumTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.ResourceEnumTest" type="ManagedTest.ResourceManagerTest" method="ResourceEnumTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.GetValueFullUriTest" type="ManagedTest.ResourceManagerTest" method="GetValueFullUriTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.GetValueFullUriTest" type="ManagedTest.ResourceManagerTest" method="GetValueFullUriTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.GetSubtreeFullUriTest" type="ManagedTest.ResourceManagerTest" method="GetSubtreeFullUriTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceManagerTest.GetSubtreeFullUriTest" type="ManagedTest.ResourceManagerTest" method="GetSubtreeFullUriTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.LanguageContextTest" type="ManagedTest.ResourceContextTest" method="LanguageContextTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.LanguageContextTest" type="ManagedTest.ResourceContextTest" method="LanguageContextTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.NonLanguageContextTest" type="ManagedTest.ResourceContextTest" method="NonLanguageContextTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.NonLanguageContextTest" type="ManagedTest.ResourceContextTest" method="NonLanguageContextTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.ResourceEnumWithContextTest" type="ManagedTest.ResourceContextTest" method="ResourceEnumWithContextTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.ResourceEnumWithContextTest" type="ManagedTest.ResourceContextTest" method="ResourceEnumWithContextTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.ResourceNotFoundWithContextTest" type="ManagedTest.ResourceContextTest" method="ResourceNotFoundWithContextTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.ResourceNotFoundWithContextTest" type="ManagedTest.ResourceContextTest" method="ResourceNotFoundWithContextTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
-      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.NoResourceFileWithContextTest" type="ManagedTest.ResourceContextTest" method="NoResourceFileWithContextTest" time="0" result="Warning">
+      <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.ManagedTest.ResourceContextTest.NoResourceFileWithContextTest" type="ManagedTest.ResourceContextTest" method="NoResourceFileWithContextTest" time="0" result="Aborted">
+        <failure>
+          <message><![CDATA[
+[Warn]: ]]></message>
+        </failure>
       </test>
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.MrtCoreUnpackagedTests.TestClass.DefaultResourceManager" type="MrtCoreUnpackagedTests.TestClass" method="DefaultResourceManager" time="0.001" result="Pass" />
       <test name="release_x86_Windows.Server.2019.DataCenter.zh-CN.MrtCoreUnpackagedTests.TestClass.DefaultResourceManagerWithResourcePri" type="MrtCoreUnpackagedTests.TestClass" method="DefaultResourceManagerWithResourcePri" time="0.001" result="Pass" />
