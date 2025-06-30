@@ -9,13 +9,13 @@
 #include "PickerLocalization.h"
 #include <winrt\base.h>
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
-#include "StoragePickersTelemetry.h"
 
 namespace PickerLocalization {
     const winrt::hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
     winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key, winrt::hstring fallback)
     {
-        // adding try-catch to prevent localization error break picker experience
+        // adding try-catch to prevent localization error break picker experience on first shipping
+        // TODO: remove try-catch after stabilization period
         try
         {
             auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
@@ -23,7 +23,7 @@ namespace PickerLocalization {
         }
         catch (...)
         {
-            StoragePickersTelemetry::StoragePickerLocalizationLookupError(key.c_str());
+            LOG_CAUGHT_EXCEPTION();
             return fallback;
         }
     }
