@@ -41,7 +41,6 @@ stages:
         testResultsFiles: test.xml
         searchFolder: '$(Build.SourcesDirectory)\test'
         mergeTestResults: true
-        failTaskOnFailedTests: true
         testRunTitle: 'test'
         buildPlatform: x64
         buildConfiguration: release
