@@ -13,10 +13,19 @@
 
 namespace PickerLocalization {
     const winrt::hstring priPath = L"Microsoft.WindowsAppRuntime.pri";
-    winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key)
+    winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key, winrt::hstring fallback)
     {
-        auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
-        return manager.MainResourceMap().GetValue(key).ValueAsString();
+        // adding try-catch to prevent localization error break picker experience
+        try
+        {
+            auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
+            return manager.MainResourceMap().GetValue(key).ValueAsString();
+        }
+        catch (...)
+        {
+            StoragePickersTelemetry::StoragePickerLocalizationLookupError(key.c_str());
+            return fallback;
+        }
     }
 }
 
