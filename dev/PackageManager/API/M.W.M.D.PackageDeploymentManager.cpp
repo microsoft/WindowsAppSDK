@@ -254,6 +254,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                     TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
                     TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                     TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
+                    _GENERIC_PARTB_FIELDS_ENABLED,
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 return false;
@@ -351,6 +352,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                     TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                     TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
                     TraceLoggingInt32(static_cast<std::int32_t>(status), "PackageReadyOrNewerAvailableStatus"),
+                    _GENERIC_PARTB_FIELDS_ENABLED,
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
@@ -366,6 +368,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                     TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                     TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
                     TraceLoggingInt32(static_cast<std::int32_t>(status), "PackageReadyOrNewerAvailableStatus"),
+                    _GENERIC_PARTB_FIELDS_ENABLED,
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 newerAvailable = true;

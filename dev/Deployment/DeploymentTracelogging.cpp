@@ -27,7 +27,6 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     // Failure in restarting PushNotificationsLRP is non-blocking to the installer functionality
                     WindowsAppRuntimeDeployment_WriteEventWithActivity(
                         "RestartPushNotificationsLRPFailed",
-                        _GENERIC_PARTB_FIELDS_ENABLED,
                         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                         TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
                 }
@@ -36,7 +35,9 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     WindowsAppRuntimeDeployment_WriteEventWithActivity("FailureLog",
                         TraceLoggingCountedWideString(
                             deploymentActivityContext.GetCurrentResourceId().c_str(),
-                            static_cast<ULONG>(deploymentActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                            static_cast<ULONG>(deploymentActivityContext.GetCurrentResourceId().size()), "currentResource"),
+                            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                            TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
                 }
                 break;
             }
@@ -46,7 +47,9 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     "Exception",
                     TraceLoggingCountedWideString(
                         deploymentActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(deploymentActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                        static_cast<ULONG>(deploymentActivityContext.GetCurrentResourceId().size()), "currentResource"),
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
                 // Don't stop the Deployment activity here. Instead, give the failing API a chance to Stop the Activity before returning error to the caller.
                 // Hence, save the wil failure info here for later use.
@@ -59,7 +62,9 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     "FailFast",
                     TraceLoggingCountedWideString(
                         deploymentActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(deploymentActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                        static_cast<ULONG>(deploymentActivityContext.GetCurrentResourceId().size()), "currentResource"),
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
                 deploymentActivityContext.GetActivity().StopWithResult(
                     failure.hr,
@@ -85,7 +90,9 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     "FailureReturn",
                     TraceLoggingCountedWideString(
                         deploymentActivityContext.GetCurrentResourceId().c_str(),
-                        static_cast<ULONG>(deploymentActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                        static_cast<ULONG>(deploymentActivityContext.GetCurrentResourceId().size()), "currentResource"),
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
                 // If this is due to CATCH_RETURN(), we want to keep the failure info from THROW* and not overwrite that from RETURN*
                 if (!(deploymentActivityContext.GetLastFailure().type == wil::FailureType::Exception &&

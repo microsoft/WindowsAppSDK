@@ -101,4 +101,5 @@ public:
     TraceLoggingValue(failure.uLineNumber, "Line"),\
     TraceLoggingValue(failure.pszMessage, "Message"),\
     TraceLoggingValue(failure.pszModule, "Module"),\
+    _GENERIC_PARTB_FIELDS_ENABLED,\
     __VA_ARGS__)
