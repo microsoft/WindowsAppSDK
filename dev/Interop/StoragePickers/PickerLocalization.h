@@ -6,5 +6,7 @@
 
 namespace PickerLocalization {
     winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key, winrt::hstring fallback);
+    
+    bool IsInFrameworkPackage(winrt::hstring& frameworkPackageInstallLocation);
 }
 
