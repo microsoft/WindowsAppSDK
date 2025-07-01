@@ -35,10 +35,9 @@ parameters:
   default: true
 
 variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: WindowsAppSDK-CommonVariables.yml
 resources:
   repositories:
     - repository: templates
@@ -49,7 +48,7 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
-    - repository: WindowsAppSDKConfigSourceBranch
+    - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main

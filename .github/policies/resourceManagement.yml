@@ -216,13 +216,13 @@ configuration:
               the link here so we can more easily find your information on the back end. The link 
               can be found at the bottom of the feedback report. Please use "Developer Platform" and "Windows App SDK" 
               for the Category. 
-      - closeIssue
       - removeLabel:
           label: needs-triage
       - removeLabel:
           label: needs-assignee-attention
       - addLabel:
           label: needs-author-feedback
+      - closeIssue
 
     # /feedbackHub_WAIF
     - description: >-
