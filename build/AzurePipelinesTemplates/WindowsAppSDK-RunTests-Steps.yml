@@ -181,6 +181,7 @@ steps:
       xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
       TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
       BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
+      CheckoutPath: '$(Build.SourcesDirectory)\WindowsAppSDKConfig'
 
   - task: PublishTestResults@2
     displayName: 'Publish test results'
