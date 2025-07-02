@@ -219,7 +219,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             co_return winrt::make<PushNotificationCreateChannelResult>(
                 nullptr,
-                E_FAIL,
+                HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),
                 PushNotificationChannelStatus::CompletedFailure);
         }
 
