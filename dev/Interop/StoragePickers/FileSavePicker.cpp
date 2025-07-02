@@ -66,10 +66,19 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         return m_suggestedSaveFilePath;
     }
-    void FileSavePicker::SuggestedSaveFilePath(hstring const& value)
+
+    bool FileSavePicker::TrySetSuggestedSaveFilePath(hstring const& filePath)
     {
-        m_suggestedSaveFilePath = value;
+        winrt::com_ptr<IShellItem> folderItem = PickerCommon::CreateShellItemToParentFolder(filePath);
+        if (!folderItem)
+        {
+            return false;
+        }
+
+        m_suggestedSaveFilePath = filePath;
+        return true;
     }
+
     hstring FileSavePicker::SuggestedFileName()
     {
         return m_suggestedFileName;

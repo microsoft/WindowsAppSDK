@@ -14,6 +14,8 @@ namespace PickerCommon {
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
 
+    winrt::com_ptr<IShellItem> CreateShellItemToParentFolder(winrt::hstring const& filePath);
+
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;

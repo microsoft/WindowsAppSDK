@@ -65,8 +65,10 @@ namespace Microsoft.Windows.Storage.Pickers
         String CommitButtonText;
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
         String DefaultFileExtension;
-        String SuggestedSaveFilePath;
         String SuggestedFileName;
+
+        String SuggestedSaveFilePath{ get; };
+        Boolean TrySetSuggestedSaveFilePath(String filePath);
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }

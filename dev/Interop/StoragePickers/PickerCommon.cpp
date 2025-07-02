@@ -114,6 +114,31 @@ namespace PickerCommon {
         return winrt::hstring{ filePath.get() };
     }
 
+    winrt::com_ptr<IShellItem> CreateShellItemToParentFolder(winrt::hstring const& filePath)
+    {
+        std::filesystem::path path{ filePath.c_str() };
+        if (path.empty())
+        {
+            return nullptr;
+        }
+
+        // Get the file's parent folder.
+        auto folderPath = path.parent_path();
+        if (folderPath.empty())
+        {
+            return nullptr;
+        }
+
+        winrt::com_ptr<IShellItem> shellItem;
+        HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
+        if (SUCCEEDED(hr))
+        {
+            return shellItem;
+        }
+
+        return nullptr;
+    }
+
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
     {
         if (!extension.empty() && extension[0] == L'*')
@@ -268,39 +293,10 @@ namespace PickerCommon {
         
         if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
         {
-            auto suggestedPath = std::filesystem::path{ SuggestedSaveFilePath.c_str() };
-            if (!suggestedPath.empty())
+            winrt::com_ptr<IShellItem> folderItem = CreateShellItemToParentFolder(SuggestedSaveFilePath);
+            if (folderItem)
             {
-                // Force the directory of SuggestedSaveFilePath (if exist)
-                //      to be the starting location of save picker Dialog
-                auto dirPath = suggestedPath.parent_path();
-                if (!dirPath.empty())
-                {
-                    winrt::com_ptr<IShellItem> shellItem;
-                    HRESULT hr = SHCreateItemFromParsingName(dirPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
-                    if (SUCCEEDED(hr))
-                    {
-                        check_hresult(dialog->SetFolder(shellItem.get()));
-                    }
-                    else
-                    {
-                        // The messagebox won't block user from using the FileSavePicker Dialog.
-                        // TODO: the message and label here needs globalization.
-                        MessageBoxW(
-                            this->HWnd,
-                            std::format(L"{} is unavailable. If the location is on this PC, make sure the device or drive is connected or the disc is inserted, and then try again. If the location is on a network, make sure you\x2019re connected to the network or Internet, and then try again. If the location still can\x2019t be found, it might have been moved or deleted.",
-                                dirPath.c_str()).c_str(),
-                            L"Location is not available",
-                            MB_OK | MB_ICONWARNING);
-                    }
-                }
-
-                // Extract filename and use it (takes precedence over SuggestedFileName)
-                std::wstring fileName = suggestedPath.filename().wstring();
-                if (!fileName.empty())
-                {
-                    fileNameToSet = winrt::hstring(fileName);
-                }
+                check_hresult(dialog->SetFolder(folderItem.get()));
             }
         }
 
