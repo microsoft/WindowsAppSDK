@@ -324,7 +324,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if ((backOffTime <= c_maxBackoff) && IsChannelRequestRetryable(channelRequestException.code()))
                 {
-                    channelStatus.extendedError = channelRequestException.code();
+                    channelStatus.lastExtendedError = channelRequestException.code();
                     channelStatus.status = PushNotificationChannelStatus::InProgressRetry;
                     channelStatus.retryCount = ++retryCount;
 

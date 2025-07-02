@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 namespace Microsoft.Windows.PushNotifications
@@ -37,7 +37,7 @@ namespace Microsoft.Windows.PushNotifications
         PushNotificationChannelStatus status;
 
         // The last extended error we failed Channel requests on that caused the inprogress retry status. E_PENDING if this is just progress status.
-        HRESULT extendedError;
+        HRESULT lastExtendedError;
 
         // Total Retries so far
         UInt32 retryCount;
