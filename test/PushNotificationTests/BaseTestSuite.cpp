@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -97,7 +97,7 @@ void BaseTestSuite::ChannelRequestUsingNullRemoteId()
     else
     {
         auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(winrt::guid()) };
-        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), E_FAIL);
+        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
     }
 }
 
@@ -111,7 +111,7 @@ void BaseTestSuite::ChannelRequestUsingRemoteId()
     else
     {
         auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
-        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), E_FAIL);
+        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
     }
 }
 
@@ -135,7 +135,7 @@ void BaseTestSuite::ChannelRequestCheckExpirationTime()
     else
     {
         auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
-        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), E_FAIL);
+        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
     }
 }
 
