@@ -161,6 +161,8 @@ steps:
         Get-Service | Out-Host
         sc.exe queryex te.service | Write-Host
         sc.exe qc te.service | Write-Host
+  
+  - checkout: WindowsAppSDKConfig
 
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
@@ -172,8 +174,7 @@ steps:
         -Configuration "${{ parameters.buildConfiguration }}"
         -Test
         -List
-
-  - checkout: WindowsAppSDKConfig
+        -wprProfilePath "$(Build.SourcesDirectory)\WindowsAppSDKConfig\src\test\AppModelProviders.wprp"
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
     parameters:

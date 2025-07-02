@@ -69,7 +69,10 @@ param(
         [Switch]$List,
 
         [Parameter(Mandatory=$false)]
-        [Switch]$ShowSystemInfo=$true
+        [Switch]$ShowSystemInfo=$true,
+
+        [Parameter(Mandatory=$true)]
+        [string]$wprProfilePath
 )
 
 $StartTime = Get-Date
@@ -136,8 +139,6 @@ function Run-TaefTest
 
     $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
     $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
-
-    $wprProfilePath = (Join-Path $env:Build_SourcesDirectory "test\AppModelProviders.wprp")
 
     & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
 }
