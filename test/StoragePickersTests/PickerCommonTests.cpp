@@ -248,8 +248,8 @@ namespace Test::PickerCommonTests
                 {true,              testFolder,      L"MyFile",         true },
                 {true,              testFolder,      L".source",        true },
                 {true,              testFolder,      L"",               true },
-                {true,              L"C:",         L".source",        true },
-                {false,             L"C:",         L".source",        true },
+                {true,              L"C:",           L".source",        true },
+                {false,             L"C:",           L".source",        true },
                 {false,             testFolder,      L".source",        false },
             };
 
