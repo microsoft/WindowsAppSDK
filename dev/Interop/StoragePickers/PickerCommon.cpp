@@ -10,6 +10,7 @@
 #include <KnownFolders.h>
 #include <filesystem>
 #include <format>
+#include <utility>
 
 
 namespace {
@@ -114,29 +115,51 @@ namespace PickerCommon {
         return winrt::hstring{ filePath.get() };
     }
 
-    winrt::com_ptr<IShellItem> CreateShellItemToParentFolder(winrt::hstring const& filePath)
+    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath)
     {
-        std::filesystem::path path{ filePath.c_str() };
-        if (path.empty())
+        std::wstring folderPath;
+        folderPath.reserve(filePath.size() + 1);
+
+        std::wstring fileName;
+        fileName.reserve(filePath.size() + 1);
+
+        bool containsSlash = false;
+        for (const auto& c : filePath)
         {
-            return nullptr;
+            if (c == L'\\' || c == L'/')
+            {
+                folderPath += fileName;
+                folderPath += c;
+                fileName.clear();
+                containsSlash = true;
+            }
+            else
+            {
+                fileName += c;
+            }
         }
 
-        // Get the file's parent folder.
-        auto folderPath = path.parent_path();
-        if (folderPath.empty())
+        if (!containsSlash)
         {
-            return nullptr;
+            // If no slashes were found, return nullptr as we cannot determine a parent folder
+            return { nullptr, L""};
+        }
+
+        // If the parent folder does not exist or is not a directory, we cannot set folder.
+        if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath))
+        {
+            return { nullptr, L"" };
         }
 
         winrt::com_ptr<IShellItem> shellItem;
         HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
         if (SUCCEEDED(hr))
         {
-            return shellItem;
+            return { shellItem, fileName };
         }
 
-        return nullptr;
+        // If the shellitem cannot be created, we cannot set the folder.
+        return { nullptr, L""};
     }
 
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
@@ -293,7 +316,9 @@ namespace PickerCommon {
         
         if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
         {
-            winrt::com_ptr<IShellItem> folderItem = CreateShellItemToParentFolder(SuggestedSaveFilePath);
+            auto result = ParseFolderItemAndFileName(SuggestedSaveFilePath);
+            winrt::com_ptr<IShellItem> folderItem = result.first;
+            fileNameToSet = result.second;
             if (folderItem)
             {
                 check_hresult(dialog->SetFolder(folderItem.get()));

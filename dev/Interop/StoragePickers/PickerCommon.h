@@ -14,7 +14,7 @@ namespace PickerCommon {
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
 
-    winrt::com_ptr<IShellItem> CreateShellItemToParentFolder(winrt::hstring const& filePath);
+    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath);
 
     struct PickerParameters {
         HWND HWnd{};

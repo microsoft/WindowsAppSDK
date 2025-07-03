@@ -9,6 +9,9 @@
 
 #include "..\..\dev\Interop\StoragePickers\PickerCommon.h"
 
+#include <vector>
+#include <tuple>
+
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
@@ -232,6 +235,63 @@ namespace Test::PickerCommonTests
             wil::unique_cotaskmem_string fileName{};
             dialog->GetFileName(fileName.put());
             VERIFY_ARE_EQUAL(L"MyFile2.txt", std::wstring(fileName.get()));
+        }
+
+        TEST_METHOD(VerifyParseFolderItemAndFileName)
+        {
+            // Arrange.
+            std::wstring testFolder = L"C:\\temp\\testsuggestedSaveFilePath";
+
+            std::vector<std::tuple<bool, std::wstring, std::wstring, bool>> test_cases {
+            // test folder exists      folder        file              expect non-empty result
+                {true,              testFolder,      L"MyFile.txt",     true },
+                {true,              testFolder,      L"MyFile",         true },
+                {true,              testFolder,      L".source",        true },
+                {true,              testFolder,      L"",               true },
+                {true,              L"C:\\",         L".source",        true },
+                {false,             L"C:\\",         L".source",        true },
+                {false,             testFolder,      L".source",        false },
+            };
+
+            for (const auto& test_case : test_cases)
+            {
+                bool testFolderExists = std::get<0>(test_case);
+                std::wstring folder = std::get<1>(test_case);
+                std::wstring fileName = std::get<2>(test_case);
+                bool expectNonEmptyResult = std::get<3>(test_case);
+
+                // Act.
+                if (testFolderExists)
+                {
+                    std::filesystem::create_directories(testFolder);
+                }
+                else
+                {
+                    std::filesystem::remove_all(testFolder);
+                }
+
+                winrt::hstring filePath {folder + L"\\" + fileName};
+                auto [folderItem, resultFileName] = PickerCommon::ParseFolderItemAndFileName(filePath);
+                std::wstring error_message;
+                if (!expectNonEmptyResult)
+                {
+                    error_message = L"This input should not return a valid folder item: '" + filePath + L"'";
+                    VERIFY_ARE_EQUAL(nullptr, folderItem, error_message.c_str());
+                }
+                else
+                {
+                    error_message = L"Unexpected filename of '" + filePath + L"', expect: '" + fileName + L"', actual: '" + resultFileName + L"'";
+                    VERIFY_ARE_EQUAL(fileName, resultFileName, error_message.c_str());
+
+                    wil::unique_cotaskmem_string resultFolderPath{};
+                    folderItem->GetDisplayName(SIGDN_FILESYSPATH, resultFolderPath.put());
+                    winrt::hstring resultFolderPathString(resultFolderPath.get());
+                    error_message = L"Unexpected folder path of '" + filePath + L"', expect: '" + folder + L"', actual: '" + resultFolderPathString + L"'";
+                    VERIFY_ARE_EQUAL(folder, resultFolderPathString, error_message.c_str());
+                }
+                
+            }
+            
         }
     };
 }

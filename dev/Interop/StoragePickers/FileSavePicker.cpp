@@ -69,7 +69,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     bool FileSavePicker::TrySetSuggestedSaveFilePath(hstring const& filePath)
     {
-        winrt::com_ptr<IShellItem> folderItem = PickerCommon::CreateShellItemToParentFolder(filePath);
+        auto parseResult = PickerCommon::ParseFolderItemAndFileName(filePath);
+        winrt::com_ptr<IShellItem> folderItem = parseResult.first;
+
         if (!folderItem)
         {
             return false;
