@@ -248,8 +248,8 @@ namespace Test::PickerCommonTests
                 {true,              testFolder,      L"MyFile",         true },
                 {true,              testFolder,      L".source",        true },
                 {true,              testFolder,      L"",               true },
-                {true,              L"C:\\",         L".source",        true },
-                {false,             L"C:\\",         L".source",        true },
+                {true,              L"C:",         L".source",        true },
+                {false,             L"C:",         L".source",        true },
                 {false,             testFolder,      L".source",        false },
             };
 
@@ -280,6 +280,9 @@ namespace Test::PickerCommonTests
                 }
                 else
                 {
+                    error_message = L"Expected a valid folder item for: " + filePath;
+                    VERIFY_ARE_NOT_EQUAL(nullptr, folderItem, error_message.c_str());
+
                     error_message = L"Unexpected filename of '" + filePath + L"', expect: '" + fileName + L"', actual: '" + resultFileName + L"'";
                     VERIFY_ARE_EQUAL(fileName, resultFileName, error_message.c_str());
 
@@ -287,6 +290,10 @@ namespace Test::PickerCommonTests
                     folderItem->GetDisplayName(SIGDN_FILESYSPATH, resultFolderPath.put());
                     winrt::hstring resultFolderPathString(resultFolderPath.get());
                     error_message = L"Unexpected folder path of '" + filePath + L"', expect: '" + folder + L"', actual: '" + resultFolderPathString + L"'";
+                    if (folder == L"C:")
+                    {
+                        folder += L"\\";
+                    }
                     VERIFY_ARE_EQUAL(folder, resultFolderPathString, error_message.c_str());
                 }
                 
