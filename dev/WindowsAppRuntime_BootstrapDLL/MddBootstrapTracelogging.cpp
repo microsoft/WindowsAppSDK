@@ -100,6 +100,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
             MddBootstrap_WriteEventWithActivity(
                 "FailureLog",
                 activityId,
+                _GENERIC_PARTB_FIELDS_ENABLED,
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
         }
@@ -111,6 +112,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
                 MddBootstrap_WriteEventWithActivity(
                     "Exception",
                     activityId,
+                    _GENERIC_PARTB_FIELDS_ENABLED,
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                     TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
             }
@@ -119,6 +121,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
                 MddBootstrap_WriteEventWithActivity(
                     "Exception",
                     activityId,
+                    _GENERIC_PARTB_FIELDS_ENABLED,
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                     TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
@@ -130,6 +133,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
             MddBootstrap_WriteEventWithActivity(
                 "FailFast",
                 activityId,
+                _GENERIC_PARTB_FIELDS_ENABLED,
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
@@ -145,6 +149,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
                 MddBootstrap_WriteEventWithActivity(
                     "FailureReturn",
                     activityId,
+                    _GENERIC_PARTB_FIELDS_ENABLED,
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                     TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 
@@ -156,6 +161,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
                 MddBootstrap_WriteEventWithActivity(
                     "FailureReturn",
                     activityId,
+                    _GENERIC_PARTB_FIELDS_ENABLED,
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                     TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
 

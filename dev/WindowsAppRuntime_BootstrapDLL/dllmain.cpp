@@ -16,6 +16,9 @@ BOOL APIENTRY DllMain(HMODULE hmodule, DWORD  reason, LPVOID reserved)
     case DLL_PROCESS_ATTACH:
     {
         DisableThreadLibraryCalls(hmodule);
+        wil::SetResultLoggingCallback(
+            &WindowsAppRuntime::TraceLogging::wil::TraceFailureFromProvider<
+            WindowsAppRuntime::TraceLogging::WindowsAppRuntime_TraceLogger>);
         FAIL_FAST_IF_FAILED(MddWin11Initialize());
         break;
     }
