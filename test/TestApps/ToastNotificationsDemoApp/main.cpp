@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #include "pch.h"
 #include <wil/win32_helpers.h>
@@ -47,7 +47,7 @@ winrt::IAsyncOperation<winrt::PushNotificationChannel> RequestChannelAsync()
             else if (args.status == winrt::PushNotificationChannelStatus::InProgressRetry)
             {
                 LOG_HR_MSG(
-                    args.extendedError,
+                    args.lastExtendedError,
                     "The channel request is in back-off retry mode because of a retryable error! Expect delays in acquiring it. RetryCount = %d",
                     args.retryCount);
             }
