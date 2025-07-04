@@ -3,13 +3,19 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Target Name="WindowsAppRuntimeAutoInitializer">
+    <!-- Build the preprocessor definitions based on conditions -->
+    <PropertyGroup>
+      <AutoInitializerPreprocessorDefinitions></AutoInitializerPreprocessorDefinitions>
+      <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP</AutoInitializerPreprocessorDefinitions>
+      <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER</AutoInitializerPreprocessorDefinitions>
+      <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT</AutoInitializerPreprocessorDefinitions>
+      <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY</AutoInitializerPreprocessorDefinitions>
+    </PropertyGroup>
+    
     <ItemGroup>
       <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-        <PreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions>$(AutoInitializerPreprocessorDefinitions)</PreprocessorDefinitions>
       </ClCompile>
     </ItemGroup>
   </Target>
