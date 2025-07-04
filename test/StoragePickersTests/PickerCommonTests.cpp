@@ -272,29 +272,29 @@ namespace Test::PickerCommonTests
 
                 winrt::hstring filePath {folder + L"\\" + fileName};
                 auto [folderItem, resultFileName] = PickerCommon::ParseFolderItemAndFileName(filePath);
-                std::wstring error_message;
+                std::wstring message;
                 if (!expectNonEmptyResult)
                 {
-                    error_message = L"This input should not return a valid folder item: '" + filePath + L"'";
-                    VERIFY_ARE_EQUAL(nullptr, folderItem, error_message.c_str());
+                    message = L"This input should not return a valid folder item: '" + filePath + L"'";
+                    VERIFY_ARE_EQUAL(nullptr, folderItem, message.c_str());
                 }
                 else
                 {
-                    error_message = L"Expected a valid folder item for: " + filePath;
-                    VERIFY_ARE_NOT_EQUAL(nullptr, folderItem, error_message.c_str());
+                    message = L"Expected a valid folder item for: " + filePath;
+                    VERIFY_ARE_NOT_EQUAL(nullptr, folderItem, message.c_str());
 
-                    error_message = L"Unexpected filename of '" + filePath + L"', expect: '" + fileName + L"', actual: '" + resultFileName + L"'";
-                    VERIFY_ARE_EQUAL(fileName, resultFileName, error_message.c_str());
+                    message = L"Verify filename of '" + filePath + L"', expect: '" + fileName + L"', actual: '" + resultFileName + L"'";
+                    VERIFY_ARE_EQUAL(fileName, resultFileName, message.c_str());
 
                     wil::unique_cotaskmem_string resultFolderPath{};
                     folderItem->GetDisplayName(SIGDN_FILESYSPATH, resultFolderPath.put());
                     winrt::hstring resultFolderPathString(resultFolderPath.get());
-                    error_message = L"Unexpected folder path of '" + filePath + L"', expect: '" + folder + L"', actual: '" + resultFolderPathString + L"'";
+                    message = L"Verify folder path of '" + filePath + L"', expect: '" + folder + L"', actual: '" + resultFolderPathString + L"'";
                     if (folder == L"C:")
                     {
                         folder += L"\\";
                     }
-                    VERIFY_ARE_EQUAL(folder, resultFolderPathString, error_message.c_str());
+                    VERIFY_ARE_EQUAL(folder, resultFolderPathString, message.c_str());
                 }
                 
             }
