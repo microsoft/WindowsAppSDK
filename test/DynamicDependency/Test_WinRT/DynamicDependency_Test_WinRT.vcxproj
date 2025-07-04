@@ -243,7 +243,7 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" />
   </ImportGroup>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="DynamicDependency_API_WinRT.testdef" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="DynamicDependency_API_WinRT.testdef" DestinationFolder="$(OutDir)" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

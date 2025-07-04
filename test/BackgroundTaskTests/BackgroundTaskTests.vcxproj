@@ -238,9 +238,9 @@
     </Xml>
   </ItemGroup>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="BackgroundTaskTests.testdef" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="BackgroundTaskTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
   <ItemGroup>
     <ProjectReference Include="..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
