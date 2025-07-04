@@ -38,7 +38,7 @@ We propose the following:
 1.  **Introduce `SuggestedSaveFilePath` Property (readonly) and `TrySetSuggestedSaveFilePath` Method:**  
   * A new readonly `String` property `SuggestedSaveFilePath` will be added to `FileSavePicker`.  
   * A corresponding method `Boolean TrySetSuggestedSaveFilePath(String filePath)` will be introduced 
-    to set the suggested path safely, allowing validation and error handling.
+    to set the suggested path safely, allowing validation.
 
 
 ## 4. Detailed Design
@@ -64,8 +64,13 @@ Before Change:
 var openPicker = Microsoft.Windows.Storage.Pickers.FileOpenPicker(this.AppWindows.Id);
 var savePicker = Microsoft.Windows.Storage.Pickers.FileSavePicker(this.AppWindows.Id);
 
-var file = await openPicker.PickSingleFileAsync();
-savePicker.SuggestedSaveFile = await StorageFile.GetFileFromPathAsync(file.Path);
+var result = await openPicker.PickSingleFileAsync();
+try {
+    savePicker.SuggestedSaveFile = await StorageFile.GetFileFromPathAsync(result.Path);
+} catch (Exception ex) {
+    // Handling
+}
+
 ```
 
 After Change:
@@ -73,8 +78,8 @@ After Change:
 var openPicker = Microsoft.Windows.Storage.Pickers.FileOpenPicker(this.AppWindows.Id);
 var savePicker = Microsoft.Windows.Storage.Pickers.FileSavePicker(this.AppWindows.Id);
 
-var file = await openPicker.PickSingleFileAsync();
-var isSuccess = savePicker.TrySetSuggestedSaveFilePath(file.Path);
+var result = await openPicker.PickSingleFileAsync();
+var isSuccess = savePicker.TrySetSuggestedSaveFilePath(result.Path);
 if (!isSuccess)
 {
     // Handling
@@ -85,36 +90,38 @@ if (!isSuccess)
 
 Before change:
 ```cs
+var savePicker = Microsoft.Windows.Storage.Pickers.FileSavePicker(this.AppWindows.Id);
 var suggestedPath = @"C:\temp\output.txt";
 
-var suggestedFile = await StorageFile.GetFileFromPathAsync(suggestedPath);
-
-var savePicker = Microsoft.Windows.Storage.Pickers.FileSavePicker(this.AppWindows.Id);
-savePicker.SuggestedSaveFile = suggestedFile;
+try {
+    var suggestedFile = await StorageFile.GetFileFromPathAsync(suggestedPath);
+    savePicker.SuggestedSaveFile = suggestedFile;
+} catch (Exception ex) {
+    // Handling 
+}
 ```
 
 After Change:
 ```cs
+var savePicker = Microsoft.Windows.Storage.Pickers.FileSavePicker(this.AppWindows.Id);
 var suggestedPath = @"C:\temp\output.txt";
 
-var savePicker = Microsoft.Windows.Storage.Pickers.FileSavePicker(this.AppWindows.Id);
-savePicker.TrySetSuggestedSaveFilePath(suggestedPath);
+var isSuccess = savePicker.TrySetSuggestedSaveFilePath(suggestedPath);
+if (!isSuccess)
+{
+    // Handling
+}
 ```
-
 
 ## 6. Benefits
 
-*   **Simplicity:** Provides a straightforward way to suggest a save location and file name using a 
+*   **Simplicity & Lightweight:** Provides a straightforward way to suggest a save location and file name using a 
     simple path string.
-
-*   **Lightweight:** Using a path string avoids the overhead of creating or passing a full 
+    Avoids the overhead of creating or passing a full 
     `StorageFile` objects where only the path is needed for the suggestion.
 
-*   **Clear Semantics:** The property name `SuggestedSaveFilePath` clearly indicates its purpose 
-    and type.
-
 *   **Robustness:** Using a `TrySet` method allows the API to verify the existence of the provided 
-    path and handle invalid inputs gracefully, improving reliability and error handling.
+    path and handle invalid inputs gracefully.
 
 ## 7. History of Design Discussions
 
