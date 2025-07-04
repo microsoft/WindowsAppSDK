@@ -117,32 +117,17 @@ namespace PickerCommon {
 
     std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath)
     {
-        std::wstring folderPath;
-        folderPath.reserve(filePath.size() + 1);
-
-        std::wstring fileName;
-        fileName.reserve(filePath.size() + 1);
-
-        bool containsSlash = false;
-        for (const auto& c : filePath)
+        std::filesystem::path path(filePath.c_str());
+        if (path.empty())
         {
-            if (c == L'\\' || c == L'/')
-            {
-                folderPath += fileName;
-                folderPath += c;
-                fileName.clear();
-                containsSlash = true;
-            }
-            else
-            {
-                fileName += c;
-            }
+            return { nullptr, L"" };
         }
 
-        if (!containsSlash)
+        auto folderPath = path.parent_path();
+        if (folderPath.empty())
         {
-            // If no slashes were found, return nullptr as we cannot determine a parent folder
-            return { nullptr, L""};
+            // If the path does not have a parent, we cannot set folder.
+            return { nullptr, L"" };
         }
 
         // If the parent folder does not exist or is not a directory, we cannot set folder.
@@ -155,6 +140,7 @@ namespace PickerCommon {
         HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
         if (SUCCEEDED(hr))
         {
+            auto fileName = path.filename().wstring();
             return { shellItem, fileName };
         }
 
