@@ -169,6 +169,10 @@ namespace Test::StoragePickersTests
             picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
 
+            bool isSuccess = picker.TrySetSuggestedSaveFilePath(L"C:\\MyFile.txt");
+            VERIFY_ARE_EQUAL(isSuccess, true);
+            VERIFY_ARE_EQUAL(picker.SuggestedSaveFilePath(), L"C:\\MyFile.txt");
+
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
 
@@ -198,9 +202,6 @@ namespace Test::StoragePickersTests
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
-
-            picker.FileTypeFilter().Append(L"*");
-            VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
         }
     };
 }
