@@ -57,7 +57,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         std::vector<UINT32> disabledChanges;
         for (auto changeId : m_disabledChanges)
         {
-            // TODO: Telemetry!  Log the changeId that was disabled.
             // UINT32 is used internally for the changeId, so cast from the enum's Int32 to that.
             auto id = static_cast<UINT32>(changeId);
             RuntimeCompatibilityOptions_TraceLogger::TraceLogger::ChangeDisabled(id);
