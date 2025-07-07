@@ -16,16 +16,19 @@ class RuntimeCompatibilityOptions_TraceLogger final : public wil::TraceLoggingPr
 
 public:
 
-    // Event for Apply() call, includes usage info
-    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM3(
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM1(
+        ChangeDisabled,
+        PDT_ProductAndServicePerformance,
+        UINT32, changeId
+    );
+
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM2(
         ApplyCalled,
         PDT_ProductAndServicePerformance,
         PCWSTR, patchLevel1,
-        PCWSTR, patchLevel2,
-        PCWSTR, disabledChanges
+        PCWSTR, patchLevel2
     );
 
-    // Event for Apply() failure
     DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM2(
         ApplyFailed,
         PDT_ProductAndServicePerformance,
