@@ -12,6 +12,7 @@
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
+#include "PickerLocalization.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -75,6 +76,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 
         CaptureParameters(parameters);
 
@@ -127,6 +129,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         // capture parameters to avoid using get strong referece of picker
         PickerCommon::PickerParameters parameters{};
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
+
         CaptureParameters(parameters);
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
