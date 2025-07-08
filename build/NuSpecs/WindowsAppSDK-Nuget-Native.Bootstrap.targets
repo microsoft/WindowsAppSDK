@@ -16,7 +16,7 @@
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapAutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
-                <PreprocessorDefinitions>$(BootstrapPreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions>$(BootstrapPreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
             </ClCompile>
         </ItemGroup>
     </Target>
