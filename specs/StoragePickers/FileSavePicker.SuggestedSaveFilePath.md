@@ -1,47 +1,25 @@
 # One page design for `FileSavePicker.SuggestedSaveFilePath`
 
 
-## 1. Overview
+## Overview
 
 This document proposes a change to the `Microsoft.Windows.Storage.Pickers.FileSavePicker`. We aim to 
 replace the `SuggestedSaveFile` property, which was of type `Windows.Storage.StorageFile`, with a 
-new property `SuggestedSaveFilePath` of type `String`.
+new property `SuggestedSaveFilePath`, a string property that is capable of providing a comprehensive 
+hint for both the target save location (directory) and the proposed file name using a single string.
 
 This change will allow for a more straightforward way to suggest a default file path, and reduce the
 boilerplate code.
 
-## 2. Background: Behavior of the original property `SuggestedSaveFile`
-
-The `SuggestedSaveFile` property on the `FileSavePicker` dictates key aspects of the save file 
-dialog's initial state:
-
-*   **Initial Directory:** The dialog defaults to the directory of the `SuggestedSaveFile`. 
-
-    This behavior overrides any picker-specific remembered folder settings and ensures the dialog 
-    opens in the suggested file's parent folder.
-
-*   **Pre-filled File Name:** The file name field in the dialog is pre-populated with the name of 
-the `SuggestedSaveFile`. 
-
-    This takes precedence over the `FileSavePicker.SuggestedFileName` property if both are set.
-
-In essence, a string property `SuggestedSaveFilePath` is capable of providing a comprehensive hint 
-for both the target save location (directory) and the proposed file name using a single string.
-
-## 3. Proposed Changes
-
 We propose the following:
 
-1.  **Remove `SuggestedSaveFile` Property:** The existing `SuggestedSaveFile` property of type 
-`Windows.Storage.StorageFile` will be removed.
+1.  Remove the existing `SuggestedSaveFile` property of type `Windows.Storage.StorageFile`.
 
-1.  **Introduce `SuggestedSaveFilePath` Property (readonly) and `TrySetSuggestedSaveFilePath` Method:**  
-  * A new readonly `String` property `SuggestedSaveFilePath` will be added to `FileSavePicker`.  
-  * A corresponding method `Boolean TrySetSuggestedSaveFilePath(String filePath)` will be introduced 
-    to set the suggested path safely, allowing validation.
+1.  Introduce `SuggestedSaveFilePath` Property (readonly) and its set method 
+    `Boolean TrySetSuggestedSaveFilePath(String filePath)`
 
 
-## 4. Detailed Design
+## Detailed Design
 
 The `FileSavePicker` class will be updated as follows:
 
@@ -55,9 +33,9 @@ namespace Microsoft.Windows.Storage.Pickers {
 }
 ```
 
-## 5. Changes in Developers' Experience.
+## Changes in Developers' Experience.
 
-### 5.1 When Developers using the result returned by FileOpenPicker
+### 1. When Developers using the result returned by FileOpenPicker
 
 Before Change:
 ```cs
@@ -86,7 +64,7 @@ if (!isSuccess)
 }
 ```
 
-### 5.2 If a legacy project is using a path from other sources
+### 2. If a legacy project is using a path from other sources
 
 Before change:
 ```cs
@@ -113,19 +91,18 @@ if (!isSuccess)
 }
 ```
 
-## 6. Benefits
+## Benefits
 
-*   **Simplicity & Lightweight:** Provides a straightforward way to suggest a save location and file name using a 
-    simple path string.
-    Avoids the overhead of creating or passing a full 
-    `StorageFile` objects where only the path is needed for the suggestion.
+*   **Simplicity & Lightweight:** Provides a straightforward way to suggest a save location and file 
+    name using a simple path string. Avoids the overhead of creating or passing a full `StorageFile` 
+    objects where only the path is needed for the suggestion.
 
 *   **Robustness:** Using a `TrySet` method allows the API to verify the existence of the provided 
     path and handle invalid inputs gracefully.
 
-## 7. History of Design Discussions
+## History of Design Discussions
 
-### 7.1 String Property vs Object Property
+### 1. String Property vs Object Property
 
 An alternative design involving a dedicated `SuggestedSaveFile` runtime class was considered and 
 discussed at length. This approach would have involved creating an object to hold the path, with the 
@@ -151,7 +128,7 @@ class.
 This decision renders previous discussions about the `SuggestedSaveFile` class's ABI stability, 
 constructors, factory patterns, and related interfaces obsolete.
 
-### 7.2 [obsolete] ABI Stability: Adding Constructors and Members to Runtime Classes
+### 2. [obsolete] ABI Stability: Adding Constructors and Members to Runtime Classes
 
 The primary concern is understanding the Application Binary Interface (ABI) implications of evolving 
 a runtime class.
@@ -226,9 +203,9 @@ a runtime class.
     continue to work with an updated SDK providing Contract v2, as they're only seeing v1 members. 
     Applications built against SDK 1.9 can use v2 members.
 
-### 7.3 [obsolete] Discussion on the Potential of Using an Interface
+### 3. [obsolete] Discussion on the Potential of Using an Interface
 
-*   **7.3.1 Abstraction Strategy: Interface vs. Runtime Class**
+*   **3.1 Abstraction Strategy: Interface vs. Runtime Class**
 
     *   **[deprecated] Initial Proposal:** 
         An interface (`ISuggestedSaveFile`) was considered for extensibility (e.g., supporting 
@@ -265,7 +242,7 @@ a runtime class.
         However, using a simple string property is the most direct approach, avoiding the 
         complexities of both interfaces and dedicated runtime classes.
 
-*   **7.3.2 Type Recovery (Relevant if an interface were used and multiple implementations existed)**
+*   **3.2 Type Recovery (Relevant if an interface were used and multiple implementations existed)**
 
     *   **Original Question:** 
         If a new property returned an interface type, how could consumers safely recover the 

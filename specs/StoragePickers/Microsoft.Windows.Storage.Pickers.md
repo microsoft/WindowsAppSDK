@@ -92,12 +92,14 @@ namespace Microsoft.Windows.Storage.Pickers
         string SettingsIdentifier;
         string DefaultFileExtension;
         string SuggestedFileName;
-        string SuggestedSaveFilePath;
+        string SuggestedSaveFilePath{ get; };   // read-only attribute
+        boolean TrySetSuggestedSaveFilePath(String filePath);
+
         IMap<string, IVector<string>> FileTypeChoices{ get; };
 
         PickerLocationId SuggestedStartLocation;
 
-        Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync()
+        Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }
 
     runtimeclass FolderPicker

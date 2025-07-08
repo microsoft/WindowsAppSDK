@@ -92,16 +92,16 @@ savePicker.DefaultFileExtension(L".txt");
 
 ### TrySetSuggestedSaveFilePath
 
-This method sets the `SuggestedSaveFile` property on the `FileSavePicker`, that dictates key aspects 
+This method sets the `SuggestedSaveFilePath` property on the `FileSavePicker`, that dictates key aspects 
 of the save file dialog's initial state:
 
-*   **Initial Directory:** The dialog defaults to the directory of the `SuggestedSaveFile`. 
+*   **Initial Directory:** The dialog defaults to the directory of the `SuggestedSaveFilePath`. 
 
     This behavior overrides any picker-specific remembered folder settings and ensures the dialog 
     opens in the suggested file's parent folder.
 
 *   **Pre-filled File Name:** The file name field in the dialog is pre-populated with the name of 
-the `SuggestedSaveFile`. 
+the `SuggestedSaveFilePath`. 
 
     This file name overrides the `FileSavePicker.SuggestedFileName` property if both are set.
 
