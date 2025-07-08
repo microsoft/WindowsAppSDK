@@ -17,13 +17,13 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     void RuntimeCompatibilityOptions::Apply()
     {
-        std::wstring patchLevel1Str = std::to_wstring(patchLevel1.Major) + L"." +
-                                    std::to_wstring(patchLevel1.Minor) + L"." +
-                                    std::to_wstring(patchLevel1.Patch);
-        std::wstring patchLevel2Str = std::to_wstring(patchLevel2.Major) + L"." +
-                                    std::to_wstring(patchLevel2.Minor) + L"." +
-                                    std::to_wstring(patchLevel2.Patch);
-        RuntimeCompatibilityOptions_TraceLogger::TraceLogger::ApplyCalled(patchLevel1Str.c_str(), patchLevel2Str.c_str());
+        std::wstring patchLevel1Str = std::to_wstring(m_patchLevel1.Major) + L"." +
+                                    std::to_wstring(m_patchLevel1.Minor) + L"." +
+                                    std::to_wstring(m_patchLevel1.Patch);
+        std::wstring patchLevel2Str = std::to_wstring(m_patchLevel2.Major) + L"." +
+                                    std::to_wstring(m_patchLevel2.Minor) + L"." +
+                                    std::to_wstring(m_patchLevel2.Patch);
+        RuntimeCompatibilityOptions_TraceLogger::ApplyCalled(patchLevel1Str.c_str(), patchLevel2Str.c_str());
 
         WinAppSdk::Containment::WinAppSDKRuntimeConfiguration config;
 
@@ -33,7 +33,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             if (m_patchLevel1.Patch != m_patchLevel2.Patch)
             {
-                RuntimeCompatibilityOptions_TraceLogger::TraceLogger::ApplyFailed(
+                RuntimeCompatibilityOptions_TraceLogger::ApplyFailed(
                     E_INVALIDARG,
                     L"Patch levels should target different Major.Minor versions or match Patch version."
                 );
@@ -59,7 +59,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             // UINT32 is used internally for the changeId, so cast from the enum's Int32 to that.
             auto id = static_cast<UINT32>(changeId);
-            RuntimeCompatibilityOptions_TraceLogger::TraceLogger::ChangeDisabled(id);
+            RuntimeCompatibilityOptions_TraceLogger::ChangeDisabled(id);
             disabledChanges.push_back(id);
         }
         config.disabledChanges = disabledChanges.data();
@@ -70,14 +70,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             if (hr == E_ILLEGAL_STATE_CHANGE)
             {
-                RuntimeCompatibilityOptions_TraceLogger::TraceLogger::ApplyFailed(
+                RuntimeCompatibilityOptions_TraceLogger::ApplyFailed(
                     hr,
                     L"Configuration already set or locked."
                 );
                 throw winrt::hresult_illegal_state_change(L"Configuration already set or locked.");
             }
 
-            RuntimeCompatibilityOptions_TraceLogger::TraceLogger::ApplyFailed(
+            RuntimeCompatibilityOptions_TraceLogger::ApplyFailed(
                 hr,
                 L"SetConfiguration failed."
             );
