@@ -103,12 +103,12 @@ of the save file dialog's initial state:
 *   **Pre-filled File Name:** The file name field in the dialog is pre-populated with the name of 
 the `SuggestedSaveFile`. 
 
-    This name overrides the `FileSavePicker.SuggestedFileName` property if both are set.
+    This file name overrides the `FileSavePicker.SuggestedFileName` property if both are set.
 
 ### Read-only SuggestedSaveFilePath
 
-`FileSavePicker.SuggestedSaveFilePath` is a read-only attribute, meaning it can only be set via above 
-method `FileSavePicker.TrySetSuggestedSaveFilePath`.
+`FileSavePicker.SuggestedSaveFilePath` is a read-only attribute, meaning it can only be set via 
+above method `FileSavePicker.TrySetSuggestedSaveFilePath`.
 
 ### Examples
 C#
