@@ -2,10 +2,15 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include "shellapi.h"
 #include "PickerCommon.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
+#include "shobjidl_core.h"
 #include <KnownFolders.h>
+#include <filesystem>
+#include <format>
+#include <utility>
 
 
 namespace {
@@ -108,6 +113,39 @@ namespace PickerCommon {
         wil::unique_cotaskmem_string filePath;
         check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
         return winrt::hstring{ filePath.get() };
+    }
+
+    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath)
+    {
+        std::filesystem::path path(filePath.c_str());
+        if (path.empty())
+        {
+            return { nullptr, L"" };
+        }
+
+        auto folderPath = path.parent_path();
+        if (folderPath.empty())
+        {
+            // If the path does not have a parent, we cannot set folder.
+            return { nullptr, L"" };
+        }
+
+        // If the parent folder does not exist or is not a directory, we cannot set folder.
+        if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath))
+        {
+            return { nullptr, L"" };
+        }
+
+        winrt::com_ptr<IShellItem> shellItem;
+        HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
+        if (SUCCEEDED(hr))
+        {
+            auto fileName = path.filename().wstring();
+            return { shellItem, fileName };
+        }
+
+        // If the shellitem cannot be created, we cannot set the folder.
+        return { nullptr, L""};
     }
 
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
@@ -248,5 +286,36 @@ namespace PickerCommon {
         }
 
         check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+    }
+
+    /// <summary>
+    /// Configure the FileSaveDialog, this is only for FileSavePicker.
+    /// </summary>
+    /// <param name="dialog"></param>
+    void PickerParameters::ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog)
+    {
+        winrt::hstring fileNameToSet;
+        if (!IsHStringNullOrEmpty(SuggestedFileName))
+        {
+            fileNameToSet = SuggestedFileName;
+        }
+        
+        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
+        {
+            auto result = ParseFolderItemAndFileName(SuggestedSaveFilePath);
+            winrt::com_ptr<IShellItem> folderItem = result.first;
+            fileNameToSet = result.second;
+            if (folderItem)
+            {
+                check_hresult(dialog->SetFolder(folderItem.get()));
+            }
+        }
+
+        // Set the filename (either from SuggestedSaveFilePath or SuggestedFileName)
+        if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
+        {
+            check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
+        }
+
     }
 }
