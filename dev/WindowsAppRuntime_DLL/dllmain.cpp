@@ -13,10 +13,13 @@
 
 #include <../Detours/detours.h>
 
+static bool isPackaged = AppModel::Identity::IsPackagedProcess();
+static bool is19H1OrGreater = WindowsVersion::IsWindows10_19H1OrGreater();
+
 static HRESULT DetoursInitialize()
 {
     // Only detour APIs for not-packaged processes
-    if (AppModel::Identity::IsPackagedProcess())
+    if (isPackaged && is19H1OrGreater)
     {
         return S_OK;
     }
@@ -30,8 +33,11 @@ static HRESULT DetoursInitialize()
     // Detour APIs to our implementation
     DetourRestoreAfterWith();
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
-    FAIL_FAST_IF_FAILED(MddDetourPackageGraphInitialize());
-    FAIL_FAST_IF_FAILED(UrfwInitialize());
+    if (!isPackaged && !is19H1OrGreater)
+    {
+        FAIL_FAST_IF_FAILED(MddDetourPackageGraphInitialize());
+        FAIL_FAST_IF_FAILED(UrfwInitialize());
+    }
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }
@@ -39,7 +45,7 @@ static HRESULT DetoursInitialize()
 static HRESULT DetoursShutdown()
 {
     // Only detour APIs for not-packaged processes
-    if (AppModel::Identity::IsPackagedProcess())
+    if (isPackaged && is19H1OrGreater)
     {
         return S_OK;
     }
@@ -53,8 +59,11 @@ static HRESULT DetoursShutdown()
     // Stop Detour'ing APIs to our implementation
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
-    UrfwShutdown();
-    MddDetourPackageGraphShutdown();
+    if (!isPackaged && !is19H1OrGreater)
+    {
+        UrfwShutdown();
+        MddDetourPackageGraphShutdown();
+    }
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }
