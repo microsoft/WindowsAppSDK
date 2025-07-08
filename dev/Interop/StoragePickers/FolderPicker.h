@@ -24,8 +24,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring CommitButtonText();
         void CommitButtonText(hstring const& value);
 
-        winrt::Windows::Foundation::Collections::IVector<hstring> FileTypeFilter();
-
         winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> PickSingleFolderAsync();
 
     private:
@@ -36,8 +34,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
         StoragePickersTelemetryHelper m_telemetryHelper{};
-
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);
     };
