@@ -15,7 +15,7 @@ resources:
     - repository: WindowsAppSDKConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/user/haonantang/convert2xunit
+      ref: refs/heads/main
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
