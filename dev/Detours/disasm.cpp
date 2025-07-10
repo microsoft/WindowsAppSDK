@@ -337,7 +337,7 @@ CDetourDis::CDetourDis(_Out_opt_ PBYTE *ppbTarget, _Out_opt_ LONG *plExtra)
     m_nSegmentOverride = 0;
     m_lScratchExtra = 0;
     m_pbScratchTarget = nullptr;
-    memset(m_rbScratchDst, 0, sizeof(m_rbScratchDst));
+    ZeroMemory(m_rbScratchDst, sizeof(m_rbScratchDst));
 
     m_ppbTarget = ppbTarget ? ppbTarget : &m_pbScratchTarget;
     m_plExtra = plExtra ? plExtra : &m_lScratchExtra;
@@ -3566,7 +3566,7 @@ CDetourDis::CDetourDis()
     m_pbTarget = (PBYTE)DETOUR_INSTRUCTION_TARGET_NONE;
     m_pbPool = NULL;
     m_lExtra = 0;
-    memset(m_rbScratchDst, 0, sizeof(m_rbScratchDst));
+    ZeroMemory(m_rbScratchDst, sizeof(m_rbScratchDst));
 }
 
 PBYTE CDetourDis::CopyInstruction(PBYTE pDst,
@@ -3970,7 +3970,7 @@ BYTE CDetourDis::PureCopy32(BYTE* pSource, BYTE* pDest)
 CDetourDis::CDetourDis()
 {
     m_pbTarget = (PBYTE)DETOUR_INSTRUCTION_TARGET_NONE;
-    memset(m_rbScratchDst, 0, sizeof(m_rbScratchDst));
+    ZeroMemory(m_rbScratchDst, sizeof(m_rbScratchDst));
 }
 
 PBYTE CDetourDis::CopyInstruction(PBYTE pDst,
