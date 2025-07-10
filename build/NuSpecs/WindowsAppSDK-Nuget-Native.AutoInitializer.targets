@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <Target Name="WindowsAppRuntimeAutoInitializer">
-    <!-- Build the preprocessor definitions based on conditions -->
+  
+  <Target Name="SetAutoInitializerPreprocessorDefinitions" BeforeTargets="BeforeClCompile" >
+    <!-- Build the AutoInitializer preprocessor definitions based on conditions -->
     <PropertyGroup>
       <AutoInitializerPreprocessorDefinitions></AutoInitializerPreprocessorDefinitions>
       <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP</AutoInitializerPreprocessorDefinitions>
       <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER</AutoInitializerPreprocessorDefinitions>
       <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT</AutoInitializerPreprocessorDefinitions>
       <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY</AutoInitializerPreprocessorDefinitions>
+      <!-- Inherit the previous definitions based on condition -->
+      <AutoInitializerPreprocessorDefinitions Condition="'$(PreProcessorDefinitionsInheritance)'!='true'">$(AutoInitializerPreprocessorDefinitions);%(ClCompile.PreprocessorDefinitions)</AutoInitializerPreprocessorDefinitions>
+      <PreProcessorDefinitionsInheritance Condition="'$(PreProcessorDefinitionsInheritance)'!='true'">true</PreProcessorDefinitionsInheritance>
+      <!-- Set PreprocessorDefinitions final value for following target -->
+      <PreprocessorDefinitions>$(AutoInitializerPreprocessorDefinitions);$(PreprocessorDefinitions)</PreprocessorDefinitions>
     </PropertyGroup>
-    
+  </Target>
+
+  <Target Name="WindowsAppRuntimeAutoInitializer">
     <ItemGroup>
       <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
-        <PreprocessorDefinitions>$(AutoInitializerPreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions>$(PreprocessorDefinitions)</PreprocessorDefinitions>
       </ClCompile>
     </ItemGroup>
   </Target>
