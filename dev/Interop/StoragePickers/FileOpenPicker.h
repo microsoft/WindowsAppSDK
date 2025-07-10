@@ -39,6 +39,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         StoragePickersTelemetryHelper m_telemetryHelper{};
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);
+        void OnFileTypeFilterChanged(
+            winrt::Windows::Foundation::Collections::IObservableVector<winrt::hstring> const&,
+            winrt::Windows::Foundation::Collections::IVectorChangedEventArgs const&);
     };
 }
 namespace winrt::Microsoft::Windows::Storage::Pickers::factory_implementation

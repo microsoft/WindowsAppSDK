@@ -177,6 +177,37 @@ namespace PickerCommon {
         }
     }
 
+    void ValidateSingleFileTypeFilterElement(winrt::hstring filter)
+    {
+        if (filter.empty() || (filter[0] != L'.' && filter != L"*"))
+        {
+            // TODO to xiaomgao: localization
+            throw winrt::hresult_invalid_argument(L"IDS_APIERROR_IMPROPERFILEEXTENSION");
+        }
+    }
+
+    void ValidateFileTypeFilter(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
+    {
+        if (filters.Size() > 0)
+        {
+            for (const auto& filter : filters)
+            {
+                ValidateSingleFileTypeFilterElement(filter);
+            }
+        }
+    }
+
+    void ValidateFileTypeChoices(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters)
+    {
+        if (filters.Size() > 0)
+        {
+            for (const auto& filter : filters)
+            {
+                ValidateFileTypeFilter(filter.Value().GetView());
+            }
+        }
+    }
+
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
     {
         if (!extension.empty() && extension[0] == L'*')

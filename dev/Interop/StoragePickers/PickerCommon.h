@@ -19,6 +19,9 @@ namespace PickerCommon {
 
     void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value);
     void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
+    void ValidateSingleFileTypeFilterElement(winrt::hstring filter);
+    void ValidateFileTypeFilter(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);
+    void ValidateFileTypeChoices(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
 
     struct PickerParameters {
         HWND HWnd{};

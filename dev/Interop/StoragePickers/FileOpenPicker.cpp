@@ -20,6 +20,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         : m_windowId(windowId)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
+        m_fileTypeFilter.VectorChanged({ this, &FileOpenPicker::OnFileTypeFilterChanged });
     }
 
     winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
@@ -59,6 +60,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     winrt::Windows::Foundation::Collections::IVector<hstring> FileOpenPicker::FileTypeFilter()
     {
         return m_fileTypeFilter;
+    }
+
+    void FileOpenPicker::OnFileTypeFilterChanged(
+        winrt::Windows::Foundation::Collections::IObservableVector<winrt::hstring> const&,
+        winrt::Windows::Foundation::Collections::IVectorChangedEventArgs const&)
+    {
+        PickerCommon::ValidateFileTypeFilter(m_fileTypeFilter.GetView());
     }
 
     void FileOpenPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
