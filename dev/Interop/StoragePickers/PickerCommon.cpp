@@ -56,9 +56,6 @@ namespace {
         case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads:
             knownFolderId = FOLDERID_Downloads;
             break;
-        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::HomeGroup:
-            knownFolderId = FOLDERID_HomeGroup;
-            break;
         case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary:
             knownFolderId = FOLDERID_MusicLibrary;
             break;
@@ -146,6 +143,38 @@ namespace PickerCommon {
 
         // If the shellitem cannot be created, we cannot set the folder.
         return { nullptr, L""};
+    }
+
+    void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
+    {
+        switch (value)
+        {
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail:
+        default:
+            // TODO to xiaomgao: localization
+            throw winrt::hresult_invalid_argument(L"IDS_APIERROR_INVALIDVIEWMODEVALUE");
+        }
+    }
+
+    void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
+    {
+        switch (value)
+        {
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::ComputerFolder:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Desktop:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::PicturesLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::VideosLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Objects3D:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Unspecified:
+            return;
+        default:
+            // TODO to xiaomgao: localization
+            throw winrt::hresult_invalid_argument(L"IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE");
+        }
     }
 
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)

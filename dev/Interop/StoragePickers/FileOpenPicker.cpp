@@ -28,6 +28,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileOpenPicker::ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
     {
+        PickerCommon::ValidateViewMode(value);
         m_viewMode = value;
     }
     hstring FileOpenPicker::SettingsIdentifier()
@@ -44,6 +45,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileOpenPicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
+        PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
     winrt::hstring FileOpenPicker::CommitButtonText()

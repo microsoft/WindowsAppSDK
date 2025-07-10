@@ -26,6 +26,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FolderPicker::ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
     {
+        PickerCommon::ValidateViewMode(value);
         m_viewMode = value;
     }
     hstring FolderPicker::SettingsIdentifier()
@@ -42,6 +43,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FolderPicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
+        PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
     hstring FolderPicker::CommitButtonText()

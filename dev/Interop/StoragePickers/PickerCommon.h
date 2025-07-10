@@ -17,6 +17,9 @@ namespace PickerCommon {
 
     std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath);
 
+    void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value);
+    void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
+
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;

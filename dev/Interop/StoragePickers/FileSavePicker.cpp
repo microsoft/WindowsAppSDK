@@ -41,6 +41,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileSavePicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
+        PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
     hstring FileSavePicker::CommitButtonText()
