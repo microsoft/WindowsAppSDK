@@ -121,10 +121,10 @@
     <value>All Files</value>
   </data>
   <data name="IDS_APIERROR_INVALIDPICKERVIEWMODEVALUE" xml:space="preserve">
-    <value>The specified PickerViewMode is invalid.</value>
+    <value>The specified 'PickerViewMode' is invalid.</value>
   </data>
   <data name="IDS_APIERROR_INVALIDVPICKERLOCATIONIDVALUE" xml:space="preserve">
-    <value>The specified PickerLocationId is invalid.</value>
+    <value>The specified 'PickerLocationId' is invalid.</value>
   </data>
   <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
     <value>File extensions must begin with '.' and contain no wildcards.</value>
