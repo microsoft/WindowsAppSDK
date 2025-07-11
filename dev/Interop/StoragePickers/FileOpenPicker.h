@@ -5,6 +5,7 @@
 #include "Microsoft.Windows.Storage.Pickers.FileOpenPicker.g.h"
 #include "PickerCommon.h"
 #include "StoragePickersTelemetryHelper.h"
+#include <winrt/Windows.Foundation.Collections.h>
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -35,7 +36,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::hstring m_settingsIdentifier{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         winrt::hstring m_commitButtonText{};
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
+
+        winrt::Windows::Foundation::Collections::IObservableVector<hstring> m_fileTypeFilter{
+            winrt::single_threaded_observable_vector<hstring>()
+        };
+
         StoragePickersTelemetryHelper m_telemetryHelper{};
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);

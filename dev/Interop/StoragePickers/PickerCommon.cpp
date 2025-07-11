@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "shellapi.h"
 #include "PickerCommon.h"
+#include "PickerLocalization.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
 #include "shobjidl_core.h"
@@ -151,9 +152,10 @@ namespace PickerCommon {
         {
         case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List:
         case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail:
+            return;
         default:
-            // TODO to xiaomgao: localization
-            throw winrt::hresult_invalid_argument(L"IDS_APIERROR_INVALIDVIEWMODEVALUE");
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_INVALIDVIEWMODEVALUE"));
         }
     }
 
@@ -172,8 +174,8 @@ namespace PickerCommon {
         case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Unspecified:
             return;
         default:
-            // TODO to xiaomgao: localization
-            throw winrt::hresult_invalid_argument(L"IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE");
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE"));
         }
     }
 
@@ -181,8 +183,17 @@ namespace PickerCommon {
     {
         if (filter.empty() || (filter[0] != L'.' && filter != L"*"))
         {
-            // TODO to xiaomgao: localization
-            throw winrt::hresult_invalid_argument(L"IDS_APIERROR_IMPROPERFILEEXTENSION");
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_IMPROPERFILEEXTENSION"));
+        }
+
+        for (const auto& ch : filter)
+        {
+            if (ch == L'\0')
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"));
+            }
         }
     }
 
@@ -204,6 +215,24 @@ namespace PickerCommon {
             for (const auto& filter : filters)
             {
                 ValidateFileTypeFilter(filter.Value().GetView());
+            }
+        }
+    }
+
+    void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName)
+    {
+        if (suggestedFileName.size() > MAX_PATH)
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"));
+        }
+
+        for (const auto& ch : suggestedFileName)
+        {
+            if (ch == L'\0')
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"));
             }
         }
     }

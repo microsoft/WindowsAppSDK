@@ -59,7 +59,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> FileOpenPicker::FileTypeFilter()
     {
-        return m_fileTypeFilter;
+        return m_fileTypeFilter.as<winrt::Windows::Foundation::Collections::IVector<hstring>>();
     }
 
     void FileOpenPicker::OnFileTypeFilterChanged(

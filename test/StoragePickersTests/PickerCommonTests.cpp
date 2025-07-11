@@ -300,5 +300,170 @@ namespace Test::PickerCommonTests
             }
             
         }
+
+        TEST_METHOD(VerifyValidateViewMode)
+        {
+            // Arrange.
+            std::vector<std::tuple<int, bool>> test_cases {
+                {0, true}, // PickerViewMode::List
+                {1, true}, // PickerViewMode::Thumbnail
+                {2, false}, // An invalid value out of range
+                {-1, false}, // Negative value
+                {100, false} // An very large value out of range
+            };
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            // Act & Assert
+            for (const auto& test_case : test_cases)
+            {
+                int viewModeValue = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+                
+                if (expectValid)
+                {
+                    picker.ViewMode((winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode)viewModeValue);
+                    VERIFY_ARE_EQUAL(picker.ViewMode(), (winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode)viewModeValue);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.ViewMode((winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode)viewModeValue);
+                        VERIFY_FAIL(L"Expected exception for invalid view mode");
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid view mode
+                    }
+                }
+            }
+        }
+
+        TEST_METHOD(VerifyValidateSuggestedStartLocation)
+        {
+            // Arrange.
+            std::vector<std::tuple<int, bool>> test_cases {
+                {0, true}, // DocumentsLibrary
+                {1, true}, // ComputerFolder
+                {2, true}, // Desktop
+                {3, true}, // Downloads
+                {4, false}, // HomeGroup is removed.
+                {5, true}, // MusicLibrary
+                {6, true}, // PicturesLibrary
+                {7, true}, // VideosLibrary
+                {8, true}, // Objects3D
+                {9, true}, // Unspecified
+                {10, false}, // An invalid value out of range
+                {-1, false}, // Negative value
+                {100, false}, // An very large value out of range
+            };
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            // Act & Assert
+            for (const auto& test_case : test_cases)
+            {
+                int locationValue = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+                
+                if (expectValid)
+                {
+                    picker.SuggestedStartLocation((winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId)locationValue);
+                    VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), (winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId)locationValue);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.SuggestedStartLocation((winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId)locationValue);
+                        VERIFY_FAIL(L"Expected exception for invalid suggested start location");
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid suggested start location
+                    }
+                }
+            }
+        }
+
+        TEST_METHOD(VerifyValidateSingleFileTypeFilterElement)
+        {
+            // Arrange.
+            std::vector<std::tuple<winrt::hstring, bool>> test_cases {
+                {L".txt", true},
+                {L"*", true}, // One asterisk is valid
+                {L"**", false}, // More than one asterisk is invalid
+                {L"*.docx", false}, // Filter must be '*' or start with '.'
+                {L"", false}, // Empty string is invalid
+                {L"invalid", false}, // Invalid format
+            };
+            // Act & Assert
+            for (const auto& test_case : test_cases)
+            {
+                winrt::hstring filter = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+                
+                if (expectValid)
+                {
+                    PickerCommon::ValidateSingleFileTypeFilterElement(filter);
+                }
+                else
+                {
+                    try
+                    {
+                        PickerCommon::ValidateSingleFileTypeFilterElement(filter);
+                        VERIFY_FAIL(L"Expected exception for invalid single file type filter element");
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid single file type filter element
+                    }
+                }
+            }
+        }
+
+        TEST_METHOD(VerifyValidateFileTypeFilter)
+        {
+            // Arrange.
+            std::vector<std::tuple<winrt::hstring, bool>> test_cases {
+                {L".txt", true},
+                {L"*", true}, // One asterisk is valid
+                {L"**", false}, // More than one asterisk is invalid
+                {L"*.docx", false}, // *.ext is not a valid filter
+                {L".docx", true},
+                {L"", false}, // Empty filter is invalid
+                {L"invalid", false}, // Invalid format
+            };
+
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            // Act & Assert
+            for (const auto& test_case : test_cases)
+            {
+                auto filter = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+                
+                if (expectValid)
+                {
+                    picker.FileTypeFilter().Append(filter);
+                    auto newFilters = picker.FileTypeFilter().GetView();
+                    VERIFY_ARE_EQUAL(newFilters.GetAt(newFilters.Size() - 1), filter);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.FileTypeFilter().Append(filter);
+                        VERIFY_FAIL(L"Expected exception for invalid file type filter.");
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid file type filter
+                    }
+                }
+            }
+        }
     };
 }
