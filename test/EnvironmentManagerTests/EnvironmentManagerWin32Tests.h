@@ -8,6 +8,7 @@
 namespace WindowsAppSDKEnvironmentManagerTests
 {
     class EnvironmentManagerWin32Tests {
+        EnvironmentManagerWin32Tests() = default;
         BEGIN_TEST_CLASS(EnvironmentManagerWin32Tests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Method", L"ElevatedUser")

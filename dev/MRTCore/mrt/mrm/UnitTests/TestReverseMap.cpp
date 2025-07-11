@@ -15,7 +15,7 @@ using namespace WEX::Logging;
 namespace UnitTests
 {
 
-TestReverseFileMap::TestReverseFileMap() : m_build(), m_pPriBuilder(NULL), m_pReverseFileMapBuilder(NULL), m_pReverseFileMap(NULL) {}
+TestReverseFileMap::TestReverseFileMap() : m_build(), m_pPriBuilder(NULL), m_pReverseFileMapBuilder(NULL), m_pReverseFileMap(NULL), m_pTestDI(nullptr), m_testDI(), m_pDecisionInfo(nullptr) {}
 
 HRESULT
 TestReverseFileMap::InitFromTestVars(__in PriSectionBuilder* pPriBuilder, __in UnifiedEnvironment* pEnvironment, __in PCWSTR pVarPrefix)

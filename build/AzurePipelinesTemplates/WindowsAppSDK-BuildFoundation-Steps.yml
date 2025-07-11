@@ -84,7 +84,7 @@ steps:
       msBuildCommandline: 'msbuild.exe /restore /nologo /nr:false /p:configuration=Release /p:platform=x64 $(Build.SourcesDirectory)\WindowsAppRuntime.sln'
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
-        $(Build.SourcesDirectory)\packages
+        $(Agent.ToolsDirectory)\uCRT\#$(Build.SourcesDirectory)\obj\$(buildConfiguration)\$(buildPlatform)#$(Build.SourcesDirectory)\packages
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     continueOnError: true
