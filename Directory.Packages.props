@@ -6,11 +6,13 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)" />
     <PackageVersion Include="Microsoft.FrameworkUDK" Version="$(MicrosoftFrameworkUDKVersion)" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
     <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
+    <PackageVersion Include="Microsoft.Taef" Version="$(MicrosoftTaefVersion)" />
     <PackageVersion Include="Microsoft.VisualStudio.SDK" Version="17.3.32804.24" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageVersion Include="NuGet.VisualStudio" Version="17.6.1" />
@@ -19,8 +21,10 @@
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <PackageVersion Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118" />
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="$(WindowsAppSDKVersion)" Condition=" '$(WindowsAppSDKVersion)' != '' " />
+    <PackageVersion Include="Microsoft.WindowsAppSDK.Foundation" Version="1.1.1.1" />
     <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(CppWinRTVersion)" Condition=" '$(CppWinRTVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(WindowsSDKBuildToolsVersion)" Condition=" '$(WindowsSDKBuildToolsVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(WILVersion)" Condition=" '$(WILVersion)' != '' " />
+    <PackageVersion Include="Taef.Managed" Version="$(MicrosoftTaefVersion)" />
   </ItemGroup>
 </Project>
