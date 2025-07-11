@@ -182,9 +182,13 @@ jobs:
   - BuildMRT
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+    artifactAttempt: ''
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+    ob_artifactBaseName: '$(System.StageName)_$(imageName)'
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-RunTests-Steps.yml
     parameters:
       buildPlatform: $(buildPlatform)
       buildConfiguration: $(buildConfiguration)
       testLocale: $(testLocale)
+      ImageName: $(imageName)

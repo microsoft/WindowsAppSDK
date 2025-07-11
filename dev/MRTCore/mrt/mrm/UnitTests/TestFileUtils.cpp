@@ -15,7 +15,9 @@ namespace UnitTests
 {
 
 FileBasedTest::FileBasedTest() : m_runFrom(Current), m_pTestClassName(nullptr), m_pTestMethodName(nullptr), m_pClassDataSubfolder(nullptr)
-{}
+{
+    m_originalDir[0] = L'\0';
+}
 
 DWORD
 FileBasedTest::CreateDirectoryHierarchy(_In_ const WEX::Common::String& path)

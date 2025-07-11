@@ -57,6 +57,8 @@ jobs:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
     AZURE_PIPELINES_DEDUP_PARALLELISM: 16
     artifactAttempt: ''
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+    ob_artifactBaseName: '$(System.StageName)_$(imageName)'
   steps:
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:
