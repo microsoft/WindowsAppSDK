@@ -25,6 +25,8 @@ public class StoragePickersTest
     [TestMethod]
     public void SimpleAPlusBTest()
     {
+        var picker = new FileOpenPicker(default);
         Verify.AreEqual(2, 1 + 1);
+        picker.PickSingleFileAsync().Wait();
     }
 }

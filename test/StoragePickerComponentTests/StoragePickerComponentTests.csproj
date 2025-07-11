@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <SelfContained>true</SelfContained>
     <WindowsPackageType>None</WindowsPackageType>
+    <Platform>x64</Platform>
 
   </PropertyGroup>
 
