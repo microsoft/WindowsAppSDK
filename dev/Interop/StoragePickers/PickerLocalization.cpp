@@ -9,6 +9,7 @@
 #include "PickerLocalization.h"
 #include <winrt\base.h>
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
+#include <iostream>
 
 // find framework package related code from https://github.com/microsoft/microsoft-ui-xaml/blob/main/src/controls/dev/ResourceHelper/ResourceAccessor.cpp
 // and https://github.com/microsoft/microsoft-ui-xaml/blob/main/src/controls/dev/dll/SharedHelpers.cpp
@@ -60,6 +61,7 @@ namespace {
         std::uint32_t packageCount{};
         const PACKAGE_INFO* packageGraph{};
         std::unique_ptr<BYTE[]> packageBuffer;
+        std::cout << "calling is in framework package" << std::endl;
         if (TryGetCurrentPackageGraph(c_filter, packageCount, packageGraph, packageBuffer))
         {
             if (packageGraph)
@@ -86,41 +88,66 @@ namespace {
                            TRUE) == CSTR_EQUAL)
                     {
                         frameworkInstallLocation = winrt::hstring(packageInfo.path);
+                        std::cout << "calling is in framework package result true" << std::endl;
                         return true;
                     }
                 }
             }
         }
+        std::cout << "calling is in framework package result false" << std::endl;
         return false;
     }
 }
+
+
+
+
 bool PickerLocalization::IsInFrameworkPackage(winrt::hstring& frameworkPackageInstallLocation)
 {
     static winrt::hstring s_frameworkInstallLocation;
-    static bool isInFrameworkPackage = IsInFrameworkPackageImpl(s_frameworkInstallLocation);
+    static bool isInFrameworkPackage = IsInFrameworkPackageImpl(s_frameworkInstallLocation);    
     frameworkPackageInstallLocation = s_frameworkInstallLocation;
     return isInFrameworkPackage;
 }
+
+
+const winrt::hstring priFileName = L"Microsoft.WindowsAppRuntime.pri";
+winrt::hstring GetPriFilePath()
+{
+    HMODULE hModule = nullptr;
+    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        reinterpret_cast<LPCWSTR>(&GetPriFilePath), &hModule))
+    {
+        wchar_t path[MAX_PATH];
+        if (GetModuleFileNameW(hModule, path, MAX_PATH) > 0)
+        {
+            // Use std::filesystem to get the parent directory
+            std::filesystem::path dllPath(path);
+            std::filesystem::path parentDir = dllPath.parent_path();
+            // Combine parentDir with Microsoft.WindowsAppRuntime.pri
+            auto priFilePath = parentDir / std::wstring{ priFileName };
+            auto pathHstring = winrt::hstring{ parentDir.wstring() };
+            auto priFilePathHstring = winrt::hstring{ priFilePath.wstring() };
+            std::wcout << L"Parent directory: " << pathHstring.c_str() << std::endl;
+            std::wcout << L"PRI file path: " << priFilePathHstring.c_str() << std::endl;
+            return priFilePathHstring;
+        }
+    }
+    return priFileName;
+}
+
 namespace PickerLocalization {
-    const winrt::hstring priFileName = L"Microsoft.WindowsAppRuntime.pri";
+    
     winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key, winrt::hstring fallback)
     {
-        // adding try-catch to prevent localization error break picker experience on first shipping
-        // TODO: remove try-catch after stabilization period
-        try
-        {
-            winrt::hstring frameworkInstallLocation{};
-            auto priPath = IsInFrameworkPackage(frameworkInstallLocation)
-                ? (frameworkInstallLocation + L"\\" + priFileName)
-                : priFileName;
-            auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
-            return manager.MainResourceMap().GetValue(key).ValueAsString();
-        }
-        catch (...)
-        {
-            LOG_CAUGHT_EXCEPTION();
-            return fallback;
-        }
+            //winrt::hstring frameworkInstallLocation{};
+            //auto priPath = IsInFrameworkPackage(frameworkInstallLocation)
+            //    ? (frameworkInstallLocation + L"\\" + priFileName)
+            //    : priFileName;
+        static winrt::hstring priPath = GetPriFilePath();
+        std::wcout << L"PRI PATH FROM DLL PATH INFER" << priPath.c_str() << std::endl;
+        auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
+        return manager.MainResourceMap().GetValue(key).ValueAsString();
     }
 }
 
