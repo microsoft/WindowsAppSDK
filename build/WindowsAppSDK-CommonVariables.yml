@@ -26,6 +26,10 @@ variables:
   # Use the following corresponding version string instead of the above when calling nuget install directly.
   compilerOverrideNupkgVersion: ""
 
+  ob_sdl_checkCompliantCompilerWarnings: true
+  ob_sdl_prefast_runDuring: 'Guardian'
+  ob_sdl_msbuildOverride: true
+
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
   WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
 
