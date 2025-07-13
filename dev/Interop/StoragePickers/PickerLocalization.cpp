@@ -44,7 +44,7 @@ winrt::hstring GetPriFilePath()
 
 namespace PickerLocalization {
 
-    winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key, winrt::hstring fallback)
+    winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key)
     {
         static winrt::hstring priPath = GetPriFilePath();
         auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
