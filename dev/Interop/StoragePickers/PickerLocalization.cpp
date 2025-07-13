@@ -9,7 +9,7 @@
 #include "PickerLocalization.h"
 #include <winrt\base.h>
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
-#include <vector>
+#include <array>
 
 
 const winrt::hstring priFileName = L"Microsoft.WindowsAppRuntime.pri";
@@ -21,11 +21,11 @@ winrt::hstring GetPriFilePath()
     if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
         reinterpret_cast<LPCWSTR>(&GetPriFilePath), &hModule))
     {
-        auto buffer = std::make_unique<wchar_t[]>(MAX_PATH + 1);
-        auto pathLength = GetModuleFileName(hModule, buffer.get(), MAX_PATH + 1);
+        std::array<wchar_t, MAX_PATH + 1> buffer;
+        auto pathLength = GetModuleFileName(hModule, buffer.data(), MAX_PATH + 1);
         if (pathLength > 0)
         {
-            auto dllPathString = std::wstring(buffer.get(), pathLength);
+            auto dllPathString = std::wstring(buffer.data(), pathLength);
             std::filesystem::path dllPath(dllPathString);
             if (!std::filesystem::is_regular_file(dllPath))
             {
