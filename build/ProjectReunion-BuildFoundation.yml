@@ -15,7 +15,7 @@ resources:
     - repository: WindowsAppSDKConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      ref: refs/heads/user/haonantang/modifyTestMatrix
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
@@ -41,8 +41,6 @@ stages:
     runPREFast: true
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-  parameters:
-    testMatrix: ${{ variables.PipelineTests }}
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
   parameters:
