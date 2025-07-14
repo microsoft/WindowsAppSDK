@@ -23,17 +23,6 @@ stages:
     eq(variables['useBuildOutputFromBuildId'],'')
   dependsOn: []
   jobs:
-  - job: echo
-    steps:
-    - script: |
-        echo "This is a test job to ensure the pipeline runs correctly."
-        echo "Parameters:"
-        echo "SignOutput: ${{ parameters.SignOutput }}"
-        echo "IsOneBranch: ${{ parameters.IsOneBranch }}"
-        echo "runApiScan: ${{ parameters.runApiScan }}"
-        echo "runPREfast: ${{ parameters.runPREfast }}"
-        echo "testMatrix: ${{ parameters.testMatrix }}"
-
   - job: VerifyCopyrightHeaders
     dependsOn: []
     pool:
