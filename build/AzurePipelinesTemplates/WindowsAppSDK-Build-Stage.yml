@@ -75,7 +75,7 @@ stages:
 
 # extract BuildFoundation and BuildMRT into WindowsAppSDK-Build-Stage-Per-Platform.yml. Separate the build stage per platform
 
-- stage: testStageBuild
+- stage: "echoStage"
   jobs:
     - job: echo
       steps:
