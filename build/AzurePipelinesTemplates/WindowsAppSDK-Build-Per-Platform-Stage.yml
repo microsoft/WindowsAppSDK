@@ -196,8 +196,6 @@ stages:
       name: 'ProjectReunionESPool-2022'
     steps:
     - powershell: |
-        Write-Host "${{ parameters.testMatrix }}"
-        Write-Host "${{ parameters.buildPlatform }}"
         $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
         $targetPlatform = "${{ parameters.buildPlatform }}"
         $filteredMatrix = @{}
