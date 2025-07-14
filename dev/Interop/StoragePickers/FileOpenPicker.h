@@ -37,16 +37,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         winrt::hstring m_commitButtonText{};
 
-        winrt::Windows::Foundation::Collections::IObservableVector<hstring> m_fileTypeFilter{
-            winrt::single_threaded_observable_vector<hstring>()
-        };
+        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter;
 
         StoragePickersTelemetryHelper m_telemetryHelper{};
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);
-        void OnFileTypeFilterChanged(
-            winrt::Windows::Foundation::Collections::IObservableVector<winrt::hstring> const&,
-            winrt::Windows::Foundation::Collections::IVectorChangedEventArgs const&);
     };
 }
 namespace winrt::Microsoft::Windows::Storage::Pickers::factory_implementation

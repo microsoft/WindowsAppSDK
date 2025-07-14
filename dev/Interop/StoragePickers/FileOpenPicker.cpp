@@ -13,14 +13,14 @@
 #include "PickerCommon.h"
 #include "PickFileResult.h"
 #include "PickerLocalization.h"
+#include "ValidatingFileTypeFilterVector.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
     FileOpenPicker::FileOpenPicker(winrt::Microsoft::UI::WindowId const& windowId)
-        : m_windowId(windowId)
+        : m_windowId(windowId), m_fileTypeFilter(make<ValidatingFileTypeFilterVector>())
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
-        m_fileTypeFilter.VectorChanged({ this, &FileOpenPicker::OnFileTypeFilterChanged });
     }
 
     winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FileOpenPicker::ViewMode()
@@ -59,14 +59,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> FileOpenPicker::FileTypeFilter()
     {
-        return m_fileTypeFilter.as<winrt::Windows::Foundation::Collections::IVector<hstring>>();
-    }
-
-    void FileOpenPicker::OnFileTypeFilterChanged(
-        winrt::Windows::Foundation::Collections::IObservableVector<winrt::hstring> const&,
-        winrt::Windows::Foundation::Collections::IVectorChangedEventArgs const&)
-    {
-        PickerCommon::ValidateFileTypeFilter(m_fileTypeFilter.GetView());
+        return m_fileTypeFilter;
     }
 
     void FileOpenPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
