@@ -210,4 +210,4 @@ steps:
     condition: succeededOrFailed()
     inputs:
       targetPath: '$(Build.SourcesDirectory)\TestOutput'
-      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(variables.buildConfiguration)$(variables.buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
