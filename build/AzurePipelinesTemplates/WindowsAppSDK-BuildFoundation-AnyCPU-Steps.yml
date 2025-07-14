@@ -39,6 +39,9 @@ steps:
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
         $(Build.SourcesDirectory)\packages
+      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+      rulesetName: Custom
+      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
     continueOnError: true
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
