@@ -179,6 +179,23 @@ namespace PickerCommon {
         }
     }
 
+    void ValidateStringNoEmbeddedNulls(winrt::hstring const& value)
+    {
+        if (value.empty())
+        {
+            return;
+        }
+
+        for (int i = 0; i < value.size(); i++)
+        {
+            if (value[i] == L'\0')
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"));
+            }
+        }
+    }
+
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter)
     {
         if (filter.empty() || (filter[0] != L'.' && filter != L"*"))
@@ -187,14 +204,7 @@ namespace PickerCommon {
                 PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_IMPROPERFILEEXTENSION"));
         }
 
-        for (const auto& ch : filter)
-        {
-            if (ch == L'\0')
-            {
-                throw winrt::hresult_invalid_argument(
-                    PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"));
-            }
-        }
+        ValidateStringNoEmbeddedNulls(filter);
     }
 
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName)
@@ -205,14 +215,7 @@ namespace PickerCommon {
                 PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"));
         }
 
-        for (const auto& ch : suggestedFileName)
-        {
-            if (ch == L'\0')
-            {
-                throw winrt::hresult_invalid_argument(
-                    PickerLocalization::GetStoragePickersLocalizationText(L"IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"));
-            }
-        }
+        ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)

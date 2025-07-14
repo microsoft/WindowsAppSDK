@@ -387,7 +387,7 @@ namespace Test::PickerCommonTests
             }
         }
 
-        TEST_METHOD(VerifySuggestedFileName)
+        TEST_METHOD(VerifyValidateSuggestedFileName)
         {
             // Arrange.
             auto test_cases = std::vector<std::tuple<winrt::hstring, bool>>{
@@ -426,6 +426,211 @@ namespace Test::PickerCommonTests
                     catch (...)
                     {
                         // Expected exception for invalid suggested file name
+                    }
+                }
+            }
+        }
+
+        std::vector<std::tuple<winrt::hstring, bool>> cbsi_text_test_cases{
+            {L"Valid", true}, // Valid commit button text
+            {L"", true}, // Allow empty string
+            {L"Valid Text", true}, // Allow spaces
+            {L"Invalid\0Text", false}, // Embedded null is invalid
+        };
+
+        TEST_METHOD(VerifyFolderPicker_ValidateCommitButtonText)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
+
+            // Act & Assert            
+            for (const auto& test_case : cbsi_text_test_cases)
+            {
+                winrt::hstring commitButtonText = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+                
+                if (expectValid)
+                {
+                    picker.CommitButtonText(commitButtonText);
+                    VERIFY_ARE_EQUAL(picker.CommitButtonText(), commitButtonText);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.CommitButtonText(commitButtonText);
+                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(commitButtonText);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid commit button text
+                    }
+                }
+            }
+        }
+
+        TEST_METHOD(VerifyFileOpenPicker_ValidateCommitButtonText)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            // Act & Assert            
+            for (const auto& test_case : cbsi_text_test_cases)
+            {
+                winrt::hstring commitButtonText = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+
+                if (expectValid)
+                {
+                    picker.CommitButtonText(commitButtonText);
+                    VERIFY_ARE_EQUAL(picker.CommitButtonText(), commitButtonText);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.CommitButtonText(commitButtonText);
+                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(commitButtonText);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid commit button text
+                    }
+                }
+            }
+        }
+
+        TEST_METHOD(VerifyFileSavePicker_ValidateCommitButtonText)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            // Act & Assert            
+            for (const auto& test_case : cbsi_text_test_cases)
+            {
+                winrt::hstring commitButtonText = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+
+                if (expectValid)
+                {
+                    picker.CommitButtonText(commitButtonText);
+                    VERIFY_ARE_EQUAL(picker.CommitButtonText(), commitButtonText);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.CommitButtonText(commitButtonText);
+                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(commitButtonText);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid commit button text
+                    }
+                }
+            }
+        }
+
+        TEST_METHOD(VerifyFolderPicker_ValidateSettingsIdentifer)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
+ 
+            // Act & Assert            
+            for (const auto& test_case : cbsi_text_test_cases)
+            {
+                winrt::hstring settingsIdentifier = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+
+                if (expectValid)
+                {
+                    picker.SettingsIdentifier(settingsIdentifier);
+                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.SettingsIdentifier(settingsIdentifier);
+                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(settingsIdentifier);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid commit button text
+                    }
+                }
+            }
+        }
+
+        TEST_METHOD(VerifyFileOpenPicker_ValidateSettingsIdentifier)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            // Act & Assert            
+            for (const auto& test_case : cbsi_text_test_cases)
+            {
+                winrt::hstring settingsIdentifier = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+
+                if (expectValid)
+                {
+                    picker.SettingsIdentifier(settingsIdentifier);
+                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.SettingsIdentifier(settingsIdentifier);
+                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(settingsIdentifier);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid commit button text
+                    }
+                }
+            }
+        }
+
+        TEST_METHOD(VerifyFileSavePicker_ValidateSettingsIdentifier)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            // Act & Assert            
+            for (const auto& test_case : cbsi_text_test_cases)
+            {
+                winrt::hstring settingsIdentifier = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+
+                if (expectValid)
+                {
+                    picker.SettingsIdentifier(settingsIdentifier);
+                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.SettingsIdentifier(settingsIdentifier);
+                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(settingsIdentifier);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid commit button text
                     }
                 }
             }

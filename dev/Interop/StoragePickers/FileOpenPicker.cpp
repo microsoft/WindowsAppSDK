@@ -38,6 +38,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileOpenPicker::SettingsIdentifier(hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_settingsIdentifier = value;
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileOpenPicker::SuggestedStartLocation()
@@ -55,6 +56,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileOpenPicker::CommitButtonText(winrt::hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> FileOpenPicker::FileTypeFilter()

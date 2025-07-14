@@ -35,6 +35,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FolderPicker::SettingsIdentifier(hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_settingsIdentifier = value;
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FolderPicker::SuggestedStartLocation()
@@ -52,6 +53,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FolderPicker::CommitButtonText(hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
 

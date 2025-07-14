@@ -17,6 +17,7 @@ namespace PickerCommon {
 
     std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath);
 
+    void ValidateStringNoEmbeddedNulls(winrt::hstring const& value);
     void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value);
     void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
