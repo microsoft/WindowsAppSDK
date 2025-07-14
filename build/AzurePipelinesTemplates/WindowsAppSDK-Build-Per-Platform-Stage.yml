@@ -15,7 +15,7 @@ parameters:
   type: string
   default: x64
 - name: testMatrix
-  type: object
+  type: string
   default: ''
 
 stages:
