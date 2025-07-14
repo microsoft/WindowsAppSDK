@@ -11,10 +11,7 @@
       <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT</AutoInitializerPreprocessorDefinitions>
       <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">$(AutoInitializerPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY</AutoInitializerPreprocessorDefinitions>
       <!-- Inherit the previous definitions based on condition -->
-      <AutoInitializerPreprocessorDefinitions Condition="'$(PreProcessorDefinitionsInheritance)'!='true'">$(AutoInitializerPreprocessorDefinitions);%(ClCompile.PreprocessorDefinitions)</AutoInitializerPreprocessorDefinitions>
-      <PreProcessorDefinitionsInheritance Condition="'$(PreProcessorDefinitionsInheritance)'!='true'">true</PreProcessorDefinitionsInheritance>
-      <!-- Set PreprocessorDefinitions final value for following target -->
-      <PreprocessorDefinitions>$(AutoInitializerPreprocessorDefinitions);$(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AutoInitializerPreprocessorDefinitions>$(AutoInitializerPreprocessorDefinitions);%(ClCompile.PreprocessorDefinitions)</AutoInitializerPreprocessorDefinitions>
     </PropertyGroup>
   </Target>
 
@@ -22,7 +19,7 @@
     <ItemGroup>
       <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
-        <PreprocessorDefinitions>$(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions>$(AutoInitializerPreprocessorDefinitions)</PreprocessorDefinitions>
       </ClCompile>
     </ItemGroup>
   </Target>

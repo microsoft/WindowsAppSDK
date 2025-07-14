@@ -12,10 +12,7 @@
             <BootstrapPreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnNoMatch_ShowUI)'=='true'">$(BootstrapPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI</BootstrapPreprocessorDefinitions>
             <BootstrapPreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">$(BootstrapPreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP</BootstrapPreprocessorDefinitions>
             <!-- Inherit the previous definitions based on condition -->
-            <BootstrapPreprocessorDefinitions Condition="'$(PreProcessorDefinitionsInheritance)'!='true'">$(BootstrapPreprocessorDefinitions);%(ClCompile.PreprocessorDefinitions)</BootstrapPreprocessorDefinitions>
-            <PreProcessorDefinitionsInheritance Condition="'$(PreProcessorDefinitionsInheritance)'!='true'">true</PreProcessorDefinitionsInheritance>
-            <!-- Set PreprocessorDefinitions final value for following target -->
-            <PreprocessorDefinitions>$(BootstrapPreprocessorDefinitions);$(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <BootstrapPreprocessorDefinitions>$(BootstrapPreprocessorDefinitions);%(ClCompile.PreprocessorDefinitions)</BootstrapPreprocessorDefinitions>
         </PropertyGroup>
     </Target>
 
@@ -23,7 +20,7 @@
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapAutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
-                <PreprocessorDefinitions>$(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions>$(BootstrapPreprocessorDefinitions)</PreprocessorDefinitions>
             </ClCompile>
         </ItemGroup>
     </Target>
