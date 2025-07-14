@@ -387,19 +387,18 @@ namespace Test::PickerCommonTests
             }
         }
 
+        std::vector<std::tuple<winrt::hstring, bool>> file_extension_validation_test_cases{
+            {L".txt", true},
+            {L"*", true}, // One asterisk is valid
+            {L"**", false}, // More than one asterisk is invalid
+            {L"*.docx", false}, // Filter must be '*' or start with '.'
+            {L"", false}, // Empty string is invalid
+            {L"invalid", false}, // Invalid format
+        };
+
         TEST_METHOD(VerifyValidateSingleFileTypeFilterElement)
         {
-            // Arrange.
-            std::vector<std::tuple<winrt::hstring, bool>> test_cases {
-                {L".txt", true},
-                {L"*", true}, // One asterisk is valid
-                {L"**", false}, // More than one asterisk is invalid
-                {L"*.docx", false}, // Filter must be '*' or start with '.'
-                {L"", false}, // Empty string is invalid
-                {L"invalid", false}, // Invalid format
-            };
-            // Act & Assert
-            for (const auto& test_case : test_cases)
+            for (const auto& test_case : file_extension_validation_test_cases)
             {
                 winrt::hstring filter = std::get<0>(test_case);
                 bool expectValid = std::get<1>(test_case);
@@ -426,25 +425,15 @@ namespace Test::PickerCommonTests
         TEST_METHOD(VerifyValidateFileTypeFilter)
         {
             // Arrange.
-            std::vector<std::tuple<winrt::hstring, bool>> test_cases {
-                {L".txt", true},
-                {L"*", true}, // One asterisk is valid
-                {L"**", false}, // More than one asterisk is invalid
-                {L"*.docx", false}, // *.ext is not a valid filter
-                {L".docx", true},
-                {L"", false}, // Empty filter is invalid
-                {L"invalid", false}, // Invalid format
-            };
-
             winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
 
             // Act & Assert
-            for (const auto& test_case : test_cases)
+            for (const auto& test_case : file_extension_validation_test_cases)
             {
-                auto filter = std::get<0>(test_case);
+                auto& filter = std::get<0>(test_case);
                 bool expectValid = std::get<1>(test_case);
-                
+
                 if (expectValid)
                 {
                     picker.FileTypeFilter().Append(filter);
@@ -456,7 +445,9 @@ namespace Test::PickerCommonTests
                     try
                     {
                         picker.FileTypeFilter().Append(filter);
-                        VERIFY_FAIL(L"Expected exception for invalid file type filter.");
+
+                        std::wstring errorMessage = L"Expected exception for invalid file type filter: " + std::wstring(filter);
+                        VERIFY_FAIL(errorMessage.c_str());
                     }
                     catch (...)
                     {
@@ -465,5 +456,66 @@ namespace Test::PickerCommonTests
                 }
             }
         }
+
+        TEST_METHOD(VerifyValidateFileTypeChoices)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            // Act & Assert
+            for (const auto& test_case : file_extension_validation_test_cases)
+            {
+                auto& choice = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+
+                if (expectValid)
+                {
+                    // Create a vector with the extension
+                    auto extensions = winrt::single_threaded_vector<winrt::hstring>({ choice });
+                    picker.FileTypeChoices().Insert(L"TestChoice", extensions);
+
+                    // Verify that the choice was added
+                    auto choices = picker.FileTypeChoices();
+                    VERIFY_IS_TRUE(choices.HasKey(L"TestChoice"));
+                    auto newExtensions = choices.Lookup(L"TestChoice");
+                    VERIFY_ARE_EQUAL(newExtensions.GetAt(0), choice);
+                }
+                else
+                {
+                    // Attempt to insert a key-value pair that has invalid choice
+                    try
+                    {
+                        auto extensions = winrt::single_threaded_vector<winrt::hstring>({ choice });
+                        picker.FileTypeChoices().Insert(L"InvalidChoice", extensions);
+
+                        std::wstring errorMessage = L"Expected exception when inserting an invalid file type choice: " + std::wstring(choice);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid file type choice
+                    }
+
+                    // Attempt to append an invalid choice to the existing choices
+                    picker.FileTypeChoices().Insert(
+                        L"ValidChoice",
+                        winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc" }));
+
+                    try
+                    {
+                        picker.FileTypeChoices().Lookup(L"ValidChoice").Append(choice);
+
+                        std::wstring errorMessage = L"Expected exception when appending an invalid file type choice: " + std::wstring(choice);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid file type filter
+                    }
+                }
+            }
+        }
+
     };
 }

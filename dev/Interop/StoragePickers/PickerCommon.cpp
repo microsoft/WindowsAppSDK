@@ -197,27 +197,27 @@ namespace PickerCommon {
         }
     }
 
-    void ValidateFileTypeFilter(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
-    {
-        if (filters.Size() > 0)
-        {
-            for (const auto& filter : filters)
-            {
-                ValidateSingleFileTypeFilterElement(filter);
-            }
-        }
-    }
+    //void ValidateFileTypeFilter(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
+    //{
+    //    if (filters.Size() > 0)
+    //    {
+    //        for (const auto& filter : filters)
+    //        {
+    //            ValidateSingleFileTypeFilterElement(filter);
+    //        }
+    //    }
+    //}
 
-    void ValidateFileTypeChoices(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters)
-    {
-        if (filters.Size() > 0)
-        {
-            for (const auto& filter : filters)
-            {
-                ValidateFileTypeFilter(filter.Value().GetView());
-            }
-        }
-    }
+    //void ValidateFileTypeChoices(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters)
+    //{
+    //    if (filters.Size() > 0)
+    //    {
+    //        for (const auto& filter : filters)
+    //        {
+    //            ValidateFileTypeFilter(filter.Value().GetView());
+    //        }
+    //    }
+    //}
 
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName)
     {

@@ -203,5 +203,6 @@ namespace Test::StoragePickersTests
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
         }
+
     };
 }

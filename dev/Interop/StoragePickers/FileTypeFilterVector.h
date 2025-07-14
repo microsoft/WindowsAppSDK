@@ -3,15 +3,14 @@
 
 #pragma once
 #include <winrt/Windows.Foundation.Collections.h>
-// #include "PickerCommon.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
-    struct ValidatingFileTypeFilterVector : implements<ValidatingFileTypeFilterVector, 
-        winrt::Windows::Foundation::Collections::IVector<hstring>, 
+    struct FileTypeFilterVector : implements<FileTypeFilterVector,
+        winrt::Windows::Foundation::Collections::IVector<hstring>,
         winrt::Windows::Foundation::Collections::IIterable<hstring>>
     {
-        ValidatingFileTypeFilterVector();
+        FileTypeFilterVector();
 
         // IVector<hstring>
         hstring GetAt(uint32_t index) const;

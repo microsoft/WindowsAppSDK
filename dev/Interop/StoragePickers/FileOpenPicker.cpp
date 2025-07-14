@@ -13,12 +13,12 @@
 #include "PickerCommon.h"
 #include "PickFileResult.h"
 #include "PickerLocalization.h"
-#include "ValidatingFileTypeFilterVector.h"
+#include "FileTypeFilterVector.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
     FileOpenPicker::FileOpenPicker(winrt::Microsoft::UI::WindowId const& windowId)
-        : m_windowId(windowId), m_fileTypeFilter(make<ValidatingFileTypeFilterVector>())
+        : m_windowId(windowId), m_fileTypeFilter(make<FileTypeFilterVector>())
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }

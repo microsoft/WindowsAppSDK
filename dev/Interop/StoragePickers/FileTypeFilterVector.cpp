@@ -2,34 +2,34 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "ValidatingFileTypeFilterVector.h"
+#include "FileTypeFilterVector.h"
 #include "PickerCommon.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
-    ValidatingFileTypeFilterVector::ValidatingFileTypeFilterVector()
+    FileTypeFilterVector::FileTypeFilterVector()
     {
     }
 
-    void ValidatingFileTypeFilterVector::SetAt(uint32_t index, hstring const& value)
+    void FileTypeFilterVector::SetAt(uint32_t index, hstring const& value)
     {
         PickerCommon::ValidateSingleFileTypeFilterElement(value);
         m_innerVector.SetAt(index, value);
     }
 
-    void ValidatingFileTypeFilterVector::InsertAt(uint32_t index, hstring const& value)
+    void FileTypeFilterVector::InsertAt(uint32_t index, hstring const& value)
     {
         PickerCommon::ValidateSingleFileTypeFilterElement(value);
         m_innerVector.InsertAt(index, value);
     }
 
-    void ValidatingFileTypeFilterVector::Append(hstring const& value)
+    void FileTypeFilterVector::Append(hstring const& value)
     {
         PickerCommon::ValidateSingleFileTypeFilterElement(value);
         m_innerVector.Append(value);
     }
 
-    void ValidatingFileTypeFilterVector::ReplaceAll(array_view<hstring const> items)
+    void FileTypeFilterVector::ReplaceAll(array_view<hstring const> items)
     {
         // Validate all items before replacing
         for (auto const& item : items)
@@ -39,47 +39,47 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         m_innerVector.ReplaceAll(items);
     }
 
-    hstring ValidatingFileTypeFilterVector::GetAt(uint32_t index) const
+    hstring FileTypeFilterVector::GetAt(uint32_t index) const
     {
         return m_innerVector.GetAt(index);
     }
 
-    uint32_t ValidatingFileTypeFilterVector::Size() const
+    uint32_t FileTypeFilterVector::Size() const
     {
         return m_innerVector.Size();
     }
 
-    winrt::Windows::Foundation::Collections::IVectorView<hstring> ValidatingFileTypeFilterVector::GetView() const
+    winrt::Windows::Foundation::Collections::IVectorView<hstring> FileTypeFilterVector::GetView() const
     {
         return m_innerVector.GetView();
     }
 
-    bool ValidatingFileTypeFilterVector::IndexOf(hstring const& value, uint32_t& index) const
+    bool FileTypeFilterVector::IndexOf(hstring const& value, uint32_t& index) const
     {
         return m_innerVector.IndexOf(value, index);
     }
 
-    void ValidatingFileTypeFilterVector::RemoveAt(uint32_t index)
+    void FileTypeFilterVector::RemoveAt(uint32_t index)
     {
         m_innerVector.RemoveAt(index);
     }
 
-    void ValidatingFileTypeFilterVector::RemoveAtEnd()
+    void FileTypeFilterVector::RemoveAtEnd()
     {
         m_innerVector.RemoveAtEnd();
     }
 
-    void ValidatingFileTypeFilterVector::Clear()
+    void FileTypeFilterVector::Clear()
     {
         m_innerVector.Clear();
     }
 
-    uint32_t ValidatingFileTypeFilterVector::GetMany(uint32_t startIndex, array_view<hstring> items) const
+    uint32_t FileTypeFilterVector::GetMany(uint32_t startIndex, array_view<hstring> items) const
     {
         return m_innerVector.GetMany(startIndex, items);
     }
 
-    winrt::Windows::Foundation::Collections::IIterator<hstring> ValidatingFileTypeFilterVector::First() const
+    winrt::Windows::Foundation::Collections::IIterator<hstring> FileTypeFilterVector::First() const
     {
         return m_innerVector.First();
     }
