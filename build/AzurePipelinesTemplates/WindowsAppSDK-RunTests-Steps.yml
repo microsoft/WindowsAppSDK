@@ -1,6 +1,7 @@
 parameters:
   buildPlatform: ''
   buildConfiguration: ''
+  ImageName: ''
   TaefSelect: '*'
   BinaryCompatSwitch: ''
   testLocale: ''
@@ -178,8 +179,8 @@ steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
     parameters:
       WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
-      xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ variables.ImageName }}.xml'
-      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ variables.ImageName }}'
+      xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
+      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
       BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
       CheckoutPath: '$(Build.SourcesDirectory)\WindowsAppSDKConfig'
 
@@ -192,7 +193,7 @@ steps:
       searchFolder: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)'
       mergeTestResults: true
       failTaskOnFailedTests: true
-      testRunTitle: '$(System.StageName)_${{ variables.imageName }}_${{ variables.buildConfiguration }}${{ variables.buildPlatform }}'
+      testRunTitle: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)'
       buildPlatform: ${{ parameters.buildPlatform }}
       buildConfiguration: ${{ parameters.buildConfiguration }}
 
@@ -209,4 +210,4 @@ steps:
     condition: succeededOrFailed()
     inputs:
       targetPath: '$(Build.SourcesDirectory)\TestOutput'
-      artifact: '$(System.StageName)_${{ variables.imageName }}_${{ variables.buildConfiguration }}${{ variables.buildPlatform }}_$(Agent.JobStatus)$(artifactAttempt)'
+      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
