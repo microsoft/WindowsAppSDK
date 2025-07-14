@@ -82,7 +82,7 @@ stages:
     runPREfast : ${{ parameters.runPREfast }}
     runApiScan : ${{ parameters.runApiScan }}
     BuildPlatform: x64
-    testMatrix: ${{ parameters.PipelineTests }}
+    testMatrix: ${{ parameters.testMatrix }}
 
 - ${{ if not(parameters.runPREfast) }}:
   - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
@@ -92,7 +92,7 @@ stages:
       runPREfast : ${{ parameters.runPREfast }}
       runApiScan : ${{ parameters.runApiScan }}
       BuildPlatform: x86
-      testMatrix: ${{ parameters.PipelineTests }}
+      testMatrix: ${{ parameters.testMatrix }}
 
   - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
     parameters:
@@ -101,4 +101,4 @@ stages:
       runPREfast : ${{ parameters.runPREfast }}
       runApiScan : ${{ parameters.runApiScan }}
       BuildPlatform: arm64
-      testMatrix: ${{ parameters.PipelineTests }}
+      testMatrix: ${{ parameters.testMatrix }}
