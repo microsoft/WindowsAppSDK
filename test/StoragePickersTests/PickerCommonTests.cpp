@@ -348,7 +348,7 @@ namespace Test::PickerCommonTests
                 {1, true}, // ComputerFolder
                 {2, true}, // Desktop
                 {3, true}, // Downloads
-                {4, false}, // HomeGroup is removed.
+                {4, false}, // HomeGroup is removed, should return false.
                 {5, true}, // MusicLibrary
                 {6, true}, // PicturesLibrary
                 {7, true}, // VideosLibrary
@@ -387,6 +387,50 @@ namespace Test::PickerCommonTests
             }
         }
 
+        TEST_METHOD(VerifySuggestedFileName)
+        {
+            // Arrange.
+            auto test_cases = std::vector<std::tuple<winrt::hstring, bool>>{
+                {L"validFileName.txt", true},   // Valid file name
+                {L"in\0valid.txt", false},      // embedded null
+                {L"", true},                            // Allow Empty string
+                {L"validFileNameWithSpaces .txt", true},// Allow spaces
+                {
+                    L"too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters.txt",
+                    false, // File name too long
+                },
+            };
+
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            // Act & Assert
+            for (const auto& test_case : test_cases)
+            {
+                winrt::hstring suggestedFileName = std::get<0>(test_case);
+                bool expectValid = std::get<1>(test_case);
+                if (expectValid)
+                {
+                    picker.SuggestedFileName(suggestedFileName);
+                    VERIFY_ARE_EQUAL(picker.SuggestedFileName(), suggestedFileName);
+                }
+                else
+                {
+                    try
+                    {
+                        picker.SuggestedFileName(suggestedFileName);
+
+                        std::wstring errorMessage = L"Expected exception for invalid suggested file name: " + std::wstring(suggestedFileName);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid suggested file name
+                    }
+                }
+            }
+        }
+
         std::vector<std::tuple<winrt::hstring, bool>> file_extension_validation_test_cases{
             {L".txt", true},
             {L"*", true}, // One asterisk is valid
@@ -412,7 +456,9 @@ namespace Test::PickerCommonTests
                     try
                     {
                         PickerCommon::ValidateSingleFileTypeFilterElement(filter);
-                        VERIFY_FAIL(L"Expected exception for invalid single file type filter element");
+
+                        std::wstring errorMessage = L"Expected exception for invalid single file type filter element: " + std::wstring(filter);
+                        VERIFY_FAIL(errorMessage.c_str());
                     }
                     catch (...)
                     {

@@ -90,6 +90,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileSavePicker::SuggestedFileName(hstring const& value)
     {
+        PickerCommon::ValidateSuggestedFileName(value);
         m_suggestedFileName = value;
     }
 
