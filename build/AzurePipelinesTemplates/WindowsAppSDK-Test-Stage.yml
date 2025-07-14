@@ -6,7 +6,7 @@ stages:
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests
-      testMatrix: ${{ parameters.testMatrix }} # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+      testMatrix: $[ stageDependencies.Build_x86.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       buildPlatform: x86
 
 - stage: Test_x64
@@ -16,7 +16,7 @@ stages:
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests
-      testMatrix: ${{ parameters.testMatrix }} # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+      testMatrix: $[ stageDependencies.Build_x64.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       buildPlatform: x64
 
 - stage: Test_arm64
@@ -26,5 +26,5 @@ stages:
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTests
-      testMatrix: ${{ parameters.testMatrix }} # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+      testMatrix: $[ stageDependencies.Build_arm64.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       buildPlatform: arm64

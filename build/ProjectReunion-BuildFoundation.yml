@@ -32,6 +32,7 @@ stages:
     IsOneBranch: false
     runApiScan: true
     runPREFast: false
+    testMatrix: ${{ variables.PipelineTests }}
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:
@@ -39,10 +40,9 @@ stages:
     IsOneBranch: false
     runApiScan: false
     runPREFast: true
+    testMatrix: ${{ variables.PipelineTests }}
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-  parameters:
-    testMatrix: ${{ variables.PipelineTests }}
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
   parameters:
