@@ -208,7 +208,7 @@ stages:
         $matrixJson = $filteredMatrix | ConvertTo-Json -Compress
         Write-Host "##vso[task.setvariable variable=filteredTestMatrix;isOutput=true]$matrixJson"
       name: filterByPlatformStep
-      displayName: "Extract matrix as json value filtering by build platform and pass the extracted matrix to next job"
+      displayName: "Extract matrix as json value filtering by build platform"
     - script: echo $(filterByPlatformStep.filteredTestMatrix)
       name: echoMatrix
       displayName: "Echo filtered matrix"

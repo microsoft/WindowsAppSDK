@@ -11,9 +11,6 @@ parameters:
 - name: runPREfast
   type: boolean
   default: false
-- name: testMatrix
-  type: object
-  default: ''
 
 stages:
 - stage: ${{ iif(parameters.runPREfast, 'PREfast_AnyCPU', 'Build_AnyCPU') }}
