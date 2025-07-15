@@ -24,6 +24,9 @@ namespace Test::PickerCommonTests
 {
     class PickerCommonTests
     {
+    private:
+        static const wchar_t s_rawStringWithNull[];
+        static const winrt::hstring s_embeddedNullString;
     public:
         BEGIN_TEST_CLASS(PickerCommonTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::SetupPackages()
@@ -392,7 +395,7 @@ namespace Test::PickerCommonTests
             // Arrange.
             auto test_cases = std::vector<std::tuple<winrt::hstring, bool>>{
                 {L"validFileName.txt", true},   // Valid file name
-                {L"in\0valid.txt", false},      // embedded null
+                {s_embeddedNullString, false},      // embedded null
                 {L"", true},                            // Allow Empty string
                 {L"validFileNameWithSpaces .txt", true},// Allow spaces
                 {
@@ -435,7 +438,7 @@ namespace Test::PickerCommonTests
             {L"Valid", true}, // Valid commit button text
             {L"", true}, // Allow empty string
             {L"Valid Text", true}, // Allow spaces
-            {L"Invalid\0Text", false}, // Embedded null is invalid
+            {s_embeddedNullString, false}, // Embedded null is invalid
         };
 
         TEST_METHOD(VerifyFolderPicker_ValidateCommitButtonText)
@@ -769,4 +772,8 @@ namespace Test::PickerCommonTests
         }
 
     };
+
+    const wchar_t PickerCommonTests::s_rawStringWithNull[] = L"in\0valid.txt";
+    const winrt::hstring PickerCommonTests::s_embeddedNullString{ std::wstring_view(s_rawStringWithNull, 12) };
+
 }
