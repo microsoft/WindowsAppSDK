@@ -13,7 +13,7 @@
 namespace PickerLocalization {
     static PCWSTR c_WindowsAppRuntimeLocalizationPRIFilename{ L"Microsoft.WindowsAppRuntime.pri" };
     std::wstring GetPriFilePath()
-    {    
+    {
         wil::unique_hmodule module;
         THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(PickerLocalization::GetPriFilePath), &module));
         std::filesystem::path modulePath{ wil::GetModuleFileNameW<std::wstring>(module.get()) };
@@ -27,5 +27,4 @@ namespace PickerLocalization {
         return manager.MainResourceMap().GetValue(key).ValueAsString();
     }
 }
-
 
