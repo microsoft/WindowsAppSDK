@@ -9,44 +9,20 @@
 #include "PickerLocalization.h"
 #include <winrt\base.h>
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
-#include <array>
-
-
-const winrt::hstring priFileName = L"Microsoft.WindowsAppRuntime.pri";
-winrt::hstring GetPriFilePath()
-{
-    HMODULE hModule = nullptr;
-    // use GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, the module handle does not need to be released
-    // GetPriFilePath should only be called once to initialize the static priFilePath variable, thus thread safe
-    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-        reinterpret_cast<LPCWSTR>(&GetPriFilePath), &hModule))
-    {
-        std::array<wchar_t, MAX_PATH + 1> buffer;
-        auto pathLength = GetModuleFileName(hModule, buffer.data(), MAX_PATH + 1);
-        if (pathLength > 0)
-        {
-            auto dllPathString = std::wstring(buffer.data(), pathLength);
-            std::filesystem::path dllPath(dllPathString);
-            if (!std::filesystem::is_regular_file(dllPath))
-            {
-                return priFileName;
-            }
-            std::filesystem::path parentDir = dllPath.parent_path();
-            auto priFilePath = parentDir / std::wstring{ priFileName };
-            if (std::filesystem::exists(priFilePath))
-            {
-                return winrt::hstring{ priFilePath.wstring() };
-            }
-        }
-    }
-    return priFileName;
-}
 
 namespace PickerLocalization {
+    static PCWSTR c_WindowsAppRuntimeLocalizationPRIFilename{ L"Microsoft.WindowsAppRuntime.pri" };
+    std::wstring GetPriFilePath()
+    {    
+        wil::unique_hmodule module;
+        THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(PickerLocalization::GetPriFilePath), &module));
+        std::filesystem::path modulePath{ wil::GetModuleFileNameW<std::wstring>(module.get()) };
+        return modulePath.parent_path() / c_WindowsAppRuntimeLocalizationPRIFilename;
+    }
 
     winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key)
     {
-        static winrt::hstring priPath = GetPriFilePath();
+        static winrt::hstring priPath{ GetPriFilePath() };
         auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
         return manager.MainResourceMap().GetValue(key).ValueAsString();
     }
