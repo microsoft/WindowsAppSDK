@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Taef" />
     <PackageReference Include="Taef.Managed" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" />
+    <!--<PackageReference Include="Microsoft.WindowsAppSDK.Foundation" />-->
     <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
 
