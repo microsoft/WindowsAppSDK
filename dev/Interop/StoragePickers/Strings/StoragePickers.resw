@@ -120,11 +120,8 @@
   <data name="All Files" xml:space="preserve">
     <value>All Files</value>
   </data>
-  <data name="IDS_APIERROR_INVALIDVIEWMODEVALUE" xml:space="preserve">
-    <value>The specified ViewMode is invalid.</value>
-  </data>
-  <data name="IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE" xml:space="preserve">
-    <value>The specified SuggestedStartLocation is invalid.</value>
+  <data name="IDS_APIERROR_INVALIDENUMVALUE" xml:space="preserve">
+    <value>This specified Enum value is invalid.</value>
   </data>
   <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
     <value>File extensions must begin with '.' and contain no wildcards.</value>
