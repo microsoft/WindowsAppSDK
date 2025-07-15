@@ -11,6 +11,9 @@ parameters:
 - name: runPREfast
   type: boolean
   default: false
+- name: testMatrix
+  type: string
+  default: ''
 
 stages:
 - stage: ${{ iif(parameters.runPREfast, 'PREfast_AnyCPU', 'Build_AnyCPU') }}
@@ -56,19 +59,15 @@ stages:
         ob_sdl_apiscan_enabled: false
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU'
       ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU;SRV*https://symweb.azurefd.net'
+      ob_sdl_checkCompliantCompilerWarnings: true # This setting has no effect unless ob_sdl_msbuildOverride below is also set to true.
+      ob_sdl_prefast_runDuring: 'Guardian' # The default 'Build' setting does not match the fact that we are calling msbuild.exe directly.
+      ob_sdl_msbuildOverride: true # Because we are calling MSBuild directly instead of through the MSBuild@1 or VSBuild@1 tasks.       
     steps:
     - template: WindowsAppSDK-BuildFoundation-AnyCPU-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
         runPREfast : ${{ parameters.runPREfast }}
-
-    # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
-    # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
-    # requisite of isNative=true isn't met currently.
-    - script: |
-        md "C:\__t\NativeCompilerPrefast"
-      displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
 
 # extract BuildFoundation and BuildMRT into WindowsAppSDK-Build-Stage-Per-Platform.yml. Separate the build stage per platform
 
@@ -79,6 +78,7 @@ stages:
     runPREfast : ${{ parameters.runPREfast }}
     runApiScan : ${{ parameters.runApiScan }}
     BuildPlatform: x64
+    testMatrix: ${{ parameters.testMatrix }}
 
 - ${{ if not(parameters.runPREfast) }}:
   - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
@@ -88,6 +88,7 @@ stages:
       runPREfast : ${{ parameters.runPREfast }}
       runApiScan : ${{ parameters.runApiScan }}
       BuildPlatform: x86
+      testMatrix: ${{ parameters.testMatrix }}
 
   - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
     parameters:
@@ -96,3 +97,4 @@ stages:
       runPREfast : ${{ parameters.runPREfast }}
       runApiScan : ${{ parameters.runApiScan }}
       BuildPlatform: arm64
+      testMatrix: ${{ parameters.testMatrix }}

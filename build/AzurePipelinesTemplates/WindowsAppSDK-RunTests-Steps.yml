@@ -211,3 +211,4 @@ steps:
     inputs:
       targetPath: '$(Build.SourcesDirectory)\TestOutput'
       artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+      Parallel: true
