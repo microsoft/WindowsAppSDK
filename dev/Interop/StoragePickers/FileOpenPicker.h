@@ -6,6 +6,7 @@
 #include "PickerCommon.h"
 #include "StoragePickersTelemetryHelper.h"
 #include <winrt/Windows.Foundation.Collections.h>
+#include "FileTypeFilterVector.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -37,7 +38,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         winrt::hstring m_commitButtonText{};
 
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter;
+        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ make<FileTypeFilterVector>() };
 
         StoragePickersTelemetryHelper m_telemetryHelper{};
 

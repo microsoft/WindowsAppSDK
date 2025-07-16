@@ -42,7 +42,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring m_settingsIdentifier{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
-        winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices;
+        winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };
         hstring m_defaultFileExtension{};
         hstring m_suggestedSaveFilePath{};
         hstring m_suggestedFileName{};

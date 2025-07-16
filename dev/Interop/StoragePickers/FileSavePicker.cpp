@@ -18,13 +18,12 @@
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include "PickFileResult.h"
-#include "FileTypeChoicesMap.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
 
     FileSavePicker::FileSavePicker(winrt::Microsoft::UI::WindowId const& windowId)
-        : m_windowId(windowId), m_fileTypeChoices(make<FileTypeChoicesMap>())
+        : m_windowId(windowId)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
