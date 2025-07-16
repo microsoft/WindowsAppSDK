@@ -7,6 +7,8 @@
 
 #include "pch.h"
 #include "PickerLocalization.h"
+#include <wil/stl.h>
+#include <wil/win32_helpers.h>
 #include <winrt\base.h>
 #include <winrt\Microsoft.Windows.ApplicationModel.Resources.h>
 
@@ -14,9 +16,7 @@ namespace PickerLocalization {
     static PCWSTR c_WindowsAppRuntimeLocalizationPRIFilename{ L"Microsoft.WindowsAppRuntime.pri" };
     std::wstring GetPriFilePath()
     {
-        wil::unique_hmodule module;
-        THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(PickerLocalization::GetPriFilePath), &module));
-        std::filesystem::path modulePath{ wil::GetModuleFileNameW<std::wstring>(module.get()) };
+        std::filesystem::path modulePath{ wil::GetModuleFileNameW<std::wstring>(wil::GetModuleInstanceHandle()) };
         return modulePath.parent_path() / c_WindowsAppRuntimeLocalizationPRIFilename;
     }
 
