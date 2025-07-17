@@ -47,7 +47,7 @@ static HRESULT DetoursInitialize()
 
 static HRESULT DetoursShutdown()
 {
-    // Only detour APIs for not-packaged processes
+    // Detours needed for Lifted Reg-Free WinRT Activation before 19H1, and Dynamic Dependencies in unpackaged apps
     if (isPackaged && is19H1OrGreater)
     {
         return S_OK;
