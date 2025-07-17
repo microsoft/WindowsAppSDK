@@ -18,7 +18,7 @@ static bool is19H1OrGreater = WindowsVersion::IsWindows10_19H1OrGreater();
 
 static HRESULT DetoursInitialize()
 {
-    // Only detour APIs for not-packaged processes
+    // Detours needed for Lifted Reg-Free WinRT Activation before 19H1, and Dynamic Dependencies in unpackaged apps
     if (isPackaged && is19H1OrGreater)
     {
         return S_OK;
