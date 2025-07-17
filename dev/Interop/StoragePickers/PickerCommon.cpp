@@ -155,7 +155,8 @@ namespace PickerCommon {
             return;
         default:
             throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDVIEWMODEVALUE"));
+                PickerLocalization::GetStoragePickersLocalizationText(
+                    InvalidViewModeLocalizationKey, InvalidViewModeContent));
         }
     }
 
@@ -175,7 +176,8 @@ namespace PickerCommon {
             return;
         default:
             throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE"));
+                PickerLocalization::GetStoragePickersLocalizationText(
+                    InvalidSuggestedStartLocationLocalizationKey, InvalidSuggestedStartLocationContent));
         }
     }
 
@@ -191,7 +193,8 @@ namespace PickerCommon {
             if (value[i] == L'\0')
             {
                 throw winrt::hresult_invalid_argument(
-                    PickerLocalization::GetStoragePickersLocalizationText(L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"));
+                    PickerLocalization::GetStoragePickersLocalizationText(
+                        StringNoEmbeddedNullsLocalizationKey, StringNoEmbeddedNullsContent));
             }
         }
     }
@@ -201,7 +204,8 @@ namespace PickerCommon {
         if (filter.empty() || (filter[0] != L'.' && filter != L"*"))
         {
             throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_IMPROPERFILEEXTENSION"));
+                PickerLocalization::GetStoragePickersLocalizationText(
+                    ImproperFileExtensionLocationzationKey, ImproperFileExtensionContent));
         }
 
         ValidateStringNoEmbeddedNulls(filter);
@@ -212,7 +216,8 @@ namespace PickerCommon {
         if (suggestedFileName.size() > MAX_PATH)
         {
             throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"));
+                PickerLocalization::GetStoragePickersLocalizationText(
+                    MaxSaveFileLengthExceededLocalizationKey, MaxSaveFileLengthExceededContent));
         }
 
         ValidateStringNoEmbeddedNulls(suggestedFileName);
