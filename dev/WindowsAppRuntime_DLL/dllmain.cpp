@@ -33,9 +33,12 @@ static HRESULT DetoursInitialize()
     // Detour APIs to our implementation
     DetourRestoreAfterWith();
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
-    if (!isPackaged && !is19H1OrGreater)
+    if (!isPackaged)
     {
         FAIL_FAST_IF_FAILED(MddDetourPackageGraphInitialize());
+    }
+    if (!is19H1OrGreater)
+    {
         FAIL_FAST_IF_FAILED(UrfwInitialize());
     }
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
