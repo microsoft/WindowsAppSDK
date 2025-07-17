@@ -120,4 +120,13 @@
   <data name="All Files" xml:space="preserve">
     <value>Tüm Dosyalar</value>
   </data>
+  <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
+    <value>Dosya uzantıları ’.’ ile başlamalı ve içlerinde joker karakter bulunmamalıdır.</value>
+  </data>
+  <data name="IDS_APIERROR_STRINGSNOEMBEDDEDNULLS" xml:space="preserve">
+    <value>Dizelerde eklenmiş null karakterler olamaz.</value>
+  </data>
+  <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
+    <value>Önerilen dosya adı izin verilen karakter sayısı üst sınırını aşıyor.</value>
+  </data>
 </root>

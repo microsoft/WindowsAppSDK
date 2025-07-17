@@ -120,4 +120,13 @@
   <data name="All Files" xml:space="preserve">
     <value>所有文件</value>
   </data>
+  <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
+    <value>文件扩展名必须以“.”开头，不得包含通配符。</value>
+  </data>
+  <data name="IDS_APIERROR_STRINGSNOEMBEDDEDNULLS" xml:space="preserve">
+    <value>字符串不能内嵌空字符。</value>
+  </data>
+  <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
+    <value>建议的文件名超出允许的最大字符数。</value>
+  </data>
 </root>

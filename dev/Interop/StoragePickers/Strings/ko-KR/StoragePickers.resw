@@ -120,4 +120,13 @@
   <data name="All Files" xml:space="preserve">
     <value>모든 파일</value>
   </data>
+  <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
+    <value>파일 확장명은 '.'으로 시작해야 하며 와일드카드를 포함할 수 없습니다.</value>
+  </data>
+  <data name="IDS_APIERROR_STRINGSNOEMBEDDEDNULLS" xml:space="preserve">
+    <value>문자열에는 임베디드 null을 사용할 수 없습니다.</value>
+  </data>
+  <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
+    <value>제안된 파일 이름이 허용된 최대 문자 수를 초과합니다.</value>
+  </data>
 </root>
