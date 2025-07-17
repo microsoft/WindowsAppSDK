@@ -62,9 +62,12 @@ static HRESULT DetoursShutdown()
     // Stop Detour'ing APIs to our implementation
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
-    if (!isPackaged && !is19H1OrGreater)
+    if (!is19H1OrGreater)
     {
         UrfwShutdown();
+    }
+    if (!isPackaged)
+    {
         MddDetourPackageGraphShutdown();
     }
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
