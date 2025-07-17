@@ -120,4 +120,19 @@
   <data name="All Files" xml:space="preserve">
     <value>Tous les fichiers</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDVIEWMODEVALUE" xml:space="preserve">
+    <value>La valeur ViewMode spécifiée est non valide.</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE" xml:space="preserve">
+    <value>La valeur SuggestedStartLocation spécifiée est non valide.</value>
+  </data>
+  <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
+    <value>Les extensions de fichier doivent commencer par « . » et ne doivent pas contenir de caractères génériques.</value>
+  </data>
+  <data name="IDS_APIERROR_STRINGSNOEMBEDDEDNULLS" xml:space="preserve">
+    <value>Les chaînes ne peuvent pas contenir des caractères Null incorporés.</value>
+  </data>
+  <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
+    <value>Le nom de fichier suggéré dépasse le nombre maximum de caractères autorisés.</value>
+  </data>
 </root>
