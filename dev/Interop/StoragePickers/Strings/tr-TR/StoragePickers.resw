@@ -120,6 +120,12 @@
   <data name="All Files" xml:space="preserve">
     <value>Tüm Dosyalar</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDVIEWMODEVALUE" xml:space="preserve">
+    <value>Belirtilen ViewMode geçersiz.</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE" xml:space="preserve">
+    <value>Belirtilen SuggestedStartLocation geçersiz.</value>
+  </data>
   <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
     <value>Dosya uzantıları ’.’ ile başlamalı ve içlerinde joker karakter bulunmamalıdır.</value>
   </data>
