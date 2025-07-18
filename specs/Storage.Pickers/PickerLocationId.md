@@ -5,6 +5,8 @@ Specifies the default folder or library that a picker starts from or displays to
 
 Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Pickers.md)
 
+*Spec Note: This enum is based on [Windows.Storage.Pickers.PickerLocationId](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.pickerlocationid) but with the HomeGroup value removed, as HomeGroup is no longer supported in Windows 10 and later versions.*
+
 # Fields
 
 | **Name**           | **Value** | **Description**                                                 |
@@ -13,12 +15,13 @@ Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Picke
 | ComputerFolder     | 1         | [This PC](#pickerlocationidcomputerfolder)                      |
 | Desktop            | 2         | [The Desktop](#pickerlocationiddesktop)                         |
 | Downloads          | 3         | [The Downloads folder](#pickerlocationiddownloads)              |
-| HomeGroup          | 4         | [The HomeGroup folder will be removed in future, (avoid using this)](#pickerlocationidhomegroup) |
 | MusicLibrary       | 5         | [The Music library](#pickerlocationidmusiclibrary)              |
 | PicturesLibrary    | 6         | [The Pictures library](#pickerlocationidpictureslibrary)        |
 | VideosLibrary      | 7         | [The Videos library](#pickerlocationidvideoslibrary).           |
 | Objects3D          | 8         | [The 3D Objects folder, (avoid using this)](#pickerlocationidobjects3d)|
 | Unspecified        | 9         | [An unspecified location](#pickerlocationidunspecified)         |
+
+*Spec Note: The value 4 is intentionally skipped as it was previously assigned to HomeGroup in the original Windows.Storage.Pickers API.*
 
 # Definition
 
@@ -29,7 +32,7 @@ enum PickerLocationId
     ComputerFolder = 1,
     Desktop = 2,
     Downloads = 3,
-    HomeGroup = 4,
+    
     MusicLibrary = 5,
     PicturesLibrary = 6,
     VideosLibrary = 7,
@@ -64,12 +67,6 @@ The `Downloads` value represents the user's Downloads folder.
 This is the default location where web browsers and other applications save downloaded files. 
 It is often mapped to `%USERPROFILE%\Downloads`.
 
-## PickerLocationId.HomeGroup
-! Note that [HomeGroup has been removed from Windows 10 (version 1803) and later](https://support.microsoft.com/en-us/windows/homegroup-removed-from-windows-10-version-1803-07ca5db1-7bca-4d11-68a3-a31ff4a09979), 
-so it is not recommended to use this value.
-
-This enum value is retained now for backward compatibility with the [Windows.Storage.Pickers.PickerLocationId](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.pickerlocationid), 
-it might be removed in future.
 ## PickerLocationId.MusicLibrary
 The `MusicLibrary` value represents the user's Music library.
 

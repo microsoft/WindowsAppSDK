@@ -1,16 +1,42 @@
 Microsoft.Windows.Storage.Pickers Namespace
 ===
 
-The `Microsoft.Windows.Storage.Pickers` API in the Windows App SDK lets desktop applications (like 
-WinUI3) present a streamlined UI for selecting files or folders, modifying filenames and extensions, 
-and accessing paths — all while integrating seamlessly across Windows desktops.
+The `Microsoft.Windows.Storage.Pickers` API in the Windows App SDK provides a modernized file and 
+folder picker experience for desktop applications. This API is based on the existing 
+[Windows.Storage.Pickers](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers) API 
+design, but with key improvements for desktop scenarios.
 
 # Background
 
-The standard OS file and folder picker APIs [Windows.Storage.Pickers](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers) 
-do not work when running as an administrator. To address this gap, here we're introducing the new
-`Microsoft.Windows.Storage.Pickers` API by enabling file and folder selection in elevated mode. 
-It is designed for desktop apps and uses a `WindowId` property to link the picker to its host window.
+The new `Microsoft.Windows.Storage.Pickers` API addresses three critical limitations of the UWP file 
+and folder pickers on Apps developed with WinAppSDK/WinUI 3:
+
+1. **Elevated Process Support**: The existing [Windows.Storage.Pickers](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers) 
+APIs do not work when running as an administrator. The new API enables file and folder selection in 
+elevated mode.
+
+2. **Simplified Usage in WinUI 3**: Using the existing UWP pickers in WinUI 3 requires initializing 
+window handle for window association. The new pickers eliminate this requirement by accepting a 
+`WindowId` directly in the constructor, making them easier to use.
+
+# Key Differences
+*Spec Note: Here are some key differences from the UWP Windows.Storage.Pickers:*
+1. *Unlike the existing `Windows.Storage.Pickers` API which returns `StorageFile/StorageFolder` 
+objects, this new API returns string-based paths through `PickFileResult` and `PickFolderResult` 
+classes. This design choice simplifies the API and avoids complications with storage capabilities 
+in elevated scenarios.*
+1. *Similarly, the `StorageFile` type attribute `FileSavePicker.SuggestedSaveFile` is also replaced
+by a string type `FileSavePicker.SuggestedSaveFilePath`.*
+1. *All new pickers are designed specifically for desktop apps and uses a `WindowId` property to 
+link the picker to its host window, replacing the `WinRT.Interop.InitializeWithWindow.Initialize` 
+pattern.*
+1. The new pickers allow developers to use pickers without requiring `FileTypeFilter` or 
+`FileTypeChoices` to be specified. While UWP pickers throw exceptions when these properties are not 
+set, the new pickers default to show all file when developers don't explicitly configure these 
+attributes.
+1. *HomeGroup location has been removed as it's no longer supported in Windows 10 and later*
+1. *FolderPicker.FileTypeFilter has been removed as it was not functionally appropriate for folder 
+selection*
 
 # Conceptual pages
 
@@ -53,7 +79,7 @@ namespace Microsoft.Windows.Storage.Pickers
         ComputerFolder = 1,
         Desktop = 2,
         Downloads = 3,
-        HomeGroup = 4,  // Will be removed in future.
+        // [removed] HomeGroup = 4,  The HomeGroup LocationId is removed from Windows 10, therefore we will not support it..
         MusicLibrary = 5,
         PicturesLibrary = 6,
         VideosLibrary = 7,

@@ -28,6 +28,10 @@ runtimeclass FolderPicker
 }
 ```
 
+*Spec note:*
+*`FolderPicker.FileTypeFilter` has been removed as it was not functionally appropriate for folder 
+selection*
+
 ## Constructor
 
 ### Examples
