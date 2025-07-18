@@ -120,6 +120,12 @@
   <data name="All Files" xml:space="preserve">
     <value>모든 파일</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDVIEWMODEVALUE" xml:space="preserve">
+    <value>지정한 ViewMode가 잘못되었습니다.</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE" xml:space="preserve">
+    <value>지정한 SuggestedStartLocation이 잘못되었습니다.</value>
+  </data>
   <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
     <value>파일 확장명은 '.'으로 시작해야 하며 와일드카드를 포함할 수 없습니다.</value>
   </data>
