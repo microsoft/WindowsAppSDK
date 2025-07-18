@@ -18,17 +18,5 @@ namespace PickerLocalization {
         auto manager = winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceManager(priPath);
         return manager.MainResourceMap().GetValue(key).ValueAsString();
     }
-
-    winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key, winrt::hstring fallbackContent)
-    {
-        try
-        {
-            return GetStoragePickersLocalizationText(key);
-        }
-        catch (...)
-        {
-            return fallbackContent;
-        }
-    }
 }
 

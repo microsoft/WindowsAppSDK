@@ -562,12 +562,12 @@ namespace Test::PickerCommonTests
                     try
                     {
                         picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(settingsIdentifier);
+                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
                         VERIFY_FAIL(errorMessage.c_str());
                     }
                     catch (...)
                     {
-                        // Expected exception for invalid commit button text
+                        // Expected exception for invalid settings identifier text
                     }
                 }
             }
@@ -595,12 +595,12 @@ namespace Test::PickerCommonTests
                     try
                     {
                         picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(settingsIdentifier);
+                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
                         VERIFY_FAIL(errorMessage.c_str());
                     }
                     catch (...)
                     {
-                        // Expected exception for invalid commit button text
+                        // Expected exception for invalid settings identifier text
                     }
                 }
             }
@@ -628,12 +628,12 @@ namespace Test::PickerCommonTests
                     try
                     {
                         picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid commit button text: " + std::wstring(settingsIdentifier);
+                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
                         VERIFY_FAIL(errorMessage.c_str());
                     }
                     catch (...)
                     {
-                        // Expected exception for invalid commit button text
+                        // Expected exception for invalid settings identifier text
                     }
                 }
             }
@@ -641,11 +641,14 @@ namespace Test::PickerCommonTests
 
         std::vector<std::tuple<winrt::hstring, bool>> file_extension_validation_test_cases{
             {L".txt", true},
-            {L"*", true}, // One asterisk is valid
-            {L"**", false}, // More than one asterisk is invalid
-            {L"*.docx", false}, // Filter must be '*' or start with '.'
-            {L"", false}, // Empty string is invalid
-            {L"invalid", false}, // Invalid format
+            {L"*", true},       // One asterisk is valid
+            {L"**", false},     // More than one asterisk is invalid
+            {L"*.docx", false}, // Filter (if not "*") must start with '.'
+            {L"txt", false}, // Must start with '.' or '*'
+            {L"", false},    // Must start with '.' or '*', empty string is invalid
+            {L".t*t", false},   // Should not contain other wildcards
+            {L".t.", false},    // Should not contain other wildcards
+            {L".?txt", false},  // Should not contain other wildcards
         };
 
         TEST_METHOD(VerifyValidateSingleFileTypeFilterElement)

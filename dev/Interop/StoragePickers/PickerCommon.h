@@ -14,19 +14,10 @@ namespace PickerCommon {
     const winrt::hstring AllFilesLocalizationKey = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
 
     const winrt::hstring InvalidViewModeLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDVIEWMODEVALUE"};
-    const winrt::hstring InvalidViewModeContent{L"The specified ViewMode is invalid."};
-    
     const winrt::hstring InvalidSuggestedStartLocationLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE"};
-    const winrt::hstring InvalidSuggestedStartLocationContent{L"The specified SuggestedStartLocation is invalid."};
-
-    const winrt::hstring ImproperFileExtensionLocationzationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_IMPROPERFILEEXTENSION"};
-    const winrt::hstring ImproperFileExtensionContent{L"File extensions must begin with '.' and contain no wildcards."};
-
+    const winrt::hstring ImproperFileExtensionLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_IMPROPERFILEEXTENSION"};
     const winrt::hstring StringNoEmbeddedNullsLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"};
-    const winrt::hstring StringNoEmbeddedNullsContent{L"Strings cannot have embedded nulls."};
-
     const winrt::hstring MaxSaveFileLengthExceededLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"};
-    const winrt::hstring MaxSaveFileLengthExceededContent{L"The suggested file name exceeds the maximum number of characters allowed."};
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
 

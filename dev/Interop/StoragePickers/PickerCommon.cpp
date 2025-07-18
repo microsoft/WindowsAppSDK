@@ -155,8 +155,8 @@ namespace PickerCommon {
             return;
         default:
             throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(
-                    InvalidViewModeLocalizationKey, InvalidViewModeContent));
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidViewModeLocalizationKey));
+            break;
         }
     }
 
@@ -176,8 +176,8 @@ namespace PickerCommon {
             return;
         default:
             throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(
-                    InvalidSuggestedStartLocationLocalizationKey, InvalidSuggestedStartLocationContent));
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidSuggestedStartLocationLocalizationKey));
+            break;
         }
     }
 
@@ -193,19 +193,31 @@ namespace PickerCommon {
             if (value[i] == L'\0')
             {
                 throw winrt::hresult_invalid_argument(
-                    PickerLocalization::GetStoragePickersLocalizationText(
-                        StringNoEmbeddedNullsLocalizationKey, StringNoEmbeddedNullsContent));
+                    PickerLocalization::GetStoragePickersLocalizationText(StringNoEmbeddedNullsLocalizationKey));
             }
         }
     }
 
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter)
     {
-        if (filter.empty() || (filter[0] != L'.' && filter != L"*"))
+        if (filter == L"*")
+        {
+            return; // "*" is a valid filter, stands for "All Files"
+        }
+
+        if (filter.empty() || (filter[0] != L'.'))
         {
             throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(
-                    ImproperFileExtensionLocationzationKey, ImproperFileExtensionContent));
+                PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
+        }
+
+        for (int i = 1; i < filter.size(); i++)
+        {
+            if (filter[i] == L'.' || filter[i] == L'*' || filter[i] == L'?')
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
+            }
         }
 
         ValidateStringNoEmbeddedNulls(filter);
@@ -216,8 +228,7 @@ namespace PickerCommon {
         if (suggestedFileName.size() > MAX_PATH)
         {
             throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(
-                    MaxSaveFileLengthExceededLocalizationKey, MaxSaveFileLengthExceededContent));
+                PickerLocalization::GetStoragePickersLocalizationText(MaxSaveFileLengthExceededLocalizationKey));
         }
 
         ValidateStringNoEmbeddedNulls(suggestedFileName);

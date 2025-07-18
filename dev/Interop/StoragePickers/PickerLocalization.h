@@ -5,6 +5,5 @@
 
 namespace PickerLocalization {
     winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key);
-    winrt::hstring GetStoragePickersLocalizationText(winrt::hstring key, winrt::hstring fallbackContent);
 }
 
