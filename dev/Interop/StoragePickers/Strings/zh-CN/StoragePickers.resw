@@ -120,6 +120,12 @@
   <data name="All Files" xml:space="preserve">
     <value>所有文件</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDVIEWMODEVALUE" xml:space="preserve">
+    <value>指定的 ViewMode 无效。</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE" xml:space="preserve">
+    <value>指定的 SuggestedStartLocation 无效。</value>
+  </data>
   <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
     <value>文件扩展名必须以“.”开头，不得包含通配符。</value>
   </data>
