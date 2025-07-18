@@ -239,6 +239,7 @@ steps:
 #      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
 #      rulesetName: Custom
 #      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+#      policyName: 'WindowsUndocked'
 #    continueOnError: true
 #    env:
 #      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
