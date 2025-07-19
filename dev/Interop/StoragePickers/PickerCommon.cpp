@@ -371,7 +371,10 @@ namespace PickerCommon {
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
         }
 
-        check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+        if (FileTypeFilterPara.size() > 0)
+        {
+            check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+        }
     }
 
     /// <summary>

@@ -65,6 +65,23 @@ namespace Test::PickerCommonTests
             return true;
         }
 
+        TEST_METHOD(VerifyConfigureDialog_WhenPickerParameters_FileTypeFilterNotSpecified_ExpectSuccess)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
+
+            PickerParameters parameters{};
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog);
+
+            // Assert.
+            // Expect the action's successful.
+
+        }
+
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeFiltersDefinedExpectAddingUnionedType)
         {
             // Arrange.
