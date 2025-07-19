@@ -33,12 +33,18 @@
     <ClCompile Include="PickerCommonTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Pickerlocalization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dev\Interop\StoragePickers\PickerCommon.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PickerLocalization.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "shellapi.h"
 #include "PickerCommon.h"
+#include "PickerLocalization.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
 #include "shobjidl_core.h"
@@ -55,9 +56,6 @@ namespace {
             break;
         case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads:
             knownFolderId = FOLDERID_Downloads;
-            break;
-        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::HomeGroup:
-            knownFolderId = FOLDERID_HomeGroup;
             break;
         case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary:
             knownFolderId = FOLDERID_MusicLibrary;
@@ -146,6 +144,94 @@ namespace PickerCommon {
 
         // If the shellitem cannot be created, we cannot set the folder.
         return { nullptr, L""};
+    }
+
+    void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
+    {
+        switch (value)
+        {
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail:
+            return;
+        default:
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidViewModeLocalizationKey));
+            break;
+        }
+    }
+
+    void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
+    {
+        switch (value)
+        {
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::ComputerFolder:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Desktop:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::PicturesLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::VideosLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Objects3D:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Unspecified:
+            return;
+        default:
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidSuggestedStartLocationLocalizationKey));
+            break;
+        }
+    }
+
+    void ValidateStringNoEmbeddedNulls(winrt::hstring const& value)
+    {
+        if (value.empty())
+        {
+            return;
+        }
+
+        for (int i = 0; i < value.size(); i++)
+        {
+            if (value[i] == L'\0')
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(StringNoEmbeddedNullsLocalizationKey));
+            }
+        }
+    }
+
+    void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter)
+    {
+        if (filter == L"*")
+        {
+            return; // "*" is a valid filter, stands for "All Files"
+        }
+
+        if (filter.empty() || (filter[0] != L'.'))
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
+        }
+
+        for (int i = 1; i < filter.size(); i++)
+        {
+            if (filter[i] == L'.' || filter[i] == L'*' || filter[i] == L'?')
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
+            }
+        }
+
+        ValidateStringNoEmbeddedNulls(filter);
+    }
+
+    void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName)
+    {
+        if (suggestedFileName.size() > MAX_PATH)
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(MaxSaveFileLengthExceededLocalizationKey));
+        }
+
+        ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
