@@ -21,10 +21,11 @@
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <PackageVersion Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118" />
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="$(WindowsAppSDKVersion)" Condition=" '$(WindowsAppSDKVersion)' != '' " />
-    <PackageVersion Include="Microsoft.WindowsAppSDK.Foundation" Version="1.1.1.1" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK.Foundation" Version="1.8.250720000-experimental" />
     <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(CppWinRTVersion)" Condition=" '$(CppWinRTVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(WindowsSDKBuildToolsVersion)" Condition=" '$(WindowsSDKBuildToolsVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(WILVersion)" Condition=" '$(WILVersion)' != '' " />
+
     <PackageVersion Include="Taef.Managed" Version="$(MicrosoftTaefVersion)" />
   </ItemGroup>
 </Project>

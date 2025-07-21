@@ -1,7 +1,7 @@
 using WEX.Logging.Interop;
 using WEX.TestExecution;
 using WEX.TestExecution.Markup;
-//using Microsoft.Windows.Storage.Pickers;
+using Microsoft.Windows.Storage.Pickers;
 
 namespace StoragePickerComponentTests;
 
@@ -20,14 +20,14 @@ public class StoragePickersTest
     public static void AssemblyInitialize(TestContext testContext)
     {
         Log.Comment("AssemblyInitialize");
-
     }
+
 
     [TestMethod]
     public void SimpleAPlusBTest()
     {
-        //var picker = new FileOpenPicker(default);
+        var picker = new FileOpenPicker(default);
         Verify.AreEqual(2, 1 + 1);
-        //picker.PickSingleFileAsync().Wait();
+        picker.PickSingleFileAsync().Wait();
     }
 }
