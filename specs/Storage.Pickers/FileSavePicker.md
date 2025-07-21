@@ -136,10 +136,10 @@ if (!isSuccess)
 }
 ```
 
-### The Parsing Logic
+### The Parsing Logic of TrySuggestedSaveFilePath
 
-`TrySuggestedSaveFilePath` takes whatever after **the last slash** to fill in the file name box,
-as long as the part before the last slash is a valid and existing folder. 
+Method `TrySuggestedSaveFilePath` takes whatever after **the last slash** to fill in the file name 
+box, as long as the part before the last slash is a valid and existing folder. 
 
 And return `false` without writing any value if the input doesn't even contain a slash, 
 or the folder doesn't exist on the end user's environment.
