@@ -120,4 +120,19 @@
   <data name="All Files" xml:space="preserve">
     <value>所有檔案</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDVIEWMODEVALUE" xml:space="preserve">
+    <value>指定的 ViewMode 無效。</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE" xml:space="preserve">
+    <value>指定的 SuggestedStartLocation 無效。</value>
+  </data>
+  <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
+    <value>副檔名的開頭必須是 ’.’，而且不能包含萬用字元。</value>
+  </data>
+  <data name="IDS_APIERROR_STRINGSNOEMBEDDEDNULLS" xml:space="preserve">
+    <value>字串不能包含內嵌的 Null。</value>
+  </data>
+  <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
+    <value>建議的檔案名稱超過允許的字元數目上限。</value>
+  </data>
 </root>

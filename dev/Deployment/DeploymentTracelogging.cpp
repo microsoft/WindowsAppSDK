@@ -27,7 +27,6 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     // Failure in restarting PushNotificationsLRP is non-blocking to the installer functionality
                     WindowsAppRuntimeDeployment_WriteEventWithActivity(
                         "RestartPushNotificationsLRPFailed",
-                        _GENERIC_PARTB_FIELDS_ENABLED,
                         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                         TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
                 }

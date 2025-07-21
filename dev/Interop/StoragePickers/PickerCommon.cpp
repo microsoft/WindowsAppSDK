@@ -2,10 +2,16 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include "shellapi.h"
 #include "PickerCommon.h"
+#include "PickerLocalization.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
+#include "shobjidl_core.h"
 #include <KnownFolders.h>
+#include <filesystem>
+#include <format>
+#include <utility>
 
 
 namespace {
@@ -50,9 +56,6 @@ namespace {
             break;
         case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads:
             knownFolderId = FOLDERID_Downloads;
-            break;
-        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::HomeGroup:
-            knownFolderId = FOLDERID_HomeGroup;
             break;
         case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary:
             knownFolderId = FOLDERID_MusicLibrary;
@@ -108,6 +111,127 @@ namespace PickerCommon {
         wil::unique_cotaskmem_string filePath;
         check_hresult(shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put()));
         return winrt::hstring{ filePath.get() };
+    }
+
+    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath)
+    {
+        std::filesystem::path path(filePath.c_str());
+        if (path.empty())
+        {
+            return { nullptr, L"" };
+        }
+
+        auto folderPath = path.parent_path();
+        if (folderPath.empty())
+        {
+            // If the path does not have a parent, we cannot set folder.
+            return { nullptr, L"" };
+        }
+
+        // If the parent folder does not exist or is not a directory, we cannot set folder.
+        if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath))
+        {
+            return { nullptr, L"" };
+        }
+
+        winrt::com_ptr<IShellItem> shellItem;
+        HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
+        if (SUCCEEDED(hr))
+        {
+            auto fileName = path.filename().wstring();
+            return { shellItem, fileName };
+        }
+
+        // If the shellitem cannot be created, we cannot set the folder.
+        return { nullptr, L""};
+    }
+
+    void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
+    {
+        switch (value)
+        {
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::List:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail:
+            return;
+        default:
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidViewModeLocalizationKey));
+            break;
+        }
+    }
+
+    void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
+    {
+        switch (value)
+        {
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::ComputerFolder:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Desktop:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::PicturesLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::VideosLibrary:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Objects3D:
+        case winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Unspecified:
+            return;
+        default:
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidSuggestedStartLocationLocalizationKey));
+            break;
+        }
+    }
+
+    void ValidateStringNoEmbeddedNulls(winrt::hstring const& value)
+    {
+        if (value.empty())
+        {
+            return;
+        }
+
+        for (int i = 0; i < value.size(); i++)
+        {
+            if (value[i] == L'\0')
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(StringNoEmbeddedNullsLocalizationKey));
+            }
+        }
+    }
+
+    void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter)
+    {
+        if (filter == L"*")
+        {
+            return; // "*" is a valid filter, stands for "All Files"
+        }
+
+        if (filter.empty() || (filter[0] != L'.'))
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
+        }
+
+        for (int i = 1; i < filter.size(); i++)
+        {
+            if (filter[i] == L'.' || filter[i] == L'*' || filter[i] == L'?')
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
+            }
+        }
+
+        ValidateStringNoEmbeddedNulls(filter);
+    }
+
+    void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName)
+    {
+        if (suggestedFileName.size() > MAX_PATH)
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(MaxSaveFileLengthExceededLocalizationKey));
+        }
+
+        ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
@@ -247,6 +371,40 @@ namespace PickerCommon {
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
         }
 
-        check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+        if (FileTypeFilterPara.size() > 0)
+        {
+            check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+        }
+    }
+
+    /// <summary>
+    /// Configure the FileSaveDialog, this is only for FileSavePicker.
+    /// </summary>
+    /// <param name="dialog"></param>
+    void PickerParameters::ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog)
+    {
+        winrt::hstring fileNameToSet;
+        if (!IsHStringNullOrEmpty(SuggestedFileName))
+        {
+            fileNameToSet = SuggestedFileName;
+        }
+        
+        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
+        {
+            auto result = ParseFolderItemAndFileName(SuggestedSaveFilePath);
+            winrt::com_ptr<IShellItem> folderItem = result.first;
+            fileNameToSet = result.second;
+            if (folderItem)
+            {
+                check_hresult(dialog->SetFolder(folderItem.get()));
+            }
+        }
+
+        // Set the filename (either from SuggestedSaveFilePath or SuggestedFileName)
+        if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
+        {
+            check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
+        }
+
     }
 }

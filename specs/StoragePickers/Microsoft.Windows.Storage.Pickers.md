@@ -53,7 +53,6 @@ namespace Microsoft.Windows.Storage.Pickers
         ComputerFolder = 1,
         Desktop = 2,
         Downloads = 3,
-        HomeGroup = 4,  // Will be removed in future.
         MusicLibrary = 5,
         PicturesLibrary = 6,
         VideosLibrary = 7,
@@ -92,12 +91,14 @@ namespace Microsoft.Windows.Storage.Pickers
         string SettingsIdentifier;
         string DefaultFileExtension;
         string SuggestedFileName;
-        Windows.Storage.StorageFile SuggestedSaveFile;
+        string SuggestedSaveFilePath{ get; };   // read-only attribute
+        boolean TrySetSuggestedSaveFilePath(String filePath);
+
         IMap<string, IVector<string>> FileTypeChoices{ get; };
 
         PickerLocationId SuggestedStartLocation;
 
-        Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync()
+        Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }
 
     runtimeclass FolderPicker

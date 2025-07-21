@@ -120,4 +120,19 @@
   <data name="All Files" xml:space="preserve">
     <value>すべてのファイル</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDVIEWMODEVALUE" xml:space="preserve">
+    <value>指定された ViewMode は無効です。</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE" xml:space="preserve">
+    <value>指定された SuggestedStartLocation は無効です。</value>
+  </data>
+  <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
+    <value>ファイル拡張子の先頭は '.' にし、ワイルドカードを使わないようにしてください。</value>
+  </data>
+  <data name="IDS_APIERROR_STRINGSNOEMBEDDEDNULLS" xml:space="preserve">
+    <value>文字列に null を埋め込むことはできません。</value>
+  </data>
+  <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
+    <value>候補のファイル名は、使える文字数の上限を超えています。</value>
+  </data>
 </root>

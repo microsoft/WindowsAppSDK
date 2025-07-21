@@ -33,13 +33,19 @@ stages:
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       - name: foundationRepoPath
         value: ""
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKConfigSourceBranch
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
         value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
       - name: localCompilerOverrideNupkgVersion
         value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]
+      - name: ob_sdl_checkCompliantCompilerWarnings
+        value: true
+      - name: ob_sdl_prefast_runDuring
+        value: 'Build'
+      - name: ob_sdl_msbuildOverride
+        value: true
     condition: ne(variables.LatestOfficialBuildID, '')
     steps:
     - script: |
@@ -52,7 +58,9 @@ stages:
         echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
         echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
         echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
-        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)      
-        echo mySourceBranch=$(mySourceBranch)       
-        
+        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)         
+        echo ob_sdl_checkCompliantCompilerWarnings=$(ob_sdl_checkCompliantCompilerWarnings)       
+        echo ob_sdl_prefast_runDuring=$(ob_sdl_prefast_runDuring)       
+        echo ob_sdl_msbuildOverride=$(ob_sdl_msbuildOverride)       
+
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self

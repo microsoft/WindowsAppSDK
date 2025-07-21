@@ -4,6 +4,10 @@
 #include <TerminalVelocityFeatures-StoragePickers.h>
 namespace Microsoft.Windows.Storage.Pickers
 {
+    [contractversion(1.8)]
+    apicontract StoragePickersContract {};
+    
+    [contract(StoragePickersContract, 1.8)]
     [feature(Feature_StoragePickers)]
     enum PickerViewMode
     {
@@ -11,6 +15,7 @@ namespace Microsoft.Windows.Storage.Pickers
         Thumbnail,
     };
 
+    [contract(StoragePickersContract, 1.8)]
     [feature(Feature_StoragePickers)]
     enum PickerLocationId
     {
@@ -18,20 +23,21 @@ namespace Microsoft.Windows.Storage.Pickers
         ComputerFolder,
         Desktop,
         Downloads,
-        HomeGroup,
-        MusicLibrary,
+        MusicLibrary = 5,
         PicturesLibrary,
         VideosLibrary,
         Objects3D,
         Unspecified,
     };
 
+    [contract(StoragePickersContract, 1.8)]
     [feature(Feature_StoragePickers)]
-    runtimeclass PickFileResult 
+    runtimeclass PickFileResult
     {
         String Path { get; };
     }
 
+    [contract(StoragePickersContract, 1.8)]
     [feature(Feature_StoragePickers)]
     runtimeclass FileOpenPicker
     {
@@ -47,6 +53,7 @@ namespace Microsoft.Windows.Storage.Pickers
         [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult> > PickMultipleFilesAsync();
     }
 
+    [contract(StoragePickersContract, 1.8)]
     [feature(Feature_StoragePickers)]
     runtimeclass FileSavePicker
     {
@@ -57,18 +64,22 @@ namespace Microsoft.Windows.Storage.Pickers
         String CommitButtonText;
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
         String DefaultFileExtension;
-        Windows.Storage.StorageFile SuggestedSaveFile;
         String SuggestedFileName;
+
+        String SuggestedSaveFilePath{ get; };
+        Boolean TrySetSuggestedSaveFilePath(String filePath);
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }
 
+    [contract(StoragePickersContract, 1.8)]
     [feature(Feature_StoragePickers)]
     runtimeclass PickFolderResult
     {
         String Path { get; };
     }
 
+    [contract(StoragePickersContract, 1.8)]
     [feature(Feature_StoragePickers)]
     runtimeclass FolderPicker
     {
@@ -78,7 +89,6 @@ namespace Microsoft.Windows.Storage.Pickers
         String SettingsIdentifier;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
-        Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
     }

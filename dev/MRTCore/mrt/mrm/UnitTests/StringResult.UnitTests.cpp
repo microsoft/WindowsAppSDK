@@ -42,6 +42,7 @@ struct StringResult_Struct
 
     StringResult_Struct()
     {
+        origRef = nullptr;
         shortStr = L"Bye!";
         medStr = L"Hello!";
         concatStr = L" What's Up?";

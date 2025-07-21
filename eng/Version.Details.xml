@@ -39,9 +39,9 @@
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>b430accfb06428e6d5f4a4306f6acd07c84fc7d6</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="1.8.250627002-experimental">
+    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="1.8.250714001-experimental">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
-      <Sha>c2a6d659c265f8a9f77d1b5c04fef991c7a36daa</Sha>
+      <Sha>5293473fc061efa7f195f906e97e13279dde117c</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="1.9.250626001-experimental">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
@@ -49,6 +49,10 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
+    <Dependency Name="Microsoft.WindowsAppSDK.Version" Version="1.8.0">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKConfig</Uri>
+      <Sha>7425c8ed21b96fcc72bf04bd17a4f1d2ee870fc4</Sha>
+    </Dependency>
     <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.1.1">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>

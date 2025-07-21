@@ -2,14 +2,18 @@
 name: $(version)
 
 variables:
-- template: WindowsAppSDK-Versions.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildOutputDir
   value: $(Build.SourcesDirectory)\BuildOutput
 
 resources:
   repositories:
-    - repository: WindowsAppSDKConfigSourceBranch
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
@@ -178,9 +182,13 @@ jobs:
   - BuildMRT
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+    artifactAttempt: ''
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+    ob_artifactBaseName: '$(System.StageName)_$(imageName)'
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-RunTests-Steps.yml
     parameters:
       buildPlatform: $(buildPlatform)
       buildConfiguration: $(buildConfiguration)
       testLocale: $(testLocale)
+      ImageName: $(imageName)

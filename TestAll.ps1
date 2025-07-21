@@ -69,7 +69,10 @@ param(
         [Switch]$List,
 
         [Parameter(Mandatory=$false)]
-        [Switch]$ShowSystemInfo=$true
+        [Switch]$ShowSystemInfo=$true,
+
+        [Parameter(Mandatory=$true)]
+        [string]$wprProfilePath
 )
 
 $StartTime = Get-Date
@@ -133,7 +136,11 @@ function Run-TaefTest
     $testFolder = Split-Path -parent $test.TestDef
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
-    & $tePath $dllFile $test.Parameters
+
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
+    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
+
+    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
 }
 
 function Run-PowershellTest
@@ -223,7 +230,49 @@ if ($List -eq $true)
 
 if ($Test -eq $true)
 {
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
+    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
+    remove-item -Path $teLogFile -ErrorAction Ignore
+    remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
+
     Run-Tests
+
+    # copy test log to TestOutput folder
+    if (Test-Path -Path $teLogFile) {
+        Write-Host "Starting copy test log from '$teLogFile'"
+
+        New-Item -ItemType Directory -Path $teLogPathTo -Force
+        copy-item -Path $teLogFile -Destination $teLogPathTo -Force
+
+        Write-Host "Test log copied to '$teLogPathTo'"
+    }
+
+    # copy screenshots to TestOutput folder
+    $screenshotsFolder = Join-Path $env:Build_SourcesDirectory "WexLogFileOutput"
+    if (Test-Path -Path $screenshotsFolder) {
+        Write-Host "Starting copy screenshots from '$screenshotsFolder'"
+
+        # Copy at most 50 screenshots to the upload path.
+        # In the cases where a large number of tests failed, there is little value in uploading dozens of screenshots
+        $files = Get-ChildItem -Path $screenshotsFolder -Filter *.jpg |Select-Object -First 50
+        foreach($file in $files)
+        {
+            Copy-Item $file.FullName $teLogPathTo -Force
+        }
+
+        # Copy at most 20 tracelogging files to the upload path.
+        $files = Get-ChildItem -Path $screenshotsFolder -Filter *.etl |Select-Object -First 20
+        foreach($file in $files)
+        {
+            Copy-Item $file.FullName $teLogPathTo -Force
+        }
+
+        Write-Host "Test results copied to '$teLogPathTo'"
+    }
+    else
+    {
+        Write-Host "WexLogFileOutput not found"
+    }
 }
 
 $TotalTime = (Get-Date)-$StartTime

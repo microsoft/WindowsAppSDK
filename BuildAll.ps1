@@ -18,8 +18,8 @@ Main branch points to the external feed.
 #>
 
 Param(
-    [string]$PackageVersion = "1.1.1.1",
-    [string]$ComponentPackageVersion = "1.1.1.1",
+    [string]$PackageVersion = "",
+    [string]$ComponentPackageVersion = "",
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
@@ -57,6 +57,23 @@ if ($Clean)
     }
 
     Exit
+}
+
+# Find the Version Value provided by WindowsAppSDKConfig in Version.Details.xml
+# The version field of Microsoft.WindowsAppSDK.Version is the value provided byWindowsAppSDKConfig
+[xml]$versionDetailsPath = Get-Content -Path "$env:Build_SourcesDirectory\eng\Version.Details.xml"
+$versionFromConfig = $versionDetailsPath.Dependencies.ToolsetDependencies.Dependency | Where-Object { $_.Name -eq "Microsoft.WindowsAppSDK.Version" }
+if ([string]::IsNullOrEmpty($PackageVersion))
+{
+    $PackageVersion = $versionFromConfig.Version;
+    Write-Host "Updating PackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $PackageVersion"
+}
+
+if ([string]::IsNullOrEmpty($ComponentPackageVersion))
+{
+    Write-Host $versionFromConfig.Version
+    $ComponentPackageVersion = $versionFromConfig.Version;
+    Write-Host "Updating ComponentPackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $ComponentPackageVersion"
 }
 
 $configurationForMrtAndAnyCPU = "Release"
@@ -548,12 +565,9 @@ Try {
         $publicNuspec.package.metadata.version = $ComponentPackageVersion
 
         # Update dependency versions in the nuspec
-        $versionDetailsPath = ".\eng\Version.Details.xml"
-        [xml]$buildConfig = Get-Content -Path $versionDetailsPath
-
         foreach ($dependency in $publicNuspec.package.metadata.dependencies.dependency)
         {
-            $buildDependency = $buildConfig.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
+            $buildDependency = $versionDetailsPath.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
             if (-not($buildDependency))
             {
                 write-host "ERROR: NuGet package dependency $($dependency.Id) not found."
