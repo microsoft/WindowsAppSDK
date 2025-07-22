@@ -169,7 +169,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             HRESULT hr = HRESULT_FROM_WIN32(E_UNEXPECTED);
             winrt::hstring message = L"DeploymentManager can only be initialized once and has already been initialized by default. "
-                L"If you would like to explicitly initialize, add <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize> to your .csproj file.";
+                L"Please either remove your explicit initialization call, or disable auto-initialization by adding <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize> to your .csproj file.";
             throw winrt::hresult_error(hr, message);
         }
 
