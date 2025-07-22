@@ -48,7 +48,7 @@ inline void Initialize_StopSuccessActivity(
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    static bool isInitializedByDefault{ false };
+    static bool isAutoInitialized{ false };
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus()
     {
@@ -165,7 +165,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
         bool isRepair)
     {
-        if (isInitializedByDefault)
+        if (isAutoInitialized)
         {
             HRESULT hr = HRESULT_FROM_WIN32(E_UNEXPECTED);
             winrt::hstring message = L"DeploymentManager can only be initialized once and has already been initialized by default. "
@@ -240,7 +240,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         // Success!
-        isInitializedByDefault = true;
+        isAutoInitialized = true;
         return deploymentResult;
     }
 
