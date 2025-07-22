@@ -114,6 +114,7 @@
     <ClInclude Include="FolderPicker.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PickerCommon.h" />
+    <ClInclude Include="PickerLocalization.h" />
     <ClInclude Include="PickFileResult.h" />
     <ClInclude Include="PickFolderResult.h" />
     <ClInclude Include="StoragePickersTelemetry.h" />
@@ -130,6 +131,7 @@
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="PickerCommon.cpp" />
+    <ClCompile Include="PickerLocalization.cpp" />
     <ClCompile Include="PickFileResult.cpp" />
     <ClCompile Include="PickFolderResult.cpp" />
   </ItemGroup>

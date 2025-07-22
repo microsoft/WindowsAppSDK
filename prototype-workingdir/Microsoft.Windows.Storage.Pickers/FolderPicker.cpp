@@ -8,14 +8,13 @@
 #include <shobjidl.h>
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
+#include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
+#include "PickerLocalization.h" 
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
-    // Define the static member
-    winrt::com_ptr<IShellItem> FolderPicker::s_lastBrowsedFolder{};
-
     FolderPicker::FolderPicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
@@ -71,8 +70,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
-        CaptureParameters(parameters);
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 
+        CaptureParameters(parameters);
+        
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
@@ -86,42 +87,17 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
         parameters.ConfigureDialog(dialog);
-        FILEOPENDIALOGOPTIONS dialogOptions;
-        check_hresult(dialog->GetOptions(&dialogOptions));
-        check_hresult(dialog->SetOptions(dialogOptions | FOS_PICKFOLDERS));
+        dialog->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
 
-        // Create event handler to track folder navigation
-        auto eventHandler = new FolderDialogEventHandler();
-        DWORD eventCookie;
-        check_hresult(dialog->Advise(eventHandler, &eventCookie));
-
-        // Set the folder to the last browsed folder if available
-        if (s_lastBrowsedFolder)
         {
-            check_hresult(dialog->SetFolder(s_lastBrowsedFolder.get()));
-        }
-
-        HRESULT hr;
-        {
-            hr = dialog->Show(parameters.HWnd);
+            auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr) || cancellationToken())
             {
-                // Clean up event handler
-                dialog->Unadvise(eventCookie);
-                eventHandler->Release();
                 logTelemetry.Stop(m_telemetryHelper, false);
                 co_return nullptr;
             }
         }
 
-        // Save the last browsed folder from the event handler
-        s_lastBrowsedFolder = eventHandler->GetLastBrowsedFolder();
-
-        // Clean up event handler
-        dialog->Unadvise(eventCookie);
-        eventHandler->Release();
-
-        // Get the selected folder
         winrt::com_ptr<IShellItem> shellItem{};
         check_hresult(dialog->GetResult(shellItem.put()));
         auto path = PickerCommon::GetPathFromShellItem(shellItem);

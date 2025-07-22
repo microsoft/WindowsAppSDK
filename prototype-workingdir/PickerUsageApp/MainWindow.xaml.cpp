@@ -66,7 +66,7 @@ namespace winrt::PickerUsageApp::implementation
         case 1: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::ComputerFolder;
         case 2: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Desktop;
         case 3: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::Downloads;
-        case 4: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::HomeGroup;
+        //case 4: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::HomeGroup;
         case 5: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::MusicLibrary;
         case 6: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::PicturesLibrary;
         case 7: return winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::VideosLibrary;
@@ -863,10 +863,27 @@ namespace winrt::PickerUsageApp::implementation
     winrt::Windows::Foundation::IAsyncAction MainWindow::TestAnyCode_Click(IInspectable const&, RoutedEventArgs const&)
     {
         auto lifetime = get_strong();
+
         try
         {
             auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker(this->AppWindow().Id());
-            picker.SuggestedSaveFilePath(L"C:\\temp3\\MyFile.txt");
+            picker.TrySetSuggestedSaveFilePath(L"C:\\temp\\");
+            auto result = co_await picker.PickSaveFileAsync();
+
+            LogResult(L"Test code executed successfully");
+        }
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in test code: " << ex.message().c_str();
+            LogResult(winrt::hstring{ ss.str() });
+        }
+
+        try
+        {
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker(this->AppWindow().Id());
+            picker.TrySetSuggestedSaveFilePath(L"C:\\temp3\\MyFile.txt");
+            auto result = co_await picker.PickSaveFileAsync();
 
             LogResult(L"Test code executed successfully");
         }
@@ -876,6 +893,37 @@ namespace winrt::PickerUsageApp::implementation
             ss << L"Error in test code: " << ex.message().c_str();
             LogResult(winrt::hstring{ss.str()});
         }
+
+        try
+        {
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker(this->AppWindow().Id());
+            picker.TrySetSuggestedSaveFilePath(L"illegal*%$^&-_folderpath\\MyFile.txt");
+            auto result = co_await picker.PickSaveFileAsync();
+
+            LogResult(L"Test code executed successfully");
+        }
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in test code: " << ex.message().c_str();
+            LogResult(winrt::hstring{ ss.str() });
+        }
+
+        try
+        {
+            auto picker = winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker(this->AppWindow().Id());
+            picker.TrySetSuggestedSaveFilePath(L"C:\\temp\\illegal*%$^&-_MyFile.txt");
+            auto result = co_await picker.PickSaveFileAsync();
+
+            LogResult(L"Test code executed successfully");
+        }
+        catch (hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"Error in test code: " << ex.message().c_str();
+            LogResult(winrt::hstring{ ss.str() });
+        }
+
 
         co_return;
     }

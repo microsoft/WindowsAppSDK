@@ -16,6 +16,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
+#include "PickerLocalization.h"
 #include "PickFileResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
@@ -66,10 +67,21 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         return m_suggestedSaveFilePath;
     }
-    void FileSavePicker::SuggestedSaveFilePath(hstring const& value)
+
+    bool FileSavePicker::TrySetSuggestedSaveFilePath(hstring const& filePath)
     {
-        m_suggestedSaveFilePath = value;
+        auto parseResult = PickerCommon::ParseFolderItemAndFileName(filePath);
+        winrt::com_ptr<IShellItem> folderItem = parseResult.first;
+
+        if (!folderItem)
+        {
+            return false;
+        }
+
+        m_suggestedSaveFilePath = filePath;
+        return true;
     }
+
     hstring FileSavePicker::SuggestedFileName()
     {
         return m_suggestedFileName;
@@ -99,7 +111,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
+
         CaptureParameters(parameters);
+
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedSaveFilePath = m_suggestedSaveFilePath;
         auto suggestedFileName = m_suggestedFileName;

@@ -170,7 +170,7 @@
                                 <StackPanel>  <!--Style="{StaticResource TestGroupStyle}"-->
                                     <TextBlock Text="Test Any Code" FontWeight="SemiBold"/>
                                     <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <Button Content="Do Anything" Click="TestAnyCode_Click"/>
+                                        <Button Content="SuggestedSaveFilePath=C:\temp3\MyFile.txt" Click="TestAnyCode_Click"/>
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

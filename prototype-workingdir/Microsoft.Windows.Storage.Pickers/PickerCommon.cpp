@@ -9,7 +9,8 @@
 #include "shobjidl_core.h"
 #include <KnownFolders.h>
 #include <filesystem>
-#include <thread>
+#include <format>
+#include <utility>
 
 
 namespace {
@@ -114,6 +115,39 @@ namespace PickerCommon {
         return winrt::hstring{ filePath.get() };
     }
 
+    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath)
+    {
+        std::filesystem::path path(filePath.c_str());
+        if (path.empty())
+        {
+            return { nullptr, L"" };
+        }
+
+        auto folderPath = path.parent_path();
+        if (folderPath.empty())
+        {
+            // If the path does not have a parent, we cannot set folder.
+            return { nullptr, L"" };
+        }
+
+        // If the parent folder does not exist or is not a directory, we cannot set folder.
+        if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath))
+        {
+            return { nullptr, L"" };
+        }
+
+        winrt::com_ptr<IShellItem> shellItem;
+        HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
+        if (SUCCEEDED(hr))
+        {
+            auto fileName = path.filename().wstring();
+            return { shellItem, fileName };
+        }
+
+        // If the shellitem cannot be created, we cannot set the folder.
+        return { nullptr, L""};
+    }
+
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
     {
         if (!extension.empty() && extension[0] == L'*')
@@ -144,41 +178,10 @@ namespace PickerCommon {
         }
         return result;
     }
-}
-
-
-namespace PickerCommon {
-
-    using namespace winrt;
-
-    bool IsHStringNullOrEmpty(winrt::hstring value)
-    {
-        return value.empty();
-    }
-
-    winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem)
-    {
-        wil::unique_cotaskmem_string filePath;
-        auto hr = shellItem->GetDisplayName(SIGDN_FILESYSPATH, filePath.put());
-
-        // Returns the item's file system path if it has one
-        if (FAILED(hr))
-        {
-            /* Only items that report SFGAO_FILESYSTEM have a file system path.
-               When an item does not have a file system path, for instance, "This PC",
-               the call to IShellItem::GetDisplayName(SIGDN_FILESYSPATH, [out] LPWSTR *ppszName ) will fail.
-               In this case, we return an empty string.
-            */
-            return winrt::hstring{};
-        }
-
-        return winrt::hstring{ filePath.get() };
-    }
 
     /// <summary>
     /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type, for FileOpenPicker
     /// </summary>
-    /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
     /// <param name="filters">winrt style filters</param>
     void PickerParameters::CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters)
     {
@@ -194,7 +197,6 @@ namespace PickerCommon {
             FileTypeFilterData.push_back(L"");
             FileTypeFilterData.push_back(ext);
 
-            allFilesExtensionList.reserve(allFilesExtensionList.length() + ext.size() + 1);
             allFilesExtensionList += ext;
             allFilesExtensionList += L";";
         }
@@ -207,13 +209,13 @@ namespace PickerCommon {
         if (filters.Size() == 0)
         {
             // when filters not defined, set filter to All Files *.*
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(L"*");
         }
         else if (filters.Size() == 1 && allFilesExtensionList == L"*")
         {
             // when there're only one filter "*", set filter to All Files *.* (override the values pushed above)
-            FileTypeFilterData[0] = L"";
+            FileTypeFilterData[0] = AllFilesText;
             FileTypeFilterData[1] = L"*";
             resultSize = 1;
         }
@@ -229,14 +231,11 @@ namespace PickerCommon {
         {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
-
-        return result;
     }
 
     /// <summary>
     /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type, for FileSavePicker
     /// </summary>
-    /// <param name="buffer">temp buffer to hold dynamically transformed strings</param>
     /// <param name="filters">winrt style filters</param>
     void PickerParameters::CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> filters)
     {
@@ -254,7 +253,7 @@ namespace PickerCommon {
         if (filters.Size() == 0)
         {
             // when filters not defined, set filter to All Files *.*
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(L"*");
             resultSize = 1;
         }
@@ -265,7 +264,6 @@ namespace PickerCommon {
         {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
-        return result;
     }
 
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
@@ -301,31 +299,15 @@ namespace PickerCommon {
         {
             fileNameToSet = SuggestedFileName;
         }
-
+        
         if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
         {
-            auto suggestedPath = std::filesystem::path{ SuggestedSaveFilePath.c_str() };
-            if (!suggestedPath.empty())
+            auto result = ParseFolderItemAndFileName(SuggestedSaveFilePath);
+            winrt::com_ptr<IShellItem> folderItem = result.first;
+            fileNameToSet = result.second;
+            if (folderItem)
             {
-                // Force the directory of SuggestedSaveFilePath (if exist)
-                //      to be the starting location of save picker Dialog
-                auto dirPath = suggestedPath.parent_path();
-                if (!dirPath.empty())
-                {
-                    winrt::com_ptr<IShellItem> shellItem;
-                    HRESULT hr = SHCreateItemFromParsingName(dirPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
-                    if (SUCCEEDED(hr))
-                    {
-                        check_hresult(dialog->SetFolder(shellItem.get()));
-                    }
-                }
-
-                // Extract filename and use it (takes precedence over SuggestedFileName)
-                std::wstring fileName = suggestedPath.filename().wstring();
-                if (!fileName.empty())
-                {
-                    fileNameToSet = winrt::hstring(fileName);
-                }
+                check_hresult(dialog->SetFolder(folderItem.get()));
             }
         }
 

@@ -29,7 +29,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         void DefaultFileExtension(hstring const& value);
 
         hstring SuggestedSaveFilePath();
-        void SuggestedSaveFilePath(hstring const& value);
+        bool TrySetSuggestedSaveFilePath(hstring const& filePath);
 
         hstring SuggestedFileName();
         void SuggestedFileName(hstring const& value);

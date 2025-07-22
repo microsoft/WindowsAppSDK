@@ -18,6 +18,7 @@
     <ClCompile Include="PickerCommon.cpp" />
     <ClCompile Include="PickFileResult.cpp" />
     <ClCompile Include="PickFolderResult.cpp" />
+    <ClCompile Include="PickerLocalization.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -31,6 +32,7 @@
     <ClInclude Include="StoragePickersTelemetryHelper.h" />
     <ClInclude Include="TerminalVelocityFeatures-StoragePickers.h" />
     <ClInclude Include="TelemetryHelper.h" />
+    <ClInclude Include="PickerLocalization.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Microsoft.Windows.Storage.Pickers.idl" />
