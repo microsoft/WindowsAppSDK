@@ -48,6 +48,7 @@ inline void Initialize_StopSuccessActivity(
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
+    static bool isInitializedByDefault{ false };
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus()
     {
@@ -164,6 +165,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
         bool isRepair)
     {
+        if (isInitializedByDefault)
+        {
+            HRESULT hr = HRESULT_FROM_WIN32(E_UNEXPECTED);
+            winrt::hstring message = L"DeploymentManager can only be initialized once and has already been initialized by default. "
+                L"If you would like to explicitly initialize, add <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize> to your .csproj file.";
+            throw winrt::hresult_error(hr, message);
+        }
+
         auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
         const bool isPackagedProcess{ AppModel::Identity::IsPackagedProcess() };
         const int integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
@@ -231,6 +240,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         // Success!
+        isInitializedByDefault = true;
         return deploymentResult;
     }
 
