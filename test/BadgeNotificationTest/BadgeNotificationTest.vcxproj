@@ -162,9 +162,9 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="BadgeNotification.testdef" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="BadgeNotification.testdef" DestinationFolder="$(OutDir)" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

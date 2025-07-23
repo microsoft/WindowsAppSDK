@@ -49,6 +49,8 @@ namespace Test::ABForward
         }
 
     public:
+        FunctionalTests() = default;
+        
         BEGIN_TEST_CLASS(FunctionalTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")

@@ -1,11 +1,15 @@
 parameters:
   buildPlatform: ''
   buildConfiguration: ''
+  ImageName: ''
   TaefSelect: '*'
   BinaryCompatSwitch: ''
   testLocale: ''
 
 steps:
+  - checkout: self
+    path: s
+
   - task: powershell@2
     displayName: 'DevCheck: Setup/Verify development environment'
     inputs:
@@ -157,6 +161,8 @@ steps:
         Get-Service | Out-Host
         sc.exe queryex te.service | Write-Host
         sc.exe qc te.service | Write-Host
+  
+  - checkout: WindowsAppSDKConfig
 
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
@@ -168,3 +174,41 @@ steps:
         -Configuration "${{ parameters.buildConfiguration }}"
         -Test
         -List
+        -wprProfilePath "$(Build.SourcesDirectory)\WindowsAppSDKConfig\src\test\AppModelProviders.wprp"
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
+      xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
+      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
+      BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
+      CheckoutPath: '$(Build.SourcesDirectory)\WindowsAppSDKConfig'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish test results'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: xUnit
+      testResultsFiles: testResults-*.xml
+      searchFolder: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+      testRunTitle: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)'
+      buildPlatform: ${{ parameters.buildPlatform }}
+      buildConfiguration: ${{ parameters.buildConfiguration }}
+
+  # Edit the artifactAttempt variable when the job has failed, so that the artifact name can be unique.
+  - task: PowerShell@2
+    displayName: Edit the artifactAttempt variable when the job has failed
+    condition: failed()
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "##vso[task.setvariable variable=artifactAttempt]_$(System.JobAttempt)"
+
+  - task: PublishPipelineArtifact@1
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: '$(Build.SourcesDirectory)\TestOutput'
+      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+      Parallel: true

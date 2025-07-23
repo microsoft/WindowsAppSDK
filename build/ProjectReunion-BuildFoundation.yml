@@ -6,9 +6,9 @@ name: $(version)
 trigger: none
 
 variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: WindowsAppSDK-CommonVariables.yml
 
 resources:
   repositories:
@@ -16,7 +16,7 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
-    - repository: WindowsAppSDKConfigSourceBranch
+    - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/release/1.8-stable
@@ -32,6 +32,7 @@ stages:
     IsOneBranch: false
     runApiScan: true
     runPREFast: false
+    testMatrix: ${{ variables.PipelineTests }}
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:
@@ -39,10 +40,9 @@ stages:
     IsOneBranch: false
     runApiScan: false
     runPREFast: true
+    testMatrix: ${{ variables.PipelineTests }}
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-  parameters:
-    testMatrix: ${{ variables.PipelineTests }}
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
   parameters:
