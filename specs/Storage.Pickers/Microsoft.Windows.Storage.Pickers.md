@@ -34,9 +34,16 @@ pattern.*
 `FileTypeChoices` to be specified. While UWP pickers throw exceptions when these properties are not 
 set, the new pickers default to show all file when developers don't explicitly configure these 
 attributes.
-1. *HomeGroup location has been removed as it's no longer supported in Windows 10 and later*
-1. *FolderPicker.FileTypeFilter has been removed as it was not functionally appropriate for folder 
+1. *HomeGroup location has been excluded from the new `PickerLocationId` enum as it's no longer 
+supported in Windows 10 and later*
+1. *FolderPicker.FileTypeFilter has been exluded as it was not functionally appropriate for folder 
 selection*
+1. *Excluding methods and attributes that are already marked as deprecated, or "Do not use". 
+e.g. `PickSingleFileAndContinue`, `ContinuationData`, `ResumePickSingleFileAsync`, etc*
+1. *Excluding methods and attributes for [multi-user-mode](https://learn.microsoft.com/en-us/previous-versions/windows/uwp/xbox-apps/multi-user-applications), 
+as the new APIs are currently designed for desktop scenarios where each user has their own 
+interactive session and each session is completely independent of the other sessions on the device, 
+instead of Xbox One or other multi-user devices.*
 
 # Conceptual pages
 

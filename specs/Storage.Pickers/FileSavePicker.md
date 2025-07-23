@@ -206,4 +206,3 @@ else
 # See Also
 
 * [PickFileResult](./PickFileResult.md)
-* [One page design for `FileSavePicker.SuggestedSaveFilePath`](./FileSavePicker.SuggestedSaveFilePath.md)
