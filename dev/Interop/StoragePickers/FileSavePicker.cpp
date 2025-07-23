@@ -33,6 +33,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileSavePicker::SettingsIdentifier(hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_settingsIdentifier = value;
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileSavePicker::SuggestedStartLocation()
@@ -41,6 +42,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileSavePicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
+        PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
     hstring FileSavePicker::CommitButtonText()
@@ -49,6 +51,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileSavePicker::CommitButtonText(hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
     winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileSavePicker::FileTypeChoices()
@@ -86,11 +89,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         return m_suggestedFileName;
     }
+
     void FileSavePicker::SuggestedFileName(hstring const& value)
     {
+        PickerCommon::ValidateSuggestedFileName(value);
         m_suggestedFileName = value;
     }
-
 
     void FileSavePicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {

@@ -53,7 +53,6 @@ namespace Microsoft.Windows.Storage.Pickers
         ComputerFolder = 1,
         Desktop = 2,
         Downloads = 3,
-        HomeGroup = 4,  // Will be removed in future.
         MusicLibrary = 5,
         PicturesLibrary = 6,
         VideosLibrary = 7,
