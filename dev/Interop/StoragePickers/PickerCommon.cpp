@@ -121,29 +121,24 @@ namespace PickerCommon {
             return { nullptr, L"" };
         }
 
-        auto folderPath = path.parent_path();
-        if (folderPath.empty())
-        {
-            // If the path does not have a parent, we cannot set folder.
-            return { nullptr, L"" };
-        }
+        auto fileName = path.filename().wstring();
 
         // If the parent folder does not exist or is not a directory, we cannot set folder.
+        auto folderPath = path.parent_path();
         if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath))
         {
-            return { nullptr, L"" };
+            return { nullptr, fileName };
         }
 
         winrt::com_ptr<IShellItem> shellItem;
         HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
         if (SUCCEEDED(hr))
         {
-            auto fileName = path.filename().wstring();
             return { shellItem, fileName };
         }
 
-        // If the shellitem cannot be created, we cannot set the folder.
-        return { nullptr, L""};
+        // If the we cannot set the folder, we can at least set the file name suggested by developer.
+        return { nullptr, fileName};
     }
 
     void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
