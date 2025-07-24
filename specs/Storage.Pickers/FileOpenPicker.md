@@ -19,7 +19,6 @@ runtimeclass FileOpenPicker
     FileOpenPicker(Microsoft.UI.WindowId windowId);
 
     string CommitButtonText;
-    string SettingsIdentifier;
     IVector<string> FileTypeFilter{ get; };
     PickerLocationId SuggestedStartLocation;
     PickerViewMode ViewMode;
@@ -40,14 +39,18 @@ using Microsoft.Windows.Storage.Pickers;
 var openPicker = new FileOpenPicker(this.AppWindow.Id)
 {
     // (Optional) specify the initial location.
-    //     If not specified, using PickerLocationId.Unspecified by default.
+    //     If not specified, default to PickerLocationId.Unspecified.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
     
-    // (Optional) specify the text displayed on commit button. If not specified, use system default.
+    // (Optional) specify the text displayed on commit button. 
+    //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Choose selected files",
 
     // (Optional) specify file extensions filters. If not specified, default to all (*.*)
     FileTypeFilter = { ".txt", ".pdf", ".doc", ".docx" },
+
+    // (Optional) specify the view mode of the picker dialog. If not specified, default to List.
+    ViewMode = PickerViewMode.List,
 };
 ```
 
@@ -60,17 +63,18 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 FileOpenPicker openPicker(AppWindow().Id());
 
 // (Optional) specify the initial location.
-//     If not specified, using PickerLocationId.Unspecified by default.
+//     If not specified, default to PickerLocationId.Unspecified.
 openPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
-// (Optional) specify the text displayed on commit button. If not specified, use system default.
+// (Optional) specify the text displayed on commit button. 
+//     If not specified, the system uses a default label of "Open" (suitably translated).
 openPicker.CommitButtonText(L"Choose selected files");
 
 // (Optional) specify file extensions filters. If not specified, default to all (*.*)
-openPicker.FileTypeFilter().Append(L".txt");
-openPicker.FileTypeFilter().Append(L".pdf");
-openPicker.FileTypeFilter().Append(L".doc");
-openPicker.FileTypeFilter().Append(L".docx");
+openPicker.FileTypeFilter().ReplaceAll({ L".txt", L".pdf", L".doc", L".docx" });
+
+// (Optional) specify the view mode of the picker dialog. If not specified, default to List.
+picker.ViewMode(PickerViewMode::List);
 ```
 
 ## FileOpenPicker.PickSingleFileAsync
@@ -109,11 +113,11 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileOpenPicker openPicker(AppWindow().Id());
-auto& result{ co_await openPicker.PickSingleFileAsync() };
+auto result{ co_await openPicker.PickSingleFileAsync() };
 if (result)
 {
     std::ifstream fileReader(result.Path().c_str());
-    std::string text((std::istreambuf_iterator<char>(fileReader)), std::istreambuf_iterator<char>());
+    std::string text(std::istreambuf_iterator(fileReader), {});
     winrt::hstring hText = winrt::to_hstring(text);
 }
 else
@@ -162,7 +166,7 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileOpenPicker openPicker(AppWindow().Id());
-auto& results{ co_await openPicker.PickMultipleFilesAsync() };
+auto results{ co_await openPicker.PickMultipleFilesAsync() };
 if (results.Size() > 0)
 {
     for (auto const& result : results)

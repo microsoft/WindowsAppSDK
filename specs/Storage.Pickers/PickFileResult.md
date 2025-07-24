@@ -6,7 +6,7 @@ PickFileResult Class
 Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Pickers.md)
 
 Represents the result of a file picking operation. This is a lightweight class that contains a 
-string attribute representing the file path.
+string property representing the file path.
 
 # API Pages
 
@@ -52,11 +52,11 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileOpenPicker picker;
-auto& result{ co_await openPicker.PickSingleFileAsync() };
+auto result{ co_await openPicker.PickSingleFileAsync() };
 if (result)
 {
     // Perform this conversion if you have business logic that uses StorageFile
-    auto& storageFile{ co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(result.Path) }
+    auto storageFile{ co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(result.Path) }
     // Continue your business logic with storageFile
 }
 else

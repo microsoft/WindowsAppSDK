@@ -47,7 +47,7 @@ The `DocumentsLibrary` value represents the user's Documents library.
 This is the default location where many applications save documents, and it is often mapped 
 to the `%USERPROFILE%\Documents` folder on the user's system. 
 If the user has configured OneDrive for documents, this location would be redirected to a OneDrive 
-folder, such as `%USERPROFILE%\OneDrive - ...\Documents`.
+folder, such as `%USERPROFILE%\OneDrive\Documents`.
 
 ## PickerLocationId.ComputerFolder
 The `ComputerFolder` value represents "This PC" directory.
@@ -72,21 +72,21 @@ The `MusicLibrary` value represents the user's Music library.
 
 This is the default location where many applications save music files, and it is often mapped 
 to `%USERPROFILE%\Music`. If the user has configured OneDrive for the music library, this location 
-would be redirected to a OneDrive folder, such as `%USERPROFILE%\OneDrive - ...\Music`.
+would be redirected to a OneDrive folder, such as `%USERPROFILE%\OneDrive\Music`.
 
 ## PickerLocationId.PicturesLibrary
 The `PicturesLibrary` value represents the user's Pictures library.
 
 This is the default location where many applications save image files, and it is often mapped 
 to `%USERPROFILE%\Pictures`. If the user has configured OneDrive for the pictures library, this 
-location would be redirected to a OneDrive folder, such as `%USERPROFILE%\OneDrive - ...\Pictures`.
+location would be redirected to a OneDrive folder, such as `%USERPROFILE%\OneDrive\Pictures`.
 
 ## PickerLocationId.VideosLibrary
 The `VideosLibrary` value represents the user's Videos library.
 
 This is the default location where many applications save video files, and it is often mapped 
 to `%USERPROFILE%\Videos`. If the user has configured OneDrive for the videos library, this location 
-would be redirected to a OneDrive folder, such as `%USERPROFILE%\OneDrive - ...\Videos`.
+would be redirected to a OneDrive folder, such as `%USERPROFILE%\OneDrive\Videos`.
 
 ## PickerLocationId.Objects3D
 ! Note: This location is being phased out, so it is recommended to avoid using this value.

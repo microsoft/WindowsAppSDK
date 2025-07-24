@@ -17,12 +17,9 @@ runtimeclass FileSavePicker
     FileSavePicker(Microsoft.UI.WindowId windowId);
 
     string CommitButtonText;
-
-    string SettingsIdentifier;
     string DefaultFileExtension;
     string SuggestedFileName;
-    string SuggestedSaveFilePath{ get; };   // read-only attribute
-    boolean TrySetSuggestedSaveFilePath(String filePath);
+    string SuggestedSaveFilePath;
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
 
@@ -43,13 +40,14 @@ using Microsoft.Windows.Storage.Pickers;
 var savePicker = new FileSavePicker(this.AppWindow.Id)
 {
     // (Optional) specify the initial location.
-    //     If not specified, using PickerLocationId.Unspecified by default.
+    //     If not specified, default to PickerLocationId.Unspecified.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
     
     // (Optional) specify the default file name. If not specified, use system default.
     SuggestedFileName = "My Document",
 
-    // (Optional) specify the text displayed on commit button. If not specified, use system default.
+    // (Optional) specify the text displayed on commit button. 
+    //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Save Document",
 
     // (Optional) categorized extensions types. If not specified, allow All Files (*.*)
@@ -73,11 +71,15 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 FileSavePicker savePicker(AppWindow().Id());
 
 // (Optional) specify the initial location.
-//     If not specified, using PickerLocationId.Unspecified by default
+//     If not specified, default to PickerLocationId.Unspecified.
 savePicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
 // (Optional) specify the default file name. If not specified, use system default.
 savePicker.SuggestedFileName(L"NewDocument");
+
+// (Optional) specify the text displayed on commit button. 
+//     If not specified, the system uses a default label of "Open" (suitably translated).
+savePicker.CommitButtonText(L"Save Document");
 
 // (Optional) categorized extensions types. If not specified, allow All Files (*.*)
 //     Note that when allow All Files (*.*), end users can save a file without extension.
@@ -88,12 +90,10 @@ savePicker.FileTypeChoices().Insert(L"Text", winrt::single_threaded_vector<winrt
 savePicker.DefaultFileExtension(L".txt");
 ```
 
-## FileSavePicker.TrySetSuggestedSaveFilePath and SuggestedSaveFilePath
+## Setting the FileSavePicker.SuggestedSaveFilePath Property
 
-### TrySetSuggestedSaveFilePath
-
-This method sets the `SuggestedSaveFilePath` property on the `FileSavePicker`, that dictates key aspects 
-of the save file dialog's initial state:
+The `SuggestedSaveFilePath` property of `FileSavePicker` dictates 2 key aspects of the save file 
+dialog's initial state:
 
 *   **Initial Directory:** The dialog defaults to the directory of the `SuggestedSaveFilePath`. 
 
@@ -105,22 +105,13 @@ the `SuggestedSaveFilePath`.
 
     This file name overrides the `FileSavePicker.SuggestedFileName` property if both are set.
 
-### Read-only SuggestedSaveFilePath
-
-`FileSavePicker.SuggestedSaveFilePath` is a read-only attribute, meaning it can only be set via 
-above method `FileSavePicker.TrySetSuggestedSaveFilePath`.
-
 ### Examples
 C#
 ```C#
 using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id);
-var isSuccess = savePicker.TrySetSuggestedSaveFilePath(@"C:\temp\MyProject\MyFile.txt");
-if (!isSuccess)
-{
-    // Handling
-}
+savePicker.SuggestedSaveFilePath(@"C:\temp\MyProject\MyFile.txt");
 ```
 
 C++
@@ -129,20 +120,16 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
-bool isSuccess = savePicker.TrySetSuggestedSaveFilePath(L"C:\\temp\\MyProject\\MyFile.txt");
-if (!isSuccess)
-{
-    // Handling
-}
+bool isSuccess = savePicker.SuggestedSaveFilePath(L"C:\\temp\\MyProject\\MyFile.txt");
 ```
 
-### The Parsing Logic of TrySuggestedSaveFilePath
+### The Parsing Logic of Setting SuggestedSaveFilePath
 
-Method `TrySuggestedSaveFilePath` takes whatever after **the last slash** to fill in the file name 
-box, as long as the part before the last slash is a valid and existing folder. 
+`SuggestedSaveFilePath` takes whatever after **the last slash** to fill in the file name box, 
+as long as the part before the last slash is a valid and existing folder. 
 
-And return `false` without writing any value if the input doesn't even contain a slash, 
-or the folder doesn't exist on the end user's environment.
+It allows the value to be set to an empty string. However, it raises invalid argument exception 
+if the non-empty input doesn't contain have a folder path.
 
 Here're some examples about the parsing logic:
 
@@ -190,7 +177,7 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
-auto& result{ co_await savePicker.PickSaveFileAsync() };
+auto result{ co_await savePicker.PickSaveFileAsync() };
 if (result)
 {
     std::ofstream outFile(result.Path().c_str());

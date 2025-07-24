@@ -22,7 +22,6 @@ runtimeclass FolderPicker
 
     PickerLocationId SuggestedStartLocation;
     PickerViewMode ViewMode;
-    string SettingsIdentifier;
 
     Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
 }
@@ -44,11 +43,15 @@ using Microsoft.Windows.Storage.Pickers;
 var folderPicker = new FolderPicker(this.AppWindow.Id)
 {
     // (Optional) specify the initial location.
-    //     If not specified, using PickerLocationId.Unspecified by default.
+    //     If not specified, default to PickerLocationId.Unspecified.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
 
-    // (Optional) specify the text displayed on commit button. If not specified, use system default.
+    // (Optional) specify the text displayed on commit button. 
+    //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Select Folder",
+
+    // (Optional) specify the view mode of the picker dialog. If not specified, default to List.
+    ViewMode = PickerViewMode.List,
 };
 ```
 
@@ -61,11 +64,15 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 FolderPicker folderPicker(AppWindow().Id());
 
 // (Optional) specify the initial location.
-//     If not specified, using PickerLocationId.Unspecified by default.
+//     If not specified, default to PickerLocationId.Unspecified.
 folderPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
-// (Optional) specify the text displayed on commit button. If not specified, use system default.
+// (Optional) specify the text displayed on commit button. 
+//     If not specified, the system uses a default label of "Open" (suitably translated).
 folderPicker.CommitButtonText(L"Select Folder");
+
+// (Optional) specify the view mode of the picker dialog. If not specified, default to List.
+folderPicker.ViewMode(PickerViewMode::List);
 ```
 
 ## FolderPicker.PickSingleFolderAsync
@@ -101,7 +108,7 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker folderPicker(AppWindow().Id());
-auto& result{ co_await folderPicker.PickSingleFolderAsync() };
+auto result{ co_await folderPicker.PickSingleFolderAsync() };
 if (result)
 {
     auto path{ result.Path() };

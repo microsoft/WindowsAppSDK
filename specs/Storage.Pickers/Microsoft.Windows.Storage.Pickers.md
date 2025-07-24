@@ -25,7 +25,7 @@ window handle for window association. The new pickers eliminate this requirement
 objects, this new API returns string-based paths through `PickFileResult` and `PickFolderResult` 
 classes. This design choice simplifies the API and avoids complications with storage capabilities 
 in elevated scenarios.*
-1. *Similarly, the `StorageFile` type attribute `FileSavePicker.SuggestedSaveFile` is also replaced
+1. *Similarly, the `StorageFile` type property `FileSavePicker.SuggestedSaveFile` is also replaced
 by a string type `FileSavePicker.SuggestedSaveFilePath`.*
 1. *All new pickers are designed specifically for desktop apps and uses a `WindowId` property to 
 link the picker to its host window, replacing the `WinRT.Interop.InitializeWithWindow.Initialize` 
@@ -33,14 +33,14 @@ pattern.*
 1. The new pickers allow developers to use pickers without requiring `FileTypeFilter` or 
 `FileTypeChoices` to be specified. While UWP pickers throw exceptions when these properties are not 
 set, the new pickers default to show all file when developers don't explicitly configure these 
-attributes.
+properties.
 1. *HomeGroup location has been excluded from the new `PickerLocationId` enum as it's no longer 
 supported in Windows 10 and later*
 1. *FolderPicker.FileTypeFilter has been exluded as it was not functionally appropriate for folder 
 selection*
-1. *Excluding methods and attributes that are already marked as deprecated, or "Do not use". 
+1. *Excluding methods and properties that are already marked as deprecated, or "Do not use". 
 e.g. `PickSingleFileAndContinue`, `ContinuationData`, `ResumePickSingleFileAsync`, etc*
-1. *Excluding methods and attributes for [multi-user-mode](https://learn.microsoft.com/en-us/previous-versions/windows/uwp/xbox-apps/multi-user-applications), 
+1. *Excluding methods and properties for [multi-user-mode](https://learn.microsoft.com/en-us/previous-versions/windows/uwp/xbox-apps/multi-user-applications), 
 as the new APIs are currently designed for desktop scenarios where each user has their own 
 interactive session and each session is completely independent of the other sessions on the device, 
 instead of Xbox One or other multi-user devices.*
@@ -107,7 +107,6 @@ namespace Microsoft.Windows.Storage.Pickers
         FileOpenPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
-        string SettingsIdentifier;
         IVector<string> FileTypeFilter{ get; };
         PickerLocationId SuggestedStartLocation;
         PickerViewMode ViewMode;
@@ -121,12 +120,9 @@ namespace Microsoft.Windows.Storage.Pickers
         FileSavePicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
-
-        string SettingsIdentifier;
         string DefaultFileExtension;
         string SuggestedFileName;
-        string SuggestedSaveFilePath{ get; };   // read-only attribute
-        boolean TrySetSuggestedSaveFilePath(String filePath);
+        string SuggestedSaveFilePath;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
 
@@ -140,11 +136,9 @@ namespace Microsoft.Windows.Storage.Pickers
         FolderPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
-        IVector<string> FileTypeFilter{ get; };
 
         PickerLocationId SuggestedStartLocation;
         PickerViewMode ViewMode;
-        string SettingsIdentifier;
 
         Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
     }

@@ -6,7 +6,7 @@ PickFolderResult Class
 Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Pickers.md)
 
 Represents the result of a folder picking operation. This is a lightweight class that contains a 
-string attribute representing the folder path.
+string property representing the folder path.
 
 # API Pages
 
@@ -53,11 +53,11 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker picker;
-auto& result{ co_await openPicker.PickSingleFolderAsync() };
+auto result{ co_await openPicker.PickSingleFolderAsync() };
 if (result)
 {
     // Perform this conversion if you have business logic that uses StorageFolder
-    auto& storageFolder{ co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(result.Path) }
+    auto storageFolder{ co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(result.Path) }
     // Continue your business logic with storageFolder
 }
 else
