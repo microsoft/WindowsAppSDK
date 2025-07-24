@@ -254,12 +254,14 @@ namespace PickerCommon {
             throw std::invalid_argument("SuggestedSaveFilePath");
         }
 
-        auto [folderItem, fileName] = ParseFolderItemAndFileName(path);
-        if (!folderItem)
+        auto folderPath = p.parent_path();
+        if (folderPath.empty())
         {
+            // If the path does not have a parent, we cannot set folder.
             throw std::invalid_argument("SuggestedSaveFilePath");
         }
 
+        auto fileName = p.filename().wstring();
         if (fileName.size() > MAX_PATH)
         {
             throw winrt::hresult_invalid_argument(
