@@ -15,9 +15,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         FileSavePicker(winrt::Microsoft::UI::WindowId const& windowId);
 
-        hstring SettingsIdentifier();
-        void SettingsIdentifier(hstring const& value);
-
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation();
         void SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
 
@@ -30,7 +27,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         void DefaultFileExtension(hstring const& value);
 
         hstring SuggestedSaveFilePath();
-        bool TrySetSuggestedSaveFilePath(hstring const& filePath);
+        void SuggestedSaveFilePath(hstring const& value);
 
         hstring SuggestedFileName();
         void SuggestedFileName(hstring const& value);
@@ -39,7 +36,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     private:
         winrt::Microsoft::UI::WindowId m_windowId{};
-        hstring m_settingsIdentifier{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };

@@ -234,6 +234,39 @@ namespace PickerCommon {
         ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
+    void ValidateSuggestedSaveFilePath(winrt::hstring const& path)
+    {
+        if (path.empty())
+        {
+            // allow empty path.
+            return;
+        }
+
+        ValidateStringNoEmbeddedNulls(path);
+
+        std::filesystem::path p;
+        try {
+            // validate that the path string is syntactically correct, does not validate its existence.
+            p = std::filesystem::path(path.c_str());
+        }
+        catch (...)
+        {
+            throw std::invalid_argument("SuggestedSaveFilePath");
+        }
+
+        auto [folderItem, fileName] = ParseFolderItemAndFileName(path);
+        if (!folderItem)
+        {
+            throw std::invalid_argument("SuggestedSaveFilePath");
+        }
+
+        if (fileName.size() > MAX_PATH)
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(MaxSaveFileLengthExceededLocalizationKey));
+        }
+    }
+
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
     {
         if (!extension.empty() && extension[0] == L'*')
@@ -357,12 +390,6 @@ namespace PickerCommon {
         if (!IsHStringNullOrEmpty(CommitButtonText))
         {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
-        }
-
-        if (!IsHStringNullOrEmpty(SettingsIdentifierId))
-        {
-            auto guid = HashHStringToGuid(SettingsIdentifierId);
-            check_hresult(dialog->SetClientGuid(guid));
         }
 
         auto defaultFolder = GetKnownFolderFromId(PickerLocationId);

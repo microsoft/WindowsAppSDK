@@ -557,100 +557,43 @@ namespace Test::PickerCommonTests
             }
         }
 
-        TEST_METHOD(VerifyFolderPicker_ValidateSettingsIdentifer)
-        {
-            // Arrange.
-            winrt::Microsoft::UI::WindowId windowId{};
-            winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
- 
-            // Act & Assert            
-            for (const auto& test_case : cbsi_text_test_cases)
-            {
-                winrt::hstring settingsIdentifier = std::get<0>(test_case);
-                bool expectValid = std::get<1>(test_case);
-
-                if (expectValid)
-                {
-                    picker.SettingsIdentifier(settingsIdentifier);
-                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
-                }
-                else
-                {
-                    try
-                    {
-                        picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
-                        VERIFY_FAIL(errorMessage.c_str());
-                    }
-                    catch (...)
-                    {
-                        // Expected exception for invalid settings identifier text
-                    }
-                }
-            }
-        }
-
-        TEST_METHOD(VerifyFileOpenPicker_ValidateSettingsIdentifier)
-        {
-            // Arrange.
-            winrt::Microsoft::UI::WindowId windowId{};
-            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
-
-            // Act & Assert            
-            for (const auto& test_case : cbsi_text_test_cases)
-            {
-                winrt::hstring settingsIdentifier = std::get<0>(test_case);
-                bool expectValid = std::get<1>(test_case);
-
-                if (expectValid)
-                {
-                    picker.SettingsIdentifier(settingsIdentifier);
-                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
-                }
-                else
-                {
-                    try
-                    {
-                        picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
-                        VERIFY_FAIL(errorMessage.c_str());
-                    }
-                    catch (...)
-                    {
-                        // Expected exception for invalid settings identifier text
-                    }
-                }
-            }
-        }
-
-        TEST_METHOD(VerifyFileSavePicker_ValidateSettingsIdentifier)
+        TEST_METHOD(VerifyFileSavePicker_ValidateSuggestedSaveFilePath)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            std::vector<std::tuple<winrt::hstring, bool>> ssfp_test_cases{
+                {L"C:\\temp\\valid.txt", true}, // Valid path
+                {s_embeddedNullString, false}, // Embedded null is invalid
+                {L"1.txt", false}, // no folder path
+                {
+                    L"C:\\temp\\too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters.txt",
+                    false           // file name too long.
+                },
+            };
 
-            // Act & Assert            
-            for (const auto& test_case : cbsi_text_test_cases)
+            // Act & Assert
+            for (const auto& test_case : ssfp_test_cases)
             {
-                winrt::hstring settingsIdentifier = std::get<0>(test_case);
+                winrt::hstring suggestedPath = std::get<0>(test_case);
                 bool expectValid = std::get<1>(test_case);
 
                 if (expectValid)
                 {
-                    picker.SettingsIdentifier(settingsIdentifier);
-                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
+                    picker.SuggestedSaveFilePath(suggestedPath);
+                    VERIFY_ARE_EQUAL(picker.SuggestedSaveFilePath(), suggestedPath);
                 }
                 else
                 {
                     try
                     {
-                        picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
+                        picker.SuggestedSaveFilePath(suggestedPath);
+                        std::wstring errorMessage = L"Expected exception for invalid suggested save file path: " + std::wstring(suggestedPath);
                         VERIFY_FAIL(errorMessage.c_str());
                     }
                     catch (...)
                     {
-                        // Expected exception for invalid settings identifier text
+                        // Expected exception for invalid suggested save file path
                     }
                 }
             }
