@@ -1,14 +1,12 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <TerminalVelocityFeatures-StoragePickers.h>
 namespace Microsoft.Windows.Storage.Pickers
 {
     [contractversion(1.8)]
     apicontract StoragePickersContract {};
     
     [contract(StoragePickersContract, 1.8)]
-    [feature(Feature_StoragePickers)]
     enum PickerViewMode
     {
         List,
@@ -16,7 +14,6 @@ namespace Microsoft.Windows.Storage.Pickers
     };
 
     [contract(StoragePickersContract, 1.8)]
-    [feature(Feature_StoragePickers)]
     enum PickerLocationId
     {
         DocumentsLibrary,
@@ -31,20 +28,17 @@ namespace Microsoft.Windows.Storage.Pickers
     };
 
     [contract(StoragePickersContract, 1.8)]
-    [feature(Feature_StoragePickers)]
     runtimeclass PickFileResult
     {
         String Path { get; };
     }
 
     [contract(StoragePickersContract, 1.8)]
-    [feature(Feature_StoragePickers)]
     runtimeclass FileOpenPicker
     {
         FileOpenPicker(Microsoft.UI.WindowId windowId);
 
         Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
-        String SettingsIdentifier;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
         Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
@@ -54,39 +48,32 @@ namespace Microsoft.Windows.Storage.Pickers
     }
 
     [contract(StoragePickersContract, 1.8)]
-    [feature(Feature_StoragePickers)]
     runtimeclass FileSavePicker
     {
         FileSavePicker(Microsoft.UI.WindowId windowId);
 
-        String SettingsIdentifier;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
         String DefaultFileExtension;
         String SuggestedFileName;
-
-        String SuggestedSaveFilePath{ get; };
-        Boolean TrySetSuggestedSaveFilePath(String filePath);
+        String SuggestedSaveFilePath;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }
 
     [contract(StoragePickersContract, 1.8)]
-    [feature(Feature_StoragePickers)]
     runtimeclass PickFolderResult
     {
         String Path { get; };
     }
 
     [contract(StoragePickersContract, 1.8)]
-    [feature(Feature_StoragePickers)]
     runtimeclass FolderPicker
     {
         FolderPicker(Microsoft.UI.WindowId windowId);
 
         Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
-        String SettingsIdentifier;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
 

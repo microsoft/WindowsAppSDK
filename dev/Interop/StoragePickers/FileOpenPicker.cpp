@@ -31,15 +31,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateViewMode(value);
         m_viewMode = value;
     }
-    hstring FileOpenPicker::SettingsIdentifier()
-    {
-        return m_settingsIdentifier;
-    }
-    void FileOpenPicker::SettingsIdentifier(hstring const& value)
-    {
-        PickerCommon::ValidateStringNoEmbeddedNulls(value);
-        m_settingsIdentifier = value;
-    }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileOpenPicker::SuggestedStartLocation()
     {
         return m_suggestedStartLocation;
@@ -67,7 +58,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }

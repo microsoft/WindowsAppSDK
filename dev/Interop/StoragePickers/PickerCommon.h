@@ -28,11 +28,11 @@ namespace PickerCommon {
     void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
+    void ValidateSuggestedSaveFilePath(winrt::hstring const& path);
 
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;
-        winrt::hstring SettingsIdentifierId;
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId PickerLocationId;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
