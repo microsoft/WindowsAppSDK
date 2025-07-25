@@ -279,7 +279,7 @@ void BaseTestSuite::VerifyForegroundHandlerFails()
     RegisterWithPushNotificationManager();
     if (PushNotificationManager::Default().IsSupported())
     {
-        VERIFY_THROWS_HR(PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /* args */) {}), HRESULT_FROM_WIN32(ERROR_INVALID_HANDLE);
+        VERIFY_THROWS_HR(PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /* args */) {}), HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
     }
     else
     {
