@@ -8,6 +8,7 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>
+#include <shlobj_core.h>
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
@@ -28,6 +29,29 @@ namespace PickerCommon {
     void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
+
+    class FileDialogEventsHandler : public winrt::implements<FileDialogEventsHandler, IFileDialogEvents>
+    {
+    public:
+        FileDialogEventsHandler() = default;
+        
+        // IFileDialogEvents methods
+        IFACEMETHODIMP OnFileOk(IFileDialog*) { return S_OK; }
+        IFACEMETHODIMP OnFolderChanging(IFileDialog*, IShellItem*) { return S_OK; }
+        IFACEMETHODIMP OnFolderChange(IFileDialog* pfd);
+        IFACEMETHODIMP OnSelectionChange(IFileDialog*) { return S_OK; }
+        IFACEMETHODIMP OnShareViolation(IFileDialog*, IShellItem*, FDE_SHAREVIOLATION_RESPONSE*) { return S_OK; }
+        IFACEMETHODIMP OnTypeChange(IFileDialog*) { return S_OK; }
+        IFACEMETHODIMP OnOverwrite(IFileDialog*, IShellItem*, FDE_OVERWRITE_RESPONSE*) { return S_OK; }
+        
+        winrt::com_ptr<IShellItem> GetLastNavigatedFolder() { return m_lastNavigatedFolder; }
+        
+    private:
+        winrt::com_ptr<IShellItem> m_lastNavigatedFolder;
+    };
+
+    void SaveLastOpenedLocation(winrt::hstring const& settingsIdentifier, winrt::com_ptr<IShellItem> folderItem);
+    winrt::com_ptr<IShellItem> GetLastOpenedLocation(winrt::hstring const& settingsIdentifier);
 
     struct PickerParameters {
         HWND HWnd{};

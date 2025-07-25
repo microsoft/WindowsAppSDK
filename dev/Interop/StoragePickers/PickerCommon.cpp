@@ -12,7 +12,7 @@
 #include <filesystem>
 #include <format>
 #include <utility>
-
+#include <wil/win32_helpers.h>
 
 namespace {
 
@@ -96,6 +96,8 @@ namespace {
         return defaultFolder;
     }
 
+    const wchar_t c_RegistryKeyPath[] = L"Software\\Microsoft\\WindowsAppRuntime\\StoragePickers";
+    const wchar_t c_LastOpenedLocationPrefix[] = L"LastOpenedLocation_";
 }
 
 namespace PickerCommon {
@@ -407,4 +409,83 @@ namespace PickerCommon {
         }
 
     }
+
+    IFACEMETHODIMP FileDialogEventsHandler::OnFolderChange(IFileDialog* pfd)
+    {
+        winrt::com_ptr<IShellItem> currentFolder;
+        if (SUCCEEDED(pfd->GetFolder(currentFolder.put())))
+        {
+            m_lastNavigatedFolder = currentFolder;
+        }
+        return S_OK;
+    }
+
+    void SaveLastOpenedLocation(winrt::hstring const& settingsIdentifier, winrt::com_ptr<IShellItem> folderItem)
+    {
+        if (settingsIdentifier.empty() || !folderItem)
+        {
+            return;
+        }
+
+        try
+        {
+            wil::unique_cotaskmem_string folderPath;
+            if (SUCCEEDED(folderItem->GetDisplayName(SIGDN_FILESYSPATH, folderPath.put())))
+            {
+                wil::unique_hkey hKey;
+                DWORD dwDisposition;
+                if (SUCCEEDED(HRESULT_FROM_WIN32(RegCreateKeyExW(HKEY_CURRENT_USER, c_RegistryKeyPath, 0, nullptr, 
+                    REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, hKey.put(), &dwDisposition))))
+                {
+                    std::wstring valueName = std::wstring(c_LastOpenedLocationPrefix) + settingsIdentifier.c_str();
+                    RegSetValueExW(hKey.get(), valueName.c_str(), 0, REG_SZ, 
+                        reinterpret_cast<const BYTE*>(folderPath.get()), 
+                        static_cast<DWORD>((wcslen(folderPath.get()) + 1) * sizeof(wchar_t)));
+                }
+            }
+        }
+        catch (...)
+        {
+            // Silently ignore registry errors
+        }
+    }
+
+    winrt::com_ptr<IShellItem> GetLastOpenedLocation(winrt::hstring const& settingsIdentifier)
+    {
+        if (settingsIdentifier.empty())
+        {
+            return nullptr;
+        }
+
+        try
+        {
+            wil::unique_hkey hKey;
+            if (SUCCEEDED(HRESULT_FROM_WIN32(RegOpenKeyExW(HKEY_CURRENT_USER, c_RegistryKeyPath, 0, KEY_READ, hKey.put()))))
+            {
+                std::wstring valueName = std::wstring(c_LastOpenedLocationPrefix) + settingsIdentifier.c_str();
+                
+                DWORD dataSize = 0;
+                if (RegQueryValueExW(hKey.get(), valueName.c_str(), nullptr, nullptr, nullptr, &dataSize) == ERROR_SUCCESS)
+                {
+                    std::vector<wchar_t> buffer(dataSize / sizeof(wchar_t));
+                    if (RegQueryValueExW(hKey.get(), valueName.c_str(), nullptr, nullptr, 
+                        reinterpret_cast<LPBYTE>(buffer.data()), &dataSize) == ERROR_SUCCESS)
+                    {
+                        winrt::com_ptr<IShellItem> shellItem;
+                        if (SUCCEEDED(SHCreateItemFromParsingName(buffer.data(), nullptr, IID_PPV_ARGS(shellItem.put()))))
+                        {
+                            return shellItem;
+                        }
+                    }
+                }
+            }
+        }
+        catch (...)
+        {
+            // Silently ignore registry errors
+        }
+        
+        return nullptr;
+    }
+
 }

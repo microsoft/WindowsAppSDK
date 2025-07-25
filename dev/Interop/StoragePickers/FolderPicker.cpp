@@ -12,6 +12,7 @@
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
 #include "PickerLocalization.h" 
+#include <wil/resource.h>
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -93,12 +94,38 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.ConfigureDialog(dialog);
         dialog->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
 
+        // Set up event handler to track navigation
+        auto eventHandler = winrt::make<PickerCommon::FileDialogEventsHandler>();
+        DWORD dwCookie;
+        check_hresult(dialog->Advise(eventHandler.get(), &dwCookie));
+        auto unadvise = wil::scope_exit([&] { dialog->Unadvise(dwCookie); });
+
+        // Try to restore last opened location
+        if (!parameters.SettingsIdentifierId.empty())
+        {
+            auto lastOpenedLocation = PickerCommon::GetLastOpenedLocation(parameters.SettingsIdentifierId);
+            if (lastOpenedLocation)
+            {
+                dialog->SetFolder(lastOpenedLocation.get());
+            }
+        }
+
         {
             auto hr = dialog->Show(parameters.HWnd);
             if (FAILED(hr) || cancellationToken())
             {
                 logTelemetry.Stop(m_telemetryHelper, false);
                 co_return nullptr;
+            }
+        }
+
+        // Save the last navigated location (not the picked folder)
+        if (!parameters.SettingsIdentifierId.empty())
+        {
+            auto lastNavigatedFolder = eventHandler->GetLastNavigatedFolder();
+            if (lastNavigatedFolder)
+            {
+                PickerCommon::SaveLastOpenedLocation(parameters.SettingsIdentifierId, lastNavigatedFolder);
             }
         }
 
