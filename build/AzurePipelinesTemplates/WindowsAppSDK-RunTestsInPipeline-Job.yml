@@ -19,34 +19,9 @@ parameters:
   default: x64
 
 jobs:
-- job: ExtractMatrix
-  pool:
-    type: windows
-    isCustom: true
-    name: 'ProjectReunionESPool-2022'
-  steps:
-  - powershell: |
-      $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
-      $targetPlatform = "${{ parameters.buildPlatform }}"
-      $filteredMatrix = @{}
-      foreach ($entry in $testMatrix.PSObject.Properties) {
-        if ($entry.Value.buildPlatform -eq $targetPlatform) {
-            $filteredMatrix[$entry.Name] = $entry.Value
-        }
-      }
-      $matrixJson = $filteredMatrix | ConvertTo-Json -Compress
-      Write-Host "##vso[task.setvariable variable=matrixJson;isOutput=true]$matrixJson"
-    name: filterByPlatformStep
-    displayName: "Extract matrix as json value filtering by build platform and pass the extracted matrix to next job"
-  - script: echo $(filterByPlatformStep.matrixJson)
-    name: echoMatrix
-    displayName: "Echo filtered matrix"
-
-
 - job: ${{ parameters.jobName }}
-  dependsOn: ExtractMatrix
   strategy:
-    matrix: $[ dependencies.ExtractMatrix.outputs['filterByPlatformStep.matrixJson'] ]
+    matrix: ${{ parameters.TestMatrix }}
   pool:
     type: windows
     isCustom: true
@@ -56,6 +31,19 @@ jobs:
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
     AZURE_PIPELINES_DEDUP_PARALLELISM: 16
+    artifactAttempt: ''
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+    ob_artifactBaseName: '$(System.StageName)_$(imageName)'
+    # As the name of this job suggests, we currently don't build any code here, but only run tests; therefore, not bothering to enable BinSkim scans
+    # here. OTOH, if we leave BinSkim enabled, then the "Guardian: BinSkim" task in the Post* jobs injected into our pipeline by OneBranch 
+    # for this job would hit the following non-fatal, but noisy AnalyzeArgumentNoValuesException error:
+    #
+    # ##[error]Error running binskim job: 1 of 1
+    # ##[error]AnalyzeArgumentNoValuesException: Argument Target has no values. Check your configuration. -- Additional arguments:Microsoft.Guardian.InvalidResponseFileContentsException: InvalidResponseFileContentsException: Cannot create a response file with zero arguments. Ensure that your arguments are correctly set up.
+    # at Microsoft.Guardian.ResponseFileFormatterPlaintext.Format(IList`1 arguments, ResponseFileOptions Options)
+    # at Microsoft.Guardian.ResponseFileManager.CreateResponseFile(IList`1 arguments, String formatterName, ResponseFileOptions options, String outputPathOverride)
+    # at Microsoft.Guardian.CliAnalyzerResponseFileManager.SetupResponseFile(CliAnalyzerConfig analyzeConfig, ToolConfig toolConfig)
+    ob_sdl_binskim_enabled: false
   steps:
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:

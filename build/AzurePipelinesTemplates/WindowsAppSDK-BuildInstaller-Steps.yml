@@ -224,19 +224,25 @@ steps:
     ${{ if eq( parameters.runStaticAnalysis, 'true') }}:
       createLogFile: true
 
-- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
-  - task: SDLNativeRules@3
-    condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
-    displayName: Run the PREfast SDL Native Rules
-    inputs:
-      userProvideBuildInfo: auto
-      toolVersion: Latest
-      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
-      excludedPaths: |
-        $(Build.SourcesDirectory)\packages
-    continueOnError: true
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+# The VSBuild@1 task above seems to be able to do inline PREfast scanning with the EO-compliant ruleset now. So, we don't seem to
+# need the following any more. Commenting it out for now and observe a bit more. Remove it when we feel comfortable.
+#- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+#  - task: SDLNativeRules@3
+#    condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
+#    displayName: Run the PREfast SDL Native Rules
+#    inputs:
+#      userProvideBuildInfo: auto
+#      toolVersion: Latest
+#      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+#      excludedPaths: |
+#        $(Build.SourcesDirectory)\packages
+#      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+#      rulesetName: Custom
+#      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+#      policyName: 'WindowsUndocked'
+#    continueOnError: true
+#    env:
+#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Governance Detection'

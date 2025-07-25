@@ -35,6 +35,7 @@
   <Target Name="CopyMicrosoftWindowsAppRuntimeBootstrapdllToOutDir" Condition="'$(AppxPackage)' != 'true'" AfterTargets="Build" BeforeTargets="Binplace">
     <Copy
       SourceFiles="$(MSBuildThisFileDirectory)..\..\runtimes\win-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.Bootstrap.dll"
+      SkipUnchangedFiles="true"
       DestinationFolder="$(OutDir)"/>
   </Target>
 

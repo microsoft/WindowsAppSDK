@@ -12,7 +12,6 @@ namespace Microsoft.Windows.Foundation
     /// @note This is the identical memory layout and encoding of the Win32 DECIMAL structure.
     ///       The latter's definition is valid for COM but not WinRT making this equivalent structure necessary.
     /// @see https://learn.microsoft.com/windows/win32/api/wtypes/ns-wtypes-decimal-r1
-    [feature(Feature_Decimal)]
     [contract(DecimalContract, 1)]
     struct DecimalValue
     {
@@ -23,7 +22,6 @@ namespace Microsoft.Windows.Foundation
         UInt64 Lo64;
     };
 
-    [feature(Feature_Decimal)]
     [contract(DecimalContract, 1)]
     runtimeclass DecimalHelper
     {

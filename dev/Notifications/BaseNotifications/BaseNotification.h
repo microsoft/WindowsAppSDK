@@ -41,7 +41,7 @@ namespace Microsoft::Windows::BaseNotifications {
         bool m_expiresOnReboot{ false };
         winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority m_priority
         { winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority::Default };
-        ::ABI::Microsoft::Internal::ToastNotifications::NotificationType m_notificationType;
+        ::ABI::Microsoft::Internal::ToastNotifications::NotificationType m_notificationType{};
         bool m_suppressDisplay{ false };
 
         wil::srwlock m_lock;

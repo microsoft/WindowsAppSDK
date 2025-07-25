@@ -120,4 +120,19 @@
   <data name="All Files" xml:space="preserve">
     <value>Všechny soubory</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDVIEWMODEVALUE" xml:space="preserve">
+    <value>Zadaný režim ViewMode je neplatný.</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE" xml:space="preserve">
+    <value>Zadaná hodnota SuggestedStartLocation je neplatná.</value>
+  </data>
+  <data name="IDS_APIERROR_IMPROPERFILEEXTENSION" xml:space="preserve">
+    <value>Přípony souborů musí začínat tečkou a nesmí obsahovat žádné zástupné znaky.</value>
+  </data>
+  <data name="IDS_APIERROR_STRINGSNOEMBEDDEDNULLS" xml:space="preserve">
+    <value>Řetězce nemůžou mít vložené hodnoty null.</value>
+  </data>
+  <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
+    <value>Navrhovaný název souboru má větší počet znaků, než je povolené maximum.</value>
+  </data>
 </root>

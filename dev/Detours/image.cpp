@@ -775,8 +775,25 @@ CImage::CImage()
     m_hMap = NULL;
     m_pMap = NULL;
 
+    m_nNextFileAddr = 0;
+    m_nNextVirtAddr = 0;
+
+    ZeroMemory(&m_DosHeader, sizeof(m_DosHeader));
+    ZeroMemory(&m_NtHeader, sizeof(m_NtHeader));
+    ZeroMemory(&m_SectionHeaders, sizeof(m_SectionHeaders));
+
+    m_nPrePE = 0;
+    m_cbPrePE = 0;
+    m_cbPostPE = 0;
+
     m_nPeOffset = 0;
     m_nSectionsOffset = 0;
+    m_nExtraOffset = 0;
+    m_nFileSize = 0;
+
+    m_nOutputVirtAddr = 0;
+    m_nOutputVirtSize = 0;
+    m_nOutputFileAddr = 0;
 
     m_pbOutputBuffer = NULL;
     m_cbOutputBuffer = 0;

@@ -35,9 +35,9 @@ parameters:
   default: true
 
 variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: WindowsAppSDK-CommonVariables.yml
 
 resources:
   repositories:
@@ -49,7 +49,7 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
-    - repository: WindowsAppSDKConfigSourceBranch
+    - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/release/1.8-stable
@@ -118,6 +118,7 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
         runApiScan: ${{ parameters.runStaticAnalysis }}
         runPREFast: false
+        testMatrix: ${{ variables.PipelineTests }}
     
     - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
@@ -125,6 +126,7 @@ extends:
           SignOutput: ${{ parameters.SignOutput }}
           runApiScan: false
           runPREFast: true
+          testMatrix: ${{ variables.PipelineTests }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
@@ -136,8 +138,6 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-      parameters:
-        testMatrix: ${{ variables.PipelineTests }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:

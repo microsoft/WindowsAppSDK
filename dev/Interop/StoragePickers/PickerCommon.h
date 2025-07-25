@@ -13,7 +13,21 @@ namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
     const winrt::hstring AllFilesLocalizationKey = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
 
+    const winrt::hstring InvalidViewModeLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDVIEWMODEVALUE"};
+    const winrt::hstring InvalidSuggestedStartLocationLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDSUGGESTEDSTARTLOCATIONVALUE"};
+    const winrt::hstring ImproperFileExtensionLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_IMPROPERFILEEXTENSION"};
+    const winrt::hstring StringNoEmbeddedNullsLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"};
+    const winrt::hstring MaxSaveFileLengthExceededLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"};
+
     bool IsHStringNullOrEmpty(winrt::hstring value);
+
+    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath);
+
+    void ValidateStringNoEmbeddedNulls(winrt::hstring const& value);
+    void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value);
+    void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
+    void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
+    void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
 
     struct PickerParameters {
         HWND HWnd{};
@@ -24,6 +38,9 @@ namespace PickerCommon {
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
 
+        winrt::hstring SuggestedFileName;
+        winrt::hstring SuggestedSaveFilePath;
+
         winrt::hstring FormatExtensionWithWildcard(winrt::hstring extension);
         winrt::hstring JoinExtensions(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> extensions);
 
@@ -31,5 +48,6 @@ namespace PickerCommon {
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
+        void ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog);
     };
 }

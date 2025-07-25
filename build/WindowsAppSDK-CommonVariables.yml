@@ -7,8 +7,7 @@ variables:
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
   versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
   versionCounter: $[counter(variables['versionDate'], 0)]
-  version: $[format('{0}.{1}.{2}-{3}.{4}', variables['major'], variables['minor'], variables['patch'], variables['versionDate'], variables['versionCounter'])]
-  versionTag: $[coalesce(variables.VersionTagOverride, '')]
+  version: $[format('{0}.{1}.{2}-{3}.{4}', variables['MajorVersion'], variables['MinorVersion'], variables['PatchVersion'], variables['versionDate'], variables['versionCounter'])]
   
   #OneBranch Variables
   CDP_DEFINITION_BUILD_COUNT: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
@@ -26,6 +25,10 @@ variables:
   compilerOverridePackageVersion: ""
   # Use the following corresponding version string instead of the above when calling nuget install directly.
   compilerOverrideNupkgVersion: ""
+
+  ob_sdl_checkCompliantCompilerWarnings: true
+  ob_sdl_prefast_runDuring: 'Guardian'
+  ob_sdl_msbuildOverride: true
 
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
   WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
