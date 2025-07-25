@@ -601,7 +601,7 @@ namespace Test::PickerCommonTests
             }
         }
 
-        TEST_METHOD(VerifyFileSavePicker_ValidateSuggestedSaveFilePath)
+        TEST_METHOD(VerifyValidateSuggestedSaveFilePath)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
@@ -610,11 +610,12 @@ namespace Test::PickerCommonTests
                 {L"C:\\temp\\valid.txt", true}, // Valid path
                 {L"", true},                    // Allow empty string
                 {s_embeddedNullString, false},  // Embedded null is invalid
-                {L"1.txt", false}, // no folder path
+                {L"1.txt", false},              // Input without a folder is invalid
                 {
                     L"C:\\temp\\too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters.txt",
-                    false           // file name too long.
+                    false                       // file name too long is invalid.
                 },
+                {L"C:\\>:di*r\\1.txt", false},  // Throw error on invalid characters
             };
 
             // Act & Assert
