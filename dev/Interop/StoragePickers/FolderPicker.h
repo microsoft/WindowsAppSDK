@@ -15,9 +15,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode ViewMode();
         void ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value);
 
-        hstring SettingsIdentifier();
-        void SettingsIdentifier(hstring const& value);
-
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation();
         void SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
 
@@ -30,7 +27,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Microsoft::UI::WindowId m_windowId{};
 
         PickerViewMode m_viewMode{ PickerViewMode::List };
-        hstring m_settingsIdentifier{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
         StoragePickersTelemetryHelper m_telemetryHelper{};

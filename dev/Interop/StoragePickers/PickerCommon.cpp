@@ -121,29 +121,24 @@ namespace PickerCommon {
             return { nullptr, L"" };
         }
 
-        auto folderPath = path.parent_path();
-        if (folderPath.empty())
-        {
-            // If the path does not have a parent, we cannot set folder.
-            return { nullptr, L"" };
-        }
+        auto fileName = path.filename().wstring();
 
         // If the parent folder does not exist or is not a directory, we cannot set folder.
+        auto folderPath = path.parent_path();
         if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath))
         {
-            return { nullptr, L"" };
+            return { nullptr, fileName };
         }
 
         winrt::com_ptr<IShellItem> shellItem;
         HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
         if (SUCCEEDED(hr))
         {
-            auto fileName = path.filename().wstring();
             return { shellItem, fileName };
         }
 
-        // If the shellitem cannot be created, we cannot set the folder.
-        return { nullptr, L""};
+        // If the we cannot set the folder, we can at least set the file name suggested by developer.
+        return { nullptr, fileName};
     }
 
     void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
@@ -232,6 +227,38 @@ namespace PickerCommon {
         }
 
         ValidateStringNoEmbeddedNulls(suggestedFileName);
+    }
+
+    void ValidateSuggestedSaveFilePath(winrt::hstring const& path)
+    {
+        if (path.empty())
+        {
+            // allow empty path.
+            return;
+        }
+
+        ValidateStringNoEmbeddedNulls(path);
+
+        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
+        if (!pidl)
+        {
+            throw std::invalid_argument("SuggestedSaveFilePath");
+        }
+
+        std::filesystem::path p(path.c_str());
+        auto folderPath = p.parent_path();
+        if (folderPath.empty())
+        {
+            // If the path does not have a parent, we cannot set folder.
+            throw std::invalid_argument("SuggestedSaveFilePath");
+        }
+
+        auto fileName = p.filename().wstring();
+        if (fileName.size() > MAX_PATH)
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(MaxSaveFileLengthExceededLocalizationKey));
+        }
     }
 
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
@@ -357,12 +384,6 @@ namespace PickerCommon {
         if (!IsHStringNullOrEmpty(CommitButtonText))
         {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
-        }
-
-        if (!IsHStringNullOrEmpty(SettingsIdentifierId))
-        {
-            auto guid = HashHStringToGuid(SettingsIdentifierId);
-            check_hresult(dialog->SetClientGuid(guid));
         }
 
         auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
