@@ -20,9 +20,9 @@ runtimeclass PickFolderResult {
 
 # Backward Compatibility
 
-A PickFolderResult object can be converted to `Windows.Storage.StorageFolder` object via 
+A `PickFolderResult` object can be converted to a `Windows.Storage.StorageFolder` object via 
 [Windows.Storage.StorageFolder.GetFolderFromPathAsync](https://learn.microsoft.com/en-us/uwp/api/windows.storage.storagefolder.getfolderfrompathasync)
-by the folder path.
+by using the folder path.
 
 
 ## Examples
@@ -32,12 +32,13 @@ C#
 ```C#
 using Microsoft.Windows.Storage.Pickers;
 
-var picker = new FolderPicker();
-var result = await picker.PickFolderAsync();
+// In a method of a window class
+var picker = new FolderPicker(this.AppWindow.Id);
+var result = await picker.PickSingleFolderAsync();
 if (result != null)
 {
     // Perform this conversion if you have business logic that uses StorageFolder
-    var storageFolder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(result.Path)
+    var storageFolder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(result.Path);
     // Continue your business logic with storageFolder
 }
 else
@@ -52,12 +53,13 @@ C++
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
-FolderPicker picker;
-auto result{ co_await openPicker.PickSingleFolderAsync() };
+// In a coroutine method of a window class
+FolderPicker picker{ AppWindow().Id() };
+auto result{ co_await picker.PickSingleFolderAsync() };
 if (result)
 {
     // Perform this conversion if you have business logic that uses StorageFolder
-    auto storageFolder{ co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(result.Path) }
+    auto storageFolder{ co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(result.Path()) };
     // Continue your business logic with storageFolder
 }
 else

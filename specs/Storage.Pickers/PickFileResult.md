@@ -18,11 +18,11 @@ runtimeclass PickFileResult {
 }
 ```
 
-# Backward compatability
+# Backward Compatibility
 
-A PickFileResult object can be converted to `Windows.Storage.StorageFile` object via 
+A `PickFileResult` object can be converted to a `Windows.Storage.StorageFile` object via 
 [Windows.Storage.StorageFile.GetFileFromPathAsync](https://learn.microsoft.com/en-us/uwp/api/windows.storage.storagefile.getfilefrompathasync)
-by the file path.
+by using the file path.
 
 ## Examples
 
@@ -31,12 +31,13 @@ C#
 ```C#
 using Microsoft.Windows.Storage.Pickers;
 
-var picker = new FileOpenPicker();
+// In a coroutine method of a window class
+var picker = new FileOpenPicker(this.AppWindow.Id);
 var result = await picker.PickSingleFileAsync();
 if (result != null)
 {
     // Perform this conversion if you have business logic that uses StorageFile
-    var storageFile = await Windows.Storage.StorageFile.GetFileFromPathAsync(result.Path)
+    var storageFile = await Windows.Storage.StorageFile.GetFileFromPathAsync(result.Path);
     // Continue your business logic with storageFile
 }
 else
@@ -51,12 +52,13 @@ C++
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
-FileOpenPicker picker;
-auto result{ co_await openPicker.PickSingleFileAsync() };
+// In a coroutine method of a window class
+FileOpenPicker picker{ AppWindow().Id() };
+auto result{ co_await picker.PickSingleFileAsync() };
 if (result)
 {
     // Perform this conversion if you have business logic that uses StorageFile
-    auto storageFile{ co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(result.Path) }
+    auto storageFile{ co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(result.Path()) };
     // Continue your business logic with storageFile
 }
 else

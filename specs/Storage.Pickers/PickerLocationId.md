@@ -17,11 +17,11 @@ Namespace: [Microsoft.Windows.Storage.Pickers](./Microsoft.Windows.Storage.Picke
 | Downloads          | 3         | [The Downloads folder](#pickerlocationiddownloads)              |
 | MusicLibrary       | 5         | [The Music library](#pickerlocationidmusiclibrary)              |
 | PicturesLibrary    | 6         | [The Pictures library](#pickerlocationidpictureslibrary)        |
-| VideosLibrary      | 7         | [The Videos library](#pickerlocationidvideoslibrary).           |
-| Objects3D          | 8         | [The 3D Objects folder, (avoid using this)](#pickerlocationidobjects3d)|
+| VideosLibrary      | 7         | [The Videos library](#pickerlocationidvideoslibrary)            |
+| Objects3D          | 8         | [The 3D Objects folder (avoid using this)](#pickerlocationidobjects3d)|
 | Unspecified        | 9         | [An unspecified location](#pickerlocationidunspecified)         |
 
-*Spec Note: The value 4 is intentionally skipped as it was previously assigned to HomeGroup in the original Windows.Storage.Pickers API.*
+*Spec Note: The value 4 is intentionally skipped as it was previously assigned to HomeGroup in the original `Windows.Storage.Pickers` API.*
 
 # Definition
 
@@ -94,7 +94,7 @@ would be redirected to a OneDrive folder, such as `%USERPROFILE%\OneDrive\Videos
 The `Objects3D` value represents the 3D Objects folder. This is the default location where many 
 applications save 3D object files, and it is often mapped to `%USERPROFILE%\3D Objects`.
 
-This enum value is retained for backward compatibility with the [Windows.Storage.Pickers.PickerLocationId](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.pickerlocationid).
+This enum value is retained for backward compatibility with [Windows.Storage.Pickers.PickerLocationId](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.pickerlocationid).
 
 ## PickerLocationId.Unspecified
 The `Unspecified` value represents an unspecified location.
@@ -102,6 +102,6 @@ The `Unspecified` value represents an unspecified location.
 When this value is used, the file picker will use the system default location, which may vary 
 depending on the user's configuration and the context in which the picker is used.
 
-When the `SuggestedStartLocation` was not specified in [FileOpenPicker](./FileOpenPicker.md), 
+When `SuggestedStartLocation` is not specified in [FileOpenPicker](./FileOpenPicker.md), 
 [FileSavePicker](./FileSavePicker.md), or [FolderPicker](./FolderPicker.md), 
 the default value is `PickerLocationId.Unspecified`.

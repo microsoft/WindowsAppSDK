@@ -38,18 +38,19 @@ using Microsoft.Windows.Storage.Pickers;
 
 var openPicker = new FileOpenPicker(this.AppWindow.Id)
 {
-    // (Optional) specify the initial location.
-    //     If not specified, default to PickerLocationId.Unspecified.
+    // (Optional) Specify the initial location for the picker. 
+    //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
+    //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
     
-    // (Optional) specify the text displayed on commit button. 
+    // (Optional) specify the text displayed on the commit button. 
     //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Choose selected files",
 
-    // (Optional) specify file extensions filters. If not specified, default to all (*.*)
+    // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
     FileTypeFilter = { ".txt", ".pdf", ".doc", ".docx" },
 
-    // (Optional) specify the view mode of the picker dialog. If not specified, default to List.
+    // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
     ViewMode = PickerViewMode.List,
 };
 ```
@@ -62,28 +63,29 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileOpenPicker openPicker(AppWindow().Id());
 
-// (Optional) specify the initial location.
-//     If not specified, default to PickerLocationId.Unspecified.
+// (Optional) Specify the initial location for the picker. 
+//     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
+//     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
 openPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
-// (Optional) specify the text displayed on commit button. 
+// (Optional) specify the text displayed on the commit button. 
 //     If not specified, the system uses a default label of "Open" (suitably translated).
 openPicker.CommitButtonText(L"Choose selected files");
 
-// (Optional) specify file extensions filters. If not specified, default to all (*.*)
+// (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
 openPicker.FileTypeFilter().ReplaceAll({ L".txt", L".pdf", L".doc", L".docx" });
 
-// (Optional) specify the view mode of the picker dialog. If not specified, default to List.
-picker.ViewMode(PickerViewMode::List);
+// (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
+openPicker.ViewMode(PickerViewMode::List);
 ```
 
 ## FileOpenPicker.PickSingleFileAsync
 
-Displays a UI element that allows user to choose and open one file.
+Displays a UI element that allows the user to choose and open one file.
 
-Returns a light weight object that has the path of the picked file.
+Returns a lightweight object that has the path of the picked file.
 
-Return null if the file dialog was cancelled or closed without selection.
+Returns `null` if the file dialog was cancelled or closed without a selection.
 
 ### Examples
 
@@ -128,11 +130,11 @@ else
 
 ## FileOpenPicker.PickMultipleFilesAsync
 
-Displays a UI element that allows user to choose and open multiple files.
+Displays a UI element that allows the user to choose and open multiple files.
 
-Returns a collection of light weight objects that has the path of picked files.
+Returns a collection of lightweight objects that have the path of the picked files.
 
-Return an empty list (Count = 0) if the file dialog's cancelled or closed without selection.
+Returns an empty list (`Count` = 0) if the file dialog was cancelled or closed without a selection.
 
 ### Examples
 

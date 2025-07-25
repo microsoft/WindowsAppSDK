@@ -39,25 +39,26 @@ using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id)
 {
-    // (Optional) specify the initial location.
-    //     If not specified, default to PickerLocationId.Unspecified.
+    // (Optional) Specify the initial location for the picker. 
+    //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
+    //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
     
     // (Optional) specify the default file name. If not specified, use system default.
     SuggestedFileName = "My Document",
 
-    // (Optional) specify the text displayed on commit button. 
-    //     If not specified, the system uses a default label of "Open" (suitably translated).
+    // (Optional) specify the text displayed on the commit button. 
+    //     If not specified, the system uses a default label of "Save" (suitably translated).
     CommitButtonText = "Save Document",
 
-    // (Optional) categorized extensions types. If not specified, allow All Files (*.*)
-    //     Note that when allow All Files (*.*), end users can save a file without extension.
+    // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
+    //     Note that when "All Files (*.*)" is allowed, end users can save a file without an extension.
     FileTypeChoices = {
         { "Documents", new List<string> { ".txt", ".doc", ".docx" } }
     },
 
-    // (Optional) specify the default file extension (will be appended after the default file name).
-    //      If not specified, will not appended after the default extension.
+    // (Optional) specify the default file extension (will be appended to SuggestedFileName).
+    //      If not specified, no extension will be appended.
     DefaultFileExtension = ".txt",
 };
 ```
@@ -70,29 +71,30 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
 
-// (Optional) specify the initial location.
-//     If not specified, default to PickerLocationId.Unspecified.
+// (Optional) Specify the initial location for the picker. 
+//     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
+//     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
 savePicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
 // (Optional) specify the default file name. If not specified, use system default.
 savePicker.SuggestedFileName(L"NewDocument");
 
-// (Optional) specify the text displayed on commit button. 
-//     If not specified, the system uses a default label of "Open" (suitably translated).
+// (Optional) specify the text displayed on the commit button. 
+//     If not specified, the system uses a default label of "Save" (suitably translated).
 savePicker.CommitButtonText(L"Save Document");
 
-// (Optional) categorized extensions types. If not specified, allow All Files (*.*)
-//     Note that when allow All Files (*.*), end users can save a file without extension.
+// (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
+//     Note that when "All Files (*.*)" is allowed, end users can save a file without an extension.
 savePicker.FileTypeChoices().Insert(L"Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
 
-// (Optional) specify the default file extension (will be appended after the default file name).
-//      If not specified, will not appended after the default extension.
+// (Optional) specify the default file extension (will be appended to SuggestedFileName).
+//      If not specified, no extension will be appended.
 savePicker.DefaultFileExtension(L".txt");
 ```
 
 ## Setting the FileSavePicker.SuggestedSaveFilePath Property
 
-The `SuggestedSaveFilePath` property of `FileSavePicker` dictates 2 key aspects of the save file 
+The `SuggestedSaveFilePath` property of `FileSavePicker` dictates two key aspects of the save file 
 dialog's initial state:
 
 *   **Initial Directory:** The dialog defaults to the directory of the `SuggestedSaveFilePath`. 
@@ -100,7 +102,7 @@ dialog's initial state:
     This behavior overrides any picker-specific remembered folder settings and ensures the dialog 
     opens in the suggested file's parent folder.
 
-*   **Pre-filled File Name:** The file name field in the dialog is pre-populated with the name of 
+*   **Pre-filled File Name:** The file name field in the dialog is pre-populated with the name from 
 the `SuggestedSaveFilePath`. 
 
     This file name overrides the `FileSavePicker.SuggestedFileName` property if both are set.
@@ -111,7 +113,7 @@ C#
 using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id);
-savePicker.SuggestedSaveFilePath(@"C:\temp\MyProject\MyFile.txt");
+savePicker.SuggestedSaveFilePath = @"C:\temp\MyProject\MyFile.txt";
 ```
 
 C++
@@ -120,34 +122,42 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
-bool isSuccess = savePicker.SuggestedSaveFilePath(L"C:\\temp\\MyProject\\MyFile.txt");
+savePicker.SuggestedSaveFilePath(L"C:\\temp\\MyProject\\MyFile.txt");
 ```
 
-### The Parsing Logic of Setting SuggestedSaveFilePath
+### The Parsing Logic
 
-`SuggestedSaveFilePath` takes whatever after **the last slash** to fill in the file name box, 
-as long as the part before the last slash is a valid and existing folder. 
+The `SuggestedSaveFilePath` property is parsed to set the directory and file name in the 
+save dialog.
 
-It allows the value to be set to an empty string. However, it raises invalid argument exception 
-if the non-empty input doesn't contain have a folder path.
+- The substring before the final path separator (`\`) is used as the initial directory. 
+This part must be written in the format of a folder path.
+- The substring after the final path separator is used as the suggested file name.
+- If `SuggestedSaveFilePath` is set to an empty string, the property is cleared and will not take 
+effect when launching the save dialog.
+- If the provided path is a non-empty string but it does not have a folder path 
+(e.g., `"MyFile.txt"`), an `InvalidArgumentException` will be thrown.
 
-Here're some examples about the parsing logic:
+The following table illustrates the parsing behavior:
 
-|Input path string | Set folder | Set file name |
-|------------------|------------|---------------|
-|`'C:\temp\MyProject\MyFile.txt'`|`'C:\temp\MyProject'`| `'MyFile.txt'`|
-|`'C:\temp\MyProject\.git\'`|`'C:\temp\MyProject\.git'`| `''`|
-|`'C:\temp\MyProject\.git'`|`'C:\temp\MyProject'`| `'.git'`|
-|`'C:\servers\www.bing.com\'`|`'C:\servers\www.bing.com'`| `''`|
-|`'C:\servers\www.bing.com'`|`'C:\servers`| `'www.bing.com'`|
+| `SuggestedSaveFilePath` Input | Resulting Initial Directory | Resulting File Name |
+|-------------------------------|-----------------------------|---------------------|
+| `'C:\temp\MyProject\MyFile.txt'` | `'C:\temp\MyProject'` | `'MyFile.txt'` |
+| `'C:\temp\MyProject\.git\'` | `'C:\temp\MyProject\.git'` | `''` (empty) |
+| `'C:\temp\MyProject\.git'` | `'C:\temp\MyProject'` | `'.git'` |
+| `'C:\servers\www.bing.com\'` | `'C:\servers\www.bing.com'` | `''` (empty) |
+| `'C:\servers\www.bing.com'` | `'C:\servers'` | `'www.bing.com'` |
+| `''` (empty string) | null |
+| `'MyFile.txt'` | Throws `InvalidArgumentException` | Throws `InvalidArgumentException` |
+
 
 ## FileSavePicker.PickSaveFileAsync
 
 Displays a UI element that allows the user to configure the file path to save.
 
-Returns a light weight object that has the path of the saved file.
+Returns a lightweight object that has the path of the saved file.
 
-Returns null if the file dialog was cancelled or closed without saved file.
+Returns `null` if the file dialog was cancelled or closed without saving a file.
 
 ### Examples
 

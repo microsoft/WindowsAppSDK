@@ -8,42 +8,42 @@ design, but with key improvements for desktop scenarios.
 
 # Background
 
-The new `Microsoft.Windows.Storage.Pickers` API addresses three critical limitations of the UWP file 
+The new `Microsoft.Windows.Storage.Pickers` API addresses two critical limitations of the UWP file 
 and folder pickers on Apps developed with WinAppSDK/WinUI 3:
 
 1. **Elevated Process Support**: The existing [Windows.Storage.Pickers](https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers) 
-APIs do not work when running as an administrator. The new API enables file and folder selection in 
-elevated mode.
+APIs do not work when the application is running as an administrator. The new API enables file and 
+folder selection in elevated mode.
 
 2. **Simplified Usage in WinUI 3**: Using the existing UWP pickers in WinUI 3 requires initializing 
-window handle for window association. The new pickers eliminate this requirement by accepting a 
+a window handle for window association. The new pickers eliminate this requirement by accepting a 
 `WindowId` directly in the constructor, making them easier to use.
 
 # Key Differences
-*Spec Note: Here are some key differences from the UWP Windows.Storage.Pickers:*
-1. *Unlike the existing `Windows.Storage.Pickers` API which returns `StorageFile/StorageFolder` 
+*Spec Note: Here are some key differences from the UWP `Windows.Storage.Pickers`:*
+1. *Unlike the existing `Windows.Storage.Pickers` API which returns `StorageFile`/`StorageFolder` 
 objects, this new API returns string-based paths through `PickFileResult` and `PickFolderResult` 
 classes. This design choice simplifies the API and avoids complications with storage capabilities 
 in elevated scenarios.*
-1. *Similarly, the `StorageFile` type property `FileSavePicker.SuggestedSaveFile` is also replaced
-by a string type `FileSavePicker.SuggestedSaveFilePath`.*
-1. *All new pickers are designed specifically for desktop apps and uses a `WindowId` property to 
+1. *Similarly, the `StorageFile` type property `FileSavePicker.SuggestedSaveFile` is replaced
+by a string type property `FileSavePicker.SuggestedSaveFilePath`.*
+1. *All new pickers are designed specifically for desktop apps and use a `WindowId` property to 
 link the picker to its host window, replacing the `WinRT.Interop.InitializeWithWindow.Initialize` 
 pattern.*
-1. The new pickers allow developers to use pickers without requiring `FileTypeFilter` or 
+1. The new pickers allow developers to use them without requiring `FileTypeFilter` or 
 `FileTypeChoices` to be specified. While UWP pickers throw exceptions when these properties are not 
-set, the new pickers default to show all file when developers don't explicitly configure these 
+set, the new pickers default to showing all files when developers do not explicitly configure these 
 properties.
-1. *HomeGroup location has been excluded from the new `PickerLocationId` enum as it's no longer 
-supported in Windows 10 and later*
-1. *FolderPicker.FileTypeFilter has been exluded as it was not functionally appropriate for folder 
-selection*
-1. *Excluding methods and properties that are already marked as deprecated, or "Do not use". 
-e.g. `PickSingleFileAndContinue`, `ContinuationData`, `ResumePickSingleFileAsync`, etc*
+1. *The `HomeGroup` location has been excluded from the new `PickerLocationId` enum as it is 
+no longer supported in Windows 10 and later.*
+1. *`FolderPicker.FileTypeFilter` has been excluded as it was not functionally appropriate for folder 
+selection.*
+1. *Excluding methods and properties that are already marked as deprecated or "Do not use". 
+e.g., `PickSingleFileAndContinue`, `ContinuationData`, `ResumePickSingleFileAsync`, etc.*
 1. *Excluding methods and properties for [multi-user-mode](https://learn.microsoft.com/en-us/previous-versions/windows/uwp/xbox-apps/multi-user-applications), 
-as the new APIs are currently designed for desktop scenarios where each user has their own 
-interactive session and each session is completely independent of the other sessions on the device, 
-instead of Xbox One or other multi-user devices.*
+because the new APIs are currently designed for desktop scenarios where each user has their own 
+interactive session, and each session is completely independent of the other sessions on the device.
+This is in contrast to Xbox One or other multi-user devices.*
 
 # Conceptual pages
 
@@ -52,7 +52,7 @@ instead of Xbox One or other multi-user devices.*
 ## Classes
 
 Note: Developers should specify a window id to associate the picker with an owner window before 
-showing UI.
+showing the UI.
 
 | **Class**        | **Description** |
 |------------------|-----------------|
@@ -67,7 +67,7 @@ showing UI.
 | **Enum** | **Description** |
 |----------|-----------------|
 |[PickerLocationId](PickerLocationId.md)| Identifies the storage location that the file picker presents to the user. |
-|[PickerViewMode](PickerViewMode.md)    | Indicates the view mode that the file picker is using to present items.    |
+|[PickerViewMode](PickerViewMode.md)    | Indicates the view mode that the file picker uses to present items.    |
 
 ## Definition
 

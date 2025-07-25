@@ -42,11 +42,12 @@ using Microsoft.Windows.Storage.Pickers;
 
 var folderPicker = new FolderPicker(this.AppWindow.Id)
 {
-    // (Optional) specify the initial location.
-    //     If not specified, default to PickerLocationId.Unspecified.
+    // (Optional) Specify the initial location for the picker. 
+    //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
+    //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
 
-    // (Optional) specify the text displayed on commit button. 
+    // (Optional) specify the text displayed on the commit button. 
     //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Select Folder",
 
@@ -63,11 +64,12 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker folderPicker(AppWindow().Id());
 
-// (Optional) specify the initial location.
-//     If not specified, default to PickerLocationId.Unspecified.
+// (Optional) Specify the initial location for the picker. 
+//     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
+//     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
 folderPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
-// (Optional) specify the text displayed on commit button. 
+// (Optional) specify the text displayed on the commit button. 
 //     If not specified, the system uses a default label of "Open" (suitably translated).
 folderPicker.CommitButtonText(L"Select Folder");
 
@@ -79,9 +81,9 @@ folderPicker.ViewMode(PickerViewMode::List);
 
 Displays a UI element that allows the user to choose a folder.
 
-Returns a light weight object that has the path of the picked folder.
+Returns a lightweight object that has the path of the picked folder.
 
-Returns null if the file dialog was cancelled or closed without selection.
+Returns `null` if the file dialog was cancelled or closed without a selection.
 
 ### Examples
 
