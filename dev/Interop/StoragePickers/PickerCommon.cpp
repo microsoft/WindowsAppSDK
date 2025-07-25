@@ -239,16 +239,13 @@ namespace PickerCommon {
 
         ValidateStringNoEmbeddedNulls(path);
 
-        std::filesystem::path p;
-        try {
-            // validate that the path string is syntactically correct, does not validate its existence.
-            p = std::filesystem::path(path.c_str());
-        }
-        catch (...)
+        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
+        if (!pidl)
         {
             throw std::invalid_argument("SuggestedSaveFilePath");
         }
 
+        std::filesystem::path p(path.c_str());
         auto folderPath = p.parent_path();
         if (folderPath.empty())
         {
