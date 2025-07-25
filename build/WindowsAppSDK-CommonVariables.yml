@@ -2,7 +2,7 @@ variables:
   _useBuildOutputFromPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
   _useBuildOutputFromBuildId: $[coalesce(variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
 
-  channel: 'experimental'
+  channel: 'preview'
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
   versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
