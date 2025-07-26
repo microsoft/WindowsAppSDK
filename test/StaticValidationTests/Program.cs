@@ -49,10 +49,10 @@ namespace PackageInspection
 
     class CertValidation
     {
-        public string File;                 
-        public string IssuedToName;
-        public string ExtraSignToolFlags;   // Extra flags to pass to signtool.exe.
-        public int ValidationCount = 0;     // This counter is to ensure we found the files we were looking for.
+        public string File { get; set; }                 
+        public string IssuedToName { get; set; }
+        public string ExtraSignToolFlags { get; set; }   // Extra flags to pass to signtool.exe.
+        public int ValidationCount { get; set; } = 0;     // This counter is to ensure we found the files we were looking for.
     }
 
     class Program
