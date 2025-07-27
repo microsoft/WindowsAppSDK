@@ -456,6 +456,31 @@ Try {
                     'native\PushNotificationsLongRunningTask.ProxyStub.dll',
                     'native\RestartAgent.exe') `
                 -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
+
+            build\scripts\CopyContents.ps1 `
+                -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
+                -ContentsList @(
+                    'native\DynamicDependency.DataStore.exe',
+                    'native\DynamicDependency.DataStore.ProxyStub.dll',
+                    'native\DynamicDependency-Override.json') `
+                -TargetDir "$ComponentBasePath\runtimes-main\win-$platformToRun"
+
+            build\scripts\CopyContents.ps1 `
+                -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
+                -ContentsList @(
+                    'native\DynamicDependencyLifetimeManager.exe',
+                    'native\DynamicDependencyLifetimeManager.ProxyStub.dll',
+                    'native\DynamicDependencyLifetimeManagerShadow.exe') `
+                -TargetDir "$ComponentBasePath\runtimes-ddlm\win-$platformToRun"
+
+            build\scripts\CopyContents.ps1 `
+                -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
+                -ContentsList @(
+                    'native\PushNotificationsLongRunningTask.exe',
+                    'native\PushNotificationsLongRunningTask.ProxyStub.dll',
+                    'native\PushNotificationsLongRunningTask.StartupTask.exe',
+                    'native\PushNotifications-Override.json') `
+                -TargetDir "$ComponentBasePath\runtimes-singleton\win-$platformToRun"
         }
 
         # Populate ARM64EC folders with x64 content
