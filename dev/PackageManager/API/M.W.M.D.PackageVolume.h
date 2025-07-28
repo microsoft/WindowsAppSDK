@@ -15,6 +15,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         static winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> FindPackageVolumes();
         static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByPath(hstring const& packageStorePath);
         static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByName(hstring const& name);
+        static winrt::Microsoft::Windows::Management::Deployment::PackageVolume GetDefault();
 
         bool IsSystemVolume();
         hstring MountPoint();
@@ -25,8 +26,44 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsAppxInstallSupported();
         bool IsRepairNeeded();
         void Repair();
+        void SetDefault();
+        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> AddAsync(hstring packageStorePath);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RemoveAsync();
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> SetOfflineAsync();
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> SetOnlineAsync();
+        winrt::Windows::Foundation::IAsyncOperation<uint64_t> GetAvailableSpaceAsync();
 
     private:
+        HRESULT Add(
+            hstring const& packageStorePath,
+            winrt::Windows::Management::Deployment::PackageVolume& windowsPackageVolume,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+
+        HRESULT Remove(
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+
+        HRESULT SetOnline(
+            const bool online,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+
+        HRESULT GetAvailableSpace(
+            uint32_t& availableSpace,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+
+    private:
+        winrt::Windows::Management::Deployment::PackageVolume m_windowsPackageVolume;
         bool m_isSystemVolume{};
         hstring m_mountPoint;
         hstring m_name;

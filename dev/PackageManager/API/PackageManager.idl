@@ -23,76 +23,6 @@ namespace Microsoft.Windows.Management.Deployment
         ProvisionPackage_Framework          = 6,
     };
 
-    /// Represents a package storage volume.
-    /// @note A volume 'name' is the volume's media ID (you can treat 'Volume Name' == 'Volume Media ID').
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
-    /// @see https://learn.microsoft.com/windows/win32/properties/props-system-volumeid
-    /// @see https://learn.microsoft.com/sysinternals/downloads/volumeid
-    /// @see https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-getvolumenameforvolumemountpointw
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageVolume
-    {
-        /// Gets all the known volumes, regardless of their current state.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
-        static IVector<PackageVolume> FindPackageVolumes();
-
-        /// Get the specified volume.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByPath(String packageStorePath);
-
-        /// Get the specified volume.
-        /// @name The volume media ID (a GUID value)
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByName(String name);
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
-        Boolean IsSystemVolume{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.mountpoint
-        String MountPoint{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.name
-        String Name{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.packagestorepath
-        String PackageStorePath{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
-        Boolean SupportsHardLinks{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
-        Boolean IsFullTrustPackageSupported{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
-        Boolean IsAppxInstallSupported{ get; };
-
-        /// Return true if the package volume is damaged and needs to be repaired.
-        Boolean IsRepairNeeded();
-
-        /// Repair the package volume (if necessary).
-        void Repair();
-    };
-
-    /// Defines the stub behavior for an app package that is being added or staged.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.stubpackageoption
-    [contract(PackageDeploymentContract, 1)]
-    enum StubPackageOption
-    {
-        Default,
-        InstallFull,
-        InstallStub,
-        UsePreference,
-    };
-
-    /// Defines the stub behavior for an app package that is being added or staged.
-    [contract(PackageDeploymentContract, 2)]
-    enum PackageReadyOrNewerAvailableStatus
-    {
-        NotReady             = 0,
-        Ready                = 1,
-        NewerAvailable       = 2,
-    };
-
     /// The progress status of the deployment request.
     /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state
     [contract(PackageDeploymentContract, 1)]
@@ -148,6 +78,117 @@ namespace Microsoft.Windows.Management.Deployment
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.activityid
         Guid ActivityId { get; };
     }
+
+    /// Represents a package storage volume.
+    /// @note A volume 'name' is the volume's media ID (you can treat 'Volume Name' == 'Volume Media ID').
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
+    /// @see https://learn.microsoft.com/windows/win32/properties/props-system-volumeid
+    /// @see https://learn.microsoft.com/sysinternals/downloads/volumeid
+    /// @see https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-getvolumenameforvolumemountpointw
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageVolume
+    {
+        /// Gets all the known volumes, regardless of their current state.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
+        static IVector<PackageVolume> FindPackageVolumes();
+
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        static PackageVolume FindPackageVolumeByPath(String packageStorePath);
+
+        /// Get the specified volume.
+        /// @name The volume media ID (a GUID value)
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        static PackageVolume FindPackageVolumeByName(String name);
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
+        Boolean IsSystemVolume{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.mountpoint
+        String MountPoint{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.name
+        String Name{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.packagestorepath
+        String PackageStorePath{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
+        Boolean SupportsHardLinks{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
+        Boolean IsFullTrustPackageSupported{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
+        Boolean IsAppxInstallSupported{ get; };
+
+        /// Return true if the package volume is damaged and needs to be repaired.
+        Boolean IsRepairNeeded();
+
+        /// Repair the package volume (if necessary).
+        void Repair();
+
+        /// Return the default package volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.getdefaultpackagevolume
+        [contract(PackageDeploymentContract, 2)]
+        static PackageVolume GetDefault();
+
+        /// Set the default package volume.
+        /// @see //learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setdefaultpackagevolume
+        [contract(PackageDeploymentContract, 2)]
+        void SetDefault();
+
+        /// Create a new package volume.
+        /// @param packageStorePath The absolute path of the Package store.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.addpackagevolumeasync
+        [contract(PackageDeploymentContract, 2)]
+        Windows.Foundation.IAsyncOperation<PackageVolume> AddAsync(String packageStorePath);
+
+        /// @note The caller must be running with Medium IL (or higher)
+        ///       OR running in an AppContainer with the packageManagement restricted capability
+        ///       OR caller has package identity and the publisher matches the publisher of the volume being removed.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.removepackagevolumeasync
+        [contract(PackageDeploymentContract, 2)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> RemoveAsync();
+
+        /// Set the package volume to an offline state.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setpackagevolumeofflineasync
+        [contract(PackageDeploymentContract, 2)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> SetOfflineAsync();
+
+        /// Set the package volume to an online state.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setpackagevolumeonlineasync
+        [contract(PackageDeploymentContract, 2)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> SetOnlineAsync();
+
+        /// Get the available space (bytes).
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagevolume.getavailablespaceasync?view=winrt-26100
+        [contract(PackageDeploymentContract, 2)]
+        Windows.Foundation.IAsyncOperation<UInt64> GetAvailableSpaceAsync();
+    };
+
+    /// Defines the stub behavior for an app package that is being added or staged.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.stubpackageoption
+    [contract(PackageDeploymentContract, 1)]
+    enum StubPackageOption
+    {
+        Default,
+        InstallFull,
+        InstallStub,
+        UsePreference,
+    };
+
+    /// Defines the stub behavior for an app package that is being added or staged.
+    [contract(PackageDeploymentContract, 2)]
+    enum PackageReadyOrNewerAvailableStatus
+    {
+        NotReady             = 0,
+        Ready                = 1,
+        NewerAvailable       = 2,
+    };
 
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageSetItem
