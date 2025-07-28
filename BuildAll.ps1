@@ -470,7 +470,8 @@ Try {
                 -ContentsList @(
                     'native\DynamicDependencyLifetimeManager.exe',
                     'native\DynamicDependencyLifetimeManager.ProxyStub.dll',
-                    'native\DynamicDependencyLifetimeManagerShadow.exe') `
+                    'native\DynamicDependencyLifetimeManagerShadow.exe',
+                    'native\DynamicDependency-Override.json') `
                 -TargetDir "$ComponentBasePath\runtimes-ddlm\win-$platformToRun"
 
             build\scripts\CopyContents.ps1 `
