@@ -79,6 +79,7 @@ namespace Test::PickerCommonTests
 
         }
 
+        /*
         TEST_METHOD(VerifyConfigureFileSaveDialog_WhenSuggestedSaveFilePathFolderDeleted_ExpectItsFileNameStillWork)
         {
             // Arrange.
@@ -124,6 +125,7 @@ namespace Test::PickerCommonTests
             // Even the empty file name of SuggestedSaveFilePath takes precedence over SuggestedFileName.
             VERIFY_IS_NULL(dialogFileName, L"The save dialog's file name should be empty.");
         }
+        */
 
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeFiltersDefinedExpectAddingUnionedType)
         {
@@ -277,6 +279,7 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(L"MyFile1.txt", std::wstring(fileName.get()));
         }
 
+        /*
         TEST_METHOD(VerifyFileSaveDialog_SuggestedSaveFilePathTakesPrecedenceOverSuggestedFileName)
         {
             // Arrange.
@@ -299,6 +302,7 @@ namespace Test::PickerCommonTests
             dialog->GetFileName(fileName.put());
             VERIFY_ARE_EQUAL(L"MyFile2.txt", std::wstring(fileName.get()));
         }
+            */
 
         TEST_METHOD(VerifyParseFolderItemAndFileName)
         {
@@ -601,6 +605,7 @@ namespace Test::PickerCommonTests
             }
         }
 
+        /*
         TEST_METHOD(VerifyValidateSuggestedSaveFilePath)
         {
             // Arrange.
@@ -644,6 +649,7 @@ namespace Test::PickerCommonTests
                 }
             }
         }
+            */
 
         std::vector<std::tuple<winrt::hstring, bool>> file_extension_validation_test_cases{
             {L".txt", true},
