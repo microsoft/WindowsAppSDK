@@ -21,7 +21,7 @@ public class StoragePickersTest
     //[TestProperty("RunAs", "UAP")]
     //[TestProperty("UAP:AppxManifest", "StoragePickerTest-AppxManifest.xml")]
     [TestProperty("IsolationLevel", "Class")]
-    [TestProperty("CoreClrProfile", "localDotNet")]
+    [TestProperty("CoreClrProfile", "localDotnet")]
     public static void AssemblyInitialize(TestContext testContext)
     {
         Log.Comment("AssemblyInitialize");
@@ -146,6 +146,7 @@ public class StoragePickersTest
         var task = CloseDialogsAfterDelay(2500);
         var file = await picker.PickSingleFileAsync();
         await task;
-        Verify.IsNull(file);
+        // Trigger test failure for debugging
+        Verify.IsNotNull(file);
     }
 }
