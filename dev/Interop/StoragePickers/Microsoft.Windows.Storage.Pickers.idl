@@ -57,7 +57,6 @@ namespace Microsoft.Windows.Storage.Pickers
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
         String DefaultFileExtension;
         String SuggestedFileName;
-        String SuggestedSaveFilePath;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }
