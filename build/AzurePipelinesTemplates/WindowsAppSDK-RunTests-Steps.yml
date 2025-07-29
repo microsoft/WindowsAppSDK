@@ -167,6 +167,21 @@ steps:
         sc.exe qc te.service | Write-Host
   
   - checkout: WindowsAppSDKConfig
+
+  - task: PowerShell@2
+    displayName: Set TAEF_CoreCLR env variable
+    inputs:
+      targetType: 'inline'
+      script: |
+          Write-Host "##vso[task.setvariable variable=TAEF_CoreCLR;isOutput=true]$(Agent.ToolsDirectory)\dotnet\shared\Microsoft.NETCore.App\6.0.36"
+          Write-Host "##vso[task.setvariable variable=TAEF_CoreCLR;]$(Agent.ToolsDirectory)\dotnet\shared\Microsoft.NETCore.App\6.0.36"
+
+  - task: PowerShell@2
+    displayName: Show TAEF_CoreCLR env variable
+    inputs:
+      targetType: 'inline'
+      script: |
+          Write-Host $env:TAEF_CoreCLR
        
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
