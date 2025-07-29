@@ -27,8 +27,18 @@ namespace WindowsAppSDK.TemplateUtilities
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            _componentModel = ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel)) as IComponentModel;
+            if (_componentModel == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IComponentModel service.");
+            }
+            
             _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
+            if (_waitDialog == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
+            }
+            
             if (_componentModel != null)
             {
                 _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
@@ -68,19 +78,27 @@ namespace WindowsAppSDK.TemplateUtilities
             await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                int canceled; // This variable will store the status after the dialog is closed
+                int canceled = 0; // Initialize as not canceled
 
                 // Start the package installation task but do not await it here
                 var installationTask = StartInstallationAsync();
 
                 // Start the threaded wait dialog
-                _waitDialog.StartWaitDialog(null, "Installing NuGet packages into project...", null, null, "Operation in progress...", 0, false, true);
+                if (_waitDialog != null)
+                {
+                    _waitDialog.StartWaitDialog(null, "Installing NuGet packages into project...", null, null, "Operation in progress...", 0, false, true);
+                }
 
                 // Now await the installation task to complete
                 await installationTask;
 
                 // Once the installation is complete, end the wait dialog
-                _waitDialog.EndWaitDialog(out canceled);
+                if (_waitDialog != null)
+                {
+                    _waitDialog.EndWaitDialog(out canceled);
+                }
+                // If _waitDialog is null, canceled remains 0 (not canceled)
+                
                 // Check if the process was canceled before proceeding
                 if (canceled == 0) // If not canceled, finalize the process
                 {
@@ -92,6 +110,13 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private async Task StartInstallationAsync()
         {
+            if (_componentModel == null)
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                LogError("ComponentModel service is not available.");
+                return;
+            }
+
             IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
             if (installer == null)
             {

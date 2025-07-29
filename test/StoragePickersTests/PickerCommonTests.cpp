@@ -68,9 +68,6 @@ namespace Test::PickerCommonTests
         TEST_METHOD(VerifyConfigureDialog_WhenPickerParameters_FileTypeFilterNotSpecified_ExpectSuccess)
         {
             // Arrange.
-            winrt::Microsoft::UI::WindowId windowId{};
-            winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
-
             PickerParameters parameters{};
 
             // Act.
@@ -80,6 +77,52 @@ namespace Test::PickerCommonTests
             // Assert.
             // Expect the action's successful.
 
+        }
+
+        TEST_METHOD(VerifyConfigureFileSaveDialog_WhenSuggestedSaveFilePathFolderDeleted_ExpectItsFileNameStillWork)
+        {
+            // Arrange.
+            PickerParameters parameters{};
+            parameters.SuggestedFileName = L"LowPriority.txt";
+            parameters.SuggestedSaveFilePath = L"C:\\temp_filesavepicker_ut_temp\\HighPriority.txt";
+
+            // Ensure the folder of SuggestedSaveFilePath doesn't exist anumore.
+            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureFileSaveDialog(dialog);
+
+            // Assert.
+            wil::unique_cotaskmem_string dialogFileName{};
+            dialog->GetFileName(dialogFileName.put());
+            VERIFY_IS_NOT_NULL(dialogFileName, L"The save dialog's file name should be set.");
+
+            auto actualFileName = winrt::hstring{ dialogFileName.get() };
+            auto message = L"Expected file name: HighPriority.txt, Actual: " + actualFileName;
+            VERIFY_ARE_EQUAL(L"HighPriority.txt", actualFileName, message.c_str());
+        }
+
+        TEST_METHOD(VerifyConfigureFileSaveDialog_WhenSuggestedSaveFilePathFileNameEmptyAndFolderDeleted_ExpectItsFileNameStillWork)
+        {
+            // Arrange.
+            PickerParameters parameters{};
+            parameters.SuggestedFileName = L"LowPriority.txt";
+            parameters.SuggestedSaveFilePath = L"C:\\temp_filesavepicker_ut_temp\\";
+
+            // Ensure the folder of SuggestedSaveFilePath doesn't exist anumore.
+            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureFileSaveDialog(dialog);
+
+            // Assert.
+            wil::unique_cotaskmem_string dialogFileName{};
+            dialog->GetFileName(dialogFileName.put());
+
+            // Even the empty file name of SuggestedSaveFilePath takes precedence over SuggestedFileName.
+            VERIFY_IS_NULL(dialogFileName, L"The save dialog's file name should be empty.");
         }
 
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeFiltersDefinedExpectAddingUnionedType)
@@ -303,9 +346,6 @@ namespace Test::PickerCommonTests
                     message = L"Expected a valid folder item for: " + filePath;
                     VERIFY_ARE_NOT_EQUAL(nullptr, folderItem, message.c_str());
 
-                    message = L"Verify filename of '" + filePath + L"', expect: '" + fileName + L"', actual: '" + resultFileName + L"'";
-                    VERIFY_ARE_EQUAL(fileName, resultFileName, message.c_str());
-
                     wil::unique_cotaskmem_string resultFolderPath{};
                     folderItem->GetDisplayName(SIGDN_FILESYSPATH, resultFolderPath.put());
                     winrt::hstring resultFolderPathString(resultFolderPath.get());
@@ -316,6 +356,10 @@ namespace Test::PickerCommonTests
                     }
                     VERIFY_ARE_EQUAL(folder, resultFolderPathString, message.c_str());
                 }
+
+                // The file name should always be returned, no matter the folder exists or not.
+                message = L"Verify filename of '" + filePath + L"', expect: '" + fileName + L"', actual: '" + resultFileName + L"'";
+                VERIFY_ARE_EQUAL(fileName, resultFileName, message.c_str());
                 
             }
             
@@ -557,100 +601,45 @@ namespace Test::PickerCommonTests
             }
         }
 
-        TEST_METHOD(VerifyFolderPicker_ValidateSettingsIdentifer)
-        {
-            // Arrange.
-            winrt::Microsoft::UI::WindowId windowId{};
-            winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
- 
-            // Act & Assert            
-            for (const auto& test_case : cbsi_text_test_cases)
-            {
-                winrt::hstring settingsIdentifier = std::get<0>(test_case);
-                bool expectValid = std::get<1>(test_case);
-
-                if (expectValid)
-                {
-                    picker.SettingsIdentifier(settingsIdentifier);
-                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
-                }
-                else
-                {
-                    try
-                    {
-                        picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
-                        VERIFY_FAIL(errorMessage.c_str());
-                    }
-                    catch (...)
-                    {
-                        // Expected exception for invalid settings identifier text
-                    }
-                }
-            }
-        }
-
-        TEST_METHOD(VerifyFileOpenPicker_ValidateSettingsIdentifier)
-        {
-            // Arrange.
-            winrt::Microsoft::UI::WindowId windowId{};
-            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
-
-            // Act & Assert            
-            for (const auto& test_case : cbsi_text_test_cases)
-            {
-                winrt::hstring settingsIdentifier = std::get<0>(test_case);
-                bool expectValid = std::get<1>(test_case);
-
-                if (expectValid)
-                {
-                    picker.SettingsIdentifier(settingsIdentifier);
-                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
-                }
-                else
-                {
-                    try
-                    {
-                        picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
-                        VERIFY_FAIL(errorMessage.c_str());
-                    }
-                    catch (...)
-                    {
-                        // Expected exception for invalid settings identifier text
-                    }
-                }
-            }
-        }
-
-        TEST_METHOD(VerifyFileSavePicker_ValidateSettingsIdentifier)
+        TEST_METHOD(VerifyValidateSuggestedSaveFilePath)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            std::vector<std::tuple<winrt::hstring, bool>> ssfp_test_cases{
+                {L"C:\\temp\\valid.txt", true}, // Valid path
+                {L"", true},                    // Allow empty string
+                {s_embeddedNullString, false},  // Embedded null is invalid
+                {L"1.txt", false},              // Input without a folder is invalid
+                {
+                    L"C:\\temp\\too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters.txt",
+                    false                       // file name too long is invalid.
+                },
+                {L"C:\\>:di*r\\1.txt", false},  // Throw error on invalid characters
+            };
 
-            // Act & Assert            
-            for (const auto& test_case : cbsi_text_test_cases)
+            // Act & Assert
+            for (const auto& test_case : ssfp_test_cases)
             {
-                winrt::hstring settingsIdentifier = std::get<0>(test_case);
+                winrt::hstring suggestedPath = std::get<0>(test_case);
                 bool expectValid = std::get<1>(test_case);
 
                 if (expectValid)
                 {
-                    picker.SettingsIdentifier(settingsIdentifier);
-                    VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), settingsIdentifier);
+                    picker.SuggestedSaveFilePath(suggestedPath);
+                    VERIFY_ARE_EQUAL(picker.SuggestedSaveFilePath(), suggestedPath);
                 }
                 else
                 {
                     try
                     {
-                        picker.SettingsIdentifier(settingsIdentifier);
-                        std::wstring errorMessage = L"Expected exception for invalid settings identifier text: " + std::wstring(settingsIdentifier);
+                        picker.SuggestedSaveFilePath(suggestedPath);
+                        std::wstring errorMessage = L"Expected exception for invalid suggested save file path: " + std::wstring(suggestedPath);
                         VERIFY_FAIL(errorMessage.c_str());
                     }
                     catch (...)
                     {
-                        // Expected exception for invalid settings identifier text
+                        // Expected exception for invalid suggested save file path
                     }
                 }
             }
