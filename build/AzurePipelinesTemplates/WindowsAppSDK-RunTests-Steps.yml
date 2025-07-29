@@ -20,7 +20,7 @@ steps:
   - task: UseDotNet@2
     displayName: Use .NET 6 For TAEF test Runtime
     inputs:
-      version: 6.0.36
+      version: 6.0.428
 
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation'
