@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <SelfContained>true</SelfContained>
+    <!--<SelfContained>true</SelfContained>-->
     <WindowsPackageType>None</WindowsPackageType>
     <Platforms>x86;x64;ARM64</Platforms>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
@@ -36,12 +36,12 @@
   </ItemGroup>
 
   <!--TAEF test for dotnet core runtime needs coreclr.dll--> 
-  <Target Name="CopyDotNet" AfterTargets="Build" DependsOnTargets="ComputeFilesToPublish">
+  <!--<Target Name="CopyDotNet" AfterTargets="Build">
     <ItemGroup>
       <RuntimeFilesToCopy Include="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.AssetType)' == 'runtime' OR '%(ResolvedFileToPublish.AssetType)' == 'native'" />
     </ItemGroup>
     
     <Copy SourceFiles="@(RuntimeFilesToCopy)" DestinationFiles="@(RuntimeFilesToCopy->'$(OutDir)localDotNet\%(Filename)%(Extension)')" SkipUnchangedFiles="true"/>
-  </Target>
+  </Target>-->
 
 </Project>

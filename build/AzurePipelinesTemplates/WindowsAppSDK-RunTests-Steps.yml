@@ -17,6 +17,10 @@ steps:
       filePath: tools\DevCheck\DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
+  - task: UseDotNet@2
+    displayName: Use .NET 6 For TAEF test Runtime
+    inputs:
+      version: 6.0.36
 
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation'
@@ -163,7 +167,7 @@ steps:
         sc.exe qc te.service | Write-Host
   
   - checkout: WindowsAppSDKConfig
-
+       
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:
