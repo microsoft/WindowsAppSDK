@@ -8,6 +8,7 @@
     <WindowsPackageType>None</WindowsPackageType>
     <Platforms>x86;x64;ARM64</Platforms>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <Platform>x64</Platform>
   </PropertyGroup>
 
   <PropertyGroup>
