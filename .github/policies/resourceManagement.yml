@@ -14,7 +14,6 @@ configuration:
           hour: 6
       filters:
       - isIssue
-      - isOpen
       - hasLabel:
           label: needs-author-feedback
       - hasLabel:
@@ -30,7 +29,6 @@ configuration:
           hour: 6
       filters:
       - isIssue
-      - isOpen
       - hasLabel:
           label: needs-author-feedback
       - noActivitySince:
@@ -265,7 +263,34 @@ configuration:
       - addLabel:
           label: needs-author-feedback
 
-
+    # /external
+    - description: >-
+          Triggers:
+          * /external
+          * /External
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/[E|e]xternal'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              Hi @${issueAuthor}, thank you for your contribution! This issue appears to be external to the WindowsAppSDK.
+              To help route it appropriately, please submit your feedback via the Feedback Hub by pressing [Windows] + [F],
+              and include detailed information and diagnostics. We appreciate your help in improving the platform!
+      - removeLabel:
+          label: needs-triage
+      - removeLabel:
+          label: needs-assignee-attention
+      - addLabel:
+          label: area-External
+      - closeIssue
 
 onFailure: 
 onSuccess: 
