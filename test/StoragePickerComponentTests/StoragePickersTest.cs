@@ -22,6 +22,7 @@ public class StoragePickersTest
     //[TestProperty("UAP:AppxManifest", "StoragePickerTest-AppxManifest.xml")]
     [TestProperty("IsolationLevel", "Class")]
     [TestProperty("CoreClrProfile", "localDotnet")]
+    [TestProperty("ActivationContext", "taeftest.manifest")]
     public static void AssemblyInitialize(TestContext testContext)
     {
         Log.Comment("AssemblyInitialize");
