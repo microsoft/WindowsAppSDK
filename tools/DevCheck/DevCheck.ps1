@@ -1014,7 +1014,7 @@ function Test-TAEFService
     }
 
     # Double-check the TAEF service is known as a service as far as Windows is concerned
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue |Where-Object {$_.Name -eq "TE.Service"}
     if ([string]::IsNullOrEmpty($service))
     {
         Write-Host "TAEF service...Not Installed"

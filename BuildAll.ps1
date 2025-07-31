@@ -517,7 +517,9 @@ Try {
                 break
             }
         }
-        $wasFoundationProps.Save($propsFilePath)
+        $propsFileSavePath = Join-Path $PWD $propsFilePath
+        Write-Host "Saving to: $propsFileSavePath"
+        $wasFoundationProps.Save($propsFileSavePath)
 
         # Fix up ProjectCapability versions
         $FoundationBuildPaths = @(
@@ -537,7 +539,7 @@ Try {
                     $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
                 }
             }
-            $wasFoundationProps.Save($propsFilePath)
+            $wasFoundationProps.Save($propsFileSavePath)
         }
 
         $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"
