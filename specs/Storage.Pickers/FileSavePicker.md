@@ -19,7 +19,7 @@ runtimeclass FileSavePicker
     string CommitButtonText;
     string DefaultFileExtension;
     string SuggestedFileName;
-    string SuggestedSaveFilePath;
+    string SuggestedFolder;
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
 
@@ -46,6 +46,10 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     
     // (Optional) specify the default file name. If not specified, use system default.
     SuggestedFileName = "My Document",
+
+    // (Optional) Sets the folder that the file save dialog displays when it opens.
+    //     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
+    SuggestedFolder = @"C:\MyFiles",
 
     // (Optional) specify the text displayed on the commit button. 
     //     If not specified, the system uses a default label of "Save" (suitably translated).
@@ -79,6 +83,10 @@ savePicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 // (Optional) specify the default file name. If not specified, use system default.
 savePicker.SuggestedFileName(L"NewDocument");
 
+// (Optional) Sets the folder that the file save dialog displays when it opens.
+//     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
+savePicker.SuggestedFolder = L"C:\\MyFiles",
+
 // (Optional) specify the text displayed on the commit button. 
 //     If not specified, the system uses a default label of "Save" (suitably translated).
 savePicker.CommitButtonText(L"Save Document");
@@ -91,65 +99,6 @@ savePicker.FileTypeChoices().Insert(L"Text", winrt::single_threaded_vector<winrt
 //      If not specified, no extension will be appended.
 savePicker.DefaultFileExtension(L".txt");
 ```
-
-## Setting the FileSavePicker.SuggestedSaveFilePath Property
-
-The `SuggestedSaveFilePath` property of `FileSavePicker` dictates two key aspects of the save file 
-dialog's initial state:
-
-*   **Initial Directory:** The dialog defaults to the directory of the `SuggestedSaveFilePath`. 
-
-    This behavior overrides any picker-specific remembered folder settings and ensures the dialog 
-    opens in the suggested file's parent folder.
-
-*   **Pre-filled File Name:** The file name field in the dialog is pre-populated with the name from 
-the `SuggestedSaveFilePath`. 
-
-    This file name overrides the `FileSavePicker.SuggestedFileName` property if both are set.
-
-### Examples
-C#
-```C#
-using Microsoft.Windows.Storage.Pickers;
-
-var savePicker = new FileSavePicker(this.AppWindow.Id);
-savePicker.SuggestedSaveFilePath = @"C:\temp\MyProject\MyFile.txt";
-```
-
-C++
-```C++
-#include <winrt/Microsoft.Windows.Storage.Pickers.h>
-using namespace winrt::Microsoft::Windows::Storage::Pickers;
-
-FileSavePicker savePicker(AppWindow().Id());
-savePicker.SuggestedSaveFilePath(L"C:\\temp\\MyProject\\MyFile.txt");
-```
-
-### The Parsing Logic
-
-The `SuggestedSaveFilePath` property is parsed to set the directory and file name in the 
-save dialog.
-
-- The substring before the final path separator (`\`) is used as the initial directory. 
-This part must be written in the format of a folder path.
-- The substring after the final path separator is used as the suggested file name.
-- If `SuggestedSaveFilePath` is set to an empty string, the property is cleared and will not take 
-effect when launching the save dialog.
-- If the provided path is a non-empty string but it does not have a folder path 
-(e.g., `"MyFile.txt"`), an `InvalidArgumentException` will be thrown.
-
-The following table illustrates the parsing behavior:
-
-| `SuggestedSaveFilePath` Input | Resulting Initial Directory | Resulting File Name |
-|-------------------------------|-----------------------------|---------------------|
-| `'C:\temp\MyProject\MyFile.txt'` | `'C:\temp\MyProject'` | `'MyFile.txt'` |
-| `'C:\temp\MyProject\.git\'` | `'C:\temp\MyProject\.git'` | `''` (empty) |
-| `'C:\temp\MyProject\.git'` | `'C:\temp\MyProject'` | `'.git'` |
-| `'C:\servers\www.bing.com\'` | `'C:\servers\www.bing.com'` | `''` (empty) |
-| `'C:\servers\www.bing.com'` | `'C:\servers'` | `'www.bing.com'` |
-| `''` (empty string) | null |
-| `'MyFile.txt'` | Throws `InvalidArgumentException` | Throws `InvalidArgumentException` |
-
 
 ## FileSavePicker.PickSaveFileAsync
 

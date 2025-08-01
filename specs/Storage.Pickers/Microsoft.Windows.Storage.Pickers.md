@@ -25,8 +25,9 @@ a window handle for window association. The new pickers eliminate this requireme
 objects, this new API returns string-based paths through `PickFileResult` and `PickFolderResult` 
 classes. This design choice simplifies the API and avoids complications with storage capabilities 
 in elevated scenarios.*
-1. *Similarly, the `StorageFile` type property `FileSavePicker.SuggestedSaveFile` is replaced
-by a string type property `FileSavePicker.SuggestedSaveFilePath`.*
+1. *Similarly, the `FileSavePicker.SuggestedSaveFile` property (which returned a `StorageFile`) 
+has been replaced. Its functionality is now covered by two string properties: `SuggestedFolder` and 
+`SuggestedFileName`. These allow for suggesting the folder and file name for the save dialog.*
 1. *All new pickers are designed specifically for desktop apps and use a `WindowId` property to 
 link the picker to its host window, replacing the `WinRT.Interop.InitializeWithWindow.Initialize` 
 pattern.*
@@ -122,7 +123,7 @@ namespace Microsoft.Windows.Storage.Pickers
         string CommitButtonText;
         string DefaultFileExtension;
         string SuggestedFileName;
-        string SuggestedSaveFilePath;
+        string SuggestedFolder;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
 
