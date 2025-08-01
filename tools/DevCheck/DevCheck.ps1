@@ -1142,7 +1142,7 @@ function Start-TAEFService
     }
 
     $ok = Start-Service 'TE.Service'
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue |Where-Object {$_.Name -eq "TE.Service"}
     if ($service.Status -ne "Running")
     {
         Write-Host "Start TAEF service...Failed"
