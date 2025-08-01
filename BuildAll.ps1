@@ -220,9 +220,9 @@ Try {
             {
                 foreach($platformToRun in $platform.Split(","))
                 {
-                    write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
+                    write-host "Building MrtCore.sln for configuration $configurationForMrtAndAnyCPU and platform:$platformToRun"
                     & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
-                                    /p:Configuration=$configurationToRun `
+                                    /p:Configuration=$configurationForMrtAndAnyCPU `
                                     /p:Platform=$platformToRun `
                                     /p:PGOBuildMode=$PGOBuildMode `
                                     /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationToRun.binlog"
