@@ -517,8 +517,10 @@ Try {
                 break
             }
         }
+        # Note: For some reason, the Save method does not work by default
+        # with the path relative to the current working directory.
+        # So we prepend the current working directory to the path.
         $propsFileSavePath = Join-Path $PWD $propsFilePath
-        Write-Host "Saving to: $propsFileSavePath"
         $wasFoundationProps.Save($propsFileSavePath)
 
         # Fix up ProjectCapability versions
