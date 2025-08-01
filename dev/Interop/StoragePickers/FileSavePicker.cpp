@@ -57,14 +57,14 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         m_defaultFileExtension = value;
     }
-    hstring FileSavePicker::SuggestedSaveFilePath()
+    hstring FileSavePicker::SuggestedFolder()
     {
-        return m_suggestedSaveFilePath;
+        return m_suggestedFolder;
     }
-    void FileSavePicker::SuggestedSaveFilePath(hstring const& value)
+    void FileSavePicker::SuggestedFolder(hstring const& value)
     {
-        PickerCommon::ValidateSuggestedSaveFilePath(value);
-        m_suggestedSaveFilePath = value;
+        PickerCommon::ValidateSuggestedFolder(value);
+        m_suggestedFolder = value;
     }
 
     hstring FileSavePicker::SuggestedFileName()
@@ -84,7 +84,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.CommitButtonText = m_commitButtonText;
         parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.SuggestedFileName = m_suggestedFileName;
-        parameters.SuggestedSaveFilePath = m_suggestedSaveFilePath;
+        parameters.SuggestedFolder = m_suggestedFolder;
         parameters.CaptureFilterSpec(m_fileTypeChoices.GetView());
     }
 
@@ -101,7 +101,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         CaptureParameters(parameters);
 
         auto defaultFileExtension = m_defaultFileExtension;
-        auto suggestedSaveFilePath = m_suggestedSaveFilePath;
+        auto suggestedFolder = m_suggestedFolder;
         auto suggestedFileName = m_suggestedFileName;
         auto fileTypeChoices = m_fileTypeChoices;
 

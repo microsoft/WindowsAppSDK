@@ -163,9 +163,9 @@ namespace Test::StoragePickersTests
             picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
 
-            // std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
-            // picker.SuggestedSaveFilePath(L"C:\\temp_filesavepicker_ut_temp\\MyFile.txt");
-            // VERIFY_ARE_EQUAL(picker.SuggestedSaveFilePath(), L"C:\\temp_filesavepicker_ut_temp\\MyFile.txt");
+            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+            picker.SuggestedFolder(L"C:\\temp_filesavepicker_ut_temp");
+            VERIFY_ARE_EQUAL(picker.SuggestedFolder(), L"C:\\temp_filesavepicker_ut_temp");
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");

@@ -11,6 +11,7 @@
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
+    winrt::com_ptr<IShellItem> TryParseFolderItem(winrt::hstring const& folderPathStr);
     const winrt::hstring AllFilesLocalizationKey = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
 
     const winrt::hstring InvalidViewModeLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDVIEWMODEVALUE"};
@@ -20,15 +21,12 @@ namespace PickerCommon {
     const winrt::hstring MaxSaveFileLengthExceededLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"};
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
-
-    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath);
-
     void ValidateStringNoEmbeddedNulls(winrt::hstring const& value);
     void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value);
     void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
-    void ValidateSuggestedSaveFilePath(winrt::hstring const& path);
+    void ValidateSuggestedFolder(winrt::hstring const& path);
 
     struct PickerParameters {
         HWND HWnd{};
@@ -39,7 +37,7 @@ namespace PickerCommon {
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
 
         winrt::hstring SuggestedFileName;
-        winrt::hstring SuggestedSaveFilePath;
+        winrt::hstring SuggestedFolder;
 
         winrt::hstring FormatExtensionWithWildcard(winrt::hstring extension);
         winrt::hstring JoinExtensions(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> extensions);
