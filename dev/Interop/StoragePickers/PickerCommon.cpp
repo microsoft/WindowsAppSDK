@@ -234,6 +234,12 @@ namespace PickerCommon {
 
         ValidateStringNoEmbeddedNulls(path);
 
+        auto pathObj = std::filesystem::path(path.c_str());
+        if (!pathObj.is_absolute())
+        {
+            throw std::invalid_argument("SuggestedFolder");
+        }
+
         wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
         if (!pidl)
         {
