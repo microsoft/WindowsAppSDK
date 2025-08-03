@@ -22,11 +22,14 @@ runtimeclass FolderPicker
 
     PickerLocationId SuggestedStartLocation;
     PickerViewMode ViewMode;
-    string SettingsIdentifier;
 
     Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
 }
 ```
+
+*Spec note:*
+*`FolderPicker.FileTypeFilter` has been removed as it was not functionally appropriate for folder 
+selection*
 
 ## Constructor
 
@@ -39,12 +42,17 @@ using Microsoft.Windows.Storage.Pickers;
 
 var folderPicker = new FolderPicker(this.AppWindow.Id)
 {
-    // (Optional) specify the initial location.
-    //     If not specified, using PickerLocationId.Unspecified by default.
+    // (Optional) Specify the initial location for the picker. 
+    //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
+    //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
     SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
 
-    // (Optional) specify the text displayed on commit button. If not specified, use system default.
+    // (Optional) specify the text displayed on the commit button. 
+    //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Select Folder",
+
+    // (Optional) specify the view mode of the picker dialog. If not specified, default to List.
+    ViewMode = PickerViewMode.List,
 };
 ```
 
@@ -56,21 +64,26 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker folderPicker(AppWindow().Id());
 
-// (Optional) specify the initial location.
-//     If not specified, using PickerLocationId.Unspecified by default.
+// (Optional) Specify the initial location for the picker. 
+//     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
+//     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
 folderPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
-// (Optional) specify the text displayed on commit button. If not specified, use system default.
+// (Optional) specify the text displayed on the commit button. 
+//     If not specified, the system uses a default label of "Open" (suitably translated).
 folderPicker.CommitButtonText(L"Select Folder");
+
+// (Optional) specify the view mode of the picker dialog. If not specified, default to List.
+folderPicker.ViewMode(PickerViewMode::List);
 ```
 
 ## FolderPicker.PickSingleFolderAsync
 
 Displays a UI element that allows the user to choose a folder.
 
-Returns a light weight object that has the path of the picked folder.
+Returns a lightweight object that has the path of the picked folder.
 
-Returns null if the file dialog was cancelled or closed without selection.
+Returns `null` if the file dialog was cancelled or closed without a selection.
 
 ### Examples
 
@@ -97,7 +110,7 @@ C++
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FolderPicker folderPicker(AppWindow().Id());
-auto& result{ co_await folderPicker.PickSingleFolderAsync() };
+auto result{ co_await folderPicker.PickSingleFolderAsync() };
 if (result)
 {
     auto path{ result.Path() };
