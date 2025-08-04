@@ -517,7 +517,11 @@ Try {
                 break
             }
         }
-        $wasFoundationProps.Save($propsFilePath)
+        # Note: For some reason, the Save method does not work by default
+        # with the path relative to the current working directory.
+        # So we prepend the current working directory to the path.
+        $propsFileSavePath = Join-Path $PWD $propsFilePath
+        $wasFoundationProps.Save($propsFileSavePath)
 
         # Fix up ProjectCapability versions
         $FoundationBuildPaths = @(
@@ -537,7 +541,7 @@ Try {
                     $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
                 }
             }
-            $wasFoundationProps.Save($propsFilePath)
+            $wasFoundationProps.Save($propsFileSavePath)
         }
 
         $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"
