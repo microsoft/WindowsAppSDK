@@ -7,9 +7,6 @@ parameters:
   testLocale: ''
 
 steps:
-  - checkout: self
-    path: s
-
   - task: powershell@2
     displayName: 'DevCheck: Setup/Verify development environment'
     inputs:
@@ -162,8 +159,6 @@ steps:
         sc.exe queryex te.service | Write-Host
         sc.exe qc te.service | Write-Host
   
-  - checkout: WindowsAppSDKConfig
-
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:

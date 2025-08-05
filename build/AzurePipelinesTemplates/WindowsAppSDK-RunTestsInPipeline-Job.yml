@@ -45,6 +45,10 @@ jobs:
     # at Microsoft.Guardian.CliAnalyzerResponseFileManager.SetupResponseFile(CliAnalyzerConfig analyzeConfig, ToolConfig toolConfig)
     ob_sdl_binskim_enabled: false
   steps:
+    - checkout: self
+      path: s
+    - checkout: WindowsAppSDKConfig
+
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:
         buildPlatform: $(buildPlatform)
