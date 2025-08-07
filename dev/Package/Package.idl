@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <TerminalVelocityFeatures-PackageRuntime.h>
+#include <TerminalVelocityFeatures-package_runtime.h>
 
 namespace Microsoft.Windows.ApplicationModel
 {
@@ -11,6 +11,22 @@ namespace Microsoft.Windows.ApplicationModel
     [contract(PackageRuntimeContract, 1)]
     runtimeclass Package
     {
+        /// Return the absolute path to the file in the package.
+        /// @param packageFullName the package, or empty string ("") to use the current process' package identity.
+        /// @param filename file to locate.
+        /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
+        /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
+        /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
+        /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
         static String FindPackageFile(String packageFullName, String filename);
+
+        /// Return the absolute path to the file in the package graph.
+        /// @param packageFullName the package, or empty string ("") to use the current process' package identity.
+        /// @param filename file to locate.
+        /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
+        /// @note The package paths search order is External(User or Machine) -> Mutable -> Install.
+        /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
+        /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
+        static String FindPackageFileInPackageGraph(String packageFullName, String filename);
     };
 }

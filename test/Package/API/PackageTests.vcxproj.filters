@@ -18,7 +18,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PackageTests.cpp">
+    <ClCompile Include="PackageTests_CPP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageTests_WinRT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

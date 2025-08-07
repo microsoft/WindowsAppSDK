@@ -16,10 +16,10 @@ namespace Test::Package::Tests
 {
     const auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
 
-    class PackageTests
+    class PackageTests_WinRT
     {
     public:
-        BEGIN_TEST_CLASS(PackageTests)
+        BEGIN_TEST_CLASS(PackageTests_WinRT)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()

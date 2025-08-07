@@ -109,7 +109,8 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PackageTests.cpp" />
+    <ClCompile Include="PackageTests_CPP.cpp" />
+    <ClCompile Include="PackageTests_WinRT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
