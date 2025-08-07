@@ -11,6 +11,45 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
+    bool PackageVolume::IsFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature feature)
+    {
+        switch (feature)
+        {
+            case winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature::GetDefault:
+            {
+                return true;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature::SetDefault:
+            {
+                return true;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature::Add:
+            {
+                return true;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature::Remove:
+            {
+                return true;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature::SetOffline:
+            {
+                return true;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature::SetOnline:
+            {
+                return true;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature::GetAvailableSpace:
+            {
+                return true;
+            }
+            default:
+            {
+                std::ignore = LOG_HR_MSG(E_UNEXPECTED, "Feature:%d", static_cast<int>(feature));
+                return false;
+            }
+        }
+    }
     PackageVolume::PackageVolume(winrt::Windows::Management::Deployment::PackageVolume const& value)
     {
         m_windowsPackageVolume = value;
@@ -132,33 +171,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
 
-        logTelemetry.IgnoreCurrentThread();
-        co_await resume_background();   // Allow to register the progress and complete handler
-        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
-
-        winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume;
-        HRESULT error{};
-        HRESULT extendedError{};
-        winrt::hstring errorText;
-        winrt::guid activityId{};
-        try
-        {
-            error = LOG_IF_FAILED_MSG(Add(packageStorePath, windowsPackageVolume, extendedError, errorText, activityId),
-                                      "ExtendedError:0x%08X PackageVolume.Add PackageStorePath:%ls",
-                                      extendedError, m_packageStorePath.c_str());
-        }
-        catch (...)
-        {
-            const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-            error = LOG_HR_MSG(exception.code(),
-                               "ExtendedError:0x%08X PackageVolume.Add PackageStorePath:%ls",
-                               extendedError, m_packageStorePath.c_str());
-        }
-        if (FAILED(error))
-        {
-            co_return winrt::make<PackageDeploymentResult>(
-                PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
-        }
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume{ co_await packageManager.AddPackageVolumeAsync(packageStorePath) };
 
         logTelemetry.Stop(windowsPackageVolume.MountPoint(), windowsPackageVolume.Name(), windowsPackageVolume.PackageStorePath());
         co_return winrt::make<PackageVolume>(windowsPackageVolume);
@@ -319,88 +333,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
 
-        logTelemetry.IgnoreCurrentThread();
-        co_await resume_background();   // Allow to register the progress and complete handler
-        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
-
         uint64_t availableSpace{};
-        HRESULT error{};
-        HRESULT extendedError{};
-        winrt::hstring errorText;
-        winrt::guid activityId{};
-        try
-        {
-            error = LOG_IF_FAILED_MSG(GetAvailableSpace(availableSpace, extendedError, errorText, activityId),
-                                      "ExtendedError:0x%08X PackageVolume.GetAvailableSpace MountPoint:%ls Name:%ls PackageStorePath:%ls : %ls",
-                                      extendedError, m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str(), errorText.c_str());
-        }
-        catch (...)
-        {
-            const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-            error = LOG_HR_MSG(exception.code(),
-                               "ExtendedError:0x%08X PackageVolume.GetAvailableSpace MountPoint:%ls Name:%ls PackageStorePath:%ls : %ls",
-                               extendedError, m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str(), errorText.c_str());
-        }
-        if (FAILED(error))
-        {
-            co_return winrt::make<PackageDeploymentResult>(
-                PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
-        }
+        availableSpace = co_await m_windowsPackageVolume.GetAvailableSpaceAsync();
 
         logTelemetry.Stop(availableSpace);
         co_return availableSpace;
-    }
-
-    HRESULT PackageDeploymentManager::Add(
-        winrt::hstring const& packageStorePath,
-        winrt::Windows::Management::Deployment::PackageVolume& windowsPackageVolume,
-        HRESULT& extendedError,
-        winrt::hstring& errorText,
-        winrt::guid& activityId)
-    {
-        extendedError = S_OK;
-        errorText.clear();
-        activityId = winrt::guid{};
-
-        auto deploymentOperation{ m_packageManager.AddPackageVolumeAsync(packageStorePath, wil::out_param(windowsPackageVolume)) };
-        deploymentOperation.get();
-        try
-        {
-            const auto deploymentResult{ deploymentOperation.GetResults() };
-            const HRESULT error{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
-            extendedError = deploymentResult.ExtendedErrorCode();
-            errorText = deploymentResult.ErrorText();
-            activityId = deploymentResult.ActivityId();
-            const auto status{ deploymentOperation.Status() };
-            if (status == winrt::Windows::Foundation::AsyncStatus::Error)
-            {
-                RETURN_IF_FAILED_MSG(error,
-                                     "ExtendedError:0x%08X PackageVolume.Add PackageStorePath:%ls : %ls",
-                                     extendedError, packageStorePath.c_str(), errorText.c_str());
-
-                // Status=Error but SUCCEEDED(error) == This.Should.Never.Happen.
-                FAIL_FAST_HR_MSG(E_UNEXPECTED,
-                                 "ExtendedError:0x%08X PackageVolume.Add PackageStorePath:%ls : %ls",
-                                 extendedError, packageStorePath.c_str(), errorText.c_str());
-            }
-            else if (status == winrt::Windows::Foundation::AsyncStatus::Canceled)
-            {
-                RETURN_WIN32_MSG(ERROR_CANCELLED,
-                                 "PackageVolume.Add PackageStorePath:%ls",
-                                 packageStorePath.c_str());
-            }
-            FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, status != winrt::Windows::Foundation::AsyncStatus::Completed,
-                                "Status:%d PackageVolume.Add PackageStorePath:%ls : %ls",
-                                static_cast<int32_t>(status), packageStorePath.c_str(), errorText.c_str());
-        }
-        catch (...)
-        {
-            auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-            THROW_HR_MSG(exception.code(),
-                         "ExtendedError:0x%08X PackageVolume.Add PackageStorePath:%ls : %ls",
-                         extendedError, packageStorePath.c_str(), errorText.c_str());
-        }
-        return S_OK;
     }
 
     HRESULT PackageDeploymentManager::Remove(
@@ -414,7 +351,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
-        auto deploymentOperation{ m_packageManager.RemovePackageVolumeAsync(m_windowsPackageVolume) };
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto deploymentOperation{ packageManager.RemovePackageVolumeAsync(m_windowsPackageVolume) };
         deploymentOperation.Progress([&](winrt::Windows::Foundation::IAsyncOperationWithProgress<
                                             winrt::Windows::Management::Deployment::DeploymentResult,
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
@@ -475,7 +413,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
-        auto deploymentOperation{ m_packageManager.SetPackageVolumeOnlineAsync(m_windowsPackageVolume) };
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto deploymentOperation{ packageManager.SetPackageVolumeOnlineAsync(m_windowsPackageVolume) };
         deploymentOperation.Progress([&](winrt::Windows::Foundation::IAsyncOperationWithProgress<
                                             winrt::Windows::Management::Deployment::DeploymentResult,
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
@@ -520,57 +459,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             THROW_HR_MSG(exception.code(),
                          "ExtendedError:0x%08X PackageVolume.Set%hs MountPoint:%ls Name:%ls PackageStorePath:%ls : %ls",
                          extendedError, online ? "Online" : "Offline", m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str(), errorText.c_str());
-        }
-        return S_OK;
-    }
-
-    HRESULT PackageDeploymentManager::GetAvailableSpace(
-        uint32_t& availableSpace,
-        HRESULT& extendedError,
-        winrt::hstring& errorText,
-        winrt::guid& activityId)
-    {
-        extendedError = S_OK;
-        errorText.clear();
-        activityId = winrt::guid{};
-
-        auto deploymentOperation{ m_windowsPackageVolume.GetAvailableSpaceAsync(availableSpace) };
-        deploymentOperation.get();
-        try
-        {
-            const auto deploymentResult{ deploymentOperation.GetResults() };
-            const HRESULT error{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
-            extendedError = deploymentResult.ExtendedErrorCode();
-            errorText = deploymentResult.ErrorText();
-            activityId = deploymentResult.ActivityId();
-            const auto status{ deploymentOperation.Status() };
-            if (status == winrt::Windows::Foundation::AsyncStatus::Error)
-            {
-                RETURN_IF_FAILED_MSG(error,
-                                     "ExtendedError:0x%08X PackageVolume.GetAvailableSpace MountPoint:%ls Name:%ls PackageStorePath:%ls : %ls",
-                                     extendedError, m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str(), errorText.c_str());
-
-                // Status=Error but SUCCEEDED(error) == This.Should.Never.Happen.
-                FAIL_FAST_HR_MSG(E_UNEXPECTED,
-                                 "ExtendedError:0x%08X PackageVolume.GetAvailableSpace MountPoint:%ls Name:%ls PackageStorePath:%ls : %ls",
-                                 extendedError, m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str(), errorText.c_str());
-            }
-            else if (status == winrt::Windows::Foundation::AsyncStatus::Canceled)
-            {
-                RETURN_WIN32_MSG(ERROR_CANCELLED,
-                                 "PackageVolume.GetAvailableSpace MountPoint:%ls Name:%ls PackageStorePath:%ls",
-                                 m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str());
-            }
-            FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, status != winrt::Windows::Foundation::AsyncStatus::Completed,
-                                "Status:%d PackageVolume.GetAvailableSpace MountPoint:%ls Name:%ls PackageStorePath:%ls : %ls",
-                                static_cast<int32_t>(status), m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str(), errorText.c_str());
-        }
-        catch (...)
-        {
-            auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-            THROW_HR_MSG(exception.code(),
-                         "ExtendedError:0x%08X PackageVolume.GetAvailableSpace MountPoint:%ls Name:%ls PackageStorePath:%ls : %ls",
-                         extendedError, m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str(), errorText.c_str());
         }
         return S_OK;
     }

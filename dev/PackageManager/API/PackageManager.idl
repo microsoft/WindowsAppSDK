@@ -7,7 +7,7 @@ import "M.AM.DynamicDependency.idl";
 
 namespace Microsoft.Windows.Management.Deployment
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract PackageDeploymentContract{};
 
     /// Features can be queried if currently available/enabled.
@@ -21,6 +21,20 @@ namespace Microsoft.Windows.Management.Deployment
         ResetPackage                        = 4,
         RepairPackage                       = 5,
         ProvisionPackage_Framework          = 6,
+    };
+
+    /// Features can be queried if currently available/enabled.
+    /// @see PackageVolume.IsFeatureSupported()
+    [contract(PackageDeploymentContract, 3)]
+    enum PackageVolumeFeature
+    {
+        GetDefault          = 1,
+        SetDefault          = 2,
+        Add                 = 3,
+        Remove              = 4,
+        SetOffline          = 5,
+        SetOnline           = 6,
+        GetAvailableSpace   = 7,
     };
 
     /// The progress status of the deployment request.
@@ -128,45 +142,48 @@ namespace Microsoft.Windows.Management.Deployment
         /// Repair the package volume (if necessary).
         void Repair();
 
+        [contract(PackageDeploymentContract, 3)]
+        static Boolean IsFeatureSupported(PackageVolumeFeature feature);
+
         /// Return the default package volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.getdefaultpackagevolume
-        [contract(PackageDeploymentContract, 2)]
+        [contract(PackageDeploymentContract, 3)]
         static PackageVolume GetDefault();
 
         /// Set the default package volume.
         /// @see //learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setdefaultpackagevolume
-        [contract(PackageDeploymentContract, 2)]
+        [contract(PackageDeploymentContract, 3)]
         void SetDefault();
 
         /// Create a new package volume.
         /// @param packageStorePath The absolute path of the Package store.
         /// @note This requires admin privilege.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.addpackagevolumeasync
-        [contract(PackageDeploymentContract, 2)]
+        [contract(PackageDeploymentContract, 3)]
         Windows.Foundation.IAsyncOperation<PackageVolume> AddAsync(String packageStorePath);
 
         /// @note The caller must be running with Medium IL (or higher)
         ///       OR running in an AppContainer with the packageManagement restricted capability
         ///       OR caller has package identity and the publisher matches the publisher of the volume being removed.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.removepackagevolumeasync
-        [contract(PackageDeploymentContract, 2)]
+        [contract(PackageDeploymentContract, 3)]
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> RemoveAsync();
 
         /// Set the package volume to an offline state.
         /// @note This requires admin privilege.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setpackagevolumeofflineasync
-        [contract(PackageDeploymentContract, 2)]
+        [contract(PackageDeploymentContract, 3)]
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> SetOfflineAsync();
 
         /// Set the package volume to an online state.
         /// @note This requires admin privilege.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setpackagevolumeonlineasync
-        [contract(PackageDeploymentContract, 2)]
+        [contract(PackageDeploymentContract, 3)]
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> SetOnlineAsync();
 
         /// Get the available space (bytes).
         /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagevolume.getavailablespaceasync?view=winrt-26100
-        [contract(PackageDeploymentContract, 2)]
+        [contract(PackageDeploymentContract, 3)]
         Windows.Foundation.IAsyncOperation<UInt64> GetAvailableSpaceAsync();
     };
 
