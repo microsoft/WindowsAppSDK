@@ -223,7 +223,7 @@ Try {
                                 /p:Configuration=$configurationForMrtAndAnyCPU `
                                 /p:Platform=$platformToRun `
                                 /p:PGOBuildMode=$PGOBuildMode `
-                                /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationToRun.binlog"
+                                /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationForMrtAndAnyCPU.binlog"
 
                 if ($lastexitcode -ne 0)
                 {
