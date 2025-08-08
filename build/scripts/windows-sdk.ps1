@@ -103,6 +103,7 @@ if ($SdkVersion -eq "10.1.17753")
     {
         Write-Host "Failed to install the Windows Driver Kit."
         exit $wdkExitCode
+    }
 }
 else if ($SdkVersion -eq "10.0.22000")
 {
