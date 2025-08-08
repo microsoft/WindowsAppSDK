@@ -105,7 +105,7 @@ if ($SdkVersion -eq "10.1.17753")
         exit $wdkExitCode
     }
 }
-else if ($SdkVersion -eq "10.0.22000")
+elseif ($SdkVersion -eq "10.0.22000")
 {
     # Install Windows SDK for Windows 11 (10.0.22000.194).
     # Link came from https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/index-legacy.
