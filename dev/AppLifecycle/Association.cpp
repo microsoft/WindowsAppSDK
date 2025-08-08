@@ -27,7 +27,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         // Convert seed to lowercase for case-insensitive hashing
-        std::transform(seed.begin(), seed.end(), seed.begin(), [](wchar_t c) { return std::towlower(c); });
+        std::transform(seed.begin(), seed.end(), seed.begin(), ::towlower);
 
         std::hash<std::wstring> hasher;
         auto hash = hasher(seed);
