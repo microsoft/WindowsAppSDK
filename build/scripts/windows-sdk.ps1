@@ -81,7 +81,7 @@ function PrintMessageAndExit($Message, $ReturnCode)
 # Main execution sequence
 #
 
-if ($SdkVersion -eq "10.1.17753")
+if ($SdkVersion -eq "10.1.17763")
 {
     # Requires Windows SDK with the same version number as the WDK
     $winSdkUrl = "https://go.microsoft.com/fwlink/p/?LinkID=2023014"
