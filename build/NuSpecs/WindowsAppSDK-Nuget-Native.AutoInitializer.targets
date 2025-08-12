@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Target Name="WindowsAppRuntimeAutoInitializer">
+  <Target Name="WindowsAppRuntimeAutoInitializerPreprocessorDefinitions">
     <PropertyGroup>
       <AutoInitializerPreprocessorDefinitions />
       <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">
@@ -16,18 +16,16 @@
         MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;$(AutoInitializerPreprocessorDefinitions)
       </AutoInitializerPreprocessorDefinitions>
     </PropertyGroup>
+  </Target>
 
+  <Target Name="WindowsAppRuntimeAutoInitializer">
     <ItemGroup>
-      <AutoInitializerClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
-        <PreprocessorDefinitions>$(AutoInitializerPreprocessorDefinitions)</PreprocessorDefinitions>
-      </AutoInitializerClCompile>
-    </ItemGroup>
+      </ClCompile>
 
-    <ItemGroup>
-      <ClCompile Include="@(AutoInitializerClCompile->'%(Identity)')">
-        <PrecompiledHeader>%(AutoInitializerClCompile.PrecompiledHeader)</PrecompiledHeader>
-        <PreprocessorDefinitions>%(AutoInitializerClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ClCompile>
+        <PreprocessorDefinitions>%(PreprocessorDefinitions);$(AutoInitializerPreprocessorDefinitions)</PreprocessorDefinitions>
       </ClCompile>
     </ItemGroup>
   </Target>
