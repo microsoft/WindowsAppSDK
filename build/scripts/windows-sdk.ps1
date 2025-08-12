@@ -3,7 +3,7 @@
 #
 
 param(
-    # TODO: Use version, current hardwire to only support 2 specific versions.
+    # TODO: Use version, currently hardwire to only support 2 specific versions.
     [string]$SdkVersion = $null
 )
 
@@ -81,7 +81,7 @@ function PrintMessageAndExit($Message, $ReturnCode)
 # Main execution sequence
 #
 
-if ($SdkVersion -eq "10.0.17763")
+if ($SdkVersion -eq "10.1.17763")
 {
     # Requires Windows SDK with the same version number as the WDK
     $winSdkUrl = "https://go.microsoft.com/fwlink/p/?LinkID=2023014"
