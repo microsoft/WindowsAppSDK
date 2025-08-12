@@ -31,4 +31,16 @@ stages:
       foundationRepoPath: ""
     condition: ne(variables.LatestOfficialBuildID, '')
     steps:
+    # The MMS2022 image used to come with Windows SDK 10.0.22000, but not any more.
+    - task: PowerShell@2
+      displayName: 'Add Windows SDK 10.0.22000'
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      inputs:
+        targetType: filePath
+        filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+        # TODO: the SdkVersion parameter does not yet support arbitrary versions.
+        arguments: >
+          -SdkVersion "10.0.22000"
+
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
