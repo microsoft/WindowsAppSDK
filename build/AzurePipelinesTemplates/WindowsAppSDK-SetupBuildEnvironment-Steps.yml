@@ -67,6 +67,16 @@ steps:
       arguments: 18362
     displayName: 'Install Insider SDK (18362)'
 
+- task: PowerShell@2
+  displayName: 'Add Windows SDK 10.0.20348'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  inputs:
+    targetType: filePath
+    filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+    arguments: >
+      -SdkVersion "10.0.20348"
+
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
