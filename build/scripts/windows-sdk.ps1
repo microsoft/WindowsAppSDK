@@ -3,7 +3,7 @@
 #
 
 param(
-    # TODO: Use version, currently hardwire to only support 2 specific versions.
+    # TODO: Use version, currently hardwire to only support 3 specific versions.
     [string]$SdkVersion = $null
 )
 
@@ -113,6 +113,21 @@ elseif ($SdkVersion -eq "10.0.22000")
 
     # `winsdksetup.exe /features + /quiet` installs all features without showing the GUI
     $sdkExitCode = Install-EXE -Url $winSdk22000Url -Name "winsdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
+
+    if ($sdkExitCode -ne 0)
+    {
+        Write-Host "Failed to install the Windows SDK."
+        exit $sdkExitCode
+    }
+}
+elseif ($SdkVersion -eq "10.0.20348")
+{
+    # Install Windows SDK for Windows 11 (10.0.20348.0)).
+    # Link came from https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/index-legacy.
+    $winSdk20348Url = "https://go.microsoft.com/fwlink/?linkid=2164145"
+
+    # `winsdksetup.exe /features + /quiet` installs all features without showing the GUI
+    $sdkExitCode = Install-EXE -Url $winSdk20348Url -Name "winsdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
 
     if ($sdkExitCode -ne 0)
     {
