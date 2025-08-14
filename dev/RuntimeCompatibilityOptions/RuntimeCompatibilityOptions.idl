@@ -35,8 +35,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowChrome_SetTitleBarCrash = 57693465,
 
         // 1.7.4
-        DispatcherQueue_PropagateException = 58472221,
         AppWindow_NoDidPresenterChangeOnRestore = 58567549,
+        DispatcherQueue_PropagateException = 58472221,
     };
 
     /// Represents a version of the Windows App Runtime.
