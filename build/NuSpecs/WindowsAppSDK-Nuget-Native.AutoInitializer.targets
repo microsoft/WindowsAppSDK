@@ -24,8 +24,7 @@
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
       </ClCompile>
 
-      <!-- Applying the preprocessor definitions globally here avoids accidental batching,
-           which could result in duplicate source references.-->
+      <!-- Applying the preprocessor definitions globally here avoids accidental batching, which could result in duplicate source references.-->
       <ClCompile>
         <PreprocessorDefinitions>%(PreprocessorDefinitions);$(AutoInitializerPreprocessorDefinitions)</PreprocessorDefinitions>
       </ClCompile>
