@@ -33,6 +33,10 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         ApplicationDataProvider_ReentrancyProtection = 57688028,
         InputPointerSource_FlushReentrancyCrash = 57705537,
         WindowChrome_SetTitleBarCrash = 57693465,
+
+        // 1.7.4
+        AppWindow_NoDidPresenterChangeOnRestore = 58567549,
+        DispatcherQueue_PropagateException = 58472221,
     };
 
     /// Represents a version of the Windows App Runtime.
