@@ -11,6 +11,7 @@
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
+    winrt::com_ptr<IShellItem> GetKnownFolderFromId(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId);
     winrt::com_ptr<IShellItem> TryParseFolderItem(winrt::hstring const& folderPathStr);
     const winrt::hstring AllFilesLocalizationKey = L"Microsoft.WindowsAppRuntime/StoragePickers/All Files";
 
@@ -26,12 +27,14 @@ namespace PickerCommon {
     void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
-    void ValidateSuggestedFolder(winrt::hstring const& path);
+    void ValidateFolderPathProperty(winrt::hstring const& path, std::string const& propertyName);
 
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;
-        winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId PickerLocationId;
+
+        winrt::com_ptr<IShellItem> SuggestedDefaultFolderItem{ nullptr };
+
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
@@ -44,6 +47,10 @@ namespace PickerCommon {
 
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
+        void CaptureFilterSpecData(
+            winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
+            winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView);
+        void CaptureDefaultFolderItem(winrt::hstring const& suggestedDefaultFolder, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& suggestedStartLocation);
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
         void ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog);

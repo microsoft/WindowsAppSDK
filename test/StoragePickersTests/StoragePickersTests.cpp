@@ -148,11 +148,20 @@ namespace Test::StoragePickersTests
             picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
 
+            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+            picker.SuggestedDefaultFolder(L"C:\\temp_filesavepicker_ut_temp");
+            VERIFY_ARE_EQUAL(picker.SuggestedDefaultFolder(), L"C:\\temp_filesavepicker_ut_temp");
+
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
 
             picker.FileTypeFilter().Append(L"*");
             VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
+
+            auto filters = winrt::single_threaded_vector<winrt::hstring>();
+            filters.Append(L"*");
+            picker.FileTypeChoices().Insert(L"All Files", filters);
+            VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"All Files").GetAt(0), L"*");
         }
 
         TEST_METHOD(VerifyFileSavePickerOptionsAreReadCorrectly)
@@ -162,6 +171,10 @@ namespace Test::StoragePickersTests
 
             picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+
+            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+            picker.SuggestedDefaultFolder(L"C:\\temp_filesavepicker_ut_temp");
+            VERIFY_ARE_EQUAL(picker.SuggestedDefaultFolder(), L"C:\\temp_filesavepicker_ut_temp");
 
             std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
             picker.SuggestedFolder(L"C:\\temp_filesavepicker_ut_temp");
@@ -190,6 +203,10 @@ namespace Test::StoragePickersTests
 
             picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
+
+            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+            picker.SuggestedDefaultFolder(L"C:\\temp_filesavepicker_ut_temp");
+            VERIFY_ARE_EQUAL(picker.SuggestedDefaultFolder(), L"C:\\temp_filesavepicker_ut_temp");
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");

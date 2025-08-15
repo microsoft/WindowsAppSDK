@@ -18,10 +18,14 @@ runtimeclass FileOpenPicker
 {
     FileOpenPicker(Microsoft.UI.WindowId windowId);
 
+    String SuggestedDefaultFolder;
+
     string CommitButtonText;
     IVector<string> FileTypeFilter{ get; };
     PickerLocationId SuggestedStartLocation;
     PickerViewMode ViewMode;
+
+    IMap<String, IVector<String>> FileTypeChoices{ get; };
 
     Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
     Windows.Foundation.IAsyncOperation<IVectorView<PickFileResult>> PickMultipleFilesAsync();
@@ -49,6 +53,8 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
 
     // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
     FileTypeFilter = { ".txt", ".pdf", ".doc", ".docx" },
+
+    FileTypeChoices = 
 
     // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
     ViewMode = PickerViewMode.List,

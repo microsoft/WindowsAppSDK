@@ -40,6 +40,11 @@ namespace {
         return guid;
     }
 
+}
+
+namespace PickerCommon {
+    using namespace winrt;
+
     winrt::com_ptr<IShellItem> GetKnownFolderFromId(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId pickerLocationId)
     {
         KNOWNFOLDERID knownFolderId;
@@ -95,11 +100,6 @@ namespace {
 
         return defaultFolder;
     }
-
-}
-
-namespace PickerCommon {
-    using namespace winrt;
 
     bool IsHStringNullOrEmpty(winrt::hstring value)
     {
@@ -224,7 +224,7 @@ namespace PickerCommon {
         ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
-    void ValidateSuggestedFolder(winrt::hstring const& path)
+    void ValidateFolderPathProperty(winrt::hstring const& path, std::string const& propertyName)
     {
         if (path.empty())
         {
@@ -237,13 +237,13 @@ namespace PickerCommon {
         auto pathObj = std::filesystem::path(path.c_str());
         if (!pathObj.is_absolute())
         {
-            throw std::invalid_argument("SuggestedFolder");
+            throw std::invalid_argument(propertyName);
         }
 
         wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
         if (!pidl)
         {
-            throw std::invalid_argument("SuggestedFolder");
+            throw std::invalid_argument(propertyName);
         }
     }
 
@@ -365,6 +365,35 @@ namespace PickerCommon {
         }
     }
 
+    void PickerParameters::CaptureFilterSpecData(
+        winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
+        winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView)
+    {
+        // FileTypeChoices takes precedence over the FileTypeFilter
+        if (fileTypeChoicesView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeChoicesView);
+        }
+        else if (fileTypeFilterView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeFilterView);
+        }
+    }
+
+    void PickerParameters::CaptureDefaultFolderItem(winrt::hstring const& suggestedDefaultFolder, winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& suggestedStartLocation)
+    {
+        // SuggestedDefaultFolder takes precedence over SuggestedStartLocation
+        if (suggestedDefaultFolder != L"")
+        {
+            SuggestedDefaultFolderItem = TryParseFolderItem(suggestedDefaultFolder);
+        }
+        
+        if (SuggestedDefaultFolderItem == nullptr)
+        {
+            SuggestedDefaultFolderItem = GetKnownFolderFromId(suggestedStartLocation);
+        }
+    }
+
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
     {
         if (!IsHStringNullOrEmpty(CommitButtonText))
@@ -372,10 +401,9 @@ namespace PickerCommon {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
         }
 
-        auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
-        if (defaultFolder != nullptr)
+        if (SuggestedDefaultFolderItem != nullptr)
         {
-            check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
+            check_hresult(dialog->SetDefaultFolder(SuggestedDefaultFolderItem.get()));
         }
 
         if (FileTypeFilterPara.size() > 0)

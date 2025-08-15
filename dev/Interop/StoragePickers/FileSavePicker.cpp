@@ -36,6 +36,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
+    hstring FileSavePicker::SuggestedDefaultFolder()
+    {
+        return m_suggestedDefaultFolder;
+    }
+    void FileSavePicker::SuggestedDefaultFolder(hstring const& value)
+    {
+        PickerCommon::ValidateFolderPathProperty(value, "SuggestedDefaultFolder");
+        m_suggestedDefaultFolder = value;
+    }
     hstring FileSavePicker::CommitButtonText()
     {
         return m_commitButtonText;
@@ -63,7 +72,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileSavePicker::SuggestedFolder(hstring const& value)
     {
-        PickerCommon::ValidateSuggestedFolder(value);
+        PickerCommon::ValidateFolderPathProperty(value, "SuggestedFolder");
         m_suggestedFolder = value;
     }
 
@@ -82,7 +91,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.PickerLocationId = m_suggestedStartLocation;
+        parameters.CaptureDefaultFolderItem(m_suggestedDefaultFolder, m_suggestedStartLocation);
         parameters.SuggestedFileName = m_suggestedFileName;
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.CaptureFilterSpec(m_fileTypeChoices.GetView());

@@ -38,6 +38,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
+    hstring FolderPicker::SuggestedDefaultFolder()
+    {
+        return m_suggestedDefaultFolder;
+    }
+    void FolderPicker::SuggestedDefaultFolder(hstring const& value)
+    {
+        PickerCommon::ValidateFolderPathProperty(value, "SuggestedDefaultFolder");
+        m_suggestedDefaultFolder = value;
+    }
     hstring FolderPicker::CommitButtonText()
     {
         return m_commitButtonText;
@@ -52,7 +61,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.PickerLocationId = m_suggestedStartLocation;
+        parameters.CaptureDefaultFolderItem(m_suggestedDefaultFolder, m_suggestedStartLocation);
     }
 
 
