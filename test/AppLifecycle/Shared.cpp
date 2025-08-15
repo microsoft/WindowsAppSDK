@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #include <pch.h>
 #include <TestDef.h>
@@ -87,7 +87,7 @@ namespace Test::AppLifecycle
         attributes.lpSecurityDescriptor = descriptor.get();
 
         wil::unique_event event;
-        event.create(wil::EventOptions::None, eventName.c_str(), &attributes, &alreadyExists);
+        event.create(wil::EventOptions::ManualReset, eventName.c_str(), &attributes, &alreadyExists);
         return event;
     }
 
