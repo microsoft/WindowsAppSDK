@@ -216,19 +216,22 @@ Try {
         if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT"))
         {
             # Build mrt core.
-            foreach($platformToRun in $platform.Split(","))
+            foreach($configurationToRun in $configuration.Split(","))
             {
-                write-host "Building MrtCore.sln for configuration $configurationForMrtAndAnyCPU and platform:$platformToRun"
-                & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
-                                /p:Configuration=$configurationForMrtAndAnyCPU `
-                                /p:Platform=$platformToRun `
-                                /p:PGOBuildMode=$PGOBuildMode `
-                                /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationForMrtAndAnyCPU.binlog"
-
-                if ($lastexitcode -ne 0)
+                foreach($platformToRun in $platform.Split(","))
                 {
-                    write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
-                    exit 1
+                    write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
+                    & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
+                                    /p:Configuration=$configurationToRun `
+                                    /p:Platform=$platformToRun `
+                                    /p:PGOBuildMode=$PGOBuildMode `
+                                    /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationToRun.binlog"
+
+                    if ($lastexitcode -ne 0)
+                    {
+                        write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+                        exit 1
+                    }
                 }
             }
         }
