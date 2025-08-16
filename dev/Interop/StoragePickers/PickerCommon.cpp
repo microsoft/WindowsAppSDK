@@ -320,7 +320,7 @@ namespace PickerCommon {
         }
         else
         {
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(allFilesExtensionList.c_str());
         }
 
