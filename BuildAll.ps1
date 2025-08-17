@@ -281,7 +281,7 @@ Try {
             {
                 # TODO: $windowsAppSdkBinariesPath may not be defined. Remove the temp downgrade to 1.0 once this issue has been fixed (b#52130179). 
                 Set-StrictMode -Version 1.0
-                .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
+                .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
                 Set-StrictMode -Version 3.0
                 if ($lastexitcode -ne 0)
                 {
@@ -461,8 +461,7 @@ Try {
                 -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
                 -ContentsList @(
                     'native\DynamicDependency.DataStore.exe',
-                    'native\DynamicDependency.DataStore.ProxyStub.dll',
-                    'native\DynamicDependency-Override.json') `
+                    'native\DynamicDependency.DataStore.ProxyStub.dll') `
                 -TargetDir "$ComponentBasePath\runtimes-main\win-$platformToRun"
 
             build\scripts\CopyContents.ps1 `
@@ -470,8 +469,7 @@ Try {
                 -ContentsList @(
                     'native\DynamicDependencyLifetimeManager.exe',
                     'native\DynamicDependencyLifetimeManager.ProxyStub.dll',
-                    'native\DynamicDependencyLifetimeManagerShadow.exe',
-                    'native\DynamicDependency-Override.json') `
+                    'native\DynamicDependencyLifetimeManagerShadow.exe') `
                 -TargetDir "$ComponentBasePath\runtimes-ddlm\win-$platformToRun"
 
             build\scripts\CopyContents.ps1 `
@@ -479,8 +477,7 @@ Try {
                 -ContentsList @(
                     'native\PushNotificationsLongRunningTask.exe',
                     'native\PushNotificationsLongRunningTask.ProxyStub.dll',
-                    'native\PushNotificationsLongRunningTask.StartupTask.exe',
-                    'native\PushNotifications-Override.json') `
+                    'native\PushNotificationsLongRunningTask.StartupTask.exe') `
                 -TargetDir "$ComponentBasePath\runtimes-singleton\win-$platformToRun"
         }
 
@@ -501,6 +498,9 @@ Try {
         }
 
         Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
+        Copy-Item -Path "$nuSpecsPath\main.appxfragment" -Destination "$ComponentBasePath\runtimes-main\package.appxfragment"
+        Copy-Item -Path "$buildOverridePath\ddlm.appxfragment" -Destination "$ComponentBasePath\runtimes-ddlm\package.appxfragment"
+        Copy-Item -Path "$nuSpecsPath\singleton.appxfragment" -Destination "$ComponentBasePath\runtimes-singleton\package.appxfragment"
 
         # Populate Intellisense files
         $IntellisensePath = "$PSScriptRoot\build\NuSpecs\Intellisense"

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Fragment xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+  <Applications>
+    <Application Id="App"
+      Executable="DynamicDependency.DataStore.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Windows App Runtime Main"
+        Square150x150Logo="WindowsAppRuntime.png"
+        Square44x44Logo="WindowsAppRuntime.png"
+        Description="Windows App Runtime Main package"
+        BackgroundColor="transparent"
+        AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="WindowsAppRuntime.png"/>
+        <uap:SplashScreen Image="WindowsAppRuntime.png" uap5:Optional="true"/>
+      </uap:VisualElements>
+      <Extensions>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="DynamicDependency.DataStore.exe" DisplayName="Windows App Runtime DynamicDependency DataStore">
+              <com:Class Id="D1AD16C7-EC59-4765-BF95-9A243EB00507" DisplayName="Windows App Runtime DynamicDependency DataStore"/>
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comInterface">
+          <com:ComInterface>
+            <com:ProxyStub Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" DisplayName="DynamicDependency.DataStore ProxyStub" Path="DynamicDependency.DataStore.ProxyStub.dll"/>
+            <com:Interface Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" ProxyStubClsid="DDEB4D6A-E146-476d-B729-0BFB1A29A86E"/> <!-- IID_IDynamicDependencyDataStore -->
+          </com:ComInterface>
+        </com:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+</Fragment>
