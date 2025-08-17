@@ -46,10 +46,11 @@ $lifetimemanager_clsid_guid = Convert-Guid $lifetimemanager_clsid_uuid
 
 # Replace the GUID in the appxfragment.xml
 $appxfragment_path = Join-Path $Path 'ddlm.appxfragment'
+$appxfragment_overrides_path = Join-Path 'build\NuSpecs' 'ddlm.appxfragment'
 $appxfragment = Get-Content $appxfragment_path
 $appxfragment = $appxfragment.Replace('$(DynDep.LifetimeManager.CLSID.UUID)', "$lifetimemanager_clsid_uuid")
-Write-Output "Writing $appxfragment_path..."
-Set-Content -Value $appxfragment $appxfragment_path
+Write-Output "Writing $appxfragment_overrides_path..."
+Set-Content -Value $appxfragment $appxfragment_overrides_path
 
 # Generate the header file
 $content_h=@"
