@@ -6,28 +6,6 @@ Param(
     [string]$Path
 )
 
-function Convert-Guid
-{
-    Param([string]$uuid)
-
-    $fields = $uuid -Split '-', 5
-    $field0 = $fields[0]
-    $field1 = $fields[1]
-    $field2 = $fields[2]
-    $field3 = $fields[3]
-    $b0 = $field3.SubString(0, 2)
-    $b1 = $field3.SubString(2, 2)
-    $field4 = $fields[4]
-    $b2 = $field4.SubString(0, 2)
-    $b3 = $field4.SubString(2, 2)
-    $b4 = $field4.SubString(4, 2)
-    $b5 = $field4.SubString(6, 2)
-    $b6 = $field4.SubString(8, 2)
-    $b7 = $field4.SubString(10, 2)
-    $guid = "0x$field0, 0x$field1, 0x$field2, { 0x$b0, 0x$b1, 0x$b2, 0x$b3, 0x$b4, 0x$b5, 0x$b6, 0x$b7 }"
-    return $guid
-}
-
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
@@ -40,39 +18,6 @@ else
 {
     Write-Output "$Path exists"
 }
-
-# Generate the json file
-$content_json=@"
-{
-	"LIBID": "CE96C745-3017-460E-895B-4FD98E1194F2",
-	"ComServer": {
-		"CLSID": {
-			"UUID": "E739C755-0D09-48DF-A468-A5DF0B5422DC"
-		}
-	},
-	"ComInterfaces": {
-		"LRP": {
-			"CLSID": {
-				"UUID": "60FC21B2-B396-4D49-94F0-7555869FB93C"
-			}
-		},
-		"ForegroundSink": {
-			"CLSID": {
-				"UUID": "25604D55-9B17-426F-9D67-2B11B3A65598"
-			}
-		},
-            "ForegroundSink2": {
-			"CLSID": {
-				"UUID": "559B4205-F810-4947-B02B-3EA9A311C6AD"
-			}
-		}
-	}
-}
-"@
-
-$file_json = Join-Path $Path 'PushNotifications-Override.json'
-Write-Output "Writing $file_json..."
-"$content_json" | Out-File $file_json -Encoding utf8
 
 # Generate the Push Notifications header file
 $content_h=@"
