@@ -85,6 +85,14 @@ steps:
             Add-AppxPackage $package -ErrorAction SilentlyContinue
 
   - task: powerShell@2
+    displayName: 'Install VCLibs.UWPDesktop'
+    inputs:
+      targetType: 'inline'
+      script: |
+            $package = "$(Build.SourcesDirectory)\redist\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.UWPDesktop.appx"
+            Add-AppxPackage $package -ErrorAction SilentlyContinue
+
+  - task: powerShell@2
     displayName: 'Install vc_redist'
     inputs:
       targetType: 'inline'
