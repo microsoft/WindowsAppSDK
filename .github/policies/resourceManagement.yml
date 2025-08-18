@@ -296,6 +296,9 @@ configuration:
       - hasLabel:
           label: area-External
       - isOpen
+      - commentContains:
+          pattern: '\/[E|e]xternal'
+          isRegex: True
       then:
       - closeIssue
 
