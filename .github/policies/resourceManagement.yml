@@ -290,6 +290,16 @@ configuration:
           label: needs-assignee-attention
       - addLabel:
           label: area-External
+
+    - description: Close /external issues (step 2)
+      if:
+      - hasLabel:
+          label: area-External
+      - isOpen
+      - commentContains:
+          pattern: '\/[E|e]xternal'
+          isRegex: True
+      then:
       - closeIssue
 
 onFailure: 
