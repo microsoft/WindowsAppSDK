@@ -5,7 +5,7 @@
             "Filename": "AppLifecycleTests.dll",
             "Parameters": "",
             "Architectures": ["x64", "arm64"],
-            "Status": "Disabled"
+            "Status": "Enabled"
         }
     ]
 }
