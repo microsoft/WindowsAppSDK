@@ -290,6 +290,16 @@ configuration:
           label: needs-assignee-attention
       - addLabel:
           label: area-External
+
+    - description: Close /external issues (step 2)
+      frequencies:
+      - hourly:
+          hour: 6
+      if:
+      - hasLabel:
+          label: area-External
+      - isOpen
+      then:
       - closeIssue
 
 onFailure: 
