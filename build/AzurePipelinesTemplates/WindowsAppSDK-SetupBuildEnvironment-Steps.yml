@@ -107,14 +107,6 @@ steps:
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCLibsDesktop.ps1'
     arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\redist"
 
-- task: PowerShell@2
-  displayName: 'Download UWP desktop bridge CRT'
-  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
-  inputs:
-    targetType: filePath
-    filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCLibsUWPDesktop.ps1'
-    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\redist"
-
 - task: powershell@2
   displayName: 'Create DynamicDependencies TerminalVelocity features'
   inputs:
