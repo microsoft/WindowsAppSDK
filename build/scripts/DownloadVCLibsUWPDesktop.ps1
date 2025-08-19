@@ -16,15 +16,18 @@ if(-not(Test-Path $OutputDirectory))
     $null = New-Item -ItemType Directory -Path $OutputDirectory
 }
 
-# Find direct download links at https://learn.microsoft.com/en-us/troubleshoot/developer/visualstudio/cpp/libraries/c-runtime-packages-desktop-bridge
-$downloadurl = "https://aka.ms/Microsoft.VCLibs.$Platform.14.00.UWPDesktop.appx"
+# UWPDesktop packages are distributed with Visual Studio SDK, not via web download
+# Check Visual Studio SDK location first
+$vsSDKPath = "${env:ProgramFiles(x86)}\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs.Desktop\14.0\Appx\Retail\$Platform\Microsoft.VCLibs.$Platform.14.00.UWPDesktop.appx"
 
-if(-not(Test-Path $outputPath))
+if(Test-Path $vsSDKPath)
 {
-    Write-Host "Downloading $downloadurl to $outputPath"
-    Invoke-WebRequest $downloadurl -OutFile $outputPath
+    Write-Host "Copying UWPDesktop VCLibs from Visual Studio SDK: $vsSDKPath"
+    Copy-Item $vsSDKPath $outputPath
 }
 else
 {
-    Write-Host "The file '$outputPath' already exists. Skipping download."
+    Write-Host "WARNING: UWPDesktop VCLibs not found in Visual Studio SDK at: $vsSDKPath"
+    Write-Host "UWPDesktop packages are not available for web download. Please install Visual Studio with UWP workload."
+    Write-Host "Skipping UWPDesktop VCLibs download."
 }
