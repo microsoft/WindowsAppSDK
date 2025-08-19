@@ -1525,5 +1525,6 @@
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zstring_view_localename_system",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zwstring_view",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zwstring_view_invariant",
-  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zwstring_view_localename_system"
+  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zwstring_view_localename_system",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::ClassInit"
 ]
