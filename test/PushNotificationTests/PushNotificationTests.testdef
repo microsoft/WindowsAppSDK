@@ -1,16 +1,30 @@
 {
     "Tests": [
         {
+            "Description": "Test unpackaged scenarios for PushNotifications (Self-contained)",
+            "Filename": "PushNotificationTests.dll",
+            "Parameters": "/name:UnpackagedTests#metadataSet0*",
+            "Architectures": ["x64"],
+            "Status": "Enabled" 
+        },
+        {
+            "Description": "Test packaged scenarios for PushNotifications (Self-contained)",
+            "Filename": "PushNotificationTests.dll",
+            "Parameters": "/name:PackagedTests#metadataSet0*",
+            "Architectures": ["x64"],
+            "Status": "Enabled" 
+        },
+        {
             "Description": "Test unpackaged scenarios for PushNotifications",
             "Filename": "PushNotificationTests.dll",
-            "Parameters": "/name:UnpackagedTests*",
+            "Parameters": "/name:UnpackagedTests#metadataSet1*",
             "Architectures": ["x64"],
             "Status": "Enabled" 
         },
         {
             "Description": "Test packaged scenarios for PushNotifications",
             "Filename": "PushNotificationTests.dll",
-            "Parameters": "/name:PackagedTests*",
+            "Parameters": "/name:PackagedTests#metadataSet1*",
             "Architectures": ["x64"],
             "Status": "Enabled" 
         }

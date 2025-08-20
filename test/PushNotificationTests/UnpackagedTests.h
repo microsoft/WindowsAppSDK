@@ -14,7 +14,7 @@ class UnpackagedTests : BaseTestSuite
         TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications test")
         TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
         TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
-        TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+        TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
         TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
     END_TEST_CLASS()
 
