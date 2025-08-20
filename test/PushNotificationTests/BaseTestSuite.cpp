@@ -45,7 +45,7 @@ void BaseTestSuite::MethodSetup()
         testFrameworkPackageFamilyName = testMainPackageFamilyName = L"I_don't_exist_package!";
     }
 
-    if( MddCore::Win11::IsSupported())
+    if (MddCore::Win11::IsSupported())
     {
         testMainPackageFamilyName = nullptr;
     }
