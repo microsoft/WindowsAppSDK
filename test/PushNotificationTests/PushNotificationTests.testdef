@@ -3,14 +3,7 @@
         {
             "Description": "Test unpackaged scenarios for PushNotifications",
             "Filename": "PushNotificationTests.dll",
-            "Parameters": "/name:UnpackagedTests*",
-            "Architectures": ["x64"],
-            "Status": "Enabled" 
-        },
-        {
-            "Description": "Test packaged scenarios for PushNotifications",
-            "Filename": "PushNotificationTests.dll",
-            "Parameters": "/name:PackagedTests*",
+            "Parameters": "",
             "Architectures": ["x64"],
             "Status": "Enabled" 
         }
