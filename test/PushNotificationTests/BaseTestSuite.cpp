@@ -54,14 +54,12 @@ void BaseTestSuite::MethodSetup()
     {
         if (MddCore::Win11::IsSupported())
         {
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
             ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!");
         }
         else
         {
             ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
         }
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!");
         VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
 }
