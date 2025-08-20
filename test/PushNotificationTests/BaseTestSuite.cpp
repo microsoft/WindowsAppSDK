@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -37,31 +37,12 @@ void BaseTestSuite::MethodSetup()
     bool isSelfContained{};
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained));
 
-    if (!isSelfContained)
-    {
-        if (MddCore::Win11::IsSupported())
-        {
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
-        }
-        else
-        {
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
-                ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
-        }
-        VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
-    }
-    else
-    {
-        if (MddCore::Win11::IsSupported())
-        {
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!");
-        }
-        else
-        {
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
-        }
-        VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
-    }
+    const PCWSTR testFrameworkPackageFamilyName = isSelfContained ? ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName : L"I_don't_exist_package!";
+    const PCWSTR testMainPackageFamilyName = MddCore::Win11::IsSupported() ? testFrameworkPackageFamilyName : nullptr;
+
+    ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
+
+    VERIFY_ARE_EQUAL(isSelfContained, ::WindowsAppRuntime::SelfContained::IsSelfContained());
 }
 
 void BaseTestSuite::MethodCleanup()
