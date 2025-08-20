@@ -414,9 +414,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-        // Gets the package path, which is a fast and reliable way to check if the package is
-        // at least staged on the device, even without package query capabilities.
-        std::wstring DeploymentManager::GetPackagePath(std::wstring const& packageFullName)
+    // Gets the package path, which is a fast and reliable way to check if the package is
+    // at least staged on the device, even without package query capabilities.
+    std::wstring DeploymentManager::GetPackagePath(std::wstring const& packageFullName)
     {
         UINT32 pathLength{};
         const auto rc{ GetPackagePathByFullName(packageFullName.c_str(), &pathLength, nullptr) };
@@ -480,7 +480,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-        std::wstring DeploymentManager::GenerateDeploymentAgentPath()
+    std::wstring DeploymentManager::GenerateDeploymentAgentPath()
     {
         // Calculate the path to the restart agent as being in the same directory as the current module.
         wil::unique_hmodule module;
@@ -538,7 +538,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     CATCH_RETURN()
 
         // Deploys all of the packages carried by the specified framework.
-        HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
+    HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
         RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName));
         RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment));
@@ -546,7 +546,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-        HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
+    HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
     {
         ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
@@ -706,8 +706,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         PCWSTR message2Format{ L"ERROR 0x%08X: DeploymentManager initialization failed for version %s (MSIX package version %hu.%hu.%hu.%hu)" };
         const PACKAGE_VERSION version{ packageIdentity.Version() };
         FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,
-            hrInitialize, release.c_str(),
-            version.Major, version.Minor, version.Build, version.Revision));
+                                             hrInitialize, release.c_str(),
+                                             version.Major, version.Minor, version.Build, version.Revision));
         PCWSTR strings[2]{ message1, message2 };
         LOG_IF_WIN32_BOOL_FALSE(ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, 0, c_eventId, nullptr, ARRAYSIZE(strings), 0, strings, nullptr));
 
@@ -717,9 +717,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-        HRESULT Initialize_OnError_ShowUI(
-            const AppModel::Identity::PackageIdentity& packageIdentity,
-            const std::wstring& release)
+    HRESULT Initialize_OnError_ShowUI(
+        const AppModel::Identity::PackageIdentity& packageIdentity,
+        const std::wstring& release)
     {
         // Get the message caption
         PCWSTR caption{};
@@ -752,8 +752,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         if (!caption)
         {
             LOG_IF_FAILED(StringCchPrintfW(captionOnError, ARRAYSIZE(captionOnError),
-                L"<Process %d> - This application could not be started",
-                GetCurrentProcessId()));
+                                           L"<Process %d> - This application could not be started",
+                                           GetCurrentProcessId()));
             caption = captionOnError;
         }
 
@@ -764,11 +764,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                            L"    (MSIX package version %hu.%hu.%hu.%hu)\n"
                            L"\n"
                            L"Do you want to install a compatible Windows App Runtime now?"
-        };
+                         };
         const PACKAGE_VERSION version{ packageIdentity.Version() };
         FAIL_FAST_IF_FAILED(StringCchPrintfW(text, ARRAYSIZE(text), textFormat,
-            release.c_str(),
-            version.Major, version.Minor, version.Build, version.Revision));
+                                             release.c_str(),
+                                             version.Major, version.Minor, version.Build, version.Revision));
 
         // Show the prompt
         const auto yesno{ MessageBoxW(nullptr, text, caption, MB_YESNO | MB_ICONERROR) };
