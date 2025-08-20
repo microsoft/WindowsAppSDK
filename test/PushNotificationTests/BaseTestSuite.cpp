@@ -38,7 +38,7 @@ void BaseTestSuite::MethodSetup()
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained));
 
     const PCWSTR testFrameworkPackageFamilyName = isSelfContained ? ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName : L"I_don't_exist_package!";
-    const PCWSTR testMainPackageFamilyName = MddCore::Win11::IsSupported() ? testFrameworkPackageFamilyName : nullptr;
+    const PCWSTR testMainPackageFamilyName = MddCore::Win11::IsSupported() ? nullptr : testFrameworkPackageFamilyName;
 
     ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
 
