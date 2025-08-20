@@ -112,23 +112,72 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
+            // The main and singleton packages contain a shortened version tag for the package family name.
+            std::wstring formattedVersionTag{};
+
+            auto ExtractFormattedVersionTag = [](const std::wstring& versionTag, bool addDashPrefix = false) -> std::wstring
+            {
+                wchar_t firstLetter = versionTag.size() > 1 ? versionTag[1] : L'\0';
+                std::wstring numberBeforeUnderscore;
+                size_t i = 2;
+                while (i < versionTag.size() && iswdigit(versionTag[i]))
+                {
+                    numberBeforeUnderscore += versionTag[i];
+                    ++i;
+                }
+                std::wstring result;
+                if (firstLetter != L'\0')
+                {
+                    if (addDashPrefix)
+                    {
+                        result += L"-";
+                    }
+                    result += firstLetter;
+                }
+                result += numberBeforeUnderscore;
+                return result;
+            };
+
+            // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
+            // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
             if (package.versionType == PackageVersionType::Versioned)
             {
-                // PackageFamilyName = Prefix + SubTypeName + VersionIdentifier + Suffix
-                // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // Versioned: keep "Major.Minor-" and append first letter after '-' and number (if any) before '_'
+                // Example: packageNameVersionIdentifier = "1.8-experimental4", packageNameVersionTag = "-experimental4"
+                // formattedVersionTag = "1.8-e4"
+
+                size_t dashPos = packageNameVersionIdentifier.find('-');
+                std::wstring majorMinor = (dashPos != std::wstring::npos) ? packageNameVersionIdentifier.substr(0, dashPos) : packageNameVersionIdentifier; // "1.8"
+                if (dashPos != std::wstring::npos)
+                {
+                    formattedVersionTag = majorMinor + ExtractFormattedVersionTag(packageNameVersionTag, /*addDashPrefix*/true);
+                }
+                else
+                {
+                    formattedVersionTag = majorMinor;
+                }
             }
             else if (package.versionType == PackageVersionType::Unversioned)
             {
-                // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
-                // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // Unversioned: append first letter after '-' and number (if any) before '_'
+                // Example: packageNameVersionTag = "-experimental4"
+                // formattedVersionTag = "-e4"
+                if (packageNameVersionTag.find(L'-') != std::wstring::npos)
+                {
+                    formattedVersionTag = ExtractFormattedVersionTag(packageNameVersionTag, /*addDashPrefix*/true);
+                }
+                else
+                {
+                    formattedVersionTag = L"";
+                }
             }
             else
             {
                 // Other version types not supported.
                 FAIL_FAST_HR(HRESULT_FROM_WIN32(ERROR_UNSUPPORTED_TYPE));
             }
+
+            packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + formattedVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
 
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
@@ -181,7 +230,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
         initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
                                                       Security::IntegrityLevel::IsElevated(),
                                                       isPackagedProcess,
@@ -270,7 +319,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         else
         {
-            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) && 
+            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) &&
                 (isRepair))
             {
                 status = DeploymentStatus::PackageRepairFailed;
@@ -365,9 +414,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-    // Gets the package path, which is a fast and reliable way to check if the package is
-    // at least staged on the device, even without package query capabilities.
-    std::wstring DeploymentManager::GetPackagePath(std::wstring const& packageFullName)
+        // Gets the package path, which is a fast and reliable way to check if the package is
+        // at least staged on the device, even without package query capabilities.
+        std::wstring DeploymentManager::GetPackagePath(std::wstring const& packageFullName)
     {
         UINT32 pathLength{};
         const auto rc{ GetPackagePathByFullName(packageFullName.c_str(), &pathLength, nullptr) };
@@ -431,7 +480,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-    std::wstring DeploymentManager::GenerateDeploymentAgentPath()
+        std::wstring DeploymentManager::GenerateDeploymentAgentPath()
     {
         // Calculate the path to the restart agent as being in the same directory as the current module.
         wil::unique_hmodule module;
@@ -488,8 +537,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-    // Deploys all of the packages carried by the specified framework.
-    HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
+        // Deploys all of the packages carried by the specified framework.
+        HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
         RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName));
         RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment));
@@ -497,7 +546,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-    HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
+        HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
     {
         ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
@@ -657,8 +706,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         PCWSTR message2Format{ L"ERROR 0x%08X: DeploymentManager initialization failed for version %s (MSIX package version %hu.%hu.%hu.%hu)" };
         const PACKAGE_VERSION version{ packageIdentity.Version() };
         FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,
-                                             hrInitialize, release.c_str(),
-                                             version.Major, version.Minor, version.Build, version.Revision));
+            hrInitialize, release.c_str(),
+            version.Major, version.Minor, version.Build, version.Revision));
         PCWSTR strings[2]{ message1, message2 };
         LOG_IF_WIN32_BOOL_FALSE(ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, 0, c_eventId, nullptr, ARRAYSIZE(strings), 0, strings, nullptr));
 
@@ -668,9 +717,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-    HRESULT Initialize_OnError_ShowUI(
-        const AppModel::Identity::PackageIdentity& packageIdentity,
-        const std::wstring& release)
+        HRESULT Initialize_OnError_ShowUI(
+            const AppModel::Identity::PackageIdentity& packageIdentity,
+            const std::wstring& release)
     {
         // Get the message caption
         PCWSTR caption{};
@@ -703,8 +752,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         if (!caption)
         {
             LOG_IF_FAILED(StringCchPrintfW(captionOnError, ARRAYSIZE(captionOnError),
-                                           L"<Process %d> - This application could not be started",
-                                           GetCurrentProcessId()));
+                L"<Process %d> - This application could not be started",
+                GetCurrentProcessId()));
             caption = captionOnError;
         }
 
@@ -715,11 +764,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                            L"    (MSIX package version %hu.%hu.%hu.%hu)\n"
                            L"\n"
                            L"Do you want to install a compatible Windows App Runtime now?"
-                         };
+        };
         const PACKAGE_VERSION version{ packageIdentity.Version() };
         FAIL_FAST_IF_FAILED(StringCchPrintfW(text, ARRAYSIZE(text), textFormat,
-                                             release.c_str(),
-                                             version.Major, version.Minor, version.Build, version.Revision));
+            release.c_str(),
+            version.Major, version.Minor, version.Build, version.Revision));
 
         // Show the prompt
         const auto yesno{ MessageBoxW(nullptr, text, caption, MB_YESNO | MB_ICONERROR) };
