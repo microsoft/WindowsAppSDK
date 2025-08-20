@@ -5,6 +5,7 @@
 
 #include "PushNotification-Test-Constants.h"
 #include "BaseTestSuite.h"
+#include "MddWin11.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -38,11 +39,28 @@ void BaseTestSuite::MethodSetup()
 
     if (!isSelfContained)
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+        if (MddCore::Win11::IsSupported())
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+        }
+        else
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+        }
         VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
     else
     {
+        if (MddCore::Win11::IsSupported())
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!");
+        }
+        else
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
+        }
         ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!");
         VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
