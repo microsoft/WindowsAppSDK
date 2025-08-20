@@ -1525,5 +1525,18 @@
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zstring_view_localename_system",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zwstring_view",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zwstring_view_invariant",
-  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zwstring_view_localename_system"
+  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::from_zwstring_view_localename_system",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsIsNotNull",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsForLaunch",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsForFile_Win32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsForUnicodeNamedFile_Win32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsForFile_PackagedWin32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsForProtocol_Win32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsForProtocol_PackagedWin32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsForPush_Win32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::GetActivatedEventArgsForStartup_Win32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::SingleInstanceTest_Win32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::SingleInstanceTest_PackagedWin32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::RequestRestart_Win32",
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::RequestRestart_PackagedWin32"
 ]
