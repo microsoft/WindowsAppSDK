@@ -585,4 +585,23 @@ namespace CommonTestCode
             Verify.IsNull(resourceCandidate);
         }
     }
+
+    public class ApplicationLanguagesTest
+    {
+        public static void PrimaryLanguageOverrideAcceptsEmptyStringTest()
+        {
+            ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+            ApplicationLanguages.PrimaryLanguageOverride = "";
+
+            Verify.AreEqual(ApplicationLanguages.PrimaryLanguageOverride, "");
+        }
+
+        public static void PrimaryLanguageOverrideAcceptsNullStringTest()
+        {
+            ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+            ApplicationLanguages.PrimaryLanguageOverride = null;
+
+            Verify.AreEqual(ApplicationLanguages.PrimaryLanguageOverride, ""); // C# projection of null HSTRING is empty string
+        }
+    }
 }
