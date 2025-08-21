@@ -42,9 +42,10 @@ void BaseTestSuite::MethodSetup()
 
     if (isSelfContained)
     {
-        testFrameworkPackageFamilyName = testMainPackageFamilyName = L"I_don't_exist_package!";
+        testFrameworkPackageFamilyName = testMainPackageFamilyName = c_fakePackageFamilyName;
     }
 
+    // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
     if (MddCore::Win11::IsSupported())
     {
         testMainPackageFamilyName = nullptr;
