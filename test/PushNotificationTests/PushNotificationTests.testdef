@@ -12,7 +12,14 @@
             "Filename": "PushNotificationTests.dll",
             "Parameters": "/name:PackagedTests*",
             "Architectures": ["x64"],
-            "Status": "Enabled" 
+            "Status": "Enabled"
+        },
+        {
+            "Description": "Test Long Running Process (LRP) scenarios for PushNotifications",
+            "Filename": "PushNotificationTests.dll",
+            "Parameters": "/name:LRPTests*",
+            "Architectures": ["x64"],
+            "Status": "Enabled"
         }
     ]
 }
