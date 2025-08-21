@@ -112,6 +112,7 @@
     <ClCompile Include="BaseTestSuite.cpp" />
     <ClCompile Include="PackagedTests.cpp" />
     <ClCompile Include="UnpackagedTests.cpp" />
+    <ClCompile Include="LRPTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseTestSuite.h" />
