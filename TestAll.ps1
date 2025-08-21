@@ -78,7 +78,7 @@ param(
 $StartTime = Get-Date
 $lastexitcode = 0
 Set-StrictMode -Version 3.0
-$ErrorActionPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
 
 function Get-Tests
 {
@@ -140,7 +140,15 @@ function Run-TaefTest
     $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
     $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
 
-    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
+    try {
+        & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "TAEF test '$($test.Filename)' exited with code $LASTEXITCODE" -ForegroundColor Yellow
+        }
+    }
+    catch {
+        Write-Host "Error running TAEF test '$($test.Filename)': $($_.Exception.Message)" -ForegroundColor Red
+    }
 }
 
 function Run-PowershellTest
