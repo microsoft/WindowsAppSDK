@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 // suppress macro redifinition.  This is needed to declare tests inline.
@@ -13,6 +13,7 @@
 #include <WexTestClass.h>
 #include <WindowsAppRuntime.VersionInfo.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include "MddWin11.h"
 
 using namespace winrt::Microsoft::Windows;
 
@@ -45,28 +46,31 @@ namespace WindowsAppSDKEnvironmentManagerTests
         bool isSelfContained{};
         VERIFY_SUCCEEDED(WEX::TestExecution::TestData::TryGetValue(L"SelfContained", isSelfContained));
 
-        if (!isSelfContained)
+        PCWSTR testFrameworkPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName };
+        PCWSTR testMainPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName };
+
+        if (isSelfContained)
         {
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName, ::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
-            VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
-
-            EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
-            VERIFY_IS_TRUE(forUser.AreChangesTracked());
-
-            EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
-            VERIFY_IS_TRUE(forMachine.AreChangesTracked());
+            testFrameworkPackageFamilyName = testMainPackageFamilyName = L"I_don't_exist_package!";
         }
-        else
+
+        // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
+        if (MddCore::Win11::IsSupported())
         {
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
-            VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
-
-            EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
-            VERIFY_IS_FALSE(forUser.AreChangesTracked());
-
-            EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
-            VERIFY_IS_FALSE(forMachine.AreChangesTracked());
+            testMainPackageFamilyName = nullptr;
         }
+
+        ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
+
+        bool expectedAreChangesTracked{ !isSelfContained };
+
+        VERIFY_ARE_EQUAL(isSelfContained, ::WindowsAppRuntime::SelfContained::IsSelfContained());
+
+        EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
+        VERIFY_ARE_EQUAL(expectedAreChangesTracked, forUser.AreChangesTracked());
+
+        EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
+        VERIFY_ARE_EQUAL(expectedAreChangesTracked, forMachine.AreChangesTracked());
 
         EnvironmentManager forProcess{ EnvironmentManager::GetForProcess() };
         VERIFY_IS_FALSE(forProcess.AreChangesTracked());
