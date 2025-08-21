@@ -85,6 +85,12 @@
       <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(_FoundationRuntimesFrameworkFolder)\Microsoft.WindowsAppRuntime.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
+    <Reference Include="Microsoft.Windows.Foundation.winmd"
+      Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.Foundation.winmd')">
+      <HintPath>$(_FoundationMetadataFolder)\Microsoft.Windows.Foundation.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(_FoundationRuntimesFrameworkFolder)\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
     <Reference Include="Microsoft.Windows.Storage.Pickers.winmd"
       Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.Storage.Pickers.winmd')">
       <HintPath>$(_FoundationMetadataFolder)\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
