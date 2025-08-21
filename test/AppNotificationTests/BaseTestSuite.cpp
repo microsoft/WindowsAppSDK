@@ -6,6 +6,7 @@
 #include "AppNotification-Test-Constants.h"
 #include "AppNotifications.Test.h"
 #include "BaseTestSuite.h"
+#include "MddWin11.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
