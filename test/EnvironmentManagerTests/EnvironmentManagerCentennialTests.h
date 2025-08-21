@@ -82,10 +82,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(CentennialTestAppendToPathForMachine);
 
         TEST_METHOD(CentennialTestRemoveFromPathForProcess);
-        TEST_METHOD(CentennialTestRemoveFromPathForUser)
-        {
-            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Test skipped - needs to be fixed in the future.");
-        }
+        TEST_METHOD(CentennialTestRemoveFromPathForUser);
         TEST_METHOD(CentennialTestRemoveFromPathForMachine);
 
         TEST_METHOD(CentennialTestAppendToPathExtForProcess);
@@ -93,10 +90,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(CentennialTestAppendToPathExtForMachine);
 
         TEST_METHOD(CentennialTestRemoveFromPathExtForProcess);
-        TEST_METHOD(CentennialTestRemoveFromPathExtForUser)
-        {
-            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Test skipped - needs to be fixed in the future.");
-        }
+        TEST_METHOD(CentennialTestRemoveFromPathExtForUser);
         TEST_METHOD(CentennialTestRemoveFromPathExtForMachine);
 
     };

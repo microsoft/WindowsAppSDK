@@ -83,10 +83,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(TestAppendToPathExtForMachine);
 
         TEST_METHOD(TestRemoveFromPathExtForProcess);
-        TEST_METHOD(TestRemoveFromPathExtForUser)
-        {
-            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Test skipped - needs to be fixed in the future.");
-        }
+        TEST_METHOD(TestRemoveFromPathExtForUser);
         TEST_METHOD(TestRemoveFromPathExtForMachine);
     };
 }

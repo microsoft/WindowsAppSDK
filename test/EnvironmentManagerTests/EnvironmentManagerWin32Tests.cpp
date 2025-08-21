@@ -472,6 +472,9 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
     void EnvironmentManagerWin32Tests::TestRemoveFromPathExtForUser()
     {
+        WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Test skipped - needs to be fixed in the future.");
+        return;
+
         // Keep a local string to match all operations to PATH
         std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathExtName) };
 
