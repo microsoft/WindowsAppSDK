@@ -78,7 +78,7 @@ param(
 $StartTime = Get-Date
 $lastexitcode = 0
 Set-StrictMode -Version 3.0
-$ErrorActionPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
 
 function Get-Tests
 {
