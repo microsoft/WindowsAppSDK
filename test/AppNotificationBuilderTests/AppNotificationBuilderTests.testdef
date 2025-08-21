@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "App Notification Builder Tests",
+            "Filename": "AppNotificationBuilderTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
