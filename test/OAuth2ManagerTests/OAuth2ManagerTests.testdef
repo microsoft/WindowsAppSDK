@@ -4,7 +4,7 @@
             "Description": "OAuth2 Manager API Tests",
             "Filename": "OAuth2ManagerTests.dll",
             "Parameters": "",
-            "Architectures": ["x64", "x86", "arm64"],
+            "Architectures": ["x64", "arm64"],
             "Status": "Enabled"
         }
     ]
