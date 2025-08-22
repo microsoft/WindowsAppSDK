@@ -1538,5 +1538,16 @@
   "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::SingleInstanceTest_Win32",
   "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::SingleInstanceTest_PackagedWin32",
   "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::RequestRestart_Win32",
-  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::RequestRestart_PackagedWin32"
+  "release_x64_Win10_rs5_DC.Test::AppLifecycle::FunctionalTests::RequestRestart_PackagedWin32",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::Protocol_AuthorizationCode_BasicEndToEnd",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::AuthorizationCodeWithClientAuth",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::ClientCredentialsTokenRequest",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::RefreshTokenRequest",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::ExtensionTokenRequest",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::TokenRequestErrorResponse",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::AdditionalParams",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::CompleteInvalidState",
+  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::FlatAPITest",
+  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::WinRTStringTest",
+  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::WinRTBytesTest"
 ]
