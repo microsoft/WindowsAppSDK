@@ -340,11 +340,14 @@ namespace Test::PickerCommonTests
                     winrt::hstring resultFolderPathString(resultFolderPath.get());
 
                     // Do a case insensitive comparison for the folder path.
-                    std::transform(resultFolderPathString.begin(), resultFolderPathString.end(), resultFolderPathString.begin(), ::tolower);
-                    std::transform(folder.c_str(), folder.c_str() + folder.size(), folder.begin(), ::tolower);
+                    std::wstring expectConfigLower{ expectConfig };
+                    std::wstring resultFolderPathLower{ resultFolderPathString };
+
+                    std::transform(expectConfigLower.begin(), expectConfigLower.end(), expectConfigLower.begin(), ::towlower);
+                    std::transform(resultFolderPathLower.begin(), resultFolderPathLower.end(), resultFolderPathLower.begin(), ::towlower);
 
                     message = L"Verify folder path of '" + folder + L"', expect: '" + folder + L"', actual: '" + resultFolderPathString + L"'";
-                    VERIFY_ARE_EQUAL(resultFolderPathString, expectConfig, message.c_str());
+                    VERIFY_ARE_EQUAL(resultFolderPathLower, expectConfigLower, message.c_str());
                 }
                 else
                 {
