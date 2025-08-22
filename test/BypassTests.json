@@ -1560,5 +1560,5 @@
   "release_x64_Windows.10.Enterprise.LTSC.2021.OAuth2ManagerTests::OAuth2APITests::CompleteInvalidState",
   "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::FlatAPITest",
   "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::WinRTStringTest",
-  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::WinRTBytesTest",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::WinRTBytesTest"
 ]
