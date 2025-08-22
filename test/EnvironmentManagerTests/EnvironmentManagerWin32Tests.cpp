@@ -36,7 +36,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
     {
         BEGIN_TEST_METHOD_PROPERTIES()
             TEST_METHOD_PROPERTY(L"Data:SelfContained", L"{true, false}")
-            END_TEST_METHOD_PROPERTIES()
+        END_TEST_METHOD_PROPERTIES()
 
         bool isSelfContained{};
         VERIFY_SUCCEEDED(WEX::TestExecution::TestData::TryGetValue(L"SelfContained", isSelfContained));
@@ -54,6 +54,8 @@ namespace WindowsAppSDKEnvironmentManagerTests
         {
             testMainPackageFamilyName = nullptr;
         }
+
+        ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
 
         VERIFY_ARE_EQUAL(isSelfContained, ::WindowsAppRuntime::SelfContained::IsSelfContained());
 
