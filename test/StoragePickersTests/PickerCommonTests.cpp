@@ -339,6 +339,10 @@ namespace Test::PickerCommonTests
                     folderItem->GetDisplayName(SIGDN_FILESYSPATH, resultFolderPath.put());
                     winrt::hstring resultFolderPathString(resultFolderPath.get());
 
+                    // Do a case insensitive comparison for the folder path.
+                    std::transform(resultFolderPathString.begin(), resultFolderPathString.end(), resultFolderPathString.begin(), ::tolower);
+                    std::transform(folder.c_str(), folder.c_str() + folder.size(), folder.begin(), ::tolower);
+
                     message = L"Verify folder path of '" + folder + L"', expect: '" + folder + L"', actual: '" + resultFolderPathString + L"'";
                     VERIFY_ARE_EQUAL(resultFolderPathString, expectConfig, message.c_str());
                 }
