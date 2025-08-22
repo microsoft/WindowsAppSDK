@@ -1607,5 +1607,16 @@
   "release_x64_Win10_rs5_DC.LRPTests::LaunchLRP_FromStartupTask",
   "release_x64_Win10_rs5_DC.LRPTests::AddToastRegistrationMappingNoSink",
   "release_x64_Win10_rs5_DC.LRPTests::RemoveToastRegistrationMappingNoSink",
-  "release_x64_Win10_rs5_DC.LRPTests::AddRemoveToastRegistrationMappingWithSink"
+  "release_x64_Win10_rs5_DC.LRPTests::AddRemoveToastRegistrationMappingWithSink",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Delete",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Frameworks_WindowsAppRuntime_MathAdd",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::FullLifecycle_RegistryLifetime_Frameworks_WindowsAppRuntime_MathAdd",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Add_Rank_A0_B10",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Add_Rank_B0prepend_A0",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Add_Rank_Bneg10_A0",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Explicit",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Current"
 ]
