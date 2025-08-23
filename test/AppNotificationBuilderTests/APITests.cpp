@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+#include "MddWin11.h"
 
 namespace winrt
 {
@@ -35,10 +36,18 @@ namespace Test::AppNotification::Builder
 
        TEST_METHOD_SETUP(MethodSetup)
         {
-
             ::Test::Bootstrap::SetupBootstrap();
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
-                ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+
+            PCWSTR testFrameworkPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName };
+            PCWSTR testMainPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName };
+
+            // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
+            if (MddCore::Win11::IsSupported())
+            {
+                testMainPackageFamilyName = nullptr;
+            }
+
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
             return true;
         }
 

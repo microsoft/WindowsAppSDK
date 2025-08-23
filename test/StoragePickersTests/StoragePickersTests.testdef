@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Storage Pickers Tests",
+            "Filename": "StoragePickersTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}

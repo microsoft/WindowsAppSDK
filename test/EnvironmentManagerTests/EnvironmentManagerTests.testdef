@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Environment Manager Tests",
+            "Filename": "EnvironmentManagerTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86"],
+            "Status": "Enabled"
+        }
+    ]
+}
