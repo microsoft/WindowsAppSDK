@@ -165,4 +165,20 @@ namespace ManagedTest
             CommonTestCode.ResourceContextTest.NoResourceFileWithContextTest();
         }
     }
+
+    [TestClass]
+    public class ApplicationLanguagesTest
+    {
+        [TestMethod]
+        public void PrimaryLanguageOverrideAcceptsEmptyStringTest()
+        {
+            CommonTestCode.ApplicationLanguagesTest.PrimaryLanguageOverrideAcceptsEmptyStringTest();
+        }
+
+        [TestMethod]
+        public void PrimaryLanguageOverrideAcceptsNullStringTest()
+        {
+            CommonTestCode.ApplicationLanguagesTest.PrimaryLanguageOverrideAcceptsNullStringTest();
+        }
+    }
 }
