@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!--<SelfContained>true</SelfContained>-->
+    <WindowsPackageType>None</WindowsPackageType>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'x64'">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'x86'">win-x86</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Taef" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" GeneratePathProperty="true" />
+    <PackageReference Include="Taef.Managed" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="StoragePickerComponentTests.testdef">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="taeftest.manifest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!--TAEF test for dotnet core runtime needs coreclr.dll--> 
+  <!--<Target Name="CopyDotNet" AfterTargets="Build">
+    <ItemGroup>
+      <RuntimeFilesToCopy Include="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.AssetType)' == 'runtime' OR '%(ResolvedFileToPublish.AssetType)' == 'native'" />
+    </ItemGroup>
+    
+    <Copy SourceFiles="@(RuntimeFilesToCopy)" DestinationFiles="@(RuntimeFilesToCopy->'$(OutDir)localDotNet\%(Filename)%(Extension)')" SkipUnchangedFiles="true"/>
+  </Target>-->
+
+</Project>
