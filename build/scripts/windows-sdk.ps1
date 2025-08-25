@@ -3,7 +3,7 @@
 #
 
 param(
-    # TODO: Use version, current hardwire to only support 2 specific versions.
+    # TODO: Use version, currently hardwire to only support 2 specific versions.
     [string]$SdkVersion = $null
 )
 
