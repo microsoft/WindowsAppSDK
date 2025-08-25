@@ -13,7 +13,7 @@ $repoInstallDir  = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\.dotnet")
 $filename = "$PSScriptRoot\..\..\..\eng\Versions.Dependencies.props"
 $xml = [xml](Get-Content $filename -EA:Stop)
 $dotNotSdkVersion = $xml.SelectSingleNode("/Dependencies/ToolsetDependencies/Dependency[@Name='CsWinRT.Dependency.DotNetCoreSdk']").Version
-$dotNotSdkVersionLkg = if (-not $skipLKG) $dotNotSdkVersion
+$dotNotSdkVersionLkg = if (-not $skipLKG) { $dotNotSdkVersion }
 
 if ($version -ne "")
 {
