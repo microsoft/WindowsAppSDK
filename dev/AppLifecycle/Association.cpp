@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #include <pch.h>
 #include "Association.h"
@@ -25,6 +25,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         {
             seed = wil::GetModuleFileNameW<std::wstring>(nullptr);
         }
+
+        // Convert seed to lowercase for case-insensitive hashing
+        std::transform(seed.begin(), seed.end(), seed.begin(), ::towlower);
 
         std::hash<std::wstring> hasher;
         auto hash = hasher(seed);

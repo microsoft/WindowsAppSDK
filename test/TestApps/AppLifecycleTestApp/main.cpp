@@ -91,7 +91,15 @@ int main()
                 }
                 catch (...)
                 {
-                    //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                    // Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                    // These errors indicate the registration doesn't exist, which is the desired state
+                    auto hr = winrt::to_hresult();
+                    if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
+                    {
+                        // Signal event that protocol was unregistered (or already didn't exist).
+                        SignalPhase(c_testProtocolPhaseEventName);
+                        succeeded = true;
+                    }
                 }
             }
             else if (argument.compare(L"RegisterFile") == 0)
@@ -116,7 +124,15 @@ int main()
                 }
                 catch (...)
                 {
-                    //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                    // Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                    // These errors indicate the registration doesn't exist, which is the desired state
+                    auto hr = winrt::to_hresult();
+                    if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
+                    {
+                        // Signal event that file was unregistered (or already didn't exist).
+                        SignalPhase(c_testFilePhaseEventName);
+                        succeeded = true;
+                    }
                 }
             }
             else if (argument.compare(L"RegisterStartup") == 0)
