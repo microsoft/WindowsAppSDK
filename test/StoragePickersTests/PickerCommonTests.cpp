@@ -346,7 +346,9 @@ namespace Test::PickerCommonTests
                     std::transform(expectConfigLower.begin(), expectConfigLower.end(), expectConfigLower.begin(), ::towlower);
                     std::transform(resultFolderPathLower.begin(), resultFolderPathLower.end(), resultFolderPathLower.begin(), ::towlower);
 
-                    message = L"Verify folder path of '" + folder + L"', expect: '" + expectConfigLower + L"', actual: '" + resultFolderPathLower + L"'";
+                    message = L"Folder path verification for:  '" + folder +
+          L"'\n  Expected: '" + expectConfigLower +
+          L"'\n  Actual: '" + resultFolderPathLower + L"'";
                     VERIFY_ARE_EQUAL(resultFolderPathLower, expectConfigLower, message.c_str());
                 }
                 else
