@@ -265,14 +265,14 @@ if ($InstallWindowsSDK)
     # Static(ish) link for Windows SDK
     # Note: there is a delay from Windows SDK announcements to availability via the static link
     $uri = ""
-    if ($buildNumber -eq "18362")
+    if ($buildNumber -eq "26100")
     {
-        $uri = "https://go.microsoft.com/fwlink/?linkid=2083448"
+        $uri = "https://go.microsoft.com/fwlink/?linkid=2327008"
     }
-    else 
+    else
     {
         Write-Host
-        Write-Host "Only version 18362 is available"
+        Write-Host "Only version 26100 is available"
         Write-Host
         Exit 1
     }

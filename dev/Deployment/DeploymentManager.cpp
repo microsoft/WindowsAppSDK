@@ -229,7 +229,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 std::ignore = LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
             }
 
-            THROW_HR_MSG(hr, "PackageFullName=%ls Options=0x%X isRepair:%c", packageFullName.c_str(), deploymentInitializeOptions, isRepair ? 'Y' : 'N' );
+            THROW_HR_MSG(hr, "PackageFullName=%ls Options: ForceDeployment=%c OnErrorShowUI=%c isRepair:%c",
+                         packageFullName.c_str(), deploymentInitializeOptions.ForceDeployment() ? 'Y' : 'N',
+                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N' );
         }
 
         // Success!

@@ -2,7 +2,7 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-  
+
 stages:
 - stage: StaticValidationTest
   dependsOn: Pack
@@ -39,7 +39,7 @@ stages:
     - task: CopyFiles@2
       inputs:
         SourceFolder: '$(System.ArtifactsDirectory)'
-        Contents: | 
+        Contents: |
           **/*.nupkg
         targetFolder: $(Build.SourcesDirectory)\localpackages
 
@@ -76,6 +76,18 @@ stages:
         # TODO: the SdkVersion parameter does not yet support arbitrary versions.
         arguments: >
           -SdkVersion "10.0.22000"
+
+    # The MMS2022 image used to come with Windows SDK 10.0.26100, but not any more.
+    - task: PowerShell@2
+      displayName: 'Add Windows SDK 10.0.26100'
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      inputs:
+        targetType: filePath
+        filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+        # TODO: the SdkVersion parameter does not yet support arbitrary versions.
+        arguments: >
+          -SdkVersion "10.0.26100"
 
     - task: VSBuild@1
       displayName: 'Restore PackageInspectionTest.sln'
