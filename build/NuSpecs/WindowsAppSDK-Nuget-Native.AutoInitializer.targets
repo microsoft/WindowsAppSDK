@@ -2,24 +2,6 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Target Name="WindowsAppRuntimeAutoInitializerPreprocessorDefinitions">
-    <PropertyGroup>
-      <AutoInitializerPreprocessorDefinitions />
-      <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">
-        MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;$(AutoInitializerPreprocessorDefinitions)
-      </AutoInitializerPreprocessorDefinitions>
-      <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">
-        MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;$(AutoInitializerPreprocessorDefinitions)
-      </AutoInitializerPreprocessorDefinitions>
-      <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">
-        MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT;$(AutoInitializerPreprocessorDefinitions)
-      </AutoInitializerPreprocessorDefinitions>
-      <AutoInitializerPreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">
-        MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;$(AutoInitializerPreprocessorDefinitions)
-      </AutoInitializerPreprocessorDefinitions>
-    </PropertyGroup>
-  </Target>
-
   <Target Name="WindowsAppRuntimeAutoInitializer">
     <ItemGroup>
       <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
@@ -28,7 +10,10 @@
 
       <!-- Applying the preprocessor definitions globally here avoids accidental batching, which could result in duplicate source references.-->
       <ClCompile>
-        <PreprocessorDefinitions>%(PreprocessorDefinitions);$(AutoInitializerPreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        <PreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       </ClCompile>
     </ItemGroup>
   </Target>
