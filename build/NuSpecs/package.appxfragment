@@ -102,6 +102,9 @@
             <!-- BadgeNotifications -->
             <ActivatableClass ActivatableClassId="Microsoft.Windows.BadgeNotifications.BadgeNotificationManager" ThreadingModel="both" />
 
+            <!-- Decimal -->
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Foundation.DecimalHelper" ThreadingModel="both" />
+
             <!-- StoragePickers -->
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileOpenPicker" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileSavePicker" ThreadingModel="both" />
