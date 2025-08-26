@@ -144,6 +144,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.Foundation.winmd"
+       Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.Foundation.winmd')">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="$(_FoundationMetadataFolder)\Microsoft.Windows.Storage.Pickers.winmd"
        Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.Storage.Pickers.winmd')">
       <Private>false</Private>
