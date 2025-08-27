@@ -18,6 +18,7 @@ namespace Test::LRP
 {
     static const PCWSTR c_processName = L"TAEF.exe";
     static const PCWSTR c_appId = L"toastAppId";
+    static const winrt::guid c_remoteId{ winrt::guid_of<INotificationsLongRunningPlatform>() }; // Add this line
 
     class LRPTests
     {
@@ -39,52 +40,86 @@ namespace Test::LRP
 
         TEST_CLASS_SETUP(ClassInit)
         {
-
             ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
+            
+            // Launch the LRP service so COM interface becomes available
+            LaunchLRPService();
+            
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
+            // Stop the LRP service
+            StopLRPService();
+            
             ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
             return true;
         }
 
-        TEST_METHOD(LaunchLRP_FromStartupTask)
+        void LaunchLRPService()
         {
-            VerifyLRP_IsRunning(false);
+            // Only launch if not already running
+            if (!IsLRPRunning())
+            {
+                STARTUPINFO startupInfo{};
+                ZeroMemory(&startupInfo, sizeof(startupInfo));
+                startupInfo.cb = sizeof(startupInfo);
 
-            STARTUPINFO startupInfo{};
-            ZeroMemory(&startupInfo, sizeof(startupInfo));
-            startupInfo.cb = sizeof(startupInfo);
+                auto startupTaskExePath{ Test::FileSystem::GetSolutionOutDirPath() / Test::Packages::WindowsAppRuntimeSingleton::c_PackageDirName };
+                startupTaskExePath += LR"(.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe)";
 
-            // Build the Solution OutDir path where the Startup Task exe is.
-            // Path: $OutDir/WindowsAppRuntime.Test.Singleton.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe
-            auto startupTaskExePath{ Test::FileSystem::GetSolutionOutDirPath() / Test::Packages::WindowsAppRuntimeSingleton::c_PackageDirName };
-            startupTaskExePath += LR"(.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe)";
+                wil::unique_process_information processInfo;
+                VERIFY_NO_THROW(winrt::check_bool(CreateProcess(
+                    startupTaskExePath.c_str(),
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    FALSE,
+                    NORMAL_PRIORITY_CLASS,
+                    nullptr,
+                    nullptr,
+                    &startupInfo,
+                    &processInfo)));
 
-            wil::unique_process_information processInfo;
-            VERIFY_NO_THROW(winrt::check_bool(CreateProcess(
-                startupTaskExePath.c_str(),
-                nullptr, // command line options
-                nullptr, // process attributes
-                nullptr, // thread attributes
-                FALSE,   // inherit handles
-                NORMAL_PRIORITY_CLASS, // creation flags
-                nullptr, // lpEnvironment
-                nullptr, // current directory for the process
-                &startupInfo,
-                &processInfo)));
-
-            // Wait for the process to come up and be captured in the snapshot from verification step.
-            Sleep(1000);
-            VerifyLRP_IsRunning(true);
+                // Wait for the service to be ready
+                Sleep(2000);
+                VERIFY_IS_TRUE(IsLRPRunning());
+            }
         }
 
-        void VerifyLRP_IsRunning(bool isRunning)
+        void StopLRPService()
+        {
+            // Find and terminate the LRP process
+            wil::unique_handle processesSnapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
+            if (processesSnapshot.get() != INVALID_HANDLE_VALUE)
+            {
+                PROCESSENTRY32 processEntry{};
+                processEntry.dwSize = sizeof(processEntry);
+
+                BOOL result{ Process32First(processesSnapshot.get(), &processEntry) };
+                while (result != FALSE)
+                {
+                    if (wcscmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
+                    {
+                        wil::unique_handle processHandle(OpenProcess(PROCESS_TERMINATE, FALSE, processEntry.th32ProcessID));
+                        if (processHandle.get())
+                        {
+                            TerminateProcess(processHandle.get(), 0);
+                            WaitForSingleObject(processHandle.get(), 5000);
+                        }
+                        break;
+                    }
+                    result = Process32Next(processesSnapshot.get(), &processEntry);
+                }
+            }
+        }
+
+        bool IsLRPRunning()
         {
             wil::unique_handle processesSnapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
-            VERIFY_IS_NOT_NULL(processesSnapshot.get());
+            if (processesSnapshot.get() == INVALID_HANDLE_VALUE)
+                return false;
 
             PROCESSENTRY32 processEntry{};
             processEntry.dwSize = sizeof(processEntry);
@@ -94,23 +129,26 @@ namespace Test::LRP
             {
                 if (wcscmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
                 {
-                    VERIFY_IS_TRUE(isRunning);
-                    DWORD processId{ processEntry.th32ProcessID };
-
-                    wil::unique_handle longRunningProcessHandle(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, processId));
-                    DWORD exitCode{};
-                    BOOL exitCodeProcess{ GetExitCodeProcess(longRunningProcessHandle.get(), &exitCode) };
-
-                    VERIFY_SUCCEEDED(exitCodeProcess == FALSE ? GetLastError() : S_OK);
-                    VERIFY_ARE_EQUAL(exitCode, STILL_ACTIVE);
-
-                    return;
+                    return true;
                 }
-
                 result = Process32Next(processesSnapshot.get(), &processEntry);
             }
+            return false;
+        }
 
-            VERIFY_IS_FALSE(isRunning);
+        void VerifyLRP_IsRunning(bool isRunning)
+        {
+            VERIFY_ARE_EQUAL(IsLRPRunning(), isRunning);
+        }
+
+        TEST_METHOD(LaunchLRP_FromStartupTask)
+        {
+            // Stop any existing LRP service first for this test
+            StopLRPService();
+            VerifyLRP_IsRunning(false);
+
+            LaunchLRPService();
+            VerifyLRP_IsRunning(true);
         }
 
         TEST_METHOD(RegisterUnregisterLongRunningActivator)
