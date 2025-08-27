@@ -43,6 +43,7 @@ namespace Test::AppNotification::Builder
             PCWSTR testMainPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName };
 
             // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
+            // https://github.com/microsoft/WindowsAppSDK/blob/main/dev/Common/WindowsAppRuntime.VersionInfo.cpp#L123-L133
             if (MddCore::Win11::IsSupported())
             {
                 testMainPackageFamilyName = nullptr;
