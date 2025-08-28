@@ -1,10 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
 
 #include "PushNotification-Test-Constants.h"
 #include "BaseTestSuite.h"
+#include "MddWin11.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -36,17 +37,24 @@ void BaseTestSuite::MethodSetup()
     bool isSelfContained{};
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained));
 
-    if (!isSelfContained)
+    PCWSTR testFrameworkPackageFamilyName = ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName;
+    PCWSTR testMainPackageFamilyName = ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName;
+
+    if (isSelfContained)
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
-            ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
-        VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+        testFrameworkPackageFamilyName = testMainPackageFamilyName = c_fakePackageFamilyName;
     }
-    else
+
+    // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
+    // https://github.com/microsoft/WindowsAppSDK/blob/main/dev/Common/WindowsAppRuntime.VersionInfo.cpp#L123-L133
+    if (MddCore::Win11::IsSupported())
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
-        VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+        testMainPackageFamilyName = nullptr;
     }
+
+    ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
+
+    VERIFY_ARE_EQUAL(isSelfContained, ::WindowsAppRuntime::SelfContained::IsSelfContained());
 }
 
 void BaseTestSuite::MethodCleanup()
