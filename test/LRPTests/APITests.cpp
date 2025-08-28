@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -6,6 +6,7 @@
 #include <TlHelp32.h>
 #include <NotificationsLongRunningProcess_h.h>
 #include "NotificationPlatformActivation.h"
+#include "MddWin11.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -41,11 +42,28 @@ namespace Test::LRP
         {
 
             ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
+            ::Test::Bootstrap::SetupBootstrap();
+
+            PCWSTR testFrameworkPackageFamilyName = ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName;
+            PCWSTR testMainPackageFamilyName = ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName;
+
+
+            // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
+            // https://github.com/microsoft/WindowsAppSDK/blob/main/dev/Common/WindowsAppRuntime.VersionInfo.cpp#L123-L133
+            if (MddCore::Win11::IsSupported())
+            {
+                testMainPackageFamilyName = nullptr;
+            }
+
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
+
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
+            ::WindowsAppRuntime::VersionInfo::TestShutdown();
+            ::Test::Bootstrap::CleanupBootstrap();
             ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
             return true;
         }
@@ -77,7 +95,7 @@ namespace Test::LRP
                 &processInfo)));
 
             // Wait for the process to come up and be captured in the snapshot from verification step.
-            Sleep(1000);
+            Sleep(5000);
             VerifyLRP_IsRunning(true);
         }
 
