@@ -41,8 +41,7 @@ namespace Test::LRP
         TEST_CLASS_SETUP(ClassInit)
         {
 
-            ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
-            ::Test::Bootstrap::SetupBootstrap();
+            ::Test::Bootstrap::Setup();
 
             PCWSTR testFrameworkPackageFamilyName = ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName;
             PCWSTR testMainPackageFamilyName = ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName;
@@ -63,8 +62,7 @@ namespace Test::LRP
         TEST_CLASS_CLEANUP(ClassUninit)
         {
             ::WindowsAppRuntime::VersionInfo::TestShutdown();
-            ::Test::Bootstrap::CleanupBootstrap();
-            ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
+            ::Test::Bootstrap::Cleanup();
             return true;
         }
 
