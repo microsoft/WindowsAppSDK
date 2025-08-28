@@ -267,7 +267,11 @@ if ($InstallWindowsSDK)
     $uri = ""
     if ($buildNumber -eq "26100")
     {
-        $uri = "https://go.microsoft.com/fwlink/?linkid=2327008"
+        # Per https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/
+        # Windows SDK for Windows 11 (10.0.25100.4654)
+        #   * Install SDK (setup.exe) = https://go.microsoft.com/fwlink/?linkid=2327008
+        #   *           Download .iso = https://go.microsoft.com/fwlink/?linkid=2326092
+        $uri = "https://go.microsoft.com/fwlink/?linkid=2326092"
     }
     else
     {

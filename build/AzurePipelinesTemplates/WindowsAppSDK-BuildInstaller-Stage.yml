@@ -63,18 +63,6 @@ stages:
         echo ob_sdl_prefast_runDuring=$(ob_sdl_prefast_runDuring)
         echo ob_sdl_msbuildOverride=$(ob_sdl_msbuildOverride)
 
-    # The MMS2022 image used to come with Windows SDK 10.0.22000, but not any more.
-    - task: PowerShell@2
-      displayName: 'Add Windows SDK 10.0.22000'
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-      inputs:
-        targetType: filePath
-        filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
-        # TODO: the SdkVersion parameter does not yet support arbitrary versions.
-        arguments: >
-          -SdkVersion "10.0.22000"
-
     # The MMS2022 image used to come with Windows SDK 10.0.26100, but not any more.
     - task: PowerShell@2
       displayName: 'Add Windows SDK 10.0.26100'
