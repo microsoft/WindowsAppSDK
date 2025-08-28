@@ -1,0 +1,18 @@
+{
+    "Tests": [
+        {
+            "Description": "App Notification Tests Packaged",
+            "Filename": "AppNotificationTests.dll",
+            "Parameters": "/name:PackagedTests*",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "App Notification Tests Unpackaged",
+            "Filename": "AppNotificationTests.dll",
+            "Parameters": "/name:UnpackagedTests*",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
