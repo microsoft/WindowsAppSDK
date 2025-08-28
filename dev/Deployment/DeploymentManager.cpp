@@ -112,23 +112,72 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
+            // The main and singleton packages contain a shortened version tag for the package family name.
+            std::wstring formattedVersionTag{};
+
+            auto ExtractFormattedVersionTag = [](const std::wstring& versionTag, bool addDashPrefix = false) -> std::wstring
+            {
+                wchar_t firstLetter = versionTag.size() > 1 ? versionTag[1] : L'\0';
+                std::wstring numberBeforeUnderscore;
+                size_t i = 2;
+                while (i < versionTag.size() && iswdigit(versionTag[i]))
+                {
+                    numberBeforeUnderscore += versionTag[i];
+                    ++i;
+                }
+                std::wstring result;
+                if (firstLetter != L'\0')
+                {
+                    if (addDashPrefix)
+                    {
+                        result += L"-";
+                    }
+                    result += firstLetter;
+                }
+                result += numberBeforeUnderscore;
+                return result;
+            };
+
+            // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
+            // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
             if (package.versionType == PackageVersionType::Versioned)
             {
-                // PackageFamilyName = Prefix + SubTypeName + VersionIdentifier + Suffix
-                // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // Versioned: keep "Major.Minor-" and append first letter after '-' and number (if any) before '_'
+                // Example: packageNameVersionIdentifier = "1.8-experimental4", packageNameVersionTag = "-experimental4"
+                // formattedVersionTag = "1.8-e4"
+
+                size_t dashPos = packageNameVersionIdentifier.find('-');
+                std::wstring majorMinor = (dashPos != std::wstring::npos) ? packageNameVersionIdentifier.substr(0, dashPos) : packageNameVersionIdentifier; // "1.8"
+                if (dashPos != std::wstring::npos)
+                {
+                    formattedVersionTag = majorMinor + ExtractFormattedVersionTag(packageNameVersionTag, /*addDashPrefix*/true);
+                }
+                else
+                {
+                    formattedVersionTag = majorMinor;
+                }
             }
             else if (package.versionType == PackageVersionType::Unversioned)
             {
-                // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
-                // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // Unversioned: append first letter after '-' and number (if any) before '_'
+                // Example: packageNameVersionTag = "-experimental4"
+                // formattedVersionTag = "-e4"
+                if (packageNameVersionTag.find(L'-') != std::wstring::npos)
+                {
+                    formattedVersionTag = ExtractFormattedVersionTag(packageNameVersionTag, /*addDashPrefix*/true);
+                }
+                else
+                {
+                    formattedVersionTag = L"";
+                }
             }
             else
             {
                 // Other version types not supported.
                 FAIL_FAST_HR(HRESULT_FROM_WIN32(ERROR_UNSUPPORTED_TYPE));
             }
+
+            packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + formattedVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
 
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
@@ -181,7 +230,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
         initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
                                                       Security::IntegrityLevel::IsElevated(),
                                                       isPackagedProcess,
@@ -270,7 +319,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         else
         {
-            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) && 
+            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) &&
                 (isRepair))
             {
                 status = DeploymentStatus::PackageRepairFailed;
@@ -488,7 +537,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-    // Deploys all of the packages carried by the specified framework.
+        // Deploys all of the packages carried by the specified framework.
     HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
         RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName));
