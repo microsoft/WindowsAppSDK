@@ -40,11 +40,17 @@
 .PARAMETER CheckVisualStudio
     Check Visual Studio
 
-.PARAMETER NoInteractive
-    Run in non-interactive mode (fail if any need for user input)
+.PARAMETER FixAll
+    Enable all -Fix* options.
+
+.PARAMETER FixLongPath
+    Enable LongPath support if necessary.
 
 .PARAMETER InstallWindowsSDK
     Download and install Windows Platform SDKs (if necessary).
+
+.PARAMETER NoInteractive
+    Run in non-interactive mode (fail if any need for user input)
 
 .PARAMETER Offline
     Do not access the network
@@ -119,6 +125,10 @@ Param(
     [Switch]$CheckDeveloperMode=$false,
 
     [Switch]$Clean=$false,
+
+    [Switch]$FixAll=$false,
+
+    [Switch]$FixLongPath=$false,
 
     [Switch]$InstallWindowsSDK=$false,
 
@@ -1557,6 +1567,64 @@ function Test-DeveloperMode
     }
 }
 
+function Get-LongPath
+{
+    $regkey = 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem'
+    if (Test-Path -Path $regkey -PathType Container)
+    {
+        $value = $(Get-Item -Path $regkey).GetValue('LongPathsEnabled')
+        return $value -eq 1
+    }
+    return $false
+}
+
+function Set-LongPath
+{
+    $enabled = Get-LongPath
+    if ($enabled)
+    {
+        Write-Host "LongPath support...Already enabled"
+        return $true
+    }
+
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
+    {
+        Write-Host "Enable LongPath support...Access Denied. Run from an admin prompt"
+        $global:issues++
+        return $false
+    }
+
+    $regkey = 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem'
+    $ok = Set-ItemProperty -Path $regkey -Name LongPathsEnabled -Value 1 -Force
+    if ($ok -ne $true)
+    {
+        Write-Host "ERROR: LongPath support could not be enabled. Enable it via Settings" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    return $true
+}
+
+function Test-LongPath
+{
+    $enabled = Get-LongPath
+    if ($enabled)
+    {
+        Write-Host "LongPath support: Enabled"
+        return $true
+    }
+    Write-Host "LongPath support: Disabled"
+
+    if ($FixLongPath -eq $false)
+    {
+        Write-Warning "WARNING: LongPath support is disabled"
+        return $false
+    }
+    Set-LongPath
+}
+
 function Get-SystemInfo
 {
     $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
@@ -1588,6 +1656,8 @@ function Get-SystemInfo
     Write-Host "LCU Version     : $($lcuver)"
 
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
+
+    $null = Test-LongPath
 }
 
 $null = Set-Settings
@@ -1606,6 +1676,11 @@ if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAE
 if ($SyncDependencies -eq $true)
 {
     $CheckDependencies = $true
+}
+if ($FixAll -eq $true)
+{
+    $FixLongPath = $true
+    $InstallWindowsSDK = $true
 }
 
 Write-Output "Checking developer environment..."
