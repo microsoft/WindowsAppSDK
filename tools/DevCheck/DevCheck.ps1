@@ -40,6 +40,9 @@
 .PARAMETER CheckVisualStudio
     Check Visual Studio
 
+.PARAMETER CheckWindowsSDK
+    Check Windows Platform SDK(s)
+
 .PARAMETER FixAll
     Enable all -Fix* options.
 
@@ -112,6 +115,10 @@ Param(
 
     [Switch]$CheckAll=$false,
 
+    [Switch]$CheckDependencies=$false,
+
+    [Switch]$CheckDeveloperMode=$false,
+
     [Switch]$CheckTAEFService=$false,
 
     [Switch]$CheckTestCert=$false,
@@ -120,9 +127,7 @@ Param(
 
     [Switch]$CheckVisualStudio=$false,
 
-    [Switch]$CheckDependencies=$false,
-
-    [Switch]$CheckDeveloperMode=$false,
+    [Switch]$CheckWindowsSDK=$false,
 
     [Switch]$Clean=$false,
 
@@ -698,6 +703,20 @@ function Install-WindowsSDK
     return $true
 }
 
+function Parse-DotQuadVersion
+{
+    param(
+        [String]$version
+    )
+
+    $fields = $version -split '\.'
+    $major = [int]$fields[0]
+    $minor = [int]$fields[1]
+    $build = [int]$fields[2]
+    $revision = [int]$fields[3]
+    return @($major, $minor, $build, $revision)
+}
+
 function Test-WindowsSDKInstall
 {
     param(
@@ -705,8 +724,32 @@ function Test-WindowsSDKInstall
         [uri]$url
     )
 
-    $regkey = "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots\$version"
+    # Parse version from a.b.c.d into parts
+    $dotquadversion = Parse-DotQuadVersion $version
+    $major = $dotquadversion[0]
+    $minor = $dotquadversion[1]
+    $build = $dotquadversion[2]
+    $revision = $dotquadversion[3]
+
+    # Check if version=a.b.c.0 is present at HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots\$version
+    $regkey = "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots\$($major).$($minor).$($build).0"
     $found = Test-Path $regkey -PathType Container
+    if ($found)
+    {
+        # Check if Windows SDK EULA x86 a.c is present at HKLM:SOFTWARE\Classes\Installer\Dependencies\Microsoft.Windows.WindowsSDKEULA.x86.$a.$c
+        $eula_regkey = "HKLM:SOFTWARE\Classes\Installer\Dependencies\Microsoft.Windows.WindowsSDKEULA.x86.$($major).$($build)"
+        $found = Test-Path $eula_regkey -PathType Container
+        if ($found)
+        {
+            # Check if 'Version' name has a value of a.c.d+ where ==a.c and >=d
+            # We ignore b because sometimes it varies (10.0.... or 10.1....)
+            $value = $(Get-Item -Path $eula_regkey).GetValue('Version')
+            Write-Verbose "Version $value detected at $eula_regkey"
+            $value_fields = Parse-DotQuadVersion $value
+            $found = ($value_fields[0] -eq $major) -And ($value_fields[2] -eq $build) -And ($value_fields[3] -ge $revision)
+        }
+    }
+
     if ($found)
     {
         Write-Host "Windows SDK $($version) = OK"
@@ -718,7 +761,7 @@ function Test-WindowsSDKInstall
     }
     else
     {
-        Write-Host "...ERROR: Windows SDK $($version) not found or valid. Run with -InstallWindowsSDK to download and install missing SDK(s). For more information see https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines/GettingStarted.md#tooling-prerequisites" -ForegroundColor Red -BackgroundColor Black
+        Write-Host "...ERROR: Windows SDK $($version) not found or valid. Run with -InstallWindowsSDK (or -FixAll) to download and install missing SDK(s). For more information see https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines/GettingStarted.md#tooling-prerequisites" -ForegroundColor Red -BackgroundColor Black
         $global:issues++
     }
     return $found
@@ -1668,7 +1711,8 @@ $null = Get-UserSettings
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTaefService -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
-    ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
+    ($CheckVisualStudio -eq $false) -And ($CheckWindowsSDK -eq $false) -And
+    ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
     ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
 {
     $CheckAll = $true
@@ -1696,6 +1740,12 @@ if (($CheckAll -ne $false) -Or ($ShowSystemInfo -ne $false))
     Get-SystemInfo
 }
 
+if (($CheckAll -ne $false) -Or ($CheckWindowsSDK -ne $false))
+{
+    $null = Test-WindowsSDKInstall '10.0.17763.0' 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
+    $null = Test-WindowsSDKInstall '10.0.26100.4654' 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'
+}
+
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
     $ok = Test-VisualStudio2022Install
@@ -1703,8 +1753,6 @@ if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
     {
         $null = Test-VisualStudioComponents
     }
-    $null = Test-WindowsSDKInstall '10.0.17763.0' 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
-    $null = Test-WindowsSDKInstall '10.0.26100.4654' 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
