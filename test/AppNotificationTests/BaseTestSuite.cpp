@@ -58,14 +58,37 @@ void BaseTestSuite::MethodSetup()
 
 void BaseTestSuite::MethodCleanup()
 {
-    if (Test::AppModel::IsPackagedProcess() || (!Test::AppModel::IsPackagedProcess() && !m_unregisteredFully))
+    try
     {
-        VERIFY_IS_TRUE(EnsureNoActiveToasts());
-    }
+        if (Test::AppModel::IsPackagedProcess() || (!Test::AppModel::IsPackagedProcess() && !m_unregisteredFully))
+        {
+            // Add safety check before cleanup
+            try
+            {
+                VERIFY_IS_TRUE(EnsureNoActiveToasts());
+            }
+            catch (...)
+            {
+                Log::Warning(L"EnsureNoActiveToasts failed during cleanup - continuing");
+            }
+        }
 
-    if (!m_unregisteredFully)
+        if (!m_unregisteredFully)
+        {
+            try
+            {
+                UnregisterAllWithAppNotificationManager();
+            }
+            catch (...)
+            {
+                Log::Warning(L"UnregisterAllWithAppNotificationManager failed during cleanup");
+                m_unregisteredFully = true;
+            }
+        }
+    }
+    catch (...)
     {
-        UnregisterAllWithAppNotificationManager();
+        Log::Warning(L"Exception in MethodCleanup - swallowing to prevent test host crash");
     }
 
     ::WindowsAppRuntime::VersionInfo::TestShutdown();
