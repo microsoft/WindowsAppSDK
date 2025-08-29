@@ -8,9 +8,11 @@
 .DESCRIPTION
     Review the current environment and fix or warn if anything is amiss. This includes...
     * Developer mode is enabled
+    * LongPath support is enabled
     * Test certificate to sign test MSIX packages is installed
     * TAEF service is installed and running
     * Visual Studio 2022 is installed and properly configured
+    * Windows SDK(s) are installed
     * Dependencies in use are in the approved list of packages and versions
 
 .PARAMETER CertPassword
@@ -670,6 +672,13 @@ function Install-WindowsSDK
         [String]$version,
         [uri]$url
     )
+
+    if ($Offline -eq $true)
+    {
+        Write-Host "ERROR: Windows SDK(s) cannot be downloaded with -Offline" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
 
     $path = Join-Path $env:TEMP "winsdksetup-$($version).exe"
     if ($Clean -eq $true -And (Test-Path -Path $path -PathType Leaf))
