@@ -19,8 +19,13 @@ runtimeclass FileOpenPicker
     FileOpenPicker(Microsoft.UI.WindowId windowId);
 
     string CommitButtonText;
+
+    IMap<String, IVector<String>> FileTypeChoices{ get; };
     IVector<string> FileTypeFilter{ get; };
+
+    String SuggestedDefaultFolder;
     PickerLocationId SuggestedStartLocation;
+    
     PickerViewMode ViewMode;
 
     Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
@@ -38,6 +43,11 @@ using Microsoft.Windows.Storage.Pickers;
 
 var openPicker = new FileOpenPicker(this.AppWindow.Id)
 {
+    // (Optional) set an initial folder by absolute path. 
+    //     Takes precedence over SuggestedStartLocation when both defined.
+    //     If this folder is not found, falls back to SuggestedStartLocation.
+    SuggestedDefaultFolder = @"C:\\MyFiles",
+
     // (Optional) Specify the initial location for the picker. 
     //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
     //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
@@ -46,6 +56,14 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
     // (Optional) specify the text displayed on the commit button. 
     //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Choose selected files",
+
+    // (Optional) group file types into labeled choices
+    //     FileTypeChoices takes precedence over FileTypeFilter when both defined.
+    FileTypeChoices = new Dictionary<string, IList<string>>
+    {
+        { "Documents", new List<string> { ".txt", ".doc", ".docx" } },
+        { "Pictures", new List<string> { ".png", ".jpg", ".jpeg", ".bmp" } }
+    },
 
     // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
     FileTypeFilter = { ".txt", ".pdf", ".doc", ".docx" },
@@ -63,6 +81,11 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileOpenPicker openPicker(AppWindow().Id());
 
+// (Optional) set an initial folder by absolute path. 
+//     Takes precedence over SuggestedStartLocation when both defined.
+//     If not found, falls back to SuggestedStartLocation.
+openPicker.SuggestedDefaultFolder(L"C:\\MyFiles");
+
 // (Optional) Specify the initial location for the picker. 
 //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
 //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
@@ -71,6 +94,12 @@ openPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 // (Optional) specify the text displayed on the commit button. 
 //     If not specified, the system uses a default label of "Open" (suitably translated).
 openPicker.CommitButtonText(L"Choose selected files");
+
+// (Optional) group file types into labeled choices
+//     FileTypeChoices takes precedence over FileTypeFilter when both defined.
+auto choices = openPicker.FileTypeChoices();
+choices.Insert(L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc", L".docx" }));
+choices.Insert(L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg", L".jpeg", L".bmp" }));
 
 // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
 openPicker.FileTypeFilter().ReplaceAll({ L".txt", L".pdf", L".doc", L".docx" });
