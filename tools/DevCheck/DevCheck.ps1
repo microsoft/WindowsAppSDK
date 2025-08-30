@@ -181,6 +181,7 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 $global:issues = 0
+$global:issues_test_certificate_thumbprint_not_found = 0
 
 $global:isadmin = $null
 
@@ -188,6 +189,11 @@ $global:vswhere = ''
 $global:vswhere_url = ''
 
 $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
+
+function Get-Issues
+{
+    return $global:issues + $global:issues_test_certificate_thumbprint_not_found
+}
 
 function Get-SettingsFileDefault
 {
@@ -762,7 +768,7 @@ function Test-WindowsSDKInstall
     }
     elseif ($InstallWindowsSDK -eq $true)
     {
-        Write-Warning "WARNING: Windows SDK $($version) not found. Installing..."
+        Write-Warning "Windows SDK $($version) not found. Installing..."
         $null = Install-WindowsSDK $version $url
     }
     else
@@ -785,7 +791,7 @@ function Test-DevTestPfx
     if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
     {
         Write-Host "Test certificate thumbprint $pfx_thumbprint...Not Found"
-        $global:issues++
+        $global:issues_test_certificate_thumbprint_not_found = 1
         return $false
     }
 
@@ -833,7 +839,7 @@ function Repair-DevTestPfx
 
     if (Test-Path -Path $pwd_file -PathType Leaf)
     {
-        Write-Warning "WARNING: A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
+        Write-Warning "A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
     }
 
     $password = ''
@@ -893,7 +899,7 @@ function Repair-DevTestPfx
     $pfx = Join-Path $user 'winappsdk.certificate.test.pfx'
     $export_pfx = Export-PfxCertificate -Cert $cert_personal -FilePath $pfx -Password $password
 
-    # Delete the personal certiicate
+    # Delete the personal certificate
     Remove-Item -Path $cert_personal -DeleteKey
 
     $ok = $true
@@ -1049,12 +1055,12 @@ function Test-TAEFServiceVersion
 
     if ($cmp -lt 0)
     {
-        Write-Warning "WARNING: TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        Write-Warning "TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
         return 'OlderVersion'
     }
     elseif ($cmp -gt 0)
     {
-        Write-Warning "WARNING: TAEF service newer than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        Write-Warning "TAEF service newer than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
         return 'NewerVersion'
     }
     else
@@ -1668,7 +1674,7 @@ function Test-LongPath
 
     if ($FixLongPath -eq $false)
     {
-        Write-Warning "WARNING: LongPath support is disabled"
+        Write-Warning "LongPath support is disabled"
         return $false
     }
     Set-LongPath
@@ -1852,12 +1858,15 @@ if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
     $null = Remove-DevTestPfx
 }
 
-if ($global:issues -eq 0)
+$issues_count = Get-Issues
+if ($issues_count -eq 0)
 {
     Write-Output "Coding time!"
+    Exit 0
 }
 else
 {
-    $n = $global:issues
+    $n = $issues_count
     Write-Output "$n issue(s) detected"
+    Exit 1
 }
