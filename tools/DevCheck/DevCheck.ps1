@@ -9,11 +9,12 @@
     Review the current environment and fix or warn if anything is amiss. This includes...
     * Developer mode is enabled
     * LongPath support is enabled
-    * Test certificate to sign test MSIX packages is installed
-    * TAEF service is installed and running
     * Visual Studio 2022 is installed and properly configured
     * Windows SDK(s) are installed
-    * Dependencies in use are in the approved list of packages and versions
+    * Nuget.exe is installed
+    * Test certificate to sign test MSIX packages is installed
+    * TAEF service is installed and running
+    * Project dependencies are in the approved list of packages and versions
 
 .PARAMETER CertPassword
     Password for new certificates
@@ -29,6 +30,9 @@
 
 .PARAMETER CheckDeveloperMode
     Check developer mode
+
+.PARAMETER CheckNugetExe
+    Check nuget.exe
 
 .PARAMETER CheckTAEFService
     Check the TAEF service
@@ -56,6 +60,15 @@
 
 .PARAMETER NoInteractive
     Run in non-interactive mode (fail if any need for user input)
+
+.PARAMETER NugetExe
+    Location of nuget.exe (default=".user\nuget.exe")
+
+.PARAMETER NugetMinVersion
+    Minimum requried version of nuget.exe (default="6.14.0.116")
+
+.PARAMETER NugetExeUpdate
+    Download nuget.exe to the -NugetExe path
 
 .PARAMETER Offline
     Do not access the network
@@ -121,6 +134,8 @@ Param(
 
     [Switch]$CheckDeveloperMode=$false,
 
+    [Switch]$CheckNugetExe=$false,
+
     [Switch]$CheckTAEFService=$false,
 
     [Switch]$CheckTestCert=$false,
@@ -140,6 +155,12 @@ Param(
     [Switch]$InstallWindowsSDK=$false,
 
     [Switch]$NoInteractive=$false,
+
+    [String]$NugetExe='.user\nuget.exe',
+
+    [String]$NugetMinVersion="6.14.0.116",
+
+    [Switch]$NugetExeUpdate=$false,
 
     [Switch]$Offline=$false,
 
@@ -1715,6 +1736,63 @@ function Get-SystemInfo
     $null = Test-LongPath
 }
 
+function Test-NugetExe
+{
+    $file = [IO.Path]::GetFullPath($NugetExe)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        Write-Host "ERROR: Nuget.exe ($file)...Not Found" -ForegroundColor Red -BackgroundColor Black
+        return $false
+    }
+    $versioninfo = (Get-Item $file).VersionInfo
+    $version_dotquad = $versioninfo.FileVersionRaw
+    $major = [uint64]$version_dotquad.Major
+    $minor = [uint64]$version_dotquad.Minor
+    $build = [uint64]$version_dotquad.Build
+    $revision = [uint64]$version_dotquad.Revision
+    $version_uint64 = (((($major -shl 48) -bor ($minor -shl 32)) -bor ($build -shl 16)) -bor $revision)
+
+    $minversion_dotquad = Parse-DotQuadVersion $NugetMinVersion
+    $major = [uint64]$minversion_dotquad[0]
+    $minor = [uint64]$minversion_dotquad[1]
+    $build = [uint64]$minversion_dotquad[2]
+    $revision = [uint64]$minversion_dotquad[3]
+    $minversion_uint64 = (((($major -shl 48) -bor ($minor -shl 32)) -bor ($build -shl 16)) -bor $revision)
+    if ($version_uint64 -lt $minversion_uint64)
+    {
+        Write-Host "ERROR: Nuget.exe ($file)...Version {$($versioninfo.FileVersion)} doesn't meet required minversion v{$NugetMinVersion}" -ForegroundColor Red -BackgroundColor Black
+        return $false
+    }
+
+    Write-Host "Nuget.exe v$($versioninfo.FileVersion) detected...$file"
+    return $true
+}
+
+function Install-NugetExe
+{
+    if ($Offline -eq $true)
+    {
+        Write-Host "ERROR: Nuget.exe cannot be downloaded with -Offline" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    $url = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
+    $file = [IO.Path]::GetFullPath($NugetExe)
+    Write-Host "Downloading nuget.exe from $url..."
+    Write-Verbose "Executing: curl.exe --output $file -L -# $url"
+    $null = Start-Process curl.exe -ArgumentList "--output $file -L -# $url" -Wait -NoNewWindow -PassThru
+
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        Write-Host "ERROR: Nuget.exe ($file)...Not Found" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+    Write-Verbose "Nuget.exe downloaded to $file"
+    return $true
+}
+
 $null = Set-Settings
 $null = Set-UserSettings
 $null = Get-Settings
@@ -1725,6 +1803,7 @@ if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAE
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
     ($CheckVisualStudio -eq $false) -And ($CheckWindowsSDK -eq $false) -And
     ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
+    ($CheckNugetExe -eq $false) -And ($NugetExeUpdate -eq $false) -And
     ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
 {
     $CheckAll = $true
@@ -1787,6 +1866,23 @@ if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
     if ($test -ne $true)
     {
         $null = Repair-DevTestCert
+    }
+}
+
+if (($CheckAll -ne $false) -Or ($CheckNugetExe -ne $false) -Or ($NugetExeUpdate -ne $false))
+{
+    $ok = Test-NugetExe
+    if ((-not $ok) -or ($NugetExeUpdate))
+    {
+        $ok = Install-NugetExe
+        if ($ok)
+        {
+            $ok = Test-NugetExe
+            if ($ok -ne $true)
+            {
+                $global:issues++
+            }
+        }
     }
 }
 

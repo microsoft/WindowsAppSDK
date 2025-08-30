@@ -18,14 +18,8 @@ Development requires the following installation:
      * select `Modify`
    and wait for the install to complete.
 
-2. Run `DevCheck -CheckAll -FixAll` to verify your configuration and perform additional installation and configuration updates.
-
-4. Run NuGet Restore
-   * Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
-     e.g. https://dist.nuget.org/win-x86-commandline/v6.2.1/nuget.exe
-   * Open a command prompt
-   * CD to the project root e.g. `cd c:\source\repos\windowsappsdk`
-   * Run `nuget.exe restore`
+2. Run `DevCheck -CheckAll -FixAll` from an admin prompt to verify your configuration and perform
+   additional installation and configuration updates. See `One-Time Setup` for more details.
 
 # One-Time Setup
 
@@ -37,6 +31,7 @@ in the Start Menu and select `Run as Administrator`) to update your development 
 * Verify Visual Studio is installed with the required components.
 * Verify Windows 10 SDK 10.0.17763.0 is installed (and install if necessary).
 * Verify Windows 11 SDK 10.0.26100.4654+ is installed (and install if necessary).
+* Verify nuget.exe is available (and download if necessary).
 * Verify a password-protected test certificate exists and add it to the certificate store (or create if necessary). Used to sign test packages for inner-loop development and testing.
 * Install the TAEF service (TE.Service). Used by TAEF to enable test functionality (e.g. RunAs).
 * Verify the project's dependencies are sanctioned and using the correct version(s).
