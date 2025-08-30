@@ -4,7 +4,7 @@
             "Description": "App Notification Tests Packaged",
             "Filename": "AppNotificationTests.dll",
             "Parameters": "/name:PackagedTests*",
-            "Architectures": ["x64"],
+            "Architectures": ["x64", "x86", "arm64"],
             "Status": "Enabled"
         },
         {
