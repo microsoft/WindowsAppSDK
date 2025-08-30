@@ -60,7 +60,7 @@ void BaseTestSuite::MethodCleanup()
 {
     try
     {
-        if (Test::AppModel::IsPackagedProcess() || (!Test::AppModel::IsPackagedProcess() && !m_unregisteredFully))
+        if (Test::AppModel::IsPackagedProcess())
         {
             // Add safety check before cleanup
             try
