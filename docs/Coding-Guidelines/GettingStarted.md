@@ -2,61 +2,23 @@
 
 # Tooling Prerequisites
 
-Development requires the following installed tools...
+Development requires the following installation:
 
-1. Windows 10 SDK 10.0.17763.0 (RS5)
+1. Install Visual Studio 2022
 
-The SDK can be installed via winget:
+   Select the following workloads:
+     * .NET desktop development
+     * Desktop development with C++
+     * Universal Windows Platform development
 
-    winget install Microsoft.WindowsSDK.10.0.17736
+   Additional components are quired. To add them via the Visual Studio Installer...
+     * select `More` / `Import configuration`
+     * select the file `docs\Coding-Guidelines\VisualStudio2022.vsconfig` in the repository
+     * select `Review details`
+     * select `Modify`
+   and wait for the install to complete.
 
-or via the browser:
-
-* Browse to https://go.microsoft.com/fwlink/p/?LinkID=2033908
-* Save the offered download `winsdksetup.exe`
-* Run winsdksetup.exe
-
-**NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
-
-2. Windows 11 SDK 10.0.26100.2454 (24H2)
-   a. Browse to https://go.microsoft.com/fwlink/?linkid=2300556
-   b. Save the offered download `winsdksetup.exe`
-   c. Run winsdksetup.exe
-
-**NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
-
-3. Visual Studio 2022 with...
-   * Workloads
-      * .NET desktop development
-      * Desktop development with C++
-      * Universal Windows Platform development
-   * Individual components including
-      * .NET 6.0 Runtime (LTS)
-      * .NET 7.0 Runtime
-      * .NET SDK
-      * Git for Windows
-      * NuGet package manager
-      * NuGet targets and build tasks
-      * C# and Visual Basic Roslyn compilers
-      * MSBuild
-      * MSVC v143 - VS 2022 C++ ARM64 build tools (Latest)
-      * MSVC v143 - VS 2022 C++ x64/x86 build tools (Latest)
-      * MSVC v143 - VS 2022 C++ ARM64 Spectre-mitigated libs (Latest)
-      * MSVC v143 - VS 2022 C++ x64/x86 Spectre-mitigated libs (Latest)
-      * Windows Universal CRT SDK
-      * C# and Visual Basic
-      * C++ core features
-      * C++/WinRT
-      * Windows 10 SDK (10.0.18362.0)
-      * Windows 10 SDK (10.0.19041.0)
-      * Windows 10 SDK (10.0.20348.0)
-      * Windows 10 SDK (10.0.22000.0)
-      * Windows 10 SDK (10.0.22621.0)
-      * Windows Universal C Runtime
-      * and more! See [VisualStudio2022.vsconfig](https://github.com/microsoft/WindowsAppSDK/blob/develop/docs/Coding-Guidelines/VisualStudio2022.vsconfig) for the complete list
-
-**NOTE:** You can tell the Visual Studio Installer to do the heavy lifting for you
-via `More` / `Import configuration` and select `docs\Coding-Guidelines\VisualStudio2022.vsconfig`.
+2. Run `DevCheck -CheckAll -FixAll` to verify your configuration and perform additional installation and configuration updates.
 
 4. Run NuGet Restore
    * Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
@@ -71,8 +33,11 @@ Run the `DevCheck.cmd` from an elevated command prompt (e.g. right-click on "Com
 in the Start Menu and select `Run as Administrator`) to update your development environment. The script will:
 
 * Verify Windows' Developer Mode is enabled.
+* Verify LongPath support (and enable if necessary).
 * Verify Visual Studio is installed with the required components.
-* Create a test certificate and add it to the certificate store. Used to sign test packages for inner-loop development and testing.
+* Verify Windows 10 SDK 10.0.17763.0 is installed (and install if necessary).
+* Verify Windows 11 SDK 10.0.26100.4654+ is installed (and install if necessary).
+* Verify a password-protected test certificate exists and add it to the certificate store (or create if necessary). Used to sign test packages for inner-loop development and testing.
 * Install the TAEF service (TE.Service). Used by TAEF to enable test functionality (e.g. RunAs).
 * Verify the project's dependencies are sanctioned and using the correct version(s).
 
