@@ -377,15 +377,16 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier
         removeNotificationAsync.Cancel();
     });
 
+    // On x86, the wait_for may return Error instead of Completed.
+    // We check if the HR is E_INVALIDARG in that case.
     auto status = removeNotificationAsync.wait_for(c_timeout);
-    if (status == winrt::Windows::Foundation::AsyncStatus::Completed)
-    {
-        // we are good
-    }
-    else if (status == winrt::Windows::Foundation::AsyncStatus::Error)
+    VERIFY_IS_TRUE(status == winrt::Windows::Foundation::AsyncStatus::Completed || status == winrt::Windows::Foundation::AsyncStatus::Error);
+
+    if (status == winrt::Windows::Foundation::AsyncStatus::Error)
     {
         VERIFY_THROWS_HR(removeNotificationAsync.GetResults(), E_INVALIDARG);
     }
+
     scope_exit.release();
 }
 
