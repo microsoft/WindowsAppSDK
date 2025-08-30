@@ -384,7 +384,7 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier
 
     if (status == winrt::Windows::Foundation::AsyncStatus::Error)
     {
-        VERIFY_THROWS_HR(removeNotificationAsync.GetResults(), E_INVALIDARG);
+        VERIFY_THROWS_HR(removeNotificationAsync.GetResults(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
     }
 
     scope_exit.release();
