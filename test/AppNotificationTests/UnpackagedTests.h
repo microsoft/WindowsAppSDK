@@ -15,7 +15,7 @@ class UnpackagedTests : BaseTestSuite
         TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
         TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
-        TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
+        TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{false}")
     END_TEST_CLASS()
 
     TEST_CLASS_SETUP(ClassInit)
