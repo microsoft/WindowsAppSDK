@@ -76,13 +76,13 @@
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
 .PARAMETER SaveSettingsFile
-    Save settings file
+    Save settings file (default filename=DevCheck-Settings.ps1)
 
 .PARAMETER SaveUserSettingsFile
     Save settings file
 
 .PARAMETER Settings
-    Load settings file
+    Load settings file (enabled by default. -Settings $false to disable)
 
 .PARAMETER SettingsFile
     Settings file to load (if present). Relative filenames are resolved to .user directory. Default="DevCheck-Settings.ps1"
@@ -153,7 +153,7 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
-    [String]$SaveSettingsFile=$null,
+    [Switch]$SaveSettingsFile,
 
     [String]$SaveUserSettingsFile=$null,
 
@@ -189,25 +189,21 @@ $global:vswhere_url = ''
 
 $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 
+function Get-SettingsFileDefault
+{
+    $path = (Get-Item $PSScriptRoot).FullName
+    $file = Join-Path $path 'DevCheck-Settings.ps1'
+    $file
+}
+
 function Get-SettingsFile
 {
-    if ([string]::IsNullOrEmpty($SettingsFile))
+    $file = Get-SettingsFileDefault
+    if ([string]::IsNullOrEmpty($file))
     {
         return $null
     }
-
-    $file = [IO.Path]::GetFullPath($SettingsFile)
-    if (-not(Test-Path -Path $file -PathType Leaf))
-    {
-        $root = Get-ProjectRoot
-        $userdir = Join-Path $root '.user'
-        $file = Join-Path $userdir $SettingsFile
-        if (-not(Test-Path -Path $file -PathType Leaf))
-        {
-            return $null
-        }
-    }
-    return $file
+    return [IO.Path]::GetFullPath($file)
 }
 
 function Get-Settings
@@ -217,7 +213,7 @@ function Get-Settings
         return $null
     }
 
-    $settings_file = Get-SettingsFile $true
+    $settings_file = Get-SettingsFile
     if ([string]::IsNullOrEmpty($settings_file))
     {
         return $null
@@ -226,13 +222,8 @@ function Get-Settings
     $file = [IO.Path]::GetFullPath($settings_file)
     if (-not(Test-Path -Path $file -PathType Leaf))
     {
-        $root = Get-ProjectRoot
-        $userdir = Join-Path $root '.user'
-        $file = Join-Path $userdir $settings_file
-        if (-not(Test-Path -Path $file -PathType Leaf))
-        {
-            return $null
-        }
+        Write-Host "No settings file $($file)"
+        return $null
     }
     Write-Host "Loading settings file $($file)..."
     $null = . $file
@@ -242,7 +233,12 @@ function Get-Settings
 
 function Set-Settings
 {
-    $file = $SaveSettingsFile
+    if (-not $SaveSettingsFile)
+    {
+        return $null
+    }
+
+    $file = Get-SettingsFile
     if ([string]::IsNullOrEmpty($file))
     {
         return $null
@@ -264,18 +260,19 @@ function Set-Settings
 # Do not alter contents except in the Customization block
 # Everything else is owned by DevCheck and subject to change without warning
 
-$me = (Get-Item $PSScriptRoot ).FullName
+$me = (Get-Item $PSScriptRoot).FullName
 Write-Verbose "$me BEGIN Customization"
 #-----------------------------------------------------------------------
 # BEGIN Customization
 #...insert customization here...
 # END   Customization
 #-----------------------------------------------------------------------
-$me = (Get-Item $PSScriptRoot ).FullName
+$me = (Get-Item $PSScriptRoot).FullName
 Write-Verbose "$me END Customization"
 '@
 
     Write-Host "Saving settings file $($file)..."
+Write-Host $file
     Set-Content -Path $file -Value $content -Encoding utf8
     return $file
 }
