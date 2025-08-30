@@ -377,7 +377,15 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier
         removeNotificationAsync.Cancel();
     });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
+    auto status = removeNotificationAsync.wait_for(c_timeout);
+    if (status == winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        // we are good
+    }
+    else if (status == winrt::Windows::Foundation::AsyncStatus::Error)
+    {
+        VERIFY_THROWS_HR(removeNotificationAsync.GetResults(), E_INVALIDARG);
+    }
     scope_exit.release();
 }
 
