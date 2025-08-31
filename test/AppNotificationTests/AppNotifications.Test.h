@@ -241,7 +241,8 @@ namespace AppNotifications::Test
 
     bool EnsureNoActiveToasts()
     {
-        auto removeAllAsync{ winrt::AppNotificationManager::Default().RemoveAllAsync() };
+        auto manager = winrt::AppNotificationManager::Default();
+        auto removeAllAsync{ manager.RemoveAllAsync() };
         if (removeAllAsync.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
         {
             removeAllAsync.Cancel();
