@@ -498,7 +498,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         if (!IsSupported())
         {
-            return AppNotificationSetting::Unsupported;
+            return AppNotificationSetting::DisabledForUser;
         }
 
         auto logTelemetry{ AppNotificationTelemetry::Setting::Start(g_telemetryHelper, m_appId) };
