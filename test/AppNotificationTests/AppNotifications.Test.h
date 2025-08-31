@@ -222,20 +222,13 @@ namespace AppNotifications::Test
                 VERIFY_ARE_EQUAL(getAllAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
                 scopeExitGetAll.release();
 
-                try 
+                auto actualToastVector{ getAllAsync.GetResults() };
+                if (actualToastVector.Size() == 0u)
                 {
-                    auto actualToastVector{ getAllAsync.GetResults() };
-                    if (actualToastVector.Size() == 0u)
-                    {
-                        result = true;
-                        break;
-                    }
+                    result = true;
+                    break;
                 }
-                catch (...)
-                {
-                }
-
-                if (elapsed > c_sleepTimeout.count())
+                else if (elapsed > c_sleepTimeout.count())
                 {
                     break;
                 }
@@ -248,7 +241,7 @@ namespace AppNotifications::Test
 
     bool EnsureNoActiveToasts()
     {
-        auto manager{ winrt::AppNotificationManager::Default() };
+        auto manager = winrt::AppNotificationManager::Default();
         auto removeAllAsync{ manager.RemoveAllAsync() };
         if (removeAllAsync.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
         {
