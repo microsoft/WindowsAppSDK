@@ -612,7 +612,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ AppNotificationTelemetry::RemoveAllAsync::Start(g_telemetryHelper, m_appId) };
 
-        THROW_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(m_appId.c_str()));
+        LOG_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(m_appId.c_str()));
 
         logTelemetry.Stop();
     }
