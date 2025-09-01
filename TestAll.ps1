@@ -140,14 +140,7 @@ function Run-TaefTest
     $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
     $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
 
-    # For unpackaged tests, explicitly override RunAs to ensure restricted user context
-    $runAsParam = ""
-    if ($test.Test -like "*Unpackaged*" -or $test.Filename -like "*UnpackagedTests*") {
-        $runAsParam = "/runAs:RestrictedUser"
-        Write-Host "Forcing RunAs:RestrictedUser for unpackaged test: $($test.Test)"
-    }
-
-    & $tePath $dllFile $test.Parameters $runAsParam /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
+    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
 }
 
 function Run-PowershellTest
