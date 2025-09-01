@@ -12,9 +12,12 @@ using namespace WEX::TestExecution;
 class UnpackagedTests : BaseTestSuite
 {
     BEGIN_TEST_CLASS(UnpackagedTests)
+        TEST_CLASS_PROPERTY(L"RestrictedLowILUser:ProcessContext:User", L"AnyUser")
+        TEST_CLASS_PROPERTY(L"RestrictedLowILUser:ProcessContext:TokenElevation", L"false")
+        TEST_CLASS_PROPERTY(L"RestrictedLowILUser:ProcessContext:TokenIntegrityLevel", SDDL_ML_LOW)
         TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK App Notifications test")
         TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-        TEST_CLASS_PROPERTY(L"RunAs:Class", L"LowIL")
+        TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedLowILUser")
         TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
         TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
     END_TEST_CLASS()
