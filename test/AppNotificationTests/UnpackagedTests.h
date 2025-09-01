@@ -1,8 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
 #include "BaseTestSuite.h"
+#include "Security.IntegrityLevel.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -20,6 +21,18 @@ class UnpackagedTests : BaseTestSuite
 
     TEST_CLASS_SETUP(ClassInit)
     {
+        // Debug: Print current integrity level
+        DWORD integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
+        bool isElevated = Security::IntegrityLevel::IsElevated();
+        
+        std::wstring debugMsg = L"UnpackagedTests ClassInit - Integrity Level: " + 
+                               std::to_wstring(integrityLevel) + 
+                               L" (0x" + std::to_wstring(integrityLevel) + 
+                               L"), IsElevated: " + (isElevated ? L"true" : L"false");
+        
+        // Output to test log
+        WEX::Logging::Log::Comment(debugMsg.c_str());
+        
         BaseTestSuite::ClassSetup();
         return true;
     }
