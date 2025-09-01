@@ -14,10 +14,10 @@ class UnpackagedTests : BaseTestSuite
     BEGIN_TEST_CLASS(UnpackagedTests)
         TEST_CLASS_PROPERTY(L"RestrictedLowILUser:ProcessContext:User", L"AnyUser")
         TEST_CLASS_PROPERTY(L"RestrictedLowILUser:ProcessContext:TokenElevation", L"false")
-        TEST_CLASS_PROPERTY(L"RestrictedLowILUser:ProcessContext:TokenIntegrityLevel", SDDL_ML_LOW)
+        TEST_CLASS_PROPERTY(L"RestrictedLowILUser:ProcessContext:TokenIntegrityLevel", SDDL_ML_MEDIUM)
         TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK App Notifications test")
         TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-        TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedLowILUser")
+        TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedLowILUser")
         TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
         TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
     END_TEST_CLASS()
@@ -35,7 +35,7 @@ class UnpackagedTests : BaseTestSuite
         
         // Output to test log
         WEX::Logging::Log::Comment(debugMsg.c_str());
-        
+
         BaseTestSuite::ClassSetup();
         return true;
     }
@@ -48,6 +48,18 @@ class UnpackagedTests : BaseTestSuite
 
     TEST_METHOD_SETUP(MethodInit)
     {
+        // Debug: Print current integrity level
+        DWORD integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
+        bool isElevated = Security::IntegrityLevel::IsElevated();
+        
+        std::wstring debugMsg = L"UnpackagedTests MethodInit - Integrity Level: " + 
+                               std::to_wstring(integrityLevel) + 
+                               L" (0x" + std::to_wstring(integrityLevel) + 
+                               L"), IsElevated: " + (isElevated ? L"true" : L"false");
+        
+        // Output to test log
+        WEX::Logging::Log::Comment(debugMsg.c_str());
+
         BaseTestSuite::MethodSetup();
         return true;
     }
