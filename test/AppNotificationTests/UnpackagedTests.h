@@ -14,11 +14,7 @@ class UnpackagedTests : BaseTestSuite
     BEGIN_TEST_CLASS(UnpackagedTests)
         TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK App Notifications test")
         TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-        TEST_CLASS_PROPERTY(L"RestrictedMediumILUser:ProcessContext:User", L"AnyUser")
-        TEST_CLASS_PROPERTY(L"RestrictedMediumILUser:ProcessContext:TokenElevation", L"false")
-        // TAEF does not set the integrity level unless explicitly specified.
-        TEST_CLASS_PROPERTY(L"RestrictedMediumILUser:ProcessContext:TokenIntegrityLevel", SDDL_ML_MEDIUM)
-        TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedMediumILUser")
+        TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
         TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
     END_TEST_CLASS()
