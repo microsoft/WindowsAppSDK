@@ -52,7 +52,7 @@ namespace OAuth2ManagerTests
     public:
         BEGIN_TEST_CLASS(OAuth2APITests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            END_TEST_CLASS()
+        END_TEST_CLASS()
 
         TEST_METHOD_SETUP(MethodInit)
         {
