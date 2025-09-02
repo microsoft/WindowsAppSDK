@@ -27,7 +27,7 @@ namespace Test::LRP
         BEGIN_TEST_CLASS(LRPTests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications Long Running Process tests")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
