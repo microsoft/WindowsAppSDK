@@ -174,6 +174,7 @@ Try {
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
@@ -222,6 +223,7 @@ Try {
                 & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
                                 /p:Configuration=$configurationForMrtAndAnyCPU `
                                 /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
                                 /p:PGOBuildMode=$PGOBuildMode `
                                 /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationForMrtAndAnyCPU.binlog"
 
@@ -239,7 +241,7 @@ Try {
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
         # build and restore AnyCPU
-        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU
+        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
