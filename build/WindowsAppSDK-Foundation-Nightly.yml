@@ -33,6 +33,30 @@ parameters:
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
   default: true
+- name: "BuildSampleApps"
+  displayName: "Run Build Sample Apps Stage"
+  type: boolean
+  default: true
+- name: "TestSampleAppsAfterBuildStage"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: true
+- name: "TestOnArm64"
+  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
+  type: boolean
+  default: true
+- name: maxParallelForBuildSamplesCompatJob_x64
+  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform x64"
+  type: number
+  default: 20
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform arm64"
+  type: number
+  default: 20
+- name: "MaestroDependOnTestSamples"
+  displayName: "Whether Maestro publishing should depend on successful Sample tests"
+  type: boolean
+  default: false
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
@@ -53,6 +77,11 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'GitHub - benkuhn - 2-18'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
@@ -143,3 +172,15 @@ extends:
       parameters:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
+        TestSampleAppsAfterBuildStage: ${{ parameters.TestSampleAppsAfterBuildStage }}
+        TestOnArm64: ${{ parameters.TestOnArm64 }}
+        MaestroDependOnTestSamples: ${{ parameters.MaestroDependOnTestSamples }}
+
+    - ${{ if eq( parameters.BuildSampleApps, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
+        parameters:
+          TestSampleAppsAfterBuildStage: ${{ parameters.TestSampleAppsAfterBuildStage }}
+          TestOnArm64: ${{ parameters.TestOnArm64 }}
+          runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
+          maxParallel_x64: ${{ parameters.maxParallelForBuildSamplesCompatJob_x64 }}
+          maxParallel_arm64: ${{ parameters.maxParallelForBuildSamplesCompatJob_arm64 }}

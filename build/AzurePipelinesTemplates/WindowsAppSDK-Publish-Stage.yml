@@ -5,6 +5,18 @@ parameters:
 - name: "IgnoreFailures"
   type: boolean
   default: true
+- name: "TestSampleAppsAfterBuildStage"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: false
+- name: "TestOnArm64"
+  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
+  type: boolean
+  default: false
+- name: "MaestroDependOnTestSamples"
+  displayName: "Whether Maestro publishing should depend on successful Sample tests"
+  type: boolean
+  default: false
 stages:
 - stage: Publish
   dependsOn:
@@ -12,6 +24,10 @@ stages:
   - Test_x64
   - Test_arm64
   - StaticValidationTest
+  - ${{ if and(eq( parameters.TestSampleAppsAfterBuildStage, true ), eq( parameters.MaestroDependOnTestSamples, true )) }}:
+    - TestSampleApps_x64
+    - ${{ if eq( parameters.TestOnArm64, true ) }}:
+      - TestSampleApps_arm64
   condition: not(failed())
   jobs:
   # Publish

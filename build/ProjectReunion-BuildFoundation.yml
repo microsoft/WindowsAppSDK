@@ -5,6 +5,32 @@ name: $(version)
 
 trigger: none
 
+parameters:
+- name: "BuildSampleApps"
+  displayName: "Test build of sample apps"
+  type: boolean
+  default: false
+- name: "TestSampleAppsAfterBuildStage"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: true
+- name: "TestOnArm64"
+  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
+  type: boolean
+  default: true
+- name: maxParallelForBuildSamplesCompatJob_x64
+  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform x64"
+  type: number
+  default: 13     # comparing with Nightly and Official build, PR build may have several build running at same time. Need to reduce max parallel to avoid exceeding
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform arm64"
+  type: number
+  default: 13     # comparing with Nightly and Official build, PR build may have several build running at same time. Need to reduce max parallel to avoid exceeding
+- name: runStaticAnalysisInBuildAndTestSampleApps
+  displayName: "Run Static Analysis (e.g., PREFast, APIScan) In BuildAndTestSampleApps Stage"
+  type: boolean
+  default: false
+
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
@@ -15,11 +41,16 @@ resources:
     - repository: WindowsAppSDKConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      ref: refs/heads/user/haonantang/sampleApps
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'GitHub - benkuhn - 2-18'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
 
 stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
@@ -50,3 +81,13 @@ stages:
     PublishPackage: false
     IsOneBranch: false
     BuildMockWindowsAppSDK: false
+
+- ${{ if eq( parameters.BuildSampleApps, true ) }}:
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
+    parameters:
+      IsOneBranch: false
+      TestSampleAppsAfterBuildStage: ${{ parameters.TestSampleAppsAfterBuildStage }}
+      TestOnArm64: ${{ parameters.TestOnArm64 }}
+      runStaticAnalysis: ${{ parameters.runStaticAnalysisInBuildAndTestSampleApps }}
+      maxParallel_x64: ${{ parameters.maxParallelForBuildSamplesCompatJob_x64 }}
+      maxParallel_arm64: ${{ parameters.maxParallelForBuildSamplesCompatJob_arm64 }}
