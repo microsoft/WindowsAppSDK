@@ -104,7 +104,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     bool AppNotificationManager::IsSupported()
     {
-        bool isSupported{ !Security::IntegrityLevel::IsElevated() };
+        static bool isSupported{ !Security::IntegrityLevel::IsElevated() };
         return isSupported;
     }
 
