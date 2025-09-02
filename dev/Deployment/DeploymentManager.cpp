@@ -113,23 +113,59 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
+            // The main and singleton packages contain a shortened version tag for the package family name.
+            std::wstring formattedVersionTag{};
+
+            auto ExtractFormattedVersionTag = [](const std::wstring& versionTag) -> std::wstring
+            {
+                //versionTag = "-experimental", result = "-e"
+                //verstionTag = "-experimental4" result = "-e4"
+                std::wstring result{};
+                if (versionTag.size() > 1)
+                {
+                    result = std::wstring(L"-") + versionTag[1];
+                }
+
+                unsigned int numberBeforeUnderscore;
+                if (swscanf_s(versionTag.c_str(), L"%*[^0-9]%u", &numberBeforeUnderscore) == 1)
+                {
+                    result += std::to_wstring(numberBeforeUnderscore);
+                }
+                return result;
+            };
+
+            // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
+            // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
             if (package.versionType == PackageVersionType::Versioned)
             {
-                // PackageFamilyName = Prefix + SubTypeName + VersionIdentifier + Suffix
-                // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // To understand the package naming of main and singleton packages, see https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackages.md#3-package-naming
+                if (!packageNameVersionTag.empty())
+                {
+                    formattedVersionTag = packageNameVersionIdentifier.substr(0, versionTagPos) + ExtractFormattedVersionTag(packageNameVersionTag);
+                }
+                else
+                {
+                    formattedVersionTag = packageNameVersionIdentifier.substr(0, versionTagPos); // "1.8"
+                }
             }
             else if (package.versionType == PackageVersionType::Unversioned)
             {
-                // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
-                // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                if (!packageNameVersionTag.empty())
+                {
+                    formattedVersionTag = ExtractFormattedVersionTag(packageNameVersionTag);
+                }
+                else
+                {
+                    formattedVersionTag = L"";
+                }
             }
             else
             {
                 // Other version types not supported.
                 FAIL_FAST_HR(HRESULT_FROM_WIN32(ERROR_UNSUPPORTED_TYPE));
             }
+
+            packageFamilyName = std::format(WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER L"{}{}" WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX, package.identifier, formattedVersionTag);
 
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
