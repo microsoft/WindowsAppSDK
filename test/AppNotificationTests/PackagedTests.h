@@ -3,7 +3,6 @@
 
 #include "pch.h"
 #include "BaseTestSuite.h"
-#include <IsWindowsVersion.h>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
