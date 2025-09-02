@@ -23,12 +23,6 @@ class PackagedTests : BaseTestSuite
 
     TEST_CLASS_SETUP(ClassInit)
     {
-        // Skip PackagedTests on Win10 RS5 and earlier due to COM registration issues
-        if (!WindowsVersion::IsWindows10_19H1OrGreater())
-        {
-            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"AppNotification::PackagedTests require Win10 19H1 or greater due to COM registration compatibility. Skipping tests on this OS version.");
-            return true;
-        }
         BaseTestSuite::ClassSetup();
         return true;
     }
