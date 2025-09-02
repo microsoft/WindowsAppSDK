@@ -108,7 +108,7 @@ namespace Test::LRP
             BOOL result{ Process32First(processesSnapshot.get(), &processEntry) };
             while (result != FALSE)
             {
-                if (wcscmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
+                if (_wcsicmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
                 {
                     VERIFY_IS_TRUE(isRunning);
                     DWORD processId{ processEntry.th32ProcessID };
