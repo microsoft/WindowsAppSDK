@@ -37,7 +37,7 @@ This example generates the projections from the `Microsoft.WindowsAppSDK.ML` pac
 # Run these in the root directory of the repo
 $abiwinrt = gci -r $working_dir\packages\*abi*\abi.exe
 $metadata = gci -r $working_dir\packages\microsoft.windowsappsdk.ml*\metadata
-& $abiwinrt -input $metadata -reference sdk -output inc/abi/winml -lowercase-include-guard -ns-prefix optional
+& $abiwinrt -input $metadata -reference sdk -output inc/abi/winml -lowercase-include-guard -ns-prefix always
 ```
 
 ## Commit changes

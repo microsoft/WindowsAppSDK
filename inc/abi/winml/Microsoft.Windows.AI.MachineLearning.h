@@ -34,46 +34,9 @@
 // If you get an error from the compiler indicating "warning C4005: 'CHECK_NS_PREFIX_STATE': macro redefinition", this
 // indicates that you have included two different headers with different settings for the /ns_prefix MIDL command line switch
 #if !defined(DISABLE_NS_PREFIX_CHECKS)
-#if defined(MIDL_NS_PREFIX)
 #define CHECK_NS_PREFIX_STATE "always"
-#else
-#define CHECK_NS_PREFIX_STATE "never"
-#endif // MIDL_NS_PREFIX
 #endif // !defined(DISABLE_NS_PREFIX_CHECKS)
 
-
-#pragma push_macro("ABI_CONCAT")
-#pragma push_macro("ABI_PARAMETER")
-#pragma push_macro("ABI_NAMESPACE_BEGIN")
-#pragma push_macro("ABI_NAMESPACE_END")
-#pragma push_macro("C_IID")
-#undef ABI_CONCAT
-#undef ABI_PARAMETER
-#undef ABI_NAMESPACE_BEGIN
-#undef ABI_NAMESPACE_END
-#undef C_IID
-#define ABI_CONCAT(x,y)  x##y
-
-// /ns_prefix optional state
-#if defined(MIDL_NS_PREFIX)
-#if defined(__cplusplus)
-#define ABI_PARAMETER(x) ABI::x
-#define ABI_NAMESPACE_BEGIN namespace ABI {
-#define ABI_NAMESPACE_END }
-#else // !defined(__cplusplus)
-#define C_ABI_PARAMETER(x) ABI_CONCAT(__x_ABI_C, x)
-#endif // !defined(__cplusplus)
-#define C_IID(x) ABI_CONCAT(IID___x_ABI_C, x)
-#else
-#if defined(__cplusplus)
-#define ABI_PARAMETER(x) x
-#define ABI_NAMESPACE_BEGIN
-#define ABI_NAMESPACE_END
-#else // !defined(__cplusplus)
-#define C_ABI_PARAMETER(x) ABI_CONCAT(__x_, x)
-#endif // !defined(__cplusplus)
-#define C_IID(x) ABI_CONCAT(IID___x_, x)
-#endif // defined(MIDL_NS_PREFIX)
 
 #pragma push_macro("MIDL_CONST_ID")
 #undef MIDL_CONST_ID
@@ -108,98 +71,98 @@
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
 /* Forward Declarations */
-#ifndef ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                interface IExecutionProvider;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProvider)
+#ifndef ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    interface IExecutionProvider;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProvider
 
-#endif // ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
+#endif // ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
 
-#ifndef ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                interface IExecutionProviderCatalog;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProviderCatalog)
+#ifndef ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    interface IExecutionProviderCatalog;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProviderCatalog
 
-#endif // ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
+#endif // ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
 
-#ifndef ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                interface IExecutionProviderCatalogStatics;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProviderCatalogStatics)
+#ifndef ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    interface IExecutionProviderCatalogStatics;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProviderCatalogStatics
 
-#endif // ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
+#endif // ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
 
-#ifndef ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                interface IExecutionProviderReadyResult;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProviderReadyResult)
+#ifndef ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    interface IExecutionProviderReadyResult;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProviderReadyResult
 
-#endif // ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
+#endif // ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
 
 // Parameterized interface forward declarations (C++)
 
 // Collection interface definitions
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                class ExecutionProviderReadyResult;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    class ExecutionProviderReadyResult;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 #ifndef DEF___FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE
 #define DEF___FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation {
+namespace ABI { namespace Windows { namespace Foundation {
 template <>
 struct __declspec(uuid("cb503403-2777-55e8-a053-58a39c93e645"))
-IAsyncOperationWithProgressCompletedHandler<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, double> : IAsyncOperationWithProgressCompletedHandler_impl<ABI_PARAMETER(Windows::Foundation::Internal::AggregateType)<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProviderReadyResult)*>, double>
+IAsyncOperationWithProgressCompletedHandler<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, double> : IAsyncOperationWithProgressCompletedHandler_impl<ABI::Windows::Foundation::Internal::AggregateType<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProviderReadyResult*>, double>
 {
     static const wchar_t* z_get_rc_name_impl()
     {
@@ -209,13 +172,9 @@ IAsyncOperationWithProgressCompletedHandler<ABI_PARAMETER(Microsoft::Windows::AI
 // Define a typedef for the parameterized interface specialization's mangled name.
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
-typedef IAsyncOperationWithProgressCompletedHandler<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, double> __FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t;
-#if defined(MIDL_NS_PREFIX)
+typedef IAsyncOperationWithProgressCompletedHandler<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, double> __FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t;
 #define __FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double ABI::Windows::Foundation::__FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t
-#else
-#define __FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double Windows::Foundation::__FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t
-#endif // MIDL_NS_PREFIX
-/* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE */
@@ -227,10 +186,10 @@ typedef IAsyncOperationWithProgressCompletedHandler<ABI_PARAMETER(Microsoft::Win
 #ifndef DEF___FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE
 #define DEF___FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation {
+namespace ABI { namespace Windows { namespace Foundation {
 template <>
 struct __declspec(uuid("4f16a3c6-1230-5503-b92f-7d9c97139ad4"))
-IAsyncOperationWithProgress<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, double> : IAsyncOperationWithProgress_impl<ABI_PARAMETER(Windows::Foundation::Internal::AggregateType)<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProviderReadyResult)*>, double>
+IAsyncOperationWithProgress<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, double> : IAsyncOperationWithProgress_impl<ABI::Windows::Foundation::Internal::AggregateType<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProviderReadyResult*>, double>
 {
     static const wchar_t* z_get_rc_name_impl()
     {
@@ -240,13 +199,9 @@ IAsyncOperationWithProgress<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearnin
 // Define a typedef for the parameterized interface specialization's mangled name.
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
-typedef IAsyncOperationWithProgress<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, double> __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t;
-#if defined(MIDL_NS_PREFIX)
+typedef IAsyncOperationWithProgress<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, double> __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t;
 #define __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double ABI::Windows::Foundation::__FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t
-#else
-#define __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double Windows::Foundation::__FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t
-#endif // MIDL_NS_PREFIX
-/* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE */
@@ -258,10 +213,10 @@ typedef IAsyncOperationWithProgress<ABI_PARAMETER(Microsoft::Windows::AI::Machin
 #ifndef DEF___FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE
 #define DEF___FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation {
+namespace ABI { namespace Windows { namespace Foundation {
 template <>
 struct __declspec(uuid("cc529045-fc8f-5897-bb77-f3459844ef0b"))
-IAsyncOperationProgressHandler<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, double> : IAsyncOperationProgressHandler_impl<ABI_PARAMETER(Windows::Foundation::Internal::AggregateType)<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProviderReadyResult)*>, double>
+IAsyncOperationProgressHandler<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, double> : IAsyncOperationProgressHandler_impl<ABI::Windows::Foundation::Internal::AggregateType<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProviderReadyResult*>, double>
 {
     static const wchar_t* z_get_rc_name_impl()
     {
@@ -271,40 +226,36 @@ IAsyncOperationProgressHandler<ABI_PARAMETER(Microsoft::Windows::AI::MachineLear
 // Define a typedef for the parameterized interface specialization's mangled name.
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
-typedef IAsyncOperationProgressHandler<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult)*, double> __FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t;
-#if defined(MIDL_NS_PREFIX)
+typedef IAsyncOperationProgressHandler<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult*, double> __FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t;
 #define __FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double ABI::Windows::Foundation::__FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t
-#else
-#define __FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double Windows::Foundation::__FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_t
-#endif // MIDL_NS_PREFIX
-/* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIAsyncOperationProgressHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double_USE */
 
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                class ExecutionProvider;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    class ExecutionProvider;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 #ifndef DEF___FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE
 #define DEF___FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation { namespace Collections {
+namespace ABI { namespace Windows { namespace Foundation { namespace Collections {
 template <>
 struct __declspec(uuid("84dafd53-568b-566e-b833-5ff9bd22a9d8"))
-IIterator<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*> : IIterator_impl<ABI_PARAMETER(Windows::Foundation::Internal::AggregateType)<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*, ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProvider)*>>
+IIterator<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*> : IIterator_impl<ABI::Windows::Foundation::Internal::AggregateType<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*, ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProvider*>>
 {
     static const wchar_t* z_get_rc_name_impl()
     {
@@ -314,13 +265,9 @@ IIterator<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvid
 // Define a typedef for the parameterized interface specialization's mangled name.
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
-typedef IIterator<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*> __FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t;
-#if defined(MIDL_NS_PREFIX)
+typedef IIterator<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*> __FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t;
 #define __FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider ABI::Windows::Foundation::Collections::__FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t
-#else
-#define __FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider Windows::Foundation::Collections::__FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t
-#endif // MIDL_NS_PREFIX
-/* Collections */ } /* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Collections */ } /* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE */
@@ -332,10 +279,10 @@ typedef IIterator<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::Executi
 #ifndef DEF___FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE
 #define DEF___FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation { namespace Collections {
+namespace ABI { namespace Windows { namespace Foundation { namespace Collections {
 template <>
 struct __declspec(uuid("71dd7ffc-0481-5563-8ba2-9ee2a579a5e8"))
-IIterable<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*> : IIterable_impl<ABI_PARAMETER(Windows::Foundation::Internal::AggregateType)<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*, ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProvider)*>>
+IIterable<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*> : IIterable_impl<ABI::Windows::Foundation::Internal::AggregateType<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*, ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProvider*>>
 {
     static const wchar_t* z_get_rc_name_impl()
     {
@@ -345,13 +292,9 @@ IIterable<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvid
 // Define a typedef for the parameterized interface specialization's mangled name.
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
-typedef IIterable<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*> __FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t;
-#if defined(MIDL_NS_PREFIX)
+typedef IIterable<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*> __FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t;
 #define __FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider ABI::Windows::Foundation::Collections::__FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t
-#else
-#define __FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider Windows::Foundation::Collections::__FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t
-#endif // MIDL_NS_PREFIX
-/* Collections */ } /* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Collections */ } /* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIIterable_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE */
@@ -363,10 +306,10 @@ typedef IIterable<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::Executi
 #ifndef DEF___FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE
 #define DEF___FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation { namespace Collections {
+namespace ABI { namespace Windows { namespace Foundation { namespace Collections {
 template <>
 struct __declspec(uuid("f21a7606-ec9f-53a9-8132-35d9fb8c73dc"))
-IVectorView<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*> : IVectorView_impl<ABI_PARAMETER(Windows::Foundation::Internal::AggregateType)<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*, ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProvider)*>>
+IVectorView<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*> : IVectorView_impl<ABI::Windows::Foundation::Internal::AggregateType<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*, ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProvider*>>
 {
     static const wchar_t* z_get_rc_name_impl()
     {
@@ -376,13 +319,9 @@ IVectorView<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProv
 // Define a typedef for the parameterized interface specialization's mangled name.
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
-typedef IVectorView<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*> __FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t;
-#if defined(MIDL_NS_PREFIX)
+typedef IVectorView<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*> __FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t;
 #define __FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider ABI::Windows::Foundation::Collections::__FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t
-#else
-#define __FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider Windows::Foundation::Collections::__FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t
-#endif // MIDL_NS_PREFIX
-/* Collections */ } /* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Collections */ } /* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE */
@@ -394,10 +333,10 @@ typedef IVectorView<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::Execu
 #ifndef DEF___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE
 #define DEF___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation { namespace Collections {
+namespace ABI { namespace Windows { namespace Foundation { namespace Collections {
 template <>
 struct __declspec(uuid("13307e3d-2da6-55c0-a420-0037b606c236"))
-IVector<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*> : IVector_impl<ABI_PARAMETER(Windows::Foundation::Internal::AggregateType)<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*, ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProvider)*>>
+IVector<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*> : IVector_impl<ABI::Windows::Foundation::Internal::AggregateType<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*, ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProvider*>>
 {
     static const wchar_t* z_get_rc_name_impl()
     {
@@ -407,13 +346,9 @@ IVector<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider
 // Define a typedef for the parameterized interface specialization's mangled name.
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
-typedef IVector<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProvider)*> __FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t;
-#if defined(MIDL_NS_PREFIX)
+typedef IVector<ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProvider*> __FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t;
 #define __FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider ABI::Windows::Foundation::Collections::__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t
-#else
-#define __FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider Windows::Foundation::Collections::__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_t
-#endif // MIDL_NS_PREFIX
-/* Collections */ } /* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Collections */ } /* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_USE */
@@ -425,7 +360,7 @@ typedef IVector<ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::Execution
 #ifndef DEF___FIAsyncOperationWithProgressCompletedHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE
 #define DEF___FIAsyncOperationWithProgressCompletedHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation {
+namespace ABI { namespace Windows { namespace Foundation {
 template <>
 struct __declspec(uuid("fe2e5c84-df58-5335-bc01-eafe9d61b0c7"))
 IAsyncOperationWithProgressCompletedHandler<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double> : IAsyncOperationWithProgressCompletedHandler_impl<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double>
@@ -439,12 +374,8 @@ IAsyncOperationWithProgressCompletedHandler<__FIVector_1_Microsoft__CWindows__CA
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
 typedef IAsyncOperationWithProgressCompletedHandler<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double> __FIAsyncOperationWithProgressCompletedHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t;
-#if defined(MIDL_NS_PREFIX)
 #define __FIAsyncOperationWithProgressCompletedHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double ABI::Windows::Foundation::__FIAsyncOperationWithProgressCompletedHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t
-#else
-#define __FIAsyncOperationWithProgressCompletedHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double Windows::Foundation::__FIAsyncOperationWithProgressCompletedHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t
-#endif // MIDL_NS_PREFIX
-/* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIAsyncOperationWithProgressCompletedHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE */
@@ -456,7 +387,7 @@ typedef IAsyncOperationWithProgressCompletedHandler<__FIVector_1_Microsoft__CWin
 #ifndef DEF___FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE
 #define DEF___FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation {
+namespace ABI { namespace Windows { namespace Foundation {
 template <>
 struct __declspec(uuid("85c56225-d760-5ce9-91f9-b5ba8085a32f"))
 IAsyncOperationWithProgress<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double> : IAsyncOperationWithProgress_impl<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double>
@@ -470,12 +401,8 @@ IAsyncOperationWithProgress<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearn
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
 typedef IAsyncOperationWithProgress<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double> __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t;
-#if defined(MIDL_NS_PREFIX)
 #define __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double ABI::Windows::Foundation::__FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t
-#else
-#define __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double Windows::Foundation::__FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t
-#endif // MIDL_NS_PREFIX
-/* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE */
@@ -487,7 +414,7 @@ typedef IAsyncOperationWithProgress<__FIVector_1_Microsoft__CWindows__CAI__CMach
 #ifndef DEF___FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE
 #define DEF___FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE
 #if !defined(RO_NO_TEMPLATE_NAME)
-ABI_NAMESPACE_BEGIN namespace Windows { namespace Foundation {
+namespace ABI { namespace Windows { namespace Foundation {
 template <>
 struct __declspec(uuid("2c248381-46e7-54b6-8af8-adc86b44a6f1"))
 IAsyncOperationProgressHandler<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double> : IAsyncOperationProgressHandler_impl<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double>
@@ -501,53 +428,49 @@ IAsyncOperationProgressHandler<__FIVector_1_Microsoft__CWindows__CAI__CMachineLe
 // This allows code which uses the mangled name for the parameterized interface to access the
 // correct parameterized interface specialization.
 typedef IAsyncOperationProgressHandler<__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider*, double> __FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t;
-#if defined(MIDL_NS_PREFIX)
 #define __FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double ABI::Windows::Foundation::__FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t
-#else
-#define __FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double Windows::Foundation::__FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_t
-#endif // MIDL_NS_PREFIX
-/* Foundation */ } /* Windows */ } ABI_NAMESPACE_END
+/* Foundation */ } /* Windows */ } /* ABI */ }
 
 #endif // !defined(RO_NO_TEMPLATE_NAME)
 #endif /* DEF___FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_USE */
 
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                typedef enum ExecutionProviderReadyResultState : int ExecutionProviderReadyResultState;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    typedef enum ExecutionProviderReadyResultState : int ExecutionProviderReadyResultState;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                typedef enum ExecutionProviderReadyState : int ExecutionProviderReadyState;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    typedef enum ExecutionProviderReadyState : int ExecutionProviderReadyState;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                class ExecutionProviderCatalog;
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    class ExecutionProviderCatalog;
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
 /*
  *
@@ -557,22 +480,22 @@ ABI_NAMESPACE_END
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                enum ExecutionProviderReadyResultState : int
-                {
-                    ExecutionProviderReadyResultState_InProgress = 0,
-                    ExecutionProviderReadyResultState_Success = 1,
-                    ExecutionProviderReadyResultState_Failure = 2,
-                };
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    enum ExecutionProviderReadyResultState : int
+                    {
+                        ExecutionProviderReadyResultState_InProgress = 0,
+                        ExecutionProviderReadyResultState_Success = 1,
+                        ExecutionProviderReadyResultState_Failure = 2,
+                    };
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -583,22 +506,22 @@ ABI_NAMESPACE_END
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                enum ExecutionProviderReadyState : int
-                {
-                    ExecutionProviderReadyState_Ready = 0,
-                    ExecutionProviderReadyState_NotReady = 1,
-                    ExecutionProviderReadyState_NotPresent = 2,
-                };
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    enum ExecutionProviderReadyState : int
+                    {
+                        ExecutionProviderReadyState_Ready = 0,
+                        ExecutionProviderReadyState_NotReady = 1,
+                        ExecutionProviderReadyState_NotPresent = 2,
+                    };
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -611,44 +534,44 @@ ABI_NAMESPACE_END
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-#if !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__)
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__
+#if !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__)
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__
 extern const __declspec(selectany) _Null_terminated_ WCHAR InterfaceName_Microsoft_Windows_AI_MachineLearning_IExecutionProvider[] = L"Microsoft.Windows.AI.MachineLearning.IExecutionProvider";
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                MIDL_INTERFACE("d541c2bf-4a51-5804-8e44-2bdf2160c3a1")
-                IExecutionProvider : public IInspectable
-                {
-                public:
-                    virtual HRESULT STDMETHODCALLTYPE get_Name(
-                        HSTRING* value
-                        ) = 0;
-                    virtual HRESULT STDMETHODCALLTYPE get_LibraryPath(
-                        HSTRING* value
-                        ) = 0;
-                    virtual HRESULT STDMETHODCALLTYPE get_ReadyState(
-                        ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyState)* value
-                        ) = 0;
-                    virtual HRESULT STDMETHODCALLTYPE EnsureReadyAsync(
-                        __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double** operation
-                        ) = 0;
-                    virtual HRESULT STDMETHODCALLTYPE TryRegister(
-                        boolean* result
-                        ) = 0;
-                };
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    MIDL_INTERFACE("d541c2bf-4a51-5804-8e44-2bdf2160c3a1")
+                    IExecutionProvider : public IInspectable
+                    {
+                    public:
+                        virtual HRESULT STDMETHODCALLTYPE get_Name(
+                            HSTRING* value
+                            ) = 0;
+                        virtual HRESULT STDMETHODCALLTYPE get_LibraryPath(
+                            HSTRING* value
+                            ) = 0;
+                        virtual HRESULT STDMETHODCALLTYPE get_ReadyState(
+                            ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyState* value
+                            ) = 0;
+                        virtual HRESULT STDMETHODCALLTYPE EnsureReadyAsync(
+                            __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double** operation
+                            ) = 0;
+                        virtual HRESULT STDMETHODCALLTYPE TryRegister(
+                            boolean* result
+                            ) = 0;
+                    };
 
-                MIDL_CONST_ID IID& IID_IExecutionProvider = _uuidof(IExecutionProvider);
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+                    MIDL_CONST_ID IID& IID_IExecutionProvider = _uuidof(IExecutionProvider);
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
-EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider);
-#endif /* !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__) */
+EXTERN_C const IID IID___x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider;
+#endif /* !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__) */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -661,39 +584,39 @@ EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProv
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-#if !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__)
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__
+#if !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__)
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__
 extern const __declspec(selectany) _Null_terminated_ WCHAR InterfaceName_Microsoft_Windows_AI_MachineLearning_IExecutionProviderCatalog[] = L"Microsoft.Windows.AI.MachineLearning.IExecutionProviderCatalog";
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                MIDL_INTERFACE("1dc174c1-5c7f-54ec-af7a-9f3cbf230097")
-                IExecutionProviderCatalog : public IInspectable
-                {
-                public:
-                    virtual HRESULT STDMETHODCALLTYPE FindAllProviders(
-                        UINT32* resultLength,
-                        ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProvider)*** result
-                        ) = 0;
-                    virtual HRESULT STDMETHODCALLTYPE EnsureAndRegisterAllAsync(
-                        __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double** operation
-                        ) = 0;
-                    virtual HRESULT STDMETHODCALLTYPE RegisterAllAsync(
-                        __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double** operation
-                        ) = 0;
-                };
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    MIDL_INTERFACE("1dc174c1-5c7f-54ec-af7a-9f3cbf230097")
+                    IExecutionProviderCatalog : public IInspectable
+                    {
+                    public:
+                        virtual HRESULT STDMETHODCALLTYPE FindAllProviders(
+                            UINT32* resultLength,
+                            ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProvider*** result
+                            ) = 0;
+                        virtual HRESULT STDMETHODCALLTYPE EnsureAndRegisterAllAsync(
+                            __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double** operation
+                            ) = 0;
+                        virtual HRESULT STDMETHODCALLTYPE RegisterAllAsync(
+                            __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double** operation
+                            ) = 0;
+                    };
 
-                MIDL_CONST_ID IID& IID_IExecutionProviderCatalog = _uuidof(IExecutionProviderCatalog);
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+                    MIDL_CONST_ID IID& IID_IExecutionProviderCatalog = _uuidof(IExecutionProviderCatalog);
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
-EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog);
-#endif /* !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__) */
+EXTERN_C const IID IID___x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog;
+#endif /* !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__) */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -706,32 +629,32 @@ EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProv
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-#if !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__)
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__
+#if !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__)
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__
 extern const __declspec(selectany) _Null_terminated_ WCHAR InterfaceName_Microsoft_Windows_AI_MachineLearning_IExecutionProviderCatalogStatics[] = L"Microsoft.Windows.AI.MachineLearning.IExecutionProviderCatalogStatics";
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                MIDL_INTERFACE("550def98-2611-5433-afb8-43673b610848")
-                IExecutionProviderCatalogStatics : public IInspectable
-                {
-                public:
-                    virtual HRESULT STDMETHODCALLTYPE GetDefault(
-                        ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::IExecutionProviderCatalog)** result
-                        ) = 0;
-                };
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    MIDL_INTERFACE("550def98-2611-5433-afb8-43673b610848")
+                    IExecutionProviderCatalogStatics : public IInspectable
+                    {
+                    public:
+                        virtual HRESULT STDMETHODCALLTYPE GetDefault(
+                            ABI::Microsoft::Windows::AI::MachineLearning::IExecutionProviderCatalog** result
+                            ) = 0;
+                    };
 
-                MIDL_CONST_ID IID& IID_IExecutionProviderCatalogStatics = _uuidof(IExecutionProviderCatalogStatics);
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+                    MIDL_CONST_ID IID& IID_IExecutionProviderCatalogStatics = _uuidof(IExecutionProviderCatalogStatics);
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
-EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics);
-#endif /* !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__) */
+EXTERN_C const IID IID___x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics;
+#endif /* !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__) */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -744,38 +667,38 @@ EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProv
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-#if !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__)
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__
+#if !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__)
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__
 extern const __declspec(selectany) _Null_terminated_ WCHAR InterfaceName_Microsoft_Windows_AI_MachineLearning_IExecutionProviderReadyResult[] = L"Microsoft.Windows.AI.MachineLearning.IExecutionProviderReadyResult";
-ABI_NAMESPACE_BEGIN
-namespace Microsoft {
-    namespace Windows {
-        namespace AI {
-            namespace MachineLearning {
-                MIDL_INTERFACE("91c1724d-93c7-5284-adbe-ba2bd7be7c79")
-                IExecutionProviderReadyResult : public IInspectable
-                {
-                public:
-                    virtual HRESULT STDMETHODCALLTYPE get_Status(
-                        ABI_PARAMETER(Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResultState)* value
-                        ) = 0;
-                    virtual HRESULT STDMETHODCALLTYPE get_ExtendedError(
-                        HRESULT* value
-                        ) = 0;
-                    virtual HRESULT STDMETHODCALLTYPE get_DiagnosticText(
-                        HSTRING* value
-                        ) = 0;
-                };
+namespace ABI {
+    namespace Microsoft {
+        namespace Windows {
+            namespace AI {
+                namespace MachineLearning {
+                    MIDL_INTERFACE("91c1724d-93c7-5284-adbe-ba2bd7be7c79")
+                    IExecutionProviderReadyResult : public IInspectable
+                    {
+                    public:
+                        virtual HRESULT STDMETHODCALLTYPE get_Status(
+                            ABI::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResultState* value
+                            ) = 0;
+                        virtual HRESULT STDMETHODCALLTYPE get_ExtendedError(
+                            HRESULT* value
+                            ) = 0;
+                        virtual HRESULT STDMETHODCALLTYPE get_DiagnosticText(
+                            HSTRING* value
+                            ) = 0;
+                    };
 
-                MIDL_CONST_ID IID& IID_IExecutionProviderReadyResult = _uuidof(IExecutionProviderReadyResult);
-            } /* MachineLearning */
-        } /* AI */
-    } /* Windows */
-} /* Microsoft */
-ABI_NAMESPACE_END
+                    MIDL_CONST_ID IID& IID_IExecutionProviderReadyResult = _uuidof(IExecutionProviderReadyResult);
+                } /* MachineLearning */
+            } /* AI */
+        } /* Windows */
+    } /* Microsoft */
+} /* ABI */
 
-EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult);
-#endif /* !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__) */
+EXTERN_C const IID IID___x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult;
+#endif /* !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__) */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -842,29 +765,29 @@ extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Microsof
 
 #else // !defined(__cplusplus)
 /* Forward Declarations */
-#ifndef ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
-typedef interface C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider) C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider);
+#ifndef ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
+typedef interface __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider;
 
-#endif // ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
+#endif // ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_FWD_DEFINED__
 
-#ifndef ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
-typedef interface C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog) C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog);
+#ifndef ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
+typedef interface __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog;
 
-#endif // ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
+#endif // ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FWD_DEFINED__
 
-#ifndef ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
-typedef interface C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics) C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics);
+#ifndef ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
+typedef interface __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics;
 
-#endif // ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
+#endif // ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_FWD_DEFINED__
 
-#ifndef ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
-typedef interface C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult) C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult);
+#ifndef ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
+typedef interface __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult;
 
-#endif // ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
+#endif // ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_FWD_DEFINED__
 
 // Parameterized interface forward declarations (C)
 
@@ -957,7 +880,7 @@ typedef struct __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachi
     HRESULT (STDMETHODCALLTYPE* get_Completed)(__FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double* This,
         __FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double** result);
     HRESULT (STDMETHODCALLTYPE* GetResults)(__FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double* This,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)** result);
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult** result);
 
     END_INTERFACE
 } __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_doubleVtbl;
@@ -1082,14 +1005,14 @@ typedef struct __FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecu
     HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(__FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         TrustLevel* trustLevel);
     HRESULT (STDMETHODCALLTYPE* get_Current)(__FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)** result);
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider** result);
     HRESULT (STDMETHODCALLTYPE* get_HasCurrent)(__FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         boolean* result);
     HRESULT (STDMETHODCALLTYPE* MoveNext)(__FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         boolean* result);
     HRESULT (STDMETHODCALLTYPE* GetMany)(__FIIterator_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 itemsLength,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)** items,
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider** items,
         UINT32* result);
 
     END_INTERFACE
@@ -1228,17 +1151,17 @@ typedef struct __FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExe
         TrustLevel* trustLevel);
     HRESULT (STDMETHODCALLTYPE* GetAt)(__FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 index,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)** result);
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider** result);
     HRESULT (STDMETHODCALLTYPE* get_Size)(__FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32* result);
     HRESULT (STDMETHODCALLTYPE* IndexOf)(__FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* value,
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* value,
         UINT32* index,
         boolean* result);
     HRESULT (STDMETHODCALLTYPE* GetMany)(__FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 startIndex,
         UINT32 itemsLength,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)** items,
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider** items,
         UINT32* result);
 
     END_INTERFACE
@@ -1313,35 +1236,35 @@ typedef struct __FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecuti
         TrustLevel* trustLevel);
     HRESULT (STDMETHODCALLTYPE* GetAt)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 index,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)** result);
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider** result);
     HRESULT (STDMETHODCALLTYPE* get_Size)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32* result);
     HRESULT (STDMETHODCALLTYPE* GetView)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         __FIVectorView_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider** result);
     HRESULT (STDMETHODCALLTYPE* IndexOf)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* value,
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* value,
         UINT32* index,
         boolean* result);
     HRESULT (STDMETHODCALLTYPE* SetAt)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 index,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* value);
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* value);
     HRESULT (STDMETHODCALLTYPE* InsertAt)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 index,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* value);
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* value);
     HRESULT (STDMETHODCALLTYPE* RemoveAt)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 index);
     HRESULT (STDMETHODCALLTYPE* Append)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* value);
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* value);
     HRESULT (STDMETHODCALLTYPE* RemoveAtEnd)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This);
     HRESULT (STDMETHODCALLTYPE* Clear)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This);
     HRESULT (STDMETHODCALLTYPE* GetMany)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 startIndex,
         UINT32 itemsLength,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)** items,
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider** items,
         UINT32* result);
     HRESULT (STDMETHODCALLTYPE* ReplaceAll)(__FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider* This,
         UINT32 itemsLength,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)** items);
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider** items);
 
     END_INTERFACE
 } __FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderVtbl;
@@ -1598,9 +1521,9 @@ interface __FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__
 #endif // ____FIAsyncOperationProgressHandler_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double_INTERFACE_DEFINED__
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
-typedef enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyResultState) C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyResultState);
+typedef enum __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyResultState __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyResultState;
 
-typedef enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyState) C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyState);
+typedef enum __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyState __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyState;
 
 /*
  *
@@ -1610,7 +1533,7 @@ typedef enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionP
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyResultState)
+enum __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyResultState
 {
     ExecutionProviderReadyResultState_InProgress = 0,
     ExecutionProviderReadyResultState_Success = 1,
@@ -1626,7 +1549,7 @@ enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderR
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyState)
+enum __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyState
 {
     ExecutionProviderReadyState_Ready = 0,
     ExecutionProviderReadyState_NotReady = 1,
@@ -1644,83 +1567,83 @@ enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderR
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-#if !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__)
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__
+#if !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__)
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__
 extern const __declspec(selectany) _Null_terminated_ WCHAR InterfaceName_Microsoft_Windows_AI_MachineLearning_IExecutionProvider[] = L"Microsoft.Windows.AI.MachineLearning.IExecutionProvider";
-typedef struct C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderVtbl)
+typedef struct __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderVtbl
 {
     BEGIN_INTERFACE
 
-    HRESULT (STDMETHODCALLTYPE* QueryInterface)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
+    HRESULT (STDMETHODCALLTYPE* QueryInterface)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
         REFIID riid,
         void** ppvObject);
-    ULONG (STDMETHODCALLTYPE* AddRef)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This);
-    ULONG (STDMETHODCALLTYPE* Release)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This);
-    HRESULT (STDMETHODCALLTYPE* GetIids)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
+    ULONG (STDMETHODCALLTYPE* AddRef)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This);
+    ULONG (STDMETHODCALLTYPE* Release)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This);
+    HRESULT (STDMETHODCALLTYPE* GetIids)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
         ULONG* iidCount,
         IID** iids);
-    HRESULT (STDMETHODCALLTYPE* GetRuntimeClassName)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
+    HRESULT (STDMETHODCALLTYPE* GetRuntimeClassName)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
         HSTRING* className);
-    HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
+    HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
         TrustLevel* trustLevel);
-    HRESULT (STDMETHODCALLTYPE* get_Name)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
+    HRESULT (STDMETHODCALLTYPE* get_Name)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
         HSTRING* value);
-    HRESULT (STDMETHODCALLTYPE* get_LibraryPath)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
+    HRESULT (STDMETHODCALLTYPE* get_LibraryPath)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
         HSTRING* value);
-    HRESULT (STDMETHODCALLTYPE* get_ReadyState)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
-        enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyState)* value);
-    HRESULT (STDMETHODCALLTYPE* EnsureReadyAsync)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
+    HRESULT (STDMETHODCALLTYPE* get_ReadyState)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
+        enum __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyState* value);
+    HRESULT (STDMETHODCALLTYPE* EnsureReadyAsync)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
         __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double** operation);
-    HRESULT (STDMETHODCALLTYPE* TryRegister)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)* This,
+    HRESULT (STDMETHODCALLTYPE* TryRegister)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider* This,
         boolean* result);
 
     END_INTERFACE
-} C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderVtbl);
+} __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderVtbl;
 
-interface C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)
+interface __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider
 {
-    CONST_VTBL struct C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderVtbl)* lpVtbl;
+    CONST_VTBL struct __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderVtbl* lpVtbl;
 };
 
 #ifdef COBJMACROS
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_QueryInterface(This, riid, ppvObject) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_QueryInterface(This, riid, ppvObject) \
     ((This)->lpVtbl->QueryInterface(This, riid, ppvObject))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_AddRef(This) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_AddRef(This) \
     ((This)->lpVtbl->AddRef(This))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_Release(This) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_Release(This) \
     ((This)->lpVtbl->Release(This))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_GetIids(This, iidCount, iids) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_GetIids(This, iidCount, iids) \
     ((This)->lpVtbl->GetIids(This, iidCount, iids))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_GetRuntimeClassName(This, className) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_GetRuntimeClassName(This, className) \
     ((This)->lpVtbl->GetRuntimeClassName(This, className))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_GetTrustLevel(This, trustLevel) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_GetTrustLevel(This, trustLevel) \
     ((This)->lpVtbl->GetTrustLevel(This, trustLevel))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_get_Name(This, value) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_get_Name(This, value) \
     ((This)->lpVtbl->get_Name(This, value))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_get_LibraryPath(This, value) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_get_LibraryPath(This, value) \
     ((This)->lpVtbl->get_LibraryPath(This, value))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_get_ReadyState(This, value) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_get_ReadyState(This, value) \
     ((This)->lpVtbl->get_ReadyState(This, value))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_EnsureReadyAsync(This, operation) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_EnsureReadyAsync(This, operation) \
     ((This)->lpVtbl->EnsureReadyAsync(This, operation))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_TryRegister(This, result) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_TryRegister(This, result) \
     ((This)->lpVtbl->TryRegister(This, result))
 
 #endif /* COBJMACROS */
 
-EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider);
-#endif /* !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__) */
+EXTERN_C const IID IID___x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider;
+#endif /* !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider_INTERFACE_DEFINED__) */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -1733,74 +1656,74 @@ EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProv
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-#if !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__)
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__
+#if !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__)
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__
 extern const __declspec(selectany) _Null_terminated_ WCHAR InterfaceName_Microsoft_Windows_AI_MachineLearning_IExecutionProviderCatalog[] = L"Microsoft.Windows.AI.MachineLearning.IExecutionProviderCatalog";
-typedef struct C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogVtbl)
+typedef struct __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogVtbl
 {
     BEGIN_INTERFACE
 
-    HRESULT (STDMETHODCALLTYPE* QueryInterface)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This,
+    HRESULT (STDMETHODCALLTYPE* QueryInterface)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This,
         REFIID riid,
         void** ppvObject);
-    ULONG (STDMETHODCALLTYPE* AddRef)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This);
-    ULONG (STDMETHODCALLTYPE* Release)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This);
-    HRESULT (STDMETHODCALLTYPE* GetIids)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This,
+    ULONG (STDMETHODCALLTYPE* AddRef)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This);
+    ULONG (STDMETHODCALLTYPE* Release)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This);
+    HRESULT (STDMETHODCALLTYPE* GetIids)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This,
         ULONG* iidCount,
         IID** iids);
-    HRESULT (STDMETHODCALLTYPE* GetRuntimeClassName)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This,
+    HRESULT (STDMETHODCALLTYPE* GetRuntimeClassName)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This,
         HSTRING* className);
-    HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This,
+    HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This,
         TrustLevel* trustLevel);
-    HRESULT (STDMETHODCALLTYPE* FindAllProviders)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This,
+    HRESULT (STDMETHODCALLTYPE* FindAllProviders)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This,
         UINT32* resultLength,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProvider)*** result);
-    HRESULT (STDMETHODCALLTYPE* EnsureAndRegisterAllAsync)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This,
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProvider*** result);
+    HRESULT (STDMETHODCALLTYPE* EnsureAndRegisterAllAsync)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This,
         __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double** operation);
-    HRESULT (STDMETHODCALLTYPE* RegisterAllAsync)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)* This,
+    HRESULT (STDMETHODCALLTYPE* RegisterAllAsync)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog* This,
         __FIAsyncOperationWithProgress_2___FIVector_1_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProvider_double** operation);
 
     END_INTERFACE
-} C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogVtbl);
+} __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogVtbl;
 
-interface C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)
+interface __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog
 {
-    CONST_VTBL struct C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogVtbl)* lpVtbl;
+    CONST_VTBL struct __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogVtbl* lpVtbl;
 };
 
 #ifdef COBJMACROS
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_QueryInterface(This, riid, ppvObject) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_QueryInterface(This, riid, ppvObject) \
     ((This)->lpVtbl->QueryInterface(This, riid, ppvObject))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_AddRef(This) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_AddRef(This) \
     ((This)->lpVtbl->AddRef(This))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_Release(This) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_Release(This) \
     ((This)->lpVtbl->Release(This))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_GetIids(This, iidCount, iids) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_GetIids(This, iidCount, iids) \
     ((This)->lpVtbl->GetIids(This, iidCount, iids))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_GetRuntimeClassName(This, className) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_GetRuntimeClassName(This, className) \
     ((This)->lpVtbl->GetRuntimeClassName(This, className))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_GetTrustLevel(This, trustLevel) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_GetTrustLevel(This, trustLevel) \
     ((This)->lpVtbl->GetTrustLevel(This, trustLevel))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FindAllProviders(This, resultLength, result) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_FindAllProviders(This, resultLength, result) \
     ((This)->lpVtbl->FindAllProviders(This, resultLength, result))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_EnsureAndRegisterAllAsync(This, operation) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_EnsureAndRegisterAllAsync(This, operation) \
     ((This)->lpVtbl->EnsureAndRegisterAllAsync(This, operation))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_RegisterAllAsync(This, operation) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_RegisterAllAsync(This, operation) \
     ((This)->lpVtbl->RegisterAllAsync(This, operation))
 
 #endif /* COBJMACROS */
 
-EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog);
-#endif /* !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__) */
+EXTERN_C const IID IID___x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog;
+#endif /* !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog_INTERFACE_DEFINED__) */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -1813,63 +1736,63 @@ EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProv
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-#if !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__)
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__
+#if !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__)
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__
 extern const __declspec(selectany) _Null_terminated_ WCHAR InterfaceName_Microsoft_Windows_AI_MachineLearning_IExecutionProviderCatalogStatics[] = L"Microsoft.Windows.AI.MachineLearning.IExecutionProviderCatalogStatics";
-typedef struct C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStaticsVtbl)
+typedef struct __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStaticsVtbl
 {
     BEGIN_INTERFACE
 
-    HRESULT (STDMETHODCALLTYPE* QueryInterface)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics)* This,
+    HRESULT (STDMETHODCALLTYPE* QueryInterface)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics* This,
         REFIID riid,
         void** ppvObject);
-    ULONG (STDMETHODCALLTYPE* AddRef)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics)* This);
-    ULONG (STDMETHODCALLTYPE* Release)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics)* This);
-    HRESULT (STDMETHODCALLTYPE* GetIids)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics)* This,
+    ULONG (STDMETHODCALLTYPE* AddRef)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics* This);
+    ULONG (STDMETHODCALLTYPE* Release)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics* This);
+    HRESULT (STDMETHODCALLTYPE* GetIids)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics* This,
         ULONG* iidCount,
         IID** iids);
-    HRESULT (STDMETHODCALLTYPE* GetRuntimeClassName)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics)* This,
+    HRESULT (STDMETHODCALLTYPE* GetRuntimeClassName)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics* This,
         HSTRING* className);
-    HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics)* This,
+    HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics* This,
         TrustLevel* trustLevel);
-    HRESULT (STDMETHODCALLTYPE* GetDefault)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics)* This,
-        C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog)** result);
+    HRESULT (STDMETHODCALLTYPE* GetDefault)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics* This,
+        __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalog** result);
 
     END_INTERFACE
-} C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStaticsVtbl);
+} __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStaticsVtbl;
 
-interface C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics)
+interface __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics
 {
-    CONST_VTBL struct C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStaticsVtbl)* lpVtbl;
+    CONST_VTBL struct __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStaticsVtbl* lpVtbl;
 };
 
 #ifdef COBJMACROS
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_QueryInterface(This, riid, ppvObject) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_QueryInterface(This, riid, ppvObject) \
     ((This)->lpVtbl->QueryInterface(This, riid, ppvObject))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_AddRef(This) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_AddRef(This) \
     ((This)->lpVtbl->AddRef(This))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_Release(This) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_Release(This) \
     ((This)->lpVtbl->Release(This))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_GetIids(This, iidCount, iids) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_GetIids(This, iidCount, iids) \
     ((This)->lpVtbl->GetIids(This, iidCount, iids))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_GetRuntimeClassName(This, className) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_GetRuntimeClassName(This, className) \
     ((This)->lpVtbl->GetRuntimeClassName(This, className))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_GetTrustLevel(This, trustLevel) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_GetTrustLevel(This, trustLevel) \
     ((This)->lpVtbl->GetTrustLevel(This, trustLevel))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_GetDefault(This, result) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_GetDefault(This, result) \
     ((This)->lpVtbl->GetDefault(This, result))
 
 #endif /* COBJMACROS */
 
-EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics);
-#endif /* !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__) */
+EXTERN_C const IID IID___x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics;
+#endif /* !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderCatalogStatics_INTERFACE_DEFINED__) */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -1882,73 +1805,73 @@ EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProv
  *
  */
 #if MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
-#if !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__)
-#define ____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__
+#if !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__)
+#define ____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__
 extern const __declspec(selectany) _Null_terminated_ WCHAR InterfaceName_Microsoft_Windows_AI_MachineLearning_IExecutionProviderReadyResult[] = L"Microsoft.Windows.AI.MachineLearning.IExecutionProviderReadyResult";
-typedef struct C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResultVtbl)
+typedef struct __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResultVtbl
 {
     BEGIN_INTERFACE
 
-    HRESULT (STDMETHODCALLTYPE* QueryInterface)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This,
+    HRESULT (STDMETHODCALLTYPE* QueryInterface)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This,
         REFIID riid,
         void** ppvObject);
-    ULONG (STDMETHODCALLTYPE* AddRef)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This);
-    ULONG (STDMETHODCALLTYPE* Release)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This);
-    HRESULT (STDMETHODCALLTYPE* GetIids)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This,
+    ULONG (STDMETHODCALLTYPE* AddRef)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This);
+    ULONG (STDMETHODCALLTYPE* Release)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This);
+    HRESULT (STDMETHODCALLTYPE* GetIids)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This,
         ULONG* iidCount,
         IID** iids);
-    HRESULT (STDMETHODCALLTYPE* GetRuntimeClassName)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This,
+    HRESULT (STDMETHODCALLTYPE* GetRuntimeClassName)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This,
         HSTRING* className);
-    HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This,
+    HRESULT (STDMETHODCALLTYPE* GetTrustLevel)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This,
         TrustLevel* trustLevel);
-    HRESULT (STDMETHODCALLTYPE* get_Status)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This,
-        enum C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyResultState)* value);
-    HRESULT (STDMETHODCALLTYPE* get_ExtendedError)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This,
+    HRESULT (STDMETHODCALLTYPE* get_Status)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This,
+        enum __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CExecutionProviderReadyResultState* value);
+    HRESULT (STDMETHODCALLTYPE* get_ExtendedError)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This,
         HRESULT* value);
-    HRESULT (STDMETHODCALLTYPE* get_DiagnosticText)(C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)* This,
+    HRESULT (STDMETHODCALLTYPE* get_DiagnosticText)(__x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult* This,
         HSTRING* value);
 
     END_INTERFACE
-} C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResultVtbl);
+} __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResultVtbl;
 
-interface C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult)
+interface __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult
 {
-    CONST_VTBL struct C_ABI_PARAMETER(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResultVtbl)* lpVtbl;
+    CONST_VTBL struct __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResultVtbl* lpVtbl;
 };
 
 #ifdef COBJMACROS
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_QueryInterface(This, riid, ppvObject) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_QueryInterface(This, riid, ppvObject) \
     ((This)->lpVtbl->QueryInterface(This, riid, ppvObject))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_AddRef(This) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_AddRef(This) \
     ((This)->lpVtbl->AddRef(This))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_Release(This) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_Release(This) \
     ((This)->lpVtbl->Release(This))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_GetIids(This, iidCount, iids) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_GetIids(This, iidCount, iids) \
     ((This)->lpVtbl->GetIids(This, iidCount, iids))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_GetRuntimeClassName(This, className) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_GetRuntimeClassName(This, className) \
     ((This)->lpVtbl->GetRuntimeClassName(This, className))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_GetTrustLevel(This, trustLevel) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_GetTrustLevel(This, trustLevel) \
     ((This)->lpVtbl->GetTrustLevel(This, trustLevel))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_get_Status(This, value) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_get_Status(This, value) \
     ((This)->lpVtbl->get_Status(This, value))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_get_ExtendedError(This, value) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_get_ExtendedError(This, value) \
     ((This)->lpVtbl->get_ExtendedError(This, value))
 
-#define __x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_get_DiagnosticText(This, value) \
+#define __x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_get_DiagnosticText(This, value) \
     ((This)->lpVtbl->get_DiagnosticText(This, value))
 
 #endif /* COBJMACROS */
 
-EXTERN_C const IID C_IID(Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult);
-#endif /* !defined(____x_Microsoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__) */
+EXTERN_C const IID IID___x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult;
+#endif /* !defined(____x_ABI_CMicrosoft_CWindows_CAI_CMachineLearning_CIExecutionProviderReadyResult_INTERFACE_DEFINED__) */
 #endif // MICROSOFT_WINDOWS_AI_MACHINELEARNING_MACHINELEARNINGCONTRACT_VERSION >= 0x10000
 
 /*
@@ -2015,13 +1938,6 @@ extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Microsof
 
 #endif // defined(__cplusplus)
 #pragma pop_macro("MIDL_CONST_ID")
-#pragma pop_macro("C_IID")
-#pragma pop_macro("ABI_CONCAT")
-#pragma pop_macro("ABI_PARAMETER")
-#pragma pop_macro("ABI_NAMESPACE_BEGIN")
-#pragma pop_macro("ABI_NAMESPACE_END")
-
-
 #endif // __microsoft2Ewindows2Eai2Emachinelearning_p_h__
 
 #endif // __microsoft2Ewindows2Eai2Emachinelearning_h__
