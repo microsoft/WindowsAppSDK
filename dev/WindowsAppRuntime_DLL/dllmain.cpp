@@ -22,6 +22,12 @@ static HRESULT DetoursInitialize()
     }
 
     // Do we need to detour APIs?
+    if (!MddNeedsDetours() && !UrfwNeedsDetours())
+    {
+        return S_OK;
+    }
+
+    // No detours needed in a 'detours helper process'
     if (DetourIsHelperProcess())
     {
         return S_OK;
