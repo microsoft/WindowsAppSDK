@@ -32,7 +32,7 @@
     Check developer mode
 
 .PARAMETER CheckNugetExe
-    Check nuget.exe
+    Verify nuget.exe is present
 
 .PARAMETER CheckTAEFService
     Check the TAEF service

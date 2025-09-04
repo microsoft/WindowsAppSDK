@@ -19,7 +19,7 @@ Development requires the following installation:
    and wait for the install to complete.
 
 2. Run `DevCheck -CheckAll -FixAll` from an admin prompt to verify your configuration and perform
-   additional installation and configuration updates. See `One-Time Setup` for more details.
+   additional installation and configuration updates (if necessary). See `One-Time Setup` for more details.
 
 # One-Time Setup
 
@@ -28,10 +28,10 @@ in the Start Menu and select `Run as Administrator`) to update your development 
 
 * Verify Windows' Developer Mode is enabled.
 * Verify LongPath support (and enable if necessary).
+* Verify nuget.exe is available (and download if necessary).
 * Verify Visual Studio is installed with the required components.
 * Verify Windows 10 SDK 10.0.17763.0 is installed (and install if necessary).
 * Verify Windows 11 SDK 10.0.26100.4654+ is installed (and install if necessary).
-* Verify nuget.exe is available (and download if necessary).
 * Verify a password-protected test certificate exists and add it to the certificate store (or create if necessary). Used to sign test packages for inner-loop development and testing.
 * Install the TAEF service (TE.Service). Used by TAEF to enable test functionality (e.g. RunAs).
 * Verify the project's dependencies are sanctioned and using the correct version(s).
