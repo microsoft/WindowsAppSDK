@@ -111,7 +111,6 @@
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll"/>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
-    <!-- Add DeploymentAgent.exe to the package -->
     <MakeMsixInputs Include="$(OutDir)..\DeploymentAgent\DeploymentAgent.exe" />
     <MakeMsixInputsWithLocations Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix">
       <TargetFile>MSIX\Main.msix</TargetFile>
@@ -132,7 +131,6 @@
     <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj">
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
-    <!-- Add DeploymentAgent project reference to ensure it builds before this package -->
     <ProjectReference Include="$(RepoRoot)\dev\DeploymentAgent\DeploymentAgent.vcxproj">
       <Project>{4410d374-a90c-4adf-8b15-aa2aae2636bf}</Project>
     </ProjectReference>
