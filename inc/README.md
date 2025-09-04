@@ -47,6 +47,11 @@ mkdir inc\abi\runtime -ErrorAction SilentlyContinue
 copy $working_dir\packages\microsoft.windowsappsdk.runtime*\include\*.h inc\abi\runtime -recurse -force
 ```
 
+## Update Copyright Stamps
+
+Ensure that any new files have the Microsoft copyright and MIT license notice at the top.  Run
+[VerifyCopyrightHeaders.cmd](../tools/VerifyCopyrightHeaders.cmd) before committing.
+
 ## Commit changes
 
 Create or switch to the release branch for the output artifacts, then commit the changes
