@@ -58,7 +58,7 @@ namespace Test::AccessControl
         BEGIN_TEST_CLASS(APITests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK AccessControl test")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
