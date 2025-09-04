@@ -405,29 +405,25 @@ HRESULT ExtRoLoadCatalog()
     return S_OK;
 }
 
+static bool UrfwUseOSImplementation() noexcept
+{
+    // Delegate to the OS' implementation on >= Windows 11 24H1
+    return WindowsVersion::IsWindows11_24H1OrGreater();
+}
+
+bool UrfwNeedsDetours() noexcept
+{
+    // Detour to our own implementation if Windows doesn't provide a sufficient implementation
+    return !UrfwUseOSImplementation();
+}
+
 HRESULT UrfwInitialize() noexcept
 {
-#if defined(TODO_URFW_DELEGATE_TO_OS_19H1PLUS)
-    // Windows' Reg-Free WinRT first appeared in Windows 10 Version 1903, May 2019 Update (aka 19H1)
-    // https://blogs.windows.com/windowsdeveloper/2019/04/30/enhancing-non-packaged-desktop-apps-using-windows-runtime-components/
-    // Delegate to the OS' implementation when available
-    if (WindowsVersion::IsWindows10_19H1OrGreater())
+    // Delegate to the OS' implementation if we can
+    if (UrfwUseOSImplementation())
     {
         return S_OK;
     }
-#elif defined(TODO_SEEME_PRODUCT_TARGET)
-    // Delegate to the OS' implementation on >= Windows 11 24H1
-    if (WindowsVersion::IsWindows11_22H2OrGreater())
-    {
-        return S_OK;
-    }
-#else
-    // Delegate to the OS' implementation on >= Windows 11 24H1
-    if (WindowsVersion::IsWindows11_24H1OrGreater())
-    {
-        return S_OK;
-    }
-#endif
 
     // OS Reg-Free WinRT isn't available so let's do it ourselves...
     DetourAttach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
