@@ -6,17 +6,25 @@ parameters:
 - name: jobName
   type: string
   default: PipelineTests
-- name: dependsOn
+- name: samplesArtifactName
+  displayName: "Supply a valid base name for Sample Apps BuildOutput to trigger publishing of the artifact"
+  type: string
+  default: ''
+- name: sampleFeatureAreasList
   type: object
-  default:
-  - ''
-  # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+  default: []
+- name: callingStage
+  type: string
+  default: ''
 - name: testMatrix
   type: object
   default: ''
 - name: buildPlatform
   type: string
   default: x64
+- name: "IsOneBranch"
+  type: boolean
+  default: true
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -55,3 +63,7 @@ jobs:
         buildConfiguration: $(buildConfiguration)
         testLocale: $(testLocale)
         ImageName: $(imageName)
+        callingStage: ${{ parameters.callingStage }}
+        samplesArtifactName: ${{ parameters.samplesArtifactName }}
+        sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
