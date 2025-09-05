@@ -23,7 +23,7 @@ runtimeclass FileSavePicker
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
 
-    String SuggestedDefaultFolder;
+    String SuggestedStartFolder;
     PickerLocationId SuggestedStartLocation;
 
     Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
@@ -43,7 +43,7 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     // (Optional) set an initial folder by absolute path. 
     //     Takes precedence over SuggestedStartLocation when both defined.
     //     If this folder is not found, falls back to SuggestedStartLocation.
-    SuggestedDefaultFolder = @"C:\\Templates",
+    SuggestedStartFolder = @"C:\\Templates",
 
     // (Optional) Specify the initial location for the picker. 
     //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
@@ -84,7 +84,7 @@ FileSavePicker savePicker(AppWindow().Id());
 // (Optional) set an initial folder by absolute path. 
 //     Takes precedence over SuggestedStartLocation when both defined.
 //     If this folder is not found, falls back to SuggestedStartLocation.
-savePicker.SuggestedDefaultFolder(L"C:\\Templates");
+savePicker.SuggestedStartFolder(L"C:\\Templates");
 
 // (Optional) Specify the initial location for the picker. 
 //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
@@ -112,7 +112,7 @@ savePicker.DefaultFileExtension(L".txt");
 
 Notes:
 
-- SuggestedDefaultFolder takes precedence over SuggestedStartLocation.
+- SuggestedStartFolder takes precedence over SuggestedStartLocation.
 ```
 
 ## FileSavePicker.PickSaveFileAsync

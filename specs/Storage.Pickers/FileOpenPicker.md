@@ -23,7 +23,7 @@ runtimeclass FileOpenPicker
     IMap<String, IVector<String>> FileTypeChoices{ get; };
     IVector<string> FileTypeFilter{ get; };
 
-    String SuggestedDefaultFolder;
+    String SuggestedStartFolder;
     PickerLocationId SuggestedStartLocation;
     
     PickerViewMode ViewMode;
@@ -46,7 +46,7 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
     // (Optional) set an initial folder by absolute path. 
     //     Takes precedence over SuggestedStartLocation when both defined.
     //     If this folder is not found, falls back to SuggestedStartLocation.
-    SuggestedDefaultFolder = @"C:\\MyFiles",
+    SuggestedStartFolder = @"C:\\MyFiles",
 
     // (Optional) Specify the initial location for the picker. 
     //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
@@ -84,7 +84,7 @@ FileOpenPicker openPicker(AppWindow().Id());
 // (Optional) set an initial folder by absolute path. 
 //     Takes precedence over SuggestedStartLocation when both defined.
 //     If not found, falls back to SuggestedStartLocation.
-openPicker.SuggestedDefaultFolder(L"C:\\MyFiles");
+openPicker.SuggestedStartFolder(L"C:\\MyFiles");
 
 // (Optional) Specify the initial location for the picker. 
 //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.

@@ -46,8 +46,8 @@ because the new APIs are currently designed for desktop scenarios where each use
 interactive session, and each session is completely independent of the other sessions on the device.
 This is in contrast to Xbox One or other multi-user devices.*
 
-1. Adding `SuggestedDefaultFolder` for all 3 pickers. This allows setting the initial folder with 
-an absolute folder path in string. When its specified folder exists, `SuggestedDefaultFolder` 
+1. Adding `SuggestedStartFolder` for all 3 pickers. This allows setting the initial folder with 
+an absolute folder path in string. When its specified folder exists, `SuggestedStartFolder` 
 takes precedence over `SuggestedStartLocation`; when its folder not found, the picker falls back 
 to `SuggestedStartLocation`, then to the system default.
 
@@ -121,7 +121,7 @@ namespace Microsoft.Windows.Storage.Pickers
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
 
-        string SuggestedDefaultFolder;
+        string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
 
         PickerViewMode ViewMode;
@@ -141,7 +141,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
 
-        string SuggestedDefaultFolder;
+        string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
 
         Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
@@ -153,7 +153,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         string CommitButtonText;
 
-        string SuggestedDefaultFolder;
+        string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
 
         PickerViewMode ViewMode;
