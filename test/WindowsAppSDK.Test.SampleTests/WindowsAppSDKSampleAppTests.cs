@@ -16,6 +16,37 @@ using WEX.Logging.Interop;
 using WEX.TestExecution;
 using WEX.TestExecution.Markup;
 
+/*
+    General Notes:
+    - If you are onboarding a new Sample app, please look for instructions in the "Adding a new Sample app" section below.
+    - This TAEF test attempts to verify that Sample apps on the Samples repo can be launched successfully given a newly built WASDK Foundation product
+      (i.e., regression detection).
+    - Currently, ~70 buildable and launchable Sample apps have been identified on the Samples repo.
+    - Because there are different kinds of Sample apps, the extend to which the app launch can be verified varies from one app to another. The  
+      basic permutations are: [ Packaged | Unpackaged ] x [ Windowed | Console | wpf ].
+    - "Packaged + Windowed" is generally the most rigiously verified, while "Unpackaged + Console" is minimally verified. 
+    - This TAEF test requires the environment variable SAMPLES_ROOT_PATH to be set to point to the root folder of the sample apps, under which folders 
+      such as AppLifeCycle and ResourcesManagement can be found, e.g. "set SAMPLES_ROOT_PATH=C:\\myRepo\\WindowsAppSDK-Samples\\Samples". This approach
+      seems to be more effective than spending time searching all logical drives the the machine for the samples root folder on each run of the test.  
+    - The environment variable can be set in the pipeline or on a developer's local machine.    
+    - The caller can optionally set environment variables Build_Platform and Build_Configuration to modify the paths to the target sample binaries.
+      Build_Platform can be one of { x86 | x64 | arm64 }. By default, Build_Platform=x64.
+      Build_Configuration can be one of { Debug | Release }. By default, Build_Configuration=Release.
+    - Currently, not all Sample apps are being built for all permutations of { x86 | x64 | arm64 } X { Debug | Release }, with X64+Release being the
+      greatest common denominator. When a test case exercises the Build_Platform + Build_Configuration which the corresponding Sample app isn't built
+      for, that test is being skipped.
+    - Not all Sample apps are working on all versions of Windows supported by WASDK. When a Sample app does not support a particular version of
+      Windows, the corresponding test case is being skipped on that version of Windows.
+    - The following information about each Sample app is currently hardcoded: relative path to executable/manifest, process name, window title, app 
+      ID, package full/family names. The benefit of this hardcoding approach is simplicity. 
+    - Test cases are intentionally "flat" structured, such that when any sample app test is failing, it is straight forward to diagnose and fix. 
+      In case some of these per-app pieces are churning frequently enough in the future to create a maintenance burden, we can consider 
+      investing into detection logic for populating most if not all of these pieces.
+    - It is currently deemed non-critical to maximize the degree of verification for every app on the Samples repo, given the purpose of increasing 
+      test coverage for nightly builds, as there likely is already redundance in the test cases. The ROI on including more sample apps in the future  
+      is anticipated to diminish, unless a new feature or app activation mechansim needs to be verified.
+*/
+
 namespace WindowsAppSDK.Test.SampleTests
 {
     [TestClass]

@@ -45,14 +45,6 @@ parameters:
   displayName: "Enable running of sample tests on arm64 platform (Default: true)"
   type: boolean
   default: true
-- name: maxParallelForBuildSamplesCompatJob_x64
-  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform x64"
-  type: number
-  default: 20
-- name: maxParallelForBuildSamplesCompatJob_arm64
-  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform arm64"
-  type: number
-  default: 20
 - name: "MaestroDependOnTestSamples"
   displayName: "Whether Maestro publishing should depend on successful Sample tests"
   type: boolean
@@ -62,6 +54,15 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
+- name: maxParallelForBuildSamplesCompatJob_x64
+  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform x64"
+  type: number
+  default: 20
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform arm64"
+  type: number
+  default: 20
+
 resources:
   repositories:
     - repository: templates
@@ -164,5 +165,5 @@ extends:
           TestSampleAppsAfterBuildStage: ${{ parameters.TestSampleAppsAfterBuildStage }}
           TestOnArm64: ${{ parameters.TestOnArm64 }}
           runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
-          maxParallel_x64: ${{ parameters.maxParallelForBuildSamplesCompatJob_x64 }}
-          maxParallel_arm64: ${{ parameters.maxParallelForBuildSamplesCompatJob_arm64 }}
+          maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
+          maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}

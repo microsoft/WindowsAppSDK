@@ -124,7 +124,6 @@ jobs:
         -Source "$(Build.SourcesDirectory)\localpackages\NugetPackages"
         -Version "$(FoundationVersion)"
         -OutputDirectory "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\localpackages"
-        -FallbackSource "https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json"
 
   # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
   - script: |

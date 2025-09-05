@@ -23,23 +23,15 @@ parameters: # parameters are shown up in ADO UI in a build queue time
 - name: "BuildSampleApps"
   displayName: "Run Build Sample Apps Stage"
   type: boolean
-  default: true
+  default: false
 - name: "TestSampleAppsAfterBuildStage"
   displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
   type: boolean
-  default: true
+  default: false
 - name: "TestOnArm64"
   displayName: "Enable running of sample tests on arm64 platform (Default: true)"
   type: boolean
-  default: true
-- name: maxParallelForBuildSamplesCompatJob_x64
-  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform x64"
-  type: number
-  default: 20
-- name: maxParallelForBuildSamplesCompatJob_arm64
-  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform arm64"
-  type: number
-  default: 20
+  default: false
 - name: runStaticAnalysis
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
@@ -49,6 +41,14 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
+- name: maxParallelForBuildSamplesCompatJob_x64
+  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform x64"
+  type: number
+  default: 20
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform arm64"
+  type: number
+  default: 20
 
 resources:
   repositories:
@@ -147,5 +147,5 @@ extends:
           TestSampleAppsAfterBuildStage: ${{ parameters.TestSampleAppsAfterBuildStage }}
           TestOnArm64: ${{ parameters.TestOnArm64 }}
           runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
-          maxParallel_x64: ${{ parameters.maxParallelForBuildSamplesCompatJob_x64 }}
-          maxParallel_arm64: ${{ parameters.maxParallelForBuildSamplesCompatJob_arm64 }}
+          maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
+          maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}

@@ -74,9 +74,9 @@ stages:
       - 'Debug'
       BuildPlatform:
       - 'x64'
-      ${{ if or(eq(parameters.TestSampleAppsAfterBuildStage, 'true'), false) }}:
+      ${{ if eq(parameters.TestSampleAppsAfterBuildStage, 'true') }}:
         SamplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_x64
-      ${{ if and(ne(parameters.TestSampleAppsAfterBuildStage, 'true'), true) }}:
+      ${{ if ne(parameters.TestSampleAppsAfterBuildStage, 'true') }}:
         SamplesArtifactName: ''
       runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
       maxParallel: ${{ parameters.maxParallel_x64 }}
@@ -98,9 +98,9 @@ stages:
       - 'Debug'
       BuildPlatform:
       - 'arm64'
-      ${{ if or(eq(parameters.TestSampleAppsAfterBuildStage, 'true'), false) }}:
+      ${{ if eq(parameters.TestSampleAppsAfterBuildStage, 'true') }}:
         SamplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_arm64
-      ${{ if and(ne(parameters.TestSampleAppsAfterBuildStage, 'true'), true) }}:
+      ${{ if ne(parameters.TestSampleAppsAfterBuildStage, 'true') }}:
         SamplesArtifactName: ''
       runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
       maxParallel: ${{ parameters.maxParallel_arm64 }}
