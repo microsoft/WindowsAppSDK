@@ -80,24 +80,17 @@ namespace Test::AccessControl
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            try
+            if (m_processHandle.is_valid())
             {
-                if (m_processHandle.is_valid())
-                {
-                    VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
+                VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
 
-                    DWORD exitCode{};
-                    VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-                    VERIFY_ARE_EQUAL(exitCode, 0u);
-                }
-                // Remove in reverse order to avoid conflicts between inter-dependent packages.
-                ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
-                ::Test::Bootstrap::Cleanup();
+                DWORD exitCode{};
+                VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
+                VERIFY_ARE_EQUAL(exitCode, 0u);
             }
-            catch (...)
-            {
-                return false;
-            }
+            // Remove in reverse order to avoid conflicts between inter-dependent packages.
+            ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
+            ::Test::Bootstrap::Cleanup();
             return true;
         }
 
