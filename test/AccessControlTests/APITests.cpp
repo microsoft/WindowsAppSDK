@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -32,7 +32,7 @@ namespace Test::AccessControl
 
         static PCWSTR GetTestPackageFullName()
         {
-            return L"AccessControlTestPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE "8wekyb3d8bbwe";
+            return L"AccessControlTestAppPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE "__8wekyb3d8bbwe";
         }
 
         static PCWSTR GetTestPackageFamilyName()
@@ -63,16 +63,9 @@ namespace Test::AccessControl
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            try
-            {
-                ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
-                ::Test::Bootstrap::Setup();
-                ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs AccessControlTests.msix
-            }
-            catch (...)
-            {
-                return false;
-            }
+            ::Test::Packages::RemovePackage(GetTestPackageFullName());
+            ::Test::Bootstrap::Setup();
+            ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs AccessControlTests.msix
 
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
             return true;
@@ -89,7 +82,7 @@ namespace Test::AccessControl
                 VERIFY_ARE_EQUAL(exitCode, 0u);
             }
             // Remove in reverse order to avoid conflicts between inter-dependent packages.
-            ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
+            ::Test::Packages::RemovePackage(GetTestPackageFullName());
             ::Test::Bootstrap::Cleanup();
             return true;
         }
