@@ -243,5 +243,6 @@
   </Target>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="AccessControlTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>
