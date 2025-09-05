@@ -203,6 +203,7 @@ $ErrorActionPreference = "Stop"
 
 $global:issues = 0
 $global:issues_test_certificate_thumbprint_not_found = 0
+$global:issues_nuget_exe_not_found = 0
 
 $global:isadmin = $null
 
@@ -213,7 +214,7 @@ $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 
 function Get-Issues
 {
-    return $global:issues + $global:issues_test_certificate_thumbprint_not_found
+    return $global:issues + $global:issues_test_certificate_thumbprint_not_found + $global:issues_nuget_exe_not_found
 }
 
 function Get-SettingsFileDefault
@@ -912,6 +913,7 @@ function Repair-DevTestPfx
     # Save the thumbprint
     $thumbprint = $cert.Thumbprint
     Set-Content -Path $cert_thumbprint -Value $thumbprint -Force
+    $global:issues_test_certificate_thumbprint_not_found = 0
 
     # Export the certificate
     $cer = Join-Path $user 'winappsdk.certificate.test.cer'
@@ -1742,6 +1744,7 @@ function Test-NugetExe
     if (-not(Test-Path -Path $file -PathType Leaf))
     {
         Write-Host "ERROR: Nuget.exe ($file)...Not Found" -ForegroundColor Red -BackgroundColor Black
+        $global:issues_nuget_exe_not_found = 1
         return $false
     }
     $versioninfo = (Get-Item $file).VersionInfo
@@ -1761,10 +1764,12 @@ function Test-NugetExe
     if ($version_uint64 -lt $minversion_uint64)
     {
         Write-Host "ERROR: Nuget.exe ($file)...Version {$($versioninfo.FileVersion)} doesn't meet required minversion v{$NugetMinVersion}" -ForegroundColor Red -BackgroundColor Black
+        $global:issues_nuget_exe_not_found = 1
         return $false
     }
 
     Write-Host "Nuget.exe v$($versioninfo.FileVersion) detected...$file"
+    $global:issues_nuget_exe_not_found = 0
     return $true
 }
 
