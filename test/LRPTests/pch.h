@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef PCH_H
@@ -40,6 +40,7 @@
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.TAEF.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 #include <windows.applicationmodel.h>
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>
