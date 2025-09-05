@@ -54,8 +54,10 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
-- maxParallelForBuildSamplesCompatJob_x64: 20
-- maxParallelForBuildSamplesCompatJob_arm64: 20
+- name: maxParallelForBuildSamplesCompatJob_x64
+  value: 20
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  value: 20
 
 resources:
   repositories:

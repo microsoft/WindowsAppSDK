@@ -27,8 +27,10 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
-- maxParallelForBuildSamplesCompatJob_x64: 13
-- maxParallelForBuildSamplesCompatJob_arm64: 13
+- name: maxParallelForBuildSamplesCompatJob_x64
+  value: 10
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  value: 10
 
 resources:
   repositories:
@@ -47,6 +49,7 @@ resources:
       ref: $(SamplesBranch)
 
 stages:
+
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml@self
@@ -74,7 +77,6 @@ stages:
     SignOutput: false
     PublishPackage: false
     IsOneBranch: false
-    BuildMockWindowsAppSDK: false
 
 - ${{ if eq( parameters.BuildSampleApps, true ) }}:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
