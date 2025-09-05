@@ -41,14 +41,8 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
-- name: maxParallelForBuildSamplesCompatJob_x64
-  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform x64"
-  type: number
-  default: 20
-- name: maxParallelForBuildSamplesCompatJob_arm64
-  displayName: "Maximum number of parallel runs for Samples Compat Tests on platform arm64"
-  type: number
-  default: 20
+- maxParallelForBuildSamplesCompatJob_x64: 20
+- maxParallelForBuildSamplesCompatJob_arm64: 20
 
 resources:
   repositories:
