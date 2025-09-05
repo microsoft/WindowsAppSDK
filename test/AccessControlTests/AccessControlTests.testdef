@@ -3,7 +3,7 @@
     "Tests": [
         {
             "Description": "Access Control Tests",
-            "Filename": "AcessControlTests.dll",
+            "Filename": "AccessControlTests.dll",
             "Parameters": "",
             "Architectures": ["x64", "x86", "arm64"],
             "Status": "Enabled"
