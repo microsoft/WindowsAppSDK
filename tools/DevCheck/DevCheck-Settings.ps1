@@ -14,6 +14,10 @@ Write-Verbose "$me BEGIN Customization"
 # Set paths to scan by -CheckDependencies and -SyncDependencies
 $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 
+# Set Windows SDKs to check/install by -CheckWindowsSDK and -InstallWindowsSDK
+$global:windows_sdks = (('10.0.17763.0', 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'),
+                        ('10.0.26100.4654', 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'))
+
 # END   Customization
 #-----------------------------------------------------------------------
 $me = (Get-Item $PSScriptRoot).FullName

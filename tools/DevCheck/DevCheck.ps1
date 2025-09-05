@@ -212,6 +212,9 @@ $global:vswhere_url = ''
 
 $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 
+$global:windows_sdks = (('10.0.17763.0', 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'),
+                        ('10.0.26100.4654', 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'))
+
 function Get-Issues
 {
     return $global:issues + $global:issues_test_certificate_thumbprint_not_found + $global:issues_nuget_exe_not_found
@@ -1838,8 +1841,12 @@ if (($CheckAll -ne $false) -Or ($ShowSystemInfo -ne $false))
 
 if (($CheckAll -ne $false) -Or ($CheckWindowsSDK -ne $false))
 {
-    $null = Test-WindowsSDKInstall '10.0.17763.0' 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
-    $null = Test-WindowsSDKInstall '10.0.26100.4654' 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'
+    ForEach ($sdk in $global:windows_sdks)
+    {
+        $version = $sdk[0]
+        $url = $sdk[1]
+        $null = Test-WindowsSDKInstall $version $url
+    }
 }
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
