@@ -1,8 +1,8 @@
 {
     "Tests": [
         {
-            "Description": "Power Notification tests",
-            "Filename": "PowerNotification.dll",
+            "Description": "Power Notifications tests",
+            "Filename": "PowerNotifications.dll",
             "Parameters": "",
             "Architectures": ["x64", "x86", "arm64"],
             "Status": "Enabled"
