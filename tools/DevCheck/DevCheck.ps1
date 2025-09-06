@@ -1032,6 +1032,7 @@ function Repair-DevTestCert
     $cert_path = "cert:\LocalMachine\TrustedPeople"
     $x509certificates = Import-Certificate -FilePath $cer -CertStoreLocation $cert_path
     Write-Host "Install test certificate $cer...OK"
+    $global:issues_test_certificate_thumbprint_not_found = 0
 }
 
 function Remove-DevTestCert
