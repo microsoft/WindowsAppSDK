@@ -70,6 +70,9 @@
 .PARAMETER NugetExeUpdate
     Download nuget.exe to the -NugetExe path
 
+.PARAMETER NugetRestore
+    Run nuget.exe restore... to restore packages if necessary.
+
 .PARAMETER Offline
     Do not access the network
 
@@ -162,6 +165,8 @@ Param(
 
     [Switch]$NugetExeUpdate=$false,
 
+    [Switch]$NugetRestore=$false,
+
     [Switch]$Offline=$false,
 
     [Switch]$OnlineVSWhere=$false,
@@ -210,10 +215,19 @@ $global:isadmin = $null
 $global:vswhere = ''
 $global:vswhere_url = ''
 
+#--------------------------------------
+# Overrideable via settings files
+
+# Paths to scan by -CheckDependencies and -SyncDependencies
 $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 
+# Windows SDKs to check/install by -CheckWindowsSDK and -InstallWindowsSDK
 $global:windows_sdks = (('10.0.17763.0', 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'),
                         ('10.0.26100.4654', 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'))
+
+# Nuget Restore paths/filenames (relative to project root directory)
+$global:nuget_restore_filenames = ('.')
+#--------------------------------------
 
 function Get-Issues
 {
@@ -1801,6 +1815,37 @@ function Install-NugetExe
     return $true
 }
 
+function Restore-Nuget
+{
+    if ($Offline -eq $true)
+    {
+        Write-Host "ERROR: -NugetRestore cannot restore packages with -Offline" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    $nugetexe = [IO.Path]::GetFullPath($NugetExe)
+    if (-not(Test-Path -Path $nugetexe -PathType Leaf))
+    {
+        Write-Host "ERROR: Nuget.exe ($nugetexe)...Not Found" -ForegroundColor Red -BackgroundColor Black
+        $global:issues_nuget_exe_not_found = 1
+        return $false
+    }
+
+    ForEach ($file in $global:nuget_restore_filenames)
+    {
+        $root = Get-ProjectRoot
+        $restore_target = Join-Path $root $file
+        $args = "restore ""$($restore_target)"""
+        Write-Host "Nuget restoring packages: $($restore_target)..."
+        if ($Verbose -eq $true)
+        {
+            Write-Verbose "Executing $nuget_exec restore $restore_target"
+        }
+        & $nugetexe "restore" "$restore_target" | Write-Host
+    }
+}
+
 $null = Set-Settings
 $null = Set-UserSettings
 $null = Get-Settings
@@ -1896,6 +1941,11 @@ if (($CheckAll -ne $false) -Or ($CheckNugetExe -ne $false) -Or ($NugetExeUpdate 
             }
         }
     }
+}
+
+if (($FixAll -ne $false) -Or ($NugetRestore -ne $false))
+{
+    $null = Restore-Nuget
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))

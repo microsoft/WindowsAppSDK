@@ -18,6 +18,9 @@ $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 $global:windows_sdks = (('10.0.17763.0', 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'),
                         ('10.0.26100.4654', 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'))
 
+# Set Nuget Restore paths/filenames (relative to project root directory)
+$global:nuget_restore_filenames = ('WindowsAppRuntime.sln')
+
 # END   Customization
 #-----------------------------------------------------------------------
 $me = (Get-Item $PSScriptRoot).FullName
