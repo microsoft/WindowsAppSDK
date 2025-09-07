@@ -530,14 +530,27 @@ function Get-TAEFPackageVersion
 
 function Get-VSWhereOffline
 {
-    # Absolute Path = "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+    # Default absolute Path = "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+    # Unless it's installed in a non-default location
 
+    # Check default path
     $programfilesx86 = [Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFilesX86)
     $path = Join-Path $programfilesx86 "Microsoft Visual Studio\Installer\vswhere.exe"
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
-        return $null
+        # Check if Windows can find it (e.g. via PATH)
+        $file = Get-Command 'vswhere.exe' -ErrorAction Ignore
+        if ($file)
+        {
+            $path = $file.Path
+        }
+        else
+        {
+            Write-Verbose "...vswhere.exe not found offline"
+            return $null
+        }
     }
+    Write-Verbose "...vswhere.exe found offline...$path"
     return $path
 }
 
@@ -564,6 +577,7 @@ function Get-VSWhereOnline
     {
         return $null
     }
+    Write-Verbose "...vswhere.exe found online...$path"
     return $path
 }
 
@@ -878,7 +892,7 @@ function Repair-DevTestPfx
 
     if (Test-Path -Path $pwd_file -PathType Leaf)
     {
-        Write-Warning "A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
+        Write-Warning "A pre-existing password file is found. A new password will be generated, please rebuild tests to ensure the new password is used."
     }
 
     $password = ''
