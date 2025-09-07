@@ -23,7 +23,7 @@ stages:
     - Build_x64
     - Build_arm64
   condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+    and(succeeded(), eq(variables['useBuildOutputFromBuildId'],''))
   jobs:
   - job: NugetPackage
     pool:
