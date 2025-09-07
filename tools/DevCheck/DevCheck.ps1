@@ -207,8 +207,12 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 $global:issues = 0
-$global:issues_test_certificate_thumbprint_not_found = 0
+$global:issues_valid_test_pfx_thumbprint_not_found = 0
+$global:issues_valid_test_certificate_thumbprint_not_found = 0
 $global:issues_nuget_exe_not_found = 0
+
+$global:warnings_test_pfx_expires_soon = 0
+$global:warnings_test_certificate_expires_soon = 0
 
 $global:isadmin = $null
 
@@ -231,7 +235,7 @@ $global:nuget_restore_filenames = ('.')
 
 function Get-Issues
 {
-    return $global:issues + $global:issues_test_certificate_thumbprint_not_found + $global:issues_nuget_exe_not_found
+    return $global:issues + $global:issues_valid_test_pfx_thumbprint_not_found + $global:issues_valid_test_certificate_thumbprint_not_found + $global:issues_nuget_exe_not_found
 }
 
 function Get-SettingsFileDefault
@@ -844,7 +848,7 @@ function Test-DevTestPfx
     if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
     {
         Write-Host "Test certificate thumbprint $pfx_thumbprint...Not Found"
-        $global:issues_test_certificate_thumbprint_not_found = 1
+        $global:issues_valid_test_pfx_thumbprint_not_found++
         return $false
     }
 
@@ -853,7 +857,7 @@ function Test-DevTestPfx
     if (-not(Test-Path -Path $cert_path))
     {
         Write-Host "Test certificate for $pfx_thumbprint...Not Found"
-        $global:issues++
+        $global:issues_valid_test_pfx_thumbprint_not_found++
         return $false
     }
 
@@ -863,13 +867,13 @@ function Test-DevTestPfx
     if ($expiration -lt $now)
     {
         Write-Host "Test certificate for $pfx_thumbprint...Expired ($expiration)"
-        $global:issues++
+        $global:issues_valid_test_pfx_thumbprint_not_found++
         return $false
     }
     elseif ($expiration -lt ($now + (New-TimeSpan -Days 14)))
     {
         Write-Host "Test certificate for $pfx_thumbprint...Expires soon ($expiration)"
-        $global:issues++
+        $global:warnings_test_pfx_expires_soon++
         return $true
     }
 
@@ -944,7 +948,8 @@ function Repair-DevTestPfx
     # Save the thumbprint
     $thumbprint = $cert.Thumbprint
     Set-Content -Path $cert_thumbprint -Value $thumbprint -Force
-    $global:issues_test_certificate_thumbprint_not_found = 0
+    $global:issues_valid_test_pfx_thumbprint_not_found = 0
+    $global:warnings_test_pfx_expires_soon = 0
 
     # Export the certificate
     $cer = Join-Path $user 'winappsdk.certificate.test.cer'
@@ -1003,7 +1008,7 @@ function Test-DevTestCert
     if (-not(Test-Path -Path $cert_path))
     {
         Write-Host "Test certificate $pfx_thumbprint thumbprint $thumbprint...Not Found"
-        $global:issues++
+        $global:issues_valid_test_certificate_thumbprint_not_found++
         return $false
     }
 
@@ -1013,13 +1018,13 @@ function Test-DevTestCert
     if ($expiration -lt $now)
     {
         Write-Host "Test certificate $thumbprint...Expired ($expiration)"
-        $global:issues++
+        $global:issues_valid_test_certificate_thumbprint_not_found++
         return $false
     }
     elseif ($expiration -lt ($now + (New-TimeSpan -Days 14)))
     {
         Write-Host "Test certificate $thumbprint...Expires soon ($expiration)"
-        $global:issues++
+        $global:warnings_test_certificate_expires_soon++
         return $false
     }
 
@@ -1046,7 +1051,8 @@ function Repair-DevTestCert
     $cert_path = "cert:\LocalMachine\TrustedPeople"
     $x509certificates = Import-Certificate -FilePath $cer -CertStoreLocation $cert_path
     Write-Host "Install test certificate $cer...OK"
-    $global:issues_test_certificate_thumbprint_not_found = 0
+    $global:issues_valid_test_certificate_thumbprint_not_found = 0
+    $global:warnings_test_certificate_expires_soon = 0
 }
 
 function Remove-DevTestCert
