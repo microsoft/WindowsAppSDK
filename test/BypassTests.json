@@ -1634,20 +1634,5 @@
   "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Add_Rank_Bneg10_A0",
   "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution",
   "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Explicit",
-  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Current",
-  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::FlatAPITest",
-  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::WinRTStringTest",
-  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::WinRTBytesTest",
-  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::FlatAPITest",
-  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::WinRTStringTest",
-  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::WinRTBytesTest",
-  "release_x86_Windows.10.Enterprise.22h2.Test::AccessControl::APITests::FlatAPITest",
-  "release_x86_Windows.10.Enterprise.22h2.Test::AccessControl::APITests::WinRTStringTest",
-  "release_x86_Windows.10.Enterprise.22h2.Test::AccessControl::APITests::WinRTBytesTest",
-  "release_x86_Windows.11.Professional.23H2.zh-CN.Test::AccessControl::APITests::FlatAPITest",
-  "release_x86_Windows.11.Professional.23H2.zh-CN.Test::AccessControl::APITests::WinRTStringTest",
-  "release_x86_Windows.11.Professional.23H2.zh-CN.Test::AccessControl::APITests::WinRTBytesTest",
-  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::AccessControl::APITests::FlatAPITest",
-  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::AccessControl::APITests::WinRTStringTest",
-  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::AccessControl::APITests::WinRTBytesTest"
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Current"
 ]
