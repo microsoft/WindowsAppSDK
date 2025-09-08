@@ -48,8 +48,6 @@ inline void Initialize_StopSuccessActivity(
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    static bool s_isInitialized{ false };
-    static wil::srwlock m_isInitializedLock;
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus()
     {
@@ -166,14 +164,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
         bool isRepair)
     {
-        auto lock{ m_isInitializedLock.lock_exclusive() };
-
-        if (s_isInitialized)
-        {
-            throw winrt::hresult_error(HRESULT_FROM_WIN32(ERROR_INVALID_STATE),
-                                       L"DeploymentManager is already initialized (can only be initialized once). See https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applicationmodel.windowsappruntime.deploymentmanager.initialize?view=windows-app-sdk-1.7#microsoft-windows-applicationmodel-windowsappruntime-deploymentmanager-initialize");
-        }
-
         auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
         const bool isPackagedProcess{ AppModel::Identity::IsPackagedProcess() };
         const int integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
@@ -182,16 +172,22 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
-        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
-                                                      isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
+            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
+        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
+                                                      Security::IntegrityLevel::IsElevated(),
+                                                      isPackagedProcess,
+                                                      initializeActivityContext.GetIsFullTrustPackage(),
+                                                      Security::IntegrityLevel::GetIntegrityLevel(),
+                                                      isRepair);
 
         // DeploymentManager API requires a packaged process?
+        HRESULT hr{};
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult deploymentResult{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown, S_OK };
         if (!isPackagedProcess)
         {
             // The process lacks package identity but that's OK. Do nothing
-            return winrt::make<implementation::DeploymentResult>(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok, S_OK);
+            const auto c_status{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok };
+            return winrt::make<implementation::DeploymentResult>(c_status, S_OK);
         }
 
         try
@@ -200,8 +196,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         catch (winrt::hresult_error const& e)
         {
-            const HRESULT hr{ e.code() };
-
+            hr = e.code();
+        }
+        if (FAILED(hr))
+        {
             auto packageIdentity{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
             PCWSTR c_packageNamePrefix{ L"microsoft.windowsappruntime." };
             const size_t c_packageNamePrefixLength{ ARRAYSIZE(L"microsoft.windowsappruntime.") - 1 };
@@ -212,9 +210,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             }
             else
             {
-                release = std::format(L"??? ({})", packageFullName);
+                release = std::wstring{ L"??? (" } + std::wstring(packageFullName.c_str()) + L")";
             }
-            std::ignore = LOG_IF_FAILED(Initialize_Log(hr, packageIdentity, release));
+            LOG_IF_FAILED(Initialize_Log(hr, packageIdentity, release));
 
             // NOTE: IsDebuggerPresent()=TRUE if running under a debugger context.
             //       IsDebuggerPresent()=FALSE if not running under a debugger context, even if AEDebug is set.
@@ -226,16 +224,13 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             if (deploymentInitializeOptions.OnErrorShowUI() ||
                 ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_ONERRORSHOWUI"))
             {
-                std::ignore = LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
+                LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
             }
 
-            THROW_HR_MSG(hr, "PackageFullName=%ls Options: ForceDeployment=%c OnErrorShowUI=%c isRepair:%c",
-                         packageFullName.c_str(), deploymentInitializeOptions.ForceDeployment() ? 'Y' : 'N',
-                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N' );
+            THROW_HR(hr);
         }
 
         // Success!
-        s_isInitialized = true;
         return deploymentResult;
     }
 
@@ -265,7 +260,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         else
         {
-            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) &&
+            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) && 
                 (isRepair))
             {
                 status = DeploymentStatus::PackageRepairFailed;
