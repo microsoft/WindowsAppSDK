@@ -1,3 +1,6 @@
+# Note: In Foundation, the approach to test launching sample apps differs slightly from Aggregator. All sample apps in Foundation are tested in SelfContained mode.
+#       The reason for this difference is: sample apps only use component package in Foundation. There is no associated framework package, Runtime package is generated until Aggregator.
+
 parameters:
   - name: "IsOneBranch"
     type: boolean
