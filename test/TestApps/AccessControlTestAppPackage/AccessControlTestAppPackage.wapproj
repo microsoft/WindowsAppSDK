@@ -50,7 +50,7 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>$(Platform)</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <DotNetNativeVCLibsDependencySDKMoniker>false</DotNetNativeVCLibsDependencySDKMoniker>
+    <UseDotNetNativeSharedAssemblyFrameworkPackage>false</UseDotNetNativeSharedAssemblyFrameworkPackage>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
