@@ -209,7 +209,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>
-    <VCLibsDebugConfigName Condition="'$(Configuration)' == 'Debug'">.Debug</VCLibsDebugConfigName>
     <TestPkgDebugConfigName Condition="'$(Configuration)' == 'Debug'">_Debug</TestPkgDebugConfigName>
     <TestPkgOutputPath>$(AppxPackageDir)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
     <TestPkgOutputFile>$(TestPkgOutputPath)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msix</TestPkgOutputFile>
