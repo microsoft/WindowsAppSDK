@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -32,7 +32,7 @@ namespace Test::AccessControl
 
         static PCWSTR GetTestPackageFullName()
         {
-            return L"AccessControlTestPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE "8wekyb3d8bbwe";
+            return L"AccessControlTestAppPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE "__8wekyb3d8bbwe";
         }
 
         static PCWSTR GetTestPackageFamilyName()
@@ -58,21 +58,14 @@ namespace Test::AccessControl
         BEGIN_TEST_CLASS(APITests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK AccessControl test")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            try
-            {
-                ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
-                ::Test::Bootstrap::Setup();
-                ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs AccessControlTests.msix
-            }
-            catch (...)
-            {
-                return false;
-            }
+            ::Test::Packages::RemovePackage(GetTestPackageFullName());
+            ::Test::Bootstrap::Setup();
+            ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs AccessControlTests.msix
 
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
             return true;
@@ -80,24 +73,17 @@ namespace Test::AccessControl
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            try
+            if (m_processHandle.is_valid())
             {
-                if (m_processHandle.is_valid())
-                {
-                    VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
+                VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
 
-                    DWORD exitCode{};
-                    VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-                    VERIFY_ARE_EQUAL(exitCode, 0u);
-                }
-                // Remove in reverse order to avoid conflicts between inter-dependent packages.
-                ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
-                ::Test::Bootstrap::Cleanup();
+                DWORD exitCode{};
+                VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
+                VERIFY_ARE_EQUAL(exitCode, 0u);
             }
-            catch (...)
-            {
-                return false;
-            }
+            // Remove in reverse order to avoid conflicts between inter-dependent packages.
+            ::Test::Packages::RemovePackage(GetTestPackageFullName());
+            ::Test::Bootstrap::Cleanup();
             return true;
         }
 

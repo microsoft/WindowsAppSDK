@@ -1674,5 +1674,20 @@
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.OAuth2ManagerTests::OAuth2APITests::ExtensionTokenRequest",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.OAuth2ManagerTests::OAuth2APITests::TokenRequestErrorResponse",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.OAuth2ManagerTests::OAuth2APITests::AdditionalParams",
-  "release_x86_Windows.Server.2019.DataCenter.zh-CN.OAuth2ManagerTests::OAuth2APITests::CompleteInvalidState"
+  "release_x86_Windows.Server.2019.DataCenter.zh-CN.OAuth2ManagerTests::OAuth2APITests::CompleteInvalidState",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::FlatAPITest",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::WinRTStringTest",
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::AccessControl::APITests::WinRTBytesTest",
+  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::FlatAPITest",
+  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::WinRTStringTest",
+  "release_x64_Win10_rs5_DC.Test::AccessControl::APITests::WinRTBytesTest",
+  "release_x86_Windows.10.Enterprise.22h2.Test::AccessControl::APITests::FlatAPITest",
+  "release_x86_Windows.10.Enterprise.22h2.Test::AccessControl::APITests::WinRTStringTest",
+  "release_x86_Windows.10.Enterprise.22h2.Test::AccessControl::APITests::WinRTBytesTest",
+  "release_x86_Windows.11.Professional.23H2.zh-CN.Test::AccessControl::APITests::FlatAPITest",
+  "release_x86_Windows.11.Professional.23H2.zh-CN.Test::AccessControl::APITests::WinRTStringTest",
+  "release_x86_Windows.11.Professional.23H2.zh-CN.Test::AccessControl::APITests::WinRTBytesTest",
+  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::AccessControl::APITests::FlatAPITest",
+  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::AccessControl::APITests::WinRTStringTest",
+  "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::AccessControl::APITests::WinRTBytesTest"
 ]
