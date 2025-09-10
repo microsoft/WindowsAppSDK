@@ -68,6 +68,10 @@ jobs:
   - checkout: self
   - checkout: WindowsAppSDKSamples
 
+  # Used to restore Windows SDK projection preview package from MSFTNuGet feed
+  - task: NuGetAuthenticate@1
+    displayName: "NuGet authenticate to restore Windows SDK projection"
+
   - task: PowerShell@2
     displayName: 'Add Windows SDK 10.0.22000'
     env:
@@ -203,10 +207,6 @@ jobs:
           Write-Host "nuget.config file does not exist."
       }
     displayName: 'Modify NuGet.config feed to internal feed'
-
-  # Used to restore Windows SDK projection preview package from MSFTNuGet feed
-  - task: NuGetAuthenticate@1
-    displayName: "NuGet authenticate to restore Windows SDK projection"
 
   - task: NuGetCommand@2
     inputs:
