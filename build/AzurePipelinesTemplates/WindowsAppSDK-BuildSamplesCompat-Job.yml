@@ -159,6 +159,16 @@ jobs:
   #====================================================================================================================
 
   - task: PowerShell@2
+    name: GetWASDKNugetDependencies
+    displayName: 'Get Nuget Dependencies for WindowsAppSDK'
+    inputs:
+      targetType: filePath
+      filePath: $(Build.SourcesDirectory)\$(SelfRepoName)\test\GetNugetDependencies.ps1
+      arguments: >
+        -PackageName "Microsoft.WindowsAppSDK"
+        -OutputVariableName "wasdkDependencies"
+      
+  - task: PowerShell@2
     displayName: "Modify Sample Apps References" 
     inputs:
       filePath: '$(Build.SourcesDirectory)\$(SelfRepoName)\test\ModifySampleAppsReferences.ps1'
@@ -166,7 +176,7 @@ jobs:
         -SampleRepoRoot "$(Build.SourcesDirectory)\$(SamplesRepoName)"
         -FoundationVersion "$(FoundationVersion)"
         -FoundationPackagesFolder "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\localpackages"
-        -WASDKPackagesFolder "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\localpackages\WASDK"
+        -WASDKNugetDependencies variables['wasdkDependencies']
   
   # update the nuget.config file to point to the internal feed
   - powershell: |

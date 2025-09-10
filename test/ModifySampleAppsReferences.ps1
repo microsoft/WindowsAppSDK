@@ -2,20 +2,11 @@
 Param(
     [string]$SampleRepoRoot = "",
     [string]$FoundationVersion = "",
-    [string]$FoundationPackagesFolder = ""
+    [string]$FoundationPackagesFolder = "",
+    [string]$WASDKNugetDependencies = "" 
 )
 
-# List all packages that need to be removed because they are dependencies of Microsoft.WindowsAppSDK but not of Microsoft.WindowsAppSDK.Foundation
-$packagesToRemove = @(
-    "Microsoft.WindowsAppSDK",
-    "Microsoft.Web.WebView2",
-    "Microsoft.WindowsAppSDK.AI",
-    "Microsoft.WindowsAppSDK.DWrite",
-    "Microsoft.WindowsAppSDK.Runtime",
-    "Microsoft.WindowsAppSDK.Widgets",
-    "Microsoft.WindowsAppSDK.WinUI",
-    "Microsoft.WindowsAppSDK.ML"
-)
+$packagesToRemove = $WASDKNugetDependencies -split ';'
 
 $nugetPackageToVersionTable = @{"Microsoft.WindowsAppSDK.Foundation" = $FoundationVersion}
 
@@ -33,6 +24,8 @@ if (!($FoundationPackagesFolder -eq ""))
         {
             $nugetPackageToVersionTable[$Matches[1]] = $Matches[2]
             Write-Host "Found $($Matches[1]) - $($Matches[2])"
+
+            $packagesToRemove = $packagesToRemove | Where-Object { $_ -ne $Matches[1] }
         } 
     }
 }
