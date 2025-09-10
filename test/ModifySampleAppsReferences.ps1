@@ -6,9 +6,9 @@ Param(
     [string]$WASDKNugetDependencies = "" 
 )
 
-$packagesToRemove = $WASDKNugetDependencies -split ';'
+$packagesToRemoveList = $WASDKNugetDependencies -split ';'
 
-$nugetPackageToVersionTable = @{"Microsoft.WindowsAppSDK.Foundation" = $FoundationVersion}
+$packagesToUpdateTable = @{"Microsoft.WindowsAppSDK.Foundation" = $FoundationVersion}
 
 # Go through the nuget packages folder to get the versions of all dependency packages.
 if (!($FoundationPackagesFolder -eq ""))
@@ -22,25 +22,25 @@ if (!($FoundationPackagesFolder -eq ""))
             $_.Name -match "^(Microsoft\.Windows\.SDK\.BuildTools\.MSIX)\.([0-9].*)$" -or
             $_.Name -match "^(Microsoft\.Windows\.SDK\.BuildTools)\.([0-9].*)$")
         {
-            $nugetPackageToVersionTable[$Matches[1]] = $Matches[2]
+            $packagesToUpdateTable[$Matches[1]] = $Matches[2]
             Write-Host "Found $($Matches[1]) - $($Matches[2])"
 
-            $packagesToRemove = $packagesToRemove | Where-Object { $_ -ne $Matches[1] }
+            $packagesToRemoveList = $packagesToRemoveList | Where-Object { $_ -ne $Matches[1] }
         } 
     }
 }
-Write-Host "NuGet packages to version table: $($nugetPackageToVersionTable | Out-String)"
+Write-Host "NuGet packages to version table: $($packagesToUpdateTable | Out-String)"
 
 Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
     $content = Get-Content $_.FullName -Raw
 
-    foreach ($nugetPackageToVersion in $nugetPackageToVersionTable.GetEnumerator())
+    foreach ($nugetPackageToVersion in $packagesToUpdateTable.GetEnumerator())
     {
         $newVersionString = 'package id="' + $nugetPackageToVersion.Key + '" version="' + $nugetPackageToVersion.Value + '"'
         $oldVersionString = 'package id="' + $nugetPackageToVersion.Key + '" version="[-.0-9a-zA-Z]*"'
         $content = $content -replace $oldVersionString, $newVersionString
     }
-    foreach ($package in $packagesToRemove)
+    foreach ($package in $packagesToRemoveList)
     {
         $packageReferenceString = '(?m)^\s*<package id="' + $package + '" version="[-.0-9a-zA-Z]*"[^>]*?/>\s*$\r?\n?'
         $content = $content -replace $packageReferenceString, ''
@@ -53,13 +53,13 @@ Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
 Get-ChildItem -Recurse *.vcxproj -Path $SampleRepoRoot | foreach-object {
     $content = Get-Content $_.FullName -Raw
 
-    foreach ($nugetPackageToVersion in $nugetPackageToVersionTable.GetEnumerator())
+    foreach ($nugetPackageToVersion in $packagesToUpdateTable.GetEnumerator())
     {
         $newVersionString = "\$($nugetPackageToVersion.Key)." + $nugetPackageToVersion.Value + '\'
         $oldVersionString = "\\$($nugetPackageToVersion.Key).[0-9][-.0-9a-zA-Z]*\\"
         $content = $content -replace $oldVersionString, $newVersionString
     }
-    foreach ($package in $packagesToRemove)
+    foreach ($package in $packagesToRemoveList)
     {
         $packageReferenceString = "(?m)^.*\\$package\.[0-9][-.0-9a-zA-Z]*\\.*\r?\n?"
         $content = $content -replace $packageReferenceString, ''
