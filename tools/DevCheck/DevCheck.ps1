@@ -55,6 +55,9 @@
 .PARAMETER FixLongPath
     Enable LongPath support if necessary.
 
+.PARAMETER InstallVCLibs
+    Install VCLibs MSIX packages.
+
 .PARAMETER InstallWindowsSDK
     Download and install Windows Platform SDKs (if necessary).
 
@@ -145,6 +148,8 @@ Param(
 
     [Switch]$CheckTestPfx=$false,
 
+    [Switch]$CheckVCLibs=$false,
+
     [Switch]$CheckVisualStudio=$false,
 
     [Switch]$CheckWindowsSDK=$false,
@@ -154,6 +159,8 @@ Param(
     [Switch]$FixAll=$false,
 
     [Switch]$FixLongPath=$false,
+
+    [Switch]$InstallVCLibs=$false,
 
     [Switch]$InstallWindowsSDK=$false,
 
@@ -232,6 +239,8 @@ $global:windows_sdks = (('10.0.17763.0', 'https://go.microsoft.com/fwlink/p/?Lin
 # Nuget Restore paths/filenames (relative to project root directory)
 $global:nuget_restore_filenames = ('.')
 #--------------------------------------
+
+$null = [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem')
 
 function Get-Issues
 {
@@ -834,6 +843,132 @@ function Test-WindowsSDKInstall
         $global:issues++
     }
     return $found
+}
+
+function Install-VCLibsAppx
+{
+    param(
+        [string]$file,
+        [string]$name,
+        [string]$architecture
+    )
+
+    $install = 0
+
+    $package = Get-AppxPackage $name | Where-Object Architecture -eq $architecture
+    if (-not $package)
+    {
+        Write-Host "...$name $($architecture) not installed"
+        $install++
+        $identity = $null
+    }
+    else
+    {
+        $zip = [IO.Compression.ZipFile]::OpenRead($file)
+        $stream = $zip.GetEntry('AppxManifest.xml').Open()
+        $reader = New-Object IO.StreamReader($stream)
+        $manifest = $reader.ReadToEnd()
+        $reader.Close()
+        $stream.Close()
+        $zip.Dispose()
+        $xml = [xml]$manifest
+        #$identity = $xml.selectSingleNode("/*[local-name()='Package']/*[local-name='Identity']")
+        $identity = $xml.documentElement.Identity
+        $appx_version_fields = Parse-DotQuadVersion $identity.Version
+        $appx_version = "{0:X04}.{1:X04}.{2:X04}.{3:X04}" -f $appx_version_fields
+
+        if ($package)
+        {
+            $package_version_fields = Parse-DotQuadVersion $package.Version
+            $package_version = "{0:X04}.{1:X04}.{2:X04}.{3:X04}" -f $package_version_fields
+
+            if ($package_version -ge $appx_version)
+            {
+                Write-Host "...$($name) $($architecture): Latest version $($package.Version) installed"
+            }
+            else
+            {
+                Write-Host "...$($name) $($architecture): $($package.Version) installed but newer version $($identity.Version) available"
+                $install++
+            }
+        }
+    }
+
+    if ($InstallVCLibs)
+    {
+        if ($install)
+        {
+            if ($identity)
+            {
+                Write-Host "...Installing $name $($architecture) $($identity.Version)..."
+            }
+            else
+            {
+                Write-Host "...Installing $name $($architecture)..."
+            }
+            Add-AppxPackage $file
+        }
+    }
+    else
+    {
+        $global:issues += $install
+    }
+    return $install -eq 0
+}
+
+function Install-VCLibs
+{
+    $extension_sdks = Join-Path ${Env:ProgramFiles(x86)} 'Microsoft SDKs\Windows Kits\10\ExtensionSDKs'
+    $path = Join-Path $extension_sdks 'Microsoft.VCLibs\14.0\Appx'
+    $path_desktop = Join-Path $extension_sdks 'Microsoft.VCLibs.Desktop\14.0\Appx'
+    $found = Test-Path $path -PathType Container
+    $found_desktop = Test-Path $path_desktop -PathType Container
+    if (-not $found)
+    {
+        Write-Host "...ERROR: Microsoft.VCLibs.*.14.00.appx not found or valid." -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+    }
+    if (-not $found_desktop)
+    {
+        Write-Host "...ERROR: Microsoft.VCLibs.*.14.00.Desktop.appx not found or valid." -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+    }
+    if ((-not $found) -or (-not $found_desktop))
+    {
+        return $false
+    }
+
+    Write-Host "Installing VCLibs MSIX packages..."
+    $cpu = Get-CpuArchitecture
+
+
+    Install-VCLibsAppx (Join-Path $path 'Retail\x86\Microsoft.VCLibs.x86.14.00.appx') 'Microsoft.VCLibs.140.00' 'x86'
+    Install-VCLibsAppx (Join-Path $path 'Debug\x86\Microsoft.VCLibs.x86.Debug.14.00.appx') 'Microsoft.VCLibs.140.00.Debug' 'x86'
+    Install-VCLibsAppx (Join-Path $path_desktop 'Retail\x86\Microsoft.VCLibs.x86.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.UWPDesktop' 'x86'
+    Install-VCLibsAppx (Join-Path $path_desktop 'Debug\x86\Microsoft.VCLibs.x86.Debug.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.Debug.UWPDesktop' 'x86'
+
+    if (($cpu -eq 'x64') -or ($cpu -eq 'arm64'))
+    {
+        Install-VCLibsAppx (Join-Path $path 'Retail\x64\Microsoft.VCLibs.x64.14.00.appx') 'Microsoft.VCLibs.140.00' 'x64'
+        Install-VCLibsAppx (Join-Path $path 'Debug\x64\Microsoft.VCLibs.x64.Debug.14.00.appx') 'Microsoft.VCLibs.140.00.Debug' 'x64'
+        Install-VCLibsAppx (Join-Path $path_desktop 'Retail\x64\Microsoft.VCLibs.x64.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.UWPDesktop' 'x64'
+        Install-VCLibsAppx (Join-Path $path_desktop 'Debug\x64\Microsoft.VCLibs.x64.Debug.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.Debug.UWPDesktop' 'x64'
+    }
+
+    if ($cpu -eq 'arm64')
+    {
+        Install-VCLibsAppx (Join-Path $path 'Retail\arm64\Microsoft.VCLibs.arm64.14.00.appx') 'Microsoft.VCLibs.140.00' 'arm64'
+        Install-VCLibsAppx (Join-Path $path 'Debug\arm64\Microsoft.VCLibs.arm64.Debug.14.00.appx') 'Microsoft.VCLibs.140.00.Debug' 'arm64'
+        Install-VCLibsAppx (Join-Path $path_desktop 'Retail\arm64\Microsoft.VCLibs.arm64.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.UWPDesktop' 'arm64'
+        Install-VCLibsAppx (Join-Path $path_desktop 'Debug\arm64\Microsoft.VCLibs.arm64.Debug.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.Debug.UWPDesktop' 'arm64'
+    }
+
+    return $true
+}
+
+function Test-VCLibsInstall
+{
+    $null = Install-VCLibs
 }
 
 function Test-DevTestPfx
@@ -1875,7 +2010,7 @@ $null = Get-UserSettings
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTaefService -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
-    ($CheckVisualStudio -eq $false) -And ($CheckWindowsSDK -eq $false) -And
+    ($CheckVCLibs -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckWindowsSDK -eq $false) -And
     ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
     ($CheckNugetExe -eq $false) -And ($NugetExeUpdate -eq $false) -And
     ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
@@ -1889,6 +2024,7 @@ if ($SyncDependencies -eq $true)
 if ($FixAll -eq $true)
 {
     $FixLongPath = $true
+    $InstallVCLibs = $true
     $InstallWindowsSDK = $true
 }
 
@@ -1913,6 +2049,11 @@ if (($CheckAll -ne $false) -Or ($CheckWindowsSDK -ne $false))
         $url = $sdk[1]
         $null = Test-WindowsSDKInstall $version $url
     }
+}
+
+if (($CheckAll -ne $false) -Or ($CheckVCLibs -ne $false))
+{
+    $ok = Test-VCLibsInstall
 }
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
