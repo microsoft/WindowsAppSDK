@@ -54,8 +54,6 @@ namespace Test::AccessControl
             VERIFY_IS_TRUE(m_processHandle.is_valid());
         }
 
-
-
     public:
         BEGIN_TEST_CLASS(APITests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK AccessControl test")
@@ -67,8 +65,6 @@ namespace Test::AccessControl
         {
             ::Test::Packages::RemovePackage(GetTestPackageFullName());
             ::Test::Bootstrap::Setup();
-            ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), L"VCLibs", L".appx"); // Installs VCLibs.appx
-            ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), L"VCLibsDesktop", L".appx"); // Installs VCLibsDesktop.appx
             ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs AccessControlTests.msix
 
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
