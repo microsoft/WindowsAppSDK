@@ -19,7 +19,7 @@ if (-not (Test-Path $SourceDirectory)) {
 }
 
 # Search pattern for VCLibs packages
-$SearchPath = Join-Path $SourceDirectory "*\AppxPackages\*\Dependencies\$Platform\Microsoft.VCLibs.*.$Platform.14.00*.appx"
+$SearchPath = Join-Path $SourceDirectory "$Platform\AppxPackages\*\Dependencies\$Platform\Microsoft.VCLibs.$Platform.14.00*.appx"
 Write-Host "Searching for: $SearchPath" -ForegroundColor Cyan
 
 # Find all VCLibs packages
