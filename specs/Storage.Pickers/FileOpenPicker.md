@@ -46,7 +46,7 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
     // (Optional) set an initial folder by absolute path. 
     //     Takes precedence over SuggestedStartLocation when both defined.
     //     If this folder is not found, falls back to SuggestedStartLocation.
-    SuggestedStartFolder = @"C:\\MyFiles",
+    SuggestedStartFolder = @"C:\MyFiles",
 
     // (Optional) Specify the initial location for the picker. 
     //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
@@ -59,8 +59,7 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
 
     // (Optional) group file types into labeled choices
     //     FileTypeChoices takes precedence over FileTypeFilter when both defined.
-    FileTypeChoices = new Dictionary<string, IList<string>>
-    {
+    FileTypeChoices = {
         { "Documents", new List<string> { ".txt", ".doc", ".docx" } },
         { "Pictures", new List<string> { ".png", ".jpg", ".jpeg", ".bmp" } }
     },

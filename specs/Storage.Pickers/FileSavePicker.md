@@ -43,7 +43,7 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     // (Optional) set an initial folder by absolute path. 
     //     Takes precedence over SuggestedStartLocation when both defined.
     //     If this folder is not found, falls back to SuggestedStartLocation.
-    SuggestedStartFolder = @"C:\\Templates",
+    SuggestedStartFolder = @"C:\Templates",
 
     // (Optional) Specify the initial location for the picker. 
     //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
@@ -55,6 +55,7 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
 
     // (Optional) Sets the folder that the file save dialog displays when it opens.
     //     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
+    //     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
     SuggestedFolder = @"C:\MyFiles",
 
     // (Optional) specify the text displayed on the commit button. 
@@ -96,6 +97,7 @@ savePicker.SuggestedFileName(L"NewDocument");
 
 // (Optional) Sets the folder that the file save dialog displays when it opens.
 //     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
+//     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
 savePicker.SuggestedFolder(L"C:\\MyFiles");
 
 // (Optional) specify the text displayed on the commit button. 
