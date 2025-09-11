@@ -145,7 +145,7 @@ int main()
     {
         constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
         constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
-        constexpr PCWSTR c_FrameworkPackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework.4.1_8wekyb3d8bbwe";
+        constexpr PCWSTR c_FrameworkPackageFamilyName = L"Microsoft.WindowsAppRuntime.4.1_8wekyb3d8bbwe";
         constexpr PCWSTR c_MainPackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_8wekyb3d8bbwe";
         RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId, c_FrameworkPackageFamilyName, c_MainPackageFamilyName));
 
