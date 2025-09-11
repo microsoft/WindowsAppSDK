@@ -145,9 +145,6 @@ namespace Test::StoragePickersTests
             picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail);
             VERIFY_ARE_EQUAL(picker.ViewMode(), winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail);
 
-            picker.SettingsIdentifier(L"id");
-            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"id");
-
             picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
 
@@ -163,15 +160,12 @@ namespace Test::StoragePickersTests
             winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
 
-            picker.SettingsIdentifier(L"id");
-            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"id");
-
             picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
 
-            bool isSuccess = picker.TrySetSuggestedSaveFilePath(L"C:\\MyFile.txt");
-            VERIFY_ARE_EQUAL(isSuccess, true);
-            VERIFY_ARE_EQUAL(picker.SuggestedSaveFilePath(), L"C:\\MyFile.txt");
+            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+            picker.SuggestedFolder(L"C:\\temp_filesavepicker_ut_temp");
+            VERIFY_ARE_EQUAL(picker.SuggestedFolder(), L"C:\\temp_filesavepicker_ut_temp");
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
@@ -193,9 +187,6 @@ namespace Test::StoragePickersTests
 
             picker.ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail);
             VERIFY_ARE_EQUAL(picker.ViewMode(), winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode::Thumbnail);
-
-            picker.SettingsIdentifier(L"id");
-            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"id");
 
             picker.SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);

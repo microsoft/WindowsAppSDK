@@ -113,37 +113,27 @@ namespace PickerCommon {
         return winrt::hstring{ filePath.get() };
     }
 
-    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath)
+    winrt::com_ptr<IShellItem> TryParseFolderItem(winrt::hstring const& folderPathStr)
     {
-        std::filesystem::path path(filePath.c_str());
-        if (path.empty())
-        {
-            return { nullptr, L"" };
-        }
-
-        auto folderPath = path.parent_path();
+        std::filesystem::path folderPath(folderPathStr.c_str());
         if (folderPath.empty())
         {
-            // If the path does not have a parent, we cannot set folder.
-            return { nullptr, L"" };
+            return nullptr;
         }
 
-        // If the parent folder does not exist or is not a directory, we cannot set folder.
         if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath))
         {
-            return { nullptr, L"" };
+            return nullptr;
         }
 
         winrt::com_ptr<IShellItem> shellItem;
         HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
         if (SUCCEEDED(hr))
         {
-            auto fileName = path.filename().wstring();
-            return { shellItem, fileName };
+            return shellItem;
         }
 
-        // If the shellitem cannot be created, we cannot set the folder.
-        return { nullptr, L""};
+        return nullptr;
     }
 
     void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
@@ -234,6 +224,29 @@ namespace PickerCommon {
         ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
+    void ValidateSuggestedFolder(winrt::hstring const& path)
+    {
+        if (path.empty())
+        {
+            // allow empty path.
+            return;
+        }
+
+        ValidateStringNoEmbeddedNulls(path);
+
+        auto pathObj = std::filesystem::path(path.c_str());
+        if (!pathObj.is_absolute())
+        {
+            throw std::invalid_argument("SuggestedFolder");
+        }
+
+        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
+        if (!pidl)
+        {
+            throw std::invalid_argument("SuggestedFolder");
+        }
+    }
+
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
     {
         if (!extension.empty() && extension[0] == L'*')
@@ -307,7 +320,7 @@ namespace PickerCommon {
         }
         else
         {
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(allFilesExtensionList.c_str());
         }
 
@@ -359,12 +372,6 @@ namespace PickerCommon {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
         }
 
-        if (!IsHStringNullOrEmpty(SettingsIdentifierId))
-        {
-            auto guid = HashHStringToGuid(SettingsIdentifierId);
-            check_hresult(dialog->SetClientGuid(guid));
-        }
-
         auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
         if (defaultFolder != nullptr)
         {
@@ -383,28 +390,18 @@ namespace PickerCommon {
     /// <param name="dialog"></param>
     void PickerParameters::ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog)
     {
-        winrt::hstring fileNameToSet;
         if (!IsHStringNullOrEmpty(SuggestedFileName))
         {
-            fileNameToSet = SuggestedFileName;
+            check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
         }
-        
-        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
+
+        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedFolder))
         {
-            auto result = ParseFolderItemAndFileName(SuggestedSaveFilePath);
-            winrt::com_ptr<IShellItem> folderItem = result.first;
-            fileNameToSet = result.second;
+            winrt::com_ptr<IShellItem> folderItem = TryParseFolderItem(SuggestedFolder);
             if (folderItem)
             {
                 check_hresult(dialog->SetFolder(folderItem.get()));
             }
         }
-
-        // Set the filename (either from SuggestedSaveFilePath or SuggestedFileName)
-        if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
-        {
-            check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
-        }
-
     }
 }

@@ -48,6 +48,8 @@ inline void Initialize_StopSuccessActivity(
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
+    static bool s_isInitialized{ false };
+    static wil::srwlock m_isInitializedLock;
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus()
     {
@@ -71,6 +73,21 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options{};
         return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
+    }
+
+    std::wstring ExtractFormattedVersionTag(const std::wstring& versionTag)
+    {
+        std::wstring result{};
+        if (versionTag.size() > 1)
+        {
+            result = std::wstring(L"-") + versionTag[1];
+        }
+        unsigned int numberBeforeUnderscore{};
+        if (swscanf_s(versionTag.c_str(), L"%*[^0-9]%u", &numberBeforeUnderscore) == 1)
+        {
+            result += std::to_wstring(numberBeforeUnderscore);
+        }
+        return result;
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
@@ -111,23 +128,41 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
+            // The main and singleton packages contain a shortened version tag for the package family name.
+            std::wstring formattedVersionTag{};
+
+            // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
+            // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
             if (package.versionType == PackageVersionType::Versioned)
             {
-                // PackageFamilyName = Prefix + SubTypeName + VersionIdentifier + Suffix
-                // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // To understand the package naming of main and singleton packages, see https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackages.md#3-package-naming
+                if (!packageNameVersionTag.empty())
+                {
+                    formattedVersionTag = packageNameVersionIdentifier.substr(0, versionTagPos) + ExtractFormattedVersionTag(packageNameVersionTag);
+                }
+                else
+                {
+                    formattedVersionTag = packageNameVersionIdentifier.substr(0, versionTagPos); // "1.8"
+                }
             }
             else if (package.versionType == PackageVersionType::Unversioned)
             {
-                // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
-                // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                if (!packageNameVersionTag.empty())
+                {
+                    formattedVersionTag = ExtractFormattedVersionTag(packageNameVersionTag);
+                }
+                else
+                {
+                    formattedVersionTag = L"";
+                }
             }
             else
             {
                 // Other version types not supported.
-                FAIL_FAST_HR(HRESULT_FROM_WIN32(ERROR_UNSUPPORTED_TYPE));
+                THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_UNSUPPORTED_TYPE), "%d", static_cast<int>(package.versionType));
             }
+
+            packageFamilyName = std::format(WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER L"{}{}" WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX, package.identifier, formattedVersionTag);
 
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
@@ -164,6 +199,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
         bool isRepair)
     {
+        auto lock{ m_isInitializedLock.lock_exclusive() };
+
+        if (s_isInitialized)
+        {
+            throw winrt::hresult_error(HRESULT_FROM_WIN32(ERROR_INVALID_STATE),
+                                       L"DeploymentManager is already initialized (can only be initialized once). See https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applicationmodel.windowsappruntime.deploymentmanager.initialize?view=windows-app-sdk-1.7#microsoft-windows-applicationmodel-windowsappruntime-deploymentmanager-initialize");
+        }
+
         auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
         const bool isPackagedProcess{ AppModel::Identity::IsPackagedProcess() };
         const int integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
@@ -172,22 +215,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
-        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
-                                                      Security::IntegrityLevel::IsElevated(),
-                                                      isPackagedProcess,
-                                                      initializeActivityContext.GetIsFullTrustPackage(),
-                                                      Security::IntegrityLevel::GetIntegrityLevel(),
-                                                      isRepair);
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
+        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
+                                                      isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
 
         // DeploymentManager API requires a packaged process?
-        HRESULT hr{};
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult deploymentResult{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown, S_OK };
         if (!isPackagedProcess)
         {
             // The process lacks package identity but that's OK. Do nothing
-            const auto c_status{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok };
-            return winrt::make<implementation::DeploymentResult>(c_status, S_OK);
+            return winrt::make<implementation::DeploymentResult>(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok, S_OK);
         }
 
         try
@@ -196,10 +233,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         catch (winrt::hresult_error const& e)
         {
-            hr = e.code();
-        }
-        if (FAILED(hr))
-        {
+            const HRESULT hr{ e.code() };
+
             auto packageIdentity{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
             PCWSTR c_packageNamePrefix{ L"microsoft.windowsappruntime." };
             const size_t c_packageNamePrefixLength{ ARRAYSIZE(L"microsoft.windowsappruntime.") - 1 };
@@ -210,9 +245,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             }
             else
             {
-                release = std::wstring{ L"??? (" } + std::wstring(packageFullName.c_str()) + L")";
+                release = std::format(L"??? ({})", packageFullName);
             }
-            LOG_IF_FAILED(Initialize_Log(hr, packageIdentity, release));
+            std::ignore = LOG_IF_FAILED(Initialize_Log(hr, packageIdentity, release));
 
             // NOTE: IsDebuggerPresent()=TRUE if running under a debugger context.
             //       IsDebuggerPresent()=FALSE if not running under a debugger context, even if AEDebug is set.
@@ -224,13 +259,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             if (deploymentInitializeOptions.OnErrorShowUI() ||
                 ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_ONERRORSHOWUI"))
             {
-                LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
+                std::ignore = LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
             }
 
-            THROW_HR(hr);
+            THROW_HR_MSG(hr, "PackageFullName=%ls Options: ForceDeployment=%c OnErrorShowUI=%c isRepair:%c",
+                         packageFullName.c_str(), deploymentInitializeOptions.ForceDeployment() ? 'Y' : 'N',
+                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N' );
         }
 
         // Success!
+        s_isInitialized = true;
         return deploymentResult;
     }
 
@@ -260,7 +298,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         else
         {
-            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) && 
+            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) &&
                 (isRepair))
             {
                 status = DeploymentStatus::PackageRepairFailed;

@@ -27,25 +27,25 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="1.9.0-CI-26108.1813.250626-1011.0">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="2.0.0-experimental-26108.1821.250905-1130.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>b430accfb06428e6d5f4a4306f6acd07c84fc7d6</Sha>
+      <Sha>7c259ec8cfff11d1082ac93517b01f745de66460</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.7.0-main.20241009.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>f52676312ebf1d66ef59731feb4fad29a713a897</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.9.0-CI-26108.1813.250626-1011.0">
+    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="2.0.0-experimental-26108.1821.250905-1130.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>b430accfb06428e6d5f4a4306f6acd07c84fc7d6</Sha>
+      <Sha>7c259ec8cfff11d1082ac93517b01f745de66460</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="1.8.250714001-experimental">
+    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="2.0.250829002-experimental">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
-      <Sha>5293473fc061efa7f195f906e97e13279dde117c</Sha>
+      <Sha>a77d2132952622a91d38121d9f25bc8c3701d107</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="1.9.250626001-experimental">
+    <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.0.250905002-experimental">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>b430accfb06428e6d5f4a4306f6acd07c84fc7d6</Sha>
+      <Sha>7c259ec8cfff11d1082ac93517b01f745de66460</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>

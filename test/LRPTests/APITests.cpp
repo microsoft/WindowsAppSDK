@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -6,6 +6,7 @@
 #include <TlHelp32.h>
 #include <NotificationsLongRunningProcess_h.h>
 #include "NotificationPlatformActivation.h"
+#include "MddWin11.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -26,7 +27,7 @@ namespace Test::LRP
         BEGIN_TEST_CLASS(LRPTests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications Long Running Process tests")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
@@ -40,13 +41,28 @@ namespace Test::LRP
         TEST_CLASS_SETUP(ClassInit)
         {
 
-            ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
+            ::Test::Bootstrap::Setup();
+
+            PCWSTR testFrameworkPackageFamilyName = ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName;
+            PCWSTR testMainPackageFamilyName = ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName;
+
+
+            // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
+            // https://github.com/microsoft/WindowsAppSDK/blob/main/dev/Common/WindowsAppRuntime.VersionInfo.cpp#L123-L133
+            if (MddCore::Win11::IsSupported())
+            {
+                testMainPackageFamilyName = nullptr;
+            }
+
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
+
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
+            ::WindowsAppRuntime::VersionInfo::TestShutdown();
+            ::Test::Bootstrap::Cleanup();
             return true;
         }
 
@@ -77,7 +93,7 @@ namespace Test::LRP
                 &processInfo)));
 
             // Wait for the process to come up and be captured in the snapshot from verification step.
-            Sleep(1000);
+            Sleep(5000);
             VerifyLRP_IsRunning(true);
         }
 
@@ -92,7 +108,7 @@ namespace Test::LRP
             BOOL result{ Process32First(processesSnapshot.get(), &processEntry) };
             while (result != FALSE)
             {
-                if (wcscmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
+                if (_wcsicmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
                 {
                     VERIFY_IS_TRUE(isRunning);
                     DWORD processId{ processEntry.th32ProcessID };

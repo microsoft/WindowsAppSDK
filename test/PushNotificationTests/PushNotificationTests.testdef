@@ -3,16 +3,16 @@
         {
             "Description": "Test unpackaged scenarios for PushNotifications",
             "Filename": "PushNotificationTests.dll",
-            "Parameters": "/name:UnpackagedTests#metadataSet1::VerifyForegroundHandlerFails",
+            "Parameters": "/name:UnpackagedTests*",
             "Architectures": ["x64"],
-            "Status": "Disabled" 
+            "Status": "Enabled" 
         },
         {
             "Description": "Test packaged scenarios for PushNotifications",
             "Filename": "PushNotificationTests.dll",
-            "Parameters": "/name:PackagedTests#metadataSet1::VerifyForegroundHandlerFails",
+            "Parameters": "/name:PackagedTests*",
             "Architectures": ["x64"],
-            "Status": "Disabled" 
+            "Status": "Enabled" 
         }
     ]
 }

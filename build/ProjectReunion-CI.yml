@@ -186,6 +186,10 @@ jobs:
     ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
     ob_artifactBaseName: '$(System.StageName)_$(imageName)'
   steps:
+  - checkout: self
+    path: s
+  - checkout: WindowsAppSDKConfig
+  
   - template: AzurePipelinesTemplates\WindowsAppSDK-RunTests-Steps.yml
     parameters:
       buildPlatform: $(buildPlatform)
