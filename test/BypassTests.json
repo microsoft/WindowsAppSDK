@@ -1634,5 +1634,7 @@
   "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Add_Rank_Bneg10_A0",
   "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution",
   "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Explicit",
-  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Current"
+  "release_x64_Windows.10.Enterprise.LTSC.2021.Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Current",
+  "release_x64_Win10_rs5_DC.OAuth2ManagerTests::OAuth2APITests::Protocol_AuthorizationCode_BasicEndToEnd",
+  "release_x86_Windows.Server.2019.DataCenter.zh-CN.OAuth2ManagerTests::OAuth2APITests::Protocol_AuthorizationCode_BasicEndToEnd"
 ]
