@@ -3,6 +3,7 @@ param(
     [ValidateSet("x86", "x64", "arm64")]
     [string]$Platform,
     
+    # Expecting BuildOutput\Release
     [Parameter(Mandatory = $true)]
     [string]$SourceDirectory
 )
@@ -19,31 +20,22 @@ if (-not (Test-Path $SourceDirectory)) {
 }
 
 # Search pattern for VCLibs packages
+# This pattern should get both VCLibs, VCLibs Desktop and possibly UWP desktop if present
+# VCLibs: Microsoft.VCLibs.{platform}.14.00.appx
+# VCLibs Desktop: Microsoft.VCLibs.{platform}.14.00.Desktop.appx
 $SearchPath = Join-Path $SourceDirectory "$Platform\AppxPackages\*\Dependencies\$Platform\Microsoft.VCLibs.$Platform.14.00*.appx"
-Write-Host "Searching for: $SearchPath" -ForegroundColor Cyan
-
-# Find all VCLibs packages
 $VCLibsPackages = Get-ChildItem -Path $SearchPath -ErrorAction SilentlyContinue
 
-if ($VCLibsPackages.Count -eq 0) {
-    Write-Warning "No VCLibs packages found for platform $Platform in $SourceDirectory"
-    exit 1
-}
-
-Write-Host "Found $($VCLibsPackages.Count) VCLibs packages" -ForegroundColor Green
+Write-Host "Found: $($VCLibsPackages.Count) VCLibs packages" -ForegroundColor White
 
 # Track installed packages to avoid duplicates
+# We want to install each unique package only once
 $InstalledPackages = @{}
-$TotalInstalled = 0
-$TotalSkipped = 0
 
 foreach ($Package in $VCLibsPackages) {
     $PackageName = $Package.Name
     
-    # Check if we've already processed this package name
     if ($InstalledPackages.ContainsKey($PackageName)) {
-        Write-Host "Skipping duplicate: $PackageName" -ForegroundColor Yellow
-        $TotalSkipped++
         continue
     }
     
@@ -56,25 +48,8 @@ foreach ($Package in $VCLibsPackages) {
         Write-Host "  -> Success" -ForegroundColor Green
     }
     catch {
-        # Handle already installed packages
-        if ($_.Exception.Message -like "*already installed*" -or 
-            $_.Exception.Message -like "*already exists*" -or
-            $_.Exception.HResult -eq -2147024816) {
-            Write-Host "  -> Already installed" -ForegroundColor Yellow
-            $InstalledPackages[$PackageName] = $Package.FullName
-            $TotalSkipped++
-        }
-        else {
-            Write-Error "Failed to install $PackageName`: $($_.Exception.Message)"
-            throw
-        }
+        Write-Error "Failed to install $PackageName`: $($_.Exception.Message)"
     }
 }
 
-# Summary
-Write-Host ""
-Write-Host "=== Summary ===" -ForegroundColor Cyan
-Write-Host "Found: $($VCLibsPackages.Count) packages" -ForegroundColor White
-Write-Host "Installed: $TotalInstalled packages" -ForegroundColor Green
-Write-Host "Skipped: $TotalSkipped packages" -ForegroundColor Yellow
 Write-Host "Completed successfully!" -ForegroundColor Green
