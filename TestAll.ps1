@@ -72,7 +72,10 @@ param(
         [Switch]$ShowSystemInfo=$true,
 
         [Parameter(Mandatory=$true)]
-        [string]$wprProfilePath
+        [string]$wprProfilePath,
+
+        [Parameter(Mandatory=$false)]
+        [string]$callingStage = ''
 )
 
 $StartTime = Get-Date
@@ -120,6 +123,15 @@ function Get-Tests
         }
     }
 
+    if ($callingStage -eq 'TestSampleApps')
+    {
+        $tests = $tests | Where-Object { $_.Filename -like "WindowsAppSDK.Test.SampleTests.dll" }
+    }
+    else 
+    {
+        $tests = $tests | Where-Object { $_.Filename -notlike "WindowsAppSDK.Test.SampleTests.dll" }
+    }
+
     $tests
 }
 
@@ -140,7 +152,7 @@ function Run-TaefTest
     $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
     $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
 
-    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile $/testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
+    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile /testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
 }
 
 function Run-PowershellTest
@@ -217,6 +229,9 @@ function Get-SystemInfo
 
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
 }
+
+$env:Build_Platform = $Platform.ToLower()
+$env:Build_Configuration = $Configuration.ToLower()
 
 if ($ShowSystemInfo -eq $true)
 {
