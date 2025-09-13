@@ -23,6 +23,7 @@ runtimeclass FileSavePicker
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
 
+    String SuggestedStartFolder;
     PickerLocationId SuggestedStartLocation;
 
     Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
@@ -39,6 +40,11 @@ using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id)
 {
+    // (Optional) set an initial folder by absolute path. 
+    //     Takes precedence over SuggestedStartLocation when both defined.
+    //     If this folder is not found, falls back to SuggestedStartLocation.
+    SuggestedStartFolder = @"C:\Templates",
+
     // (Optional) Specify the initial location for the picker. 
     //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
     //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
@@ -49,6 +55,7 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
 
     // (Optional) Sets the folder that the file save dialog displays when it opens.
     //     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
+    //     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
     SuggestedFolder = @"C:\MyFiles",
 
     // (Optional) specify the text displayed on the commit button. 
@@ -75,6 +82,11 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
 
+// (Optional) set an initial folder by absolute path. 
+//     Takes precedence over SuggestedStartLocation when both defined.
+//     If this folder is not found, falls back to SuggestedStartLocation.
+savePicker.SuggestedStartFolder(L"C:\\Templates");
+
 // (Optional) Specify the initial location for the picker. 
 //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
 //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
@@ -85,7 +97,8 @@ savePicker.SuggestedFileName(L"NewDocument");
 
 // (Optional) Sets the folder that the file save dialog displays when it opens.
 //     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
-savePicker.SuggestedFolder = L"C:\\MyFiles",
+//     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
+savePicker.SuggestedFolder(L"C:\\MyFiles");
 
 // (Optional) specify the text displayed on the commit button. 
 //     If not specified, the system uses a default label of "Save" (suitably translated).
@@ -98,6 +111,10 @@ savePicker.FileTypeChoices().Insert(L"Text", winrt::single_threaded_vector<winrt
 // (Optional) specify the default file extension (will be appended to SuggestedFileName).
 //      If not specified, no extension will be appended.
 savePicker.DefaultFileExtension(L".txt");
+
+Notes:
+
+- SuggestedStartFolder takes precedence over SuggestedStartLocation.
 ```
 
 ## FileSavePicker.PickSaveFileAsync
