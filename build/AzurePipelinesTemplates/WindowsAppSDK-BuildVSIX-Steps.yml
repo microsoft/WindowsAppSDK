@@ -105,8 +105,6 @@ steps:
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.build.binlog'
-    ${{ if eq( parameters.runStaticAnalysis, 'true') }}:
-      createLogFile: true
 
 - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
@@ -118,6 +116,10 @@ steps:
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
         $(Build.SourcesDirectory)\packages
+      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+      rulesetName: Custom
+      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+      policyName: 'WindowsUndocked'
     continueOnError: true
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -137,8 +139,6 @@ steps:
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.build.binlog'
-    ${{ if eq( parameters.runStaticAnalysis, 'true') }}:
-      createLogFile: true
 
 - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
@@ -150,6 +150,10 @@ steps:
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
         $(Build.SourcesDirectory)\packages
+      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+      rulesetName: Custom
+      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+      policyName: 'WindowsUndocked'
     continueOnError: true
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)

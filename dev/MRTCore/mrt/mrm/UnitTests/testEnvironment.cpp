@@ -405,7 +405,7 @@ TestEnvironment::GetQualifierInfo(_In_ INT32 evIndex, _Outptr_ const QUALIFIER_I
     return E_NOTIMPL;
 }
 
-TestEnvironmentCollection::TestEnvironmentCollection() {}
+TestEnvironmentCollection::TestEnvironmentCollection() : m_pEnvironments(nullptr) {}
 
 TestEnvironmentCollection::~TestEnvironmentCollection() { delete m_pEnvironments; }
 

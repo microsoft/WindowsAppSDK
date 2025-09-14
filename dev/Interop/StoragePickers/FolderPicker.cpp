@@ -11,6 +11,7 @@
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
+#include "PickerLocalization.h" 
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -25,15 +26,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FolderPicker::ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
     {
+        PickerCommon::ValidateViewMode(value);
         m_viewMode = value;
-    }
-    hstring FolderPicker::SettingsIdentifier()
-    {
-        return m_settingsIdentifier;
-    }
-    void FolderPicker::SettingsIdentifier(hstring const& value)
-    {
-        m_settingsIdentifier = value;
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FolderPicker::SuggestedStartLocation()
     {
@@ -41,6 +35,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FolderPicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
+        PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
     hstring FolderPicker::CommitButtonText()
@@ -49,20 +44,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FolderPicker::CommitButtonText(hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
-    }
-    winrt::Windows::Foundation::Collections::IVector<hstring> FolderPicker::FileTypeFilter()
-    {
-        return m_fileTypeFilter;
     }
 
     void FolderPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
-        parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
 
 
@@ -74,8 +64,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
-        CaptureParameters(parameters);
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 
+        CaptureParameters(parameters);
+        
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();

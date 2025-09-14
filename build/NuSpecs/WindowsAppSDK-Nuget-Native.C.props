@@ -4,7 +4,7 @@
   <PropertyGroup>
     <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' == 'Win32'">x86</_WindowsAppSDKFoundationPlatform>
     <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_WindowsAppSDKFoundationPlatform>
-    <_FoundationLibFolder>$(MSBuildThisFileDirectory)..\..\lib\win-$(_WindowsAppSDKFoundationPlatform)</_FoundationLibFolder>
+    <_FoundationLibFolder>$(MSBuildThisFileDirectory)..\..\lib\native\$(_WindowsAppSDKFoundationPlatform)</_FoundationLibFolder>
     <_FoundationLibFolder Condition="'$(WindowsAppSDKAggregatePackage)' == 'true'">$(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)</_FoundationLibFolder>
   </PropertyGroup>
 
@@ -35,6 +35,7 @@
   <Target Name="CopyMicrosoftWindowsAppRuntimeBootstrapdllToOutDir" Condition="'$(AppxPackage)' != 'true'" AfterTargets="Build" BeforeTargets="Binplace">
     <Copy
       SourceFiles="$(MSBuildThisFileDirectory)..\..\runtimes\win-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.Bootstrap.dll"
+      SkipUnchangedFiles="true"
       DestinationFolder="$(OutDir)"/>
   </Target>
 

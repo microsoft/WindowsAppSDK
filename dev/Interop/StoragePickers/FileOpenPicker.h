@@ -5,6 +5,8 @@
 #include "Microsoft.Windows.Storage.Pickers.FileOpenPicker.g.h"
 #include "PickerCommon.h"
 #include "StoragePickersTelemetryHelper.h"
+#include <winrt/Windows.Foundation.Collections.h>
+#include "FileTypeFilterVector.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -14,9 +16,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode ViewMode();
         void ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value);
-
-        hstring SettingsIdentifier();
-        void SettingsIdentifier(hstring const& value);
 
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation();
         void SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
@@ -32,10 +31,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     private:
         winrt::Microsoft::UI::WindowId m_windowId{};
         PickerViewMode m_viewMode{ PickerViewMode::List };
-        winrt::hstring m_settingsIdentifier{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         winrt::hstring m_commitButtonText{};
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ winrt::single_threaded_vector<hstring>() };
+
+        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ make<FileTypeFilterVector>() };
+
         StoragePickersTelemetryHelper m_telemetryHelper{};
 
         void CaptureParameters(PickerCommon::PickerParameters& parameters);

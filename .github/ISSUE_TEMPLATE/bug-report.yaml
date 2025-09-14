@@ -7,6 +7,7 @@ body:
     attributes:
       value: |
         For bugs related to WinUI, please open a bug on the [Microsoft.UI.Xaml repository](https://github.com/microsoft/microsoft-ui-xaml)
+        Please provide the title, description, and reproduction steps in English. Thank you!
   - type: textarea
     validations:
       required: true
@@ -35,9 +36,9 @@ body:
       label: NuGet package version
       description: Specify the version of Windows App SDK (or Project Reunion) you're using.
       options:
-        - "Windows App SDK 1.7.3: 1.7.250606001"
-        - "Windows App SDK 1.7 Preview 1: 1.7.250208002-preview1"
-        - "Windows App SDK 1.8 Experimental 2: 1.8.250515001-experimental2"
+        - "Windows App SDK 1.8.0: 1.8.250907003"
+        - "Windows App SDK 1.8 Preview 1: 1.8.250814004-preview1"
+        - "Windows App SDK 1.8 Experimental 4: 1.8.250702007-experimental4"
   - type: dropdown
     attributes:
       label: Packaging type
@@ -53,8 +54,9 @@ body:
       multiple: true
       options:
         - "Insider Build (xxxxx)"
-        - "Windows 11 version 24H2 (22621, October 2024 Update)"
-        - "Windows 11 version 23H2 (22631, November 2023 Update)"
+        - "Windows 11 version 24H2 LTSC (26100, June Update)"
+        - "Windows 11 version 24H2 (26100, June 2025 Update)"
+        - "Windows 11 version 23H2 (22631, June 2025 Update)"
         - "Windows 11 version 22H2 (22621, 2022 Update)"
         - "Windows 11 version 21H2 (22000)"
         - "Windows 10 version 22H2 (19045, 2022 Update)"

@@ -14,6 +14,9 @@ parameters:
 - name: buildPlatform
   type: string
   default: x64
+- name: testMatrix
+  type: string
+  default: ''
 
 stages:
 - stage: ${{ format(iif(parameters.runPREfast, 'PREfast_{0}', 'Build_{0}'), parameters.buildPlatform) }}
@@ -42,12 +45,12 @@ stages:
         ${{ format('Release_{0}', parameters.buildPlatform) }}:
           ${{ if ne(parameters.buildPlatform, 'arm64') }}:
             buildPlatform: ${{ parameters.buildPlatform }}
-            buildConfiguration: 'release'
+            buildConfiguration: 'Release'
             normalizedConfiguration: 'fre'
             PGOBuildMode: 'Optimize'
           ${{ else }}:
             buildPlatform: ${{ parameters.buildPlatform }}
-            buildConfiguration: 'release'
+            buildConfiguration: 'Release'
             normalizedConfiguration: 'fre'
     variables:
       - name: ob_outputDirectory
@@ -68,13 +71,19 @@ stages:
         value: '$(build.SourcesDirectory)\APIScanTarget'
       - name: ob_sdl_apiscan_symbolsFolder
         value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKConfigSourceBranch
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
         value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
       - name: localCompilerOverrideNupkgVersion
         value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
+      - name: ob_sdl_checkCompliantCompilerWarnings
+        value: true # This setting has no effect unless ob_sdl_msbuildOverride below is also set to true.
+      - name: ob_sdl_prefast_runDuring
+        value: 'Guardian' # The default 'Build' setting does not match the fact that we are calling msbuild.exe directly.
+      - name: ob_sdl_msbuildOverride
+        value: true # Because we are calling MSBuild directly instead of through the MSBuild@1 or VSBuild@1 tasks. 
     steps:
     - script: |
         echo Build.SourceBranch=$(Build.SourceBranch)
@@ -88,6 +97,9 @@ stages:
         echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
         echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
         echo mySourceBranch=$(mySourceBranch)        
+        echo ob_sdl_msbuildOverride=$(ob_sdl_msbuildOverride)
+        echo ob_sdl_prefast_runDuring=$(ob_sdl_prefast_runDuring)
+        echo ob_sdl_checkCompliantCompilerWarnings=$(ob_sdl_checkCompliantCompilerWarnings)
 
     - template: WindowsAppSDK-BuildFoundation-Steps.yml@self
       parameters:
@@ -95,13 +107,6 @@ stages:
         IsOneBranch: ${{ parameters.IsOneBranch }}
         runApiScan: ${{ parameters.runApiScan }}
         runPREfast: ${{ parameters.runPREfast }}
-
-    # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
-    # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
-    # requisite of isNative=true isn't met currently.
-    - script: |
-        md "C:\__t\NativeCompilerPrefast"
-      displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
 
   - job: BuildMRT
     pool:
@@ -151,13 +156,19 @@ stages:
         value: '$(build.SourcesDirectory)\APIScanTarget'
       - name: ob_sdl_apiscan_symbolsFolder
         value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKConfigSourceBranch
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
         value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
       - name: localCompilerOverrideNupkgVersion
         value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
+      - name: ob_sdl_checkCompliantCompilerWarnings
+        value: true # This setting has no effect unless ob_sdl_msbuildOverride below is also set to true.
+      - name: ob_sdl_prefast_runDuring
+        value: 'Guardian' # The default 'Build' setting does not match the fact that we are calling msbuild.exe directly.
+      - name: ob_sdl_msbuildOverride
+        value: true # Because we are calling MSBuild directly instead of through the MSBuild@1 or VSBuild@1 tasks. 
     steps:
     - script: |
         echo Build.SourceBranch=$(Build.SourceBranch)
@@ -171,6 +182,9 @@ stages:
         echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
         echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
         echo mySourceBranch=$(mySourceBranch)        
+        echo ob_sdl_msbuildOverride=$(ob_sdl_msbuildOverride)
+        echo ob_sdl_prefast_runDuring=$(ob_sdl_prefast_runDuring)
+        echo ob_sdl_checkCompliantCompilerWarnings=$(ob_sdl_checkCompliantCompilerWarnings)
 
     - template: WindowsAppSDK-BuildMRT-Steps.yml@self
       parameters:
@@ -179,9 +193,27 @@ stages:
         runPREfast : ${{ parameters.runPREfast }}
         runApiScan : ${{ parameters.runApiScan }}
 
-    # This is a temporarily workaround to avoid getting non-fatal "folder C:\__t\NativeCompilerPrefast not found"
-    # errors from the Guardian PREfast task, which shouldn't even be run in the first place, because its pre-
-    # requisite of isNative=true isn't met currently.
-    - script: |
-        md "C:\__t\NativeCompilerPrefast"
-      displayName: 'Creating C:\__t\NativeCompilerPrefast to prevent errors from Guardian PREfast'
+  # Only run the test matrix extraction job in Build_{buildPlatform} job. The PREfast_{buildPlatform} job don't have the following test stages, don't need this job.
+  - ${{ if not(parameters.runPREfast) }}:
+    - job: ExtractMatrix
+      pool:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+      steps:
+      - powershell: |
+          $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
+          $targetPlatform = "${{ parameters.buildPlatform }}"
+          $filteredMatrix = @{}
+          foreach ($entry in $testMatrix.PSObject.Properties) {
+            if ($entry.Value.buildPlatform -eq $targetPlatform) {
+                $filteredMatrix[$entry.Name] = $entry.Value
+            }
+          }
+          $matrixJson = $filteredMatrix | ConvertTo-Json -Compress
+          Write-Host "##vso[task.setvariable variable=filteredTestMatrix;isOutput=true]$matrixJson"
+        name: filterByPlatformStep
+        displayName: "Extract matrix as json value filtering by build platform"
+      - script: echo $(filterByPlatformStep.filteredTestMatrix)
+        name: echoMatrix
+        displayName: "Echo filtered matrix"

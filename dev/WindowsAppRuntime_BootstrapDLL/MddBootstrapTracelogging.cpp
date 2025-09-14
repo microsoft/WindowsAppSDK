@@ -97,24 +97,42 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
 
         if (failure.type == wil::FailureType::Log)
         {
-            MddBootstrap_WriteEventWithActivity("Log", activityId);
+            MddBootstrap_WriteEventWithActivity(
+                "FailureLog",
+                activityId,
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
         }
         else if (failure.type == wil::FailureType::Exception)
         {
             // Bootstrap shutdown API is a best effort API. Hence, don't stop bootstrap activity on an Exception
             if (activityContext.GetMddBootstrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Shutdown)
             {
-                MddBootstrap_WriteEventWithActivity("Exception", activityId);
+                MddBootstrap_WriteEventWithActivity(
+                    "Exception",
+                    activityId,
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
             }
             else
             {
-                MddBootstrap_WriteEventWithActivity("Exception", activityId);
+                MddBootstrap_WriteEventWithActivity(
+                    "Exception",
+                    activityId,
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
+
                 MddBootstrap_StopActivity(isActivityRunning, activityContext, failure);
             }
         }
         else if (failure.type == wil::FailureType::FailFast)
         {
-            MddBootstrap_WriteEventWithActivity("FailFast", activityId);
+            MddBootstrap_WriteEventWithActivity(
+                "FailFast",
+                activityId,
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
+
             MddBootstrap_StopActivity(isActivityRunning, activityContext, failure);
         }
         else if (failure.type == wil::FailureType::Return)
@@ -124,13 +142,23 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
             // When it is set, stop the activity.
             if (activityContext.ShouldStopActivityForWilReturnHR())
             {
-                MddBootstrap_WriteEventWithActivity("Return", activityId);
+                MddBootstrap_WriteEventWithActivity(
+                    "FailureReturn",
+                    activityId,
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
+
                 MddBootstrap_StopActivity(isActivityRunning, activityContext, failure);
                 activityContext.StopActivityForWilReturnHR(false);
             }
             else
             {
-                MddBootstrap_WriteEventWithActivity("Return", activityId);
+                MddBootstrap_WriteEventWithActivity(
+                    "FailureReturn",
+                    activityId,
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
+
                 activityContext.SetLastFailure(failure);
             }
         }

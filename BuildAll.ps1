@@ -18,8 +18,8 @@ Main branch points to the external feed.
 #>
 
 Param(
-    [string]$PackageVersion = "1.1.1.1",
-    [string]$ComponentPackageVersion = "1.1.1.1",
+    [string]$PackageVersion = "",
+    [string]$ComponentPackageVersion = "",
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
@@ -57,6 +57,23 @@ if ($Clean)
     }
 
     Exit
+}
+
+# Find the Version Value provided by WindowsAppSDKConfig in Version.Details.xml
+# The version field of Microsoft.WindowsAppSDK.Version is the value provided byWindowsAppSDKConfig
+[xml]$versionDetailsPath = Get-Content -Path "$env:Build_SourcesDirectory\eng\Version.Details.xml"
+$versionFromConfig = $versionDetailsPath.Dependencies.ToolsetDependencies.Dependency | Where-Object { $_.Name -eq "Microsoft.WindowsAppSDK.Version" }
+if ([string]::IsNullOrEmpty($PackageVersion))
+{
+    $PackageVersion = $versionFromConfig.Version;
+    Write-Host "Updating PackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $PackageVersion"
+}
+
+if ([string]::IsNullOrEmpty($ComponentPackageVersion))
+{
+    Write-Host $versionFromConfig.Version
+    $ComponentPackageVersion = $versionFromConfig.Version;
+    Write-Host "Updating ComponentPackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $ComponentPackageVersion"
 }
 
 $configurationForMrtAndAnyCPU = "Release"
@@ -155,7 +172,9 @@ Try {
                 write-host "Building WindowsAppRuntime.sln for configuration $configurationToRun and platform:$platformToRun"
                 & $msBuildPath /restore `
                                 WindowsAppRuntime.sln `
-                                /p:Configuration=$configurationToRun,Platform=$platformToRun `
+                                /p:Configuration=$configurationToRun `
+                                /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
@@ -198,21 +217,20 @@ Try {
         if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT"))
         {
             # Build mrt core.
-            foreach($configurationToRun in $configuration.Split(","))
+            foreach($platformToRun in $platform.Split(","))
             {
-                foreach($platformToRun in $platform.Split(","))
-                {
-                    write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
-                    & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
-                                    /p:Configuration=$configurationToRun,Platform=$platformToRun `
-                                    /p:PGOBuildMode=$PGOBuildMode `
-                                    /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationToRun.binlog"
+                write-host "Building MrtCore.sln for configuration $configurationForMrtAndAnyCPU and platform:$platformToRun"
+                & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
+                                /p:Configuration=$configurationForMrtAndAnyCPU `
+                                /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
+                                /p:PGOBuildMode=$PGOBuildMode `
+                                /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationForMrtAndAnyCPU.binlog"
 
-                    if ($lastexitcode -ne 0)
-                    {
-                        write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
-                        exit 1
-                    }
+                if ($lastexitcode -ne 0)
+                {
+                    write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+                    exit 1
                 }
             }
         }
@@ -223,7 +241,7 @@ Try {
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
         # build and restore AnyCPU
-        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
+        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
@@ -424,7 +442,7 @@ Try {
         {
             build\Scripts\RobocopyWrapper.ps1 `
                 -Source "$PSScriptRoot\$BasePath\lib\win10-$platformToRun" `
-                -dest "$ComponentBasePath\lib\win-$platformToRun"
+                -dest "$ComponentBasePath\lib\native\$platformToRun"
 
             build\scripts\CopyContents.ps1 `
                 -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
@@ -433,6 +451,7 @@ Try {
                     'native\Microsoft.Windows.ApplicationModel.Resources.dll',
                     'native\Microsoft.WindowsAppRuntime.dll',
                     'native\Microsoft.WindowsAppRuntime.Insights.Resource.dll',
+                    'native\Microsoft.WindowsAppRuntime.pri',
                     'native\MRM.dll',
                     'native\PushNotificationsLongRunningTask.ProxyStub.dll',
                     'native\RestartAgent.exe') `
@@ -443,8 +462,8 @@ Try {
         if ($platform.Split(",") -contains "x64")
         {
             build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\lib\win-x64" `
-                -dest "$ComponentBasePath\lib\win-arm64ec"
+                -Source "$ComponentBasePath\lib\native\x64" `
+                -dest "$ComponentBasePath\lib\native\arm64ec"
 
             build\Scripts\RobocopyWrapper.ps1 `
                 -Source "$ComponentBasePath\runtimes\win-x64" `
@@ -497,7 +516,11 @@ Try {
                 break
             }
         }
-        $wasFoundationProps.Save($propsFilePath)
+        # Note: For some reason, the Save method does not work by default
+        # with the path relative to the current working directory.
+        # So we prepend the current working directory to the path.
+        $propsFileSavePath = Join-Path $PWD $propsFilePath
+        $wasFoundationProps.Save($propsFileSavePath)
 
         # Fix up ProjectCapability versions
         $FoundationBuildPaths = @(
@@ -517,7 +540,7 @@ Try {
                     $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
                 }
             }
-            $wasFoundationProps.Save($propsFilePath)
+            $wasFoundationProps.Save($propsFileSavePath)
         }
 
         $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"
@@ -545,12 +568,9 @@ Try {
         $publicNuspec.package.metadata.version = $ComponentPackageVersion
 
         # Update dependency versions in the nuspec
-        $versionDetailsPath = ".\eng\Version.Details.xml"
-        [xml]$buildConfig = Get-Content -Path $versionDetailsPath
-
         foreach ($dependency in $publicNuspec.package.metadata.dependencies.dependency)
         {
-            $buildDependency = $buildConfig.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
+            $buildDependency = $versionDetailsPath.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
             if (-not($buildDependency))
             {
                 write-host "ERROR: NuGet package dependency $($dependency.Id) not found."

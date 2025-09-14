@@ -267,8 +267,9 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
   </ImportGroup>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="OAuth2ManagerTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

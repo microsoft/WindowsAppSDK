@@ -12,6 +12,7 @@
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
+#include "PickerLocalization.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -27,15 +28,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileOpenPicker::ViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
     {
+        PickerCommon::ValidateViewMode(value);
         m_viewMode = value;
-    }
-    hstring FileOpenPicker::SettingsIdentifier()
-    {
-        return m_settingsIdentifier;
-    }
-    void FileOpenPicker::SettingsIdentifier(hstring const& value)
-    {
-        m_settingsIdentifier = value;
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileOpenPicker::SuggestedStartLocation()
     {
@@ -43,6 +37,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileOpenPicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
+        PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
     winrt::hstring FileOpenPicker::CommitButtonText()
@@ -51,6 +46,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileOpenPicker::CommitButtonText(winrt::hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> FileOpenPicker::FileTypeFilter()
@@ -62,7 +58,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
     }
@@ -75,6 +70,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 
         CaptureParameters(parameters);
 
@@ -127,6 +123,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         // capture parameters to avoid using get strong referece of picker
         PickerCommon::PickerParameters parameters{};
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
+
         CaptureParameters(parameters);
 
         auto cancellationToken = co_await winrt::get_cancellation_token();

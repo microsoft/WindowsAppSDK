@@ -23,7 +23,7 @@ stages:
     - Build_x64
     - Build_arm64
   condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+    and(succeeded(), eq(variables['useBuildOutputFromBuildId'],''))
   jobs:
   - job: NugetPackage
     pool:
@@ -185,8 +185,15 @@ stages:
           }
 
           $buildType = '$(channel)'
-          $majorMinorPatchRev = '$(major).$(minor).$(versionMinDate)'
+          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).$(versionMinDate)'
           $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
+          
+          if ($env:ComponentType)
+          {
+            Write-Host "componentType " $env:ComponentType
+            $majorMinorPatchRev = $majorMinorPatchRev + $env:ComponentType
+          }
+          
           $version = $majorMinorPatchRev + '-' + $buildType
 
           # If using release versioning, drop the version suffix, which includes a tag & build stamp.
@@ -194,7 +201,7 @@ stages:
 
           if ('${{ parameters.IsOfficial }}' -eq 'true')
           {
-            $versionTag = '$(versionTag)'
+            $versionTag = '$(VersionTag)'
             Write-Host "VersionTag: " $versionTag
             if ($buildType -ne "stable" -and -not $versionTag.StartsWith($buildType))
             {

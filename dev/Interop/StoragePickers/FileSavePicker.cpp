@@ -16,6 +16,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
+#include "PickerLocalization.h"
 #include "PickFileResult.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
@@ -26,20 +27,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
-    hstring FileSavePicker::SettingsIdentifier()
-    {
-        return m_settingsIdentifier;
-    }
-    void FileSavePicker::SettingsIdentifier(hstring const& value)
-    {
-        m_settingsIdentifier = value;
-    }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileSavePicker::SuggestedStartLocation()
     {
         return m_suggestedStartLocation;
     }
     void FileSavePicker::SuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value)
     {
+        PickerCommon::ValidateSuggestedStartLocation(value);
         m_suggestedStartLocation = value;
     }
     hstring FileSavePicker::CommitButtonText()
@@ -48,6 +42,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileSavePicker::CommitButtonText(hstring const& value)
     {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
     winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileSavePicker::FileTypeChoices()
@@ -62,30 +57,34 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         m_defaultFileExtension = value;
     }
-    winrt::Windows::Storage::StorageFile FileSavePicker::SuggestedSaveFile()
+    hstring FileSavePicker::SuggestedFolder()
     {
-        return m_suggestedSaveFile;
+        return m_suggestedFolder;
     }
-    void FileSavePicker::SuggestedSaveFile(winrt::Windows::Storage::StorageFile const& value)
+    void FileSavePicker::SuggestedFolder(hstring const& value)
     {
-        m_suggestedSaveFile = value;
+        PickerCommon::ValidateSuggestedFolder(value);
+        m_suggestedFolder = value;
     }
+
     hstring FileSavePicker::SuggestedFileName()
     {
         return m_suggestedFileName;
     }
+
     void FileSavePicker::SuggestedFileName(hstring const& value)
     {
+        PickerCommon::ValidateSuggestedFileName(value);
         m_suggestedFileName = value;
     }
-
 
     void FileSavePicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.SettingsIdentifierId = m_settingsIdentifier;
         parameters.PickerLocationId = m_suggestedStartLocation;
+        parameters.SuggestedFileName = m_suggestedFileName;
+        parameters.SuggestedFolder = m_suggestedFolder;
         parameters.CaptureFilterSpec(m_fileTypeChoices.GetView());
     }
 
@@ -97,9 +96,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
+        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
+
         CaptureParameters(parameters);
+
         auto defaultFileExtension = m_defaultFileExtension;
-        auto suggestedSaveFile = m_suggestedSaveFile;
+        auto suggestedFolder = m_suggestedFolder;
         auto suggestedFileName = m_suggestedFileName;
         auto fileTypeChoices = m_fileTypeChoices;
 
@@ -115,6 +117,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
         parameters.ConfigureDialog(dialog);
+        parameters.ConfigureFileSaveDialog(dialog);
 
         if (!PickerCommon::IsHStringNullOrEmpty(defaultFileExtension))
         {
@@ -130,18 +133,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         FILEOPENDIALOGOPTIONS dialogOptions;
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_STRICTFILETYPES));
-
-        if (!PickerCommon::IsHStringNullOrEmpty(suggestedFileName))
-        {
-            check_hresult(dialog->SetFileName(suggestedFileName.c_str()));
-        }
-
-        if (suggestedSaveFile != nullptr)
-        {
-            winrt::com_ptr<IShellItem> shellItem;
-            check_hresult(SHCreateItemFromParsingName(suggestedSaveFile.Path().c_str(), nullptr, IID_PPV_ARGS(shellItem.put())));
-            check_hresult(dialog->SetSaveAsItem(shellItem.get()));
-        }
 
         {
             auto hr = dialog->Show(parameters.HWnd);
@@ -181,4 +172,3 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         co_return result;
     }
 }
-

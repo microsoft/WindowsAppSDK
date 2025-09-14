@@ -76,6 +76,15 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox" ThreadingModel="both" />
 
+        <!-- RuntimeCompatibilityOptions -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions" ThreadingModel="both" />
+
+        <!-- BadgeNotifications -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.BadgeNotifications.BadgeNotificationManager" ThreadingModel="both" />
+
+        <!-- Decimal -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Foundation.DecimalHelper" ThreadingModel="both" />
+
         <!-- Deployment -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.AddPackageOptions" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.EnsureReadyOptions" ThreadingModel="both" />
@@ -92,6 +101,9 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.RemovePackageOptions" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.StagePackageOptions" ThreadingModel="both" />
 
+        <!-- CameraCaptureUI -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Media.Capture.CameraCaptureUI" ThreadingModel="both" />
+
         <!-- PushNotifications -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationChannel" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult" ThreadingModel="both" />
@@ -107,25 +119,16 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.ApplicationData" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.ApplicationDataContainer" ThreadingModel="both" />
 
-        <!-- Environment Manager -->
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
-
-        <!-- PowerNotifications -->
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
-
-        <!-- CameraCaptureUI -->
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.Media.Capture.CameraCaptureUI" ThreadingModel="both" />
-
-        <!-- BadgeNotifications -->
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.BadgeNotifications.BadgeNotificationManager" ThreadingModel="both" />
-
         <!-- StoragePickers -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileOpenPicker" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FileSavePicker" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.Pickers.FolderPicker" ThreadingModel="both" />
 
-        <!-- RuntimeCompatibilityOptions -->
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions" ThreadingModel="both" />
+        <!-- Environment Manager -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
+
+        <!-- PowerNotifications -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub">
