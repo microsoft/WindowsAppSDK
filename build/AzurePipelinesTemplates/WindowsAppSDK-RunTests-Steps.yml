@@ -8,11 +8,11 @@ parameters:
 
 steps:
   - task: powershell@2
-    displayName: 'DevCheck: Setup/Verify development environment'
+    displayName: 'DevCheck: Setup/Verify test environment'
     inputs:
       targetType: filePath
       filePath: tools\DevCheck\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
+      arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: DownloadPipelineArtifact@2
@@ -150,7 +150,7 @@ steps:
         Get-Service | Out-Host
         sc.exe queryex te.service | Write-Host
         sc.exe qc te.service | Write-Host
-  
+
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:
