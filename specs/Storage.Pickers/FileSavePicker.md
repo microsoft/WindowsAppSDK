@@ -32,13 +32,22 @@ runtimeclass FileSavePicker
 
 Notes: **Understanding SuggestedStartFolder/SuggestedStartLocation vs SuggestedFolder:**
 
-These two properties have fundamentally different behaviors in terms of when and how they affect the picker:
+These two properties have fundamentally different behaviors in terms of when and how they affect the 
+picker:
 
-- `SuggestedFolder` sets the path that will always be tried when opening the picker, regardless of the user's previous operations. This uses the [SetFolder]() method of the underlying COM APIs and takes precedence over any user navigation history.
+- `SuggestedFolder` sets the path that will always be tried when opening the picker, regardless of 
+    the user's previous operations. This uses the [SetFolder](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setfolder) 
+    method of the underlying COM APIs and takes precedence over any user navigation history.
 
-- `SuggestedStartFolder` sets the path shown only the first time the user launches the picker (typically when the app is newly installed). After the user has picked a file, subsequent launches of the picker will open to the user's last selected folder, and `SuggestedStartFolder` becomes silent. This corresponds to the [SetDefaultFolder]() method in the COM API.
+- `SuggestedStartFolder` sets the path shown only the first time the user launches the picker 
+    (typically when the app is newly installed). After the user has picked a file, subsequent 
+    launches of the picker will open to the user's last selected folder, and `SuggestedStartFolder` 
+    becomes silent. This corresponds to the [SetDefaultFolder](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setdefaultfolder) 
+    method in the COM API.
 
-    The effective time span of `SuggestedStartFolder` is the same as that of `SuggestedStartLocation` - both only influence the picker's initial behavior before user interaction establishes a navigation history.
+    The effective time span of `SuggestedStartFolder` is the same as that of `SuggestedStartLocation`, 
+    both only influence the picker's initial behavior before user interaction establishes a 
+    navigation history.
 
     What's more, `SuggestedStartFolder` takes precedence over `SuggestedStartLocation`.
 
@@ -93,7 +102,7 @@ C++
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
 using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
-FileSavePicker savePicker(AppWindow().Id);
+FileSavePicker savePicker(AppWindow().Id());
 
 // (Optional) set an initial folder by absolute path. 
 //     Takes precedence over SuggestedStartLocation when both defined.
