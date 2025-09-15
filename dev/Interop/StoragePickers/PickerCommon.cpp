@@ -375,7 +375,8 @@ namespace PickerCommon {
         auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
         if (defaultFolder != nullptr)
         {
-            check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
+            // Use SetFolder to set the current folder so the picker's SuggestedStartLocation is honored
+            check_hresult(dialog->SetFolder(defaultFolder.get()));
         }
 
         if (FileTypeFilterPara.size() > 0)
