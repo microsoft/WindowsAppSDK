@@ -14,6 +14,10 @@ steps:
       filePath: tools\DevCheck\DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
+  - task: UseDotNet@2
+    displayName: Use .NET 6 For TAEF test Runtime
+    inputs:
+      version: 6.0.428
 
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation'
@@ -151,6 +155,21 @@ steps:
         sc.exe queryex te.service | Write-Host
         sc.exe qc te.service | Write-Host
 
+  - task: PowerShell@2
+    displayName: Set TAEF_CoreCLR env variable
+    inputs:
+      targetType: 'inline'
+      script: |
+          Write-Host "##vso[task.setvariable variable=TAEF_CoreCLR;isOutput=true]$(Agent.ToolsDirectory)\dotnet\shared\Microsoft.NETCore.App\6.0.36"
+          Write-Host "##vso[task.setvariable variable=TAEF_CoreCLR;]$(Agent.ToolsDirectory)\dotnet\shared\Microsoft.NETCore.App\6.0.36"
+
+  - task: PowerShell@2
+    displayName: Show TAEF_CoreCLR env variable
+    inputs:
+      targetType: 'inline'
+      script: |
+          Write-Host $env:TAEF_CoreCLR
+       
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:

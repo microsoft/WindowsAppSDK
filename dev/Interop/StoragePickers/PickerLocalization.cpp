@@ -27,4 +27,3 @@ namespace PickerLocalization {
         return manager.MainResourceMap().GetValue(key).ValueAsString();
     }
 }
-

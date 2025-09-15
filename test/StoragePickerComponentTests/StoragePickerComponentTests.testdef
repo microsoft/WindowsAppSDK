@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Storage Picker API",
+            "Filename": "StoragePickerComponentTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
