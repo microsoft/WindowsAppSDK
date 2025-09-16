@@ -99,7 +99,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        Get-WmiObject win32_logicaldisk | Format-Table DeviceId, MediaType, @{n="Size";e={[math]::Ro53und($_.Size/1GB,2)}},@{n="FreeSpace";e={[math]::Round($_.FreeSpace/1GB,2)}}, @{n="UsedSpace";e={[math]::Round((($_.Size-$_.FreeSpace)/1GB),2)}}
+        Get-WmiObject win32_logicaldisk | Format-Table DeviceId, MediaType, @{n="Size";e={[math]::Round($_.Size/1GB,2)}},@{n="FreeSpace";e={[math]::Round($_.FreeSpace/1GB,2)}}, @{n="UsedSpace";e={[math]::Round((($_.Size-$_.FreeSpace)/1GB),2)}}
         $IsPlatformX86 = (('${{ parameters.buildPlatform }}' -eq 'x86') -or ('${{ parameters.buildPlatform }}' -eq 'X86'))
         Write-Output "##vso[task.setvariable variable=isPlatformX86;isOutput=true]$IsPlatformX86"
         Write-Output "##vso[task.setvariable variable=isPlatformX86]$IsPlatformX86"
