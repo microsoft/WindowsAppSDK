@@ -7,6 +7,9 @@ param(
     [string]$OutputVariableName = "dependencyList"
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 # Clean start
 if (Test-Path $TempFolder) {
     Remove-Item $TempFolder -Recurse -Force -ErrorAction SilentlyContinue
@@ -52,7 +55,7 @@ function Extract-DependenciesFromPackage {
         # Extract nupkg to find nuspec
         $extractPath = Join-Path $TempFolder "extract_$PackageName"
         if (Test-Path $extractPath) {
-            Remove-Item $extractPath -Recurse -Force
+            Remove-Item $extractPath -Recurse -Force -ErrorAction SilentlyContinue
         }
         New-Item -Path $extractPath -ItemType Directory -Force | Out-Null
         
@@ -96,8 +99,7 @@ function Extract-DependenciesFromPackage {
         return $dependencies
     }
     catch {
-        Write-Warning "  Error processing $PackageName`: $($_.Exception.Message)"
-        return @()
+        throw "Error processing $PackageName`: $($_.Exception.Message)"
     }
 }
 

@@ -6,6 +6,9 @@ Param(
     [string]$WASDKNugetDependencies = "" 
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $packagesToRemoveList = $WASDKNugetDependencies -split ';'
 
 $packagesToUpdateTable = @{"Microsoft.WindowsAppSDK.Foundation" = $FoundationVersion}
