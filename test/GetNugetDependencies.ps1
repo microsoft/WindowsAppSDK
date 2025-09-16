@@ -20,7 +20,6 @@ $allDependencies = @{}  # Use hashtable to track unique dependencies
 $processed = @{}        # Track processed packages
 
 Write-Host "=== NuGet Dependency Discovery ===" -ForegroundColor Green
-Write-Host "Package: $PackageName $(if($PackageVersion){"v$PackageVersion"})" -ForegroundColor Yellow
 Write-Host "Source: $Source" -ForegroundColor Yellow
 Write-Host "Temp Folder: $TempFolder" -ForegroundColor Yellow
 
