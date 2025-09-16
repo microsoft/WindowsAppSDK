@@ -1,11 +1,14 @@
-# Note: In Foundation, the approach to test launching sample apps differs slightly from Aggregator. All sample apps in Foundation are tested in SelfContained mode.
-#       The reason for this difference is: sample apps only use component package in Foundation. There is no associated framework package, Runtime package is not generated until Aggregator.
+# Note: In Foundation, the approach to test launching sample apps differs slightly from Aggregator:
+# 1. In Foundation, we only exercises a subset of the sample apps that are tested in Aggregator.
+# 2. All sample apps in Foundation are built and tested in SelfContained mode.
+#    The reason for this difference is: sample apps only use component package in Foundation. There is no associated framework package, Runtime package is not generated until Aggregator.
+# 3. Foundation pipeline only supports running sample app testing in one specific stage.
 
 parameters:
   - name: "IsOneBranch"
     type: boolean
     default: true
-  - name: TestSampleAppsAfterBuildStage
+  - name: TestSampleApps
     displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
     type: boolean
     default: true
@@ -77,9 +80,9 @@ stages:
       - 'Debug'
       BuildPlatform:
       - 'x64'
-      ${{ if eq(parameters.TestSampleAppsAfterBuildStage, 'true') }}:
+      ${{ if eq(parameters.TestSampleApps, 'true') }}:
         SamplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_x64
-      ${{ if ne(parameters.TestSampleAppsAfterBuildStage, 'true') }}:
+      ${{ if ne(parameters.TestSampleApps, 'true') }}:
         SamplesArtifactName: ''
       runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
       maxParallel: ${{ parameters.maxParallel_x64 }}
@@ -101,14 +104,14 @@ stages:
       - 'Debug'
       BuildPlatform:
       - 'arm64'
-      ${{ if eq(parameters.TestSampleAppsAfterBuildStage, 'true') }}:
+      ${{ if eq(parameters.TestSampleApps, 'true') }}:
         SamplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_arm64
-      ${{ if ne(parameters.TestSampleAppsAfterBuildStage, 'true') }}:
+      ${{ if ne(parameters.TestSampleApps, 'true') }}:
         SamplesArtifactName: ''
       runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
       maxParallel: ${{ parameters.maxParallel_arm64 }}
 
-- ${{ if eq( parameters.TestSampleAppsAfterBuildStage, true ) }}:
+- ${{ if eq( parameters.TestSampleApps, true ) }}:
   - stage: TestSampleApps_x64
     dependsOn: 
     - BuildSampleApps_x64

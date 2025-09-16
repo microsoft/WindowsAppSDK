@@ -5,7 +5,7 @@ parameters:
 - name: "IgnoreFailures"
   type: boolean
   default: true
-- name: "TestSampleAppsAfterBuildStage"
+- name: "TestSampleApps"
   displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
   type: boolean
   default: false
@@ -24,7 +24,7 @@ stages:
   - Test_x64
   - Test_arm64
   - StaticValidationTest
-  - ${{ if and(eq( parameters.TestSampleAppsAfterBuildStage, true ), eq( parameters.MaestroDependOnTestSamples, true )) }}:
+  - ${{ if and(eq( parameters.TestSampleApps, true ), eq( parameters.MaestroDependOnTestSamples, true )) }}:
     - TestSampleApps_x64
     - ${{ if eq( parameters.TestOnArm64, true ) }}:
       - TestSampleApps_arm64

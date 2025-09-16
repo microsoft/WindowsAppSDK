@@ -24,7 +24,7 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   displayName: "Run Build Sample Apps Stage"
   type: boolean
   default: false
-- name: "TestSampleAppsAfterBuildStage"
+- name: "TestSampleApps"
   displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
   type: boolean
   default: false
@@ -140,7 +140,7 @@ extends:
     - ${{ if eq( parameters.BuildSampleApps, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
         parameters:
-          TestSampleAppsAfterBuildStage: ${{ parameters.TestSampleAppsAfterBuildStage }}
+          TestSampleApps: ${{ parameters.TestSampleApps }}
           TestOnArm64: ${{ parameters.TestOnArm64 }}
           runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
           maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
