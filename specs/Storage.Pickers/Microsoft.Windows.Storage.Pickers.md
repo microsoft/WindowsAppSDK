@@ -28,6 +28,8 @@ in elevated scenarios.*
 1. *Similarly, the `FileSavePicker.SuggestedSaveFile` property (which returned a `StorageFile`) 
 has been replaced. Its functionality is now covered by two string properties: `SuggestedFolder` and 
 `SuggestedFileName`. These allow for suggesting the folder and file name for the save dialog.*
+1. Also adding the `SuggestedFolder` property to `FileOpenPicker` and `FolderPicker`, to better 
+support a commonly requested scenario - setting a persistent folder for all pickers.
 1. *All new pickers are designed specifically for desktop apps and use a `WindowId` property to 
 link the picker to its host window, replacing the `WinRT.Interop.InitializeWithWindow.Initialize` 
 pattern.*
@@ -117,6 +119,7 @@ namespace Microsoft.Windows.Storage.Pickers
         FileOpenPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+        string SuggestedFolder;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
@@ -152,6 +155,7 @@ namespace Microsoft.Windows.Storage.Pickers
         FolderPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+        string SuggestedFolder;
 
         string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
@@ -162,3 +166,24 @@ namespace Microsoft.Windows.Storage.Pickers
     }
 }
 ```
+
+Note: **Understanding SuggestedStartFolder/SuggestedStartLocation vs SuggestedFolder:**
+
+These two kinds of properties have fundamentally different behaviors in terms of when and how they 
+affect the picker:
+
+- `SuggestedFolder` sets the path that will always be tried when opening the picker, regardless of 
+    the user's previous operations. This uses the [SetFolder](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setfolder) 
+    method of the underlying COM APIs and takes precedence over any user navigation history.
+
+- `SuggestedStartFolder` sets the path shown only the first time the user launches the picker 
+    (typically when the app is newly installed). After the user has picked a file, subsequent 
+    launches of the picker will open to the user's last selected folder, and `SuggestedStartFolder` 
+    becomes silent. This corresponds to the [SetDefaultFolder](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setdefaultfolder) 
+    method in the COM API.
+
+    The effective time span of `SuggestedStartFolder` is the same as that of `SuggestedStartLocation`, 
+    both only influence the picker's initial behavior before user interaction establishes a 
+    navigation history.
+
+    `SuggestedStartFolder` takes precedence over `SuggestedStartLocation` when both specified.

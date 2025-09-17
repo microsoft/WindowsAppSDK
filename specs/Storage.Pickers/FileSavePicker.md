@@ -30,28 +30,6 @@ runtimeclass FileSavePicker
 }
 ```
 
-Notes: **Understanding SuggestedStartFolder/SuggestedStartLocation vs SuggestedFolder:**
-
-These two properties have fundamentally different behaviors in terms of when and how they affect the 
-picker:
-
-- `SuggestedFolder` sets the path that will always be tried when opening the picker, regardless of 
-    the user's previous operations. This uses the [SetFolder](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setfolder) 
-    method of the underlying COM APIs and takes precedence over any user navigation history.
-
-- `SuggestedStartFolder` sets the path shown only the first time the user launches the picker 
-    (typically when the app is newly installed). After the user has picked a file, subsequent 
-    launches of the picker will open to the user's last selected folder, and `SuggestedStartFolder` 
-    becomes silent. This corresponds to the [SetDefaultFolder](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setdefaultfolder) 
-    method in the COM API.
-
-    The effective time span of `SuggestedStartFolder` is the same as that of `SuggestedStartLocation`, 
-    both only influence the picker's initial behavior before user interaction establishes a 
-    navigation history.
-
-    What's more, `SuggestedStartFolder` takes precedence over `SuggestedStartLocation`.
-
-
 ## Constructor
 
 ### Examples
@@ -62,10 +40,17 @@ using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id)
 {
-    // (Optional) set an initial folder by absolute path. 
+    // (Optional) Sets the folder that the file save dialog always tries to display when it opens.
+    //     SuggestedFolder will not be overriden by the last picked folder.
+    //     If not specified, or the specified path doesn't exist, defaults to the last folder the user picked.
+    //     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
+    SuggestedFolder = @"C:\MyFiles",
+
+    // (Optional) Sets an initial folder path shown when the picker is first launched.
+    //     Once the user has picked from a directory, SuggestedStartFolder will be silently ignored.
     //     Takes precedence over SuggestedStartLocation when both defined.
     //     If this folder is not found, falls back to SuggestedStartLocation.
-    SuggestedStartFolder = @"C:\Templates",
+    SuggestedStartFolder = @"C:\MyFiles",
 
     // (Optional) Specify the initial location for the picker. 
     //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
@@ -74,11 +59,6 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     
     // (Optional) specify the default file name. If not specified, use system default.
     SuggestedFileName = "My Document",
-
-    // (Optional) Sets the folder that the file save dialog displays when it opens.
-    //     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
-    //     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
-    SuggestedFolder = @"C:\MyFiles",
 
     // (Optional) specify the text displayed on the commit button. 
     //     If not specified, the system uses a default label of "Save" (suitably translated).
@@ -104,10 +84,17 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
 
-// (Optional) set an initial folder by absolute path. 
+// (Optional) Sets the folder that the file save dialog always tries to display when it opens.
+//     SuggestedFolder will not be overriden by the last picked folder.
+//     If not specified, or the specified path doesn't exist, defaults to the last folder the user picked.
+//     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
+savePicker.SuggestedFolder(L"C:\\MyFiles");
+
+// (Optional) Sets an initial folder path shown when the picker is first launched.
+//     Once the user has picked from a directory, SuggestedStartFolder will be silently ignored.
 //     Takes precedence over SuggestedStartLocation when both defined.
 //     If this folder is not found, falls back to SuggestedStartLocation.
-savePicker.SuggestedStartFolder(L"C:\\Templates");
+savePicker.SuggestedStartFolder(L"C:\\MyFiles");
 
 // (Optional) Specify the initial location for the picker. 
 //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
@@ -116,11 +103,6 @@ savePicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
 // (Optional) specify the default file name. If not specified, use system default.
 savePicker.SuggestedFileName(L"NewDocument");
-
-// (Optional) Sets the folder that the file save dialog displays when it opens.
-//     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
-//     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
-savePicker.SuggestedFolder(L"C:\\MyFiles");
 
 // (Optional) specify the text displayed on the commit button. 
 //     If not specified, the system uses a default label of "Save" (suitably translated).

@@ -43,7 +43,14 @@ using Microsoft.Windows.Storage.Pickers;
 
 var openPicker = new FileOpenPicker(this.AppWindow.Id)
 {
-    // (Optional) set an initial folder by absolute path. 
+    // (Optional) Sets the folder that the file dialog always tries to display when it opens.
+    //     SuggestedFolder will not be overriden by the last picked folder.
+    //     If not specified, or the specified path doesn't exist, defaults to the last folder the user picked.
+    //     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
+    SuggestedFolder = @"C:\MyFiles",
+
+    // (Optional) Sets an initial folder path shown when the picker is first launched.
+    //     Once the user has picked from a directory, SuggestedStartFolder will be silently ignored.
     //     Takes precedence over SuggestedStartLocation when both defined.
     //     If this folder is not found, falls back to SuggestedStartLocation.
     SuggestedStartFolder = @"C:\MyFiles",
@@ -80,9 +87,16 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileOpenPicker openPicker(AppWindow().Id());
 
-// (Optional) set an initial folder by absolute path. 
+// (Optional) Sets the folder that the file dialog always tries to display when it opens.
+//     SuggestedFolder will not be overriden by the last picked folder.
+//     If not specified, or the specified path doesn't exist, defaults to the last folder the user picked.
+//     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
+openPicker.SuggestedFolder(L"C:\\MyFiles");
+
+// (Optional) Sets an initial folder path shown when the picker is first launched.
+//     Once the user has picked from a directory, SuggestedStartFolder will be silently ignored.
 //     Takes precedence over SuggestedStartLocation when both defined.
-//     If not found, falls back to SuggestedStartLocation.
+//     If this folder is not found, falls back to SuggestedStartLocation.
 openPicker.SuggestedStartFolder(L"C:\\MyFiles");
 
 // (Optional) Specify the initial location for the picker. 
