@@ -10,8 +10,6 @@
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    static PCWSTR c_deploymentAgentFilename{ L"DeploymentAgent.exe" };
-
     struct DeploymentManager
     {
         DeploymentManager() = default;

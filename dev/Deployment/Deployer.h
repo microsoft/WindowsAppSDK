@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <windows.h>
 #include "PackagePathUtilities.h"
+#include "PackageRegistrar.h"
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
@@ -20,13 +21,5 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         // Package deployment
         static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, PackagePathUtilities& packagePathUtilities);
-        
-    private:
-        // Package registration methods
-        static HRESULT AddOrRegisterPackage(const std::filesystem::path& package, const bool useExistingPackageIfHigherVersion, const bool forceDeployment);
-        static HRESULT AddOrRegisterPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool useExistingPackageIfHigherVersion, const bool forceDeployment);
-        
-        // Utility methods
-        static std::wstring GenerateDeploymentAgentPath();
     };
 }

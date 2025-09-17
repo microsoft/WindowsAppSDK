@@ -29,6 +29,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDefinitions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Deployer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackagePathUtilities.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageRegistrar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentTraceLogging.cpp" />
@@ -37,6 +38,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentActivityContext.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Deployer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageRegistrar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)DeploymentManagerAutoInitializer.cs" />
