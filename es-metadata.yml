@@ -1,0 +1,8 @@
+schemaVersion: 0.0.1
+isProduction: true
+accountableOwners:
+  service: a204191f-66d6-44ec-857a-a9bdac1383d1
+routing:
+  defaultAreaPath:
+    org: microsoft
+    path: OS\Windows Client and Services\WinPD\DFX-Developer Fundamentals and Experiences\DEFT\AmUse\WinAppSDK
