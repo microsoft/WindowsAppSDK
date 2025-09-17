@@ -19,15 +19,19 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     // Deploys all of the packages carried by the specified framework.
     HRESULT Deployer::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
-        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName));
+        auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
+        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext));
         RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment));
         return S_OK;
     }
     CATCH_RETURN()
 
-    HRESULT Deployer::InstallLicenses(const std::wstring& frameworkPackageFullName)
+    HRESULT Deployer::InstallLicenses(
+        const std::wstring& frameworkPackageFullName,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext
+    )
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
+        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
         // Build path for licenses
         auto licensePath{ std::filesystem::path(PackagePathUtilities::GetPackagePath(frameworkPackageFullName)) };
@@ -35,7 +39,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         auto licenseFilespec{ licensePath };
         licenseFilespec /= L"*_license.xml";
 
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
+        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
 
         // Deploy the licenses (if any)
         ::Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
@@ -54,8 +58,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto licenseFilename{ licensePath };
             licenseFilename /= findFileData.cFileName;
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetCurrentResourceId(licenseFilename);
+            initializeActivityContext.Reset();
+            initializeActivityContext.SetCurrentResourceId(licenseFilename);
 
             RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFilename.c_str()),
                                  "LicenseFile:%ls", licenseFilename.c_str());
