@@ -19,10 +19,10 @@ runtimeclass FileSavePicker
     string CommitButtonText;
     string DefaultFileExtension;
     string SuggestedFileName;
-    string SuggestedFolder;
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
 
+    string SuggestedFolder;
     String SuggestedStartFolder;
     PickerLocationId SuggestedStartLocation;
 

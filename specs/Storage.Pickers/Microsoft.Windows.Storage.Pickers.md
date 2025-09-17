@@ -119,11 +119,11 @@ namespace Microsoft.Windows.Storage.Pickers
         FileOpenPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
-        string SuggestedFolder;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
 
+        string SuggestedFolder;
         string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
 
@@ -140,10 +140,10 @@ namespace Microsoft.Windows.Storage.Pickers
         string CommitButtonText;
         string DefaultFileExtension;
         string SuggestedFileName;
-        string SuggestedFolder;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
 
+        string SuggestedFolder;
         string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
 
@@ -155,8 +155,8 @@ namespace Microsoft.Windows.Storage.Pickers
         FolderPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
-        string SuggestedFolder;
 
+        string SuggestedFolder;
         string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
 

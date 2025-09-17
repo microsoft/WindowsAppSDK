@@ -20,7 +20,10 @@ runtimeclass FolderPicker
 
     string CommitButtonText;
 
+    string SuggestedFolder;
+    String SuggestedStartFolder;
     PickerLocationId SuggestedStartLocation;
+
     PickerViewMode ViewMode;
 
     Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();

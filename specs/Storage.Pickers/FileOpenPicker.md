@@ -23,6 +23,7 @@ runtimeclass FileOpenPicker
     IMap<String, IVector<String>> FileTypeChoices{ get; };
     IVector<string> FileTypeFilter{ get; };
 
+    string SuggestedFolder;
     String SuggestedStartFolder;
     PickerLocationId SuggestedStartLocation;
     
