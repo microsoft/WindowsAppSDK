@@ -164,6 +164,11 @@ steps:
     scanType: 'Register'
     failOnAlert: true
 
+- task: ManifestGeneratorTask@0
+  displayName: 'Generation Task'
+  inputs:
+      BuildDropPath: '$(ob_outputDirectory)\\VSIX
+
 - ${{ if eq(parameters.SignOutput, false) }}:
   - task: CopyFiles@2
     displayName: 'Stage unsigned VSIX files for publishing'
