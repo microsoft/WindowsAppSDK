@@ -369,9 +369,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
         bool match{};
+        PackagePathUtilities packagePathUtilities{};
         for (const auto& packageFullName : packageFullNames)
         {
-            auto packagePath{ PackagePathUtilities::GetPackagePath(packageFullName) };
+            auto packagePath{ packagePathUtilities.GetPackagePath(packageFullName) };
             if (packagePath.empty())
             {
                 continue;

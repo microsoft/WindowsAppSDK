@@ -20,8 +20,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT Deployer::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
         auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
-        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext, PackagePathUtilities::GetPackagePath(frameworkPackageFullName)));
-        RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment));
+        PackagePathUtilities packagePathUtilities{};
+        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext, packagePathUtilities.GetPackagePath(frameworkPackageFullName)));
+        RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment, initializeActivityContext, packagePathUtilities));
         return S_OK;
     }
     CATCH_RETURN()
@@ -76,12 +77,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return S_OK;
     }
 
-    HRESULT Deployer::DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment)
+    HRESULT Deployer::DeployPackages(
+        const std::wstring& frameworkPackageFullName,
+        const bool forceDeployment,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
+        PackagePathUtilities& packagePathUtilities
+    )
     {
-        auto initializeActivity{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
-
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
-        const auto frameworkPath{ std::filesystem::path(PackagePathUtilities::GetPackagePath(frameworkPackageFullName)) };
+        const auto frameworkPath{ std::filesystem::path(packagePathUtilities.GetPackagePath(frameworkPackageFullName)) };
 
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
         for (auto package : c_targetPackages)
@@ -99,7 +103,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             if (useExistingPackageIfHigherVersion)
             {
                 initializeActivity.SetUseExistingPackageIfHigherVersion();
-                packagePath = std::filesystem::path(PackagePathUtilities::GetPackagePath(existingPackageIfHigherVersion->second));
+                packagePath = std::filesystem::path(packagePathUtilities.GetPackagePath(existingPackageIfHigherVersion->second));
                 packagePath /= WINDOWSAPPRUNTIME_PACKAGE_MANIFEST_FILE;
             }
             else

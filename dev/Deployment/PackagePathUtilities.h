@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         /// at least staged on the device, even without package query capabilities.
         /// @param packageFullName The full name of the package
         /// @return The package path, or empty string if package not found
-        static std::wstring GetPackagePath(std::wstring const& packageFullName)
+        virtual std::wstring GetPackagePath(std::wstring const& packageFullName)
         {
             UINT32 pathLength{};
             const auto rc{ GetPackagePathByFullName(packageFullName.c_str(), &pathLength, nullptr) };
