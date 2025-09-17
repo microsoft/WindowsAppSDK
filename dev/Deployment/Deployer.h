@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         static HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment = false);
 
         // License installation
-        static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext);
+        static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, std::wstring packagePath);
 
         // Package deployment
         static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment);

@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT Deployer::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
         auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
-        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext));
+        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext, PackagePathUtilities::GetPackagePath(frameworkPackageFullName)));
         RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment));
         return S_OK;
     }
@@ -28,13 +28,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT Deployer::InstallLicenses(
         const std::wstring& frameworkPackageFullName,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        std::wstring packagePath
     )
     {
         initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
         // Build path for licenses
-        auto licensePath{ std::filesystem::path(PackagePathUtilities::GetPackagePath(frameworkPackageFullName)) };
+        auto licensePath{ std::filesystem::path(packagePath) };
         licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
         auto licenseFilespec{ licensePath };
         licenseFilespec /= L"*_license.xml";
