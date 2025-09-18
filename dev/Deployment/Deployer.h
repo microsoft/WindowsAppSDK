@@ -8,18 +8,18 @@
 #include "PackagePathUtilities.h"
 #include "PackageRegistrar.h"
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
+namespace WindowsAppRuntime::Deployment::Deployer
 {
-    class Deployer
-    {
-    public:
-        // Main deployment entry point
-        static HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment = false);
+    // Main deployment entry point
+    HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment = false);
 
-        // License installation
-        static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, std::wstring packagePath);
+    // License installation
+    HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, std::wstring packagePath);
 
-        // Package deployment
-        static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, PackagePathUtilities& packagePathUtilities);
-    };
+    // Package deployment
+    HRESULT DeployPackages(
+        const std::wstring& frameworkPackageFullName,
+        const bool forceDeployment,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        ::WindowsAppRuntime::Deployment::PackagePathUtilities& packagePathUtilities);
 }

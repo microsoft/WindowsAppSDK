@@ -36,12 +36,11 @@ namespace Test::Deployment
 
         TEST_METHOD(PackageRegistrar_BasicTest)
         {
-            Log::Comment(L"Basic test to verify PackageRegistrar class");
+            Log::Comment(L"Basic test to verify PackageRegistrar namespace");
             
-            // Test that PackageRegistrar can be instantiated
-            winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::PackageRegistrar registrar;
-            
-            // Test static method
+            // Test static method - no instantiation needed since it's now a namespace
+            auto path = WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath();
+            VERIFY_IS_FALSE(path.empty());
             
             Log::Comment(L"PackageRegistrar tests completed successfully");
         }

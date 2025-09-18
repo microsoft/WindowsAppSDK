@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <wil/resource.h>
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
+namespace WindowsAppRuntime::Deployment
 {
     /// @brief Utilities for package path operations
     class PackagePathUtilities

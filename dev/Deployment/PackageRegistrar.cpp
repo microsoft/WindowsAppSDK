@@ -13,12 +13,12 @@
 
 using namespace winrt;
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
+namespace WindowsAppRuntime::Deployment::PackageRegistrar
 {
     // If useExistingPackageIfHigherVersion == false, Adds the current version package at the passed in path using PackageManager.
     // If useExistingPackageIfHigherVersion == true, Registers the higher version package using the passed in path as manifest path and PackageManager.
     // This requires the 'packageManagement' or 'runFullTrust' capabilities.
-    HRESULT PackageRegistrar::AddOrRegisterPackage(
+    HRESULT AddOrRegisterPackage(
         const std::filesystem::path& path,
         const bool useExistingPackageIfHigherVersion,
         const bool forceDeployment,
@@ -67,7 +67,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-    std::wstring PackageRegistrar::GenerateDeploymentAgentPath()
+    std::wstring GenerateDeploymentAgentPath()
     {
         // Calculate the path to the restart agent as being in the same directory as the current module.
         wil::unique_hmodule module;
@@ -78,7 +78,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
 
     /// @warning This function is ONLY for processes with package identity. It's the caller's responsibility to ensure this.
-    HRESULT PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
+    HRESULT AddOrRegisterPackageInBreakAwayProcess(
         const std::filesystem::path& path,
         const bool useExistingPackageIfHigherVersion,
         const bool forceDeployment,

@@ -7,27 +7,23 @@
 #include <windows.h>
 #include <DeploymentActivityContext.h>
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
+namespace WindowsAppRuntime::Deployment::PackageRegistrar
 {
-    static PCWSTR c_deploymentAgentFilename{ L"DeploymentAgent.exe" };
+    static constexpr PCWSTR c_deploymentAgentFilename{ L"DeploymentAgent.exe" };
 
-    class PackageRegistrar
-    {
-    public:
-        static HRESULT AddOrRegisterPackage(
-            const std::filesystem::path& path,
-            const bool useExistingPackageIfHigherVersion,
-            const bool forceDeployment,
-            winrt::Windows::Management::Deployment::IPackageManager& packageManager,
-            ::WindowsAppRuntime::Deployment::Activity::Context& activityContext);
+    std::wstring GenerateDeploymentAgentPath();
 
-        static HRESULT AddOrRegisterPackageInBreakAwayProcess(
-            const std::filesystem::path& path,
-            const bool useExistingPackageIfHigherVersion,
-            const bool forceDeployment,
-            ::WindowsAppRuntime::Deployment::Activity::Context& activityContext,
-            const std::wstring& deploymentAgentPath = GenerateDeploymentAgentPath());
+    HRESULT AddOrRegisterPackage(
+        const std::filesystem::path& path,
+        const bool useExistingPackageIfHigherVersion,
+        const bool forceDeployment,
+        winrt::Windows::Management::Deployment::IPackageManager& packageManager,
+        ::WindowsAppRuntime::Deployment::Activity::Context& activityContext);
 
-        static std::wstring GenerateDeploymentAgentPath();
-    };
+    HRESULT AddOrRegisterPackageInBreakAwayProcess(
+        const std::filesystem::path& path,
+        const bool useExistingPackageIfHigherVersion,
+        const bool forceDeployment,
+        ::WindowsAppRuntime::Deployment::Activity::Context& activityContext,
+        const std::wstring& deploymentAgentPath = GenerateDeploymentAgentPath());
 }

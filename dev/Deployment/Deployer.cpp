@@ -14,20 +14,20 @@
 
 using namespace winrt;
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
+namespace WindowsAppRuntime::Deployment::Deployer
 {
     // Deploys all of the packages carried by the specified framework.
-    HRESULT Deployer::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
+    HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
         auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
-        PackagePathUtilities packagePathUtilities{};
+        ::WindowsAppRuntime::Deployment::PackagePathUtilities packagePathUtilities{};
         RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext, packagePathUtilities.GetPackagePath(frameworkPackageFullName)));
         RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment, initializeActivityContext, packagePathUtilities));
         return S_OK;
     }
     CATCH_RETURN()
 
-    HRESULT Deployer::InstallLicenses(
+    HRESULT InstallLicenses(
         const std::wstring& frameworkPackageFullName,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
         std::wstring packagePath
@@ -77,18 +77,18 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return S_OK;
     }
 
-    HRESULT Deployer::DeployPackages(
+    HRESULT DeployPackages(
         const std::wstring& frameworkPackageFullName,
         const bool forceDeployment,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
-        PackagePathUtilities& packagePathUtilities
+        ::WindowsAppRuntime::Deployment::PackagePathUtilities& packagePathUtilities
     )
     {
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
         const auto frameworkPath{ std::filesystem::path(packagePathUtilities.GetPackagePath(frameworkPackageFullName)) };
 
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
-        for (auto package : c_targetPackages)
+        for (auto package : winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::c_targetPackages)
         {
             auto isSingleton{ CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL };
             initializeActivity.Reset();
@@ -98,8 +98,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             // If there is exisiting target package version higher than that of framework current version package, then re-register it.
             // Otherwise, deploy the target msix package from the current framework package version.
-            auto existingPackageIfHigherVersion = g_existingTargetPackagesIfHigherVersion.find(package.identifier);
-            auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != g_existingTargetPackagesIfHigherVersion.end() };
+            auto existingPackageIfHigherVersion = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::g_existingTargetPackagesIfHigherVersion.find(package.identifier);
+            auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::g_existingTargetPackagesIfHigherVersion.end() };
             if (useExistingPackageIfHigherVersion)
             {
                 initializeActivity.SetUseExistingPackageIfHigherVersion();
@@ -119,7 +119,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             if (initializeActivity.GetIsFullTrustPackage())
             {
 
-                RETURN_IF_FAILED(PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
+                RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
                     packagePath,
                     useExistingPackageIfHigherVersion,
                     forceDeployment || isSingleton,
@@ -129,7 +129,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             else
             {
                 auto packageManager = winrt::Windows::Management::Deployment::PackageManager{};
-                RETURN_IF_FAILED(PackageRegistrar::AddOrRegisterPackage(
+                RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackage(
                     packagePath,
                     useExistingPackageIfHigherVersion,
                     forceDeployment || isSingleton,

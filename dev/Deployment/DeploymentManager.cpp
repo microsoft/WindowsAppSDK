@@ -290,7 +290,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto deployPackagesResult{ Deployer::Deploy(frameworkPackageFullName, deploymentInitializeOptions.ForceDeployment()) };
+        auto deployPackagesResult{ ::WindowsAppRuntime::Deployment::Deployer::Deploy(frameworkPackageFullName, deploymentInitializeOptions.ForceDeployment()) };
         DeploymentStatus status{};
         if (SUCCEEDED(deployPackagesResult))
         {
@@ -369,7 +369,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
         bool match{};
-        PackagePathUtilities packagePathUtilities{};
+        ::WindowsAppRuntime::Deployment::PackagePathUtilities packagePathUtilities{};
         for (const auto& packageFullName : packageFullNames)
         {
             auto packagePath{ packagePathUtilities.GetPackagePath(packageFullName) };
