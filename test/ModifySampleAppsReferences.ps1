@@ -1,4 +1,4 @@
-# This script is a Foundation version of https://github.com/microsoft/WindowsAppSDK-Samples/blob/main/UpdateVersions.ps1
+# This script is a Foundation version of https://github.com/microsoft/WindowsAppSDK-Samples/blob/release/experimental/UpdateVersions.ps1
 Param(
     [string]$SampleRepoRoot = "",
     [string]$FoundationVersion = "",
