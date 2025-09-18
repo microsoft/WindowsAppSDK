@@ -28,7 +28,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             ::WindowsAppRuntime::Deployment::Activity::Context& activityContext,
             const std::wstring& deploymentAgentPath = GenerateDeploymentAgentPath());
 
-    private:
         static std::wstring GenerateDeploymentAgentPath();
     };
 }
