@@ -18,9 +18,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     // If useExistingPackageIfHigherVersion == false, Adds the current version package at the passed in path using PackageManager.
     // If useExistingPackageIfHigherVersion == true, Registers the higher version package using the passed in path as manifest path and PackageManager.
     // This requires the 'packageManagement' or 'runFullTrust' capabilities.
-    HRESULT PackageRegistrar::AddOrRegisterPackage(const std::filesystem::path& path, const bool useExistingPackageIfHigherVersion, const bool forceDeployment) try
+    HRESULT PackageRegistrar::AddOrRegisterPackage(
+        const std::filesystem::path& path,
+        const bool useExistingPackageIfHigherVersion,
+        const bool forceDeployment,
+        winrt::Windows::Management::Deployment::IPackageManager& packageManager,
+        ::WindowsAppRuntime::Deployment::Activity::Context& activityContext
+    )
+    try
     {
-        winrt::Windows::Management::Deployment::PackageManager packageManager;
 
         const auto options{ forceDeployment ?
                             winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
@@ -48,7 +54,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             deploymentOperationHResult = static_cast<HRESULT>(deploymentOperation.ErrorCode());
             deploymentOperationExtendedHResult = deploymentResult.ExtendedErrorCode();
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetDeploymentErrorInfo(
+            activityContext.SetDeploymentErrorInfo(
                 deploymentOperationExtendedHResult,
                 deploymentResult.ErrorText().c_str(),
                 deploymentResult.ActivityId());
@@ -72,10 +78,17 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
 
     /// @warning This function is ONLY for processes with package identity. It's the caller's responsibility to ensure this.
-    HRESULT PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(const std::filesystem::path& path, const bool useExistingPackageIfHigherVersion, const bool forceDeployment) try
+    HRESULT PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
+        const std::filesystem::path& path,
+        const bool useExistingPackageIfHigherVersion,
+        const bool forceDeployment,
+        ::WindowsAppRuntime::Deployment::Activity::Context& activityContext,
+        const std::wstring& deploymentAgentPath
+    )
+    try
     {
-        auto exePath{ GenerateDeploymentAgentPath() };
-        auto activityId{ winrt::to_hstring(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id()) };
+        auto exePath{ deploymentAgentPath };
+        auto activityId{ winrt::to_hstring(*activityContext.GetActivity().Id()) };
 
         // <currentdirectory>\deploymentagent.exe <custom arguments passed by caller>
         auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %u \"%s\" %u %s", exePath.c_str(), (useExistingPackageIfHigherVersion ? 1 : 0), path.c_str(), (forceDeployment ? 1 : 0), activityId.c_str()) };

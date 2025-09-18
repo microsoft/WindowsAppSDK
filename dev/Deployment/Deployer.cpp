@@ -119,11 +119,23 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             if (initializeActivity.GetIsFullTrustPackage())
             {
 
-                RETURN_IF_FAILED(PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(packagePath, useExistingPackageIfHigherVersion, forceDeployment || isSingleton));
+                RETURN_IF_FAILED(PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
+                    packagePath,
+                    useExistingPackageIfHigherVersion,
+                    forceDeployment || isSingleton,
+                    initializeActivity
+                ));
             }
             else
             {
-                RETURN_IF_FAILED(PackageRegistrar::AddOrRegisterPackage(packagePath, useExistingPackageIfHigherVersion, forceDeployment || isSingleton));
+                auto packageManager = winrt::Windows::Management::Deployment::PackageManager{};
+                RETURN_IF_FAILED(PackageRegistrar::AddOrRegisterPackage(
+                    packagePath,
+                    useExistingPackageIfHigherVersion,
+                    forceDeployment || isSingleton,
+                    packageManager,
+                    initializeActivity
+                ));
             }
 
             // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.
