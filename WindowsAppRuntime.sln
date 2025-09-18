@@ -742,6 +742,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mrmmin", "dev\MRTCore\mrt\m
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MRM", "dev\MRTCore\mrt\Core\src\MRM.vcxproj", "{CF03CC8D-FFF1-4CDC-B773-D219AD4E6F76}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentUnitTests", "test\DeploymentUnitTests\DeploymentUnitTests.vcxproj", "{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeploymentUnitTests", "DeploymentUnitTests", "{2ECD5D10-0811-44D3-A789-B2C330BA8DF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2588,6 +2592,22 @@ Global
 		{CF03CC8D-FFF1-4CDC-B773-D219AD4E6F76}.Release|x64.Build.0 = Release|x64
 		{CF03CC8D-FFF1-4CDC-B773-D219AD4E6F76}.Release|x86.ActiveCfg = Release|Win32
 		{CF03CC8D-FFF1-4CDC-B773-D219AD4E6F76}.Release|x86.Build.0 = Release|Win32
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|Any CPU.Build.0 = Debug|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|ARM64.Build.0 = Debug|ARM64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|x64.ActiveCfg = Debug|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|x64.Build.0 = Debug|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|x86.ActiveCfg = Debug|Win32
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|x86.Build.0 = Debug|Win32
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|Any CPU.ActiveCfg = Release|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|Any CPU.Build.0 = Release|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|ARM64.ActiveCfg = Release|ARM64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|ARM64.Build.0 = Release|ARM64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|x64.ActiveCfg = Release|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|x64.Build.0 = Release|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|x86.ActiveCfg = Release|Win32
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2811,6 +2831,8 @@ Global
 		{E9C055BB-6AE4-497A-A354-D07841E68976} = {022E355A-AB24-48EE-9CC0-965BEFDF5E8C}
 		{DC453DE3-18FD-43E7-8103-20763C8B97C8} = {5012149E-F09F-4F18-A03C-FFE597203821}
 		{C40AE1D8-FD5F-472E-86B5-DDA5ABA6FF99} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34} = {2ECD5D10-0811-44D3-A789-B2C330BA8DF6}
+		{2ECD5D10-0811-44D3-A789-B2C330BA8DF6} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -2863,5 +2885,7 @@ Global
 		dev\VersionInfo\VersionInfo.vcxitems*{e3edec7f-a24e-4766-bb1d-6bdfba157c51}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems*{e49329f3-5196-4bba-b5c4-e11ce7efb07a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
+		dev\Common\Common.vcxitems*{f2a9b8e7-4c62-4d89-9a4f-829f8e2a7e34}*SharedItemsImports = 4
+		test\inc\inc.vcxitems*{f2a9b8e7-4c62-4d89-9a4f-829f8e2a7e34}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
