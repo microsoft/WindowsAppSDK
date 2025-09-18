@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Tests to launch sample apps",
+            "Filename": "WindowsAppSDK.Test.SampleTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
