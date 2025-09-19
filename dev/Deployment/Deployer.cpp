@@ -50,18 +50,20 @@ namespace WindowsAppRuntime::Deployment::Deployer
         return S_OK;
     }
     CATCH_RETURN()
-
-    HRESULT GetLicenseFiles(const std::wstring& licensePath, std::vector<std::wstring>& licenseFiles)
+    
+    // licenseFileSpec: This parameter specifies the file specification (e.g., path and pattern) for the license files to be retrieved.
+    // licenseFiles: This is an output parameter that will be populated with the names of the license files found matching the specified file specification.
+    HRESULT GetLicenseFiles(const std::wstring& licenseFileSpec, std::vector<std::wstring>& licenseFiles)
     {
         licenseFiles.clear();
 
         WIN32_FIND_DATA findFileData{};
-        wil::unique_hfind hfind{ FindFirstFileW(licensePath.c_str(), &findFileData) };
+        wil::unique_hfind hfind{ FindFirstFileW(licenseFileSpec.c_str(), &findFileData) };
         if (!hfind)
         {
             const auto lastError{ GetLastError() };
             RETURN_HR_IF_MSG(HRESULT_FROM_WIN32(lastError), (lastError != ERROR_FILE_NOT_FOUND) && (lastError != ERROR_PATH_NOT_FOUND),
-                             "FindFirstFile:%ls", licensePath.c_str());
+                             "FindFirstFile:%ls", licenseFileSpec.c_str());
             return S_OK;
         }
         for (;;)
@@ -81,7 +83,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     }
 
     HRESULT InstallLicenses(
-        std::vector<std::wstring>& licenseFiles,
+        const std::vector<std::wstring>& licenseFiles,
         std::filesystem::path licensePath,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext
     )
