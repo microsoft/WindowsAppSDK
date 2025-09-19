@@ -22,7 +22,10 @@ namespace WindowsAppRuntime::Deployment::Deployer
         auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
         ::WindowsAppRuntime::Deployment::PackagePathUtilities packagePathUtilities{};
         RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext, packagePathUtilities.GetPackagePath(frameworkPackageFullName)));
-        RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment, initializeActivityContext, packagePathUtilities));
+
+        auto deploymentPackageArguments = GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, packagePathUtilities);
+        RETURN_IF_FAILED(DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext));
+
         return S_OK;
     }
     CATCH_RETURN()
@@ -77,22 +80,19 @@ namespace WindowsAppRuntime::Deployment::Deployer
         return S_OK;
     }
 
-    HRESULT DeployPackages(
+    std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
         const std::wstring& frameworkPackageFullName,
-        const bool forceDeployment,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
-        ::WindowsAppRuntime::Deployment::PackagePathUtilities& packagePathUtilities
-    )
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        ::WindowsAppRuntime::Deployment::PackagePathUtilities& packagePathUtilities)
     {
-        initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
-        const auto frameworkPath{ std::filesystem::path(packagePathUtilities.GetPackagePath(frameworkPackageFullName)) };
+        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
 
-        initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
+        std::vector<DeploymentPackageArguments> deploymentPackageArguments;
+
+        const auto frameworkPath{ std::filesystem::path(packagePathUtilities.GetPackagePath(frameworkPackageFullName)) };
         for (auto package : winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::c_targetPackages)
         {
             auto isSingleton{ CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL };
-            initializeActivity.Reset();
-            initializeActivity.SetCurrentResourceId(package.identifier);
 
             std::filesystem::path packagePath{};
 
@@ -102,7 +102,6 @@ namespace WindowsAppRuntime::Deployment::Deployer
             auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::g_existingTargetPackagesIfHigherVersion.end() };
             if (useExistingPackageIfHigherVersion)
             {
-                initializeActivity.SetUseExistingPackageIfHigherVersion();
                 packagePath = std::filesystem::path(packagePathUtilities.GetPackagePath(existingPackageIfHigherVersion->second));
                 packagePath /= WINDOWSAPPRUNTIME_PACKAGE_MANIFEST_FILE;
             }
@@ -113,6 +112,24 @@ namespace WindowsAppRuntime::Deployment::Deployer
                 packagePath /= package.identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
             }
 
+            deploymentPackageArguments.push_back(DeploymentPackageArguments{ package.identifier, packagePath, useExistingPackageIfHigherVersion, isSingleton });
+        }
+
+        return deploymentPackageArguments;
+    }
+
+    HRESULT DeployPackages(
+        std::vector<DeploymentPackageArguments> deploymentPackageArguments,
+        const bool forceDeployment,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity
+    )
+    {
+        initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
+        for (auto package : deploymentPackageArguments)
+        {
+            initializeActivity.Reset();
+            initializeActivity.SetCurrentResourceId(package.packageIdentifier);
+
             // If the current application has runFullTrust capability, then Deploy the target package in a Breakaway process.
             // Otherwise, call PackageManager API to deploy the target package.
             // The Singleton package will always set true for forceDeployment and the running process will be terminated to update the package.
@@ -120,9 +137,9 @@ namespace WindowsAppRuntime::Deployment::Deployer
             {
 
                 RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
-                    packagePath,
-                    useExistingPackageIfHigherVersion,
-                    forceDeployment || isSingleton,
+                    package.packagePath,
+                    package.useExistingPackageIfHigherVersion,
+                    forceDeployment || package.isSingleton,
                     initializeActivity
                 ));
             }
@@ -130,16 +147,16 @@ namespace WindowsAppRuntime::Deployment::Deployer
             {
                 auto packageManager = winrt::Windows::Management::Deployment::PackageManager{};
                 RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackage(
-                    packagePath,
-                    useExistingPackageIfHigherVersion,
-                    forceDeployment || isSingleton,
+                    package.packagePath,
+                    package.useExistingPackageIfHigherVersion,
+                    forceDeployment || package.isSingleton,
                     packageManager,
                     initializeActivity
                 ));
             }
 
             // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.
-            if (isSingleton)
+            if (package.isSingleton)
             {
                 // wil callback is set up to log telemetry events for Push Notifications LRP.
                 LOG_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Notifications LRP failed in all 3 attempts.");
