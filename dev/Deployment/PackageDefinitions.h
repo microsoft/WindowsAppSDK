@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
-#include <pch.h>
+
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX                       L"Microsoft.WindowsAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_DDLMPREFIX                   L"Microsoft.WinAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX                   L"MicrosoftCorporationII.WinAppRuntime"

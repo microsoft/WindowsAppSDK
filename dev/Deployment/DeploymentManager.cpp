@@ -290,7 +290,29 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto deployPackagesResult{ ::WindowsAppRuntime::Deployment::Deployer::Deploy(frameworkPackageFullName, deploymentInitializeOptions.ForceDeployment()) };
+
+        class LicenseInstallerProxy : public ::WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
+        {
+            ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
+
+        public:
+            LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
+
+            HRESULT InstallLicenseFile(const std::wstring& licenseFilename) const override
+            {
+                return m_installer.InstallLicenseFile(licenseFilename.c_str());
+            }
+        };
+
+        auto licenseInstaller{ ::Microsoft::Windows::ApplicationModel::Licensing::Installer{} };
+        auto licenseInstallerProxy{ LicenseInstallerProxy(licenseInstaller) };
+
+        auto deployPackagesResult{ ::WindowsAppRuntime::Deployment::Deployer::Deploy(
+            frameworkPackageFullName,
+            StartupNotificationsLongRunningPlatform,
+            licenseInstallerProxy,
+            deploymentInitializeOptions.ForceDeployment()) };
+
         DeploymentStatus status{};
         if (SUCCEEDED(deployPackagesResult))
         {

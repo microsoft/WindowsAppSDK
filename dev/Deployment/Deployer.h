@@ -8,6 +8,7 @@
 #include <windows.h>
 #include "PackagePathUtilities.h"
 #include "PackageRegistrar.h"
+#include <functional>
 
 namespace WindowsAppRuntime::Deployment::Deployer
 {
@@ -23,11 +24,14 @@ namespace WindowsAppRuntime::Deployment::Deployer
     // Proxy/Wrapper for license installer
     struct ILicenseInstaller
     {
-        virtual HRESULT InstallLicenseFile(const std::wstring& licenseFilename) = 0;
+        virtual HRESULT InstallLicenseFile(const std::wstring& licenseFilename) const = 0;
     };
 
     // Main deployment entry point
-    HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment = false);
+    HRESULT Deploy(const std::wstring& frameworkPackageFullName,
+        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
+        const ILicenseInstaller& licenseInstaller,
+        const bool forceDeployment = false);
 
     // Get license files from the specified path pattern
     HRESULT GetLicenseFiles(const std::wstring& licenseFileSpec, std::vector<std::wstring>& licenseFiles);
@@ -36,7 +40,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT InstallLicenses(
         const std::vector<std::wstring>& licenseFiles,
         std::filesystem::path licensePath,
-        ILicenseInstaller& licenseInstaller,
+        const ILicenseInstaller& licenseInstaller,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext);
 
     // Get deployment package arguments
@@ -49,5 +53,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT DeployPackages(
         std::vector<DeploymentPackageArguments> deploymentPackageArguments,
         const bool forceDeployment,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity);
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
+        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc
+    );
 }

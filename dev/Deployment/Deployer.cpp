@@ -2,36 +2,23 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
-#include <DeploymentManager.h>
-#include <DeploymentResult.h>
 #include <DeploymentActivityContext.h>
-#include <PackageInfo.h>
+#include <PackageDefinitions.h>
 #include <Deployer.h>
 #include "PackagePathUtilities.h"
-#include <TerminalVelocityFeatures-DeploymentAPI.h>
-#include <PushNotificationsLongRunningPlatform-Startup.h>
-#include "WindowsAppRuntime-License.h"
+#include <functional>
 
 using namespace winrt;
 
 namespace WindowsAppRuntime::Deployment::Deployer
 {
-    class LicenseInstallerProxy : public ILicenseInstaller
-    {
-        ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
-
-    public:
-        LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
-
-        HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
-        {
-            return m_installer.InstallLicenseFile(licenseFilename.c_str());
-        }
-    };
-    
-
     // Deploys all of the packages carried by the specified framework.
-    HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
+    HRESULT Deploy(
+        const std::wstring& frameworkPackageFullName,
+        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
+        const ILicenseInstaller& licenseInstaller,
+        const bool forceDeployment
+    ) try
     {
         auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
         auto packagePathUtilities = ::WindowsAppRuntime::Deployment::PackagePathUtilities{};
@@ -53,15 +40,13 @@ namespace WindowsAppRuntime::Deployment::Deployer
 
             RETURN_IF_FAILED(GetLicenseFiles(licenseFilespec, licenseFiles));
 
-            auto licenseInstaller = ::Microsoft::Windows::ApplicationModel::Licensing::Installer{};
-            LicenseInstallerProxy licenseInstallerProxy{ licenseInstaller };
-            RETURN_IF_FAILED(InstallLicenses(licenseFiles, licensePath, licenseInstallerProxy, initializeActivityContext));
+            RETURN_IF_FAILED(InstallLicenses(licenseFiles, licensePath, licenseInstaller, initializeActivityContext));
         }
 
         //  Deploy packages scope
         {
             auto deploymentPackageArguments = GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, packagePathUtilities);
-            RETURN_IF_FAILED(DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext));
+            RETURN_IF_FAILED(DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, startupNotificationsLongRunningPlatformFunc));
         }
 
         return S_OK;
@@ -102,7 +87,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT InstallLicenses(
         const std::vector<std::wstring>& licenseFiles,
         std::filesystem::path licensePath,
-        ILicenseInstaller& licenseInstaller,
+        const ILicenseInstaller& licenseInstaller,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext
     )
     {
@@ -165,7 +150,8 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT DeployPackages(
         std::vector<DeploymentPackageArguments> deploymentPackageArguments,
         const bool forceDeployment,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
+        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc
     )
     {
         for (auto package : deploymentPackageArguments)
@@ -207,7 +193,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
             if (package.isSingleton)
             {
                 // wil callback is set up to log telemetry events for Push Notifications LRP.
-                LOG_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Notifications LRP failed in all 3 attempts.");
+                LOG_IF_FAILED_MSG(startupNotificationsLongRunningPlatformFunc(), "Restarting Notifications LRP failed in all 3 attempts.");
             }
         }
 
