@@ -1966,6 +1966,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             const auto progressAfter{ progressBefore + PercentageToProgress(progressInfo.percentage, progressMaxPerPackageSetItem) };
             if (packageDeploymentProgress.Progress < progressAfter)
             {
@@ -2050,6 +2051,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             const auto progressAfter{ progressBefore + PercentageToProgress(progressInfo.percentage, progressMaxPerPackage) };
             if (packageDeploymentProgress.Progress < progressAfter)
             {
@@ -2144,6 +2146,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             const auto progressAfter{ progressBefore + PercentageToProgress(progressInfo.percentage, progressMaxPerPackage) };
             if (packageDeploymentProgress.Progress < progressAfter)
             {
@@ -2238,6 +2241,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             const auto progressAfter{ progressBefore + PercentageToProgress(progressInfo.percentage, progressMaxPerPackage) };
             if (packageDeploymentProgress.Progress < progressAfter)
             {
@@ -2316,6 +2320,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             const auto progressAfter{ progressBefore + PercentageToProgress(progressInfo.percentage, progressMaxPerPackage) };
             if (packageDeploymentProgress.Progress < progressAfter)
             {
@@ -2391,6 +2396,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             const double progressMaxPerPackage{ 1.0 };
             packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage, progressMaxPerPackage);
             progress(packageDeploymentProgress);
@@ -2496,6 +2502,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage, progressMaxPerPackage);
             progress(packageDeploymentProgress);
         });
@@ -2815,6 +2822,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage, progressMaxPerPackage);
             progress(packageDeploymentProgress);
         });
@@ -3049,6 +3057,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage, progressMaxPerPackage);
             progress(packageDeploymentProgress);
         });
@@ -3192,6 +3201,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             const double progressMaxPerPackage{ 1.0 };
             packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage, progressMaxPerPackage);
             progress(packageDeploymentProgress);
@@ -3296,6 +3306,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
             const double progressMaxPerPackage{ 1.0 };
             packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage, progressMaxPerPackage);
             progress(packageDeploymentProgress);
