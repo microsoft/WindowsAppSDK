@@ -20,54 +20,54 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
         auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
-        ::WindowsAppRuntime::Deployment::PackagePathUtilities packagePathUtilities{};
-        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext, packagePathUtilities.GetPackagePath(frameworkPackageFullName)));
+        auto packagePathUtilities = ::WindowsAppRuntime::Deployment::PackagePathUtilities{};
 
-        auto deploymentPackageArguments = GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, packagePathUtilities);
-        RETURN_IF_FAILED(DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext));
+        // Install licenses scope
+        {
+            initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
+
+            auto packagePath = packagePathUtilities.GetPackagePath(frameworkPackageFullName);
+
+            // Build path for licenses
+            auto licensePath{ std::filesystem::path(packagePath) };
+            licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
+            auto licenseFilespec{ licensePath };
+            licenseFilespec /= L"*_license.xml";
+
+            std::vector<std::wstring> licenseFiles;
+
+            RETURN_IF_FAILED(GetLicenseFiles(licenseFilespec, licenseFiles));
+
+            RETURN_IF_FAILED(InstallLicenses(licenseFiles, licensePath, initializeActivityContext));
+        }
+
+        //  Deploy packages scope
+        {
+            auto deploymentPackageArguments = GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, packagePathUtilities);
+            RETURN_IF_FAILED(DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext));
+        }
 
         return S_OK;
     }
     CATCH_RETURN()
 
-    HRESULT InstallLicenses(
-        const std::wstring& frameworkPackageFullName,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-        std::wstring packagePath
-    )
+    HRESULT GetLicenseFiles(const std::wstring& licensePath, std::vector<std::wstring>& licenseFiles)
     {
-        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
+        licenseFiles.clear();
 
-        // Build path for licenses
-        auto licensePath{ std::filesystem::path(packagePath) };
-        licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
-        auto licenseFilespec{ licensePath };
-        licenseFilespec /= L"*_license.xml";
-
-        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
-
-        // Deploy the licenses (if any)
-        ::Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
         WIN32_FIND_DATA findFileData{};
-        wil::unique_hfind hfind{ FindFirstFileW(licenseFilespec.c_str(), &findFileData) };
+        wil::unique_hfind hfind{ FindFirstFileW(licensePath.c_str(), &findFileData) };
         if (!hfind)
         {
             const auto lastError{ GetLastError() };
             RETURN_HR_IF_MSG(HRESULT_FROM_WIN32(lastError), (lastError != ERROR_FILE_NOT_FOUND) && (lastError != ERROR_PATH_NOT_FOUND),
-                             "FindFirstFile:%ls", licenseFilespec.c_str());
+                             "FindFirstFile:%ls", licensePath.c_str());
             return S_OK;
         }
         for (;;)
         {
-            // Install the license file
-            auto licenseFilename{ licensePath };
-            licenseFilename /= findFileData.cFileName;
-
-            initializeActivityContext.Reset();
-            initializeActivityContext.SetCurrentResourceId(licenseFilename);
-
-            RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFilename.c_str()),
-                                 "LicenseFile:%ls", licenseFilename.c_str());
+            // Add the license file
+            licenseFiles.push_back(findFileData.cFileName);
 
             // Next! (if any)
             if (!FindNextFileW(hfind.get(), &findFileData))
@@ -76,6 +76,31 @@ namespace WindowsAppRuntime::Deployment::Deployer
                 RETURN_HR_IF(HRESULT_FROM_WIN32(lastError), lastError != ERROR_NO_MORE_FILES);
                 break;
             }
+        }
+        return S_OK;
+    }
+
+    HRESULT InstallLicenses(
+        std::vector<std::wstring>& licenseFiles,
+        std::filesystem::path licensePath,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext
+    )
+    {
+        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
+
+        // Deploy the licenses (if any)
+        ::Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
+        for (const auto& licenseFileName : licenseFiles)
+        {
+            // Install the license file
+            auto licenseFileFullName{ licensePath };
+            licenseFileFullName /= licenseFileName;
+
+            // initializeActivityContext.Reset(); --> Why are we reseting here? It clears out all the info.
+            initializeActivityContext.SetCurrentResourceId(licenseFileFullName);
+
+            RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFileFullName.c_str()),
+                                 "LicenseFile:%ls", licenseFileFullName.c_str());
         }
         return S_OK;
     }

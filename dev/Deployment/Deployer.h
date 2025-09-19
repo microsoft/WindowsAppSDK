@@ -23,11 +23,14 @@ namespace WindowsAppRuntime::Deployment::Deployer
     // Main deployment entry point
     HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment = false);
 
-    // License installation
+    // Get license files from the specified path pattern
+    HRESULT GetLicenseFiles(const std::wstring& licensePath, std::vector<std::wstring>& licenseFiles);
+
+    // Install license files
     HRESULT InstallLicenses(
-        const std::wstring& frameworkPackageFullName, 
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, 
-        std::wstring packagePath);
+        std::vector<std::wstring>& licenseFiles,
+        std::filesystem::path licensePath,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext);
 
     // Get deployment package arguments
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
