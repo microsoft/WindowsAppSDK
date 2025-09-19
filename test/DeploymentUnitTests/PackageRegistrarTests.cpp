@@ -8,12 +8,14 @@
 #include <filesystem>
 #include <windows.h>
 #include <DeploymentActivityContext.h>
+#include <winrt/Windows.Management.Deployment.h>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
 using namespace winrt;
+using namespace winrt::Windows::Management::Deployment;
 
 namespace Test::Deployment
 {
@@ -34,15 +36,74 @@ namespace Test::Deployment
             return true;
         }
 
-        TEST_METHOD(PackageRegistrar_BasicTest)
+        // Basic functionality tests
+        TEST_METHOD(PackageRegistrar_GenerateDeploymentAgentPath_ReturnsValidPath)
         {
-            Log::Comment(L"Basic test to verify PackageRegistrar namespace");
+            Log::Comment(L"Test GenerateDeploymentAgentPath returns a valid path");
             
-            // Test static method - no instantiation needed since it's now a namespace
             auto path = WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath();
-            VERIFY_IS_FALSE(path.empty());
             
-            Log::Comment(L"PackageRegistrar tests completed successfully");
+            VERIFY_IS_FALSE(path.empty());
+            VERIFY_IS_TRUE(path.find(L"DeploymentAgent.exe") != std::wstring::npos);
+            
+            // Verify it's a valid path format
+            std::filesystem::path fsPath(path);
+            VERIFY_IS_FALSE(fsPath.filename().empty());
+            VERIFY_ARE_EQUAL(fsPath.filename().wstring(), std::wstring(L"DeploymentAgent.exe"));
+            
+            Log::Comment(String().Format(L"Generated path: %s", path.c_str()));
+        }
+        // Path validation tests
+        TEST_METHOD(PackageRegistrar_GenerateDeploymentAgentPath_PathExists)
+        {
+            Log::Comment(L"Test that generated path points to an existing location");
+            
+            auto path = WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath();
+            std::filesystem::path fsPath(path);
+            
+            // The directory should exist (even if the exe doesn't)
+            auto parentPath = fsPath.parent_path();
+            VERIFY_IS_TRUE(std::filesystem::exists(parentPath));
+            
+            Log::Comment(String().Format(L"Parent directory exists: %s", parentPath.c_str()));
+        }
+        // AddOrRegisterPackageInBreakAwayProcess tests
+        TEST_METHOD(PackageRegistrar_AddOrRegisterPackageInBreakAwayProcess_InvalidPath_ReturnsError)
+        {
+            Log::Comment(L"Test AddOrRegisterPackageInBreakAwayProcess with invalid path");
+            
+            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            std::filesystem::path invalidPath(L"C:\\NonExistent\\Invalid.msix");
+            
+            HRESULT hr = WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
+                invalidPath,
+                false, // useExistingPackageIfHigherVersion
+                false, // forceDeployment
+                activityContext
+            );
+            
+            VERIFY_IS_TRUE(FAILED(hr));
+        }
+
+        TEST_METHOD(PackageRegistrar_AddOrRegisterPackageInBreakAwayProcess_CustomDeploymentAgentPath)
+        {
+            Log::Comment(L"Test AddOrRegisterPackageInBreakAwayProcess with custom deployment agent path");
+            
+            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            std::filesystem::path testPackagePath(L"C:\\test.msix");
+            std::wstring customAgentPath = L"C:\\CustomPath\\DeploymentAgent.exe";
+            
+            // Should fail because neither package nor agent exist, but we're testing parameter handling
+            HRESULT hr = WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
+                testPackagePath,
+                false,
+                false,
+                activityContext,
+                customAgentPath
+            );
+            
+            VERIFY_IS_TRUE(FAILED(hr));
+            // The specific error will depend on what fails first (package not found vs agent not found)
         }
     };
 }

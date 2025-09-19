@@ -15,6 +15,34 @@ using namespace winrt;
 
 namespace WindowsAppRuntime::Deployment::PackageRegistrar
 {
+    // Helper method to process deployment operation results and extract error information
+    inline HRESULT ProcessDeploymentOperationResult(
+        const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress>& deploymentOperation,
+        ::WindowsAppRuntime::Deployment::Activity::Context& activityContext)
+    {
+        deploymentOperation.get();
+
+        const auto deploymentResult{ deploymentOperation.GetResults() };
+        HRESULT deploymentOperationHResult{};
+        HRESULT deploymentOperationExtendedHResult{};
+
+        if (deploymentOperation.Status() != winrt::Windows::Foundation::AsyncStatus::Completed)
+        {
+            deploymentOperationHResult = static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            deploymentOperationExtendedHResult = deploymentResult.ExtendedErrorCode();
+
+            activityContext.SetDeploymentErrorInfo(
+                deploymentOperationExtendedHResult,
+                deploymentResult.ErrorText().c_str(),
+                deploymentResult.ActivityId());
+        }
+
+        // If deploymentOperationHResult indicates success, take that, ignore deploymentOperationExtendedHResult.
+        // Otherwise, return deploymentOperationExtendedHResult if there is an error in it, if not, return deploymentOperationHResult.
+        return SUCCEEDED(deploymentOperationHResult) ? deploymentOperationHResult :
+            (FAILED(deploymentOperationExtendedHResult) ? deploymentOperationExtendedHResult : deploymentOperationHResult);
+    }
+
     // If useExistingPackageIfHigherVersion == false, Adds the current version package at the passed in path using PackageManager.
     // If useExistingPackageIfHigherVersion == true, Registers the higher version package using the passed in path as manifest path and PackageManager.
     // This requires the 'packageManagement' or 'runFullTrust' capabilities.
@@ -44,26 +72,8 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
         {
             deploymentOperation = packageManager.AddPackageAsync(pathUri, nullptr, options);
         }
-        deploymentOperation.get();
-        const auto deploymentResult{ deploymentOperation.GetResults() };
-        HRESULT deploymentOperationHResult{};
-        HRESULT deploymentOperationExtendedHResult{};
-
-        if (deploymentOperation.Status() != winrt::Windows::Foundation::AsyncStatus::Completed)
-        {
-            deploymentOperationHResult = static_cast<HRESULT>(deploymentOperation.ErrorCode());
-            deploymentOperationExtendedHResult = deploymentResult.ExtendedErrorCode();
-
-            activityContext.SetDeploymentErrorInfo(
-                deploymentOperationExtendedHResult,
-                deploymentResult.ErrorText().c_str(),
-                deploymentResult.ActivityId());
-        }
-
-        // If deploymentOperationHResult indicates success, take that, ignore deploymentOperationExtendedHResult.
-        // Otherwise, return deploymentOperationExtendedHResult if there is an error in it, if not, return deploymentOperationHResult.
-        return SUCCEEDED(deploymentOperationHResult) ? deploymentOperationHResult :
-            (FAILED(deploymentOperationExtendedHResult) ? deploymentOperationExtendedHResult : deploymentOperationHResult);
+        
+        return ProcessDeploymentOperationResult(deploymentOperation, activityContext);
     }
     CATCH_RETURN()
 
