@@ -16,6 +16,20 @@ using namespace winrt;
 
 namespace WindowsAppRuntime::Deployment::Deployer
 {
+    class LicenseInstallerProxy : public ILicenseInstaller
+    {
+        ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
+
+    public:
+        LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
+
+        HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
+        {
+            return m_installer.InstallLicenseFile(licenseFilename.c_str());
+        }
+    };
+    
+
     // Deploys all of the packages carried by the specified framework.
     HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
@@ -36,9 +50,12 @@ namespace WindowsAppRuntime::Deployment::Deployer
 
             std::vector<std::wstring> licenseFiles;
 
+
             RETURN_IF_FAILED(GetLicenseFiles(licenseFilespec, licenseFiles));
 
-            RETURN_IF_FAILED(InstallLicenses(licenseFiles, licensePath, initializeActivityContext));
+            auto licenseInstaller = ::Microsoft::Windows::ApplicationModel::Licensing::Installer{};
+            LicenseInstallerProxy licenseInstallerProxy{ licenseInstaller };
+            RETURN_IF_FAILED(InstallLicenses(licenseFiles, licensePath, licenseInstallerProxy, initializeActivityContext));
         }
 
         //  Deploy packages scope
@@ -85,13 +102,13 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT InstallLicenses(
         const std::vector<std::wstring>& licenseFiles,
         std::filesystem::path licensePath,
+        ILicenseInstaller& licenseInstaller,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext
     )
     {
         initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
 
         // Deploy the licenses (if any)
-        ::Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
         for (const auto& licenseFileName : licenseFiles)
         {
             // Install the license file
@@ -151,11 +168,15 @@ namespace WindowsAppRuntime::Deployment::Deployer
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity
     )
     {
-        initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
         for (auto package : deploymentPackageArguments)
         {
             initializeActivity.Reset();
+            initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
             initializeActivity.SetCurrentResourceId(package.packageIdentifier);
+            if (package.useExistingPackageIfHigherVersion)
+            {
+                initializeActivity.SetUseExistingPackageIfHigherVersion();
+            }
 
             // If the current application has runFullTrust capability, then Deploy the target package in a Breakaway process.
             // Otherwise, call PackageManager API to deploy the target package.
