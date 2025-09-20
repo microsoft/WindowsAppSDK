@@ -74,6 +74,7 @@ namespace Test::Deployment
         }
 
         // GetLicenseFiles Tests
+        // TODO: Do testing with real files.
         TEST_METHOD(GetLicenseFiles_NoFilesFound_ReturnsSuccessWithEmptyVector)
         {
             Log::Comment(L"Test GetLicenseFiles with non-existent path returns success with empty vector");
