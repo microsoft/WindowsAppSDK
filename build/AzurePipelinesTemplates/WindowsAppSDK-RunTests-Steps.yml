@@ -79,6 +79,14 @@ steps:
       script: |
             $(Build.SourcesDirectory)\redist\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
 
+  - task: PowerShell@2
+    displayName: 'Install VCLibs and VCLibs Desktop'
+    inputs:
+      filePath: 'build/InstallVCLibs.ps1'
+      arguments: >
+        -SourceDirectory "$(Build.SourcesDirectory)\BuildOutput\Release"
+        -Platform "${{ parameters.buildPlatform }}"
+
   - task: powerShell@2
     displayName: 'Install vc_redist'
     inputs:
