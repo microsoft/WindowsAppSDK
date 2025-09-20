@@ -6,7 +6,7 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.Framework.4.1"
+    Name="Microsoft.WindowsAppRuntime.4.1"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
