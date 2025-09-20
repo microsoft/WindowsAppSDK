@@ -16,7 +16,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT Deploy(
         const std::wstring& frameworkPackageFullName,
         const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
-        const ILicenseInstaller& licenseInstaller,
+        ILicenseInstaller& licenseInstaller,
         const bool forceDeployment
     ) try
     {
@@ -87,7 +87,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT InstallLicenses(
         const std::vector<std::wstring>& licenseFiles,
         std::filesystem::path licensePath,
-        const ILicenseInstaller& licenseInstaller,
+        ILicenseInstaller& licenseInstaller,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext
     )
     {

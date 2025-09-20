@@ -24,13 +24,13 @@ namespace WindowsAppRuntime::Deployment::Deployer
     // Proxy/Wrapper for license installer
     struct ILicenseInstaller
     {
-        virtual HRESULT InstallLicenseFile(const std::wstring& licenseFilename) const = 0;
+        virtual HRESULT InstallLicenseFile(const std::wstring& licenseFilename) = 0;
     };
 
     // Main deployment entry point
     HRESULT Deploy(const std::wstring& frameworkPackageFullName,
         const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
-        const ILicenseInstaller& licenseInstaller,
+        ILicenseInstaller& licenseInstaller,
         const bool forceDeployment = false);
 
     // Get license files from the specified path pattern
@@ -40,7 +40,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT InstallLicenses(
         const std::vector<std::wstring>& licenseFiles,
         std::filesystem::path licensePath,
-        const ILicenseInstaller& licenseInstaller,
+        ILicenseInstaller& licenseInstaller,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext);
 
     // Get deployment package arguments

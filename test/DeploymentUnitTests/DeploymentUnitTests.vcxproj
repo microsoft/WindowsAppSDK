@@ -212,13 +212,16 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PackageRegistrarTests.cpp" />
+    <ClCompile Include="DeployerTests.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageRegistrar.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.cpp" />
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\Deployer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="$(RepoRoot)\dev\Deployment\PackageRegistrar.h" />
     <ClInclude Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.h" />
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\Deployer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
