@@ -298,7 +298,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         public:
             LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
 
-            HRESULT InstallLicenseFile(const std::wstring& licenseFilename) const override
+            HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
             {
                 return m_installer.InstallLicenseFile(licenseFilename.c_str());
             }
