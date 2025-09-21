@@ -11,7 +11,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
     runtimeclass ResourceLoader
     {
         ResourceLoader();
-        ResourceLoader(String fileName);
+        ResourceLoader(String resourceMap);
         ResourceLoader(String fileName, String resourceMap);
 
         static String GetDefaultResourceFilePath();
