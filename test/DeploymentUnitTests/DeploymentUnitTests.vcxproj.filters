@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Test Data">
+      <UniqueIdentifier>{5F8E8F1A-1B2C-4D3E-9F4A-1B2C3D4E5F6A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test Data\MSIX">
+      <UniqueIdentifier>{6A9B8C7D-2C3D-4E5F-A6B7-2C3D4E5F6A7B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="External">
     </Filter>
     <Filter Include="External\Deployment">
@@ -57,5 +63,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MSIX\a_license.xml">
+      <Filter>Test Data\MSIX</Filter>
+    </Content>
+    <Content Include="MSIX\b_license.xml">
+      <Filter>Test Data\MSIX</Filter>
+    </Content>
+    <Content Include="MSIX\c_License.xml">
+      <Filter>Test Data\MSIX</Filter>
+    </Content>
+    <Content Include="MSIX\AppxManifest.xml">
+      <Filter>Test Data\MSIX</Filter>
+    </Content>
   </ItemGroup>
 </Project>

@@ -74,7 +74,6 @@ namespace Test::Deployment
         }
 
         // GetLicenseFiles Tests
-        // TODO: Do testing with real files.
         TEST_METHOD(GetLicenseFiles_NoFilesFound_ReturnsSuccessWithEmptyVector)
         {
             Log::Comment(L"Test GetLicenseFiles with non-existent path returns success with empty vector");
@@ -134,6 +133,30 @@ namespace Test::Deployment
             VERIFY_SUCCEEDED(hr);
             VERIFY_ARE_EQUAL(licenseFiles.size(), 0u);
             Log::Comment(L"GetLicenseFiles correctly cleared the output vector");
+        }
+
+        TEST_METHOD(GetLicenseFiles_WithRealFiles_FindsAllLicenseFiles)
+        {
+            Log::Comment(L"Test GetLicenseFiles with real mock license files");
+
+            std::vector<std::wstring> licenseFiles;
+            
+            // Get the current test directory and construct the MSIX path
+            wchar_t currentDir[MAX_PATH];
+            GetCurrentDirectory(MAX_PATH, currentDir);
+            std::wstring testPath = std::wstring(currentDir) + L"\\test\\DeploymentUnitTests\\MSIX\\*_license.xml";
+
+            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(testPath, licenseFiles);
+
+            VERIFY_SUCCEEDED(hr);
+            VERIFY_ARE_EQUAL(licenseFiles.size(), 3u);
+            
+            VERIFY_ARE_EQUAL(licenseFiles[0], L"a_license.xml");
+            VERIFY_ARE_EQUAL(licenseFiles[1], L"b_license.xml");
+            // Note: preserve case of original name
+            VERIFY_ARE_EQUAL(licenseFiles[2], L"c_License.xml");
+
+            Log::Comment(L"GetLicenseFiles correctly found all 3 license files");
         }
 
         // InstallLicenses Tests
