@@ -149,7 +149,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     }
 
     HRESULT DeployPackages(
-        std::vector<DeploymentPackageArguments> deploymentPackageArguments,
+        const std::vector<DeploymentPackageArguments>& deploymentPackageArguments,
         const bool forceDeployment,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
         const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc
