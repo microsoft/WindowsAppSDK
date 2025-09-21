@@ -6,6 +6,7 @@
 #include <PackageDefinitions.h>
 #include <Deployer.h>
 #include <PackageUtilities.h>
+#include <PackageRegistrar.h>
 #include <functional>
 
 using namespace winrt;

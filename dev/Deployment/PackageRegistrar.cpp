@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
-#include "PackageRegistrar.h"
+#include <PackageRegistrar.h>
 #include <DeploymentActivityContext.h>
 
 #include <wil/result.h>

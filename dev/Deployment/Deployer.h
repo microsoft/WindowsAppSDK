@@ -5,10 +5,8 @@
 #include <string>
 #include <filesystem>
 #include <vector>
-#include <windows.h>
-#include "PackageUtilities.h"
-#include "PackageRegistrar.h"
 #include <functional>
+#include <DeploymentActivityContext.h>
 
 namespace WindowsAppRuntime::Deployment::Deployer
 {
