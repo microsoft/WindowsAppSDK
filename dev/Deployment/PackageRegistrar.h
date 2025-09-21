@@ -30,5 +30,5 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
         const bool useExistingPackageIfHigherVersion,
         const bool forceDeployment,
         ::WindowsAppRuntime::Deployment::Activity::Context& activityContext,
-        const std::wstring& deploymentAgentPath = GenerateDeploymentAgentPath());
+        const std::wstring& deploymentAgentPath);
 }

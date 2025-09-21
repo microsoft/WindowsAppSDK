@@ -79,7 +79,8 @@ namespace Test::Deployment
                 invalidPath,
                 false, // useExistingPackageIfHigherVersion
                 false, // forceDeployment
-                activityContext
+                activityContext,
+                WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath()
             );
             
             VERIFY_IS_TRUE(FAILED(hr));

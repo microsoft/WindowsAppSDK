@@ -36,10 +36,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
             licenseFilespec /= L"*_license.xml";
 
             std::vector<std::wstring> licenseFiles;
-
-
             RETURN_IF_FAILED(GetLicenseFiles(licenseFilespec, licenseFiles));
-
             RETURN_IF_FAILED(InstallLicenses(licenseFiles, licensePath, licenseInstaller, initializeActivityContext));
         }
 
@@ -175,7 +172,8 @@ namespace WindowsAppRuntime::Deployment::Deployer
                     package.packagePath,
                     package.useExistingPackageIfHigherVersion,
                     forceDeployment || package.isSingleton,
-                    initializeActivity
+                    initializeActivity,
+                    ::WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath()
                 ));
             }
             else

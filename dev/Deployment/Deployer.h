@@ -19,7 +19,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
         const bool isSingleton;
     };
 
-    // Proxy/Wrapper for license installer
+    // Proxy/Wrapper for license installer. Open possibility to add more methods if needed.
     struct ILicenseInstaller
     {
         virtual HRESULT InstallLicenseFile(const std::wstring& licenseFilename) = 0;
@@ -30,7 +30,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
         const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
         ILicenseInstaller& licenseInstaller,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-        const bool forceDeployment = false);
+        const bool forceDeployment);
 
     // Get license files from the specified path pattern
     HRESULT GetLicenseFiles(const std::wstring& licenseFileSpec, std::vector<std::wstring>& licenseFiles);
@@ -53,6 +53,5 @@ namespace WindowsAppRuntime::Deployment::Deployer
         const std::vector<DeploymentPackageArguments>& deploymentPackageArguments,
         const bool forceDeployment,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
-        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc
-    );
+        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc);
 }
