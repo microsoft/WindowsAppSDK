@@ -5,7 +5,7 @@
 #include <DeploymentActivityContext.h>
 #include <PackageDefinitions.h>
 #include <Deployer.h>
-#include <PackagePathUtilities.h>
+#include <PackageUtilities.h>
 #include <functional>
 
 using namespace winrt;

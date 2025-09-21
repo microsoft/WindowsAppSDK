@@ -7,7 +7,7 @@
 #include <DeploymentActivityContext.h>
 #include <PackageInfo.h>
 #include <Deployer.h>
-#include "PackagePathUtilities.h"
+#include "PackageUtilities.h"
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>

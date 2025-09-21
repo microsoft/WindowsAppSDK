@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <vector>
 #include <windows.h>
-#include "PackagePathUtilities.h"
+#include "PackageUtilities.h"
 #include "PackageRegistrar.h"
 #include <functional>
 

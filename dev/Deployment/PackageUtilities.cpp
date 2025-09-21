@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
-#include <PackagePathUtilities.h>
+#include <PackageUtilities.h>
 #include <PackageDefinitions.h>
 #include <windows.h>
 #include <wil/resource.h>
