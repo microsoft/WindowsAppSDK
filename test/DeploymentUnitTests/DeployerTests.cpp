@@ -8,6 +8,7 @@
 #include <string>
 #include <filesystem>
 #include <vector>
+#include <map>
 #include <windows.h>
 
 using namespace WEX::Common;
@@ -19,40 +20,37 @@ using namespace winrt;
 namespace Test::Deployment
 {
     // Mock implementation of ILicenseInstaller for testing
-    class MockLicenseInstaller : public WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
+    struct MockLicenseInstaller : public WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
     {
-    private:
         std::vector<std::wstring> m_installedFiles;
-        HRESULT m_returnCode;
-        bool m_shouldFail;
-        std::wstring m_expectedFailureFile;
+        std::unordered_map<std::wstring, HRESULT> m_expectedFailureMap;
 
-    public:
-        MockLicenseInstaller(HRESULT returnCode = S_OK) 
-            : m_returnCode(returnCode), m_shouldFail(false) {}
+        MockLicenseInstaller() = default;
 
         // Set up the mock to fail on a specific file
         void SetupFailureOnFile(const std::wstring& filename, HRESULT errorCode)
         {
-            m_shouldFail = true;
-            m_expectedFailureFile = filename;
-            m_returnCode = errorCode;
+            m_expectedFailureMap[filename] = errorCode;
         }
 
         HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
         {
-            if (m_shouldFail && licenseFilename.find(m_expectedFailureFile) != std::wstring::npos)
+            for (auto it : m_expectedFailureMap)
             {
-                return m_returnCode;
+                auto filename {it.first};
+                if(licenseFilename.find(filename) != std::wstring::npos)
+                {
+                    return it.second;
+                }
             }
-            
+
             m_installedFiles.push_back(licenseFilename);
             return S_OK;
         }
 
         // Test helper methods
         const std::vector<std::wstring>& GetInstalledFiles() const { return m_installedFiles; }
-        void Reset() { m_installedFiles.clear(); }
+        void Reset() { m_installedFiles.clear(); m_expectedFailureMap.clear(); }
         size_t GetInstallCount() const { return m_installedFiles.size(); }
     };
 
