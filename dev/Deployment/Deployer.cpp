@@ -13,16 +13,16 @@ using namespace winrt;
 
 namespace WindowsAppRuntime::Deployment::Deployer
 {
+    // Entry point
     // Deploys all of the packages carried by the specified framework.
     HRESULT Deploy(
         const std::wstring& frameworkPackageFullName,
         const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
         ILicenseInstaller& licenseInstaller,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
         const bool forceDeployment
     ) try
     {
-        auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
-
         // Install licenses scope
         {
             initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);

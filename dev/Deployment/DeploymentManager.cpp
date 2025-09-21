@@ -311,6 +311,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             frameworkPackageFullName,
             StartupNotificationsLongRunningPlatform,
             licenseInstallerProxy,
+            initializeActivityContext,
             deploymentInitializeOptions.ForceDeployment()) };
 
         DeploymentStatus status{};

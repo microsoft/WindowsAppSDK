@@ -29,6 +29,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     HRESULT Deploy(const std::wstring& frameworkPackageFullName,
         const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
         ILicenseInstaller& licenseInstaller,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
         const bool forceDeployment = false);
 
     // Get license files from the specified path pattern
