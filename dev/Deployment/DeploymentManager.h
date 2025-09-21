@@ -34,8 +34,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     private:
         static MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName);
-        static std::vector<std::wstring> FindPackagesByFamily(std::wstring const& packageFamilyName);
-        static HRESULT VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion, const std::wstring& matchedPackageFullName);
 
         static hstring GetCurrentFrameworkPackageFullName();
 

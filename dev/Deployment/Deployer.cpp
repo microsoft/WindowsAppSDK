@@ -26,7 +26,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
         {
             initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
-            auto packagePath = ::WindowsAppRuntime::Deployment::PackagePathUtilities::GetPackagePath(frameworkPackageFullName);
+            auto packagePath = ::WindowsAppRuntime::Deployment::Package::GetPackagePath(frameworkPackageFullName);
 
             // Build path for licenses
             auto licensePath{ std::filesystem::path(packagePath) };
@@ -44,7 +44,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
 
         //  Deploy packages scope
         {
-            std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::PackagePathUtilities::GetPackagePath };
+            std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
             auto deploymentPackageArguments = GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
             RETURN_IF_FAILED(DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, startupNotificationsLongRunningPlatformFunc));
         }
