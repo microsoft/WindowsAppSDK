@@ -5,7 +5,7 @@
 #include <DeploymentActivityContext.h>
 #include <PackageDefinitions.h>
 #include <Deployer.h>
-#include "PackagePathUtilities.h"
+#include <PackagePathUtilities.h>
 #include <functional>
 
 using namespace winrt;
@@ -21,13 +21,12 @@ namespace WindowsAppRuntime::Deployment::Deployer
     ) try
     {
         auto& initializeActivityContext = ::WindowsAppRuntime::Deployment::Activity::Context::Get();
-        auto packagePathUtilities = ::WindowsAppRuntime::Deployment::PackagePathUtilities{};
 
         // Install licenses scope
         {
             initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
-            auto packagePath = packagePathUtilities.GetPackagePath(frameworkPackageFullName);
+            auto packagePath = ::WindowsAppRuntime::Deployment::PackagePathUtilities::GetPackagePath(frameworkPackageFullName);
 
             // Build path for licenses
             auto licensePath{ std::filesystem::path(packagePath) };
@@ -45,7 +44,8 @@ namespace WindowsAppRuntime::Deployment::Deployer
 
         //  Deploy packages scope
         {
-            auto deploymentPackageArguments = GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, packagePathUtilities);
+            std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::PackagePathUtilities::GetPackagePath };
+            auto deploymentPackageArguments = GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
             RETURN_IF_FAILED(DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, startupNotificationsLongRunningPlatformFunc));
         }
 
@@ -112,13 +112,13 @@ namespace WindowsAppRuntime::Deployment::Deployer
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
         const std::wstring& frameworkPackageFullName,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-        ::WindowsAppRuntime::Deployment::PackagePathUtilities& packagePathUtilities)
+        const std::function<std::wstring(const std::wstring&)>& getPackagePathFunc)
     {
         initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
 
         std::vector<DeploymentPackageArguments> deploymentPackageArguments;
 
-        const auto frameworkPath{ std::filesystem::path(packagePathUtilities.GetPackagePath(frameworkPackageFullName)) };
+        const auto frameworkPath{ std::filesystem::path(getPackagePathFunc(frameworkPackageFullName)) };
         for (auto package : winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::c_targetPackages)
         {
             auto isSingleton{ CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL };
@@ -131,7 +131,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
             auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::g_existingTargetPackagesIfHigherVersion.end() };
             if (useExistingPackageIfHigherVersion)
             {
-                packagePath = std::filesystem::path(packagePathUtilities.GetPackagePath(existingPackageIfHigherVersion->second));
+                packagePath = std::filesystem::path(getPackagePathFunc(existingPackageIfHigherVersion->second));
                 packagePath /= WINDOWSAPPRUNTIME_PACKAGE_MANIFEST_FILE;
             }
             else

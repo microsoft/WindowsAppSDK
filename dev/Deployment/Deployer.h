@@ -47,7 +47,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
         const std::wstring& frameworkPackageFullName,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-        ::WindowsAppRuntime::Deployment::PackagePathUtilities& packagePathUtilities);
+        const std::function<std::wstring(const std::wstring&)>& getPackagePathFunc);
 
     // Package deployment
     HRESULT DeployPackages(

@@ -216,6 +216,7 @@
     <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageRegistrar.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\Deployer.cpp" />
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\PackagePathUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
