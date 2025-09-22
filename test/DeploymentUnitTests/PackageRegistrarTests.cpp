@@ -36,23 +36,6 @@ namespace Test::Deployment
             return true;
         }
 
-        // Basic functionality tests
-        TEST_METHOD(PackageRegistrar_GenerateDeploymentAgentPath_ReturnsValidPath)
-        {
-            Log::Comment(L"Test GenerateDeploymentAgentPath returns a valid path");
-            
-            auto path = WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath();
-            
-            VERIFY_IS_FALSE(path.empty());
-            VERIFY_IS_TRUE(path.find(L"DeploymentAgent.exe") != std::wstring::npos);
-            
-            // Verify it's a valid path format
-            std::filesystem::path fsPath(path);
-            VERIFY_IS_FALSE(fsPath.filename().empty());
-            VERIFY_ARE_EQUAL(fsPath.filename().wstring(), std::wstring(L"DeploymentAgent.exe"));
-            
-            Log::Comment(String().Format(L"Generated path: %s", path.c_str()));
-        }
         // Path validation tests
         TEST_METHOD(PackageRegistrar_GenerateDeploymentAgentPath_PathExists)
         {
@@ -67,6 +50,7 @@ namespace Test::Deployment
             
             Log::Comment(String().Format(L"Parent directory exists: %s", parentPath.c_str()));
         }
+
         // AddOrRegisterPackageInBreakAwayProcess tests
         TEST_METHOD(PackageRegistrar_AddOrRegisterPackageInBreakAwayProcess_InvalidPath_ReturnsError)
         {

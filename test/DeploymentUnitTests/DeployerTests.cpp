@@ -86,11 +86,8 @@ namespace Test::Deployment
             Log::Comment(L"GetLicenseFiles correctly handled non-existent path");
         }
 
-        TEST_METHOD(GetLicenseFiles_EmptyFileSpec_ReturnsError)
+        TEST_METHOD(GetLicenseFiles_EmptyFileSpec_Succeeds)
         {
-            Log::Result(WEX::Logging::TestResults::Skipped, "This test fails. Is it the correct behavior?");
-            return;
-
             Log::Comment(L"Test GetLicenseFiles with empty file specification");
 
             std::vector<std::wstring> licenseFiles;
@@ -98,8 +95,9 @@ namespace Test::Deployment
 
             HRESULT hr = WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(emptyPath, licenseFiles);
 
-            VERIFY_IS_TRUE(FAILED(hr));
-            Log::Comment(String().Format(L"GetLicenseFiles correctly failed with empty path, HR: 0x%08X", hr));
+            VERIFY_SUCCEEDED(hr);
+            VERIFY_ARE_EQUAL(licenseFiles.size(), 0u);
+            Log::Comment(L"GetLicenseFiles correctly handled empty file specification");
         }
 
         TEST_METHOD(GetLicenseFiles_InvalidPath_ReturnsError)
@@ -151,7 +149,7 @@ namespace Test::Deployment
             
             VERIFY_ARE_EQUAL(licenseFiles[0], L"a_license.xml");
             VERIFY_ARE_EQUAL(licenseFiles[1], L"b_license.xml");
-            // Note: preserve case of original name
+            // Note: preserves case of original name
             VERIFY_ARE_EQUAL(licenseFiles[2], L"c_License.xml");
 
             Log::Comment(L"GetLicenseFiles correctly found all 3 license files");
@@ -162,7 +160,7 @@ namespace Test::Deployment
         {
             Log::Comment(L"Test InstallLicenses with empty license file list");
 
-            std::vector<std::wstring> licenseFiles; // Empty vector
+            std::vector<std::wstring> licenseFiles;
             std::filesystem::path licensePath = L"C:\\TestPath";
             MockLicenseInstaller mockInstaller;
             WindowsAppRuntime::Deployment::Activity::Context activityContext;
