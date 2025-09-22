@@ -331,6 +331,7 @@ namespace Test::Deployment
         TEST_METHOD(InstallLicenses_CorruptedLicenseFile_HandlesException)
         {
             std::vector<std::wstring> licenseFiles = { L"corrupted_license.xml" };
+            std::filesystem::path licensePath = L"C:\\Program Files\\TestApp\\Licenses";
             MockLicenseInstaller mockInstaller;
             ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
             
@@ -338,7 +339,7 @@ namespace Test::Deployment
             mockInstaller.SetShouldThrowException(true);
             
             auto hr = ::WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
-                licenseFiles, tempDir, mockInstaller, activityContext);
+                licenseFiles, licensePath, mockInstaller, activityContext);
             
             // Should handle license processing exceptions gracefully
             VERIFY_IS_TRUE(FAILED(hr));
