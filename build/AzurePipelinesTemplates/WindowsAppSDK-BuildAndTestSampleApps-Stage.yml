@@ -1,0 +1,148 @@
+# Note: In Foundation, the approach to test launching sample apps differs slightly from Aggregator:
+# 1. In Foundation, we only exercises a subset of the sample apps that are tested in Aggregator.
+# 2. All sample apps in Foundation are built and tested in SelfContained mode.
+#    The reason for this difference is: sample apps only use component package in Foundation. There is no associated framework package, Runtime package is not generated until Aggregator.
+# 3. Foundation pipeline only supports running sample app testing in one specific stage.
+
+parameters:
+  - name: "IsOneBranch"
+    type: boolean
+    default: true
+  - name: TestSampleApps
+    displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+    type: boolean
+    default: true
+  - name: TestOnArm64
+    type: boolean
+    default: true
+  - name: SamplesBuildOutputArtifactName
+    displayName: "Base name for Samples build output artifacts"
+    type: string
+    default: 'SamplesBuildOutput'
+  - name: runStaticAnalysis
+    type: boolean
+    default: true
+  - name: maxParallel_x64
+    type: number
+    default: 10
+  - name: maxParallel_arm64
+    type: number
+    default: 10
+  # sampleFeatureAreasList param have the same naming rule and pattern as Aggregator repo: 
+  # https://microsoft.visualstudio.com/ProjectReunion/_git/WindowsAppSDKAggregator?path=/build/AzurePipelinesTemplates/WindowsAppSDK-BuildWindowsAppSDK-Stages.yml
+  - name: "sampleFeatureAreasList"
+    type: object
+    default:
+      SamplesCompatTest:
+      - 'Installer'
+      - 'Unpackaged'
+      - 'Notifications-Push'
+      - 'Insights'
+      - 'AppLifecycle-Activation-cpp-cpp--console--unpackaged'
+      - 'AppLifecycle-Activation-cpp-cpp--win32--unpackaged'
+      - 'AppLifecycle-Activation-cs'
+      - 'AppLifecycle-Instancing-cpp-cpp--console--unpackaged'
+      - 'AppLifecycle-Instancing-cpp-cpp--win32--packaged'
+      - 'AppLifecycle-Instancing-cpp-cpp--win32--unpackaged'
+      - 'AppLifecycle-Instancing-cs'
+      - 'AppLifecycle-Instancing-cs1'
+      - 'AppLifecycle-StateNotifications-cpp-cpp--console--unpackaged'
+      - 'AppLifecycle-StateNotifications-cpp-cpp--win32--packaged'
+      - 'AppLifecycle-StateNotifications-cpp-cpp--win32--unpackaged'
+      - 'AppLifecycle-StateNotifications-cs'
+      - 'AppLifecycle-StateNotifications-cs1'
+      - 'AppLifecycle-EnvironmentVariables'
+      - 'AppLifecycle-Restart-cpp--console--unpackaged'
+      - 'ResourceManagement-cpp-cpp--console--unpackaged'
+      - 'ResourceManagement-cs-cs--winforms--unpackaged'
+      - 'ResourceManagement-cs1'
+      - 'Mica-cpp--win32'
+      - 'Windowing-cpp-cpp--win32'
+      - 'Windowing-cs-cs--winforms--unpackaged'
+      - 'SelfContainedDeployment-cpp-cpp--console--unpackaged'
+      - 'SelfContainedDeployment-cs'
+
+stages:
+- stage: BuildSampleApps_x64
+  dependsOn: Pack
+  variables:
+    SamplesRepoName: 'WindowsAppSDK-Samples'
+    SelfRepoName: 'WindowsAppSDK'
+    FoundationVersion: $[ stageDependencies.Pack.NugetPackage.outputs['DetermineComponentNugetPackageVersion.componentPackageVersion'] ]
+  jobs:
+  - template: WindowsAppSDK-BuildSamplesCompat-Job.yml
+    parameters:
+      IsOneBranch: ${{ parameters.IsOneBranch }}
+      JobName: "SamplesCompatTest"
+      FeatureAreas: ${{ parameters.sampleFeatureAreasList.SamplesCompatTest }}
+      BuildConfig:
+      - 'Release'
+      - 'Debug'
+      BuildPlatform:
+      - 'x64'
+      ${{ if eq(parameters.TestSampleApps, 'true') }}:
+        SamplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_x64
+      ${{ if ne(parameters.TestSampleApps, 'true') }}:
+        SamplesArtifactName: ''
+      runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+      maxParallel: ${{ parameters.maxParallel_x64 }}
+
+- stage: BuildSampleApps_arm64
+  dependsOn: Pack
+  variables:
+    SamplesRepoName: 'WindowsAppSDK-Samples'
+    SelfRepoName: 'WindowsAppSDK'
+    FoundationVersion: $[ stageDependencies.Pack.NugetPackage.outputs['DetermineComponentNugetPackageVersion.componentPackageVersion'] ]
+  jobs:
+  - template: WindowsAppSDK-BuildSamplesCompat-Job.yml
+    parameters:
+      IsOneBranch: ${{ parameters.IsOneBranch }}
+      JobName: "SamplesCompatTest"
+      FeatureAreas: ${{ parameters.sampleFeatureAreasList.SamplesCompatTest }}
+      BuildConfig:
+      - 'Release'
+      - 'Debug'
+      BuildPlatform:
+      - 'arm64'
+      ${{ if eq(parameters.TestSampleApps, 'true') }}:
+        SamplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_arm64
+      ${{ if ne(parameters.TestSampleApps, 'true') }}:
+        SamplesArtifactName: ''
+      runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
+      maxParallel: ${{ parameters.maxParallel_arm64 }}
+
+- ${{ if eq( parameters.TestSampleApps, true ) }}:
+  - stage: TestSampleApps_x64
+    dependsOn: 
+    - BuildSampleApps_x64
+    - Build_x64
+    variables:
+      SamplesRepoName: 'WindowsAppSDK-Samples'
+      SelfRepoName: 'WindowsAppSDK'
+    jobs:
+    - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+      parameters:
+        jobName: TestSamplesX64
+        samplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_x64
+        callingStage: 'TestSampleApps'
+        sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+        TestMatrix: $[ variables.SampleAppsTests ]
+
+  - ${{ if eq(parameters.TestOnArm64, true)}}:
+    - stage: TestSampleApps_arm64
+      dependsOn: 
+      - BuildSampleApps_arm64
+      - Build_arm64
+      variables:
+        SamplesRepoName: 'WindowsAppSDK-Samples'
+        SelfRepoName: 'WindowsAppSDK'
+      jobs:
+      - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+        parameters:
+          jobName: TestSamplesArm64
+          samplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_arm64
+          callingStage: 'TestSampleApps'
+          sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}
+          IsOneBranch: ${{ parameters.IsOneBranch }}
+          TestMatrix: $[ variables.SampleAppsTestsArm64 ]
