@@ -11,7 +11,7 @@
     <Icon>WindowsAppSDK.png</Icon>
     <PreviewImage>WindowsAppSDK.png</PreviewImage>
     <Tags>WindowsAppSDK, WinAppSDK, WinUI, XAML, C#, Managed</Tags>
-    <Preview>true</Preview>
+    <Preview>false</Preview>
   </Metadata>
   <Installation AllUsers="true">
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 19.0)">
