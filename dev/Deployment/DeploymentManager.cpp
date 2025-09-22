@@ -336,49 +336,53 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const bool forceDeployment
     ) try
     {
-        // Install licenses scope
-        {
-            class LicenseInstallerProxy : public ::WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
-            {
-                ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
-
-            public:
-                LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
-
-                HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
-                {
-                    return m_installer.InstallLicenseFile(licenseFilename.c_str());
-                }
-            };
-
-            auto licenseInstaller{ ::Microsoft::Windows::ApplicationModel::Licensing::Installer{} };
-            auto licenseInstallerProxy{ LicenseInstallerProxy(licenseInstaller) };
-
-            initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
-
-            auto packagePath = ::WindowsAppRuntime::Deployment::Package::GetPackagePath(frameworkPackageFullName);
-
-            // Build path for licenses
-            auto licensePath{ std::filesystem::path(packagePath) };
-            licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
-            auto licenseFilespec{ licensePath };
-            licenseFilespec /= L"*_license.xml";
-
-            std::vector<std::wstring> licenseFiles;
-            RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(licenseFilespec, licenseFiles));
-            RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::InstallLicenses(licenseFiles, licensePath, licenseInstallerProxy, initializeActivityContext));
-        }
-
-        //  Deploy packages scope
-        {
-            std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
-            auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::Deployer::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
-            RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, StartupNotificationsLongRunningPlatform));
-        }
-
+        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName, initializeActivityContext));
+        RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, initializeActivityContext, forceDeployment));
         return S_OK;
     }
     CATCH_RETURN()
+
+    HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext)
+    {
+        class LicenseInstallerProxy : public ::WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
+        {
+            ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
+
+        public:
+            LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
+
+            HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
+            {
+                return m_installer.InstallLicenseFile(licenseFilename.c_str());
+            }
+        };
+
+        auto licenseInstaller{ ::Microsoft::Windows::ApplicationModel::Licensing::Installer{} };
+        auto licenseInstallerProxy{ LicenseInstallerProxy{ licenseInstaller } };
+
+        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
+
+        auto packagePath = ::WindowsAppRuntime::Deployment::Package::GetPackagePath(frameworkPackageFullName);
+
+        // Build path for licenses
+        auto licensePath{ std::filesystem::path(packagePath) };
+        licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
+        auto licenseFilespec{ licensePath };
+        licenseFilespec /= L"*_license.xml";
+
+        std::vector<std::wstring> licenseFiles;
+        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(licenseFilespec, licenseFiles));
+        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::InstallLicenses(licenseFiles, licensePath, licenseInstallerProxy, initializeActivityContext));
+        return S_OK;
+    }
+
+    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, const bool forceDeployment)
+    {
+        std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
+        auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::Deployer::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
+        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, StartupNotificationsLongRunningPlatform));
+        return S_OK;
+    }
 
     MddCore::PackageInfo DeploymentManager::GetPackageInfoForPackage(std::wstring const& packageFullName)
     {

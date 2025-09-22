@@ -37,6 +37,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
             const bool forceDeployment);
 
+        static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext);
+        static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, const bool forceDeployment);
+
     private:
         static MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName);
 
