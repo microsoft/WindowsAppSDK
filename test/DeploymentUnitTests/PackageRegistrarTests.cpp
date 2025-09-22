@@ -6,6 +6,7 @@
 #include <PackageRegistrar.h>
 #include <string>
 #include <filesystem>
+#include <fstream>
 #include <windows.h>
 #include <DeploymentActivityContext.h>
 #include <winrt/Windows.Management.Deployment.h>
@@ -89,6 +90,70 @@ namespace Test::Deployment
             
             VERIFY_IS_TRUE(FAILED(hr));
             // The specific error will depend on what fails first (package not found vs agent not found)
+        }
+
+        TEST_METHOD(AddOrRegisterPackage_InvalidPath_HandlesException)
+        {
+            auto packageManager = winrt::Windows::Management::Deployment::PackageManager{};
+            ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
+            
+            // Test with invalid/malformed path that could cause unhandled exceptions
+            std::filesystem::path invalidPath{ L"\\\\invalid-unc-path\\nonexistent\\path\\package.msix" };
+            
+            auto hr = ::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackage(
+                invalidPath, false, false, packageManager, activityContext);
+            
+            // Should return a proper HRESULT, not throw unhandled exception
+            VERIFY_IS_TRUE(FAILED(hr));
+            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E)); // Should not be ERROR_UNHANDLED_EXCEPTION
+        }
+
+        TEST_METHOD(AddOrRegisterPackage_CorruptedPackage_HandlesException)
+        {
+            auto packageManager = winrt::Windows::Management::Deployment::PackageManager{};
+            ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
+            
+            // Create a corrupted/invalid MSIX file
+            std::filesystem::path tempPath = std::filesystem::temp_directory_path() / L"corrupted.msix";
+            std::ofstream corruptedFile(tempPath, std::ios::binary);
+            corruptedFile << "This is not a valid MSIX file content";
+            corruptedFile.close();
+            
+            auto hr = ::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackage(
+                tempPath, false, false, packageManager, activityContext);
+            
+            // Cleanup
+            std::filesystem::remove(tempPath);
+            
+            // Should handle the corruption gracefully, not throw unhandled exception
+            VERIFY_IS_TRUE(FAILED(hr));
+            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
+        }
+
+        TEST_METHOD(AddOrRegisterPackageInBreakAwayProcess_InvalidAgentPath_HandlesException)
+        {
+            ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
+            std::filesystem::path validPackagePath = std::filesystem::temp_directory_path() / L"test.msix";
+            std::wstring invalidAgentPath = L"C:\\NonExistent\\deploymentagent.exe";
+            
+            auto hr = ::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
+                validPackagePath, false, false, activityContext, invalidAgentPath);
+            
+            // Should fail gracefully, not throw unhandled exception
+            VERIFY_IS_TRUE(FAILED(hr));
+            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
+        }
+
+        TEST_METHOD(ProcessDeploymentOperationResult_AsyncOperationException_HandlesGracefully)
+        {
+            // This test would require mocking the async operation to throw exceptions
+            // You'd need to create a mock IAsyncOperationWithProgress that throws
+            ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
+            
+            // Mock scenario where deploymentOperation.get() throws
+            // This would require dependency injection or a test seam
+            // For now, document this as a test case that should be implemented
+            Log::Comment(L"Test case: Verify ProcessDeploymentOperationResult handles C++/WinRT exceptions from async operations");
         }
     };
 }

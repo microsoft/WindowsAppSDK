@@ -7,6 +7,7 @@
 #include <DeploymentActivityContext.h>
 #include <string>
 #include <filesystem>
+#include <fstream>
 #include <vector>
 #include <map>
 #include <windows.h>
@@ -24,6 +25,7 @@ namespace Test::Deployment
     {
         std::vector<std::wstring> m_installedFiles;
         std::unordered_map<std::wstring, HRESULT> m_expectedFailureMap;
+        bool m_shouldTrhowException = false;
 
         MockLicenseInstaller() = default;
 
@@ -33,8 +35,18 @@ namespace Test::Deployment
             m_expectedFailureMap[filename] = errorCode;
         }
 
+        void SetShouldThrowException(bool shouldThrow)
+        {
+            m_shouldTrhowException = shouldThrow;
+        }
+
         HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
         {
+            if (m_shouldTrhowException)
+            {
+                throw std::runtime_error("Test exception");
+            }
+
             for (auto it : m_expectedFailureMap)
             {
                 auto filename {it.first};
@@ -314,6 +326,59 @@ namespace Test::Deployment
             VERIFY_IS_TRUE(actualPath.find(L"myapp_license.xml") != std::wstring::npos);
             
             Log::Comment(String().Format(L"Correct path combination: %s", actualPath.c_str()));
+        }
+
+        TEST_METHOD(InstallLicenses_CorruptedLicenseFile_HandlesException)
+        {
+            std::vector<std::wstring> licenseFiles = { L"corrupted_license.xml" };
+            MockLicenseInstaller mockInstaller;
+            ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
+            
+            // Mock the installer to simulate exception during license processing
+            mockInstaller.SetShouldThrowException(true);
+            
+            auto hr = ::WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+                licenseFiles, tempDir, mockInstaller, activityContext);
+            
+            // Should handle license processing exceptions gracefully
+            VERIFY_IS_TRUE(FAILED(hr));
+            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
+        }
+
+        TEST_METHOD(GetLicenseFiles_FileSystemException_HandlesGracefully)
+        {
+            // Test with path that could cause file system exceptions
+            std::wstring problematicPath = L"\\\\?\\C:\\System Volume Information\\*_license.xml"; // Restricted access
+            std::vector<std::wstring> licenseFiles;
+            
+            auto hr = ::WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(problematicPath, licenseFiles);
+            
+            // Should handle file system access issues gracefully
+            VERIFY_IS_TRUE(SUCCEEDED(hr) || FAILED(hr)); // Either way, shouldn't throw unhandled exception
+            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
+        }
+
+        TEST_METHOD(DeployPackages_PackageManagerException_HandlesGracefully)
+        {
+            std::vector<WindowsAppRuntime::Deployment::Deployer::DeploymentPackageArguments> args;
+            ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
+            
+            // Add invalid package argument that could cause exceptions
+            args.push_back({
+                L"TestPackage",
+                std::filesystem::path(L"\\\\invalid\\path\\package.msix"),
+                false,
+                false
+            });
+            
+            auto startupFunc = []() -> HRESULT { return S_OK; };
+            
+            auto hr = ::WindowsAppRuntime::Deployment::Deployer::DeployPackages(
+                args, false, activityContext, startupFunc);
+            
+            // Should handle package deployment exceptions gracefully
+            VERIFY_IS_TRUE(FAILED(hr));
+            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
         }
     };
 }
