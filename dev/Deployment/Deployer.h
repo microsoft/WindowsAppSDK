@@ -25,13 +25,6 @@ namespace WindowsAppRuntime::Deployment::Deployer
         virtual HRESULT InstallLicenseFile(const std::wstring& licenseFilename) = 0;
     };
 
-    // Main deployment entry point
-    HRESULT Deploy(const std::wstring& frameworkPackageFullName,
-        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
-        ILicenseInstaller& licenseInstaller,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-        const bool forceDeployment);
-
     // Get license files from the specified path pattern
     HRESULT GetLicenseFiles(const std::wstring& licenseFileSpec, std::vector<std::wstring>& licenseFiles);
 

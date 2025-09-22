@@ -13,44 +13,6 @@ using namespace winrt;
 
 namespace WindowsAppRuntime::Deployment::Deployer
 {
-    // Entry point
-    // Deploys all of the packages carried by the specified framework.
-    HRESULT Deploy(
-        const std::wstring& frameworkPackageFullName,
-        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc,
-        ILicenseInstaller& licenseInstaller,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-        const bool forceDeployment
-    ) try
-    {
-        // Install licenses scope
-        {
-            initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
-
-            auto packagePath = ::WindowsAppRuntime::Deployment::Package::GetPackagePath(frameworkPackageFullName);
-
-            // Build path for licenses
-            auto licensePath{ std::filesystem::path(packagePath) };
-            licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
-            auto licenseFilespec{ licensePath };
-            licenseFilespec /= L"*_license.xml";
-
-            std::vector<std::wstring> licenseFiles;
-            RETURN_IF_FAILED(GetLicenseFiles(licenseFilespec, licenseFiles));
-            RETURN_IF_FAILED(InstallLicenses(licenseFiles, licensePath, licenseInstaller, initializeActivityContext));
-        }
-
-        //  Deploy packages scope
-        {
-            std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
-            auto deploymentPackageArguments = GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
-            RETURN_IF_FAILED(DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, startupNotificationsLongRunningPlatformFunc));
-        }
-
-        return S_OK;
-    }
-    CATCH_RETURN()
-    
     // licenseFileSpec: This parameter specifies the file specification (e.g., path and pattern) for the license files to be retrieved.
     // licenseFiles: This is an output parameter that will be populated with the names of the license files found matching the specified file specification.
     HRESULT GetLicenseFiles(const std::wstring& licenseFileSpec, std::vector<std::wstring>& licenseFiles)

@@ -291,28 +291,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         std::wstring frameworkPackageFullName{ packageFullName };
 
-        class LicenseInstallerProxy : public ::WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
-        {
-            ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
-
-        public:
-            LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
-
-            HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
-            {
-                return m_installer.InstallLicenseFile(licenseFilename.c_str());
-            }
-        };
-
-        auto licenseInstaller{ ::Microsoft::Windows::ApplicationModel::Licensing::Installer{} };
-        auto licenseInstallerProxy{ LicenseInstallerProxy(licenseInstaller) };
-
-        auto deployPackagesResult{ ::WindowsAppRuntime::Deployment::Deployer::Deploy(
-            frameworkPackageFullName,
-            StartupNotificationsLongRunningPlatform,
-            licenseInstallerProxy,
-            initializeActivityContext,
-            deploymentInitializeOptions.ForceDeployment()) };
+        auto deployPackagesResult{ Deploy(frameworkPackageFullName, initializeActivityContext, deploymentInitializeOptions.ForceDeployment()) };
 
         DeploymentStatus status{};
         if (SUCCEEDED(deployPackagesResult))
@@ -350,6 +329,56 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         return winrt::make<implementation::DeploymentResult>(status, deployPackagesResult);
     }
+
+    HRESULT DeploymentManager::Deploy(
+        const std::wstring& frameworkPackageFullName,
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        const bool forceDeployment
+    ) try
+    {
+        // Install licenses scope
+        {
+            class LicenseInstallerProxy : public ::WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
+            {
+                ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
+
+            public:
+                LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
+
+                HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
+                {
+                    return m_installer.InstallLicenseFile(licenseFilename.c_str());
+                }
+            };
+
+            auto licenseInstaller{ ::Microsoft::Windows::ApplicationModel::Licensing::Installer{} };
+            auto licenseInstallerProxy{ LicenseInstallerProxy(licenseInstaller) };
+
+            initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
+
+            auto packagePath = ::WindowsAppRuntime::Deployment::Package::GetPackagePath(frameworkPackageFullName);
+
+            // Build path for licenses
+            auto licensePath{ std::filesystem::path(packagePath) };
+            licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
+            auto licenseFilespec{ licensePath };
+            licenseFilespec /= L"*_license.xml";
+
+            std::vector<std::wstring> licenseFiles;
+            RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(licenseFilespec, licenseFiles));
+            RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::InstallLicenses(licenseFiles, licensePath, licenseInstallerProxy, initializeActivityContext));
+        }
+
+        //  Deploy packages scope
+        {
+            std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
+            auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::Deployer::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
+            RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, StartupNotificationsLongRunningPlatform));
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN()
 
     MddCore::PackageInfo DeploymentManager::GetPackageInfoForPackage(std::wstring const& packageFullName)
     {
