@@ -1,5 +1,10 @@
 # Producing the Projection Headers
 
+Current projection packages:
+
+* [Microsoft.WindowsAppSDK.ML v1.8.2091](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.ML/1.8.2091)
+* [Microsoft.WindowsAppSDK.Runtime v1.8.250916003](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.Runtime/1.8.250916003)
+
 ## Acquire Tooling
 
 Install a Windows Platform SDK if you don't have one already:
@@ -19,32 +24,33 @@ nuget install Microsoft.Windows.AbiWinRT -OutputDirectory $working_dir\packages
 
 ## Acquire metadata from latest release
 
-Check [the NuGet package release list](https://nuget.info/packages/Microsoft.WindowsAppSDK) to find
-the latest packages (including preview and experimental).  Note their version number. In this example,
-we'll be using [Microsoft.WindowsAppSDK version 1.8.250907003](https://www.nuget.org/packages/Microsoft.WindowsAppSDK/1.8.250907003)
-
-Fetch the package from nuget:
+Fetch the package from nuget using the above package names:
 
 ```pwsh
-nuget install Microsoft.WindowsAppSDK -Version "1.8.250907003" -OutputDirectory $working_dir\packages
+$ml_version = "1.8.2091"
+$runtime_version = "1.8.250916003"
+nuget install Microsoft.WindowsAppSDK.ML -Version $ml_version -OutputDirectory $working_dir\packages
+nuget install Microsoft.WindowsAppSDK.Runtime -Version $runtime_version -OutputDirectory $working_dir\packages
 ```
 
 ## Projections and Related Headers
 
-This example generates the projections from the `Microsoft.WindowsAppSDK.ML` package, and copies the related
-versioning headers and samples in as well. Run these from the root of the repo:
+Currently, only a subset of interfaces are projected and available in this repo. See the list above.
+File a new issue to request inclusion of other content.
+
+From the root of the repo:
 
 ```pwsh
 # Generate WinML projections, copy headers (replace inc\abi\winml with inc\abi\othercomponent as needed)
 mkdir inc\abi\winml -ErrorAction SilentlyContinue
 $abiwinrt = gci -r $working_dir\packages\*abi*\abi.exe
-$metadata = gci -r $working_dir\packages\microsoft.windowsappsdk.ml*\metadata
+$metadata = gci -r $working_dir\packages\microsoft.windowsappsdk.ml.$ml_version\metadata
 & $abiwinrt -input $metadata -reference sdk -output inc\abi\winml -lowercase-include-guard -ns-prefix always
-copy $working_dir\packages\microsoft.windowsappsdk.ml*\include\* inc\abi\winml -recurse -force
+copy $working_dir\packages\microsoft.windowsappsdk.ml.$ml_version\include\* inc\abi\winml -recurse -force
 
 # Copy common runtime headers
 mkdir inc\abi\runtime -ErrorAction SilentlyContinue
-copy $working_dir\packages\microsoft.windowsappsdk.runtime*\include\*.h inc\abi\runtime -recurse -force
+copy $working_dir\packages\microsoft.windowsappsdk.runtime.$runtime_version\include\*.h inc\abi\runtime -recurse -force
 
 # Remove accidental over-projection
 gci -r inc\abi\runtime\Windows.* | remove-item
@@ -53,7 +59,7 @@ gci -r inc\abi\runtime\Windows.* | remove-item
 ## Update Copyright Stamps
 
 Ensure that any new files have the Microsoft copyright and MIT license notice at the top.  Run
-[VerifyCopyrightHeaders.cmd](../tools/VerifyCopyrightHeaders.cmd) before committing.
+[VerifyCopyrightHeaders.cmd -fix](../tools/VerifyCopyrightHeaders.cmd) before committing.
 
 ## Commit changes
 
@@ -66,4 +72,3 @@ Create or switch to the release branch for the output artifacts, then commit the
 git add inc/
 git commit -m {suitable comment here} inc/
 ```
-
