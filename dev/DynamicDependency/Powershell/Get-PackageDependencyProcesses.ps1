@@ -35,8 +35,8 @@ if (-not (Get-Module | Where-Object {$_.Name -eq 'MsixDynamicDependency'}))
     Import-Module -Name $module -ErrorAction Stop
 }
 
-$processIdsCount = 0
-$processIds = $null
+[uint32]$processIdsCount = 0
+[uint32[]]$processIds = $null
 $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetProcesses(
         $PackageDependencyId, $ScopeIsSystem, [ref] $processIdsCount, [ref] $processIds)
 if ($hr -lt 0)
