@@ -88,10 +88,6 @@ function Get-Processes
         $win32ex = [System.ComponentModel.Win32Exception]::new($hr)
         Write-Error "Error 0x$($hr.ToString('X')): $($win32ex.Message)" -ErrorAction Stop
     }
-    else
-    {
-        Write-Host "Processes: $processIdsCount"
-    }
     return $processIds
 }
 
