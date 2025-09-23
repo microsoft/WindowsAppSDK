@@ -215,7 +215,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
         initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
                                                       isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
 
