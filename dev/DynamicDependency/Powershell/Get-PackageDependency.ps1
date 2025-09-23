@@ -178,9 +178,13 @@ ForEach ($pdi in $ids.Keys)
     {
         $lifetimeExpiration = $null
     }
+
+    $packageFullName = .\Get-PackageDependencyResolved.ps1 $pdi
+
     $pd = [PSCustomObject]@{
         PackageDependencyId     = $pdi
         PackageFamilyName       = $familyName
+        ResolvedPackage         = $packageFullName
         MinVersion              = $minVersion
         ProcessorArchitectures  = $processorArchitectures
         LifetimeKind            = $lifetimeKind
