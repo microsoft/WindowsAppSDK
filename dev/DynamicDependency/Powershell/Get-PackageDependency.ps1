@@ -13,10 +13,16 @@
     NOTE: -All, -PackageDependencyId and -PackageFamilyName are mutually exclusive.
 
 .PARAMETER PackageDependencyId
-    The id of the resolved package dependency.
+    Find package dependencies with this id.
+
+.PARAMETER All
+    Find all package dependencies.
 
 .PARAMETER PackageFamilyName
     Find package dependencies with this package family.
+
+.PARAMETER ScopeIsSystem
+    Find package dependencies created with CreatePackageDependencyOptions_ScopeIsSystem.
 
 .LINK
     https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-findpackagedependency
