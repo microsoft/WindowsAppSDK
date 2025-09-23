@@ -23,6 +23,21 @@ using System;
 using System.Runtime.InteropServices;
 using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
+namespace Microsoft.Windows.ApplicationModel
+{
+    public class PackageFamilyName
+    {
+        [DllImport("kernelbase.dll", EntryPoint="VerifyPackageFamilyName", ExactSpelling=true, CharSet = CharSet.Unicode)]
+        private static extern int kernelbase_VerifyPackageFamilyName(
+            /*_In_ PCWSTR*/ string packageFamilyName);
+
+        public static int Verify(string packageFamilyName)
+        {
+            return kernelbase_VerifyPackageFamilyName(packageFamilyName);
+        }
+    }
+}
+
 namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 {
     public enum CreatePackageDependencyOptions
@@ -82,6 +97,24 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         Arm64   = 0x00000010,
         X86A64  = 0x00000020,
     };
+
+    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+    public struct FindPackageDependencyCriteria
+    {
+        /// Match package dependencies for this user if not NULL.
+        /// Match package dependencies for the current user if NULL (and ScopeIsSystem=FALSE).
+        /// @note This MUST be NULL if ScopeIsSystem=TRUE.
+        /// @note Admin privilege is required if User is not NULL and not the current user.
+        public /*PSID*/ IntPtr User;
+
+        /// Match package dependencies created with CreatePackageDependencyOptions_ScopeIsSystem this is TRUE.
+        /// @note Admin privilege is required if ScopeIsSystem is TRUE.
+        [MarshalAs(UnmanagedType.Bool)]
+        public bool ScopeIsSystem;
+
+        /// Match package dependencies with this package family. Ignore if NULL or empty ("").
+        public string PackageFamilyName;
+    }
 
     public class PackageDependency
     {
@@ -566,23 +599,6 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
             return hr;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct FindPackageDependencyCriteria
-        {
-            /// Match package dependencies for this user if not NULL.
-            /// Match package dependencies for the current user if NULL (and ScopeIsSystem=FALSE).
-            /// @note This MUST be NULL if ScopeIsSystem=TRUE.
-            /// @note Admin privilege is required if User is not NULL and not the current user.
-            public /*PSID*/ IntPtr User;
-
-            /// Match package dependencies created with CreatePackageDependencyOptions_ScopeIsSystem this is TRUE.
-            /// @note Admin privilege is required if ScopeIsSystem is TRUE.
-            public bool ScopeIsSystem;
-
-            /// Match package dependencies with this package family. Ignore if NULL or empty ("").
-            public string PackageFamilyName;
-        }
-
         /// Retrieve package dependencies.
         /// @param packageDependencyIds allocated via HeapAlloc; use HeapFree to deallocate
         ///
@@ -591,12 +607,12 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         [DllImport("kernelbase.dll", ExactSpelling=true, CharSet=CharSet.Unicode)]
         private static extern int FindPackageDependency(
             /*const FindPackageDependencyCriteria* */ ref FindPackageDependencyCriteria findPackageDependencyCriteria,
-            /*_Out_ UINT32* */ out /*ref*/ ulong packageDependencyIdsCount,
+            /*_Out_ UINT32* */ out /*ref*/ uint packageDependencyIdsCount,
             /*_Outptr_result_buffer_maybenull_(*packageDependencyIdsCount) PWSTR** */ out IntPtr packageDependencyIds);
 
         public static int Find(
             FindPackageDependencyCriteria findPackageDependencyCriteria,
-            out ulong packageDependencyIdsCount,
+            out uint packageDependencyIdsCount,
             out string[] packageDependencyIds)
         {
             packageDependencyIdsCount = 0;
@@ -617,6 +633,10 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
                     }
                     packageDependencyIds = ids;
                 }
+                else
+                {
+                    packageDependencyIds = null;
+                }
             }
             if (pdis != IntPtr.Zero)
             {
@@ -636,21 +656,21 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         [DllImport("kernelbase.dll", ExactSpelling=true, CharSet=CharSet.Unicode)]
         private static extern int GetPackageDependencyInformation(
             /*PCWSTR*/ string packageDependencyId,
-            /*_Outptr_opt_result_maybenull_ PSID* */ out /*ref*/ IntPtr user,
+            /*_Outptr_opt_result_maybenull_ PSID* */ out IntPtr user,
             /*_Outptr_opt_result_maybenull_ PWSTR* */ out IntPtr packageFamilyName,
-            /*_Out_opt_ PACKAGE_VERSION* */ out /*ref*/ long minVersion,
-            /*_Out_opt_ PackageDependencyProcessorArchitectures* */ out /*ref*/ int packageDependencyProcessorArchitectures,
-            /*_Out_opt_ PackageDependencyLifetimeKind* */ out /*ref*/ int lifetimeKind,
-            /*_Outptr_opt_result_maybenull_ PWSTR* */ out /*ref*/ IntPtr lifetimeArtifact,
-            /*_Out_opt_ CreatePackageDependencyOptions* */ out /*ref*/ int options,
-            /*_Out_opt_ FILETIME* */ out /*ref*/ FILETIME lifetimeExpiration);
+            /*_Out_opt_ PACKAGE_VERSION* */ out ulong minVersion,
+            /*_Out_opt_ PackageDependencyProcessorArchitectures* */ out PackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
+            /*_Out_opt_ PackageDependencyLifetimeKind* */ out PackageDependencyLifetimeKind lifetimeKind,
+            /*_Outptr_opt_result_maybenull_ PWSTR* */ out IntPtr lifetimeArtifact,
+            /*_Out_opt_ CreatePackageDependencyOptions* */ out int options,
+            /*_Out_opt_ FILETIME* */ out FILETIME lifetimeExpiration);
 
         public static int GetInfo(
             string packageDependencyId,
             out string packageFamilyName,
-            out long minVersion,
-            out int packageDependencyProcessorArchitectures,
-            out int lifetimeKind,
+            out ulong minVersion,
+            out PackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
+            out PackageDependencyLifetimeKind lifetimeKind,
             out string lifetimeArtifact,
             out int options,
             out DateTime lifetimeExpiration)
@@ -706,7 +726,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
             /*PCWSTR*/ string packageDependencyId,
             /*PSID*/ IntPtr user,
             /*BOOL*/ bool scopeIsSystem,
-            /*_Out_ UINT32* */ out /*ref*/ uint processIdsCount,
+            /*_Out_ UINT32* */ out uint processIdsCount,
             /*_Outptr_result_buffer_maybenull_(*processIdsCount) DWORD** */ out IntPtr processIds);
 
         public static int GetProcesses(
@@ -722,11 +742,19 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
             int hr = GetProcessesUsingPackageDependency(packageDependencyId, IntPtr.Zero, scopeIsSystem, out processIdsCount, out pis);
             if (hr >= 0)
             {
-                uint[] pids = new uint[processIdsCount];
-                int pidSize = sizeof(uint);
-                for (uint index=0; index < processIdsCount; ++index)
+                if (processIdsCount > 0)
                 {
-                    pids[index] = (uint)Marshal.ReadInt32(pis, (int)(index * pidSize));
+                    uint[] pids = new uint[processIdsCount];
+                    int pidSize = sizeof(uint);
+                    for (uint index=0; index < processIdsCount; ++index)
+                    {
+                        pids[index] = (uint)Marshal.ReadInt32(pis, (int)(index * pidSize));
+                    }
+                    processIds = pids;
+                }
+                else
+                {
+                    processIds = null;
                 }
             }
             if (pis != IntPtr.Zero)
