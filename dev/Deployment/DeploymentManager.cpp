@@ -497,6 +497,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
     {
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
         ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
         // Build path for licenses
@@ -524,7 +525,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto licenseFilename{ licensePath };
             licenseFilename /= findFileData.cFileName;
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
             ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetCurrentResourceId(licenseFilename);
 
             RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFilename.c_str()),
@@ -544,15 +544,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment)
     {
         auto initializeActivity{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+        initializeActivity.Reset();
 
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
         const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
 
-        initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
         for (auto package : c_targetPackages)
         {
             auto isSingleton{ CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL };
             initializeActivity.Reset();
+            initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
             initializeActivity.SetCurrentResourceId(package.identifier);
 
             std::filesystem::path packagePath{};
