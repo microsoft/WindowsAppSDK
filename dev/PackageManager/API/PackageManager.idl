@@ -7,7 +7,7 @@ import "M.AM.DynamicDependency.idl";
 
 namespace Microsoft.Windows.Management.Deployment
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract PackageDeploymentContract{};
 
     /// Features can be queried if currently available/enabled.
@@ -171,6 +171,44 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<PackageSetItem> Items { get; };
     }
 
+    [feature(Feature_PackageValidator)]
+    [contract(PackageDeploymentContract, 3)]
+    [default_interface]
+    runtimeclass AppxPackagingObject
+    {
+        // This is an interop class for COM types defined in AppxPackaging.idl.
+        // The WinRT side has no methods or properties, but the object supports QueryInterface into the COM interfaces
+        // IAppxPackageReader or IAppxBundleReader, whichever is relevant for the object being read.
+    }
+
+    [feature(Feature_PackageValidator)]
+    [contract(PackageDeploymentContract, 3)]
+    interface IPackageValidator
+    {
+        Boolean IsPackageValid(AppxPackagingObject packagingObject);
+    }
+
+    [feature(Feature_PackageValidator)]
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageFamilyNameValidator : [default] IPackageValidator
+    {
+        PackageFamilyNameValidator(String expectedPackageFamilyName);
+    }
+
+    [feature(Feature_PackageValidator)]
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageMinimumVersionValidator : [default] IPackageValidator
+    {
+        PackageMinimumVersionValidator(Windows.ApplicationModel.PackageVersion minimumVersion);
+    }
+
+    [feature(Feature_PackageValidator)]
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageCertificateEkuValidator : [default] IPackageValidator
+    {
+        PackageCertificateEkuValidator(String expectedCertificateEku);
+    }
+
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
     [contract(PackageDeploymentContract, 1)]
     runtimeclass AddPackageOptions
@@ -200,6 +238,14 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         Boolean LimitToExistingPackages;
+
+        [feature(Feature_PackageValidator)]
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsPackageValidatorsSupported{ get; };
+
+        [feature(Feature_PackageValidator)]
+        [contract(PackageDeploymentContract, 3)]
+        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -224,6 +270,14 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+
+        [feature(Feature_PackageValidator)]
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsPackageValidatorsSupported{ get; };
+
+        [feature(Feature_PackageValidator)]
+        [contract(PackageDeploymentContract, 3)]
+        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
