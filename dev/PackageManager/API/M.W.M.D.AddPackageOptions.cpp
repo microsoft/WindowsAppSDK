@@ -4,7 +4,9 @@
 #include "pch.h"
 
 #include <IsWindowsVersion.h>
+#include <TerminalVelocityFeatures-PackageManager.h>
 
+#include "M.W.M.D.PackageValidationEventSource.h"
 #include "M.W.M.D.AddPackageOptions.h"
 #include "Microsoft.Windows.Management.Deployment.AddPackageOptions.g.cpp"
 
@@ -171,5 +173,41 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void AddPackageOptions::LimitToExistingPackages(bool value)
     {
         m_limitToExistingPackages = value;
+    }
+
+    bool AddPackageOptions::IsPackageValidationSupported()
+    {
+        return WindowsVersion::SupportsIAppxFactory4();
+    }
+
+    winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource AddPackageOptions::GetValidationEventSourceForUri(winrt::Windows::Foundation::Uri const& uri)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidation::IsEnabled());
+
+        if (!m_packageValidators)
+        {
+            m_packageValidators = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource>();
+        }
+        if (!m_packageValidators.HasKey(uri))
+        {
+            m_packageValidators.Insert(uri, winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageValidationEventSource>());
+        }
+
+        return m_packageValidators.Lookup(uri);
+    }
+
+    winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource> AddPackageOptions::PackageValidators()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidation::IsEnabled());
+
+        if (!m_packageValidators)
+        {
+            // return an empty view
+            return winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource>().GetView();
+        }
+        else
+        {
+            return m_packageValidators.GetView();
+        }
     }
 }

@@ -16,13 +16,19 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureReadyOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageCertificateEkuValidator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageFamilyNameValidator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageMinimumVersionValidator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageRuntimeManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSet.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItemRuntimeDisposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetRuntimeDisposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageValidationEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageValidationEventSource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageValidationHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.ProvisionPackageOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageOptions.cpp" />
@@ -31,15 +37,22 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppxPackagingObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureReadyOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageCertificateEkuValidator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageFamilyNameValidator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageMinimumVersionValidator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageRuntimeManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItemRuntimeDisposition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetRuntimeDisposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageValidationEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageValidationEventSource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageValidationHandler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.ProvisionPackageOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageOptions.h" />
