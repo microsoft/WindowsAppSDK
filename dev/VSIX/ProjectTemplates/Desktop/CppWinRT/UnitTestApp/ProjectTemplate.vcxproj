@@ -29,7 +29,11 @@
   <ItemGroup>
     <ProjectCapability Include="TestContainer" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(VisualStudioVersion)' == '18.0'">
+    <SDKReference Include="CppUnitTestFramework.Universal.Net6, Version=18.0" />
+    <SDKReference Include="TestPlatform.Universal, Version=18.1" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
     <SDKReference Include="CppUnitTestFramework.Universal.Net6, Version=17.0" />
     <SDKReference Include="TestPlatform.Universal, Version=17.1" />
   </ItemGroup>
