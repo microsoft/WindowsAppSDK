@@ -30,7 +30,7 @@
    <SDKReference Include="CppUnitTestFramework.Universal.Net6, Version=18.0" />
    <SDKReference Include="TestPlatform.Universal, Version=18.1" />
   </ItemGroup>
-  <ItemGroup Condition="'$(VisualStudioVersion)' $lt; '18.0'">
+  <ItemGroup Condition="'$(VisualStudioVersion)' &lt; '18.0'">
    <SDKReference Include="CppUnitTestFramework.Universal.Net6, Version=17.0" />
    <SDKReference Include="TestPlatform.Universal, Version=17.1" />
   </ItemGroup>
@@ -63,7 +63,7 @@
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v145</PlatformToolset>
-    <PlatformToolset Condition="'$(VisualStudioVersion)' == '17.0'">v143</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' &lt; '18.0'">v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <DesktopCompatible>true</DesktopCompatible>
   </PropertyGroup>
