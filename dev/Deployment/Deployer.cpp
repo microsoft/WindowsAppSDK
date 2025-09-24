@@ -74,6 +74,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
         const std::function<std::wstring(const std::wstring&)>& getPackagePathFunc)
     {
+        initializeActivityContext.Reset();
         initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
 
         std::vector<DeploymentPackageArguments> deploymentPackageArguments;
