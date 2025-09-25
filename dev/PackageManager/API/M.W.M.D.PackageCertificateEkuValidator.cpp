@@ -13,6 +13,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         throw hresult_not_implemented();
     }
+
     bool PackageCertificateEkuValidator::IsPackageValid(winrt::Windows::Foundation::IInspectable const& appxPackagingObject)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidator::IsEnabled());

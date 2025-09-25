@@ -9,16 +9,47 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidator::IsEnabled());
 
-        UNREFERENCED_PARAMETER(minimumVersion);
-
-        throw hresult_not_implemented();
+        m_minimumVersion = ::AppModel::Identity::PackageVersion{ minimumVersion }.Version;
     }
+
     bool PackageMinimumVersionValidator::IsPackageValid(winrt::Windows::Foundation::IInspectable const& appxPackagingObject)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidator::IsEnabled());
 
-        UNREFERENCED_PARAMETER(appxPackagingObject);
+        winrt::com_ptr<IAppxPackageReader> packageReader;
+        winrt::com_ptr<IAppxBundleReader> bundleReader;
 
-        throw hresult_not_implemented();
+        if (SUCCEEDED(appxPackagingObject.as(IID_PPV_ARGS(&packageReader))))
+        {
+            winrt::com_ptr<IAppxManifestReader> manifestReader;
+            THROW_IF_FAILED(packageReader->GetManifest(manifestReader.put()));
+
+            winrt::com_ptr<IAppxManifestPackageId> packageId;
+            THROW_IF_FAILED(manifestReader->GetPackageId(packageId.put()));
+
+            return CheckIdentity(packageId.get());
+        }
+        else if (SUCCEEDED(appxPackagingObject.as(IID_PPV_ARGS(&bundleReader))))
+        {
+            winrt::com_ptr<IAppxBundleManifestReader> manifestReader;
+            THROW_IF_FAILED(bundleReader->GetManifest(manifestReader.put()));
+
+            winrt::com_ptr<IAppxManifestPackageId> packageId;
+            THROW_IF_FAILED(manifestReader->GetPackageId(packageId.put()));
+
+            return CheckIdentity(packageId.get());
+        }
+        else
+        {
+            THROW_WIN32(ERROR_NOT_SUPPORTED);
+        }
+    }
+
+    bool PackageMinimumVersionValidator::CheckIdentity(IAppxManifestPackageId* packageId)
+    {
+        UINT64 version;
+        THROW_IF_FAILED(packageId->GetVersion(&version));
+
+        return (version >= m_minimumVersion);
     }
 }

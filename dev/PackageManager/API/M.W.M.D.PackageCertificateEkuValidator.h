@@ -11,6 +11,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsPackageValid(winrt::Windows::Foundation::IInspectable const& appxPackagingObject);
     };
 }
+
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
 {
     struct PackageCertificateEkuValidator : PackageCertificateEkuValidatorT<PackageCertificateEkuValidator, implementation::PackageCertificateEkuValidator>
