@@ -173,19 +173,9 @@ namespace Microsoft.Windows.Management.Deployment
 
     [feature(Feature_PackageValidator)]
     [contract(PackageDeploymentContract, 3)]
-    [default_interface]
-    runtimeclass AppxPackagingObject
-    {
-        // This is an interop class for COM types defined in AppxPackaging.idl.
-        // The WinRT side has no methods or properties, but the object supports QueryInterface into the COM interfaces
-        // IAppxPackageReader or IAppxBundleReader, whichever is relevant for the object being read.
-    }
-
-    [feature(Feature_PackageValidator)]
-    [contract(PackageDeploymentContract, 3)]
     interface IPackageValidator
     {
-        Boolean IsPackageValid(AppxPackagingObject packagingObject);
+        Boolean IsPackageValid(IInspectable appxPackagingObject);
     }
 
     [feature(Feature_PackageValidator)]

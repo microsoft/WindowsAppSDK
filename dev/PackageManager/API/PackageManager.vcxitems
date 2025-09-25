@@ -15,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AppxPackagingObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureReadyOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageCertificateEkuValidator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.cpp" />
@@ -36,7 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AppxPackagingObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureReadyOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageCertificateEkuValidator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.h" />

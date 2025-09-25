@@ -13,11 +13,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         throw hresult_not_implemented();
     }
-    bool PackageCertificateEkuValidator::IsPackageValid(winrt::Microsoft::Windows::Management::Deployment::AppxPackagingObject const& packagingObject)
+    bool PackageCertificateEkuValidator::IsPackageValid(winrt::Windows::Foundation::IInspectable const& appxPackagingObject)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidator::IsEnabled());
 
-        UNREFERENCED_PARAMETER(packagingObject);
+        UNREFERENCED_PARAMETER(appxPackagingObject);
 
         throw hresult_not_implemented();
     }

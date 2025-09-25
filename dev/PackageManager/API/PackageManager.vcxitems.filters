@@ -56,9 +56,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AppxPackagingObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageCertificateEkuValidator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -116,9 +113,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AppxPackagingObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageCertificateEkuValidator.h">

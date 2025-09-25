@@ -8,7 +8,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         PackageCertificateEkuValidator() = default;
 
         PackageCertificateEkuValidator(hstring const& expectedCertificateEku);
-        bool IsPackageValid(winrt::Microsoft::Windows::Management::Deployment::AppxPackagingObject const& packagingObject);
+        bool IsPackageValid(winrt::Windows::Foundation::IInspectable const& appxPackagingObject);
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
