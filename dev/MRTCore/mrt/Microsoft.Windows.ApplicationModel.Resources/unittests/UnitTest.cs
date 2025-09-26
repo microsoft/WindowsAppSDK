@@ -184,7 +184,11 @@ namespace ManagedTest
         [TestMethod]
         public void PrimaryLanguageOverrideSetsWindowsValueTest()
         {
-            CommonTestCode.ApplicationLanguagesTest.PrimaryLanguageOverrideSetsWindowsValueTest();
+            ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+            Verify.AreEqual(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride, "fr-FR");
+
+            ApplicationLanguages.PrimaryLanguageOverride = null;
+            Verify.AreEqual(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride, ""); // C# projection of null HSTRING is empty string
         }
     }
 }
