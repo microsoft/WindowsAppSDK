@@ -402,21 +402,23 @@ These methods require administrative privileges.
 
 ## 3.13. PackageValidator
 
-This API allows callers to verify that packages being processed by PackageDeploymentManager.AddPackageAsync
-and PackageDeploymentManager.StagePackageAsync match what are expected from their URI.
+This API allows callers to verify that packages being processed by Add*, Ensure*, and Stage* APIs of
+PackageDeploymentManager match what are expected from their URI.
 
 When adding or staging a package from an external source such as HTTP URI or uncontrolled file location,
-an attacker can potentially intercept and tamper with the package data being read, causing a malicious
-package to be installed instead of the expected one.  Verifying the identity and signature of target
-packages helps ensure that such tampering has not happened.
+a malicious actor might perform a man-in-the-middle attack to intercept and tamper with the package data
+being read, causing a malicious package to be installed instead of the expected one.  The package might
+also be tampered at the source through supply-chain attacks.  Verifying the identity and signature of
+target packages helps ensure that such attacks have not happened.
 
 The following PackageValidators are provided and available for use directly:
 * PackageFamilyNameValidator: Validates that the package has the expected package family name.
 * PackageMinimumVersionValidator: Validates that the package has at least the expected minimum version number.
 * PackageCertificateEkuValidator: Validates that the certificate used to sign the package contains the expected Extended Key Usage (EKU) value.
 
-Custom validators can also be implemented using the IPackageValidator interface, which allows verifying
-any part of the package’s footprint data (manifest, block map, and digital signature) in any desired manner.
+Custom validators can be implemented using the `IPackageValidator` interface. This can verify any part
+of packages' [footprint data](https://learn.microsoft.com/windows/win32/api/appxpackaging/ne-appxpackaging-appx_bundle_footprint_file_type)
+(manifest, block map, and digital signature).
 
 # 4. Examples
 
@@ -787,22 +789,39 @@ PackageVersion ToVersion(uint major, uint minor, uint build, uint revision) =>
 
 This example shows how to use built-in PackageValidators to verify package family name, minimum version, and certificate EKU.
 
-```c++/winrt
-auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-const auto packageUri{ L"https://example.com/package.msix"};
-const winrt::hstring package{ packageUri.c_str() };
+```c#
+using Microsoft.Windows.Management.Deployment;
 
-IVector<IPackageValidator> validators{ winrt::single_threaded_vector<IPackageValidator>() };
-validators.Append(winrt::Microsoft::Windows::Management::Deployment::PackageFamilyNameValidator(L"ExpectedFamilyName_abcdefg123"));
-validators.Append(winrt::Microsoft::Windows::Management::Deployment::PackageMinimumVersionValidator(2, 0, 0, 0));
-validators.Append(winrt::Microsoft::Windows::Management::Deployment::PackageCertificateEkuValidator(L"1.3.6.1.4.1.311.2.1.11");
+var pdm = PackageDeploymentManager().GetDefault();
+var packageUri = "https://contoso.com/package.msix";
 
-winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions addOptions;
-addOptions.PackageValidators.Insert(packageUri, validators);
+var validators = new IList<PackageValidator>();
+validators.Add(new PackageFamilyNameValidator("ExpectedFamilyName_1234567890abc"));
+validators.Add(new PackageMinimumVersionValidator(new Windows.ApplicationModel.PackageVersion(2, 0, 0, 0)));
+validators.Add(new PackageCertificateEkuValidator("1.3.6.1.4.1.311.2.1.11"));
 
-auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(package, addOptions) };
-auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-// deploymentOperation will fail with APPX_E_DIGEST_MISMATCH if any packageValidator rejects the package
+var options = new AddPackageOptions();
+options.Validators.Add(packageUri, validators);
+
+var deploymentResult = await pdm.AddPackageAsync(packageUri, options);
+if (deploymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+{
+    Console.WriteLine("Success");
+}
+else // deploymentResult.Status == PackageDeploymentStatus.CompletedFailure
+{
+    var error = deploymentResult.Error.HResult;
+    if (error = 0x80080219 /*APPX_E_DIGEST_MISMATCH*/)
+    {
+        Console.WriteLine("The package retrieved from the specified URI isn't expected according to PackageValidators");
+    }
+    else
+    {
+        var extendedError = deploymentResult.ExtendedError.HResult;
+        var message = deploymentResult.MessageText;
+        Console.WriteLine($"An error occurred while adding the package. Error 0x{error:X08} ExtendedError 0x{extendedError:X08} {message}");
+    }
+}
 ```
 
 ### 4.9.2. Using custom PackageValidators
@@ -815,7 +834,7 @@ namespace MyCustom
 {
     runtimeclass MyPackageValidator : [default] Microsoft.Windows.Management.Deployment.IPackageValidator
     {
-        Boolean IsPackageValid(AppxPackagingObject packagingObject);
+        Boolean IsPackageValid(IInspectable package);
     }
 }
 ```
@@ -831,10 +850,10 @@ namespace winrt::MyCustom::implementation
     {
         MyCustomPackageValidator();
 
-        bool IsPackageValid(winrt::Microsoft::Windows::Management::Deployment::AppxPackagingObject object)
+        bool IsPackageValid(winrt::Microsoft::Foundation::IInspectable package)
         {
             winrt::com_ptr<IAppxPackageReader> packageReader;
-            if (FAILED(object.as<IAppxPackageReader>(packageReader.put())))
+            if (FAILED(package.as<IAppxPackageReader>(packageReader.put())))
             {
                 // object is not an msix package as expected (i.e. it is a bundle), reject it
                 return false;
@@ -861,8 +880,7 @@ namespace winrt::MyCustom::implementation
 // At the call site to PackageDeploymentManager, using the custom package validator
 auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-const auto packageUri{ L"https://example.com/package.msix"};
-const winrt::hstring package{ packageUri.c_str() };
+const winrt::hstring packageUri{ L"https://contoso.com/package.msix" };
 
 IVector<IPackageValidator> validators{ winrt::single_threaded_vector<IPackageValidator>() };
 validators.Append(winrt::MyCustom::MyPackageValidator());
@@ -870,9 +888,24 @@ validators.Append(winrt::MyCustom::MyPackageValidator());
 winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
 options.PackageValidators.Insert(packageUri, validators);
 
-auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(package, options) };
-auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-// deploymentOperation will fail with APPX_E_DIGEST_MISMATCH if any packageValidator rejects the package
+auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(packageUri, options) };
+auto deploymentResult{ deploymentOperation().get() };
+if (deploymentResult.Status() == winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess)
+{
+    printf(L"Success!");
+}
+else // deploymentResult.Status() == winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure)
+{
+    if (deploymentResult.Error() == APPX_E_DIGEST_MISMATCH)
+    {
+        printf("The package retrieved from the specified URI isn't expected according to PackageValidators");
+    }
+    else
+    {
+        printf("An error occurred while adding the package. Error 0x%08X  ExtendedError 0x%08X  %ls",
+            deploymentResult.Error(), deploymentResult.ExtendedError(), deploymentResult.ErrorMessage().c_str());
+    }
+}
 ```
 
 # 5. Remarks
@@ -972,38 +1005,30 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     [contract(PackageDeploymentContract, 3)]
-    [default_interface]
-    runtimeclass AppxPackagingObject{
-        // This is an interop class for COM types defined in AppxPackaging.idl.
-        // The WinRT side has no methods or properties, but the object supports QueryInterface into the COM interfaces
-        // IAppxPackageReader or IAppxBundleReader, whichever is relevant for the object being read.
-    }
-
-    [contract(PackageDeploymentContract, 3)]
     interface IPackageValidator
     {
-        Boolean IsPackageValid(AppxPackagingObject packagingObject);
+        // This IInspectable will support QueryInterface into either IAppxPackageReader or
+        // IAppxBundleReader (these are COM interfaces from AppxPackaging.h).
+        // One of these interfaces will be available depending on the type of file being validated.
+        Boolean IsPackageValid(IInspectable package);
     }
 
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageFamilyNameValidator : [default] IPackageValidator
     {
         PackageFamilyNameValidator(String expectedPackageFamilyName);
-        Boolean IsPackageValid(AppxPackagingObject packagingObject);
     }
 
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageMinimumVersionValidator : [default] IPackageValidator
     {
-        PackageMinimumVersionValidator(UINT major, UINT minor, UINT build, UINT revision);
-        Boolean IsPackageValid(AppxPackagingObject packagingObject);
+        PackageMinimumVersionValidator(Windows.ApplicationModel.PackageVersion minimumVersion);
     }
 
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageCertificateEkuValidator : [default] IPackageValidator
     {
         PackageCertificateEkuValidator(String expectedCertificateEku);
-        Boolean IsPackageValid(AppxPackagingObject packagingObject);
     }
 
     /// The progress status of the deployment request.
@@ -1115,7 +1140,7 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean LimitToExistingPackages;
 
         Boolean IsPackageValidatorsSupported{ get; };
-        IMap<Windows.Foundation.Uri, IVector<IPackageValidator>> PackageValidators{ get; };
+        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -1142,7 +1167,7 @@ namespace Microsoft.Windows.Management.Deployment
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
 
         Boolean IsPackageValidatorsSupported{ get; };
-        IMap<Windows.Foundation.Uri, IVector<IPackageValidator>> PackageValidators{ get; };
+        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
