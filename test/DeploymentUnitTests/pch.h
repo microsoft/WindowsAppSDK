@@ -14,6 +14,7 @@
 #include <wil/result.h>
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
+#include <wil/stl.h>
 #include <wil/resource.h>
 
 #include <WexTestClass.h>
