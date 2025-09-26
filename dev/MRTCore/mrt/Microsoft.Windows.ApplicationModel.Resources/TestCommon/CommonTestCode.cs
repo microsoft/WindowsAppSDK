@@ -603,5 +603,14 @@ namespace CommonTestCode
 
             Verify.AreEqual(ApplicationLanguages.PrimaryLanguageOverride, ""); // C# projection of null HSTRING is empty string
         }
+
+        public static void PrimaryLanguageOverrideSetsWindowsValueTest()
+        {
+            ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+            Verify.AreEqual(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride, "fr-FR");
+
+            ApplicationLanguages.PrimaryLanguageOverride = null;
+            Verify.AreEqual(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride, ""); // C# projection of null HSTRING is empty string
+        }
     }
 }

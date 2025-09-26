@@ -180,5 +180,11 @@ namespace ManagedTest
         {
             CommonTestCode.ApplicationLanguagesTest.PrimaryLanguageOverrideAcceptsNullStringTest();
         }
+
+        [TestMethod]
+        public void PrimaryLanguageOverrideSetsWindowsValueTest()
+        {
+            CommonTestCode.ApplicationLanguagesTest.PrimaryLanguageOverrideSetsWindowsValueTest();
+        }
     }
 }
