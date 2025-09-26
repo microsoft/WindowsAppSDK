@@ -2,7 +2,7 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-  
+
 stages:
 - stage: StaticValidationTest
   dependsOn: Pack
@@ -39,7 +39,7 @@ stages:
     - task: CopyFiles@2
       inputs:
         SourceFolder: '$(System.ArtifactsDirectory)'
-        Contents: | 
+        Contents: |
           **/*.nupkg
         targetFolder: $(Build.SourcesDirectory)\localpackages
 
@@ -65,9 +65,9 @@ stages:
               Write-Host "##vso[task.complete result=Failed;]DONE"
           }
 
-    # The MMS2022 image used to come with Windows SDK 10.0.22000, but not any more.
+    # The MMS2022 image used to come with Windows SDK 10.0.26100, but not any more.
     - task: PowerShell@2
-      displayName: 'Add Windows SDK 10.0.22000'
+      displayName: 'Add 3Windows SDK 10.0.26100'
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
@@ -75,7 +75,7 @@ stages:
         filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
         # TODO: the SdkVersion parameter does not yet support arbitrary versions.
         arguments: >
-          -SdkVersion "10.0.22000"
+          -SdkVersion "10.0.26100"
 
     - task: VSBuild@1
       displayName: 'Restore PackageInspectionTest.sln'
@@ -98,7 +98,7 @@ stages:
         ignoreLASTEXITCODE: true
         script: |
           $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
-          $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\10.0.22000.0\x86"
+          $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\10.0.26100.0\x86"
 
           $path = "$(Build.SourcesDirectory)\Packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage\$(FoundationVersion)"
           $buildtype = '$(channel)'

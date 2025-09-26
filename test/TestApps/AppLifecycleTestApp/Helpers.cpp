@@ -42,7 +42,7 @@ HRESULT BootstrapInitialize()
 
     constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
-    constexpr PCWSTR c_FrameworkPackageNamePrefix = L"Microsoft.WindowsAppRuntime.Framework";
+    constexpr PCWSTR c_FrameworkPackageNamePrefix = L"Microsoft.WindowsAppRuntime";
     constexpr PCWSTR c_MainPackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
     RETURN_IF_FAILED(mddTestInitialize(c_PackageNamePrefix, c_PackagePublisherId, c_FrameworkPackageNamePrefix, c_MainPackageNamePrefix));
 
