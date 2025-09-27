@@ -4,6 +4,7 @@
 #include "pch.h"
 
 #include <IsWindowsVersion.h>
+#include <TerminalVelocityFeatures-PackageManager.h>
 
 #include "M.W.M.D.AddPackageOptions.h"
 #include "Microsoft.Windows.Management.Deployment.AddPackageOptions.g.cpp"
@@ -171,5 +172,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void AddPackageOptions::LimitToExistingPackages(bool value)
     {
         m_limitToExistingPackages = value;
+    }
+
+    bool AddPackageOptions::IsPackageValidatorsSupported()
+    {
+        // TODO - check presence of AppxPackaging streaming reader feature
+        return true;
+    }
+    winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > AddPackageOptions::PackageValidators()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidator::IsEnabled());
+
+        if (!m_packageValidators)
+        {
+            m_packageValidators = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> >();
+        }
+        return m_packageValidators;
     }
 }
