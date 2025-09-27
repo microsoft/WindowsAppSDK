@@ -23,6 +23,7 @@ but with additional functionality, improved developer experience and performance
   - [3.10. PackageVolume Repair](#310-packagevolume-repair)
   - [3.11. Usability](#311-usability)
   - [3.12. Is\*Provisioned()](#312-312-isprovisioned)
+  - [3.13. PackageValidator](#313-packagevalidator)
 - [4. Examples](#4-examples)
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
@@ -73,6 +74,7 @@ Additional functionality includes:
 * IsPackageRegistrationPending -- Is there an update waiting to register?
 * PackageSets -- Batch operations
 * PackageRuntimeManager -- Batch operations for use at runtime via Dynamic Dependencies
+* PackageValidator -- Validate a package has expected identity, signature, etc. before adding/staging
 * Usability -- Quality-of-Life enhancements
 
 ## 3.1. API Structure
@@ -397,6 +399,26 @@ package management APIs in Windows (e.g. Windows.Management.Deployment.PackageMa
 Is\*Provisioned\*() methods determine if the target is provisioned.
 
 These methods require administrative privileges.
+
+## 3.13. PackageValidator
+
+This API allows callers to verify that packages being processed by Add*, Ensure*, and Stage* APIs of
+PackageDeploymentManager match what are expected from their URI.
+
+When adding or staging a package from an external source such as HTTP URI or uncontrolled file location,
+a malicious actor might perform a man-in-the-middle attack to intercept and tamper with the package data
+being read, causing a malicious package to be installed instead of the expected one.  The package might
+also be tampered at the source through supply-chain attacks.  Verifying the identity and signature of
+target packages helps ensure that such attacks have not happened.
+
+The following PackageValidators are provided and available for use directly:
+* PackageFamilyNameValidator: Validates that the package has the expected package family name.
+* PackageMinimumVersionValidator: Validates that the package has at least the expected minimum version number.
+* PackageCertificateEkuValidator: Validates that the certificate used to sign the package contains the expected Extended Key Usage (EKU) value.
+
+Custom validators can be implemented using the `IPackageValidator` interface. This can verify any part
+of packages' [footprint data](https://learn.microsoft.com/windows/win32/api/appxpackaging/ne-appxpackaging-appx_bundle_footprint_file_type)
+(manifest, block map, and digital signature).
 
 # 4. Examples
 
@@ -761,6 +783,131 @@ PackageVersion ToVersion(uint major, uint minor, uint build, uint revision) =>
     };
 ```
 
+## 4.9. PackageValidator
+
+### 4.9.1. Using built-in PackageValidators
+
+This example shows how to use built-in PackageValidators to verify package family name, minimum version, and certificate EKU.
+
+```c#
+using Microsoft.Windows.Management.Deployment;
+
+var pdm = PackageDeploymentManager().GetDefault();
+var packageUri = "https://contoso.com/package.msix";
+
+var validators = new IList<PackageValidator>();
+validators.Add(new PackageFamilyNameValidator("ExpectedFamilyName_1234567890abc"));
+validators.Add(new PackageMinimumVersionValidator(new Windows.ApplicationModel.PackageVersion(2, 0, 0, 0)));
+validators.Add(new PackageCertificateEkuValidator("1.3.6.1.4.1.311.2.1.11"));
+
+var options = new AddPackageOptions();
+options.Validators.Add(packageUri, validators);
+
+var deploymentResult = await pdm.AddPackageAsync(packageUri, options);
+if (deploymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+{
+    Console.WriteLine("Success");
+}
+else // deploymentResult.Status == PackageDeploymentStatus.CompletedFailure
+{
+    var error = deploymentResult.Error.HResult;
+    if (error = 0x80080219 /*APPX_E_DIGEST_MISMATCH*/)
+    {
+        Console.WriteLine("The package retrieved from the specified URI isn't expected according to PackageValidators");
+    }
+    else
+    {
+        var extendedError = deploymentResult.ExtendedError.HResult;
+        var message = deploymentResult.MessageText;
+        Console.WriteLine($"An error occurred while adding the package. Error 0x{error:X08} ExtendedError 0x{extendedError:X08} {message}");
+    }
+}
+```
+
+### 4.9.2. Using custom PackageValidators
+
+This example shows how to implement a custom PackageValidator using IPackageValidator interface, and use it to verify a package.
+
+```idl
+// MyCustom.idl
+namespace MyCustom
+{
+    runtimeclass MyPackageValidator : [default] Microsoft.Windows.Management.Deployment.IPackageValidator
+    {
+        Boolean IsPackageValid(IInspectable package);
+    }
+}
+```
+
+```c++/winrt
+// MyCustom.cpp
+// (Assume other standard cppwinrt-generated code related to MyCustom.MyPackageValidator are present.
+// This sample only shows the custom hand-written parts.)
+namespace winrt::MyCustom::implementation
+{
+    // Implements a custom package validator that checks that the package does not delcare any capabilities.
+    struct MyCustomPackageValidator : MyCustomPackageValidatorT<MyCustomPackageValidator>
+    {
+        MyCustomPackageValidator();
+
+        bool IsPackageValid(winrt::Microsoft::Foundation::IInspectable package)
+        {
+            winrt::com_ptr<IAppxPackageReader> packageReader;
+            if (FAILED(package.as<IAppxPackageReader>(packageReader.put())))
+            {
+                // object is not an msix package as expected (i.e. it is a bundle), reject it
+                return false;
+            }
+
+            winrt::com_ptr<IAppxManifestReader> manifestReader;
+            THROW_IF_FAILED(packageReader->GetManifest(manifestReader.put()));
+
+            winrt::com_ptr<IAppxManifestReader3> manifestReader3;
+            THROW_IF_FAILED(manifestReader->QueryInterface(manifestReader3.put()));
+
+            winrt::com_ptr<IAppxManifestCapabilitiesEnumerator> capabilitiesEnumerator;
+            THROW_IF_FAILED(manifestReader3->GetCapabilitiesByCapabilityClass(APPX_CAPABILITY_CLASS_ALL, capabilitiesEnumerator.put()));
+
+            BOOL hasCapabilities{};
+            THROW_IF_FAILED(capabilitiesEnumerator->GetHasCurrent(&hasCapabilities));
+            return !hasCapabilities;
+        }
+    };
+}
+```
+
+```c++/winrt
+// At the call site to PackageDeploymentManager, using the custom package validator
+auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+const winrt::hstring packageUri{ L"https://contoso.com/package.msix" };
+
+IVector<IPackageValidator> validators{ winrt::single_threaded_vector<IPackageValidator>() };
+validators.Append(winrt::MyCustom::MyPackageValidator());
+
+winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
+options.PackageValidators.Insert(packageUri, validators);
+
+auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(packageUri, options) };
+auto deploymentResult{ deploymentOperation().get() };
+if (deploymentResult.Status() == winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess)
+{
+    printf(L"Success!");
+}
+else // deploymentResult.Status() == winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure)
+{
+    if (deploymentResult.Error() == APPX_E_DIGEST_MISMATCH)
+    {
+        printf("The package retrieved from the specified URI isn't expected according to PackageValidators");
+    }
+    else
+    {
+        printf("An error occurred while adding the package. Error 0x%08X  ExtendedError 0x%08X  %ls",
+            deploymentResult.Error(), deploymentResult.ExtendedError(), deploymentResult.ErrorMessage().c_str());
+    }
+}
+```
+
 # 5. Remarks
 
 ## 5.1. Platform Support
@@ -856,6 +1003,33 @@ namespace Microsoft.Windows.Management.Deployment
         Ready                = 1,
         NewerAvailable       = 2,
     };
+
+    [contract(PackageDeploymentContract, 3)]
+    interface IPackageValidator
+    {
+        // This IInspectable will support QueryInterface into either IAppxPackageReader or
+        // IAppxBundleReader (these are COM interfaces from AppxPackaging.h).
+        // One of these interfaces will be available depending on the type of file being validated.
+        Boolean IsPackageValid(IInspectable package);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageFamilyNameValidator : [default] IPackageValidator
+    {
+        PackageFamilyNameValidator(String expectedPackageFamilyName);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageMinimumVersionValidator : [default] IPackageValidator
+    {
+        PackageMinimumVersionValidator(Windows.ApplicationModel.PackageVersion minimumVersion);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageCertificateEkuValidator : [default] IPackageValidator
+    {
+        PackageCertificateEkuValidator(String expectedCertificateEku);
+    }
 
     /// The progress status of the deployment request.
     /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state
@@ -964,6 +1138,9 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         Boolean LimitToExistingPackages;
+
+        Boolean IsPackageValidatorsSupported{ get; };
+        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -988,6 +1165,9 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+
+        Boolean IsPackageValidatorsSupported{ get; };
+        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
