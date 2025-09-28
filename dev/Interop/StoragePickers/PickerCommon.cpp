@@ -12,6 +12,8 @@
 #include <filesystem>
 #include <format>
 #include <utility>
+#include <string_view>
+#include <cwctype>
 
 
 namespace {
@@ -224,7 +226,7 @@ namespace PickerCommon {
         ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
-    void ValidateSuggestedFolder(winrt::hstring const& path)
+    void ValidateFolderPath(winrt::hstring const& path, std::wstring_view argumentName)
     {
         if (path.empty())
         {
@@ -234,16 +236,77 @@ namespace PickerCommon {
 
         ValidateStringNoEmbeddedNulls(path);
 
-        auto pathObj = std::filesystem::path(path.c_str());
+        std::wstring pathString{ path };
+        auto pathObj = std::filesystem::path(pathString);
         if (!pathObj.is_absolute())
         {
-            throw std::invalid_argument("SuggestedFolder");
+            throw std::invalid_argument(argumentName);
         }
 
-        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
-        if (!pidl)
+        constexpr std::wstring_view invalidCharacters{ L"<>\"|?*" };
+
+        bool hasExtendedPrefix = false;
+        size_t startIndex = 0;
+        if (pathString.size() >= 4 && pathString[0] == L'\\' && pathString[1] == L'\\' &&
+            (pathString[2] == L'?' || pathString[2] == L'.') && pathString[3] == L'\\')
         {
-            throw std::invalid_argument("SuggestedFolder");
+            hasExtendedPrefix = true;
+            startIndex = 4; // Skip the extended path prefix
+        }
+
+        auto isDriveSpecifier = [&](size_t index)
+        {
+            if (!hasExtendedPrefix)
+            {
+                return index == 1 && std::iswalpha(pathString[0]);
+            }
+
+            return (index == 5 && std::iswalpha(pathString[4]));
+        };
+
+        for (size_t i = startIndex; i < pathString.size(); ++i)
+        {
+            wchar_t currentChar = pathString[i];
+
+            if (currentChar == L':')
+            {
+                if (isDriveSpecifier(i))
+                {
+                    continue;
+                }
+            }
+
+            if (invalidCharacters.find(currentChar) != std::wstring_view::npos)
+            {
+                throw std::invalid_argument(argumentName);
+            }
+        }
+
+        constexpr size_t MaxComponentLength = 255;
+        bool isFirstComponent = true;
+        for (auto const& component : pathObj)
+        {
+            auto nativeComponent = component.native();
+            if (nativeComponent.empty())
+            {
+                continue;
+            }
+
+            if (isFirstComponent)
+            {
+                isFirstComponent = false;
+                continue; // Skip root name (e.g., "C:" or "\\server\share")
+            }
+
+            if (nativeComponent == L"\\" || nativeComponent == L"/")
+            {
+                continue; // Skip root directory separators
+            }
+
+            if (nativeComponent.size() > MaxComponentLength)
+            {
+                throw std::invalid_argument(argumentName);
+            }
         }
     }
 
@@ -276,6 +339,28 @@ namespace PickerCommon {
             }
         }
         return result;
+    }
+
+    void PickerParameters::CaptureFilterSpecData(
+        winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
+        winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView)
+    {
+        // The FileTypeChoices takes precedence over FileTypeFilter if both are provided.
+        if (fileTypeChoicesView && fileTypeChoicesView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeChoicesView);
+            return;
+        }
+
+        if (fileTypeFilterView && fileTypeFilterView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeFilterView);
+            return;
+        }
+
+        // Even if no filters provided, we still need to set filter to All Files *.*
+        auto emptyFilters = winrt::single_threaded_vector<winrt::hstring>();
+        CaptureFilterSpec(emptyFilters.GetView());
     }
 
     /// <summary>
@@ -338,23 +423,31 @@ namespace PickerCommon {
     /// <param name="filters">winrt style filters</param>
     void PickerParameters::CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> filters)
     {
-        size_t resultSize = filters.Size();
+        size_t resultSize = filters.Size() + 1;
+
         FileTypeFilterData.clear();
-        FileTypeFilterData.reserve(filters.Size() * static_cast<size_t>(2));
-
-        for (const auto& filter : filters)
+        FileTypeFilterData.reserve(resultSize * static_cast<size_t>(2));
+        if (resultSize == 1)
         {
-            FileTypeFilterData.push_back(filter.Key());
-            auto extensionList = JoinExtensions(filter.Value().GetView());
-            FileTypeFilterData.push_back(extensionList);
-        }
-
-        if (filters.Size() == 0)
-        {
-            // when filters not defined, set filter to All Files *.*
             FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(L"*");
-            resultSize = 1;
+        }
+        else
+        {
+            std::vector<winrt::hstring> unionedExtensionVector{};
+            unionedExtensionVector.reserve(filters.Size());
+            
+            for (const auto& filter : filters)
+            {
+                FileTypeFilterData.push_back(filter.Key());
+                auto singleCategoryExtensions = JoinExtensions(filter.Value().GetView());
+                FileTypeFilterData.push_back(singleCategoryExtensions);
+                unionedExtensionVector.push_back(singleCategoryExtensions);
+            }
+
+            auto unionedExtensions = JoinExtensions(unionedExtensionVector.GetView());
+            FileTypeFilterData.push_back(AllFilesText);
+            FileTypeFilterData.push_back(unionedExtensions);
         }
 
         FileTypeFilterPara.clear();
@@ -372,10 +465,31 @@ namespace PickerCommon {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
         }
 
-        auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
-        if (defaultFolder != nullptr)
+        winrt::com_ptr<IShellItem> defaultFolder{};
+
+        // The SuggestedStartFolder takes precedence over SuggestedStartLocation if both are provided.
+        if (!IsHStringNullOrEmpty(SuggestedStartFolder))
+        {
+            defaultFolder = TryParseFolderItem(SuggestedStartFolder);
+        }
+
+        if (!defaultFolder)
+        {
+            defaultFolder = GetKnownFolderFromId(SuggestedStartLocation);
+        }
+
+        if (defaultFolder)
         {
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
+        }
+
+        // SuggestedFolder takes precedence over SuggestedStartFolder/SuggestedStartLocation if both are provided.
+        if (!IsHStringNullOrEmpty(SuggestedFolder))
+        {
+            if (auto folderItem = TryParseFolderItem(SuggestedFolder))
+            {
+                check_hresult(dialog->SetFolder(folderItem.get()));
+            }
         }
 
         if (FileTypeFilterPara.size() > 0)
@@ -395,13 +509,5 @@ namespace PickerCommon {
             check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
         }
 
-        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedFolder))
-        {
-            winrt::com_ptr<IShellItem> folderItem = TryParseFolderItem(SuggestedFolder);
-            if (folderItem)
-            {
-                check_hresult(dialog->SetFolder(folderItem.get()));
-            }
-        }
     }
 }

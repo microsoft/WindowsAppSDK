@@ -49,17 +49,41 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
-    winrt::Windows::Foundation::Collections::IVector<hstring> FileOpenPicker::FileTypeFilter()
+    winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> FileOpenPicker::FileTypeChoices()
+    {
+        return m_fileTypeChoices;
+    }
+    winrt::Windows::Foundation::Collections::IVector<winrt::hstring> FileOpenPicker::FileTypeFilter()
     {
         return m_fileTypeFilter;
+    }
+    winrt::hstring FileOpenPicker::SuggestedFolder()
+    {
+        return m_suggestedFolder;
+    }
+    void FileOpenPicker::SuggestedFolder(winrt::hstring const& value)
+    {
+        PickerCommon::ValidateFolderPath(value, "SuggestedFolder");
+        m_suggestedFolder = value;
+    }
+    winrt::hstring FileOpenPicker::SuggestedStartFolder()
+    {
+        return m_suggestedStartFolder;
+    }
+    void FileOpenPicker::SuggestedStartFolder(winrt::hstring const& value)
+    {
+        PickerCommon::ValidateFolderPath(value, "SuggestedStartFolder");
+        m_suggestedStartFolder = value;
     }
 
     void FileOpenPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.PickerLocationId = m_suggestedStartLocation;
-        parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
+        parameters.SuggestedFolder = m_suggestedFolder;
+        parameters.SuggestedStartLocation = m_suggestedStartLocation;
+        parameters.SuggestedStartFolder = m_suggestedStartFolder;
+        parameters.CaptureFilterSpecData(m_fileTypeFilter.GetView(), m_fileTypeChoices.GetView());
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()

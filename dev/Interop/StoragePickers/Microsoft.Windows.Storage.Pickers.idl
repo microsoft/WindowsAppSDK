@@ -41,7 +41,10 @@ namespace Microsoft.Windows.Storage.Pickers
         Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
+        Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
         Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
+        String SuggestedFolder;
+        String SuggestedStartFolder;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
         [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult> > PickMultipleFilesAsync();
@@ -58,6 +61,7 @@ namespace Microsoft.Windows.Storage.Pickers
         String DefaultFileExtension;
         String SuggestedFileName;
         String SuggestedFolder;
+        String SuggestedStartFolder;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }
@@ -76,6 +80,8 @@ namespace Microsoft.Windows.Storage.Pickers
         Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
+        String SuggestedFolder;
+        String SuggestedStartFolder;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
     }

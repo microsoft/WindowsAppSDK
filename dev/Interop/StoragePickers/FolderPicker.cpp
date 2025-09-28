@@ -47,14 +47,33 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
+    hstring FolderPicker::SuggestedFolder()
+    {
+        return m_suggestedFolder;
+    }
+    void FolderPicker::SuggestedFolder(hstring const& value)
+    {
+        PickerCommon::ValidateFolderPath(value, "SuggestedFolder");
+        m_suggestedFolder = value;
+    }
+    hstring FolderPicker::SuggestedStartFolder()
+    {
+        return m_suggestedStartFolder;
+    }
+    void FolderPicker::SuggestedStartFolder(hstring const& value)
+    {
+        PickerCommon::ValidateFolderPath(value, "SuggestedStartFolder");
+        m_suggestedStartFolder = value;
+    }
 
     void FolderPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.PickerLocationId = m_suggestedStartLocation;
+        parameters.SuggestedFolder = m_suggestedFolder;
+        parameters.SuggestedStartLocation = m_suggestedStartLocation;
+        parameters.SuggestedStartFolder = m_suggestedStartFolder;
     }
-
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
     {
