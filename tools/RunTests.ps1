@@ -37,18 +37,14 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$TestDef,
 
-    [Parameter]
     [string]$Output = "BuildOutput",
 
-    [Parameter]
     [ValidateSet("x86", "x64", "arm64", IgnoreCase=$true)]
     [string]$Platform = "$($env:PROCESSOR_ARCHITECTURE)",
 
-    [Parameter]
     [ValidateSet("Release", "Debug", IgnoreCase=$true)]
     [string]$Configuration = "Release",
 
-    [Parameter]
     [switch]$RunDisabled = $false
 )
 
@@ -180,6 +176,11 @@ function Run-Tests
 Write-Host "RunTests.ps1 - Running tests for testdef: $TestDef"
 Write-Host "Configuration: $Configuration, Platform: $Platform"
 Write-Host ""
+
+if ($Platform -eq "AMD64")
+{
+    $Platform = "x64"
+}
 
 $StartTime = Get-Date
 
