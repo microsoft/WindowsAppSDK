@@ -434,15 +434,14 @@ namespace PickerCommon {
         }
         else
         {
-            std::vector<winrt::hstring> unionedExtensionVector{};
-            unionedExtensionVector.reserve(filters.Size());
+            auto unionedExtensionVector = winrt::single_threaded_vector<winrt::hstring>();
             
             for (const auto& filter : filters)
             {
                 FileTypeFilterData.push_back(filter.Key());
                 auto singleCategoryExtensions = JoinExtensions(filter.Value().GetView());
                 FileTypeFilterData.push_back(singleCategoryExtensions);
-                unionedExtensionVector.push_back(singleCategoryExtensions);
+                unionedExtensionVector.Append(singleCategoryExtensions);
             }
 
             auto unionedExtensions = JoinExtensions(unionedExtensionVector.GetView());
