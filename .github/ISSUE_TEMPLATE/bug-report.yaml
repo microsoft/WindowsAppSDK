@@ -52,8 +52,8 @@ body:
       label: Deployment model
       description: Please specify the deployment model you're using.
       options:
-        - label: "Self-contained app (includes the .NET runtime)"
-        - label: "Framework-dependent app (requires .NET runtime to be installed separately)"
+        - label: "Self-contained app (`<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>` is in the project file)"
+        - label: "Framework-dependent app (`<WindowsAppSDKSelfContained>` is not in the project file or it is set to false)"
   - type: dropdown
     attributes:
       label: Windows version
