@@ -49,6 +49,13 @@ body:
         - "Unpackaged"
   - type: dropdown
     attributes:
+      label: Deployment model
+      description: Please specify the deployment model you're using.
+      options:
+        - label: "Self-contained app (includes the .NET runtime)"
+        - label: "Framework-dependent app (requires .NET runtime to be installed separately)"
+  - type: dropdown
+    attributes:
       label: Windows version
       description: Which Windows versions did you see the issue on?
       multiple: true
