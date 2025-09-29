@@ -40,13 +40,13 @@ param(
     [Parameter]
     [string]$Output = "BuildOutput",
 
-    [Parameter(Mandatory=$false)]
+    [Parameter]
     [string]$Platform = "x64",
 
-    [Parameter(Mandatory=$false)]
+    [Parameter]
     [string]$Configuration = "Release",
 
-    [Parameter(Mandatory=$false)]
+    [Parameter]
     [switch]$RunDisabled = $false
 )
 
