@@ -62,8 +62,6 @@ function Get-Tests
         $count = 0
         foreach ($testConfig in $testJson.Tests)
         {
-            $testConfig | Write-Host
-
             # Apply filters
             # If a filter is set and the test property does not contain the filter regex, skip this test
             if ($FilterTestDef -and ($testdef.BaseName -notmatch $FilterTestDef))
@@ -120,8 +118,6 @@ function Get-Tests
 
     $tests
 }
-
-
 
 function List-Tests
 {
