@@ -1,14 +1,15 @@
 <#
 .SYNOPSIS
-    Run tests from a specific .testdef file
+    Build and run tests from a specific .testdef file
 
 .DESCRIPTION
-    The RunTests script takes a testdef filename (without extension) and runs the tests defined in that
-    specific .testdef file. This is useful for development when you want to run tests for a specific
-    component rather than all tests.
+    The BuildAndRunTests script takes a testdef filename (without extension) and build then runs
+    the tests defined in that specific .testdef file. This is useful for development when you want
+    to run tests for a specific component rather than all tests.
 
-    The script searches for the specified .testdef file in the BuildOutput directory structure and
-    executes the tests according to the testdef configuration.
+    The script searches for the specified .testdef file in the test directory structure and
+    builds the associated test project. It then finds the .testdef file in the output directory,
+    lists the tests defined in the .testdef file and executes the tests according to the testdef configuration.
 
 .PARAMETER TestDef
     The name of the .testdef file to run (without the .testdef extension)
@@ -217,6 +218,7 @@ $sourceTestDefFile = Find-TestDefFile $TestDef $testsSourceFolder
 
 Build-Tests $sourceTestDefFile $msbuildPath
 
+Write-Host ""
 Write-Host "RunTests.ps1 - Running tests for testdef: $TestDef"
 Write-Host "Configuration: $Configuration, Platform: $Platform"
 Write-Host ""
