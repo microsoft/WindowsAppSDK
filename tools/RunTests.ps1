@@ -73,9 +73,14 @@ function Find-TestDefFile
 function Build-Tests
 {
     param(
-        $testDefFile,
-        $msbuildPath
+        $testDefFile
     )
+
+    $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
+    Write-Host "VCToolsInstallDir: $VCToolsInstallDir"
+
+    $msbuildPath = Join-Path $VCToolsInstallDir "MSBuild\Current\Bin\msbuild.exe"
+    Write-Host "MSBuild Path: $msbuildPath"
 
     $testFolder = Split-Path -parent $testDefFile
     Write-Host "Building tests in folder: $testFolder"
@@ -89,7 +94,7 @@ function Build-Tests
 
     Write-Host "Found project file: $projFile"
 
-    & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform
+    # & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform
 }
 
 function Get-Tests
@@ -205,18 +210,13 @@ $scriptParent = Split-Path -parent $PSScriptRoot
 
 Write-Host "Building tests from testdef: $TestDef"
 
-$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
-Write-Host "VCToolsInstallDir: $VCToolsInstallDir"
-
-$msbuildPath = Join-Path $VCToolsInstallDir "MSBuild\Current\Bin\msbuild.exe"
-Write-Host "MSBuild Path: $msbuildPath"
 
 $testsSourceFolder = Join-Path $scriptParent "test"
 Write-Host "Tests source folder: $testsSourceFolder"
 
 $sourceTestDefFile = Find-TestDefFile $TestDef $testsSourceFolder
 
-Build-Tests $sourceTestDefFile $msbuildPath
+Build-Tests $sourceTestDefFile
 
 Write-Host ""
 Write-Host "RunTests.ps1 - Running tests for testdef: $TestDef"
