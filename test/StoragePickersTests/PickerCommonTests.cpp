@@ -208,6 +208,34 @@ namespace Test::PickerCommonTests
                 L"*");
         }
 
+        TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc", L".docx" }));
+            picker.FileTypeChoices().Insert(
+                L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg", L".jpeg", L".bmp" }));
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*.txt;*.doc;*.docx");
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
+                L"*.png;*.jpg;*.jpeg;*.bmp");
+        }
+
         TEST_METHOD(VerifyFilters_FileSavePickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
         {
             // Arrange.
@@ -226,7 +254,7 @@ namespace Test::PickerCommonTests
                 picker.FileTypeChoices().GetView());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
 
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
@@ -234,9 +262,6 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
                 L"*.png;*.jpg;*.jpeg;*.bmp");
-            VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
-                L"*.txt;*.doc;*.docx;*.png;*.jpg;*.jpeg;*.bmp");
         }
 
         TEST_METHOD(VerifyFilters_FileSavePickerWhenNoFileTypeChoicesDefinedExpectAsteriskSpec)
@@ -254,16 +279,13 @@ namespace Test::PickerCommonTests
                 picker.FileTypeChoices().GetView());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
 
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
-                L"*");
-            VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[1].pszName),
+                std::wstring(parameters.FileTypeFilterPara[0].pszName),
                 L"All Files");
         }
 

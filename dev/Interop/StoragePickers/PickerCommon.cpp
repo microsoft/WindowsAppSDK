@@ -415,6 +415,8 @@ namespace PickerCommon {
         {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
+
+        FocusLastFilter = true;
     }
 
     /// <summary>
@@ -423,30 +425,23 @@ namespace PickerCommon {
     /// <param name="filters">winrt style filters</param>
     void PickerParameters::CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> filters)
     {
-        size_t resultSize = filters.Size() + 1;
-
+        size_t resultSize = filters.Size();
         FileTypeFilterData.clear();
-        FileTypeFilterData.reserve(resultSize * static_cast<size_t>(2));
-        if (resultSize == 1)
+        FileTypeFilterData.reserve(filters.Size() * static_cast<size_t>(2));
+
+        for (const auto& filter : filters)
         {
+            FileTypeFilterData.push_back(filter.Key());
+            auto extensionList = JoinExtensions(filter.Value().GetView());
+            FileTypeFilterData.push_back(extensionList);
+        }
+
+        if (filters.Size() == 0)
+        {
+            // when filters not defined, set filter to All Files *.*
             FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(L"*");
-        }
-        else
-        {
-            auto unionedExtensionVector = winrt::single_threaded_vector<winrt::hstring>();
-            
-            for (const auto& filter : filters)
-            {
-                FileTypeFilterData.push_back(filter.Key());
-                auto singleCategoryExtensions = JoinExtensions(filter.Value().GetView());
-                FileTypeFilterData.push_back(singleCategoryExtensions);
-                unionedExtensionVector.Append(singleCategoryExtensions);
-            }
-
-            auto unionedExtensions = JoinExtensions(unionedExtensionVector.GetView());
-            FileTypeFilterData.push_back(AllFilesText);
-            FileTypeFilterData.push_back(unionedExtensions);
+            resultSize = 1;
         }
 
         FileTypeFilterPara.clear();
@@ -494,6 +489,11 @@ namespace PickerCommon {
         if (FileTypeFilterPara.size() > 0)
         {
             check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+
+            if (FocusLastFilter)
+            {
+                check_hresult(dialog->SetFileTypeIndex(FileTypeFilterPara.size()));
+            }
         }
     }
 
