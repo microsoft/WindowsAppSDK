@@ -1,9 +1,11 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+#include <TerminalVelocityFeatures-StoragePickers2.h>
+
 namespace Microsoft.Windows.Storage.Pickers
 {
-    [contractversion(1.8)]
+    [contractversion(2.0)]
     apicontract StoragePickersContract {};
     
     [contract(StoragePickersContract, 1.8)]
@@ -43,7 +45,13 @@ namespace Microsoft.Windows.Storage.Pickers
         String CommitButtonText;
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
         Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
         String SuggestedFolder;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
         String SuggestedStartFolder;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
@@ -61,6 +69,9 @@ namespace Microsoft.Windows.Storage.Pickers
         String DefaultFileExtension;
         String SuggestedFileName;
         String SuggestedFolder;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
         String SuggestedStartFolder;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
@@ -81,6 +92,9 @@ namespace Microsoft.Windows.Storage.Pickers
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
         String SuggestedFolder;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
         String SuggestedStartFolder;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();

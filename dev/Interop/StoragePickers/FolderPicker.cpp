@@ -49,19 +49,23 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     hstring FolderPicker::SuggestedFolder()
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_suggestedFolder;
     }
     void FolderPicker::SuggestedFolder(hstring const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateFolderPath(value, "SuggestedFolder");
         m_suggestedFolder = value;
     }
     hstring FolderPicker::SuggestedStartFolder()
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_suggestedStartFolder;
     }
     void FolderPicker::SuggestedStartFolder(hstring const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateFolderPath(value, "SuggestedStartFolder");
         m_suggestedStartFolder = value;
     }

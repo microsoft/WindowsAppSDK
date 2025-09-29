@@ -43,7 +43,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::hstring m_commitButtonText{};
 
         winrt::Windows::Foundation::Collections::IVector<winrt::hstring> m_fileTypeFilter{ make<FileTypeFilterVector>() };
-        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };
+        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>(false) };
 
         winrt::hstring m_suggestedFolder{};
         winrt::hstring m_suggestedStartFolder{};

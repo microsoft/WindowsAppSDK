@@ -7,7 +7,7 @@
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
-    FileTypeFilterVector::FileTypeFilterVector()
+    FileTypeFilterVector::FileTypeFilterVector(bool forSavePicker)
     {
     }
 
