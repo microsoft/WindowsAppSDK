@@ -177,7 +177,7 @@ jobs:
     inputs:
       filePath: '$(Build.SourcesDirectory)\$(SelfRepoName)\test\ModifySampleAppsReferences.ps1'
       arguments: >
-        -SampleRepoRoot "$(Build.SourcesDirectory)\$(SamplesRepoName)"
+        -SampleRepoRoot "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples"
         -FoundationVersion "$(FoundationVersion)"
         -FoundationPackagesFolder "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\localpackages"
         -WASDKNugetDependencies $(wasdkDependencies)
