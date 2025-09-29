@@ -14,7 +14,7 @@
     The name of the .testdef file to run (without the .testdef extension)
     Example: "Deployment" to run "Deployment.testdef"
 
-.PARAMETER OutputFolder
+.PARAMETER Output
     Set the base folder for the script to look for testdefs. Default: BuildOutput
 
 .PARAMETER Platform
@@ -37,8 +37,8 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$TestDef,
 
-    [Parameter(Mandatory=$false)]
-    [string]$OutputFolder = "BuildOutput",
+    [Parameter]
+    [string]$Output = "BuildOutput",
 
     [Parameter(Mandatory=$false)]
     [string]$Platform = "x64",
@@ -56,8 +56,8 @@ function Find-TestDefFile
 
     $configPlat = Join-Path $Configuration $Platform
     $scriptParent = Split-Path -parent $PSScriptRoot
-    $OutputFolder = Join-Path $scriptParent $OutputFolder
-    $outputFolderPath = Join-Path $OutputFolder $configPlat
+    $Output = Join-Path $scriptParent $Output
+    $outputFolderPath = Join-Path $Output $configPlat
     $testDefFileName = "$testDefName.testdef"
     $testDefFile = Get-ChildItem -Recurse -Filter $testDefFileName $outputFolderPath -ErrorAction SilentlyContinue | Select-Object -First 1
 
