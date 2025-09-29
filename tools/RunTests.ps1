@@ -41,7 +41,7 @@ param(
     [string]$Output = "BuildOutput",
 
     [Parameter]
-    [string]$Platform = "x64",
+    [string]$Platform = "$($env:PROCESSOR_ARCHITECTURE)",
 
     [Parameter]
     [string]$Configuration = "Release",
