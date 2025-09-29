@@ -134,7 +134,9 @@ if ($Test -eq $true)
     & $PSScriptRoot\tools\DoTest.ps1 -Platform $Platform -Configuration $Configuration -OutputFolder $OutputFolder `
         -EnableETWLogging -AppendWttLogging -ScreenCaptureOnError -LogFile $teLogFile `
         -TestMode "EtwLogger" -WprProfile "WDGDEPAdex" -EtwLoggerSavePoint "TestFailure" `
-        -EtwLoggerRecordingScope "Execution" -WprProfilePath $wprProfilePath
+        -EtwLoggerRecordingScope "Execution" -WprProfilePath $wprProfilePath `
+        -List:$List -Test:$Test `
+        (if ($callingStage -eq 'TestSampleApps') { '-FilterFilename' } else { '-IgnoreFilename' }) "WindowsAppSDK.Test.SampleTests.dll"
 
     # copy test log to TestOutput folder
     if (Test-Path -Path $teLogFile) {
