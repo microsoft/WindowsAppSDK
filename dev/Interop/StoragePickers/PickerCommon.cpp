@@ -226,7 +226,7 @@ namespace PickerCommon {
         ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
-    void ValidateFolderPath(winrt::hstring const& path, std::wstring_view argumentName)
+    void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName)
     {
         if (path.empty())
         {
@@ -240,7 +240,7 @@ namespace PickerCommon {
         auto pathObj = std::filesystem::path(pathString);
         if (!pathObj.is_absolute())
         {
-            throw std::invalid_argument(argumentName);
+            throw std::invalid_argument(propertyName);
         }
 
         constexpr std::wstring_view invalidCharacters{ L"<>\"|?*" };
@@ -278,7 +278,7 @@ namespace PickerCommon {
 
             if (invalidCharacters.find(currentChar) != std::wstring_view::npos)
             {
-                throw std::invalid_argument(argumentName);
+                throw std::invalid_argument(propertyName);
             }
         }
 
@@ -305,7 +305,7 @@ namespace PickerCommon {
 
             if (nativeComponent.size() > MaxComponentLength)
             {
-                throw std::invalid_argument(argumentName);
+                throw std::invalid_argument(propertyName);
             }
         }
     }
