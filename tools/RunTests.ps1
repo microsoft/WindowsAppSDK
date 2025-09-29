@@ -18,7 +18,7 @@
     Set the base folder for the script to look for testdefs. Default: BuildOutput
 
 .PARAMETER Platform
-    Only run tests for the selected platform (x86, x64, arm64). Default: x64
+    Only run tests for the selected platform (x86, x64, arm64). Default: the current architecture
 
 .PARAMETER Configuration
     Only run tests for the selected configuration (Debug, Release). Default: Release
@@ -50,12 +50,12 @@ param(
 
 function Find-TestDefFile
 {
-    param($testDefName)
+    param(
+        $testDefName,
+        $baseFolder
+    )
 
-    $configPlat = Join-Path $Configuration $Platform
-    $scriptParent = Split-Path -parent $PSScriptRoot
-    $Output = Join-Path $scriptParent $Output
-    $outputFolderPath = Join-Path $Output $configPlat
+    $outputFolderPath = Join-Path $baseFolder $configPlat
     $testDefFileName = "$testDefName.testdef"
     $testDefFile = Get-ChildItem -Recurse -Filter $testDefFileName $outputFolderPath -ErrorAction SilentlyContinue | Select-Object -First 1
 
@@ -67,6 +67,28 @@ function Find-TestDefFile
 
     Write-Host "Found testdef file: $($testDefFile.FullName)"
     return $testDefFile
+}
+
+function Build-Tests
+{
+    param(
+        $testDefFile,
+        $msbuildPath
+    )
+
+    $testFolder = Split-Path -parent $testDefFile
+    Write-Host "Building tests in folder: $testFolder"
+    $projFile = Get-ChildItem -Filter "*.vcxproj" -Path $testFolder | Select-Object -First 1
+
+    if ($null -eq $projFile)
+    {
+        Write-Error "Could not find a .vcxproj file in $testFolder"
+        Exit 1
+    }
+
+    Write-Host "Found project file: $projFile"
+
+    & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform
 }
 
 function Get-Tests
@@ -173,19 +195,40 @@ function Run-Tests
     }
 }
 
-Write-Host "RunTests.ps1 - Running tests for testdef: $TestDef"
-Write-Host "Configuration: $Configuration, Platform: $Platform"
-Write-Host ""
-
 if ($Platform -eq "AMD64")
 {
     $Platform = "x64"
 }
 
+$scriptParent = Split-Path -parent $PSScriptRoot
+
+Write-Host "Building tests from testdef: $TestDef"
+
+$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
+Write-Host "VCToolsInstallDir: $VCToolsInstallDir"
+
+$msbuildPath = Join-Path $VCToolsInstallDir "MSBuild\Current\Bin\msbuild.exe"
+Write-Host "MSBuild Path: $msbuildPath"
+
+$testsSourceFolder = Join-Path $scriptParent "test"
+Write-Host "Tests source folder: $testsSourceFolder"
+
+$sourceTestDefFile = Find-TestDefFile $TestDef $testsSourceFolder
+
+Build-Tests $sourceTestDefFile $msbuildPath
+
+Write-Host "RunTests.ps1 - Running tests for testdef: $TestDef"
+Write-Host "Configuration: $Configuration, Platform: $Platform"
+Write-Host ""
+
+
 $StartTime = Get-Date
 
 # Find the testdef file
-$testDefFile = Find-TestDefFile $TestDef
+$configPlat = Join-Path $Configuration $Platform
+$outputFolder = Join-Path $scriptParent $Output
+
+$testDefFile = Find-TestDefFile $TestDef $outputFolder
 
 List-Tests $testDefFile
 Run-Tests $testDefFile
