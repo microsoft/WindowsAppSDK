@@ -56,13 +56,15 @@ function Find-TestDefFile
         $baseFolder
     )
 
-    $outputFolderPath = Join-Path $baseFolder $configPlat
     $testDefFileName = "$testDefName.testdef"
-    $testDefFile = Get-ChildItem -Recurse -Filter $testDefFileName $outputFolderPath -ErrorAction SilentlyContinue | Select-Object -First 1
+
+    Write-Host "Searching for testdef file '$testDefFileName' in '$baseFolder'..."
+
+    $testDefFile = Get-ChildItem -Recurse -Filter $testDefFileName $baseFolder -ErrorAction SilentlyContinue | Select-Object -First 1
 
     if ($null -eq $testDefFile)
     {
-        Write-Error "Could not find testdef file '$testDefFileName' in '$outputFolderPath'"
+        Write-Error "Could not find testdef file '$testDefFileName' in '$baseFolder'"
         Exit 1
     }
 
@@ -94,7 +96,7 @@ function Build-Tests
 
     Write-Host "Found project file: $projFile"
 
-    # & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform
+    & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform
 }
 
 function Get-Tests
@@ -206,10 +208,13 @@ if ($Platform -eq "AMD64")
     $Platform = "x64"
 }
 
+Write-Host "Configuration: $Configuration, Platform: $Platform"
+
 $scriptParent = Split-Path -parent $PSScriptRoot
 
-Write-Host "Building tests from testdef: $TestDef"
-
+Write-Host ""
+Write-Host "Building tests from testdef: $TestDef" -ForegroundColor Yellow
+Write-Host ""
 
 $testsSourceFolder = Join-Path $scriptParent "test"
 Write-Host "Tests source folder: $testsSourceFolder"
@@ -219,16 +224,14 @@ $sourceTestDefFile = Find-TestDefFile $TestDef $testsSourceFolder
 Build-Tests $sourceTestDefFile
 
 Write-Host ""
-Write-Host "RunTests.ps1 - Running tests for testdef: $TestDef"
-Write-Host "Configuration: $Configuration, Platform: $Platform"
+Write-Host "Running tests for testdef: $TestDef" -ForegroundColor Yellow
 Write-Host ""
 
 
 $StartTime = Get-Date
 
-# Find the testdef file
 $configPlat = Join-Path $Configuration $Platform
-$outputFolder = Join-Path $scriptParent $Output
+$outputFolder = Join-Path $scriptParent $Output $configPlat
 
 $testDefFile = Find-TestDefFile $TestDef $outputFolder
 
