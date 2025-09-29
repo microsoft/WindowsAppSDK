@@ -217,16 +217,13 @@ Write-Host "Building tests from testdef: $TestDef" -ForegroundColor Yellow
 Write-Host ""
 
 $testsSourceFolder = Join-Path $scriptParent "test"
-Write-Host "Tests source folder: $testsSourceFolder"
 
 $sourceTestDefFile = Find-TestDefFile $TestDef $testsSourceFolder
-
 Build-Tests $sourceTestDefFile
 
 Write-Host ""
 Write-Host "Running tests for testdef: $TestDef" -ForegroundColor Yellow
 Write-Host ""
-
 
 $StartTime = Get-Date
 
@@ -234,7 +231,6 @@ $configPlat = Join-Path $Configuration $Platform
 $outputFolder = Join-Path $scriptParent $Output $configPlat
 
 $testDefFile = Find-TestDefFile $TestDef $outputFolder
-
 List-Tests $testDefFile
 Run-Tests $testDefFile
 
