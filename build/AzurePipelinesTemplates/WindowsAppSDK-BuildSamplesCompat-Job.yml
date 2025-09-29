@@ -180,7 +180,7 @@ jobs:
         -SampleRepoRoot "$(Build.SourcesDirectory)\$(SamplesRepoName)"
         -FoundationVersion "$(FoundationVersion)"
         -FoundationPackagesFolder "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\localpackages"
-        -WASDKNugetDependencies variables['wasdkDependencies']
+        -WASDKNugetDependencies $(wasdkDependencies)
   
   # update the nuget.config file to point to the internal feed
   - powershell: |
