@@ -41,9 +41,11 @@ param(
     [string]$Output = "BuildOutput",
 
     [Parameter]
+    [ValidateSet("x86", "x64", "arm64", IgnoreCase=$true)]
     [string]$Platform = "$($env:PROCESSOR_ARCHITECTURE)",
 
     [Parameter]
+    [ValidateSet("Release", "Debug", IgnoreCase=$true)]
     [string]$Configuration = "Release",
 
     [Parameter]
