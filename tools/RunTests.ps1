@@ -96,7 +96,7 @@ function Build-Tests
 
     Write-Host "Found project file: $projFile"
 
-    & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
+    # & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
 }
 
 function Get-Tests
@@ -227,12 +227,7 @@ Write-Host ""
 
 $StartTime = Get-Date
 
-$configPlat = Join-Path $Configuration $Platform
-$outputFolder = Join-Path $scriptParent $Output $configPlat
-
-$testDefFile = Find-TestDefFile $TestDef $outputFolder
-List-Tests $testDefFile
-Run-Tests $testDefFile
+& $PSSCriptRoot\DoTest.ps1 -FilterTestDef $TestDef -Platform $Platform -Configuration $Configuration -List
 
 $TotalTime = (Get-Date)-$StartTime
 $TotalMinutes = $TotalTime.Minutes
