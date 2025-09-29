@@ -96,7 +96,7 @@ function Build-Tests
 
     Write-Host "Found project file: $projFile"
 
-    & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform
+    & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
 }
 
 function Get-Tests
