@@ -24,7 +24,25 @@ param(
 
     [string]$FilterParameters,
 
-    [string]$CustomParameters
+    [string]$CustomParameters,
+
+    [string]$LogFile,
+
+    [switch]$EnableETWLogging = $false,
+
+    [switch]$AppendWttLogging = $false,
+
+    [string]$LogFile,
+
+    [string]$TestMode,
+
+    [string]$WprProfile,
+
+    [string]$EtwLoggerSavePoint,
+
+    [string]$EtwLoggerRecordingScope,
+
+    [string]$WprProfilePath
 )
 
 function Build-Tests
@@ -155,7 +173,45 @@ function Run-TaefTest
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
 
-    & $tePath $dllFile $test.Parameters
+    if ($CustomParameters)
+    {
+        $test.Parameters = $CustomParameters
+    }
+
+    $additionalParams = ""
+
+    if ($LogFile)
+    {
+        $additionalParams += " /LogFile $LogFile"
+    }
+
+    if ($EnableETWLogging)
+    {
+        $additionalParams += " /enableEtwLogging"
+
+        if ($WprProfile)
+        {
+            $additionalParams += " /EtwLogger:WprProfile=$WprProfile"
+        }
+
+        if ($EtwLoggerSavePoint)
+        {
+            $additionalParams += " /EtwLogger:SavePoint=$EtwLoggerSavePoint"
+        }
+
+        if ($EtwLoggerRecordingScope)
+        {
+            $additionalParams += " /EtwLogger:RecordingScope=$EtwLoggerRecordingScope"
+        }
+
+        if ($WprProfilePath)
+        {
+            $additionalParams += " /EtwLogger:WprProfileFile=$WprProfilePath"
+        }
+    }
+
+
+    & $tePath $dllFile $test.Parameters $additionalParams
 }
 
 function Run-Tests
