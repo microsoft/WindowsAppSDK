@@ -176,8 +176,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     bool AddPackageOptions::IsPackageValidatorsSupported()
     {
-        // TODO - check presence of AppxPackaging streaming reader feature
-        return true;
+        return WindowsVersion::SupportsIAppxFactory4();
     }
     winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > AddPackageOptions::PackageValidators()
     {

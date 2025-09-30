@@ -32,6 +32,9 @@ namespace ABI::Windows::Management::Deployment
 #include <FrameworkUdk/PackageManagement.h>
 #include <FrameworkUdk/UupStateRepository.h>
 
+#include <appxpackaging.h>
+#include <appxpackagingobject.h>
+
 #include <IsWindowsVersion.h>
 #include <TerminalVelocityFeatures-PackageManager.h>
 
@@ -3682,10 +3685,60 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidator::IsEnabled());
 
-        UNREFERENCED_PARAMETER(packageValidators);
-        UNREFERENCED_PARAMETER(expectedDigests);
+        auto appxFactory{ wil::CoCreateInstance<AppxFactory, IAppxFactory4, wil::err_exception_policy>() };
+        auto bundleFactory{ wil::CoCreateInstance<AppxBundleFactory, IAppxBundleFactory3, wil::err_exception_policy>() };
 
-        throw hresult_not_implemented();
+        for (const auto pair : packageValidators)
+        {
+            const auto packageUri{ pair.Key() };
+            const auto validators{ pair.Value() };
+            if (!packageUri || !validators || validators.Size() == 0)
+            {
+                continue;
+            }
+
+            auto expectedDigest{ expectedDigests.TryLookup(packageUri) };
+            auto packageUriString{ packageUri.AbsoluteCanonicalUri().c_str() };
+            auto expectedDigestString{ expectedDigest.has_value() ? expectedDigest.value().c_str() : nullptr };
+
+            winrt::com_ptr<::IInspectable> appxObject;
+            winrt::com_ptr<IAppxPackageReader> packageReader;
+            winrt::com_ptr<IAppxBundleReader> bundleReader;
+            winrt::com_ptr<IAppxDigestProvider> digestProvider;
+
+            if (SUCCEEDED(appxFactory->CreatePackageReaderFromSourceUri(packageUriString, expectedDigestString, packageReader.put())))
+            {
+                appxObject = winrt::make<AppxPackagingObject>(packageReader.get());
+                digestProvider = packageReader.as<IAppxDigestProvider>();
+            }
+            else if (SUCCEEDED(bundleFactory->CreateBundleReaderFromSourceUri(packageUriString, expectedDigestString, bundleReader.put())))
+            {
+                appxObject = winrt::make<AppxPackagingObject>(bundleReader.get());
+                digestProvider = bundleReader.as<IAppxDigestProvider>();
+            }
+            else
+            {
+                THROW_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED);
+            }
+
+            for (const auto validator : validators)
+            {
+                if (!validator)
+                {
+                    continue;
+                }
+
+                THROW_HR_IF(APPX_E_DIGEST_MISMATCH, !validator.IsPackageValid(appxObject.as<IInspectable>()));
+            }
+
+            if (!expectedDigestString)
+            {
+                wil::unique_cotaskmem_string digest;
+                THROW_IF_FAILED(digestProvider->GetDigest(&digest));
+
+                expectedDigests.Insert(packageUri, digest.get());
+            }
+        }
     }
 
 }
