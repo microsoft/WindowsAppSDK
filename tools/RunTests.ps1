@@ -32,8 +32,6 @@ param(
 
     [switch]$AppendWttLogging = $false,
 
-    [string]$LogFile,
-
     [string]$TestMode,
 
     [string]$WprProfile,
@@ -92,70 +90,40 @@ function Get-Tests
 {
     param($baseFolder)
 
-    $tests = @()
-
     $testDefs = Get-ChildItem -Recurse -Filter "*.testdef" $baseFolder -ErrorAction SilentlyContinue
 
-    foreach ($testDefFile in $testDefs)
+    $allTests = foreach ($testDefFile in $testDefs)
     {
         $testJson = Get-Content -Raw $testDefFile.FullName | ConvertFrom-Json
         $count = 0
+
         foreach ($testConfig in $testJson.Tests)
         {
-            # Apply filters
-            # If a filter is set and the test property does not contain the filter regex, skip this test
-            if ($FilterTestDef -and ($testDefFile.FullName -notmatch $FilterTestDef))
-            {
-                continue
-            }
-
-            if ($FilterDescription -and ($testConfig.Description -notmatch $FilterDescription))
-            {
-                continue
-            }
-
-            if ($FilterFilename -and ($testConfig.Filename -notmatch $FilterFilename))
-            {
-                continue
-            }
-
-            if ($IgnoreFilename -and ($testConfig.Filename -match $IgnoreFilename))
-            {
-                continue
-            }
-
-            if ($FilterParameters -and ($testConfig.Parameters -notmatch $FilterParameters))
-            {
-                continue
-            }
-
-            if ($testConfig -contains 'Type')
-            {
-                $testType = $testConfig.Type
-            }
-            else
-            {
-                $testType = 'TAEF'
-            }
-
             $baseId = $testDefFile.BaseName
-            $id = $baseId + "-Test$count"
-            $t = [PSCustomObject]@{}
-            $t | Add-Member -MemberType NoteProperty -Name 'Test' -Value $id
-            $t | Add-Member -MemberType NoteProperty -Name 'Description' -Value $testConfig.Description
-            $t | Add-Member -MemberType NoteProperty -Name 'Filename' -Value $testConfig.Filename
-            $t | Add-Member -MemberType NoteProperty -Name 'Parameters' -Value $testConfig.Parameters
-            $t | Add-Member -MemberType NoteProperty -Name 'Architectures' -Value $testConfig.Architectures
-            $t | Add-Member -MemberType NoteProperty -Name 'Status' -Value $testConfig.Status
-            $t | Add-Member -MemberType NoteProperty -Name 'TestDef' -Value $testDefFile.FullName
-            $t | Add-Member -MemberType NoteProperty -Name 'Type' -Value $testType
+            $testType = if ($testConfig.PSObject.Properties['Type']) { $testConfig.Type } else { 'TAEF' }
 
-            $tests += $t
-            $count += 1
+            [PSCustomObject]@{
+                Test = "$baseId-Test$count"
+                Description = $testConfig.Description
+                Filename = $testConfig.Filename
+                Parameters = $testConfig.Parameters
+                Architectures = $testConfig.Architectures
+                Status = $testConfig.Status
+                TestDef = $testDefFile.FullName
+                Type = $testType
+            }
+
+            $count++
         }
     }
 
-    $tests
+    return $allTests | Where-Object {
+        (-not $FilterTestDef -or $_.TestDef -match $FilterTestDef) -and
+        (-not $FilterDescription -or $_.Description -match $FilterDescription) -and
+        (-not $FilterFilename -or $_.Filename -match $FilterFilename) -and
+        (-not $FilterParameters -or $_.Parameters -match $FilterParameters) -and
+        (-not $IgnoreFilename -or $_.Filename -notmatch $IgnoreFilename)
+    }
 }
 
 function List-Tests
@@ -173,45 +141,45 @@ function Run-TaefTest
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
 
-    if ($CustomParameters)
-    {
+    $teParams = @($dllFile)
+
+    if ($CustomParameters) {
         $test.Parameters = $CustomParameters
     }
 
-    $additionalParams = ""
-
-    if ($LogFile)
-    {
-        $additionalParams += " /LogFile $LogFile"
+    if ($test.Parameters) {
+        $teParams += $test.Parameters.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
     }
 
-    if ($EnableETWLogging)
-    {
-        $additionalParams += " /enableEtwLogging"
+    $additionalParams = @()
 
-        if ($WprProfile)
-        {
-            $additionalParams += " /EtwLogger:WprProfile=$WprProfile"
+    if ($LogFile) {
+        $additionalParams += "/LogFile", $LogFile
+    }
+
+    if ($EnableETWLogging) {
+        $additionalParams += "/enableEtwLogging"
+
+        if ($WprProfile) {
+            $additionalParams += "/EtwLogger:WprProfile=$WprProfile"
         }
 
-        if ($EtwLoggerSavePoint)
-        {
-            $additionalParams += " /EtwLogger:SavePoint=$EtwLoggerSavePoint"
+        if ($EtwLoggerSavePoint) {
+            $additionalParams += "/EtwLogger:SavePoint=$EtwLoggerSavePoint"
         }
 
-        if ($EtwLoggerRecordingScope)
-        {
-            $additionalParams += " /EtwLogger:RecordingScope=$EtwLoggerRecordingScope"
+        if ($EtwLoggerRecordingScope) {
+            $additionalParams += "/EtwLogger:RecordingScope=$EtwLoggerRecordingScope"
         }
 
-        if ($WprProfilePath)
-        {
-            $additionalParams += " /EtwLogger:WprProfileFile=$WprProfilePath"
+        if ($WprProfilePath) {
+            $additionalParams += "/EtwLogger:WprProfileFile=$WprProfilePath"
         }
     }
 
+    $allParams = $teParams + $additionalParams
 
-    & $tePath $dllFile $test.Parameters $additionalParams
+    & $tePath @allParams
 }
 
 function Run-Tests
