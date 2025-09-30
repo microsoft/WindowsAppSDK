@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
 using WEX.Common.Managed;
 using WEX.Logging.Interop;
 using WEX.TestExecution;

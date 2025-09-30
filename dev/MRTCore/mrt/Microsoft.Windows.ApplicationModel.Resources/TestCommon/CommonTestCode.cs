@@ -5,6 +5,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
 #else
 using System;
 using System.ComponentModel;
@@ -18,6 +19,7 @@ using WEX.Logging.Interop;
 using WEX.TestExecution;
 using WEX.TestExecution.Markup;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
 #endif
 
 namespace CommonTestCode
