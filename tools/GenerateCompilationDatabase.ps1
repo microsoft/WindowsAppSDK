@@ -17,18 +17,16 @@ if (-Not (Test-Path $binlogFile)) {
     exit 1
 }
 
-& $msBuildPath $binlogFile /v:normal /noconlog /flp:logfile=test.log
+& $msBuildPath $binlogFile /v:normal /noconlog /flp:logfile=temp.log
 
-Write-Host "Log file generated at: $(Get-Location)\test.log"
-
-Select-String -Path "test.log" -Pattern "Cl.exe" |
+Select-String -Path "temp.log" -Pattern "Cl.exe" |
     ForEach-Object { $_.Line } |
     Where-Object { $_ -notmatch "Tracker.exe" } |
-    Set-Content -Path "test-filtered.log"
+    Set-Content -Path "temp-filtered.log"
 
-Write-Host "Filtered log file generated at: $(Get-Location)\test-filtered.log"
+Write-Host "Filtered log file generated at: $(Get-Location)\temp-filtered.log"
 
-Remove-Item "test.log"
+Remove-Item "temp.log"
 
 $ms2ccPath = Join-Path $PSScriptRoot "ms2cc"
 $ms2ccExe = Join-Path $ms2ccPath "ms2cc.exe"
@@ -67,6 +65,6 @@ if (-Not (Test-Path $ms2ccExe)) {
     Write-Host "ms2cc already exists at: $ms2ccExe"
 }
 
-& $ms2ccExe -i "test-filtered.log" -d (Split-Path $PSScriptRoot -parent) -p
+& $ms2ccExe -i "temp-filtered.log" -d (Split-Path $PSScriptRoot -parent) -p
 
-Remove-Item "test-filtered.log"
+Remove-Item "temp-filtered.log"
