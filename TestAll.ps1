@@ -131,7 +131,7 @@ if ($ShowSystemInfo -eq $true)
 $configPlat = Join-Path $Configuration $Platform
 $outputFolderPath = Join-Path $OutputFolder $configPlat
 
-$allTests = Get-Tests outputFolderPath
+$allTests = Get-Tests $outputFolderPath
 
 if ($callingStage -eq 'TestSampleApps')
 {
