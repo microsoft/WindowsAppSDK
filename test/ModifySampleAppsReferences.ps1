@@ -10,6 +10,7 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
 $packagesToRemoveList = $WASDKNugetDependencies -split ';'
+$packagesToRemoveList += @("Microsoft.WindowsAppSDK")
 
 $packagesToUpdateTable = @{"Microsoft.WindowsAppSDK.Foundation" = $FoundationVersion}
 
@@ -33,6 +34,7 @@ if (!($FoundationPackagesFolder -eq ""))
     }
 }
 Write-Host "NuGet packages to version table: $($packagesToUpdateTable | Out-String)"
+Write-Host "NuGet packages to remove: $($packagesToRemoveList | Out-String)"
 
 Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
     $content = Get-Content $_.FullName -Raw
