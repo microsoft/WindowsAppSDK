@@ -176,149 +176,14 @@ function Build-Tests
     }
 }
 
-function Get-Tests
-{
-    param($baseFolder)
-
-    $testDefs = Get-ChildItem -Recurse -Filter "*.testdef" $baseFolder -ErrorAction SilentlyContinue
-
-    $allTests = foreach ($testDefFile in $testDefs)
-    {
-        $testJson = Get-Content -Raw $testDefFile.FullName | ConvertFrom-Json
-        $count = 0
-
-        foreach ($testConfig in $testJson.Tests)
-        {
-            $baseId = $testDefFile.BaseName
-            $testType = if ($testConfig.PSObject.Properties['Type']) { $testConfig.Type } else { 'TAEF' }
-
-            [PSCustomObject]@{
-                Test = "$baseId-Test$count"
-                Description = $testConfig.Description
-                DllFilename = $testConfig.DllFilename
-                Parameters = $testConfig.Parameters
-                Architectures = $testConfig.Architectures
-                Status = $testConfig.Status
-                TestDef = $testDefFile.FullName
-                Type = $testType
-            }
-
-            $count++
-        }
-    }
-
-    return $allTests | Where-Object {
-        (-not $FilterTestDef -or $_.TestDef -match $FilterTestDef) -and
-        (-not $FilterDescription -or $_.Description -match $FilterDescription) -and
-        (-not $FilterDllFilename -or $_.DllFilename -match $FilterDllFilename) -and
-        (-not $FilterParameters -or $_.Parameters -match $FilterParameters) -and
-    }
-}
-
-function List-Tests
-{
-    param($tests)
-
-    $tests | Sort-Object -Property Test | Format-Table Test,Description,Type,DllFilename,Parameters,Architectures,Status -AutoSize | Out-String -Width 512
-}
-
-function Run-TaefTest
-{
-    param($test)
-
-    $testFolder = Split-Path -parent $test.TestDef
-    $tePath = Join-Path $testFolder "te.exe"
-    $dllFile = Join-Path $testFolder $test.DllFilename
-
-    $teParams = @($dllFile)
-
-    if ($CustomParameters) {
-        $test.Parameters = $CustomParameters
-    }
-
-    if ($test.Parameters) {
-        $teParams += $test.Parameters.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
-    }
-
-    $additionalParams = @()
-
-    if ($LogFile) {
-        $additionalParams += "/LogFile:$LogFile"
-    }
-
-    if ($EnableETWLogging) {
-        $additionalParams += "/enableEtwLogging"
-        $additionalParams += "/appendWttLogging"
-        $additionalParams += "/testMode:ETWLogger"
-
-        if ($WprProfile) {
-            $additionalParams += "/EtwLogger:WprProfile=$WprProfile"
-        }
-
-        if ($EtwLoggerSavePoint) {
-            $additionalParams += "/EtwLogger:SavePoint=$EtwLoggerSavePoint"
-        }
-
-        if ($EtwLoggerRecordingScope) {
-            $additionalParams += "/EtwLogger:RecordingScope=$EtwLoggerRecordingScope"
-        }
-
-        if ($WprProfilePath) {
-            $additionalParams += "/EtwLogger:WprProfileFile=$WprProfilePath"
-        }
-    }
-
-    $allParams = $teParams + $additionalParams
-
-    & $tePath @allParams
-}
-
-function Run-Tests
-{
-    param($tests)
-
-    foreach ($test in $tests)
-    {
-        Write-Host ""
-        Write-Host "$($test.Filename) - $($test.Description)"
-        Write-Host ""
-
-        $validPlatform = $test.Architectures.Contains($Platform)
-        $testEnabled = $test.Status -eq "Enabled"
-
-        if ($validPlatform -and ($testEnabled -or $RunDisabled))
-        {
-            Write-Host "Running test for platform $Platform..."
-            if ($test.Type -eq 'TAEF')
-            {
-                Run-TaefTest $test
-            }
-            elseif ($test.Type -eq 'Powershell')
-            {
-                Write-Host "Powershell tests not supported."
-                Exit 1
-            }
-            else
-            {
-                Write-Host "Unknown test type '$($test.Type)'. Not running."
-                Exit 1
-            }
-        }
-        elseif (-not($validPlatform))
-        {
-            Write-Host "$Platform not listed in supported architectures: $($test.Architectures -join ', ')"
-        }
-        elseif (-not($testEnabled))
-        {
-            Write-Host "Test is disabled. Not running."
-        }
-    }
-}
-
 if ($Platform -eq "AMD64")
 {
     $Platform = "x64"
 }
+
+# Import the module containing the functions:
+# List-Tests, Get-Tests, Run-Tests
+Import-Module "$PSScriptRoot\Tests.psm1"
 
 Write-Host "Configuration: $Configuration, Platform: $Platform"
 
@@ -345,9 +210,46 @@ $StartTime = Get-Date
 $configPlat = Join-Path $Configuration $Platform
 $outputFolder = Join-Path $scriptParent $Output $configPlat
 
-$tests = Get-Tests $outputFolder
+$tests = Get-Tests $outputFolder | Where-Object {
+        (-not $FilterTestDef -or $_.TestDef -match $FilterTestDef) -and
+        (-not $FilterDescription -or $_.Description -match $FilterDescription) -and
+        (-not $FilterDllFilename -or $_.Filename -match $FilterDllFilename) -and
+        (-not $FilterParameters -or $_.Parameters -match $FilterParameters)
+    }
+
 List-Tests $tests
-Run-Tests $tests
+
+$additionalParams = @()
+
+if ($LogFile) {
+    $additionalParams += "/LogFile:$LogFile"
+}
+
+if ($EnableETWLogging) {
+    $additionalParams += "/enableEtwLogging"
+    $additionalParams += "/appendWttLogging"
+    $additionalParams += "/testMode:ETWLogger"
+
+    if ($WprProfile) {
+        $additionalParams += "/EtwLogger:WprProfile=$WprProfile"
+    }
+
+    if ($EtwLoggerSavePoint) {
+        $additionalParams += "/EtwLogger:SavePoint=$EtwLoggerSavePoint"
+    }
+
+    if ($EtwLoggerRecordingScope) {
+        $additionalParams += "/EtwLogger:RecordingScope=$EtwLoggerRecordingScope"
+    }
+
+    if ($WprProfilePath) {
+        $additionalParams += "/EtwLogger:WprProfileFile=$WprProfilePath"
+    }
+}
+
+Write-Host "Additional parameters for all tests: $($additionalParams -join ' ')"
+
+Run-Tests -tests $tests -platform $Platform -runDisabled:$RunDisabled -customParameters $CustomParameters -additionalParams $additionalParams
 
 $TotalTime = (Get-Date)-$StartTime
 $TotalMinutes = $TotalTime.Minutes
