@@ -236,7 +236,7 @@ $scriptParent = Split-Path -parent $PSScriptRoot
 if ($Build)
 {
     Write-Host ""
-    Write-Host "Building tests"
+    Write-Host "Building tests" -ForegroundColor Yellow
     Write-Host ""
 
     $testsSourceFolder = Join-Path $scriptParent "test"
@@ -246,7 +246,7 @@ if ($Build)
 }
 
 Write-Host ""
-Write-Host "Running tests for testdef: $TestDef" -ForegroundColor Yellow
+Write-Host "Running tests" -ForegroundColor Yellow
 Write-Host ""
 
 $StartTime = Get-Date
