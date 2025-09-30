@@ -1,43 +1,7 @@
 <#
-.SYNOPSIS
-    Build and run tests from a specific .testdef file
-
-.DESCRIPTION
-    The BuildAndRunTests script takes a testdef filename (without extension) and build then runs
-    the tests defined in that specific .testdef file. This is useful for development when you want
-    to run tests for a specific component rather than all tests.
-
-    The script searches for the specified .testdef file in the test directory structure and
-    builds the associated test project. It then finds the .testdef file in the output directory,
-    lists the tests defined in the .testdef file and executes the tests according to the testdef configuration.
-
-.PARAMETER TestDef
-    The name of the .testdef file to run (without the .testdef extension)
-    Example: "Deployment" to run "Deployment.testdef"
-
-.PARAMETER Output
-    Set the base folder for the script to look for testdefs. Default: BuildOutput
-
-.PARAMETER Platform
-    Only run tests for the selected platform (x86, x64, arm64). Default: the current architecture
-
-.PARAMETER Configuration
-    Only run tests for the selected configuration (Debug, Release). Default: Release
-
-.PARAMETER RunDisabled
-    If set, will run tests that are marked as "Disabled" in the testdef file. Default: false
-
-.EXAMPLE
-    .\RunTests.ps1 -TestDef "DeploymentTests"
-
-.EXAMPLE
-    .\RunTests.ps1 -TestDef "Deployment" -Platform "x86" -Configuration "Debug"
 #>
 
 param(
-    [Parameter(Mandatory=$true)]
-    [string]$TestDef,
-
     [string]$Output = "BuildOutput",
 
     [ValidateSet("x86", "x64", "arm64", IgnoreCase=$true)]
@@ -46,36 +10,27 @@ param(
     [ValidateSet("Release", "Debug", IgnoreCase=$true)]
     [string]$Configuration = "Release",
 
-    [switch]$RunDisabled = $false
+    [switch]$RunDisabled = $false,
+
+    [switch]$Build = $false,
+
+    [string]$FilterTestDef,
+
+    [string]$FilterDescription,
+
+    [string]$FilterFilename,
+
+    [string]$IgnoreFilename,
+
+    [string]$FilterParameters,
+
+    [string]$CustomParameters
 )
-
-function Find-TestDefFile
-{
-    param(
-        $testDefName,
-        $baseFolder
-    )
-
-    $testDefFileName = "$testDefName.testdef"
-
-    Write-Host "Searching for testdef file '$testDefFileName' in '$baseFolder'..."
-
-    $testDefFile = Get-ChildItem -Recurse -Filter $testDefFileName $baseFolder -ErrorAction SilentlyContinue | Select-Object -First 1
-
-    if ($null -eq $testDefFile)
-    {
-        Write-Error "Could not find testdef file '$testDefFileName' in '$baseFolder'"
-        Exit 1
-    }
-
-    Write-Host "Found testdef file: $($testDefFile.FullName)"
-    return $testDefFile
-}
 
 function Build-Tests
 {
     param(
-        $testDefFile
+        $tests
     )
 
     $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
@@ -84,55 +39,102 @@ function Build-Tests
     $msbuildPath = Join-Path $VCToolsInstallDir "MSBuild\Current\Bin\msbuild.exe"
     Write-Host "MSBuild Path: $msbuildPath"
 
-    $testFolder = Split-Path -parent $testDefFile
-    Write-Host "Building tests in folder: $testFolder"
-    $projFile = Get-ChildItem -Filter "*.vcxproj" -Path $testFolder | Select-Object -First 1
+    # Build each test project once
+    $projectsBuilt = @{}
 
-    if ($null -eq $projFile)
+    foreach ($test in $tests)
     {
-        Write-Error "Could not find a .vcxproj file in $testFolder"
-        Exit 1
+        $testDefFile = $test.TestDef
+        Write-Host "Building tests for testdef: $testDefFile"
+
+        $testFolder = Split-Path -parent $testDefFile
+        Write-Host "Building tests in folder: $testFolder"
+        $projFile = Get-ChildItem -Filter "*.vcxproj" -Path $testFolder | Select-Object -First 1
+
+        if ($null -eq $projFile)
+        {
+            Write-Error "Could not find a .vcxproj file in $testFolder"
+            Exit 1
+        }
+
+        Write-Host "Found project file: $projFile"
+
+        if ($projectsBuilt.ContainsKey($projFile.FullName))
+        {
+            Write-Host "Project already built. Skipping."
+            continue
+        }
+
+        & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
+        $projectsBuilt[$projFile.FullName] = $true
     }
-
-    Write-Host "Found project file: $projFile"
-
-    & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
 }
 
 function Get-Tests
 {
-    param($testDefFile)
+    param($baseFolder)
 
     $tests = @()
-    $testJson = Get-Content -Raw $testDefFile.FullName | ConvertFrom-Json
 
-    $count = 0
-    $baseId = $testDefFile.BaseName
-    foreach ($testConfig in $testJson.Tests)
+    $testDefs = Get-ChildItem -Recurse -Filter "*.testdef" $baseFolder -ErrorAction SilentlyContinue
+
+    foreach ($testDefFile in $testDefs)
     {
-        $testConfig | Write-Host
-        if ($testConfig -contains 'Type')
+        $testJson = Get-Content -Raw $testDefFile.FullName | ConvertFrom-Json
+        $count = 0
+        foreach ($testConfig in $testJson.Tests)
         {
-            $testType = $testConfig.Type
-        }
-        else
-        {
-            $testType = 'TAEF'
-        }
+            # Apply filters
+            # If a filter is set and the test property does not contain the filter regex, skip this test
+            if ($FilterTestDef -and ($testDefFile.FullName -notmatch $FilterTestDef))
+            {
+                continue
+            }
 
-        $id = $baseId + "-Test$count"
-        $t = [PSCustomObject]@{}
-        $t | Add-Member -MemberType NoteProperty -Name 'Test' -Value $id
-        $t | Add-Member -MemberType NoteProperty -Name 'Description' -Value $testConfig.Description
-        $t | Add-Member -MemberType NoteProperty -Name 'Filename' -Value $testConfig.Filename
-        $t | Add-Member -MemberType NoteProperty -Name 'Parameters' -Value $testConfig.Parameters
-        $t | Add-Member -MemberType NoteProperty -Name 'Architectures' -Value $testConfig.Architectures
-        $t | Add-Member -MemberType NoteProperty -Name 'Status' -Value $testConfig.Status
-        $t | Add-Member -MemberType NoteProperty -Name 'TestDef' -Value $testDefFile.FullName
-        $t | Add-Member -MemberType NoteProperty -Name 'Type' -Value $testType
+            if ($FilterDescription -and ($testConfig.Description -notmatch $FilterDescription))
+            {
+                continue
+            }
 
-        $tests += $t
-        $count += 1
+            if ($FilterFilename -and ($testConfig.Filename -notmatch $FilterFilename))
+            {
+                continue
+            }
+
+            if ($IgnoreFilename -and ($testConfig.Filename -match $IgnoreFilename))
+            {
+                continue
+            }
+
+            if ($FilterParameters -and ($testConfig.Parameters -notmatch $FilterParameters))
+            {
+                continue
+            }
+
+            if ($testConfig -contains 'Type')
+            {
+                $testType = $testConfig.Type
+            }
+            else
+            {
+                $testType = 'TAEF'
+            }
+
+            $baseId = $testDefFile.BaseName
+            $id = $baseId + "-Test$count"
+            $t = [PSCustomObject]@{}
+            $t | Add-Member -MemberType NoteProperty -Name 'Test' -Value $id
+            $t | Add-Member -MemberType NoteProperty -Name 'Description' -Value $testConfig.Description
+            $t | Add-Member -MemberType NoteProperty -Name 'Filename' -Value $testConfig.Filename
+            $t | Add-Member -MemberType NoteProperty -Name 'Parameters' -Value $testConfig.Parameters
+            $t | Add-Member -MemberType NoteProperty -Name 'Architectures' -Value $testConfig.Architectures
+            $t | Add-Member -MemberType NoteProperty -Name 'Status' -Value $testConfig.Status
+            $t | Add-Member -MemberType NoteProperty -Name 'TestDef' -Value $testDefFile.FullName
+            $t | Add-Member -MemberType NoteProperty -Name 'Type' -Value $testType
+
+            $tests += $t
+            $count += 1
+        }
     }
 
     $tests
@@ -140,10 +142,8 @@ function Get-Tests
 
 function List-Tests
 {
-    param($testDefFile)
+    param($tests)
 
-    $tests = Get-Tests $testDefFile
-    Write-Host "Tests in $($testDefFile.Name):"
     $tests | Sort-Object -Property Test | Format-Table Test,Description,Type,Filename,Parameters,Architectures,Status -AutoSize | Out-String -Width 512
 }
 
@@ -160,10 +160,7 @@ function Run-TaefTest
 
 function Run-Tests
 {
-    param($testDefFile)
-
-    $tests = Get-Tests $testDefFile
-    Write-Host "Running tests from $($testDefFile.Name)..."
+    param($tests)
 
     foreach ($test in $tests)
     {
@@ -212,14 +209,17 @@ Write-Host "Configuration: $Configuration, Platform: $Platform"
 
 $scriptParent = Split-Path -parent $PSScriptRoot
 
-Write-Host ""
-Write-Host "Building tests from testdef: $TestDef" -ForegroundColor Yellow
-Write-Host ""
+if ($Build)
+{
+    Write-Host ""
+    Write-Host "Building tests"
+    Write-Host ""
 
-$testsSourceFolder = Join-Path $scriptParent "test"
+    $testsSourceFolder = Join-Path $scriptParent "test"
 
-$sourceTestDefFile = Find-TestDefFile $TestDef $testsSourceFolder
-Build-Tests $sourceTestDefFile
+    $tests = Get-Tests $testsSourceFolder
+    Build-Tests $tests
+}
 
 Write-Host ""
 Write-Host "Running tests for testdef: $TestDef" -ForegroundColor Yellow
@@ -230,9 +230,9 @@ $StartTime = Get-Date
 $configPlat = Join-Path $Configuration $Platform
 $outputFolder = Join-Path $scriptParent $Output $configPlat
 
-$testDefFile = Find-TestDefFile $TestDef $outputFolder
-List-Tests $testDefFile
-Run-Tests $testDefFile
+$tests = Get-Tests $outputFolder
+List-Tests $tests
+Run-Tests $tests
 
 $TotalTime = (Get-Date)-$StartTime
 $TotalMinutes = $TotalTime.Minutes
