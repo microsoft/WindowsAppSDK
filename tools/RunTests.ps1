@@ -34,7 +34,7 @@
     Switch to build test projects before execution. Requires Visual Studio and MSBuild.
 
 .PARAMETER FilterTestDef
-    Filter tests by testdef file path using regex pattern matching.
+    Filter tests by testdef file full name using regex pattern matching.
 
 .PARAMETER FilterDescription
     Filter tests by description field using regex pattern matching.
