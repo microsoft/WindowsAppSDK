@@ -398,3 +398,6 @@ Microsoft.WinUI.AppX.targets
 
 # Compile commands database for clang-based tools
 compile_commands.json
+
+# MS2CC files used to generate compile commands database
+tools/ms2cc/**
