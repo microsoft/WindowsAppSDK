@@ -46,6 +46,7 @@ Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
     }
     foreach ($package in $packagesToRemoveList)
     {
+        Write-Host "removing $package from $($_.FullName)"
         $packageReferenceString = '(?m)^\s*<package id="' + $package + '" version="[-.0-9a-zA-Z]*"[^>]*?/>\s*$\r?\n?'
         $content = $content -replace $packageReferenceString, ''
     }
@@ -65,6 +66,7 @@ Get-ChildItem -Recurse *.vcxproj -Path $SampleRepoRoot | foreach-object {
     }
     foreach ($package in $packagesToRemoveList)
     {
+        Write-Host "removing $package from $($_.FullName)"
         $packageReferenceString = "(?m)^.*\\$package\.[0-9][-.0-9a-zA-Z]*\\.*\r?\n?"
         $content = $content -replace $packageReferenceString, ''
     }
