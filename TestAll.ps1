@@ -83,120 +83,6 @@ $lastexitcode = 0
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
-function Get-Tests
-{
-    $configPlat = Join-Path $Configuration $Platform
-    $outputFolderPath = Join-Path $OutputFolder $configPlat
-
-    $tests = @()
-    foreach ($testdef in (Get-ChildItem -Recurse -Filter "*.testdef" $outputFolderPath))
-    {
-        $testJson = Get-Content -Raw $testdef.FullName | ConvertFrom-Json
-
-        $count = 0
-        $baseId = $testdef.BaseName
-        foreach ($testConfig in $testJson.Tests)
-        {
-            $testConfig | Write-Host
-            if ($testConfig -contains 'Type')
-            {
-                $testType = $testConfig.Type
-            }
-            else
-            {
-                $testType = 'TAEF'
-            }
-
-            $id = $baseId + "-Test$count"
-            $t = [PSCustomObject]@{}
-            $t | Add-Member -MemberType NoteProperty -Name 'Test' -Value $id
-            $t | Add-Member -MemberType NoteProperty -Name 'Description' -Value $testConfig.Description
-            $t | Add-Member -MemberType NoteProperty -Name 'Filename' -Value $testConfig.Filename
-            $t | Add-Member -MemberType NoteProperty -Name 'Parameters' -Value $testConfig.Parameters
-            $t | Add-Member -MemberType NoteProperty -Name 'Architectures' -Value $testConfig.Architectures
-            $t | Add-Member -MemberType NoteProperty -Name 'Status' -Value $testConfig.Status
-            $t | Add-Member -MemberType NoteProperty -Name 'TestDef' -Value $testdef.FullName
-            $t | Add-Member -MemberType NoteProperty -Name 'Type' -Value $testType
-
-            $tests += $t
-            $count += 1
-        }
-    }
-
-    if ($callingStage -eq 'TestSampleApps')
-    {
-        $tests = $tests | Where-Object { $_.Filename -like "WindowsAppSDK.Test.SampleTests.dll" }
-    }
-    else 
-    {
-        $tests = $tests | Where-Object { $_.Filename -notlike "WindowsAppSDK.Test.SampleTests.dll" }
-    }
-
-    $tests
-}
-
-function List-Tests
-{
-    $tests = Get-Tests
-    $tests | Sort-Object -Property Test | Format-Table Test,Description,Type,Filename,Parameters,Architectures,Status -AutoSize | Out-String -Width 512
-}
-
-function Run-TaefTest
-{
-    param($test)
-
-    $testFolder = Split-Path -parent $test.TestDef
-    $tePath = Join-Path $testFolder "te.exe"
-    $dllFile = Join-Path $testFolder $test.Filename
-
-    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
-    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
-
-    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile /testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
-}
-
-function Run-PowershellTest
-{
-    param($test)
-
-    Write-Host "Powershell tests not supported"
-}
-
-function Run-Tests
-{
-    $tests = Get-Tests
-    foreach ($test in $tests)
-    {
-        Write-Host "$($test.Filename) - $($test.Description)"
-        $validPlatform = $test.Architectures.Contains($Platform)
-        $testEnabled = $test.Status -eq "Enabled"
-        if ($validPlatform -and $testEnabled)
-        {
-            if ($test.Type -eq 'TAEF')
-            {
-                Run-TaefTest $test
-            }
-            elseif ($test.Type -eq 'Powershell')
-            {
-                Run-PowershellTest $test
-            }
-            else
-            {
-                Write-Host "Unknown test type '$test.Type'. Not running."
-                Exit 1
-            }
-        }
-        elseif (-not($validPlatform))
-        {
-            Write-Host "$Platform not listed in supported architectures."
-        }
-        elseif (-not($testEnabled))
-        {
-            Write-Host "Test is disabled. Not running."
-        }
-    }
-}
-
 function Get-SystemInfo
 {
     $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
@@ -233,14 +119,32 @@ function Get-SystemInfo
 $env:Build_Platform = $Platform.ToLower()
 $env:Build_Configuration = $Configuration.ToLower()
 
+# Import the module containing the functions:
+# List-Tests, Get-Tests, Run-Tests
+Import-Module "$PSScriptRoot\tools\Tests.psm1"
+
 if ($ShowSystemInfo -eq $true)
 {
     Get-SystemInfo
 }
 
+$configPlat = Join-Path $Configuration $Platform
+$outputFolderPath = Join-Path $OutputFolder $configPlat
+
+$allTests = Get-Tests outputFolderPath
+
+if ($callingStage -eq 'TestSampleApps')
+{
+    $allTests = $allTests | Where-Object { $_.Filename -like "WindowsAppSDK.Test.SampleTests.dll" }
+}
+else
+{
+    $allTests = $allTests | Where-Object { $_.Filename -notlike "WindowsAppSDK.Test.SampleTests.dll" }
+}
+
 if ($List -eq $true)
 {
-    List-Tests | Out-String
+    List-Tests $allTests | Out-String
 }
 
 if ($Test -eq $true)
@@ -250,7 +154,9 @@ if ($Test -eq $true)
     remove-item -Path $teLogFile -ErrorAction Ignore
     remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
 
-    Run-Tests
+    $additionalParams = "/enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile /testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath"
+
+    Run-Tests $allTests -additionalParams $additionalParams -platform $Platform.ToLower()
 
     # copy test log to TestOutput folder
     if (Test-Path -Path $teLogFile) {
