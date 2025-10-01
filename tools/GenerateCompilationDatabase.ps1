@@ -15,6 +15,10 @@ $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 write-host "msBuildPath: $msBuildPath"
 
 Remove-Item "temp-filtered.log" -ErrorAction SilentlyContinue
+Remove-Item "temp-filtered2.log" -ErrorAction SilentlyContinue
+
+# Target "ClCompile" in file "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets" from project "C:\WindowsAppSDK\dev\Detours\Detours.vcxproj" (target "_ClCompile" depends on it):
+# Context here would be: "C:\WindowsAppSDK\dev\Detours"
 
 foreach ($binlogFile in $binlogFiles) {
     if (-Not (Test-Path $binlogFile)) {
@@ -24,7 +28,7 @@ foreach ($binlogFile in $binlogFiles) {
 
     & $msBuildPath $binlogFile /v:normal /noconlog /flp:logfile=temp.log
 
-    Select-String -Path "temp.log" -Pattern "Cl.exe" |
+    Select-String -Path "temp.log" -Pattern "Target ""ClCompile"" in file","Cl.exe"  |
         ForEach-Object { $_.Line } |
         Where-Object { $_ -notmatch "Tracker.exe" } |
         Out-File -FilePath "temp-filtered.log" -Append -Encoding utf8
@@ -33,6 +37,47 @@ foreach ($binlogFile in $binlogFiles) {
 }
 
 Write-Host "Filtered log file generated at: $(Get-Location)\temp-filtered.log"
+
+$contextPath = ""
+
+# for each line in temp-filtered.log, if it is a "Target " line, extract the project directory and save in the contextPath variable
+# if it is a "Cl.exe" line, prepend the contextPath to every source file in that line only if it is
+# a relative path, then output the modified line to temp-filtered-2.log
+# The source files are the arguments that ends with .cpp, .c, or .h
+# They can have spaces in them. If so, they are enclosed in quotes.
+
+$lines = Get-Content "temp-filtered.log"
+
+foreach ($line in $lines) {
+    if ($line -match 'Target "ClCompile" in file "([^"]+)" from project "([^"]+)"') {
+        $contextPath = Split-Path $matches[2] -parent
+        Write-Host "Context path set to: $contextPath"
+    } elseif ($line -match 'Cl\.exe (.+)$') {
+        $clLine = $matches[1]
+        $args = $clLine -split ' (?=(?:[^"]*"[^"]*")*[^"]*$)'
+
+        $modifiedArgs = @()
+        foreach ($arg in $args) {
+            if ($arg -match '^(.*\.(cpp|c|h))$' -or $arg -match '^"(.*\.(cpp|c|h))"$') {
+                $filePath = $arg.Trim('"')
+                if (-Not ([System.IO.Path]::IsPathRooted($filePath))) {
+                    $filePath = Join-Path $contextPath $filePath
+                }
+                if ($arg.StartsWith('"') -and $arg.EndsWith('"')) {
+                    $modifiedArgs += '"' + $filePath + '"'
+                } else {
+                    $modifiedArgs += $filePath
+                }
+            } else {
+                $modifiedArgs += $arg
+            }
+        }
+
+        $modifiedLine = "Cl.exe " + ($modifiedArgs -join ' ')
+        Add-Content -Path "temp-filtered2.log" -Value $modifiedLine
+        # Write-Host "Processed Cl.exe line: $modifiedLine"
+    }
+}
 
 $ms2ccPath = Join-Path $PSScriptRoot "ms2cc"
 $ms2ccExe = Join-Path $ms2ccPath "ms2cc.exe"
@@ -71,6 +116,7 @@ if (-Not (Test-Path $ms2ccExe)) {
     Write-Host "ms2cc already exists at: $ms2ccExe"
 }
 
-& $ms2ccExe -i "temp-filtered.log" -d (Split-Path $PSScriptRoot -parent) -p
+& $ms2ccExe -i "temp-filtered2.log" -d (Split-Path $PSScriptRoot -parent) -p
 
-Remove-Item "temp-filtered.log"
+# Remove-Item "temp-filtered.log"
+# Remove-Item "temp-filtered2.log"
