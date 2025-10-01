@@ -105,19 +105,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dev\Interop\StoragePickers\PickerCommon.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PickerCommonTests.cpp" />
-    <ClCompile Include="Pickerlocalization.cpp" />
-    <ClCompile Include="StoragePickersTests.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)PickerCommonTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Pickerlocalization.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)StoragePickersTests.cpp">
       <AdditionalIncludeDirectories>$(RepoRoot)\build\VersionInfo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dev\Interop\StoragePickers\PickerCommon.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="PickerLocalization.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PickerLocalization.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

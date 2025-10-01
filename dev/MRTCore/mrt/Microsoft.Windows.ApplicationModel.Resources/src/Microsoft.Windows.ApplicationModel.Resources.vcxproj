@@ -110,7 +110,7 @@
     <ClInclude Include="ApplicationLanguages.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="KnownResourceQualifierName.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="ResourceCandidate.h" />
     <ClInclude Include="ResourceContext.h" />
     <ClInclude Include="ResourceLoader.h" />
@@ -122,7 +122,7 @@
     <ClCompile Include="ApplicationLanguages.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="KnownResourceQualifierName.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />

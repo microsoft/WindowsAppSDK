@@ -115,15 +115,15 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PackagedTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackagedTests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PackagedTests.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="BadgeNotification-Test-Constants.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackagedTests.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)BadgeNotification-Test-Constants.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -259,21 +259,21 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="MddBootstrapActivity.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="MddBootstrap.h" />
-    <ClInclude Include="MddBootstrapTest.h" />
-    <ClInclude Include="MddBootstrapTracelogging.h" />
-    <ClInclude Include="WindowsAppRuntime-Licensing.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddBootstrapActivity.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)framework.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddBootstrap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddBootstrapTest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddBootstrapTracelogging.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime-Licensing.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MddBootstrapActivity.cpp" />
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="MddBootstrap.cpp" />
-    <ClCompile Include="MddBootstrapTracelogging.cpp" />
-    <ClCompile Include="WindowsAppRuntime-Licensing.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddBootstrapActivity.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)dllmain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddBootstrap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddBootstrapTracelogging.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime-Licensing.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>
@@ -287,7 +287,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="WindowsAppRuntime.Bootstrap.rc">      
+    <ResourceCompile Include="WindowsAppRuntime.Bootstrap.rc">
       <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>

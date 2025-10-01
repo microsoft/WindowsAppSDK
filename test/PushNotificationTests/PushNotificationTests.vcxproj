@@ -106,7 +106,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)BaseTestSuite.cpp" />
@@ -116,8 +116,8 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)BaseTestSuite.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackagedTests.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="PushNotification-Test-Constants.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotification-Test-Constants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UnpackagedTests.h" />
   </ItemGroup>
   <ItemGroup>

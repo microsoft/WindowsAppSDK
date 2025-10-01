@@ -189,19 +189,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Helpers.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Helpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="RequestRestartTest.cpp" />
-    <ClCompile Include="SingleInstanceTest.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)RequestRestartTest.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SingleInstanceTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Helpers.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="RequestRestartTest.h" />
-    <ClInclude Include="SingleInstanceTest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Helpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RequestRestartTest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SingleInstanceTest.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

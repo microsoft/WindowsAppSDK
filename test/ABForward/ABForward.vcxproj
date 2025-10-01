@@ -217,13 +217,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)FunctionalTests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
     <Content Condition="'$(Platform)'=='x64'" Include="$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x64\Microsoft.WindowsAppRuntime.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.msix"/>
