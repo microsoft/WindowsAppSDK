@@ -137,8 +137,8 @@
     <ClInclude Include="EnvironmentManagerCentennialTests.h" />
     <ClInclude Include="EnvironmentManagerWin32Tests.h" />
     <ClInclude Include="EnvironmentVariableHelper.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)framework.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="TestCommon.h" />
     <ClInclude Include="TestSetupAndTeardownHelper.h" />
   </ItemGroup>

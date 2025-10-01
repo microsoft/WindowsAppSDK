@@ -234,20 +234,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)detours.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)detver.h" />
+    <ClInclude Include="detours.h" />
+    <ClInclude Include="detver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)creatwth.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)detours.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)disasm.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)disolarm.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)disolarm64.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)disolia64.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)disolx64.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)disolx86.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)image.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)modules.cpp" />
+    <ClCompile Include="creatwth.cpp" />
+    <ClCompile Include="detours.cpp" />
+    <ClCompile Include="disasm.cpp" />
+    <ClCompile Include="disolarm.cpp" />
+    <ClCompile Include="disolarm64.cpp" />
+    <ClCompile Include="disolia64.cpp" />
+    <ClCompile Include="disolx64.cpp" />
+    <ClCompile Include="disolx86.cpp" />
+    <ClCompile Include="image.cpp" />
+    <ClCompile Include="modules.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

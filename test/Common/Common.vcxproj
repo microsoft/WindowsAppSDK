@@ -108,15 +108,15 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_Security_User.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_SelfContained.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_Utf8.cpp" />
+    <ClCompile Include="Test_Security_User.cpp" />
+    <ClCompile Include="Test_SelfContained.cpp" />
+    <ClCompile Include="Test_Utf8.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -115,7 +115,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)BaseTestSuite.cpp" />
@@ -123,11 +123,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)UnpackagedTests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotifications.Test.h" />
+    <ClInclude Include="AppNotifications.Test.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BaseTestSuite.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackagedTests.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotification-Test-Constants.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="AppNotification-Test-Constants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UnpackagedTests.h" />
   </ItemGroup>
   <ItemGroup>

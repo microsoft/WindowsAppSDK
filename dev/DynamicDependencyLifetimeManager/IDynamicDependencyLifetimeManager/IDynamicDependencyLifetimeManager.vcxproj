@@ -162,7 +162,7 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)IDynamicDependencyLifetimeManager.idl" />
+    <Midl Include="IDynamicDependencyLifetimeManager.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

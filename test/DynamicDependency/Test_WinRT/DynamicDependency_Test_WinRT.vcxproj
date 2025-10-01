@@ -201,7 +201,7 @@
     <ClCompile Include="Create_FilePathLifetime_NoExist.cpp" />
     <ClCompile Include="Create_RegistryLifetime_NoExist.cpp" />
     <ClCompile Include="Test_WinRT.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TestFilesystem.cpp" />
@@ -217,7 +217,7 @@
     <ClCompile Include="Test_WinRT_FullLifecycle_RegistryLifetime_Frameworks_2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="TestFilesystem.h" />
     <ClInclude Include="TestPackages.h" />
     <ClInclude Include="Test_WinRT.h" />
