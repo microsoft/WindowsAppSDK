@@ -26,7 +26,8 @@ Param(
     [string]$OutputDirectory = (Split-Path $MyInvocation.MyCommand.Path) + "\BuildOutput",
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
-    [switch]$Clean = $false
+    [switch]$Clean = $false,
+    [switch]$CleanIntermmediateFiles = $false
 )
 
 Set-StrictMode -Version 3.0
@@ -165,7 +166,13 @@ Try {
     # PreFastSetup intentionally skips the call to MSBuild.exe below.
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildFoundation"))
     {
-        $cleanIntermediateFiles = if ($WindowsAppSDKBuildPipeline -eq 1) { "/p:WindowsAppSDKCleanIntermediateFiles=true" } else { "" }
+        if ($WindowsAppSDKBuildPipeline -eq 1)
+        {
+            $CleanIntermediateFiles = $true
+        }
+
+        $cleanIntermediateFilesArg = if ($CleanIntermediateFiles) { "/p:WindowsAppSDKCleanIntermediateFiles=true" } else { "" }
+
         foreach($configurationToRun in $configuration.Split(","))
         {
             foreach($platformToRun in $platform.Split(","))
@@ -179,7 +186,7 @@ Try {
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
-                                $cleanIntermediateFiles `
+                                $cleanIntermediateFilesArg `
                                 /p:AppxSymbolPackageEnabled=false `
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
