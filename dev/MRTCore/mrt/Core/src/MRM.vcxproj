@@ -93,10 +93,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)MRM.cpp" />
+    <ClCompile Include="MRM.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)MRM.h" />
+    <ClInclude Include="MRM.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MRM.rc">

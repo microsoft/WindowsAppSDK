@@ -198,29 +198,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Create_FilePathLifetime_NoExist.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Create_RegistryLifetime_NoExist.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT.cpp" />
+    <ClCompile Include="Create_FilePathLifetime_NoExist.cpp" />
+    <ClCompile Include="Create_RegistryLifetime_NoExist.cpp" />
+    <ClCompile Include="Test_WinRT.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)TestFilesystem.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)TestPackages.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_Add_Rank_A0_B10.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_Add_Rank_B-10_A0.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_Add_Rank_B0prepend_A0.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_Create_Add_Architectures_Current.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_Create_Add_Architectures_Explicit.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_Create_DoNotVerifyDependencyResolution.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_FullLifecycle_FilePathLifetime_Frameworks_2.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_FullLifecycle_ProcessLifetime_Frameworks_2.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Test_WinRT_FullLifecycle_RegistryLifetime_Frameworks_2.cpp" />
+    <ClCompile Include="TestFilesystem.cpp" />
+    <ClCompile Include="TestPackages.cpp" />
+    <ClCompile Include="Test_WinRT_Add_Rank_A0_B10.cpp" />
+    <ClCompile Include="Test_WinRT_Add_Rank_B-10_A0.cpp" />
+    <ClCompile Include="Test_WinRT_Add_Rank_B0prepend_A0.cpp" />
+    <ClCompile Include="Test_WinRT_Create_Add_Architectures_Current.cpp" />
+    <ClCompile Include="Test_WinRT_Create_Add_Architectures_Explicit.cpp" />
+    <ClCompile Include="Test_WinRT_Create_DoNotVerifyDependencyResolution.cpp" />
+    <ClCompile Include="Test_WinRT_FullLifecycle_FilePathLifetime_Frameworks_2.cpp" />
+    <ClCompile Include="Test_WinRT_FullLifecycle_ProcessLifetime_Frameworks_2.cpp" />
+    <ClCompile Include="Test_WinRT_FullLifecycle_RegistryLifetime_Frameworks_2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)TestFilesystem.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)TestPackages.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Test_WinRT.h" />
+    <ClInclude Include="TestFilesystem.h" />
+    <ClInclude Include="TestPackages.h" />
+    <ClInclude Include="Test_WinRT.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

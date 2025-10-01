@@ -105,39 +105,39 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)AtomPool.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)BlobResult.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)BlobResult_C.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)DataItemsSection.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)DecisionInfo.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)DefChecksum.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Environment.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Helpers.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)HNames.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)HSchema.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)LoggingTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PriBuilder.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PriFileManager.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)RemapInfo.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceLink.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceMap.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ResourcePackMerge.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceReference.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ReverseFileMap.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)StringResult.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)StringResult_C.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)testEnvironment.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)TestFileUtils.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)testHSchema.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)TestLinks.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)testMap.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)testPri.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)testQualifier.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)TestReverseMap.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)TestSections.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)testUtils.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)UnifiedView.UnitTests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Util.UnitTests.cpp" />
+    <ClCompile Include="AtomPool.UnitTests.cpp" />
+    <ClCompile Include="BlobResult.UnitTests.cpp" />
+    <ClCompile Include="BlobResult_C.UnitTests.cpp" />
+    <ClCompile Include="DataItemsSection.UnitTests.cpp" />
+    <ClCompile Include="DecisionInfo.UnitTests.cpp" />
+    <ClCompile Include="DefChecksum.UnitTests.cpp" />
+    <ClCompile Include="Environment.UnitTests.cpp" />
+    <ClCompile Include="Helpers.cpp" />
+    <ClCompile Include="HNames.UnitTests.cpp" />
+    <ClCompile Include="HSchema.UnitTests.cpp" />
+    <ClCompile Include="LoggingTests.cpp" />
+    <ClCompile Include="PriBuilder.UnitTests.cpp" />
+    <ClCompile Include="PriFileManager.UnitTests.cpp" />
+    <ClCompile Include="RemapInfo.UnitTests.cpp" />
+    <ClCompile Include="ResourceLink.UnitTests.cpp" />
+    <ClCompile Include="ResourceMap.UnitTests.cpp" />
+    <ClCompile Include="ResourcePackMerge.UnitTests.cpp" />
+    <ClCompile Include="ResourceReference.UnitTests.cpp" />
+    <ClCompile Include="ReverseFileMap.UnitTests.cpp" />
+    <ClCompile Include="StringResult.UnitTests.cpp" />
+    <ClCompile Include="StringResult_C.UnitTests.cpp" />
+    <ClCompile Include="testEnvironment.cpp" />
+    <ClCompile Include="TestFileUtils.cpp" />
+    <ClCompile Include="testHSchema.cpp" />
+    <ClCompile Include="TestLinks.cpp" />
+    <ClCompile Include="testMap.cpp" />
+    <ClCompile Include="testPri.cpp" />
+    <ClCompile Include="testQualifier.cpp" />
+    <ClCompile Include="TestReverseMap.cpp" />
+    <ClCompile Include="TestSections.cpp" />
+    <ClCompile Include="testUtils.cpp" />
+    <ClCompile Include="UnifiedView.UnitTests.cpp" />
+    <ClCompile Include="Util.UnitTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="files\buffersize.htm">
@@ -209,17 +209,17 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Helpers.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)testEnvironment.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)TestFileUtils.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)testHSchema.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)testLinks.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)testMap.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)testPri.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)testQualifier.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)testReverseMap.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)TestSections.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)testUtils.h" />
+    <ClInclude Include="Helpers.h" />
+    <ClInclude Include="testEnvironment.h" />
+    <ClInclude Include="TestFileUtils.h" />
+    <ClInclude Include="testHSchema.h" />
+    <ClInclude Include="testLinks.h" />
+    <ClInclude Include="testMap.h" />
+    <ClInclude Include="testPri.h" />
+    <ClInclude Include="testQualifier.h" />
+    <ClInclude Include="testReverseMap.h" />
+    <ClInclude Include="TestSections.h" />
+    <ClInclude Include="testUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(MRTCoreRoot)\mrt\mrm\mrmex\mrmex.vcxproj">

@@ -102,7 +102,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)HelloWorldAdvanced.cpp" />
+    <ClCompile Include="HelloWorldAdvanced.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

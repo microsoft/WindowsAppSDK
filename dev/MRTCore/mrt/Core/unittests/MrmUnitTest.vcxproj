@@ -163,7 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)MrmTests.cpp" />
+    <ClCompile Include="MrmTests.cpp" />
     <CopyFileToFolders Include="$(BaseOutputPath)MRM\mrm.dll" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
     <CopyFileToFolders Include="$(BaseOutputPath)MRM\mrm.pdb" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
   </ItemGroup>
