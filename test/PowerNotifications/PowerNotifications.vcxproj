@@ -122,8 +122,8 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="APITests.cpp" />
-    <ClCompile Include="FunctionalTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)APITests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FunctionalTests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
