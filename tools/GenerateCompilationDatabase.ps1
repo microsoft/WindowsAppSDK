@@ -2,6 +2,11 @@ Param(
     [string]$Ms2ccVersion = "1.3.0"
 )
 
+$binlogFileBase = Split-Path $PSScriptRoot -parent
+$binlogFile0 = Join-Path $binlogFileBase "BuildOutput\Binlogs\MrtCore.x64.Release.binlog"
+$binlogFile1 = Join-Path $binlogFileBase "BuildOutput\Binlogs\WindowsAppRuntime.x64.Release.binlog"
+
+$binlogFiles = @($binlogFile0, $binlogFile1)
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
@@ -9,24 +14,25 @@ write-host "VCToolsInstallDir: $VCToolsInstallDir"
 $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 write-host "msBuildPath: $msBuildPath"
 
-$binlogFile = Split-Path $PSScriptRoot -parent
-$binlogFile = Join-Path $binlogFile "BuildOutput\Binlogs\WindowsAppRuntime.x64.Release.binlog"
+Remove-Item "temp-filtered.log" -ErrorAction SilentlyContinue
 
-if (-Not (Test-Path $binlogFile)) {
-    Write-Error "Binlog file not found: $binlogFile"
-    exit 1
+foreach ($binlogFile in $binlogFiles) {
+    if (-Not (Test-Path $binlogFile)) {
+        Write-Error "Binlog file not found: $binlogFile"
+        exit 1
+    }
+
+    & $msBuildPath $binlogFile /v:normal /noconlog /flp:logfile=temp.log
+
+    Select-String -Path "temp.log" -Pattern "Cl.exe" |
+        ForEach-Object { $_.Line } |
+        Where-Object { $_ -notmatch "Tracker.exe" } |
+        Out-File -FilePath "temp-filtered.log" -Append -Encoding utf8
+
+    Remove-Item "temp.log"
 }
 
-& $msBuildPath $binlogFile /v:normal /noconlog /flp:logfile=temp.log
-
-Select-String -Path "temp.log" -Pattern "Cl.exe" |
-    ForEach-Object { $_.Line } |
-    Where-Object { $_ -notmatch "Tracker.exe" } |
-    Set-Content -Path "temp-filtered.log"
-
 Write-Host "Filtered log file generated at: $(Get-Location)\temp-filtered.log"
-
-Remove-Item "temp.log"
 
 $ms2ccPath = Join-Path $PSScriptRoot "ms2cc"
 $ms2ccExe = Join-Path $ms2ccPath "ms2cc.exe"
