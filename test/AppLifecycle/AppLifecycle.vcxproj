@@ -206,7 +206,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="$(MSBuildThisFileDirectory)packages.config" />
   </ItemGroup>
   <PropertyGroup>
     <VCLibsDebugConfigName Condition="'$(Configuration)' == 'Debug'">.Debug</VCLibsDebugConfigName>
