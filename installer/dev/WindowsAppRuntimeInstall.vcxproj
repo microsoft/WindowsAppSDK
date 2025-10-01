@@ -126,26 +126,26 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="console.h" />
-    <ClInclude Include="MachineTypeAttributes.h" />
-    <ClInclude Include="InstallActivityContext.h" />
-    <ClInclude Include="tracelogging.h" />
-    <ClInclude Include="install.h" />
-    <ClInclude Include="packages.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="WindowsAppRuntime-License.h" />
-    <ClInclude Include="windowsappruntime_definitions.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)console.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineTypeAttributes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)InstallActivityContext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)tracelogging.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)install.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)packages.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime-License.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)windowsappruntime_definitions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="console.cpp" />
-    <ClCompile Include="install.cpp" />
-    <ClCompile Include="InstallActivityContext.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)console.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)install.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InstallActivityContext.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="tracelogging.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)tracelogging.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

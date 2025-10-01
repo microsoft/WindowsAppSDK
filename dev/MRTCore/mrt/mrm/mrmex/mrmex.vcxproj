@@ -123,28 +123,28 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AIDict.cpp" />
-    <ClCompile Include="DataItemOrchestrator.cpp" />
-    <ClCompile Include="DataSectionBuilder.cpp" />
-    <ClCompile Include="EnvironmentEx.cpp" />
-    <ClCompile Include="EnvironmentMappingBuilder.cpp" />
-    <ClCompile Include="FileAtomPoolBuilder.cpp" />
-    <ClCompile Include="FileBuilder.cpp" />
-    <ClCompile Include="FileListBuilder.cpp" />
-    <ClCompile Include="HNamesBuilder.cpp" />
-    <ClCompile Include="HSchemaBuilder.cpp" />
-    <ClCompile Include="InstanceReferences.cpp" />
-    <ClCompile Include="LinkBuilder.cpp" />
-    <ClCompile Include="MapBuilder.cpp" />
-    <ClCompile Include="PriMerge.cpp" />
-    <ClCompile Include="PriSectionBuilder.cpp" />
-    <ClCompile Include="References.cpp" />
-    <ClCompile Include="ResourcePackMerge.cpp" />
-    <ClCompile Include="ReverseMapBuilder.cpp" />
-    <ClCompile Include="SectionCopier.cpp" />
-    <ClCompile Include="SectionCopierFactory.cpp" />
-    <ClCompile Include="SectionCopiers.cpp" />
-    <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AIDict.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DataItemOrchestrator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DataSectionBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentEx.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentMappingBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FileAtomPoolBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FileBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FileListBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)HNamesBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)HSchemaBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InstanceReferences.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LinkBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MapBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PriMerge.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PriSectionBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)References.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourcePackMerge.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ReverseMapBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SectionCopier.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SectionCopierFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SectionCopiers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)StdAfx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -162,7 +162,7 @@
     <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\SectionBuilders.h" />
     <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\SectionCopiers.h" />
     <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\WriteableStringPool.h" />
-    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StdAfx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

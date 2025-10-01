@@ -133,21 +133,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ChangeTrackerHelper.h" />
-    <ClInclude Include="EnvironmentManagerCentennialTests.h" />
-    <ClInclude Include="EnvironmentManagerWin32Tests.h" />
-    <ClInclude Include="EnvironmentVariableHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ChangeTrackerHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentManagerCentennialTests.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentManagerWin32Tests.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentVariableHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)framework.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
-    <ClInclude Include="TestCommon.h" />
-    <ClInclude Include="TestSetupAndTeardownHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TestCommon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TestSetupAndTeardownHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EnvironmentManagerCentennialTests.cpp" />
-    <ClCompile Include="EnvironmentManagerWin32Tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentManagerCentennialTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentManagerWin32Tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="AppxManifest.pkg.xml">

@@ -107,31 +107,31 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ApplicationLanguages.h" />
-    <ClInclude Include="Helper.h" />
-    <ClInclude Include="KnownResourceQualifierName.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ApplicationLanguages.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Helper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)KnownResourceQualifierName.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
-    <ClInclude Include="ResourceCandidate.h" />
-    <ClInclude Include="ResourceContext.h" />
-    <ClInclude Include="ResourceLoader.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="ResourceMap.h" />
-    <ClInclude Include="ResourceNotFoundEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceCandidate.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceContext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceLoader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceMap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceNotFoundEventArgs.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ApplicationLanguages.cpp" />
-    <ClCompile Include="Helper.cpp" />
-    <ClCompile Include="KnownResourceQualifierName.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ApplicationLanguages.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Helper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)KnownResourceQualifierName.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="ResourceCandidate.cpp" />
-    <ClCompile Include="ResourceContext.cpp" />
-    <ClCompile Include="ResourceLoader.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="ResourceMap.cpp" />
-    <ClCompile Include="ResourceNotFoundEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceCandidate.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceContext.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceMap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceNotFoundEventArgs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Microsoft.Windows.ApplicationModel.Resources.idl" />

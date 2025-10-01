@@ -232,16 +232,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Microsoft.Test.DynamicDependency.Widgets.Widget1.h" />
-    <ClInclude Include="Microsoft.Test.DynamicDependency.Widgets.Widget2.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Test.DynamicDependency.Widgets.Widget1.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Test.DynamicDependency.Widgets.Widget2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Microsoft.Test.DynamicDependency.Widgets.Widget1.cpp" />
-    <ClCompile Include="Microsoft.Test.DynamicDependency.Widgets.Widget2.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)dllmain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Microsoft.Test.DynamicDependency.Widgets.Widget1.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Microsoft.Test.DynamicDependency.Widgets.Widget2.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>

@@ -167,26 +167,26 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="NotificationListener.cpp" />
-    <ClCompile Include="ForegroundSinkManager.cpp" />
-    <ClCompile Include="pch.cpp" />
-    <ClCompile Include="platform.cpp" />
-    <ClCompile Include="platformfactory.cpp" />
-    <ClCompile Include="PlatformLifetimeManager.cpp" />
-    <ClCompile Include="NotificationListenerManager.cpp" />
-    <ClCompile Include="ToastRegistrationManager.cpp" />
-    <ClCompile Include="winmain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NotificationListener.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ForegroundSinkManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)platform.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)platformfactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PlatformLifetimeManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NotificationListenerManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastRegistrationManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="NotificationListener.h" />
-    <ClInclude Include="ForegroundSinkManager.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="platform.h" />
-    <ClInclude Include="platformfactory.h" />
-    <ClInclude Include="PlatformLifetimeManager.h" />
-    <ClInclude Include="NotificationListenerManager.h" />
-    <ClInclude Include="PushNotificationLongRunningTaskTelemetry.h" />
-    <ClInclude Include="ToastRegistrationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationListener.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ForegroundSinkManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)platform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)platformfactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PlatformLifetimeManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationListenerManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationLongRunningTaskTelemetry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastRegistrationManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

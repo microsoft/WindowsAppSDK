@@ -110,28 +110,28 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Add.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Framework.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Main.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_EnsureReady.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_EnsureReady_RegisterNewerIfAvailable.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Module.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Register.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Remove.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Repair.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Reset.cpp" />
-    <ClCompile Include="PackageDeploymentManagerTests_Stage.cpp" />
-    <ClCompile Include="PackageRuntimeManagerTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Add.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Deprovision_Framework.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Deprovision_Main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_EnsureReady.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_EnsureReady_RegisterNewerIfAvailable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_IsReady.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Module.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Provision.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Register.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Remove.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Repair.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Reset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests_Stage.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageRuntimeManagerTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
-    <ClInclude Include="PackageDeploymentManagerTests.h" />
-    <ClInclude Include="PackageManagerTests.Packages.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeploymentManagerTests.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageManagerTests.Packages.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

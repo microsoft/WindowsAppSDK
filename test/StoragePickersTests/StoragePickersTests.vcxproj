@@ -104,7 +104,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\dev\Interop\StoragePickers\PickerCommon.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\dev\Interop\StoragePickers\PickerCommon.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -115,7 +115,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\dev\Interop\StoragePickers\PickerCommon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\dev\Interop\StoragePickers\PickerCommon.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PickerLocalization.h" />
   </ItemGroup>
