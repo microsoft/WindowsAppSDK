@@ -18,9 +18,15 @@ but with additional functionality, improved developer experience and performance
   - [4.1. FindPackageFileInPackage](#41-findpackagefileinpackage)
     - [4.1.1. C# Example](#411-c-example)
     - [4.1.2. C++ Example](#412-c-example)
-  - [4.2. FindPackageFileInPackageGraph](#42-findpackagefileinpackagegraph)
+  - [4.2. FindPackageFileInPackage with Options](#42-findpackagefileinpackage-with-options)
     - [4.2.1. C# Example](#421-c-example)
     - [4.2.2. C++ Example](#422-c-example)
+  - [4.3. FindPackageFileInPackageGraph](#43-findpackagefileinpackagegraph)
+    - [4.3.1. C# Example](#431-c-example)
+    - [4.3.2. C++ Example](#432-c-example)
+  - [4.4. FindPackageFileInPackageGraph with Options](#44-findpackagefileinpackagegraph-with-options)
+    - [4.4.1. C# Example](#441-c-example)
+    - [4.4.2. C++ Example](#442-c-example)
 - [5. Remarks](#5-remarks)
   - [5.1. Platform Support](#51-platform-support)
 - [6. API Details](#6-api-details)
@@ -52,7 +58,7 @@ scenarios:
 
 An MSIX package contains...
 
-* [Footprint files](https://learn.microsoft.com/windows/win32/api/appxpackaging/ne-appxpackaging-appx_footprint_file_type) 
+* [Footprint files](https://learn.microsoft.com/windows/win32/api/appxpackaging/ne-appxpackaging-appx_footprint_file_type)
   e.g. `AppxManifest.xml`
 * Content files i.e. all other files (*.exe, *.dll, *.jpg, *.dat, ...)
 
@@ -110,29 +116,39 @@ The search order for a package's locations is:
 
 ### 3.1.2. FindPackageFileInPackage
 
-`FindPackageFileInPackage(packageFullName, filename)` searches the location(s) of a specific package
+`FindPackageFileInPackage(packageFullName, filename[, options])` searches the location(s) of a specific package
 for the specified file, per the algorithm:
 
 ```
-path = package.GetEffectiveExternalPath()
-IF path != null AND FileExists(path\filename)
-    RETURN path\filename
+IF SearchUserExternalPath OR SearchMachineExternalPath in options
+    IF SearchUserExternalPath AND SearchMachineExternalPath in options
+        path = package.GetEffectiveExternalPath()
+    ELSEIF SearchUserExternalPath in options
+        path = package.GetUserExternalPath()
+    ELSEIF SearchMachineExternalPath in options
+        path = package.GetMachineExternalPath()     
+    IF path != null AND FileExists(path\filename)
+        RETURN path\filename       
 
-path = package.GetMutablePath()
-IF path != null AND FileExists(path\filename)
-    RETURN path\filename
+IF SearchMutablePath in options
+    path = package.GetMutablePath()
+    IF path != null AND FileExists(path\filename)
+        RETURN path\filename
 
 path = package.GetInstallPath()
-IF path != null AND FileExists(path\filename)
+IF FileExists(path\filename)
     RETURN path\filename
 
 // Not Found
 RETURN null
 ```
 
+Overloads without the `options` parameter use the default (search everything).
+
+
 ### 3.1.3. FindPackageFileInPackageGraph
 
-`FindPackageFileInPackageGraph(filename)` searches the location(s) of each package in the caller's
+`FindPackageFileInPackageGraph(filename[, options])` searches the location(s) of each package in the caller's
 package graph for the specified file, per the algorithm:
 
 ```
@@ -148,6 +164,8 @@ NEXT
 RETURN null
 ```
 
+Overloads without the `options` parameter use the default (search everything).
+
 # 4. Examples
 
 ## 4.1. FindPackageFileInPackage
@@ -157,9 +175,11 @@ Locate `resource.pri` in the package `Contoso_1.2.3.4_x64__1234567890abc`.
 ### 4.1.1. C# Example
 
 ```c#
+using Microsoft.Windows.ApplicationModel;
+
 string GetResourcesPri(string packageFullName)
 {
-    var absoluteFilename = Microsoft.Windows.ApplicationModel.Package.FindPackageFileInPackage(packageFullName, "resources.pri");
+    var absoluteFilename = Package.FindPackageFileInPackage(packageFullName, "resources.pri");
     if (absoluteFilename == null)
     {
         Console.WriteLine($"ERROR: resources.pri not found for {packageFullName}");
@@ -174,8 +194,10 @@ string GetResourcesPri(string packageFullName)
 ```c++
 wil::unique_process_heap_string GetResourcesPri(PCWSTR packageFullName)
 {
+    FindPackageFileOptions options{};
     wil::unique_process_heap_string absoluteFilename;
-    const HRESULT hr{ LOG_IF_FAILED(FindPackageFileInPackage(packageFullName, L"resources.pri", wistd::out_param(absoluteFilename))) };
+    const HRESULT hr{ LOG_IF_FAILED(FindPackageFileInPackage(
+        packageFullName, L"resources.pri", options, wistd::out_param(absoluteFilename))) };
     if (FAILED(hr))
     {
         wprintf(L"ERROR: 0x%08X locating resources.pri for %ls\n", hr, packageFullName);
@@ -190,16 +212,22 @@ wil::unique_process_heap_string GetResourcesPri(PCWSTR packageFullName)
 }
 ```
 
-## 4.2. FindPackageFileInPackageGraph
+## 4.2. FindPackageFileInPackage with Options
 
-Locate `resource.pri` in the current process' package graph.
+Locate `resource.pri` in the package `Contoso_1.2.3.4_x64__1234567890abc` but ignore the package's
+Mutable location.
 
 ### 4.2.1. C# Example
 
 ```c#
-string GetXamlWinMD()
+using Microsoft.Windows.ApplicationModel;
+
+string GetResourcesPri(string packageFullName)
 {
-    var absoluteFilename = Microsoft.Windows.ApplicationModel.Package.FindPackageFileInPackageGraph("Microsoft.UI.Xaml.winmd");
+    var options = FindPackageFileOptions.SearchInstallPath |
+                  FindPackageFileOptions.SearchMachineExternalPath |
+                  FindPackageFileOptions.SearchUserExternalPath;
+    var absoluteFilename = Package.FindPackageFileInPackage(packageFullName, "resources.pri", options);
     if (absoluteFilename == null)
     {
         Console.WriteLine($"ERROR: resources.pri not found for {packageFullName}");
@@ -212,10 +240,107 @@ string GetXamlWinMD()
 ### 4.2.2. C++ Example
 
 ```c++
+wil::unique_process_heap_string GetResourcesPri(PCWSTR packageFullName)
+{
+    FindPackageFileOptions options{ FindPackageFileOptions_SearchInstallPath |
+                                    FindPackageFileOptions_SearchMachineExternalPath |
+                                    FindPackageFileOptions_SearchUserExternalPath };
+    wil::unique_process_heap_string absoluteFilename;
+    const HRESULT hr{ LOG_IF_FAILED(FindPackageFileInPackage(
+        packageFullName, L"resources.pri", options, wistd::out_param(absoluteFilename))) };
+    if (FAILED(hr))
+    {
+        wprintf(L"ERROR: 0x%08X locating resources.pri for %ls\n", hr, packageFullName);
+        THROW_HR(hr);
+    }
+    else if (!absoluteFilename)
+    {
+        wprintf(L"ERROR: resources.pri not found for %ls\n", hr, packageFullName);
+        THROW_WIN32_ERROR(ERROR_FILE_NOT_FOUND);
+    }
+    return absoluteFilename;
+}
+```
+
+## 4.3. FindPackageFileInPackageGraph
+
+Locate `resource.pri` in the current process' package graph.
+
+### 4.3.1. C# Example
+
+```c#
+using Microsoft.Windows.ApplicationModel;
+
+string GetXamlWinMD()
+{
+    var absoluteFilename = Package.FindPackageFileInPackageGraph("Microsoft.UI.Xaml.winmd");
+    if (absoluteFilename == null)
+    {
+        Console.WriteLine($"ERROR: resources.pri not found for {packageFullName}");
+        throw new FileNotFoundException($"resources.pri not found for {packageFullName}");
+    }
+    return absoluteFilename;
+}
+```
+
+### 4.3.2. C++ Example
+
+```c++
 wil::unique_process_heap_string GetXamlWinMD()
 {
+    FindPackageFileOptions options{};
     wil::unique_process_heap_string absoluteFilename;
-    const HRESULT hr{ LOG_IF_FAILED(FindPackageFileInPackageGraph(L"Microsoft.UI.Xaml.winmd", wistd::out_param(absoluteFilename))) };
+    const HRESULT hr{ LOG_IF_FAILED(FindPackageFileInPackageGraph(
+        L"Microsoft.UI.Xaml.winmd", options, wistd::out_param(absoluteFilename))) };
+    if (FAILED(hr))
+    {
+        wprintf(L"ERROR: 0x%08X locating resources.pri for %ls\n", hr, packageFullName);
+        THROW_HR(hr);
+    }
+    else if (!absoluteFilename)
+    {
+        wprintf(L"ERROR: resources.pri not found for %ls\n", hr, packageFullName);
+        THROW_WIN32_ERROR(ERROR_FILE_NOT_FOUND);
+    }
+    return absoluteFilename;
+}
+```
+
+## 4.4. FindPackageFileInPackageGraph with Options
+
+Locate `resource.pri` in the current process' package graph but ignore Mutable locations.
+
+### 4.4.1. C# Example
+
+```c#
+using Microsoft.Windows.ApplicationModel;
+
+string GetXamlWinMD()
+{
+    var options = FindPackageFileOptions.SearchInstallPath |
+                  FindPackageFileOptions.SearchMachineExternalPath |
+                  FindPackageFileOptions.SearchUserExternalPath;
+    var absoluteFilename = Package.FindPackageFileInPackageGraph("Microsoft.UI.Xaml.winmd", options);
+    if (absoluteFilename == null)
+    {
+        Console.WriteLine($"ERROR: resources.pri not found for {packageFullName}");
+        throw new FileNotFoundException($"resources.pri not found for {packageFullName}");
+    }
+    return absoluteFilename;
+}
+```
+
+### 4.4.2. C++ Example
+
+```c++
+wil::unique_process_heap_string GetXamlWinMD()
+{
+    FindPackageFileOptions options{ FindPackageFileOptions_SearchInstallPath |
+                                    FindPackageFileOptions_SearchMachineExternalPath |
+                                    FindPackageFileOptions_SearchUserExternalPath };
+    wil::unique_process_heap_string absoluteFilename;
+    const HRESULT hr{ LOG_IF_FAILED(FindPackageFileInPackageGraph(
+        L"Microsoft.UI.Xaml.winmd", options, wistd::out_param(absoluteFilename))) };
     if (FAILED(hr))
     {
         wprintf(L"ERROR: 0x%08X locating resources.pri for %ls\n", hr, packageFullName);
@@ -241,10 +366,30 @@ This API is available on Windows >= 10.0.17763.0 (aka RS5).
 ## 6.1. WinRT API
 
 ```c# (but really MIDL3)
-amespace Microsoft.Windows.ApplicationModel
+namespace Microsoft.Windows.ApplicationModel
 {
     [contractversion(1)]
     apicontract PackageRuntimeContract{};
+
+    /// Options for Package.FindPackageFile*() methods
+    [contract(PackageRuntimeContract, 1)]
+    enum FindPackageFileOptions
+    {
+        /// Default behavior
+        None = 0,
+
+        /// Include the package's Install path in the file search order
+        SearchInstallPath = 1,
+
+        /// Include the package's Mutable path (if it has one) in the file search order
+        SearchMutablePath = 2,
+
+        /// Include the package's Machine External path (if it has one) in the file search order
+        SearchMachineExternalPath = 3,
+
+        /// Include the package's User External path (if it has one) in the file search order
+        SearchUserExternalPath = 4,
+    }
 
     [contract(PackageRuntimeContract, 1)]
     runtimeclass Package
@@ -259,6 +404,19 @@ amespace Microsoft.Windows.ApplicationModel
         /// @see FindPackageFileInPackageGraph
         static String FindPackageFileInPackage(String packageFullName, String filename);
 
+        /// Return the absolute path to the file in the package.
+        /// @param packageFullName the package, or empty string ("") to use the current process' package identity.
+        /// @param filename file to locate.
+        /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
+        /// @param options options for the search.
+        /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
+        /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
+        /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
+        /// @see FindPackageFileInPackageGraph
+        /// @see FindPackageFileOptions
+        [method_name("FindPackageFileInPackageWithOptions")]
+        static String FindPackageFileInPackage(String packageFullName, String filename, FindPackageFileOptions options);
+
         /// Return the absolute path to the file in the package graph.
         /// @param filename file to locate.
         /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
@@ -267,6 +425,18 @@ amespace Microsoft.Windows.ApplicationModel
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
         /// @see FindPackageFileInPackage
         static String FindPackageFileInPackageGraph(String filename);
+
+        /// Return the absolute path to the file in the package graph.
+        /// @param filename file to locate.
+        /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
+        /// @param options options for the search.
+        /// @note The package paths search order is External(User or Machine) -> Mutable -> Install.
+        /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
+        /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
+        /// @see FindPackageFileInPackage
+        /// @see FindPackageFileOptions
+        [method_name("FindPackageFileInPackageGraphWithOptions")]
+        static String FindPackageFileInPackageGraph(String filename, FindPackageFileOptions options);
     };
 }
 ```
@@ -282,28 +452,53 @@ amespace Microsoft.Windows.ApplicationModel
 #if !defined(PACKAGE_RUNTIME_H)
 #define PACKAGE_RUNTIME_H
 
+/// Options for FindPackageFile*() functions
+typedef enum FindPackageFileOptions
+{
+    /// Default behavior
+    FindPackageFileOptions_None = 0,
+
+    /// Include the package's Install path in the file search order
+    FindPackageFileOptions_SearchInstallPath = 1,
+
+    /// Include the package's Mutable path (if it has one) in the file search order
+    FindPackageFileOptions_SearchMutablePath = 2,
+
+    /// Include the package's Machine External path (if it has one) in the file search order
+    FindPackageFileOptions_SearchMachineExternalPath = 3,
+
+    /// Include the package's User External path (if it has one) in the file search order
+    FindPackageFileOptions_SearchUserExternalPath = 4,
+}
+
 /// Return the absolute path to the file in the package.
 /// @param packageFullName the package, or NULL or "" to use the current process' package identity.
 /// @param filename file to locate.
+/// @param options options for the search.
 /// @param packageFile absolute path to the packaged file, or NULL if not found. Allocated via HeapAlloc; use HeapFree to deallocate
 /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
 /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
 /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
 /// @see FindPackageFileInPackageGraph()
+/// @see FindPackageFileOptions
 STDAPI FindPackageFileInPackage(
-    _In_ PCWSTR packageFullName,
+    PCWSTR packageFullName,
     _In_ PCWSTR filename,
+    _In_ FindPackageFileOptions options,
     _Outptr_result_maybenull_ PWSTR* packageFile) noexcept;
 
 /// Return the absolute path to the file in the caller's package graph.
 /// @param filename file to locate.
+/// @param options options for the search.
 /// @param packageFile absolute path to the packaged file, or NULL if not found. Allocated via HeapAlloc; use HeapFree to deallocate
 /// @note The search order is External(User or Machine) -> Mutable -> Install for each package in the package graph.
 /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
 /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
 /// @see FindPackageFileInPackage()
+/// @see FindPackageFileOptions
 STDAPI FindPackageFileInPackageGraph(
     _In_ PCWSTR filename,
+    _In_ FindPackageFileOptions options,
     _Outptr_result_maybenull_ PWSTR* packageFile) noexcept;
 
 #endif // PACKAGE_RUNTIME_H
