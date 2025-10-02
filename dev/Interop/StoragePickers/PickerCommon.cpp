@@ -236,77 +236,17 @@ namespace PickerCommon {
 
         ValidateStringNoEmbeddedNulls(path);
 
-        std::wstring pathString{ path };
-        auto pathObj = std::filesystem::path(pathString);
+        auto pathObj = std::filesystem::path(path.c_str());
         if (!pathObj.is_absolute())
         {
             throw std::invalid_argument(propertyName);
         }
 
-        constexpr std::wstring_view invalidCharacters{ L"<>\"|?*" };
-
-        bool hasExtendedPrefix = false;
-        size_t startIndex = 0;
-        if (pathString.size() >= 4 && pathString[0] == L'\\' && pathString[1] == L'\\' &&
-            (pathString[2] == L'?' || pathString[2] == L'.') && pathString[3] == L'\\')
+        // The method SHSimpleIDListFromPath does syntax check on the path string.
+        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
+        if (!pidl)
         {
-            hasExtendedPrefix = true;
-            startIndex = 4; // Skip the extended path prefix
-        }
-
-        auto isDriveSpecifier = [&](size_t index)
-        {
-            if (!hasExtendedPrefix)
-            {
-                return index == 1 && std::iswalpha(pathString[0]);
-            }
-
-            return (index == 5 && std::iswalpha(pathString[4]));
-        };
-
-        for (size_t i = startIndex; i < pathString.size(); ++i)
-        {
-            wchar_t currentChar = pathString[i];
-
-            if (currentChar == L':')
-            {
-                if (isDriveSpecifier(i))
-                {
-                    continue;
-                }
-            }
-
-            if (invalidCharacters.find(currentChar) != std::wstring_view::npos)
-            {
-                throw std::invalid_argument(propertyName);
-            }
-        }
-
-        constexpr size_t MaxComponentLength = 255;
-        bool isFirstComponent = true;
-        for (auto const& component : pathObj)
-        {
-            auto nativeComponent = component.native();
-            if (nativeComponent.empty())
-            {
-                continue;
-            }
-
-            if (isFirstComponent)
-            {
-                isFirstComponent = false;
-                continue; // Skip root name (e.g., "C:" or "\\server\share")
-            }
-
-            if (nativeComponent == L"\\" || nativeComponent == L"/")
-            {
-                continue; // Skip root directory separators
-            }
-
-            if (nativeComponent.size() > MaxComponentLength)
-            {
-                throw std::invalid_argument(propertyName);
-            }
+            throw std::invalid_argument(propertyName);
         }
     }
 
