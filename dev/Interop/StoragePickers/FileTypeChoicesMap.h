@@ -11,9 +11,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>,
         winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>>
     {
-        FileTypeChoicesMap(bool forSavePicker = true);
+        FileTypeChoicesMap();
 
-        bool ForSavePicker{ forSavePicker };
+        bool ForFeature_StoragePickers2{ false };
 
         // IMap<hstring, IVector<hstring>>
         winrt::Windows::Foundation::Collections::IVector<hstring> Lookup(hstring const& key) const;

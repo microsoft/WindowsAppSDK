@@ -7,14 +7,13 @@
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
-    FileTypeChoicesMap::FileTypeChoicesMap(bool forSavePicker)
-        : ForSavePicker(forSavePicker)
+    FileTypeChoicesMap::FileTypeChoicesMap()
     {
     }
 
     bool FileTypeChoicesMap::Insert(hstring const& key, winrt::Windows::Foundation::Collections::IVector<hstring> const& value)
     {
-        if (!ForSavePicker)
+        if (ForFeature_StoragePickers2)
         {
             THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         }
