@@ -55,7 +55,11 @@ function Get-Tests
 function Build-Tests
 {
     param(
-        [TestInfo[]]$tests
+        [TestInfo[]]$tests,
+        [ValidateSet("Debug", "Release", IgnoreCase=$true)]
+        [string]$Configuration,
+        [ValidateSet("x86", "x64", "arm64", IgnoreCase=$true)]
+        [string]$Platform
     )
 
     $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath

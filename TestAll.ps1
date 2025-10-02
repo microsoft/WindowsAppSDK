@@ -218,7 +218,7 @@ if ($BuildTests)
 
     $tests = Get-Tests $testsSourceFolder
     $tests = FilterTests $tests
-    Build-Tests $tests # TODO: pass platform/config
+    Build-Tests $tests -Platform $Platform -Configuration $Configuration
 }
 
 $configPlat = Join-Path $Configuration $Platform
@@ -236,7 +236,7 @@ if ($Test -eq $true)
 {
     $additionalParams = @()
 
-    $teLogFile = Join-Path $BuildOutputFolder "$Configuration\$Platform\Te.wtl"
+    $teLogFile = (Join-Path $BuildOutputFolder "$Configuration\$Platform\Te.wtl")
     remove-item -Path $teLogFile -ErrorAction Ignore
     $additionalParams += "/logFile:$teLogFile"
 
@@ -260,7 +260,7 @@ if ($Test -eq $true)
 
     if ($TestOutputFolder -ne '')
     {
-        $teLogPathTo = Join-Path $TestOutputFolder "$Configuration\$Platform"
+        $teLogPathTo = (Join-Path $TestOutputFolder "$Configuration\$Platform")
         remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
 
         # copy test log to TestOutput folder
