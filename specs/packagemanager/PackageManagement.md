@@ -793,15 +793,12 @@ This example shows how to use built-in PackageValidators to verify package famil
 using Microsoft.Windows.Management.Deployment;
 
 var pdm = PackageDeploymentManager().GetDefault();
-var packageUri = "https://contoso.com/package.msix";
-
-var validators = new IList<PackageValidator>();
-validators.Add(new PackageFamilyNameValidator("ExpectedFamilyName_1234567890abc"));
-validators.Add(new PackageMinimumVersionValidator(new Windows.ApplicationModel.PackageVersion(2, 0, 0, 0)));
-validators.Add(new PackageCertificateEkuValidator("1.3.6.1.4.1.311.2.1.11"));
+var packageUri = new Uri("https://contoso.com/package.msix");
 
 var options = new AddPackageOptions();
-options.Validators.Add(packageUri, validators);
+options.AddPackageValidator(packageUri, new PackageFamilyNameValidator("ExpectedFamilyName_1234567890abc"));
+options.AddPackageValidator(packageUri, new PackageMinimumVersionValidator(new Windows.ApplicationModel.PackageVersion(2, 0, 0, 0)));
+options.AddPackageValidator(packageUri, new PackageCertificateEkuValidator("1.3.6.1.4.1.311.2.1.11"));
 
 var deploymentResult = await pdm.AddPackageAsync(packageUri, options);
 if (deploymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
@@ -880,13 +877,10 @@ namespace winrt::MyCustom::implementation
 // At the call site to PackageDeploymentManager, using the custom package validator
 auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-const winrt::hstring packageUri{ L"https://contoso.com/package.msix" };
-
-IVector<IPackageValidator> validators{ winrt::single_threaded_vector<IPackageValidator>() };
-validators.Append(winrt::MyCustom::MyPackageValidator());
+const winrt::Windows::Foundation::Uri packageUri{ L"https://contoso.com/package.msix" };
 
 winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-options.PackageValidators.Insert(packageUri, validators);
+options.AddPackageValidator(packageUri, winrt::MyCustom::MyPackageValidator());
 
 auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(packageUri, options) };
 auto deploymentResult{ deploymentOperation().get() };
@@ -1140,7 +1134,8 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean LimitToExistingPackages;
 
         Boolean IsPackageValidatorsSupported{ get; };
-        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
+        IMapView<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
+        void AddPackageValidator(Windows.Foundation.Uri packageUri, IPackageValidator validator);
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -1167,7 +1162,8 @@ namespace Microsoft.Windows.Management.Deployment
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
 
         Boolean IsPackageValidatorsSupported{ get; };
-        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
+        IMapView<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
+        void AddPackageValidator(Windows.Foundation.Uri packageUri, IPackageValidator validator);
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
