@@ -52,6 +52,49 @@ function Get-Tests
     return $allTests
 }
 
+function Build-Tests
+{
+    param(
+        [TestInfo[]]$tests
+    )
+
+    $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
+    Write-Host "VCToolsInstallDir: $VCToolsInstallDir"
+
+    $msbuildPath = Join-Path $VCToolsInstallDir "MSBuild\Current\Bin\msbuild.exe"
+    Write-Host "MSBuild Path: $msbuildPath"
+
+    # Build each test project once
+    $projectsBuilt = @{}
+
+    foreach ($test in $tests)
+    {
+        $testDefFile = $test.TestDef
+        Write-Host "Building tests for testdef: $testDefFile"
+
+        $testFolder = Split-Path -parent $testDefFile
+        Write-Host "Building tests in folder: $testFolder"
+        $projFile = Get-ChildItem -Filter "*.vcxproj" -Path $testFolder | Select-Object -First 1
+
+        if ($null -eq $projFile)
+        {
+            Write-Error "Could not find a .vcxproj file in $testFolder"
+            Exit 1
+        }
+
+        Write-Host "Found project file: $projFile"
+
+        if ($projectsBuilt.ContainsKey($projFile.FullName))
+        {
+            Write-Host "Project already built. Skipping."
+            continue
+        }
+
+        & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
+        $projectsBuilt[$projFile.FullName] = $true
+    }
+}
+
 function Run-TaefTest
 {
     param(

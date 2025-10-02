@@ -36,8 +36,11 @@
         ]
     }
 
-.PARAMETER OutputFolder
+.PARAMETER BuildOutputFolder
     Set the base folder for the script to look for testdefs
+
+.PARAMETER TestOutputFolder
+    If set, the test log and screenshots will be copied to this folder after running the tests
 
 .PARAMETER Platform
     Only run tests for the selected platform
@@ -48,19 +51,55 @@
 .PARAMETER List
     List the tests available in BuildOutput with their settings
 
+.PARAMETER BuildTests
+    Builds the tests from source before running them
+
 .PARAMETER Test
     Runs the tests available in BuildOutput
+
+.PARAMETER ShowSystemInfo
+    Show system information before running the tests
+
+.PARAMETER wprProfilePath
+    WPR profile to use for ETW logging
+
+.PARAMETER callingStage
+    If set to 'TestSampleApps', only tests from WindowsAppSDK.Test.SampleTests.dll
+
+.PARAMETER CustomParameters
+    Override test parameters for all executed tests
+
+.PARAMETER FilterTestDef
+    Filter tests by testdef file full name using regex pattern matching
+
+.PARAMETER FilterDescription
+    Filter tests by description field using regex pattern matching
+
+.PARAMETER FilterDllFilename
+    Filter tests by Dll filename using regex pattern matching
+
+.PARAMETER FilterParameters
+    Filter tests by parameters field using regex pattern matching
+
 #>
 
+# Import the module containing the functions:
+# List-Tests, Get-Tests, Run-Tests, Build-Tests
+# And the class TestInfo
+using module .\tools\Tests.psm1
+
 param(
-        [Parameter(Mandatory=$true)]
-        [string]$OutputFolder,
+        [Parameter(Mandatory=$false)]
+        [string]$BuildOutputFolder = (Join-Path $PSScriptRoot "BuildOutput"),
 
-        [Parameter(Mandatory=$true)]
-        [string]$Platform,
+        [Parameter(Mandatory=$false)]
+        [string]$TestOutputFolder = "",
 
-        [Parameter(Mandatory=$true)]
-        [string]$Configuration,
+        [Parameter(Mandatory=$false)]
+        [string]$Platform = "$($env:PROCESSOR_ARCHITECTURE)",
+
+        [Parameter(Mandatory=$false)]
+        [string]$Configuration = "Release",
 
         [Parameter(Mandatory=$false)]
         [Switch]$Test,
@@ -69,14 +108,34 @@ param(
         [Switch]$List,
 
         [Parameter(Mandatory=$false)]
-        [Switch]$ShowSystemInfo=$true,
+        [Switch]$BuildTests,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$false)]
+        [Switch]$ShowSystemInfo = $true,
+
+        [switch]$SaveScreenshots,
+
+        [Parameter(Mandatory=$false)]
         [string]$wprProfilePath,
 
         [Parameter(Mandatory=$false)]
-        [string]$callingStage = ''
+        [string]$callingStage,
+
+        [string]$CustomParameters = "",
+
+        [string]$FilterTestDef = "",
+
+        [string]$FilterDescription = "",
+
+        [string]$FilterDllFilename = "",
+
+        [string]$FilterParameters = ""
 )
+
+if ($Platform -eq "AMD64")
+{
+    $Platform = "x64"
+}
 
 $StartTime = Get-Date
 $lastexitcode = 0
@@ -116,31 +175,57 @@ function Get-SystemInfo
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
 }
 
+function FilterTests
+{
+    param(
+        [TestInfo[]]$tests
+    )
+
+    $filteredTests = $tests | Where-Object {
+        (-not $FilterTestDef -or $_.TestDef -match $FilterTestDef) -and
+        (-not $FilterDescription -or $_.Description -match $FilterDescription) -and
+        (-not $FilterDllFilename -or $_.Filename -match $FilterDllFilename) -and
+        (-not $FilterParameters -or $_.Parameters -match $FilterParameters)
+    }
+
+    if ($callingStage -eq 'TestSampleApps')
+    {
+        $filteredTests = $filteredTests | Where-Object { $_.Filename -like "WindowsAppSDK.Test.SampleTests.dll" }
+    }
+    else
+    {
+        $filteredTests = $filteredTests | Where-Object { $_.Filename -notlike "WindowsAppSDK.Test.SampleTests.dll" }
+    }
+
+    return $filteredTests
+}
+
 $env:Build_Platform = $Platform.ToLower()
 $env:Build_Configuration = $Configuration.ToLower()
-
-# Import the module containing the functions:
-# List-Tests, Get-Tests, Run-Tests
-Import-Module "$PSScriptRoot\tools\Tests.psm1"
 
 if ($ShowSystemInfo -eq $true)
 {
     Get-SystemInfo
 }
 
+if ($BuildTests)
+{
+    Write-Host ""
+    Write-Host "Building tests" -ForegroundColor Yellow
+    Write-Host ""
+
+    $testsSourceFolder = Join-Path $PSScriptRoot "test"
+
+    $tests = Get-Tests $testsSourceFolder
+    $tests = FilterTests $tests
+    Build-Tests $tests # TODO: pass platform/config
+}
+
 $configPlat = Join-Path $Configuration $Platform
-$outputFolderPath = Join-Path $OutputFolder $configPlat
+$outputFolderPath = Join-Path $BuildOutputFolder $configPlat
 
 $allTests = Get-Tests $outputFolderPath
-
-if ($callingStage -eq 'TestSampleApps')
-{
-    $allTests = $allTests | Where-Object { $_.Filename -like "WindowsAppSDK.Test.SampleTests.dll" }
-}
-else
-{
-    $allTests = $allTests | Where-Object { $_.Filename -notlike "WindowsAppSDK.Test.SampleTests.dll" }
-}
+$allTests = FilterTests $allTests
 
 if ($List -eq $true)
 {
@@ -149,50 +234,71 @@ if ($List -eq $true)
 
 if ($Test -eq $true)
 {
-    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
-    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
+    $additionalParams = @()
+
+    $teLogFile = Join-Path $BuildOutputFolder "$Configuration\$Platform\Te.wtl"
     remove-item -Path $teLogFile -ErrorAction Ignore
-    remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
+    $additionalParams += "/logFile:$teLogFile"
 
-    $additionalParams = "/enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile /testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath"
-
-    Run-Tests $allTests -additionalParams $additionalParams -platform $Platform.ToLower()
-
-    # copy test log to TestOutput folder
-    if (Test-Path -Path $teLogFile) {
-        Write-Host "Starting copy test log from '$teLogFile'"
-
-        New-Item -ItemType Directory -Path $teLogPathTo -Force
-        copy-item -Path $teLogFile -Destination $teLogPathTo -Force
-
-        Write-Host "Test log copied to '$teLogPathTo'"
-    }
-
-    # copy screenshots to TestOutput folder
-    $screenshotsFolder = Join-Path $env:Build_SourcesDirectory "WexLogFileOutput"
-    if (Test-Path -Path $screenshotsFolder) {
-        Write-Host "Starting copy screenshots from '$screenshotsFolder'"
-
-        # Copy at most 50 screenshots to the upload path.
-        # In the cases where a large number of tests failed, there is little value in uploading dozens of screenshots
-        $files = Get-ChildItem -Path $screenshotsFolder -Filter *.jpg |Select-Object -First 50
-        foreach($file in $files)
-        {
-            Copy-Item $file.FullName $teLogPathTo -Force
-        }
-
-        # Copy at most 20 tracelogging files to the upload path.
-        $files = Get-ChildItem -Path $screenshotsFolder -Filter *.etl |Select-Object -First 20
-        foreach($file in $files)
-        {
-            Copy-Item $file.FullName $teLogPathTo -Force
-        }
-
-        Write-Host "Test results copied to '$teLogPathTo'"
-    }
-    else
+    if ($wprProfilePath -ne '')
     {
-        Write-Host "WexLogFileOutput not found"
+        $additionalParams += "/enableEtwLogging"
+        $additionalParams += "/appendWttLogging"
+        $additionalParams += "/testMode:ETWLogger"
+        $additionalParams += "/EtwLogger:WprProfile=WDGDEPAdex"
+        $additionalParams += "/EtwLogger:SavePoint=TestFailure"
+        $additionalParams += "/EtwLogger:RecordingScope=Execution"
+        $additionalParams += "/EtwLogger:WprProfileFile=$WprProfilePath"
+    }
+
+    if ($SaveScreenshots)
+    {
+        $additionalParams += "/screenCaptureOnError"
+    }
+
+    Run-Tests $allTests -additionalParams $additionalParams -customParameters $CustomParameters -platform $Platform.ToLower()
+
+    if ($TestOutputFolder -ne '')
+    {
+        $teLogPathTo = Join-Path $TestOutputFolder "$Configuration\$Platform"
+        remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
+
+        # copy test log to TestOutput folder
+        if (Test-Path -Path $teLogFile) {
+            Write-Host "Starting copy test log from '$teLogFile'"
+
+            New-Item -ItemType Directory -Path $teLogPathTo -Force
+            copy-item -Path $teLogFile -Destination $teLogPathTo -Force
+
+            Write-Host "Test log copied to '$teLogPathTo'"
+        }
+
+        # copy screenshots to TestOutput folder
+        $screenshotsFolder = Join-Path (Split-Path $BuildOutpurFolder -parent) "WexLogFileOutput"
+        if (Test-Path -Path $screenshotsFolder) {
+            Write-Host "Starting copy screenshots from '$screenshotsFolder'"
+
+            # Copy at most 50 screenshots to the upload path.
+            # In the cases where a large number of tests failed, there is little value in uploading dozens of screenshots
+            $files = Get-ChildItem -Path $screenshotsFolder -Filter *.jpg |Select-Object -First 50
+            foreach($file in $files)
+            {
+                Copy-Item $file.FullName $teLogPathTo -Force
+            }
+
+            # Copy at most 20 tracelogging files to the upload path.
+            $files = Get-ChildItem -Path $screenshotsFolder -Filter *.etl |Select-Object -First 20
+            foreach($file in $files)
+            {
+                Copy-Item $file.FullName $teLogPathTo -Force
+            }
+
+            Write-Host "Test results copied to '$teLogPathTo'"
+        }
+        else
+        {
+            Write-Host "WexLogFileOutput not found"
+        }
     }
 }
 

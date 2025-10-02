@@ -231,17 +231,19 @@ steps:
         SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.NetCore\net6'
         TargetFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.SampleTests\net6'
         Contents: '**'
-  
+
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:
       filePath: 'TestAll.ps1'
       arguments: >
-        -OutputFolder "$(Build.SourcesDirectory)\BuildOutput"
+        -BuildOutputFolder "$(Build.SourcesDirectory)\BuildOutput"
+        -TestOutputFolder "$(Build.SourcesDirectory)\TestOutput"
         -Platform "${{ parameters.buildPlatform }}"
         -Configuration "${{ parameters.buildConfiguration }}"
         -Test
         -List
+        -SaveScreenshots
         -wprProfilePath "$(Build.SourcesDirectory)\WindowsAppSDKConfig\src\test\AppModelProviders.wprp"
         -callingStage "${{ parameters.callingStage }}"
 
