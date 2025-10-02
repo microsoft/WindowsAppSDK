@@ -402,22 +402,25 @@ These methods require administrative privileges.
 
 ## 3.13. PackageValidator
 
-This API allows callers to verify that packages being processed by Add*, Ensure*, and Stage* APIs of
-PackageDeploymentManager match what are expected from their URI.
+This API allows callers to verify that packages being processed by Add*, Ensure*, and Stage* APIs
+of PackageDeploymentManager match what are expected from their URI.
 
-When adding or staging a package from an external source such as HTTP URI or uncontrolled file location,
-a malicious actor might perform a man-in-the-middle attack to intercept and tamper with the package data
-being read, causing a malicious package to be installed instead of the expected one.  The package might
-also be tampered at the source through supply-chain attacks.  Verifying the identity and signature of
-target packages helps ensure that such attacks have not happened.
+When adding or staging a package from an external source such as HTTP URI or uncontrolled file
+location, a malicious actor might perform a man-in-the-middle attack to intercept and tamper with
+the package data being read, causing a malicious package to be installed instead of the expected
+one.  The package might also be tampered at the source through supply-chain attacks.  Verifying
+the identity and signature of target packages helps ensure that such attacks have not happened.
 
 The following PackageValidators are provided and available for use directly:
 * PackageFamilyNameValidator: Validates that the package has the expected package family name.
-* PackageMinimumVersionValidator: Validates that the package has at least the expected minimum version number.
-* PackageCertificateEkuValidator: Validates that the certificate used to sign the package contains the expected Extended Key Usage (EKU) value.
+* PackageMinimumVersionValidator: Validates that the package has at least the expected minimum
+  version number.
+* PackageCertificateEkuValidator: Validates that the certificate used to sign the package
+  contains the expected Extended Key Usage (EKU) value.
 
-Custom validators can be implemented using the `IPackageValidator` interface. This can verify any part
-of packages' [footprint data](https://learn.microsoft.com/windows/win32/api/appxpackaging/ne-appxpackaging-appx_bundle_footprint_file_type)
+Custom validators can be implemented using the `IPackageValidator` interface. This can verify any
+part of packages'
+[footprint data](https://learn.microsoft.com/windows/win32/api/appxpackaging/ne-appxpackaging-appx_bundle_footprint_file_type)
 (manifest, block map, and digital signature).
 
 # 4. Examples
@@ -823,7 +826,8 @@ else // deploymentResult.Status == PackageDeploymentStatus.CompletedFailure
 
 ### 4.9.2. Using custom PackageValidators
 
-This example shows how to implement a custom PackageValidator using IPackageValidator interface, and use it to verify a package.
+This example shows how to implement a custom PackageValidator using IPackageValidator interface,
+and use it to verify a package.
 
 ```idl
 // MyCustom.idl
