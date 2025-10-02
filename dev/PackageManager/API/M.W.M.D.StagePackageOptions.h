@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -35,6 +35,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void AllowUnsigned(bool value);
         bool IsExpectedDigestsSupported();
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> ExpectedDigests();
+        bool IsPackageValidatorsSupported();
+        winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > PackageValidators();
+        void AddPackageValidator(winrt::Windows::Foundation::Uri const&, winrt::Microsoft::Windows::Management::Deployment::IPackageValidator const&);
 
     private:
         winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_targetVolume{ nullptr };
@@ -51,6 +54,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool m_stageInPlace{};
         bool m_allowUnsigned{};
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> m_expectedDigests;
+        winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > m_packageValidators;
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
