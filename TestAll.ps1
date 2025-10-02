@@ -274,7 +274,7 @@ if ($Test -eq $true)
         }
 
         # copy screenshots to TestOutput folder
-        $screenshotsFolder = Join-Path (Split-Path $BuildOutpurFolder -parent) "WexLogFileOutput"
+        $screenshotsFolder = Join-Path (Split-Path $BuildOutputFolder -parent) "WexLogFileOutput"
         if (Test-Path -Path $screenshotsFolder) {
             Write-Host "Starting copy screenshots from '$screenshotsFolder'"
 
