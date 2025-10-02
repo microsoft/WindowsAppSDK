@@ -3679,7 +3679,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
 
     void PackageDeploymentManager::ValidatePackagesAndUpdateExpectedDigests(
-        winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > const& packageValidators,
+        winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > const& packageValidators,
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring>& expectedDigests
     )
     {

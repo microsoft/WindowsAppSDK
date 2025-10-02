@@ -36,7 +36,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsExpectedDigestsSupported();
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> ExpectedDigests();
         bool IsPackageValidatorsSupported();
-        winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > PackageValidators();
+        winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > PackageValidators();
+        void AddPackageValidator(winrt::Windows::Foundation::Uri const&, winrt::Microsoft::Windows::Management::Deployment::IPackageValidator const&);
 
     private:
         winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_targetVolume{ nullptr };

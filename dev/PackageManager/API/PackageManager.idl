@@ -235,7 +235,11 @@ namespace Microsoft.Windows.Management.Deployment
 
         [feature(Feature_PackageValidator)]
         [contract(PackageDeploymentContract, 3)]
-        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
+        IMapView<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
+
+        [feature(Feature_PackageValidator)]
+        [contract(PackageDeploymentContract, 3)]
+        void AddPackageValidator(Windows.Foundation.Uri packageUri, IPackageValidator validator);
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -267,7 +271,11 @@ namespace Microsoft.Windows.Management.Deployment
 
         [feature(Feature_PackageValidator)]
         [contract(PackageDeploymentContract, 3)]
-        IMap<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
+        IMapView<Windows.Foundation.Uri, IVector<IPackageValidator> > PackageValidators{ get; };
+
+        [feature(Feature_PackageValidator)]
+        [contract(PackageDeploymentContract, 3)]
+        void AddPackageValidator(Windows.Foundation.Uri packageUri, IPackageValidator validator);
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
