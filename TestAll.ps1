@@ -236,13 +236,13 @@ if ($Test -eq $true)
 {
     $additionalParams = @()
 
-    $teLogFile = (Join-Path $BuildOutputFolder "$Configuration\$Platform\Te.wtl")
+    $teLogFile = Join-Path $BuildOutputFolder "$Configuration\$Platform\Te.wtl"
     remove-item -Path $teLogFile -ErrorAction Ignore
     $additionalParams += "/logFile:$teLogFile"
 
     if ($wprProfilePath -ne '')
     {
-        $additionalParams += "/enableEtwLogging"
+        $additionalParams += "/enableWttLogging"
         $additionalParams += "/appendWttLogging"
         $additionalParams += "/testMode:ETWLogger"
         $additionalParams += "/EtwLogger:WprProfile=WDGDEPAdex"
@@ -260,7 +260,7 @@ if ($Test -eq $true)
 
     if ($TestOutputFolder -ne '')
     {
-        $teLogPathTo = (Join-Path $TestOutputFolder "$Configuration\$Platform")
+        $teLogPathTo = Join-Path $TestOutputFolder "$Configuration\$Platform"
         remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
 
         # copy test log to TestOutput folder
