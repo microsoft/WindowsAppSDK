@@ -6,10 +6,6 @@ $binlogFileBase = Join-Path (Split-Path $PSScriptRoot -parent) "BuildOutput\Binl
 
 $binlogFiles = Get-ChildItem -Path $binlogFileBase -Filter *.binlog -Recurse | Select-Object -ExpandProperty FullName
 
-Write-Host "Found binlog files:"
-$binlogFiles | ForEach-Object { Write-Host $_ }
-exit 0
-
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
 
@@ -120,5 +116,5 @@ if (-Not (Test-Path $ms2ccExe)) {
 
 & $ms2ccExe -i "temp-filtered2.log" -d (Split-Path $PSScriptRoot -parent) -p
 
-# Remove-Item "temp-filtered.log"
-# Remove-Item "temp-filtered2.log"
+Remove-Item "temp-filtered.log"
+Remove-Item "temp-filtered2.log"
