@@ -853,13 +853,13 @@ function Install-VCLibsAppx
         [string]$architecture
     )
 
-    $install_issues = 0
+    $install = 0
 
-    $packages = Get-AppxPackage $name | Where-Object Architecture -eq $architecture
-    if (-not $packages)
+    $package = Get-AppxPackage $name | Where-Object Architecture -eq $architecture
+    if (-not $package)
     {
         Write-Host "...$name $($architecture) not installed"
-        $install_issues++
+        $install++
         $identity = $null
     }
     else
@@ -872,43 +872,35 @@ function Install-VCLibsAppx
         $stream.Close()
         $zip.Dispose()
         $xml = [xml]$manifest
+        #$identity = $xml.selectSingleNode("/*[local-name()='Package']/*[local-name='Identity']")
         $identity = $xml.documentElement.Identity
-        $appx_version = $identity.Version
-        $appx_version_fields = Parse-DotQuadVersion $appx_version
-        $appx_version_comparable = "{0:X04}.{1:X04}.{2:X04}.{3:X04}" -f $appx_version_fields
+        $appx_version_fields = Parse-DotQuadVersion $identity.Version
+        $appx_version = "{0:X04}.{1:X04}.{2:X04}.{3:X04}" -f $appx_version_fields
 
-        $max_found_version = $null
-        $max_found_version_comparable = $null
-        ForEach ($package in $packages)
+        if ($package)
         {
-            if (($max_found_version_comparable -eq $null) -or ($max_found_version_comparable -lt $appx_version))
+            $package_version_fields = Parse-DotQuadVersion $package.Version
+            $package_version = "{0:X04}.{1:X04}.{2:X04}.{3:X04}" -f $package_version_fields
+
+            if ($package_version -ge $appx_version)
             {
-                $max_found_version = $package.Version
-                $version_fields = Parse-DotQuadVersion $max_found_version
-                $max_found_version_comparable = "{0:X04}.{1:X04}.{2:X04}.{3:X04}" -f $version_fields
-            }
-        }
-        if ($max_found_version)
-        {
-            if ($max_found_version_comparable -ge $appx_version_comparable)
-            {
-                Write-Host "...$($name) $($architecture): Latest version $($max_found_version) installed"
+                Write-Host "...$($name) $($architecture): Latest version $($package.Version) installed"
             }
             else
             {
-                Write-Host "...$($name) $($architecture): $($max_found_version) installed but newer version $($appx_version) available"
-                $install_issues++
+                Write-Host "...$($name) $($architecture): $($package.Version) installed but newer version $($identity.Version) available"
+                $install++
             }
         }
     }
 
     if ($InstallVCLibs)
     {
-        if ($install_issues)
+        if ($install)
         {
             if ($identity)
             {
-                Write-Host "...Installing $name $($architecture) $($appx_version)..."
+                Write-Host "...Installing $name $($architecture) $($identity.Version)..."
             }
             else
             {
@@ -919,9 +911,9 @@ function Install-VCLibsAppx
     }
     else
     {
-        $global:issues += $install_issues
+        $global:issues += $install
     }
-    return $install_issues -eq 0
+    return $install -eq 0
 }
 
 function Install-VCLibs
@@ -948,6 +940,7 @@ function Install-VCLibs
 
     Write-Host "Installing VCLibs MSIX packages..."
     $cpu = Get-CpuArchitecture
+
 
     Install-VCLibsAppx (Join-Path $path 'Retail\x86\Microsoft.VCLibs.x86.14.00.appx') 'Microsoft.VCLibs.140.00' 'x86'
     Install-VCLibsAppx (Join-Path $path 'Debug\x86\Microsoft.VCLibs.x86.Debug.14.00.appx') 'Microsoft.VCLibs.140.00.Debug' 'x86'
