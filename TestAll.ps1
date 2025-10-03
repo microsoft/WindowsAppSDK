@@ -175,7 +175,7 @@ function Get-SystemInfo
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
 }
 
-function FilterTests
+function Select-Tests
 {
     param(
         [TestInfo[]]$tests
@@ -216,16 +216,14 @@ if ($BuildTests)
 
     $testsSourceFolder = Join-Path $PSScriptRoot "test"
 
-    $tests = Get-Tests $testsSourceFolder
-    $tests = FilterTests $tests
+    $tests = Select-Tests (Get-Tests $testsSourceFolder)
     Build-Tests $tests -Platform $Platform -Configuration $Configuration
 }
 
 $configPlat = Join-Path $Configuration $Platform
 $outputFolderPath = Join-Path $BuildOutputFolder $configPlat
 
-$allTests = Get-Tests $outputFolderPath
-$allTests = FilterTests $allTests
+$allTests = Select-Tests (Get-Tests $outputFolderPath)
 
 if ($List -eq $true)
 {
