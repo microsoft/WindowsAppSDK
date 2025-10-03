@@ -18,6 +18,7 @@ parameters:
   type: string
   default: ''
 
+# adding a dummy comment for testing a PR
 stages:
 - stage: ${{ format(iif(parameters.runPREfast, 'PREfast_{0}', 'Build_{0}'), parameters.buildPlatform) }}
   # Skip the build job if we are reusing the output of a previous build.
