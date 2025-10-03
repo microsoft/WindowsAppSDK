@@ -166,13 +166,10 @@ Try {
     # PreFastSetup intentionally skips the call to MSBuild.exe below.
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildFoundation"))
     {
-        if ($WindowsAppSDKBuildPipeline -eq 1)
+        if ($CleanIntermediateFiles -eq $true)
         {
-            $CleanIntermediateFiles = $true
+            $cleanIntermediateFilesArg = "/p:WindowsAppSDKCleanIntermediateFiles=true"
         }
-
-        $cleanIntermediateFilesArg = if ($CleanIntermediateFiles) { "/p:WindowsAppSDKCleanIntermediateFiles=true" } else { "" }
-
         foreach($configurationToRun in $configuration.Split(","))
         {
             foreach($platformToRun in $platform.Split(","))
