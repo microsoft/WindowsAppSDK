@@ -27,7 +27,7 @@ Param(
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
     [switch]$Clean = $false,
-    [switch]$CleanIntermmediateFiles = $false
+    [switch]$CleanIntermediateFiles = $false
 )
 
 Set-StrictMode -Version 3.0

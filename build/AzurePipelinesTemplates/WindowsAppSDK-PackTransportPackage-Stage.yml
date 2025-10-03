@@ -17,7 +17,7 @@ parameters:
 
 stages:
 - stage: Pack
-  dependsOn: 
+  dependsOn:
     - Build_AnyCPU
     - Build_x86
     - Build_x64
@@ -38,7 +38,7 @@ stages:
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
-      ob_sdl_prefast_enabled: false    # We currently do not build native code in this job.  
+      ob_sdl_prefast_enabled: false    # We currently do not build native code in this job.
     steps:
     - ${{ if not( parameters.IsOneBranch ) }}:
       - checkout: self
@@ -128,7 +128,7 @@ stages:
       name: StageFiles
       inputs:
         filePath: 'BuildAll.ps1'
-        arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
+        arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles" -CleanIntermediateFiles
 
     - task: CopyFiles@2
       displayName: 'Copy symbols to artifact staging directory'
@@ -187,13 +187,13 @@ stages:
           $buildType = '$(channel)'
           $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).$(versionMinDate)'
           $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
-          
+
           if ($env:ComponentType)
           {
             Write-Host "componentType " $env:ComponentType
             $majorMinorPatchRev = $majorMinorPatchRev + $env:ComponentType
           }
-          
+
           $version = $majorMinorPatchRev + '-' + $buildType
 
           # If using release versioning, drop the version suffix, which includes a tag & build stamp.
@@ -233,7 +233,7 @@ stages:
       name: PackNuget
       inputs:
         filePath: 'BuildAll.ps1'
-        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)" -ComponentPackageVersion "$(componentPackageVersion)"
+        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)" -ComponentPackageVersion "$(componentPackageVersion)" -CleanIntermediateFiles
 
     # Disable building MockWindowsAppSDK until we can consider the public vs private scenario
     # - ${{ if eq(parameters.BuildMockWindowsAppSDK, 'true') }}:
@@ -241,7 +241,7 @@ stages:
     #     name: BuildMock
     #     inputs:
     #       filePath: 'BuildAll.ps1'
-    #       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+    #       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)" -CleanIntermediateFiles
 
     - ${{ if eq(parameters.SignOutput, 'true') }}:
       - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig

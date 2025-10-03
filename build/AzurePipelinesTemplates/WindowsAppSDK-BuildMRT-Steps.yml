@@ -33,7 +33,7 @@ steps:
   retryCountOnTaskFailure: 10
   inputs:
     filePath: 'BuildAll.ps1'
-    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT" -CleanIntermediateFiles
 
 - ${{ if eq(parameters.runPREfast, 'true') }}:
   - task: SDLNativeRules@3
