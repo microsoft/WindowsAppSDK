@@ -388,7 +388,7 @@ if ($BuildTests)
     Build-Tests $tests -Platform $Platform -Configuration $Configuration
 }
 
-$outputFolderPath = Join-Path $BuildOutputFolder $Configuration $Platform
+$outputFolderPath = Join-Path $BuildOutputFolder "$Configuration\$Platform"
 
 $allTests = Select-Tests (Get-Tests $outputFolderPath)
 
@@ -401,7 +401,7 @@ if ($Test)
 {
     $additionalParams = @()
 
-    $teLogFile = Join-Path $BuildOutputFolder "$Configuration\$Platform\Te.wtl"
+    $teLogFile = Join-Path $outputFolderPath "Te.wtl"
     remove-item -Path $teLogFile -ErrorAction Ignore
     $additionalParams += "/logFile:$teLogFile"
 
