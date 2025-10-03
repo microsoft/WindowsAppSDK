@@ -89,36 +89,26 @@
 using module .\tools\Tests.psm1
 
 param(
-        [Parameter(Mandatory=$false)]
         [string]$BuildOutputFolder = (Join-Path $PSScriptRoot "BuildOutput"),
 
-        [Parameter(Mandatory=$false)]
-        [string]$TestOutputFolder = "",
+        [string]$TestOutputFolder,
 
-        [Parameter(Mandatory=$false)]
         [string]$Platform = "$($env:PROCESSOR_ARCHITECTURE)",
 
-        [Parameter(Mandatory=$false)]
         [string]$Configuration = "Release",
 
-        [Parameter(Mandatory=$false)]
         [Switch]$Test,
 
-        [Parameter(Mandatory=$false)]
         [Switch]$List,
 
-        [Parameter(Mandatory=$false)]
         [Switch]$BuildTests,
 
-        [Parameter(Mandatory=$false)]
         [Switch]$ShowSystemInfo = $true,
 
         [switch]$SaveScreenshots,
 
-        [Parameter(Mandatory=$false)]
         [string]$wprProfilePath,
 
-        [Parameter(Mandatory=$false)]
         [string]$callingStage,
 
         [string]$CustomParameters,
