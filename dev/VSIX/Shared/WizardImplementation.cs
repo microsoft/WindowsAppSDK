@@ -125,6 +125,13 @@ namespace WindowsAppSDK.TemplateUtilities
                 return;
             }
 
+            if (_project == null)
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                LogError("No project available for NuGet package installation.");
+                return;
+            }
+
             // Process each package installation
             foreach (var packageId in _nuGetPackages)
             {
