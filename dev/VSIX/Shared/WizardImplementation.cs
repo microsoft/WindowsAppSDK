@@ -128,7 +128,7 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_project == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                LogError("No project available for NuGet package installation.");
+                LogError("Project reference is null. Likely a ProjectGroup vstemplate.");
                 return;
             }
 
@@ -143,6 +143,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
+                    UpdateStatusBar($"Error installing package {packageId}: {ex.Message}");
                 }
             }
         }
@@ -203,7 +204,22 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
             });
         }
-        
+
+        private void UpdateStatusBar(string message)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var statusBar = ServiceProvider.GlobalProvider.GetService(typeof(SVsStatusbar)) as IVsStatusbar;
+            if (statusBar != null)
+            {
+                int frozen;
+                statusBar.IsFrozen(out frozen);
+                if (frozen == 0)
+                {
+                    statusBar.SetText(message);
+                }
+            }
+        }
+
         public bool ShouldAddProjectItem(string _)
         {
             return true;
