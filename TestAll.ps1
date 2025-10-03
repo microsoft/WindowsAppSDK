@@ -140,47 +140,6 @@ class TestInfo
     [ValidateNotNullOrEmpty()][string]$TestDef
 }
 
-function List-Tests
-{
-    param([TestInfo[]]$tests)
-
-    $tests | Sort-Object -Property Test | Format-Table Test,Description,Type,Filename,Parameters,Architectures,Status -AutoSize | Out-String -Width 512
-}
-
-function Get-Tests
-{
-    param([string]$baseFolder)
-
-    $testDefs = Get-ChildItem -Recurse -Filter "*.testdef" $baseFolder -ErrorAction SilentlyContinue
-
-    $allTests = foreach ($testDefFile in $testDefs)
-    {
-        $testJson = Get-Content -Raw $testDefFile.FullName | ConvertFrom-Json
-        $count = 0
-
-        foreach ($testConfig in $testJson.Tests)
-        {
-            $baseId = $testDefFile.BaseName
-            $testType = if ($testConfig.PSObject.Properties['Type']) { $testConfig.Type } else { 'TAEF' }
-
-            [TestInfo]@{
-                Test = "$baseId-Test$count"
-                Description = $testConfig.Description
-                Filename = $testConfig.Filename
-                Parameters = $testConfig.Parameters
-                Architectures = $testConfig.Architectures
-                Status = $testConfig.Status
-                TestDef = $testDefFile.FullName
-                Type = $testType
-            }
-
-            $count++
-        }
-    }
-
-    return $allTests
-}
-
 function Build-Tests
 {
     param(
@@ -226,6 +185,48 @@ function Build-Tests
         & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
         $projectsBuilt[$projFile.FullName] = $true
     }
+}
+
+
+function Get-Tests
+{
+    param([string]$baseFolder)
+
+    $testDefs = Get-ChildItem -Recurse -Filter "*.testdef" $baseFolder -ErrorAction SilentlyContinue
+
+    $allTests = foreach ($testDefFile in $testDefs)
+    {
+        $testJson = Get-Content -Raw $testDefFile.FullName | ConvertFrom-Json
+        $count = 0
+
+        foreach ($testConfig in $testJson.Tests)
+        {
+            $baseId = $testDefFile.BaseName
+            $testType = if ($testConfig.PSObject.Properties['Type']) { $testConfig.Type } else { 'TAEF' }
+
+            [TestInfo]@{
+                Test = "$baseId-Test$count"
+                Description = $testConfig.Description
+                Filename = $testConfig.Filename
+                Parameters = $testConfig.Parameters
+                Architectures = $testConfig.Architectures
+                Status = $testConfig.Status
+                TestDef = $testDefFile.FullName
+                Type = $testType
+            }
+
+            $count++
+        }
+    }
+
+    return $allTests
+}
+
+function List-Tests
+{
+    param([TestInfo[]]$tests)
+
+    $tests | Sort-Object -Property Test | Format-Table Test,Description,Type,Filename,Parameters,Architectures,Status -AutoSize | Out-String -Width 512
 }
 
 function Run-TaefTest
