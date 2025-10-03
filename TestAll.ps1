@@ -121,15 +121,15 @@ param(
         [Parameter(Mandatory=$false)]
         [string]$callingStage,
 
-        [string]$CustomParameters = "",
+        [string]$CustomParameters,
 
-        [string]$FilterTestDef = "",
+        [string]$FilterTestDef,
 
-        [string]$FilterDescription = "",
+        [string]$FilterDescription,
 
-        [string]$FilterDllFilename = "",
+        [string]$FilterDllFilename,
 
-        [string]$FilterParameters = ""
+        [string]$FilterParameters
 )
 
 if ($Platform -eq "AMD64")
@@ -203,7 +203,7 @@ function Select-Tests
 $env:Build_Platform = $Platform.ToLower()
 $env:Build_Configuration = $Configuration.ToLower()
 
-if ($ShowSystemInfo -eq $true)
+if ($ShowSystemInfo)
 {
     Get-SystemInfo
 }
@@ -220,17 +220,16 @@ if ($BuildTests)
     Build-Tests $tests -Platform $Platform -Configuration $Configuration
 }
 
-$configPlat = Join-Path $Configuration $Platform
-$outputFolderPath = Join-Path $BuildOutputFolder $configPlat
+$outputFolderPath = Join-Path $BuildOutputFolder $Configuration $Platform
 
 $allTests = Select-Tests (Get-Tests $outputFolderPath)
 
-if ($List -eq $true)
+if ($List)
 {
     List-Tests $allTests | Out-String
 }
 
-if ($Test -eq $true)
+if ($Test)
 {
     $additionalParams = @()
 
