@@ -26,7 +26,7 @@ namespace PickerCommon {
     void ValidateSuggestedStartLocation(winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId const& value);
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
-    void ValidateFolderPath(winrt::hstring const& path, std::string const& argumentName);
+    void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName);
 
     struct PickerParameters {
         HWND HWnd{};

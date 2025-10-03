@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "FileTypeChoicesMap.h"
 #include "FileTypeFilterVector.h"
+#include "TerminalVelocityFeatures-StoragePickers2.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {

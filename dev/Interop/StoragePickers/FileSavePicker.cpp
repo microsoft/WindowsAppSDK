@@ -15,6 +15,7 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include "TerminalVelocityFeatures-StoragePickers.h"
+#include "TerminalVelocityFeatures-StoragePickers2.h"
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include "PickFileResult.h"

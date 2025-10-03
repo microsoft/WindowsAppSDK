@@ -9,6 +9,7 @@
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include "TerminalVelocityFeatures-StoragePickers.h"
+#include "TerminalVelocityFeatures-StoragePickers2.h"
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
 #include "PickerLocalization.h" 

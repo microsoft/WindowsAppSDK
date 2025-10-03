@@ -46,8 +46,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> m_fileTypeChoices{
             []()
             {
-                auto map = make<FileTypeChoicesMap>();
-                map.ForFeature_StoragePickers2 = true;
+                auto map = winrt::make_self<FileTypeChoicesMap>();
+                map->ForFeature_StoragePickers2 = true;
                 return map.as<winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>>>();
             }()
         };
