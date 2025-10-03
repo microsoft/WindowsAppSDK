@@ -2,11 +2,13 @@ Param(
     [string]$Ms2ccVersion = "1.3.0"
 )
 
-$binlogFileBase = Split-Path $PSScriptRoot -parent
-$binlogFile0 = Join-Path $binlogFileBase "BuildOutput\Binlogs\MrtCore.x64.Release.binlog"
-$binlogFile1 = Join-Path $binlogFileBase "BuildOutput\Binlogs\WindowsAppRuntime.x64.Release.binlog"
+$binlogFileBase = Join-Path (Split-Path $PSScriptRoot -parent) "BuildOutput\Binlogs"
 
-$binlogFiles = @($binlogFile0, $binlogFile1)
+$binlogFiles = Get-ChildItem -Path $binlogFileBase -Filter *.binlog -Recurse | Select-Object -ExpandProperty FullName
+
+Write-Host "Found binlog files:"
+$binlogFiles | ForEach-Object { Write-Host $_ }
+exit 0
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
