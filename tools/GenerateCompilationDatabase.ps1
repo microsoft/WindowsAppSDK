@@ -3,8 +3,10 @@ Param(
 )
 
 $binlogFileBase = Join-Path (Split-Path $PSScriptRoot -parent) "BuildOutput\Binlogs"
-
 $binlogFiles = Get-ChildItem -Path $binlogFileBase -Filter *.binlog -Recurse | Select-Object -ExpandProperty FullName
+
+Write-Host "Binlog files found:"
+$binlogFiles | ForEach-Object { Write-Host $_ }
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
@@ -32,6 +34,8 @@ foreach ($binlogFile in $binlogFiles) {
         Out-File -FilePath "temp-filtered.log" -Append -Encoding utf8
 
     Remove-Item "temp.log"
+
+    Write-Host "Processed binlog file: $binlogFile"
 }
 
 Write-Host "Filtered log file generated at: $(Get-Location)\temp-filtered.log"
@@ -45,6 +49,8 @@ $contextPath = ""
 # They can have spaces in them. If so, they are enclosed in quotes.
 
 $lines = Get-Content "temp-filtered.log"
+
+Write-Host "Processing filtered log to adjust file paths..."
 
 foreach ($line in $lines) {
     if ($line -match 'Target "ClCompile" in file "([^"]+)" from project "([^"]+)"') {
@@ -73,9 +79,10 @@ foreach ($line in $lines) {
 
         $modifiedLine = "Cl.exe " + ($modifiedArgs -join ' ')
         Add-Content -Path "temp-filtered2.log" -Value $modifiedLine
-        # Write-Host "Processed Cl.exe line: $modifiedLine"
     }
 }
+
+Write-Host "Adjusted file paths and generated: $(Get-Location)\temp-filtered2.log"
 
 $ms2ccPath = Join-Path $PSScriptRoot "ms2cc"
 $ms2ccExe = Join-Path $ms2ccPath "ms2cc.exe"
@@ -118,3 +125,6 @@ if (-Not (Test-Path $ms2ccExe)) {
 
 Remove-Item "temp-filtered.log"
 Remove-Item "temp-filtered2.log"
+
+Write-Host "Temporary files cleaned up."
+Write-Host "Compilation database generated at: $(Split-Path $PSScriptRoot -parent)\compile_commands.json"
