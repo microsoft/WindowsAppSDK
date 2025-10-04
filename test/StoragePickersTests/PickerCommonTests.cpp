@@ -99,6 +99,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
             parameters.ConfigureFileSaveDialog(dialog);
 
             // Assert.
@@ -130,6 +131,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
             parameters.ConfigureFileSaveDialog(dialog);
 
             // Assert.
@@ -150,7 +152,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
@@ -176,7 +178,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -196,7 +198,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -204,6 +206,34 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
+        }
+
+        TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc", L".docx" }));
+            picker.FileTypeChoices().Insert(
+                L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg", L".jpeg", L".bmp" }));
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*.txt;*.doc;*.docx");
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
+                L"*.png;*.jpg;*.jpeg;*.bmp");
         }
 
         TEST_METHOD(VerifyFilters_FileSavePickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
@@ -219,7 +249,9 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
@@ -242,7 +274,9 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -250,6 +284,9 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszName),
+                L"All Files");
         }
 
         TEST_METHOD(VerifyFilters_FileSavePickerWhenAsteriskFileTypeChoicesDefinedExpectAsteriskSpec)
@@ -265,7 +302,9 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -628,6 +667,9 @@ namespace Test::PickerCommonTests
                 {
                     picker.SuggestedFolder(suggestedFolder);
                     VERIFY_ARE_EQUAL(picker.SuggestedFolder(), suggestedFolder);
+
+                    picker.SuggestedStartFolder(suggestedFolder);
+                    VERIFY_ARE_EQUAL(picker.SuggestedStartFolder(), suggestedFolder);
                 }
                 else
                 {
@@ -640,6 +682,17 @@ namespace Test::PickerCommonTests
                     catch (...)
                     {
                         // Expected exception for invalid suggested folder
+                    }
+
+                    try
+                    {
+                        picker.SuggestedStartFolder(suggestedFolder);
+                        std::wstring errorMessage = L"Expected exception for invalid suggested start folder: " + std::wstring(suggestedFolder);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid suggested start folder
                     }
                 }
             }

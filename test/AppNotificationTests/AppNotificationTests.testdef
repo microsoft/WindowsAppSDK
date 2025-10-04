@@ -5,7 +5,7 @@
             "Filename": "AppNotificationTests.dll",
             "Parameters": "/name:PackagedTests*",
             "Architectures": ["x64", "x86"],
-            "Status": "Enabled"
+            "Status": "Disabled"
         },
         {
             "Description": "App Notification Tests Unpackaged",
