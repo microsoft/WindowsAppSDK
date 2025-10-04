@@ -28,6 +28,8 @@ in elevated scenarios.*
 1. *Similarly, the `FileSavePicker.SuggestedSaveFile` property (which returned a `StorageFile`) 
 has been replaced. Its functionality is now covered by two string properties: `SuggestedFolder` and 
 `SuggestedFileName`. These allow for suggesting the folder and file name for the save dialog.*
+1. Also adding the `SuggestedFolder` property to `FileOpenPicker` and `FolderPicker`, to better 
+support a commonly requested scenario - setting a persistent folder for all pickers.
 1. *All new pickers are designed specifically for desktop apps and use a `WindowId` property to 
 link the picker to its host window, replacing the `WinRT.Interop.InitializeWithWindow.Initialize` 
 pattern.*
@@ -45,6 +47,15 @@ e.g., `PickSingleFileAndContinue`, `ContinuationData`, `ResumePickSingleFileAsyn
 because the new APIs are currently designed for desktop scenarios where each user has their own 
 interactive session, and each session is completely independent of the other sessions on the device.
 This is in contrast to Xbox One or other multi-user devices.*
+
+1. Adding `SuggestedStartFolder` for all 3 pickers. This allows setting the initial folder with 
+an absolute folder path in string. When its specified folder exists, `SuggestedStartFolder` 
+takes precedence over `SuggestedStartLocation`; when its folder not found, the picker falls back 
+to `SuggestedStartLocation`, then to the system default.
+
+1. Adding `FileTypeChoices` for `FileOpenPicker`. This allows the dialog of FileOpenPicker to have 
+catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are provided, 
+`FileTypeChoices` is used and `FileTypeFilter` is ignored.
 
 # Conceptual pages
 
@@ -108,8 +119,14 @@ namespace Microsoft.Windows.Storage.Pickers
         FileOpenPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+
+        IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
+
+        string SuggestedFolder;
+        string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
+
         PickerViewMode ViewMode;
 
         Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
@@ -123,10 +140,11 @@ namespace Microsoft.Windows.Storage.Pickers
         string CommitButtonText;
         string DefaultFileExtension;
         string SuggestedFileName;
-        string SuggestedFolder;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
 
+        string SuggestedFolder;
+        string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
 
         Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
@@ -138,10 +156,34 @@ namespace Microsoft.Windows.Storage.Pickers
 
         string CommitButtonText;
 
+        string SuggestedFolder;
+        string SuggestedStartFolder;
         PickerLocationId SuggestedStartLocation;
+
         PickerViewMode ViewMode;
 
         Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
     }
 }
 ```
+
+Note: **Understanding SuggestedStartFolder/SuggestedStartLocation vs SuggestedFolder:**
+
+These two kinds of properties have fundamentally different behaviors in terms of when and how they 
+affect the picker:
+
+- `SuggestedFolder` sets the path that will always be tried when opening the picker, regardless of 
+    the user's previous operations. This uses the [SetFolder](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setfolder) 
+    method of the underlying COM APIs and takes precedence over any user navigation history.
+
+- `SuggestedStartFolder` sets the path shown only the first time the user launches the picker 
+    (typically when the app is newly installed). After the user has picked a file, subsequent 
+    launches of the picker will open to the user's last selected folder, and `SuggestedStartFolder` 
+    becomes silent. This corresponds to the [SetDefaultFolder](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setdefaultfolder) 
+    method in the COM API.
+
+    The effective time span of `SuggestedStartFolder` is the same as that of `SuggestedStartLocation`, 
+    both only influence the picker's initial behavior before user interaction establishes a 
+    navigation history.
+
+    `SuggestedStartFolder` takes precedence over `SuggestedStartLocation` when both specified.
