@@ -1,5 +1,7 @@
 Param(
-    [string]$Ms2ccVersion = "1.3.0"
+    [string]$Ms2ccVersion = "1.3.0",
+    [switch]$Update
+
 )
 
 $binlogFileBase = Join-Path (Split-Path $PSScriptRoot -parent) "BuildOutput\Binlogs"
@@ -121,10 +123,44 @@ if (-Not (Test-Path $ms2ccExe)) {
     Write-Host "ms2cc already exists at: $ms2ccExe"
 }
 
+$backupPath = $null
+
+# If the -Update flag is provided, we want to update an existing compile_commands.json
+# instead of overwriting it.
+if ($Update) {
+    # Save the old compile_commands.json if it exists in a new file
+    $compileCommandsPath = Join-Path (Split-Path $PSScriptRoot -parent) "compile_commands.json"
+    if (Test-Path $compileCommandsPath) {
+        $backupPath = Join-Path (Split-Path $PSScriptRoot -parent) "compile_commands_old.json"
+        Copy-Item -Path $compileCommandsPath -Destination $backupPath
+        Write-Host "Backed up existing compile_commands.json to: $backupPath"
+    } else {
+        Write-Host "No existing compile_commands.json found to back up."
+    }
+}
+
 & $ms2ccExe -i "temp-filtered2.log" -d (Split-Path $PSScriptRoot -parent) -p
 
 Remove-Item "temp-filtered.log"
 Remove-Item "temp-filtered2.log"
-
 Write-Host "Temporary files cleaned up."
+
+if ($Update -and (Test-Path $backupPath)) {
+    # Merge the old and new compile_commands.json files
+    $newCommands = Get-Content -Raw -Path (Join-Path (Split-Path $PSScriptRoot -parent) "compile_commands.json") | ConvertFrom-Json
+    $oldCommands = Get-Content -Raw -Path $backupPath | ConvertFrom-Json
+
+    # What defines the uniqueness of a command is the combination of "file" and "directory"
+    # We want to merge the old and new commands, preferring the new ones in case of duplicates
+    $mergedCommands = @{}
+    foreach ($cmd in $oldCommands + $newCommands) {
+        $key = "$($cmd.file)|$($cmd.directory)"
+        $mergedCommands[$key] = $cmd
+    }
+    $mergedCommands.Values | ConvertTo-Json -Depth 10 | Set-Content -Path (Join-Path (Split-Path $PSScriptRoot -parent) "compile_commands.json") -Encoding utf8
+    Write-Host "Merged old and new compile_commands.json files."
+
+    Remove-Item $backupPath -Force
+}
+
 Write-Host "Compilation database generated at: $(Split-Path $PSScriptRoot -parent)\compile_commands.json"
