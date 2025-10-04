@@ -4,7 +4,6 @@
 #include "pch.h"
 #include "FileTypeChoicesMap.h"
 #include "FileTypeFilterVector.h"
-#include "TerminalVelocityFeatures-StoragePickers2.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -14,11 +13,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     bool FileTypeChoicesMap::Insert(hstring const& key, winrt::Windows::Foundation::Collections::IVector<hstring> const& value)
     {
-        if (ForFeature_StoragePickers2)
-        {
-            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        }
-
         // Create a new FileTypeFilterVector and copy all values from the input vector
         auto validatingVector = make<FileTypeFilterVector>();
         
