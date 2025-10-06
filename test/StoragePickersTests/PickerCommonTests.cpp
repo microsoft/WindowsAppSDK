@@ -27,6 +27,9 @@ namespace Test::PickerCommonTests
     private:
         static const wchar_t s_rawStringWithNull[];
         static const winrt::hstring s_embeddedNullString;
+
+        static const wchar_t s_rawStringWithNullFolder[];
+        static const winrt::hstring s_embeddedNullFolder;
     public:
         BEGIN_TEST_CLASS(PickerCommonTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA") // MTA is required for ::Test::Bootstrap::SetupPackages()
@@ -79,50 +82,63 @@ namespace Test::PickerCommonTests
 
         }
 
-        TEST_METHOD(VerifyConfigureFileSaveDialog_WhenSuggestedSaveFilePathFolderDeleted_ExpectItsFileNameStillWork)
+        TEST_METHOD(VerifyConfigureFileSaveDialog)
         {
             // Arrange.
+            auto mockFileName = L"test.txt";
+            auto mockFolderPath = L"C:\\temp_filesavepicker_ut_temp";
             PickerParameters parameters{};
-            parameters.SuggestedFileName = L"LowPriority.txt";
-            parameters.SuggestedSaveFilePath = L"C:\\temp_filesavepicker_ut_temp\\HighPriority.txt";
+            parameters.SuggestedFileName = mockFileName;
+            parameters.SuggestedFolder = mockFolderPath;
 
-            // Ensure the folder of SuggestedSaveFilePath doesn't exist anumore.
-            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+            // Ensure the SuggestedFolder exists.
+            if (!std::filesystem::exists(mockFolderPath))
+            {
+                std::filesystem::create_directory(mockFolderPath);
+            }
 
             // Act.
             auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
             parameters.ConfigureFileSaveDialog(dialog);
 
             // Assert.
             wil::unique_cotaskmem_string dialogFileName{};
             dialog->GetFileName(dialogFileName.put());
-            VERIFY_IS_NOT_NULL(dialogFileName, L"The save dialog's file name should be set.");
+            VERIFY_ARE_EQUAL(std::wstring(dialogFileName.get()), mockFileName,
+                L"The save dialog's file name should match the suggested file name.");
 
-            auto actualFileName = winrt::hstring{ dialogFileName.get() };
-            auto message = L"Expected file name: HighPriority.txt, Actual: " + actualFileName;
-            VERIFY_ARE_EQUAL(L"HighPriority.txt", actualFileName, message.c_str());
+            winrt::com_ptr<IShellItem> dialogFolder{};
+            dialog->GetFolder(dialogFolder.put());
+            VERIFY_IS_NOT_NULL(dialogFolder.get(), L"The save dialog's folder should not be null.");
+
+            wil::unique_cotaskmem_string dialogFolderPath{};
+            dialogFolder->GetDisplayName(SIGDN_FILESYSPATH, dialogFolderPath.put());
+            VERIFY_ARE_EQUAL(std::wstring(dialogFolderPath.get()), mockFolderPath,
+                L"The save dialog's folder path should match the suggested folder path.");
         }
-
-        TEST_METHOD(VerifyConfigureFileSaveDialog_WhenSuggestedSaveFilePathFileNameEmptyAndFolderDeleted_ExpectItsFileNameStillWork)
+        TEST_METHOD(VerifyConfigureFileSaveDialog_WhenSuggestedFolderDeleted_ExpectItsNoError)
         {
             // Arrange.
+            std::wstring mockFileName = L"test.txt";
+            std::wstring mockFolderPath = L"C:\\temp_filesavepicker_ut_temp";
             PickerParameters parameters{};
-            parameters.SuggestedFileName = L"LowPriority.txt";
-            parameters.SuggestedSaveFilePath = L"C:\\temp_filesavepicker_ut_temp\\";
+            parameters.SuggestedFileName = winrt::hstring{ mockFileName };
+            parameters.SuggestedFolder = winrt::hstring{ mockFolderPath };
 
-            // Ensure the folder of SuggestedSaveFilePath doesn't exist anumore.
-            std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
+            // Ensure the folder of SuggestedFolder doesn't exist anumore.
+            std::filesystem::remove_all(mockFolderPath);
 
             // Act.
             auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
             parameters.ConfigureFileSaveDialog(dialog);
 
             // Assert.
             wil::unique_cotaskmem_string dialogFileName{};
             dialog->GetFileName(dialogFileName.put());
-
-            // Even the empty file name of SuggestedSaveFilePath takes precedence over SuggestedFileName.
-            VERIFY_IS_NULL(dialogFileName, L"The save dialog's file name should be empty.");
+            VERIFY_ARE_EQUAL(mockFileName, std::wstring(dialogFileName.get()),
+                L"The save dialog's file name should match the suggested file name.");
         }
 
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeFiltersDefinedExpectAddingUnionedType)
@@ -136,7 +152,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
@@ -162,7 +178,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -182,7 +198,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeFilter().GetView());
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -190,6 +206,34 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
+        }
+
+        TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc", L".docx" }));
+            picker.FileTypeChoices().Insert(
+                L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg", L".jpeg", L".bmp" }));
+
+            // Act.
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
+
+            // Assert.
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
+
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                L"*.txt;*.doc;*.docx");
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
+                L"*.png;*.jpg;*.jpeg;*.bmp");
         }
 
         TEST_METHOD(VerifyFilters_FileSavePickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
@@ -205,7 +249,9 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
@@ -228,7 +274,9 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -236,6 +284,9 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszName),
+                L"All Files");
         }
 
         TEST_METHOD(VerifyFilters_FileSavePickerWhenAsteriskFileTypeChoicesDefinedExpectAsteriskSpec)
@@ -251,7 +302,9 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpec(picker.FileTypeChoices().GetView());
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -261,7 +314,7 @@ namespace Test::PickerCommonTests
                 L"*");
         }
 
-        TEST_METHOD(VerifyFileSaveDialog_SuggestedFileNameWorksWhenSuggestedSaveFilePathNotSet)
+        TEST_METHOD(VerifyFileSaveDialog_SuggestedFileName)
         {
             // Arrange.
             PickerParameters parameters{};
@@ -277,89 +330,71 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(L"MyFile1.txt", std::wstring(fileName.get()));
         }
 
-        TEST_METHOD(VerifyFileSaveDialog_SuggestedSaveFilePathTakesPrecedenceOverSuggestedFileName)
+        TEST_METHOD(VerifyTryParseFolderItem)
         {
             // Arrange.
-            PickerParameters parameters{};
-            parameters.SuggestedSaveFilePath = L"C:\\temp\\MyFile2.txt";
-            parameters.SuggestedFileName = L"MyFile1.txt";
-
-            // Act.
-            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
-            parameters.ConfigureFileSaveDialog(dialog);
-
-            // Assert.
-            winrt::com_ptr<IShellItem> folderItem{};
-            dialog->GetFolder(folderItem.put());
-            wil::unique_cotaskmem_string dialogFolder{};
-            folderItem->GetDisplayName(SIGDN_FILESYSPATH, dialogFolder.put());
-            VERIFY_ARE_EQUAL(L"C:\\temp", std::wstring(dialogFolder.get()));
-
-            wil::unique_cotaskmem_string fileName{};
-            dialog->GetFileName(fileName.put());
-            VERIFY_ARE_EQUAL(L"MyFile2.txt", std::wstring(fileName.get()));
-        }
-
-        TEST_METHOD(VerifyParseFolderItemAndFileName)
-        {
-            // Arrange.
-            std::wstring testFolder = L"C:\\temp\\testsuggestedSaveFilePath";
-
-            std::vector<std::tuple<bool, std::wstring, std::wstring, bool>> test_cases {
-            // test folder exists      folder        file              expect non-empty result
-                {true,              testFolder,      L"MyFile.txt",     true },
-                {true,              testFolder,      L"MyFile",         true },
-                {true,              testFolder,      L".source",        true },
-                {true,              testFolder,      L"",               true },
-                {true,              L"C:",           L".source",        true },
-                {false,             L"C:",           L".source",        true },
-                {false,             testFolder,      L".source",        false },
+            std::wstring testFolder = L"C:\\temp\\testsuggestedFolder";
+            std::wstring rootFolder = L"C:\\";
+            std::vector<std::tuple<bool, std::wstring, std::wstring>> test_cases {
+            // folder exists  test folder            expect
+                {true,        testFolder,            testFolder},
+                {true,        testFolder + L"\\",    testFolder},
+                {false,       testFolder,            L""},        // stands for null result.
+                {true,        rootFolder,            rootFolder},
             };
 
             for (const auto& test_case : test_cases)
             {
                 bool testFolderExists = std::get<0>(test_case);
                 std::wstring folder = std::get<1>(test_case);
-                std::wstring fileName = std::get<2>(test_case);
-                bool expectNonEmptyResult = std::get<3>(test_case);
+                std::wstring expectConfig = std::get<2>(test_case);
 
-                // Act.
                 if (testFolderExists)
                 {
-                    std::filesystem::create_directories(testFolder);
+                    if (!std::filesystem::exists(folder))
+                    {
+                        std::filesystem::create_directories(folder);
+                    }
                 }
                 else
                 {
-                    std::filesystem::remove_all(testFolder);
+                    if (folder != rootFolder)
+                    {
+                        std::filesystem::remove_all(folder);
+                    }
                 }
 
-                winrt::hstring filePath {folder + L"\\" + fileName};
-                auto [folderItem, resultFileName] = PickerCommon::ParseFolderItemAndFileName(filePath);
+                // Act.
+                auto folderItem = PickerCommon::TryParseFolderItem(winrt::hstring{ folder });
+
+                // Assert.
                 std::wstring message;
-                if (!expectNonEmptyResult)
+                if (expectConfig != L"")
                 {
-                    message = L"This input should not return a valid folder item: '" + filePath + L"'";
-                    VERIFY_ARE_EQUAL(nullptr, folderItem, message.c_str());
-                }
-                else
-                {
-                    message = L"Expected a valid folder item for: " + filePath;
+                    message = L"Expected a valid folder item for: " + folder;
                     VERIFY_ARE_NOT_EQUAL(nullptr, folderItem, message.c_str());
 
                     wil::unique_cotaskmem_string resultFolderPath{};
                     folderItem->GetDisplayName(SIGDN_FILESYSPATH, resultFolderPath.put());
                     winrt::hstring resultFolderPathString(resultFolderPath.get());
-                    message = L"Verify folder path of '" + filePath + L"', expect: '" + folder + L"', actual: '" + resultFolderPathString + L"'";
-                    if (folder == L"C:")
-                    {
-                        folder += L"\\";
-                    }
-                    VERIFY_ARE_EQUAL(folder, resultFolderPathString, message.c_str());
-                }
 
-                // The file name should always be returned, no matter the folder exists or not.
-                message = L"Verify filename of '" + filePath + L"', expect: '" + fileName + L"', actual: '" + resultFileName + L"'";
-                VERIFY_ARE_EQUAL(fileName, resultFileName, message.c_str());
+                     // Do a case insensitive comparison for the folder path.
+                    std::wstring expectConfigLower{ expectConfig };
+                    std::wstring resultFolderPathLower{ resultFolderPathString };
+
+                    std::transform(expectConfigLower.begin(), expectConfigLower.end(), expectConfigLower.begin(), ::towlower);
+                    std::transform(resultFolderPathLower.begin(), resultFolderPathLower.end(), resultFolderPathLower.begin(), ::towlower);
+
+                    message = L"Folder path verification for:  '" + folder +
+          L"'\n  Expected: '" + expectConfigLower +
+          L"'\n  Actual: '" + resultFolderPathLower + L"'";
+                    VERIFY_ARE_EQUAL(resultFolderPathLower, expectConfigLower, message.c_str());
+                }
+                else
+                {
+                    message = L"This input should not return a valid folder item: '" + folder + L"'";
+                    VERIFY_IS_NULL(folderItem.get(), message.c_str());
+                }
                 
             }
             
@@ -455,8 +490,8 @@ namespace Test::PickerCommonTests
         {
             // Arrange.
             auto test_cases = std::vector<std::tuple<winrt::hstring, bool>>{
-                {L"validFileName.txt", true},   // Valid file name
-                {s_embeddedNullString, false},      // embedded null
+                {L"validFileName.txt", true},           // Valid file name
+                {s_embeddedNullString, false},        // embedded null
                 {L"", true},                            // Allow Empty string
                 {L"validFileNameWithSpaces .txt", true},// Allow spaces
                 {
@@ -601,19 +636,23 @@ namespace Test::PickerCommonTests
             }
         }
 
-        TEST_METHOD(VerifyValidateSuggestedSaveFilePath)
+        
+        TEST_METHOD(VerifyValidateSuggestedFolder)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            winrt::hstring folderNameTooLong = L"the_long_folder_name_that_exceeds_ntfs_maximum_length_of_a_folder_name_usually_255_characters_the_long_folder_name_that_exceeds_ntfs_maximum_length_of_a_folder_name_usually_255_characters_the_long_folder_name_that_exceeds_ntfs_maximum_length_of_name_usually_255";
             std::vector<std::tuple<winrt::hstring, bool>> ssfp_test_cases{
-                {L"C:\\temp\\valid.txt", true}, // Valid path
-                {L"", true},                    // Allow empty string
-                {s_embeddedNullString, false},  // Embedded null is invalid
-                {L"1.txt", false},              // Input without a folder is invalid
+                {L"C:\\temp\\valid", true},     // Valid path
+                {L"C:\\",            true},     // Valid path
+                {L"",                true},     // Allow empty string
+                {L".\\temp\\valid",  false},    // Reject relative path
+                {L"1.txt",           false},    // A file name will be recognized as related path, and rejected.
+                {s_embeddedNullFolder, false},  // Embedded null is invalid
                 {
-                    L"C:\\temp\\too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters_too_long_file_name_that_exceeds_the_maximum_length_of_a_file_name_usually_260_characters.txt",
-                    false                       // file name too long is invalid.
+                    L"C:\\temp\\" + folderNameTooLong,
+                    false                       // Reject folder name too long.
                 },
                 {L"C:\\>:di*r\\1.txt", false},  // Throw error on invalid characters
             };
@@ -621,25 +660,39 @@ namespace Test::PickerCommonTests
             // Act & Assert
             for (const auto& test_case : ssfp_test_cases)
             {
-                winrt::hstring suggestedPath = std::get<0>(test_case);
+                winrt::hstring suggestedFolder = std::get<0>(test_case);
                 bool expectValid = std::get<1>(test_case);
 
                 if (expectValid)
                 {
-                    picker.SuggestedSaveFilePath(suggestedPath);
-                    VERIFY_ARE_EQUAL(picker.SuggestedSaveFilePath(), suggestedPath);
+                    picker.SuggestedFolder(suggestedFolder);
+                    VERIFY_ARE_EQUAL(picker.SuggestedFolder(), suggestedFolder);
+
+                    picker.SuggestedStartFolder(suggestedFolder);
+                    VERIFY_ARE_EQUAL(picker.SuggestedStartFolder(), suggestedFolder);
                 }
                 else
                 {
                     try
                     {
-                        picker.SuggestedSaveFilePath(suggestedPath);
-                        std::wstring errorMessage = L"Expected exception for invalid suggested save file path: " + std::wstring(suggestedPath);
+                        picker.SuggestedFolder(suggestedFolder);
+                        std::wstring errorMessage = L"Expected exception for invalid suggested folder: " + std::wstring(suggestedFolder);
                         VERIFY_FAIL(errorMessage.c_str());
                     }
                     catch (...)
                     {
-                        // Expected exception for invalid suggested save file path
+                        // Expected exception for invalid suggested folder
+                    }
+
+                    try
+                    {
+                        picker.SuggestedStartFolder(suggestedFolder);
+                        std::wstring errorMessage = L"Expected exception for invalid suggested start folder: " + std::wstring(suggestedFolder);
+                        VERIFY_FAIL(errorMessage.c_str());
+                    }
+                    catch (...)
+                    {
+                        // Expected exception for invalid suggested start folder
                     }
                 }
             }
@@ -784,5 +837,8 @@ namespace Test::PickerCommonTests
 
     const wchar_t PickerCommonTests::s_rawStringWithNull[] = L"in\0valid.txt";
     const winrt::hstring PickerCommonTests::s_embeddedNullString{ std::wstring_view(s_rawStringWithNull, 12) };
+
+    const wchar_t PickerCommonTests::s_rawStringWithNullFolder[] = L"C:\\in\0valid";
+    const winrt::hstring PickerCommonTests::s_embeddedNullFolder{ std::wstring_view(s_rawStringWithNullFolder, 11) };
 
 }

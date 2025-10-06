@@ -12,6 +12,8 @@
 #include <filesystem>
 #include <format>
 #include <utility>
+#include <string_view>
+#include <cwctype>
 
 
 namespace {
@@ -113,32 +115,27 @@ namespace PickerCommon {
         return winrt::hstring{ filePath.get() };
     }
 
-    std::pair<winrt::com_ptr<IShellItem>, std::wstring> ParseFolderItemAndFileName(winrt::hstring const& filePath)
+    winrt::com_ptr<IShellItem> TryParseFolderItem(winrt::hstring const& folderPathStr)
     {
-        std::filesystem::path path(filePath.c_str());
-        if (path.empty())
+        std::filesystem::path folderPath(folderPathStr.c_str());
+        if (folderPath.empty())
         {
-            return { nullptr, L"" };
+            return nullptr;
         }
 
-        auto fileName = path.filename().wstring();
-
-        // If the parent folder does not exist or is not a directory, we cannot set folder.
-        auto folderPath = path.parent_path();
         if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath))
         {
-            return { nullptr, fileName };
+            return nullptr;
         }
 
         winrt::com_ptr<IShellItem> shellItem;
         HRESULT hr = SHCreateItemFromParsingName(folderPath.c_str(), nullptr, IID_PPV_ARGS(shellItem.put()));
         if (SUCCEEDED(hr))
         {
-            return { shellItem, fileName };
+            return shellItem;
         }
 
-        // If the we cannot set the folder, we can at least set the file name suggested by developer.
-        return { nullptr, fileName};
+        return nullptr;
     }
 
     void ValidateViewMode(winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode const& value)
@@ -229,7 +226,7 @@ namespace PickerCommon {
         ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
-    void ValidateSuggestedSaveFilePath(winrt::hstring const& path)
+    void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName)
     {
         if (path.empty())
         {
@@ -239,25 +236,17 @@ namespace PickerCommon {
 
         ValidateStringNoEmbeddedNulls(path);
 
+        auto pathObj = std::filesystem::path(path.c_str());
+        if (!pathObj.is_absolute())
+        {
+            throw std::invalid_argument(propertyName);
+        }
+
+        // The method SHSimpleIDListFromPath does syntax check on the path string.
         wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
         if (!pidl)
         {
-            throw std::invalid_argument("SuggestedSaveFilePath");
-        }
-
-        std::filesystem::path p(path.c_str());
-        auto folderPath = p.parent_path();
-        if (folderPath.empty())
-        {
-            // If the path does not have a parent, we cannot set folder.
-            throw std::invalid_argument("SuggestedSaveFilePath");
-        }
-
-        auto fileName = p.filename().wstring();
-        if (fileName.size() > MAX_PATH)
-        {
-            throw winrt::hresult_invalid_argument(
-                PickerLocalization::GetStoragePickersLocalizationText(MaxSaveFileLengthExceededLocalizationKey));
+            throw std::invalid_argument(propertyName);
         }
     }
 
@@ -290,6 +279,28 @@ namespace PickerCommon {
             }
         }
         return result;
+    }
+
+    void PickerParameters::CaptureFilterSpecData(
+        winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
+        winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView)
+    {
+        // The FileTypeChoices takes precedence over FileTypeFilter if both are provided.
+        if (fileTypeChoicesView && fileTypeChoicesView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeChoicesView);
+            return;
+        }
+
+        if (fileTypeFilterView && fileTypeFilterView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeFilterView);
+            return;
+        }
+
+        // Even if no filters provided, we still need to set filter to All Files *.*
+        auto emptyFilters = winrt::single_threaded_vector<winrt::hstring>();
+        CaptureFilterSpec(emptyFilters.GetView());
     }
 
     /// <summary>
@@ -334,7 +345,7 @@ namespace PickerCommon {
         }
         else
         {
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(allFilesExtensionList.c_str());
         }
 
@@ -344,6 +355,8 @@ namespace PickerCommon {
         {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
+
+        FocusLastFilter = true;
     }
 
     /// <summary>
@@ -386,15 +399,41 @@ namespace PickerCommon {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
         }
 
-        auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
-        if (defaultFolder != nullptr)
+        winrt::com_ptr<IShellItem> defaultFolder{};
+
+        // The SuggestedStartFolder takes precedence over SuggestedStartLocation if both are provided.
+        if (!IsHStringNullOrEmpty(SuggestedStartFolder))
+        {
+            defaultFolder = TryParseFolderItem(SuggestedStartFolder);
+        }
+
+        if (!defaultFolder)
+        {
+            defaultFolder = GetKnownFolderFromId(SuggestedStartLocation);
+        }
+
+        if (defaultFolder)
         {
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
+        }
+
+        // SuggestedFolder takes precedence over SuggestedStartFolder/SuggestedStartLocation if both are provided.
+        if (!IsHStringNullOrEmpty(SuggestedFolder))
+        {
+            if (auto folderItem = TryParseFolderItem(SuggestedFolder))
+            {
+                check_hresult(dialog->SetFolder(folderItem.get()));
+            }
         }
 
         if (FileTypeFilterPara.size() > 0)
         {
             check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+
+            if (FocusLastFilter)
+            {
+                check_hresult(dialog->SetFileTypeIndex(FileTypeFilterPara.size()));
+            }
         }
     }
 
@@ -404,27 +443,9 @@ namespace PickerCommon {
     /// <param name="dialog"></param>
     void PickerParameters::ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog)
     {
-        winrt::hstring fileNameToSet;
         if (!IsHStringNullOrEmpty(SuggestedFileName))
         {
-            fileNameToSet = SuggestedFileName;
-        }
-        
-        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedSaveFilePath))
-        {
-            auto result = ParseFolderItemAndFileName(SuggestedSaveFilePath);
-            winrt::com_ptr<IShellItem> folderItem = result.first;
-            fileNameToSet = result.second;
-            if (folderItem)
-            {
-                check_hresult(dialog->SetFolder(folderItem.get()));
-            }
-        }
-
-        // Set the filename (either from SuggestedSaveFilePath or SuggestedFileName)
-        if (!PickerCommon::IsHStringNullOrEmpty(fileNameToSet))
-        {
-            check_hresult(dialog->SetFileName(fileNameToSet.c_str()));
+            check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
         }
 
     }

@@ -8,10 +8,13 @@
 .DESCRIPTION
     Review the current environment and fix or warn if anything is amiss. This includes...
     * Developer mode is enabled
+    * LongPath support is enabled
+    * Visual Studio 2022 is installed and properly configured
+    * Windows SDK(s) are installed
+    * Nuget.exe is installed
     * Test certificate to sign test MSIX packages is installed
     * TAEF service is installed and running
-    * Visual Studio 2022 is installed and properly configured
-    * Dependencies in use are in the approved list of packages and versions
+    * Project dependencies are in the approved list of packages and versions
 
 .PARAMETER CertPassword
     Password for new certificates
@@ -28,6 +31,9 @@
 .PARAMETER CheckDeveloperMode
     Check developer mode
 
+.PARAMETER CheckNugetExe
+    Verify nuget.exe is present
+
 .PARAMETER CheckTAEFService
     Check the TAEF service
 
@@ -40,11 +46,35 @@
 .PARAMETER CheckVisualStudio
     Check Visual Studio
 
-.PARAMETER NoInteractive
-    Run in non-interactive mode (fail if any need for user input)
+.PARAMETER CheckWindowsSDK
+    Check Windows Platform SDK(s)
+
+.PARAMETER FixAll
+    Enable all -Fix* options.
+
+.PARAMETER FixLongPath
+    Enable LongPath support if necessary.
+
+.PARAMETER InstallVCLibs
+    Install VCLibs MSIX packages.
 
 .PARAMETER InstallWindowsSDK
     Download and install Windows Platform SDKs (if necessary).
+
+.PARAMETER NoInteractive
+    Run in non-interactive mode (fail if any need for user input)
+
+.PARAMETER NugetExe
+    Location of nuget.exe (default=".user\nuget.exe")
+
+.PARAMETER NugetMinVersion
+    Minimum requried version of nuget.exe (default="6.14.0.116")
+
+.PARAMETER NugetExeUpdate
+    Download nuget.exe to the -NugetExe path
+
+.PARAMETER NugetRestore
+    Run nuget.exe restore... to restore packages if necessary.
 
 .PARAMETER Offline
     Do not access the network
@@ -65,13 +95,13 @@
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
 .PARAMETER SaveSettingsFile
-    Save settings file
+    Save settings file (default filename=DevCheck-Settings.ps1)
 
 .PARAMETER SaveUserSettingsFile
     Save settings file
 
 .PARAMETER Settings
-    Load settings file
+    Load settings file (enabled by default. -Settings $false to disable)
 
 .PARAMETER SettingsFile
     Settings file to load (if present). Relative filenames are resolved to .user directory. Default="DevCheck-Settings.ps1"
@@ -106,23 +136,43 @@ Param(
 
     [Switch]$CheckAll=$false,
 
+    [Switch]$CheckDependencies=$false,
+
+    [Switch]$CheckDeveloperMode=$false,
+
+    [Switch]$CheckNugetExe=$false,
+
     [Switch]$CheckTAEFService=$false,
 
     [Switch]$CheckTestCert=$false,
 
     [Switch]$CheckTestPfx=$false,
 
+    [Switch]$CheckVCLibs=$false,
+
     [Switch]$CheckVisualStudio=$false,
 
-    [Switch]$CheckDependencies=$false,
-
-    [Switch]$CheckDeveloperMode=$false,
+    [Switch]$CheckWindowsSDK=$false,
 
     [Switch]$Clean=$false,
+
+    [Switch]$FixAll=$false,
+
+    [Switch]$FixLongPath=$false,
+
+    [Switch]$InstallVCLibs=$false,
 
     [Switch]$InstallWindowsSDK=$false,
 
     [Switch]$NoInteractive=$false,
+
+    [String]$NugetExe='.user\nuget.exe',
+
+    [String]$NugetMinVersion="6.14.0.116",
+
+    [Switch]$NugetExeUpdate=$false,
+
+    [Switch]$NugetRestore=$false,
 
     [Switch]$Offline=$false,
 
@@ -136,7 +186,7 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
-    [String]$SaveSettingsFile=$null,
+    [Switch]$SaveSettingsFile,
 
     [String]$SaveUserSettingsFile=$null,
 
@@ -164,33 +214,54 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 $global:issues = 0
+$global:issues_valid_test_pfx_thumbprint_not_found = 0
+$global:issues_valid_test_certificate_thumbprint_not_found = 0
+$global:issues_nuget_exe_not_found = 0
+
+$global:warnings_test_pfx_expires_soon = 0
+$global:warnings_test_certificate_expires_soon = 0
 
 $global:isadmin = $null
 
 $global:vswhere = ''
 $global:vswhere_url = ''
 
+#--------------------------------------
+# Overrideable via settings files
+
+# Paths to scan by -CheckDependencies and -SyncDependencies
 $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
+
+# Windows SDKs to check/install by -CheckWindowsSDK and -InstallWindowsSDK
+$global:windows_sdks = (('10.0.17763.0', 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'),
+                        ('10.0.26100.4654', 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'))
+
+# Nuget Restore paths/filenames (relative to project root directory)
+$global:nuget_restore_filenames = ('.')
+#--------------------------------------
+
+$null = [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem')
+
+function Get-Issues
+{
+    return $global:issues + $global:issues_valid_test_pfx_thumbprint_not_found + $global:issues_valid_test_certificate_thumbprint_not_found + $global:issues_nuget_exe_not_found
+}
+
+function Get-SettingsFileDefault
+{
+    $path = (Get-Item $PSScriptRoot).FullName
+    $file = Join-Path $path 'DevCheck-Settings.ps1'
+    $file
+}
 
 function Get-SettingsFile
 {
-    if ([string]::IsNullOrEmpty($SettingsFile))
+    $file = Get-SettingsFileDefault
+    if ([string]::IsNullOrEmpty($file))
     {
         return $null
     }
-
-    $file = [IO.Path]::GetFullPath($SettingsFile)
-    if (-not(Test-Path -Path $file -PathType Leaf))
-    {
-        $root = Get-ProjectRoot
-        $userdir = Join-Path $root '.user'
-        $file = Join-Path $userdir $SettingsFile
-        if (-not(Test-Path -Path $file -PathType Leaf))
-        {
-            return $null
-        }
-    }
-    return $file
+    return [IO.Path]::GetFullPath($file)
 }
 
 function Get-Settings
@@ -200,7 +271,7 @@ function Get-Settings
         return $null
     }
 
-    $settings_file = Get-SettingsFile $true
+    $settings_file = Get-SettingsFile
     if ([string]::IsNullOrEmpty($settings_file))
     {
         return $null
@@ -209,13 +280,8 @@ function Get-Settings
     $file = [IO.Path]::GetFullPath($settings_file)
     if (-not(Test-Path -Path $file -PathType Leaf))
     {
-        $root = Get-ProjectRoot
-        $userdir = Join-Path $root '.user'
-        $file = Join-Path $userdir $settings_file
-        if (-not(Test-Path -Path $file -PathType Leaf))
-        {
-            return $null
-        }
+        Write-Host "No settings file $($file)"
+        return $null
     }
     Write-Host "Loading settings file $($file)..."
     $null = . $file
@@ -225,7 +291,12 @@ function Get-Settings
 
 function Set-Settings
 {
-    $file = $SaveSettingsFile
+    if (-not $SaveSettingsFile)
+    {
+        return $null
+    }
+
+    $file = Get-SettingsFile
     if ([string]::IsNullOrEmpty($file))
     {
         return $null
@@ -247,18 +318,19 @@ function Set-Settings
 # Do not alter contents except in the Customization block
 # Everything else is owned by DevCheck and subject to change without warning
 
-$me = (Get-Item $PSScriptRoot ).FullName
+$me = (Get-Item $PSScriptRoot).FullName
 Write-Verbose "$me BEGIN Customization"
 #-----------------------------------------------------------------------
 # BEGIN Customization
 #...insert customization here...
 # END   Customization
 #-----------------------------------------------------------------------
-$me = (Get-Item $PSScriptRoot ).FullName
+$me = (Get-Item $PSScriptRoot).FullName
 Write-Verbose "$me END Customization"
 '@
 
     Write-Host "Saving settings file $($file)..."
+Write-Host $file
     Set-Content -Path $file -Value $content -Encoding utf8
     return $file
 }
@@ -471,14 +543,27 @@ function Get-TAEFPackageVersion
 
 function Get-VSWhereOffline
 {
-    # Absolute Path = "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+    # Default absolute Path = "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+    # Unless it's installed in a non-default location
 
+    # Check default path
     $programfilesx86 = [Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFilesX86)
     $path = Join-Path $programfilesx86 "Microsoft Visual Studio\Installer\vswhere.exe"
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
-        return $null
+        # Check if Windows can find it (e.g. via PATH)
+        $file = Get-Command 'vswhere.exe' -ErrorAction Ignore
+        if ($file)
+        {
+            $path = $file.Path
+        }
+        else
+        {
+            Write-Verbose "...vswhere.exe not found offline"
+            return $null
+        }
     }
+    Write-Verbose "...vswhere.exe found offline...$path"
     return $path
 }
 
@@ -505,6 +590,7 @@ function Get-VSWhereOnline
     {
         return $null
     }
+    Write-Verbose "...vswhere.exe found online...$path"
     return $path
 }
 
@@ -656,6 +742,13 @@ function Install-WindowsSDK
         [uri]$url
     )
 
+    if ($Offline -eq $true)
+    {
+        Write-Host "ERROR: Windows SDK(s) cannot be downloaded with -Offline" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
     $path = Join-Path $env:TEMP "winsdksetup-$($version).exe"
     if ($Clean -eq $true -And (Test-Path -Path $path -PathType Leaf))
     {
@@ -676,6 +769,7 @@ function Install-WindowsSDK
         Write-Verbose "Executing: curl.exe --output $path -L -# $url"
         $null = Start-Process curl.exe -ArgumentList "--output $path -L -# $url" -Wait -NoNewWindow -PassThru
     }
+    Write-Host "Installing Windows SDK $version. This may take a few minutes. Please wait..."
     $p = Start-Process $path -ArgumentList "/features + /q /log $log" -Wait -NoNewWindow -PassThru
     if ($p.ExitCode -ne 0)
     {
@@ -687,6 +781,20 @@ function Install-WindowsSDK
     return $true
 }
 
+function Parse-DotQuadVersion
+{
+    param(
+        [String]$version
+    )
+
+    $fields = $version -split '\.'
+    $major = [int]$fields[0]
+    $minor = [int]$fields[1]
+    $build = [int]$fields[2]
+    $revision = [int]$fields[3]
+    return @($major, $minor, $build, $revision)
+}
+
 function Test-WindowsSDKInstall
 {
     param(
@@ -694,23 +802,180 @@ function Test-WindowsSDKInstall
         [uri]$url
     )
 
-    $regkey = "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots\$version"
+    # Parse version from a.b.c.d into parts
+    $dotquadversion = Parse-DotQuadVersion $version
+    $major = $dotquadversion[0]
+    $minor = $dotquadversion[1]
+    $build = $dotquadversion[2]
+    $revision = $dotquadversion[3]
+
+    # Check if version=a.b.c.0 is present at HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots\$version
+    $regkey = "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots\$($major).$($minor).$($build).0"
     $found = Test-Path $regkey -PathType Container
+    if ($found)
+    {
+        # Check if Windows SDK EULA x86 a.c is present at HKLM:SOFTWARE\Classes\Installer\Dependencies\Microsoft.Windows.WindowsSDKEULA.x86.$a.$c
+        $eula_regkey = "HKLM:SOFTWARE\Classes\Installer\Dependencies\Microsoft.Windows.WindowsSDKEULA.x86.$($major).$($build)"
+        $found = Test-Path $eula_regkey -PathType Container
+        if ($found)
+        {
+            # Check if 'Version' name has a value of a.c.d+ where ==a.c and >=d
+            # We ignore b because sometimes it varies (10.0.... or 10.1....)
+            $value = $(Get-Item -Path $eula_regkey).GetValue('Version')
+            Write-Verbose "Version $value detected at $eula_regkey"
+            $value_fields = Parse-DotQuadVersion $value
+            $found = ($value_fields[0] -eq $major) -And ($value_fields[2] -eq $build) -And ($value_fields[3] -ge $revision)
+        }
+    }
+
     if ($found)
     {
         Write-Host "Windows SDK $($version) = OK"
     }
     elseif ($InstallWindowsSDK -eq $true)
     {
-        Write-Warning "WARNING: Windows SDK $($version) not found. Installing..."
+        Write-Warning "Windows SDK $($version) not found. Installing..."
         $null = Install-WindowsSDK $version $url
     }
     else
     {
-        Write-Host "...ERROR: Windows SDK $($version) not found or valid. See [Getting Started doc's Tooling Prerequisites](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines/GettingStarted.md#tooling-prerequisites)" -ForegroundColor Red -BackgroundColor Black
+        Write-Host "...ERROR: Windows SDK $($version) not found or valid. Run with -InstallWindowsSDK (or -FixAll) to download and install missing SDK(s). For more information see https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines/GettingStarted.md#tooling-prerequisites" -ForegroundColor Red -BackgroundColor Black
         $global:issues++
     }
     return $found
+}
+
+function Install-VCLibsAppx
+{
+    param(
+        [string]$file,
+        [string]$name,
+        [string]$architecture
+    )
+
+    $install_issues = 0
+
+    $packages = Get-AppxPackage $name | Where-Object Architecture -eq $architecture
+    if (-not $packages)
+    {
+        Write-Host "...$name $($architecture) not installed"
+        $install_issues++
+        $identity = $null
+    }
+    else
+    {
+        $zip = [IO.Compression.ZipFile]::OpenRead($file)
+        $stream = $zip.GetEntry('AppxManifest.xml').Open()
+        $reader = New-Object IO.StreamReader($stream)
+        $manifest = $reader.ReadToEnd()
+        $reader.Close()
+        $stream.Close()
+        $zip.Dispose()
+        $xml = [xml]$manifest
+        $identity = $xml.documentElement.Identity
+        $appx_version = $identity.Version
+        $appx_version_fields = Parse-DotQuadVersion $appx_version
+        $appx_version_comparable = "{0:X04}.{1:X04}.{2:X04}.{3:X04}" -f $appx_version_fields
+
+        $max_found_version = $null
+        $max_found_version_comparable = $null
+        ForEach ($package in $packages)
+        {
+            if (($max_found_version_comparable -eq $null) -or ($max_found_version_comparable -lt $appx_version))
+            {
+                $max_found_version = $package.Version
+                $version_fields = Parse-DotQuadVersion $max_found_version
+                $max_found_version_comparable = "{0:X04}.{1:X04}.{2:X04}.{3:X04}" -f $version_fields
+            }
+        }
+        if ($max_found_version)
+        {
+            if ($max_found_version_comparable -ge $appx_version_comparable)
+            {
+                Write-Host "...$($name) $($architecture): Latest version $($max_found_version) installed"
+            }
+            else
+            {
+                Write-Host "...$($name) $($architecture): $($max_found_version) installed but newer version $($appx_version) available"
+                $install_issues++
+            }
+        }
+    }
+
+    if ($InstallVCLibs)
+    {
+        if ($install_issues)
+        {
+            if ($identity)
+            {
+                Write-Host "...Installing $name $($architecture) $($appx_version)..."
+            }
+            else
+            {
+                Write-Host "...Installing $name $($architecture)..."
+            }
+            Add-AppxPackage $file
+        }
+    }
+    else
+    {
+        $global:issues += $install_issues
+    }
+    return $install_issues -eq 0
+}
+
+function Install-VCLibs
+{
+    $extension_sdks = Join-Path ${Env:ProgramFiles(x86)} 'Microsoft SDKs\Windows Kits\10\ExtensionSDKs'
+    $path = Join-Path $extension_sdks 'Microsoft.VCLibs\14.0\Appx'
+    $path_desktop = Join-Path $extension_sdks 'Microsoft.VCLibs.Desktop\14.0\Appx'
+    $found = Test-Path $path -PathType Container
+    $found_desktop = Test-Path $path_desktop -PathType Container
+    if (-not $found)
+    {
+        Write-Host "...ERROR: Microsoft.VCLibs.*.14.00.appx not found or valid." -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+    }
+    if (-not $found_desktop)
+    {
+        Write-Host "...ERROR: Microsoft.VCLibs.*.14.00.Desktop.appx not found or valid." -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+    }
+    if ((-not $found) -or (-not $found_desktop))
+    {
+        return $false
+    }
+
+    Write-Host "Installing VCLibs MSIX packages..."
+    $cpu = Get-CpuArchitecture
+
+    Install-VCLibsAppx (Join-Path $path 'Retail\x86\Microsoft.VCLibs.x86.14.00.appx') 'Microsoft.VCLibs.140.00' 'x86'
+    Install-VCLibsAppx (Join-Path $path 'Debug\x86\Microsoft.VCLibs.x86.Debug.14.00.appx') 'Microsoft.VCLibs.140.00.Debug' 'x86'
+    Install-VCLibsAppx (Join-Path $path_desktop 'Retail\x86\Microsoft.VCLibs.x86.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.UWPDesktop' 'x86'
+    Install-VCLibsAppx (Join-Path $path_desktop 'Debug\x86\Microsoft.VCLibs.x86.Debug.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.Debug.UWPDesktop' 'x86'
+
+    if (($cpu -eq 'x64') -or ($cpu -eq 'arm64'))
+    {
+        Install-VCLibsAppx (Join-Path $path 'Retail\x64\Microsoft.VCLibs.x64.14.00.appx') 'Microsoft.VCLibs.140.00' 'x64'
+        Install-VCLibsAppx (Join-Path $path 'Debug\x64\Microsoft.VCLibs.x64.Debug.14.00.appx') 'Microsoft.VCLibs.140.00.Debug' 'x64'
+        Install-VCLibsAppx (Join-Path $path_desktop 'Retail\x64\Microsoft.VCLibs.x64.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.UWPDesktop' 'x64'
+        Install-VCLibsAppx (Join-Path $path_desktop 'Debug\x64\Microsoft.VCLibs.x64.Debug.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.Debug.UWPDesktop' 'x64'
+    }
+
+    if ($cpu -eq 'arm64')
+    {
+        Install-VCLibsAppx (Join-Path $path 'Retail\arm64\Microsoft.VCLibs.arm64.14.00.appx') 'Microsoft.VCLibs.140.00' 'arm64'
+        Install-VCLibsAppx (Join-Path $path 'Debug\arm64\Microsoft.VCLibs.arm64.Debug.14.00.appx') 'Microsoft.VCLibs.140.00.Debug' 'arm64'
+        Install-VCLibsAppx (Join-Path $path_desktop 'Retail\arm64\Microsoft.VCLibs.arm64.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.UWPDesktop' 'arm64'
+        Install-VCLibsAppx (Join-Path $path_desktop 'Debug\arm64\Microsoft.VCLibs.arm64.Debug.14.00.Desktop.appx') 'Microsoft.VCLibs.140.00.Debug.UWPDesktop' 'arm64'
+    }
+
+    return $true
+}
+
+function Test-VCLibsInstall
+{
+    $null = Install-VCLibs
 }
 
 function Test-DevTestPfx
@@ -725,7 +990,7 @@ function Test-DevTestPfx
     if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
     {
         Write-Host "Test certificate thumbprint $pfx_thumbprint...Not Found"
-        $global:issues++
+        $global:issues_valid_test_pfx_thumbprint_not_found++
         return $false
     }
 
@@ -734,7 +999,7 @@ function Test-DevTestPfx
     if (-not(Test-Path -Path $cert_path))
     {
         Write-Host "Test certificate for $pfx_thumbprint...Not Found"
-        $global:issues++
+        $global:issues_valid_test_pfx_thumbprint_not_found++
         return $false
     }
 
@@ -744,13 +1009,13 @@ function Test-DevTestPfx
     if ($expiration -lt $now)
     {
         Write-Host "Test certificate for $pfx_thumbprint...Expired ($expiration)"
-        $global:issues++
+        $global:issues_valid_test_pfx_thumbprint_not_found++
         return $false
     }
     elseif ($expiration -lt ($now + (New-TimeSpan -Days 14)))
     {
         Write-Host "Test certificate for $pfx_thumbprint...Expires soon ($expiration)"
-        $global:issues++
+        $global:warnings_test_pfx_expires_soon++
         return $true
     }
 
@@ -773,7 +1038,7 @@ function Repair-DevTestPfx
 
     if (Test-Path -Path $pwd_file -PathType Leaf)
     {
-        Write-Warning "WARNING: A pre-existing password file is found. A new password will be generated, please rebuild the tests to ensure the new password is used."
+        Write-Warning "A pre-existing password file is found. A new password will be generated, please rebuild tests to ensure the new password is used."
     }
 
     $password = ''
@@ -825,6 +1090,8 @@ function Repair-DevTestPfx
     # Save the thumbprint
     $thumbprint = $cert.Thumbprint
     Set-Content -Path $cert_thumbprint -Value $thumbprint -Force
+    $global:issues_valid_test_pfx_thumbprint_not_found = 0
+    $global:warnings_test_pfx_expires_soon = 0
 
     # Export the certificate
     $cer = Join-Path $user 'winappsdk.certificate.test.cer'
@@ -833,7 +1100,7 @@ function Repair-DevTestPfx
     $pfx = Join-Path $user 'winappsdk.certificate.test.pfx'
     $export_pfx = Export-PfxCertificate -Cert $cert_personal -FilePath $pfx -Password $password
 
-    # Delete the personal certiicate
+    # Delete the personal certificate
     Remove-Item -Path $cert_personal -DeleteKey
 
     $ok = $true
@@ -883,7 +1150,7 @@ function Test-DevTestCert
     if (-not(Test-Path -Path $cert_path))
     {
         Write-Host "Test certificate $pfx_thumbprint thumbprint $thumbprint...Not Found"
-        $global:issues++
+        $global:issues_valid_test_certificate_thumbprint_not_found++
         return $false
     }
 
@@ -893,13 +1160,13 @@ function Test-DevTestCert
     if ($expiration -lt $now)
     {
         Write-Host "Test certificate $thumbprint...Expired ($expiration)"
-        $global:issues++
+        $global:issues_valid_test_certificate_thumbprint_not_found++
         return $false
     }
     elseif ($expiration -lt ($now + (New-TimeSpan -Days 14)))
     {
         Write-Host "Test certificate $thumbprint...Expires soon ($expiration)"
-        $global:issues++
+        $global:warnings_test_certificate_expires_soon++
         return $false
     }
 
@@ -926,6 +1193,8 @@ function Repair-DevTestCert
     $cert_path = "cert:\LocalMachine\TrustedPeople"
     $x509certificates = Import-Certificate -FilePath $cer -CertStoreLocation $cert_path
     Write-Host "Install test certificate $cer...OK"
+    $global:issues_valid_test_certificate_thumbprint_not_found = 0
+    $global:warnings_test_certificate_expires_soon = 0
 }
 
 function Remove-DevTestCert
@@ -989,12 +1258,12 @@ function Test-TAEFServiceVersion
 
     if ($cmp -lt 0)
     {
-        Write-Warning "WARNING: TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        Write-Warning "TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
         return 'OlderVersion'
     }
     elseif ($cmp -gt 0)
     {
-        Write-Warning "WARNING: TAEF service newer than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        Write-Warning "TAEF service newer than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
         return 'NewerVersion'
     }
     else
@@ -1014,7 +1283,7 @@ function Test-TAEFService
     }
 
     # Double-check the TAEF service is known as a service as far as Windows is concerned
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue |Where-Object {$_.Name -eq "TE.Service"}
     if ([string]::IsNullOrEmpty($service))
     {
         Write-Host "TAEF service...Not Installed"
@@ -1142,7 +1411,7 @@ function Start-TAEFService
     }
 
     $ok = Start-Service 'TE.Service'
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue |Where-Object {$_.Name -eq "TE.Service"}
     if ($service.Status -ne "Running")
     {
         Write-Host "Start TAEF service...Failed"
@@ -1556,6 +1825,64 @@ function Test-DeveloperMode
     }
 }
 
+function Get-LongPath
+{
+    $regkey = 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem'
+    if (Test-Path -Path $regkey -PathType Container)
+    {
+        $value = $(Get-Item -Path $regkey).GetValue('LongPathsEnabled')
+        return $value -eq 1
+    }
+    return $false
+}
+
+function Set-LongPath
+{
+    $enabled = Get-LongPath
+    if ($enabled)
+    {
+        Write-Host "LongPath support...Already enabled"
+        return $true
+    }
+
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
+    {
+        Write-Host "Enable LongPath support...Access Denied. Run from an admin prompt"
+        $global:issues++
+        return $false
+    }
+
+    $regkey = 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem'
+    $ok = Set-ItemProperty -Path $regkey -Name LongPathsEnabled -Value 1 -Force
+    if ($ok -ne $true)
+    {
+        Write-Host "ERROR: LongPath support could not be enabled. Enable it via Settings" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    return $true
+}
+
+function Test-LongPath
+{
+    $enabled = Get-LongPath
+    if ($enabled)
+    {
+        Write-Host "LongPath support: Enabled"
+        return $true
+    }
+    Write-Host "LongPath support: Disabled"
+
+    if ($FixLongPath -eq $false)
+    {
+        Write-Warning "LongPath support is disabled"
+        return $false
+    }
+    Set-LongPath
+}
+
 function Get-SystemInfo
 {
     $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
@@ -1587,6 +1914,99 @@ function Get-SystemInfo
     Write-Host "LCU Version     : $($lcuver)"
 
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
+
+    $null = Test-LongPath
+}
+
+function Test-NugetExe
+{
+    $file = [IO.Path]::GetFullPath($NugetExe)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        Write-Host "ERROR: Nuget.exe ($file)...Not Found" -ForegroundColor Red -BackgroundColor Black
+        $global:issues_nuget_exe_not_found = 1
+        return $false
+    }
+    $versioninfo = (Get-Item $file).VersionInfo
+    $version_dotquad = $versioninfo.FileVersionRaw
+    $major = [uint64]$version_dotquad.Major
+    $minor = [uint64]$version_dotquad.Minor
+    $build = [uint64]$version_dotquad.Build
+    $revision = [uint64]$version_dotquad.Revision
+    $version_uint64 = (((($major -shl 48) -bor ($minor -shl 32)) -bor ($build -shl 16)) -bor $revision)
+
+    $minversion_dotquad = Parse-DotQuadVersion $NugetMinVersion
+    $major = [uint64]$minversion_dotquad[0]
+    $minor = [uint64]$minversion_dotquad[1]
+    $build = [uint64]$minversion_dotquad[2]
+    $revision = [uint64]$minversion_dotquad[3]
+    $minversion_uint64 = (((($major -shl 48) -bor ($minor -shl 32)) -bor ($build -shl 16)) -bor $revision)
+    if ($version_uint64 -lt $minversion_uint64)
+    {
+        Write-Host "ERROR: Nuget.exe ($file)...Version {$($versioninfo.FileVersion)} doesn't meet required minversion v{$NugetMinVersion}" -ForegroundColor Red -BackgroundColor Black
+        $global:issues_nuget_exe_not_found = 1
+        return $false
+    }
+
+    Write-Host "Nuget.exe v$($versioninfo.FileVersion) detected...$file"
+    $global:issues_nuget_exe_not_found = 0
+    return $true
+}
+
+function Install-NugetExe
+{
+    if ($Offline -eq $true)
+    {
+        Write-Host "ERROR: Nuget.exe cannot be downloaded with -Offline" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    $url = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
+    $file = [IO.Path]::GetFullPath($NugetExe)
+    Write-Host "Downloading nuget.exe from $url..."
+    Write-Verbose "Executing: curl.exe --output $file -L -# $url"
+    $null = Start-Process curl.exe -ArgumentList "--output $file -L -# $url" -Wait -NoNewWindow -PassThru
+
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        Write-Host "ERROR: Nuget.exe ($file)...Not Found" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+    Write-Verbose "Nuget.exe downloaded to $file"
+    return $true
+}
+
+function Restore-Nuget
+{
+    if ($Offline -eq $true)
+    {
+        Write-Host "ERROR: -NugetRestore cannot restore packages with -Offline" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    $nugetexe = [IO.Path]::GetFullPath($NugetExe)
+    if (-not(Test-Path -Path $nugetexe -PathType Leaf))
+    {
+        Write-Host "ERROR: Nuget.exe ($nugetexe)...Not Found" -ForegroundColor Red -BackgroundColor Black
+        $global:issues_nuget_exe_not_found = 1
+        return $false
+    }
+
+    ForEach ($file in $global:nuget_restore_filenames)
+    {
+        $root = Get-ProjectRoot
+        $restore_target = Join-Path $root $file
+        $args = "restore ""$($restore_target)"""
+        Write-Host "Nuget restoring packages: $($restore_target)..."
+        if ($Verbose -eq $true)
+        {
+            Write-Verbose "Executing $nuget_exec restore $restore_target"
+        }
+        & $nugetexe "restore" "$restore_target" | Write-Host
+    }
 }
 
 $null = Set-Settings
@@ -1597,7 +2017,9 @@ $null = Get-UserSettings
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTaefService -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
-    ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
+    ($CheckVCLibs -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckWindowsSDK -eq $false) -And
+    ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
+    ($CheckNugetExe -eq $false) -And ($NugetExeUpdate -eq $false) -And
     ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
 {
     $CheckAll = $true
@@ -1605,6 +2027,12 @@ if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAE
 if ($SyncDependencies -eq $true)
 {
     $CheckDependencies = $true
+}
+if ($FixAll -eq $true)
+{
+    $FixLongPath = $true
+    $InstallVCLibs = $true
+    $InstallWindowsSDK = $true
 }
 
 Write-Output "Checking developer environment..."
@@ -1620,6 +2048,21 @@ if (($CheckAll -ne $false) -Or ($ShowSystemInfo -ne $false))
     Get-SystemInfo
 }
 
+if (($CheckAll -ne $false) -Or ($CheckWindowsSDK -ne $false))
+{
+    ForEach ($sdk in $global:windows_sdks)
+    {
+        $version = $sdk[0]
+        $url = $sdk[1]
+        $null = Test-WindowsSDKInstall $version $url
+    }
+}
+
+if (($CheckAll -ne $false) -Or ($CheckVCLibs -ne $false))
+{
+    $ok = Test-VCLibsInstall
+}
+
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
     $ok = Test-VisualStudio2022Install
@@ -1627,8 +2070,6 @@ if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
     {
         $null = Test-VisualStudioComponents
     }
-    $null = Test-WindowsSDKInstall '10.0.17763.0' [uri]'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
-    #TODO Uncomment to require new SDK: $null = Test-WindowsSDKInstall '10.0.26100.0' [uri]'https://go.microsoft.com/fwlink/?linkid=2272610'
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
@@ -1652,6 +2093,28 @@ if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
     {
         $null = Repair-DevTestCert
     }
+}
+
+if (($CheckAll -ne $false) -Or ($CheckNugetExe -ne $false) -Or ($NugetExeUpdate -ne $false))
+{
+    $ok = Test-NugetExe
+    if ((-not $ok) -or ($NugetExeUpdate))
+    {
+        $ok = Install-NugetExe
+        if ($ok)
+        {
+            $ok = Test-NugetExe
+            if ($ok -ne $true)
+            {
+                $global:issues++
+            }
+        }
+    }
+}
+
+if (($FixAll -ne $false) -Or ($NugetRestore -ne $false))
+{
+    $null = Restore-Nuget
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
@@ -1722,12 +2185,15 @@ if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
     $null = Remove-DevTestPfx
 }
 
-if ($global:issues -eq 0)
+$issues_count = Get-Issues
+if ($issues_count -eq 0)
 {
     Write-Output "Coding time!"
+    Exit 0
 }
 else
 {
-    $n = $global:issues
+    $n = $issues_count
     Write-Output "$n issue(s) detected"
+    Exit 1
 }

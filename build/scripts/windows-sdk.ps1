@@ -3,7 +3,7 @@
 #
 
 param(
-    # TODO: Use version
+    # TODO: Use version, currently hardwire to only support 2 specific versions.
     [string]$SdkVersion = $null
 )
 
@@ -51,8 +51,6 @@ function Install-EXE
     }
 }
 
-
-
 $ErrorCodes = Data {
     ConvertFrom-StringData @'
     Success = 0
@@ -83,26 +81,48 @@ function PrintMessageAndExit($Message, $ReturnCode)
 # Main execution sequence
 #
 
-# Requires Windows SDK with the same version number as the WDK
-$winSdkUrl = "https://go.microsoft.com/fwlink/p/?LinkID=2023014"
-$wdkUrl = "https://go.microsoft.com/fwlink/?linkid=2026156"
-
-# `winsdksetup.exe /features + /quiet` installs all features without showing the GUI
-$sdkExitCode = Install-EXE -Url $winSdkUrl -Name "winsdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
-
-if ($sdkExitCode -ne 0)
+if ($SdkVersion -eq "10.1.17763")
 {
-    Write-Host "Failed to install the Windows SDK."
-    exit $sdkExitCode
+    # Requires Windows SDK with the same version number as the WDK
+    $winSdkUrl = "https://go.microsoft.com/fwlink/p/?LinkID=2023014"
+    $wdkUrl = "https://go.microsoft.com/fwlink/?linkid=2026156"
+
+    # `winsdksetup.exe /features + /quiet` installs all features without showing the GUI
+    $sdkExitCode = Install-EXE -Url $winSdkUrl -Name "winsdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
+
+    if ($sdkExitCode -ne 0)
+    {
+        Write-Host "Failed to install the Windows SDK."
+        exit $sdkExitCode
+    }
+
+    # `wdksetup.exe /features + /quiet` installs all features without showing the GUI
+    $wdkExitCode = Install-EXE -Url $wdkUrl -Name "wdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
+
+    if ($wdkExitCode -ne 0)
+    {
+        Write-Host "Failed to install the Windows Driver Kit."
+        exit $wdkExitCode
+    }
 }
-
-# `wdksetup.exe /features + /quiet` installs all features without showing the GUI
-$wdkExitCode = Install-EXE -Url $wdkUrl -Name "wdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
-
-if ($wdkExitCode -ne 0)
+elseif ($SdkVersion -eq "10.0.26100")
 {
-    Write-Host "Failed to install the Windows Driver Kit."
-    exit $wdkExitCode
+    # Install Windows SDK for Windows 11 (10.0.26100.4654).
+    # Link came from https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/
+    $winSdkUrl = "https://go.microsoft.com/fwlink/?linkid=2327008"
+
+    # `winsdksetup.exe /features + /quiet` installs all features without showing the GUI
+    $sdkExitCode = Install-EXE -Url $winSdkUrl -Name "winsdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
+
+    if ($sdkExitCode -ne 0)
+    {
+        Write-Host "Failed to install the Windows SDK."
+        exit $sdkExitCode
+    }
+}
+else
+{
+    Write-Host -Object "WARNING: The supplied SdkVersion is current unsupported : $SdkVersion."
 }
 
 Write-Host "Done"

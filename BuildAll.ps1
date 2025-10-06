@@ -174,6 +174,7 @@ Try {
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
@@ -216,22 +217,20 @@ Try {
         if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT"))
         {
             # Build mrt core.
-            foreach($configurationToRun in $configuration.Split(","))
+            foreach($platformToRun in $platform.Split(","))
             {
-                foreach($platformToRun in $platform.Split(","))
-                {
-                    write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
-                    & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
-                                    /p:Configuration=$configurationToRun `
-                                    /p:Platform=$platformToRun `
-                                    /p:PGOBuildMode=$PGOBuildMode `
-                                    /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationToRun.binlog"
+                write-host "Building MrtCore.sln for configuration $configurationForMrtAndAnyCPU and platform:$platformToRun"
+                & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
+                                /p:Configuration=$configurationForMrtAndAnyCPU `
+                                /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
+                                /p:PGOBuildMode=$PGOBuildMode `
+                                /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationForMrtAndAnyCPU.binlog"
 
-                    if ($lastexitcode -ne 0)
-                    {
-                        write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
-                        exit 1
-                    }
+                if ($lastexitcode -ne 0)
+                {
+                    write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+                    exit 1
                 }
             }
         }
@@ -242,7 +241,7 @@ Try {
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
         # build and restore AnyCPU
-        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU
+        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
@@ -517,7 +516,11 @@ Try {
                 break
             }
         }
-        $wasFoundationProps.Save($propsFilePath)
+        # Note: For some reason, the Save method does not work by default
+        # with the path relative to the current working directory.
+        # So we prepend the current working directory to the path.
+        $propsFileSavePath = Join-Path $PWD $propsFilePath
+        $wasFoundationProps.Save($propsFileSavePath)
 
         # Fix up ProjectCapability versions
         $FoundationBuildPaths = @(
@@ -537,7 +540,7 @@ Try {
                     $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
                 }
             }
-            $wasFoundationProps.Save($propsFilePath)
+            $wasFoundationProps.Save($propsFileSavePath)
         }
 
         $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"

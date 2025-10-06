@@ -153,6 +153,17 @@ namespace Test::StoragePickersTests
 
             picker.FileTypeFilter().Append(L"*");
             VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
+
+            auto openPickerChoices = winrt::single_threaded_vector<winrt::hstring>();
+            openPickerChoices.Append(L".txt");
+            picker.FileTypeChoices().Insert(L"Documents", openPickerChoices);
+            VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"Documents").GetAt(0), L".txt");
+
+            picker.SuggestedFolder(L"C:\\temp_fileopenpicker_ut_temp");
+            VERIFY_ARE_EQUAL(picker.SuggestedFolder(), L"C:\\temp_fileopenpicker_ut_temp");
+
+            picker.SuggestedStartFolder(L"C:\\temp_fileopenpicker_ut_start");
+            VERIFY_ARE_EQUAL(picker.SuggestedStartFolder(), L"C:\\temp_fileopenpicker_ut_start");
         }
 
         TEST_METHOD(VerifyFileSavePickerOptionsAreReadCorrectly)
@@ -164,8 +175,8 @@ namespace Test::StoragePickersTests
             VERIFY_ARE_EQUAL(picker.SuggestedStartLocation(), winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId::DocumentsLibrary);
 
             std::filesystem::remove_all(L"C:\\temp_filesavepicker_ut_temp");
-            picker.SuggestedSaveFilePath(L"C:\\temp_filesavepicker_ut_temp\\MyFile.txt");
-            VERIFY_ARE_EQUAL(picker.SuggestedSaveFilePath(), L"C:\\temp_filesavepicker_ut_temp\\MyFile.txt");
+            picker.SuggestedFolder(L"C:\\temp_filesavepicker_ut_temp");
+            VERIFY_ARE_EQUAL(picker.SuggestedFolder(), L"C:\\temp_filesavepicker_ut_temp");
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
@@ -174,6 +185,9 @@ namespace Test::StoragePickersTests
             filters.Append(L"*");
             picker.FileTypeChoices().Insert(L"All Files", filters);
             VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"All Files").GetAt(0), L"*");
+
+            picker.SuggestedStartFolder(L"C:\\temp_filesavepicker_start");
+            VERIFY_ARE_EQUAL(picker.SuggestedStartFolder(), L"C:\\temp_filesavepicker_start");
         }
 
         TEST_METHOD(VerifyFolderPickerOptionsAreReadCorrectly)
@@ -193,6 +207,12 @@ namespace Test::StoragePickersTests
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
+
+            picker.SuggestedFolder(L"C:\\temp_folderpicker_ut_temp");
+            VERIFY_ARE_EQUAL(picker.SuggestedFolder(), L"C:\\temp_folderpicker_ut_temp");
+
+            picker.SuggestedStartFolder(L"C:\\temp_folderpicker_ut_start");
+            VERIFY_ARE_EQUAL(picker.SuggestedStartFolder(), L"C:\\temp_folderpicker_ut_start");
         }
 
     };

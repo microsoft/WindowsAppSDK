@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 #include "Helpers.h"
@@ -42,9 +42,9 @@ HRESULT BootstrapInitialize()
 
     constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
-    constexpr PCWSTR c_FrameworkPackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework.4.1_8wekyb3d8bbwe";
-    constexpr PCWSTR c_MainPackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_8wekyb3d8bbwe";
-    RETURN_IF_FAILED(mddTestInitialize(c_PackageNamePrefix, c_PackagePublisherId, c_FrameworkPackageFamilyName, c_MainPackageFamilyName));
+    constexpr PCWSTR c_FrameworkPackageNamePrefix = L"Microsoft.WindowsAppRuntime";
+    constexpr PCWSTR c_MainPackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
+    RETURN_IF_FAILED(mddTestInitialize(c_PackageNamePrefix, c_PackagePublisherId, c_FrameworkPackageNamePrefix, c_MainPackageNamePrefix));
 
     // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
     const UINT32 c_Version_MajorMinor{ 0x00040001 };

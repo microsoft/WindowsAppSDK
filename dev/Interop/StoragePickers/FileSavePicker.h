@@ -26,8 +26,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring DefaultFileExtension();
         void DefaultFileExtension(hstring const& value);
 
-        hstring SuggestedSaveFilePath();
-        void SuggestedSaveFilePath(hstring const& value);
+        hstring SuggestedFolder();
+        void SuggestedFolder(hstring const& value);
+
+        hstring SuggestedStartFolder();
+        void SuggestedStartFolder(hstring const& value);
 
         hstring SuggestedFileName();
         void SuggestedFileName(hstring const& value);
@@ -40,7 +43,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring m_commitButtonText{};
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };
         hstring m_defaultFileExtension{};
-        hstring m_suggestedSaveFilePath{};
+        hstring m_suggestedFolder{};
+        hstring m_suggestedStartFolder{};
         hstring m_suggestedFileName{};
         StoragePickersTelemetryHelper m_telemetryHelper{};
 

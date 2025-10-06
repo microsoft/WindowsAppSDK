@@ -221,8 +221,6 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArgs: /binaryLogger:$(ob_outputDirectory)\binlogs\WindowsAppRuntimeInstall.$(buildPlatform).$(buildConfiguration).binlog
-    ${{ if eq( parameters.runStaticAnalysis, 'true') }}:
-      createLogFile: true
 
 # The VSBuild@1 task above seems to be able to do inline PREfast scanning with the EO-compliant ruleset now. So, we don't seem to
 # need the following any more. Commenting it out for now and observe a bit more. Remove it when we feel comfortable.
