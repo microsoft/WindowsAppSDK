@@ -14,12 +14,12 @@ namespace TPF = ::Test::Packages::Framework;
 namespace TPM = ::Test::Packages::Main;
 namespace TPMT = ::Test::PackageManager::Tests;
 
-namespace Test::PackageVolume::Tests
+namespace Test::PackageManager::Tests
 {
-    class PackageVolumeTests_Stage_Elevated : TPMT::PackageDeploymentManagerTests_Base
+    class PackageVolumeTests_Elevated : PackageDeploymentManagerTests_Base
     {
     public:
-        BEGIN_TEST_CLASS(PackageVolumeTests_Stage_Elevated)
+        BEGIN_TEST_CLASS(PackageVolumeTests_Elevated)
             TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
@@ -56,7 +56,7 @@ namespace Test::PackageVolume::Tests
 
             if (std::filesystem::is_directory(m_tempPath.c_str()))
             {
-                VERIFY_SUCCESS(wil::RemoveDirectoryRecursiveNoThrow(m_tempPath.c_str()));
+                VERIFY_SUCCEEDED(wil::RemoveDirectoryRecursiveNoThrow(m_tempPath.c_str()));
             }
             VERIFY_IS_TRUE(std::filesystem::create_directory(m_tempPath.c_str()));
 
@@ -80,14 +80,31 @@ namespace Test::PackageVolume::Tests
 
         bool TempDirectoryExists() const
         {
-            return std::filesystem::is_directory(m_tempPath.c_str())
+            return std::filesystem::is_directory(m_tempPath.c_str());
+        }
+
+    private:
+        void Verify(
+            const winrt::Microsoft::Windows::Management::Deployment::PackageVolume& packageVolume,
+            const winrt::Windows::Management::Deployment::PackageVolume& windowsPackageVolume)
+        {
+            throw winrt::hresult_not_implemented();
+        }
+
+        void Verify(
+            const winrt::Microsoft::Windows::Management::Deployment::PackageVolume& actual,
+            const winrt::Microsoft::Windows::Management::Deployment::PackageVolume& expected)
+        {
+            throw winrt::hresult_not_implemented();
+        }
 
     public:
 
         TEST_METHOD(GetDefault)
         {
             const auto packageVolume{ winrt::Microsoft::Windows::Management::Deployment::PackageVolume::GetDefault() };
-            const auto windowsPackageVolume{ winrt::Windows::Management::Deployment::PackageManager::GetDefaultPackageVolume() };
+            winrt::Windows::Management::Deployment::PackageManager packageManager;
+            const auto windowsPackageVolume{ packageManager.GetDefaultPackageVolume() };
             Verify(packageVolume, windowsPackageVolume);
         }
 
@@ -116,7 +133,7 @@ namespace Test::PackageVolume::Tests
             }
 
             {
-                auto deploymentOperation{ winrt::Microsoft::Windows::Management::Deployment::PackageVolume::RemoveAsync(m_tempPath) };
+                auto deploymentOperation{ packageVolumeAdded.RemoveAsync() };
                 auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
                 TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
             }
