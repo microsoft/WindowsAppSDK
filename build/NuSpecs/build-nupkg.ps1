@@ -43,7 +43,8 @@ else
     [xml]$customProps = (Get-Content ..\..\version.props)
     $versionMajor = $customProps.GetElementsByTagName("WindowsAppSDKVersionMajor").'#text'
     $versionMinor = $customProps.GetElementsByTagName("WindowsAppSDKVersionMinor").'#text'
-    $versionPatch = $customProps.GetElementsByTagName("WindowsAppSDKVersionPatch").'#text'
+    # Make Patch 0 while we get the real Semver Patch Version working
+    $versionPatch = '0' # $customProps.GetElementsByTagName("WindowsAppSDKVersionPatch").'#text'
 
     if ((!$versionMajor) -or (!$versionMinor) -or (!$versionPatch))
     {
