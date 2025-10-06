@@ -16,7 +16,7 @@ namespace TPMT = ::Test::PackageManager::Tests;
 
 namespace Test::PackageVolume::Tests
 {
-    class PackageVolumeTests_Stage_Elevated : PackageDeploymentManagerTests_Base
+    class PackageVolumeTests_Stage_Elevated : TPMT::PackageDeploymentManagerTests_Base
     {
     public:
         BEGIN_TEST_CLASS(PackageVolumeTests_Stage_Elevated)
