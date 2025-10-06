@@ -5,6 +5,8 @@
 #include "M.W.M.D.PackageVolume.h"
 #include "Microsoft.Windows.Management.Deployment.PackageVolume.g.cpp"
 
+#include "M.W.M.D.PackageDeploymentResult.h"
+
 #include "PackageVolumeTelemetry.h"
 
 #include <ExportLoader.h>
@@ -58,8 +60,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         m_name = value.Name();
         m_packageStorePath = value.PackageStorePath();
         m_supportsHardLinks = value.SupportsHardLinks();
-        m_isFullTrustPackageSupported = value.IsFullTrustPackageSupported();
         m_isAppxInstallSupported = value.IsAppxInstallSupported();
+        m_isFullTrustPackageSupported = value.IsFullTrustPackageSupported();
+        m_isOffline = value.IsOffline();
     }
     winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> PackageVolume::FindPackageVolumes()
     {
@@ -103,6 +106,19 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::PackageManager packageManager;
         winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume{ packageManager.GetDefaultPackageVolume() };
         return winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageVolume>(windowsPackageVolume);
+    }
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> PackageVolume::AddAsync(hstring packageStorePath)
+    {
+        auto logTelemetry{ PackageVolumeTelemetry::Add::Start(packageStorePath) };
+
+        auto cancellation{ co_await winrt::get_cancellation_token() };
+        cancellation.enable_propagation(true);
+
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume{ co_await packageManager.AddPackageVolumeAsync(packageStorePath) };
+
+        logTelemetry.Stop(windowsPackageVolume.MountPoint(), windowsPackageVolume.Name(), windowsPackageVolume.PackageStorePath());
+        co_return winrt::make<PackageVolume>(windowsPackageVolume);
     }
     bool PackageVolume::IsSystemVolume()
     {
@@ -154,28 +170,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         THROW_IF_FAILED(msixPackageVolumeRepair(m_packageStorePath.c_str()));
     }
 
+    bool PackageVolume::IsOffline()
+    {
+        return m_isOffline;
+    }
+
     void PackageVolume::SetDefault()
     {
         THROW_HR_IF_NULL(E_ILLEGAL_METHOD_CALL, m_windowsPackageVolume);
 
         winrt::Windows::Management::Deployment::PackageManager packageManager;
         packageManager.SetDefaultPackageVolume(m_windowsPackageVolume);
-    }
-
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> PackageVolume::AddAsync(hstring packageStorePath)
-    {
-        auto logTelemetry{ PackageVolumeTelemetry::Add::Start(packageStorePath) };
-
-        auto strong{ get_strong() };
-
-        auto cancellation{ co_await winrt::get_cancellation_token() };
-        cancellation.enable_propagation(true);
-
-        winrt::Windows::Management::Deployment::PackageManager packageManager;
-        winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume{ co_await packageManager.AddPackageVolumeAsync(packageStorePath) };
-
-        logTelemetry.Stop(windowsPackageVolume.MountPoint(), windowsPackageVolume.Name(), windowsPackageVolume.PackageStorePath());
-        co_return winrt::make<PackageVolume>(windowsPackageVolume);
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> PackageVolume::RemoveAsync()
@@ -222,7 +227,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        logTelemetry.Stop();
+        logTelemetry.Stop(static_cast<HRESULT>(S_OK));
         co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
@@ -270,7 +275,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        logTelemetry.Stop();
+        logTelemetry.Stop(static_cast<HRESULT>(S_OK));
         co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
@@ -318,7 +323,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
 
-        logTelemetry.Stop();
+        logTelemetry.Stop(static_cast<HRESULT>(S_OK));
         co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
     }
 
@@ -340,7 +345,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         co_return availableSpace;
     }
 
-    HRESULT PackageDeploymentManager::Remove(
+    HRESULT PackageVolume::Remove(
         winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
         wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
         HRESULT& extendedError,
@@ -401,7 +406,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         return S_OK;
     }
 
-    HRESULT PackageDeploymentManager::SetOnline(
+    HRESULT PackageVolume::SetOnline(
         const bool online,
         winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
         wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,

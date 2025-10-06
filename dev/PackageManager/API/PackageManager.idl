@@ -130,11 +130,16 @@ namespace Microsoft.Windows.Management.Deployment
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
         Boolean SupportsHardLinks{ get; };
 
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
+        Boolean IsAppxInstallSupported{ get; };
+
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
         Boolean IsFullTrustPackageSupported{ get; };
 
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
-        Boolean IsAppxInstallSupported{ get; };
+        /// Return the default package volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isoffline
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsOffline();
 
         /// Return true if the package volume is damaged and needs to be repaired.
         Boolean IsRepairNeeded();
@@ -160,7 +165,7 @@ namespace Microsoft.Windows.Management.Deployment
         /// @note This requires admin privilege.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.addpackagevolumeasync
         [contract(PackageDeploymentContract, 3)]
-        Windows.Foundation.IAsyncOperation<PackageVolume> AddAsync(String packageStorePath);
+        static Windows.Foundation.IAsyncOperation<PackageVolume> AddAsync(String packageStorePath);
 
         /// @note The caller must be running with Medium IL (or higher)
         ///       OR running in an AppContainer with the packageManagement restricted capability

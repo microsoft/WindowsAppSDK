@@ -17,18 +17,19 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByPath(hstring const& packageStorePath);
         static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByName(hstring const& name);
         static winrt::Microsoft::Windows::Management::Deployment::PackageVolume GetDefault();
+        static winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> AddAsync(hstring packageStorePath);
 
         bool IsSystemVolume();
         hstring MountPoint();
         hstring Name();
         hstring PackageStorePath();
         bool SupportsHardLinks();
-        bool IsFullTrustPackageSupported();
         bool IsAppxInstallSupported();
+        bool IsFullTrustPackageSupported();
         bool IsRepairNeeded();
         void Repair();
+        bool IsOffline();
         void SetDefault();
-        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> AddAsync(hstring packageStorePath);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RemoveAsync();
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> SetOfflineAsync();
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> SetOnlineAsync();
@@ -51,14 +52,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::guid& activityId);
 
     private:
-        winrt::Windows::Management::Deployment::PackageVolume m_windowsPackageVolume;
+        winrt::Windows::Management::Deployment::PackageVolume m_windowsPackageVolume{ nullptr };
         bool m_isSystemVolume{};
         hstring m_mountPoint;
         hstring m_name;
         hstring m_packageStorePath;
         bool m_supportsHardLinks{};
-        bool m_isFullTrustPackageSupported{};
         bool m_isAppxInstallSupported{};
+        bool m_isFullTrustPackageSupported{};
+        bool m_isOffline{};
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
