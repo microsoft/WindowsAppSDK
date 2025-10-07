@@ -42,13 +42,13 @@ $binlogFileBase = Join-Path (Split-Path $PSScriptRoot -parent) "BuildOutput\Binl
 $binlogFiles = Get-ChildItem -Path $binlogFileBase -Filter *.binlog -Recurse | Select-Object -ExpandProperty FullName
 
 Write-Host "Binlog files found:"
-$binlogFiles | ForEach-Object { Write-Host $_ }
+$binlogFiles | ForEach-Object { Write-Host "    $_" }
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
-write-host "VCToolsInstallDir: $VCToolsInstallDir"
+Write-Host "VCToolsInstallDir: $VCToolsInstallDir"
 
 $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
-write-host "msBuildPath: $msBuildPath"
+Write-Host "msBuildPath: $msBuildPath"
 
 Remove-Item "temp-filtered.log" -ErrorAction SilentlyContinue
 Remove-Item "temp-filtered2.log" -ErrorAction SilentlyContinue
