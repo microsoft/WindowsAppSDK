@@ -51,30 +51,30 @@ Write-Host "Binlog files found:"
 $binlogFiles | ForEach-Object { Write-Host "    $_" }
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
-Write-Host "VCToolsInstallDir: $VCToolsInstallDir"
+Write-Verbose "VCToolsInstallDir: $VCToolsInstallDir"
 
 $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
-Write-Host "msBuildPath: $msBuildPath"
+Write-Verbose "msBuildPath: $msBuildPath"
 
 $temp = Join-Path (Split-Path $PSScriptRoot -parent) "temp"
 
-Write-Host "Using temporary path: $temp"
+Write-Verbose "Using temporary path: $temp"
 
 if (-not (Test-Path -Path $temp -PathType Container))
 {
-    Write-Host "Creating temporary directory: $temp"
-    New-Item -ItemType Directory -Path $temp
+    Write-Verbose "Creating temporary directory: $temp"
+    New-Item -ItemType Directory -Path $temp | Out-Null
 }
 
 if (Test-Path "$temp\temp-filtered.log")
 {
-    Write-Host "Removing existing filtered log: $temp\temp-filtered.log"
+    Write-Verbose "Removing existing filtered log: $temp\temp-filtered.log"
     Remove-Item "$temp\temp-filtered.log" -Force
 }
 
 if (Test-Path "$temp\temp-filtered2.log")
 {
-    Write-Host "Removing existing filtered log: $temp\temp-filtered2.log"
+    Write-Verbose "Removing existing filtered log: $temp\temp-filtered2.log"
     Remove-Item "$temp\temp-filtered2.log" -Force
 }
 
@@ -99,10 +99,10 @@ foreach ($binlogFile in $binlogFiles)
 
     Remove-Item $tempLog -Force
 
-    Write-Host "Processed binlog file: $binlogFile"
+    Write-Verbose "Processed binlog file: $binlogFile"
 }
 
-Write-Host "Filtered log file generated at: $tempFilteredLog"
+Write-Verbose "Filtered log file generated at: $tempFilteredLog"
 
 $contextPath = ""
 
@@ -118,14 +118,14 @@ $contextPath = ""
 $tempFiltered2Log = Join-Path $temp "temp-filtered2.log"
 $lines = Get-Content $tempFilteredLog
 
-Write-Host "Processing filtered log to adjust file paths..."
+Write-Verbose "Processing filtered log to adjust file paths..."
 
 foreach ($line in $lines)
 {
     if ($line -match 'Target "ClCompile" in file "([^"]+)" from project "([^"]+)"')
     {
         $contextPath = Split-Path $matches[2] -parent
-        Write-Host "Context path set to: $contextPath"
+        Write-Verbose "Context path set to: $contextPath"
     }
     elseif ($line -match 'Cl\.exe (.+)$')
     {
@@ -162,7 +162,7 @@ foreach ($line in $lines)
     }
 }
 
-Write-Host "Adjusted file paths and generated: $tempFiltered2Log"
+Write-Verbose "Adjusted file paths and generated: $tempFiltered2Log"
 
 if ($Ms2ccExePath)
 {
@@ -191,10 +191,10 @@ elseif ($DownloadMs2cc)
         }
 
         Expand-Archive -Path $zipPath -DestinationPath $ms2ccPath -Force
-        Write-Host "Extracted ms2cc to: $ms2ccPath"
+        Write-Verbose "Extracted ms2cc to: $ms2ccPath"
 
         Remove-Item $zipPath -Force
-        Write-Host "Cleaned up zip file"
+        Write-Verbose "Cleaned up zip file"
 
         if (Test-Path $ms2ccExePath)
         {
@@ -254,5 +254,5 @@ if ($Update -and (Test-Path $backupPath))
 }
 
 Remove-Item $temp -Recurse -Force
-Write-Host "Temporary files cleaned up."
+Write-Verbose "Temporary files cleaned up."
 Write-Host "Compilation database generated at: $(Split-Path $PSScriptRoot -parent)\compile_commands.json"
