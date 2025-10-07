@@ -42,6 +42,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         InputPointerSource_ReentrantDisposedCrash = 58635438, 
         NavigationView_ClearSelectedItem = 58987595, 
         XamlIsland_ExitNonClientArea = 58987663, 
+
+        // 1.7.5
+        InputPointerSource_FixScrollForInactiveWindowSetting = 56681943, 
     };
 
     /// Represents a version of the Windows App Runtime.
