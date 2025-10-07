@@ -100,12 +100,12 @@ foreach ($line in $lines)
     elseif ($line -match 'Cl\.exe (.+)$')
     {
         $clLine = $matches[1]
-        $args = $clLine -split ' (?=(?:[^"]*"[^"]*")*[^"]*$)'
+        $clArgs = $clLine -split ' (?=(?:[^"]*"[^"]*")*[^"]*$)'
 
         $modifiedArgs = @()
-        foreach ($arg in $args)
+        foreach ($arg in $clArgs)
         {
-            if ($arg -match '^(.*\.(cpp|c|h))$' -or $arg -match '^"(.*\.(cpp|c|h))"$')
+            if ($arg -match '^(.*\.(cpp|hpp|c|h))$' -or $arg -match '^"(.*\.(cpp|c|h))"$')
             {
                 $filePath = $arg.Trim('"')
                 if (-Not ([System.IO.Path]::IsPathRooted($filePath)))
