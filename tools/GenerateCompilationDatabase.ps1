@@ -32,11 +32,17 @@
 #>
 
 Param(
-    [string]$Ms2ccVersion = "1.3.0",
     [switch]$DownloadMs2cc,
-    [string]$Ms2ccPath,
+    [string]$Ms2ccExePath,
+    [string]$Ms2ccUrl = "https://github.com/freddiehaddad/ms2cc/releases/download/v1.3.0/ms2cc-1.3.0.zip",
     [switch]$Update
 )
+
+if (-Not $Ms2ccExePath -and -Not $DownloadMs2cc)
+{
+    Write-Error "ms2cc.exe not found at $ms2ccExe. Please provide a valid path using -Ms2ccExePath or allow downloading with -DownloadMs2cc."
+    exit 1
+}
 
 $binlogFileBase = Join-Path (Split-Path $PSScriptRoot -parent) "BuildOutput\Binlogs"
 $binlogFiles = Get-ChildItem -Path $binlogFileBase -Filter *.binlog -Recurse | Select-Object -ExpandProperty FullName
@@ -50,8 +56,29 @@ Write-Host "VCToolsInstallDir: $VCToolsInstallDir"
 $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 Write-Host "msBuildPath: $msBuildPath"
 
-Remove-Item "temp-filtered.log" -ErrorAction SilentlyContinue
-Remove-Item "temp-filtered2.log" -ErrorAction SilentlyContinue
+$temp = Join-Path (Split-Path $PSScriptRoot -parent) "temp"
+
+Write-Host "Using temporary path: $temp"
+
+if (-not (Test-Path -Path $temp -PathType Container))
+{
+    Write-Host "Creating temporary directory: $temp"
+    New-Item -ItemType Directory -Path $temp
+}
+
+if (Test-Path "$temp\temp-filtered.log")
+{
+    Write-Host "Removing existing filtered log: $temp\temp-filtered.log"
+    Remove-Item "$temp\temp-filtered.log" -Force
+}
+
+if (Test-Path "$temp\temp-filtered2.log")
+{
+    Write-Host "Removing existing filtered log: $temp\temp-filtered2.log"
+    Remove-Item "$temp\temp-filtered2.log" -Force
+}
+
+$tempFilteredLog = Join-Path $temp "temp-filtered.log"
 
 foreach ($binlogFile in $binlogFiles)
 {
@@ -61,19 +88,21 @@ foreach ($binlogFile in $binlogFiles)
         exit 1
     }
 
-    & $msBuildPath $binlogFile /v:normal /noconlog /flp:logfile=temp.log
+    $tempLog = Join-Path $temp "temp.log"
 
-    Select-String -Path "temp.log" -Pattern "Target ""ClCompile"" in file","Cl.exe"  |
+    & $msBuildPath $binlogFile /v:normal /noconlog /flp:logfile=$tempLog
+
+    Select-String -Path $tempLog -Pattern "Target ""ClCompile"" in file","Cl.exe"  |
         ForEach-Object { $_.Line } |
         Where-Object { $_ -notmatch "Tracker.exe" } |
-        Out-File -FilePath "temp-filtered.log" -Append -Encoding utf8
+        Out-File -FilePath $tempFilteredLog -Append -Encoding utf8
 
-    Remove-Item "temp.log"
+    Remove-Item $tempLog -Force
 
     Write-Host "Processed binlog file: $binlogFile"
 }
 
-Write-Host "Filtered log file generated at: $(Get-Location)\temp-filtered.log"
+Write-Host "Filtered log file generated at: $tempFilteredLog"
 
 $contextPath = ""
 
@@ -86,7 +115,8 @@ $contextPath = ""
 # The source files are the arguments that ends with .cpp, .c, or .h
 # They can have spaces in them. If so, they are enclosed in quotes.
 
-$lines = Get-Content "temp-filtered.log"
+$tempFiltered2Log = Join-Path $temp "temp-filtered2.log"
+$lines = Get-Content $tempFilteredLog
 
 Write-Host "Processing filtered log to adjust file paths..."
 
@@ -128,24 +158,31 @@ foreach ($line in $lines)
         }
 
         $modifiedLine = "Cl.exe " + ($modifiedArgs -join ' ')
-        Add-Content -Path "temp-filtered2.log" -Value $modifiedLine
+        Add-Content -Path $tempFiltered2Log -Value $modifiedLine
     }
 }
 
-Write-Host "Adjusted file paths and generated: $(Get-Location)\temp-filtered2.log"
+Write-Host "Adjusted file paths and generated: $tempFiltered2Log"
 
-$ms2ccPath = Join-Path $PSScriptRoot "ms2cc"
-$ms2ccExe = Join-Path $ms2ccPath "ms2cc.exe"
-
-if (-Not (Test-Path $ms2ccExe))
+if ($Ms2ccExePath)
+{
+    if (-Not (Test-Path $Ms2ccExePath))
+    {
+        Write-Error "Provided ms2cc.exe path does not exist: $Ms2ccExePath"
+        exit 1
+    }
+    Write-Host "Using provided ms2cc.exe path: $ms2ccExe"
+}
+elseif ($DownloadMs2cc)
 {
     Write-Host "Downloading ms2cc..."
-    $ms2ccUrl = "https://github.com/freddiehaddad/ms2cc/releases/download/v$Ms2ccVersion/ms2cc-$Ms2ccVersion.zip"
-    $zipPath = Join-Path $PSScriptRoot "ms2cc-$Ms2ccVersion.zip"
+    $zipPath = Join-Path $temp "ms2cc.zip"
+    $ms2ccPath = Join-Path $temp "ms2cc"
+    $Ms2ccExePath = Join-Path $ms2ccPath "ms2cc.exe"
 
     try
     {
-        Invoke-WebRequest -Uri $ms2ccUrl -OutFile $zipPath -UseBasicParsing
+        Invoke-WebRequest -Uri $Ms2ccUrl -OutFile $zipPath -UseBasicParsing
         Write-Host "Downloaded ms2cc to: $zipPath"
 
         if (-Not (Test-Path $ms2ccPath))
@@ -159,7 +196,7 @@ if (-Not (Test-Path $ms2ccExe))
         Remove-Item $zipPath -Force
         Write-Host "Cleaned up zip file"
 
-        if (Test-Path $ms2ccExe)
+        if (Test-Path $ms2ccExePath)
         {
             Write-Host "ms2cc successfully downloaded and extracted"
         }
@@ -175,10 +212,6 @@ if (-Not (Test-Path $ms2ccExe))
         exit 1
     }
 }
-else
-{
-    Write-Host "ms2cc already exists at: $ms2ccExe"
-}
 
 $backupPath = $null
 
@@ -190,7 +223,7 @@ if ($Update)
     $compileCommandsPath = Join-Path (Split-Path $PSScriptRoot -parent) "compile_commands.json"
     if (Test-Path $compileCommandsPath)
     {
-        $backupPath = Join-Path (Split-Path $PSScriptRoot -parent) "compile_commands_old.json"
+        $backupPath = Join-Path $temp "compile_commands_old.json"
         Copy-Item -Path $compileCommandsPath -Destination $backupPath
         Write-Host "Backed up existing compile_commands.json to: $backupPath"
     }
@@ -200,11 +233,7 @@ if ($Update)
     }
 }
 
-& $ms2ccExe -i "temp-filtered2.log" -d (Split-Path $PSScriptRoot -parent) -p
-
-Remove-Item "temp-filtered.log"
-Remove-Item "temp-filtered2.log"
-Write-Host "Temporary files cleaned up."
+& $Ms2ccExePath -i $tempFiltered2Log -d (Split-Path $PSScriptRoot -parent) -p
 
 if ($Update -and (Test-Path $backupPath))
 {
@@ -222,8 +251,8 @@ if ($Update -and (Test-Path $backupPath))
     }
     $mergedCommands.Values | ConvertTo-Json -Depth 10 | Set-Content -Path (Join-Path (Split-Path $PSScriptRoot -parent) "compile_commands.json") -Encoding utf8
     Write-Host "Merged old and new compile_commands.json files."
-
-    Remove-Item $backupPath -Force
 }
 
+Remove-Item $temp -Recurse -Force
+Write-Host "Temporary files cleaned up."
 Write-Host "Compilation database generated at: $(Split-Path $PSScriptRoot -parent)\compile_commands.json"
