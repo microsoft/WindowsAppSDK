@@ -135,7 +135,7 @@ foreach ($line in $lines)
         $modifiedArgs = @()
         foreach ($arg in $clArgs)
         {
-            if ($arg -match '^(.*\.(cpp|hpp|c|h))$' -or $arg -match '^"(.*\.(cpp|c|h))"$')
+            if ($arg -match '^(.*\.(cpp|hpp|c|h))$' -or $arg -match '^"(.*\.(cpp|hpp|c|h))"$')
             {
                 $filePath = $arg.Trim('"')
                 if (-Not ([System.IO.Path]::IsPathRooted($filePath)))
