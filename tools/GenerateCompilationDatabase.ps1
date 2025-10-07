@@ -1,7 +1,41 @@
+# Copyright (c) Microsoft Corporation and Contributors.
+# Licensed under the MIT License.
+
+<#
+.SYNOPSIS
+    Generates a compilation database (compile_commands.json) from MSBuild binlog files.
+
+.DESCRIPTION
+    This script processes MSBuild binary log files (.binlog) to extract compilation commands
+    and generates a compilation database in JSON format (compile_commands.json). It uses the
+    ms2cc tool to convert the filtered log into the desired format.
+
+.PARAMETER Ms2ccVersion
+    Specifies the version of ms2cc to download and use. Default is "1.3.0".
+
+.PARAMETER DownloadMs2cc
+    If set, it allows the script to download the specified version of ms2cc if it is not found
+    in the expected location.
+
+.PARAMETER Ms2ccPath
+    Specifies a custom path to the ms2cc executable. If not provided, the script will download
+    ms2cc to a default location.
+
+.PARAMETER Update
+    If set, the script will update an existing compile_commands.json file by merging new entries
+    with existing ones instead of overwriting it.
+
+.EXAMPLE
+    .\GenerateCompilationDatabase.ps1 -Ms2ccVersion "1.3.0" -DownloadMs2cc -Update
+
+    Generates or updates the compilation database using ms2cc version 1.3.0, downloading it if necessary.
+#>
+
 Param(
     [string]$Ms2ccVersion = "1.3.0",
+    [switch]$DownloadMs2cc,
+    [string]$Ms2ccPath,
     [switch]$Update
-
 )
 
 $binlogFileBase = Join-Path (Split-Path $PSScriptRoot -parent) "BuildOutput\Binlogs"
