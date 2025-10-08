@@ -460,7 +460,6 @@ namespace Microsoft.Windows.ApplicationModel
         /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
         /// @see PackageGraph.GetFilePath
-        [method_name("GetFilePathInCurrentPackage")]
         static String GetFilePath(String filename);
 
         /// Return the absolute path to the file in the package.
@@ -471,6 +470,7 @@ namespace Microsoft.Windows.ApplicationModel
         /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
         /// @see PackageGraph.GetFilePath
+        [method_name("GetFilePathInPackage")]
         static String GetFilePath(String packageFullName, String filename);
 
         /// Return the absolute path to the file in the package.
