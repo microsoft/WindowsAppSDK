@@ -121,7 +121,7 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
         {
             initializeActivity.Reset();
             initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
-            initializeActivity.SetCurrentResourceId(package.packageIdentifier);
+            initializeActivity.SetCurrentResourceId(package.identifier);
             if (package.useExistingPackageIfHigherVersion)
             {
                 initializeActivity.SetUseExistingPackageIfHigherVersion();
