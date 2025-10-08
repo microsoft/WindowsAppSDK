@@ -132,7 +132,6 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
             // The Singleton package will always set true for forceDeployment and the running process will be terminated to update the package.
             if (initializeActivity.GetIsFullTrustPackage())
             {
-
                 RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
                     package.packagePath,
                     package.useExistingPackageIfHigherVersion,
@@ -156,8 +155,8 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
             // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.
             if (package.isSingleton)
             {
-                // wil callback is set up to log telemetry events for Push Notifications LRP.
-                LOG_IF_FAILED_MSG(startupNotificationsLongRunningPlatformFunc(), "Restarting Notifications LRP failed in all 3 attempts.");
+                // WIL callback is set up to log telemetry events for Push Notifications LRP.
+                std::ignore = LOG_IF_FAILED_MSG(startupNotificationsLongRunningPlatformFunc(), "Restarting Notifications LRP failed in all 3 attempts.");
             }
         }
 
