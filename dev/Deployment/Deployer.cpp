@@ -156,7 +156,7 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
             if (package.isSingleton)
             {
                 // WIL callback is set up to log telemetry events for Push Notifications LRP.
-                std::ignore = LOG_IF_FAILED_MSG(startupNotificationsLongRunningPlatformFunc(), "Restarting Notifications LRP failed in all 3 attempts.");
+                std::ignore = LOG_IF_FAILED_MSG(startupNotificationsLongRunningPlatformFunc(), "Failed to restart Notifications' Long Running Process (LRP)");
             }
         }
 
