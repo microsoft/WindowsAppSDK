@@ -8,17 +8,8 @@
 #include <functional>
 #include <DeploymentActivityContext.h>
 
-namespace WindowsAppRuntime::Deployment::Deployer
+namespace WindowsAppRuntime::Deployment::Licensing
 {
-    // Structure to hold deployment package arguments
-    struct DeploymentPackageArguments
-    {
-        const std::wstring packageIdentifier;
-        const std::filesystem::path packagePath;
-        const bool useExistingPackageIfHigherVersion;
-        const bool isSingleton;
-    };
-
     // Proxy/Wrapper for license installer. Open possibility to add more methods if needed.
     struct ILicenseInstaller
     {
@@ -31,9 +22,21 @@ namespace WindowsAppRuntime::Deployment::Deployer
     // Install license files
     HRESULT InstallLicenses(
         const std::vector<std::wstring>& licenseFiles,
-        std::filesystem::path licensePath,
+        const std::filesystem::path& licensePath,
         ILicenseInstaller& licenseInstaller,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext);
+}
+
+namespace WindowsAppRuntime::Deployment::PackageDeployment
+{
+    // Structure to hold deployment package arguments
+    struct DeploymentPackageArguments
+    {
+        const std::wstring packageIdentifier;
+        const std::filesystem::path packagePath;
+        const bool useExistingPackageIfHigherVersion;
+        const bool isSingleton;
+    };
 
     // Get deployment package arguments
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(

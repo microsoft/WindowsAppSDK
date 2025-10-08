@@ -21,7 +21,7 @@ using namespace winrt;
 namespace Test::Deployment
 {
     // Mock implementation of ILicenseInstaller for testing
-    struct MockLicenseInstaller : public WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
+    struct MockLicenseInstaller : public WindowsAppRuntime::Deployment::Licensing::ILicenseInstaller
     {
         std::vector<std::wstring> m_installedFiles;
         std::unordered_map<std::wstring, HRESULT> m_expectedFailureMap;
@@ -91,7 +91,7 @@ namespace Test::Deployment
             std::vector<std::wstring> licenseFiles;
             std::wstring nonExistentPath = L"C:\\NonExistent\\Path\\*_license.xml";
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(nonExistentPath, licenseFiles);
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(nonExistentPath, licenseFiles);
 
             VERIFY_SUCCEEDED(hr);
             VERIFY_ARE_EQUAL(licenseFiles.size(), 0u);
@@ -105,7 +105,7 @@ namespace Test::Deployment
             std::vector<std::wstring> licenseFiles;
             std::wstring emptyPath = L"";
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(emptyPath, licenseFiles);
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(emptyPath, licenseFiles);
 
             VERIFY_SUCCEEDED(hr);
             VERIFY_ARE_EQUAL(licenseFiles.size(), 0u);
@@ -119,7 +119,7 @@ namespace Test::Deployment
             std::vector<std::wstring> licenseFiles;
             std::wstring invalidPath = L"C:\\Invalid|Path\\*_license.xml";
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(invalidPath, licenseFiles);
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(invalidPath, licenseFiles);
 
             VERIFY_IS_TRUE(FAILED(hr));
             Log::Comment(String().Format(L"GetLicenseFiles correctly failed with invalid path, HR: 0x%08X", hr));
@@ -136,7 +136,7 @@ namespace Test::Deployment
             VERIFY_ARE_EQUAL(licenseFiles.size(), 2u);
 
             std::wstring nonExistentPath = L"C:\\NonExistent\\Path\\*_license.xml";
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(nonExistentPath, licenseFiles);
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(nonExistentPath, licenseFiles);
 
             VERIFY_SUCCEEDED(hr);
             VERIFY_ARE_EQUAL(licenseFiles.size(), 0u);
@@ -148,17 +148,17 @@ namespace Test::Deployment
             Log::Comment(L"Test GetLicenseFiles with real mock license files");
 
             std::vector<std::wstring> licenseFiles;
-            
+
             // Get the current test directory and construct the MSIX path
             wchar_t currentDir[MAX_PATH];
             GetCurrentDirectory(MAX_PATH, currentDir);
             std::wstring testPath = std::wstring(currentDir) + L"\\test\\DeploymentUnitTests\\MSIX\\*_license.xml";
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(testPath, licenseFiles);
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(testPath, licenseFiles);
 
             VERIFY_SUCCEEDED(hr);
             VERIFY_ARE_EQUAL(licenseFiles.size(), 3u);
-            
+
             VERIFY_ARE_EQUAL(licenseFiles[0], L"a_license.xml");
             VERIFY_ARE_EQUAL(licenseFiles[1], L"b_license.xml");
             // Note: preserves case of original name
@@ -177,7 +177,7 @@ namespace Test::Deployment
             MockLicenseInstaller mockInstaller;
             WindowsAppRuntime::Deployment::Activity::Context activityContext;
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
 
             VERIFY_SUCCEEDED(hr);
@@ -194,16 +194,16 @@ namespace Test::Deployment
             MockLicenseInstaller mockInstaller;
             WindowsAppRuntime::Deployment::Activity::Context activityContext;
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
 
             VERIFY_SUCCEEDED(hr);
             VERIFY_ARE_EQUAL(mockInstaller.GetInstallCount(), 1u);
-            
+
             const auto& installedFiles = mockInstaller.GetInstalledFiles();
             VERIFY_IS_TRUE(installedFiles[0].find(L"test_license.xml") != std::wstring::npos);
             VERIFY_IS_TRUE(installedFiles[0].find(L"C:\\TestPath") != std::wstring::npos);
-            
+
             Log::Comment(String().Format(L"Successfully installed: %s", installedFiles[0].c_str()));
         }
 
@@ -211,16 +211,16 @@ namespace Test::Deployment
         {
             Log::Comment(L"Test InstallLicenses with multiple license files");
 
-            std::vector<std::wstring> licenseFiles = { 
-                L"license1.xml", 
-                L"license2.xml", 
-                L"license3.xml" 
+            std::vector<std::wstring> licenseFiles = {
+                L"license1.xml",
+                L"license2.xml",
+                L"license3.xml"
             };
             std::filesystem::path licensePath = L"C:\\TestPath";
             MockLicenseInstaller mockInstaller;
             WindowsAppRuntime::Deployment::Activity::Context activityContext;
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
 
             VERIFY_SUCCEEDED(hr);
@@ -244,7 +244,7 @@ namespace Test::Deployment
             mockInstaller.SetupFailureOnFile(L"failing_license.xml", E_ACCESSDENIED);
             WindowsAppRuntime::Deployment::Activity::Context activityContext;
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
 
             VERIFY_ARE_EQUAL(hr, E_ACCESSDENIED);
@@ -255,26 +255,26 @@ namespace Test::Deployment
         {
             Log::Comment(L"Test InstallLicenses stops on first error in batch");
 
-            std::vector<std::wstring> licenseFiles = { 
-                L"good_license.xml", 
-                L"failing_license.xml", 
-                L"never_reached.xml" 
+            std::vector<std::wstring> licenseFiles = {
+                L"good_license.xml",
+                L"failing_license.xml",
+                L"never_reached.xml"
             };
             std::filesystem::path licensePath = L"C:\\TestPath";
             MockLicenseInstaller mockInstaller;
             mockInstaller.SetupFailureOnFile(L"failing_license.xml", E_FAIL);
             WindowsAppRuntime::Deployment::Activity::Context activityContext;
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
 
             VERIFY_ARE_EQUAL(hr, E_FAIL);
             // Should have installed the first file before failing on the second
             VERIFY_ARE_EQUAL(mockInstaller.GetInstallCount(), 1u);
-            
+
             const auto& installedFiles = mockInstaller.GetInstalledFiles();
             VERIFY_IS_TRUE(installedFiles[0].find(L"good_license.xml") != std::wstring::npos);
-            
+
             Log::Comment(L"InstallLicenses correctly stopped after first failure");
         }
 
@@ -290,11 +290,11 @@ namespace Test::Deployment
             // Reset context to known state
             activityContext.Reset();
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
 
             VERIFY_SUCCEEDED(hr);
-            
+
             // The function should have set the install stage
             // Note: We can't easily verify the stage without exposing it in the API,
             // but we can verify the operation completed successfully
@@ -310,7 +310,7 @@ namespace Test::Deployment
             MockLicenseInstaller mockInstaller;
             WindowsAppRuntime::Deployment::Activity::Context activityContext;
 
-            HRESULT hr = WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+            HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
 
             VERIFY_SUCCEEDED(hr);
@@ -318,13 +318,13 @@ namespace Test::Deployment
 
             const auto& installedFiles = mockInstaller.GetInstalledFiles();
             std::wstring expectedPath = L"C:\\Program Files\\TestApp\\Licenses\\myapp_license.xml";
-            
+
             // Normalize path separators for comparison
             std::wstring actualPath = installedFiles[0];
             VERIFY_IS_TRUE(actualPath.find(L"TestApp") != std::wstring::npos);
             VERIFY_IS_TRUE(actualPath.find(L"Licenses") != std::wstring::npos);
             VERIFY_IS_TRUE(actualPath.find(L"myapp_license.xml") != std::wstring::npos);
-            
+
             Log::Comment(String().Format(L"Correct path combination: %s", actualPath.c_str()));
         }
 
@@ -338,13 +338,13 @@ namespace Test::Deployment
             std::filesystem::path licensePath = L"C:\\Program Files\\TestApp\\Licenses";
             MockLicenseInstaller mockInstaller;
             ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
-            
+
             // Mock the installer to simulate exception during license processing
             mockInstaller.SetShouldThrowException(true);
-            
-            auto hr = ::WindowsAppRuntime::Deployment::Deployer::InstallLicenses(
+
+            auto hr = ::WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
-            
+
             // Should handle license processing exceptions gracefully
             VERIFY_IS_TRUE(FAILED(hr));
             VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
@@ -355,9 +355,9 @@ namespace Test::Deployment
             // Test with path that could cause file system exceptions
             std::wstring problematicPath = L"\\\\?\\C:\\System Volume Information\\*_license.xml"; // Restricted access
             std::vector<std::wstring> licenseFiles;
-            
-            auto hr = ::WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(problematicPath, licenseFiles);
-            
+
+            auto hr = ::WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(problematicPath, licenseFiles);
+
             // Should handle file system access issues gracefully
             VERIFY_IS_TRUE(SUCCEEDED(hr) || FAILED(hr)); // Either way, shouldn't throw unhandled exception
             VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
@@ -365,9 +365,9 @@ namespace Test::Deployment
 
         TEST_METHOD(DeployPackages_PackageManagerException_HandlesGracefully)
         {
-            std::vector<WindowsAppRuntime::Deployment::Deployer::DeploymentPackageArguments> args;
+            std::vector<WindowsAppRuntime::Deployment::PackageDeployment::DeploymentPackageArguments> args;
             ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
-            
+
             // Add invalid package argument that could cause exceptions
             args.push_back({
                 L"TestPackage",
@@ -375,12 +375,12 @@ namespace Test::Deployment
                 false,
                 false
             });
-            
+
             auto startupFunc = []() -> HRESULT { return S_OK; };
-            
-            auto hr = ::WindowsAppRuntime::Deployment::Deployer::DeployPackages(
+
+            auto hr = ::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(
                 args, false, activityContext, startupFunc);
-            
+
             // Should handle package deployment exceptions gracefully
             VERIFY_IS_TRUE(FAILED(hr));
             VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));

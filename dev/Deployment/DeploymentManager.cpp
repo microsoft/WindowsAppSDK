@@ -344,7 +344,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext)
     {
-        class LicenseInstallerProxy : public ::WindowsAppRuntime::Deployment::Deployer::ILicenseInstaller
+        class LicenseInstallerProxy : public ::WindowsAppRuntime::Deployment::Licensing::ILicenseInstaller
         {
             ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
 
@@ -371,16 +371,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         licenseFilespec /= L"*_license.xml";
 
         std::vector<std::wstring> licenseFiles;
-        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::GetLicenseFiles(licenseFilespec, licenseFiles));
-        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::InstallLicenses(licenseFiles, licensePath, licenseInstallerProxy, initializeActivityContext));
+        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(licenseFilespec, licenseFiles));
+        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Licensing::InstallLicenses(licenseFiles, licensePath, licenseInstallerProxy, initializeActivityContext));
         return S_OK;
     }
 
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, const bool forceDeployment)
     {
         std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
-        auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::Deployer::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
-        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Deployer::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, StartupNotificationsLongRunningPlatform));
+        auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
+        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, StartupNotificationsLongRunningPlatform));
         return S_OK;
     }
 

@@ -11,7 +11,7 @@
 
 using namespace winrt;
 
-namespace WindowsAppRuntime::Deployment::Deployer
+namespace WindowsAppRuntime::Deployment::Licensing
 {
     // licenseFileSpec: This parameter specifies the file specification (e.g., path and pattern) for the license files to be retrieved.
     // licenseFiles: This is an output parameter that will be populated with the names of the license files found matching the specified file specification.
@@ -67,6 +67,10 @@ namespace WindowsAppRuntime::Deployment::Deployer
         }
         return S_OK;
     }
+}
+
+namespace WindowsAppRuntime::Deployment::PackageDeployment
+{
 
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
         const std::wstring& frameworkPackageFullName,
