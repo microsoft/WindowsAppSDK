@@ -46,11 +46,11 @@ namespace WindowsAppRuntime::Deployment::Deployer
 
     HRESULT InstallLicenses(
         const std::vector<std::wstring>& licenseFiles,
-        std::filesystem::path licensePath,
+        const std::filesystem::path& licensePath,
         ILicenseInstaller& licenseInstaller,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext
-    )
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext)
     {
+        initializeActivityContext.Reset();
         initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
 
         // Deploy the licenses (if any)
@@ -60,7 +60,6 @@ namespace WindowsAppRuntime::Deployment::Deployer
             auto licenseFileFullName{ licensePath };
             licenseFileFullName /= licenseFileName;
 
-            // initializeActivityContext.Reset(); --> Why are we reseting here? It clears out all the info.
             initializeActivityContext.SetCurrentResourceId(licenseFileFullName);
 
             RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFileFullName.c_str()),
@@ -112,8 +111,7 @@ namespace WindowsAppRuntime::Deployment::Deployer
         const std::vector<DeploymentPackageArguments>& deploymentPackageArguments,
         const bool forceDeployment,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
-        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc
-    )
+        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc)
     {
         for (auto package : deploymentPackageArguments)
         {

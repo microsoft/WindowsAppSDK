@@ -21,7 +21,6 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
         ::WindowsAppRuntime::Deployment::Activity::Context& activityContext)
     {
         deploymentOperation.get();
-
         const auto deploymentResult{ deploymentOperation.GetResults() };
         HRESULT deploymentOperationHResult{};
         HRESULT deploymentOperationExtendedHResult{};
@@ -51,11 +50,8 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
         const bool useExistingPackageIfHigherVersion,
         const bool forceDeployment,
         winrt::Windows::Management::Deployment::IPackageManager& packageManager,
-        ::WindowsAppRuntime::Deployment::Activity::Context& activityContext
-    )
-    try
+        ::WindowsAppRuntime::Deployment::Activity::Context& activityContext) try
     {
-
         const auto options{ forceDeployment ?
                             winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
                             winrt::Windows::Management::Deployment::DeploymentOptions::None };
@@ -72,7 +68,7 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
         {
             deploymentOperation = packageManager.AddPackageAsync(pathUri, nullptr, options);
         }
-        
+
         return ProcessDeploymentOperationResult(deploymentOperation, activityContext);
     }
     CATCH_RETURN()
@@ -93,9 +89,7 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
         const bool useExistingPackageIfHigherVersion,
         const bool forceDeployment,
         ::WindowsAppRuntime::Deployment::Activity::Context& activityContext,
-        const std::wstring& deploymentAgentPath
-    )
-    try
+        const std::wstring& deploymentAgentPath) try
     {
         auto exePath{ deploymentAgentPath };
         auto activityId{ winrt::to_hstring(*activityContext.GetActivity().Id()) };
