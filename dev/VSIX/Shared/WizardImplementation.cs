@@ -1,17 +1,19 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
 using Microsoft.VisualStudio.Threading;
 using NuGet.VisualStudio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
@@ -98,7 +100,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     _waitDialog.EndWaitDialog(out canceled);
                 }
                 // If _waitDialog is null, canceled remains 0 (not canceled)
-                
+
                 // Check if the process was canceled before proceeding
                 if (canceled == 0) // If not canceled, finalize the process
                 {
@@ -132,6 +134,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 return;
             }
 
+            List<string> packagesToInstall = new List<string>();
             // Process each package installation
             foreach (var packageId in _nuGetPackages)
             {
@@ -143,8 +146,34 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
-                    UpdateStatusBar($"Error installing package {packageId}: {ex.Message}");
+                    packagesToInstall.Add(packageId);
                 }
+            }
+
+            if (packagesToInstall.Count > 0)
+            {
+                string failedPackages = string.Join(", ", packagesToInstall);
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var errorMessage = $"The following NuGet packages failed to install: {failedPackages}";
+                LogError(errorMessage);
+                var infoBar = CreateNuGetInfoBar(errorMessage);
+                var infoBar2 = TryCreateInfoBarUI(infoBar, out IVsInfoBarUIElement uiElement);
+                uiElement.Advise(new NuGetInfoBarUIEvents(), out uint _);
+                IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
+                if (shell == null)
+                {
+                    return;
+                }
+
+                // Get the main window's InfoBar host using VSSPROPID_MainWindowInfoBarHost
+                object infoBarHostObj;
+                int hr = shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out infoBarHostObj);
+                if (ErrorHandler.Failed(hr) || !(infoBarHostObj is IVsInfoBarHost infoBarHost))
+                {
+                    return;
+                }
+
+                infoBarHost.AddInfoBar(uiElement);
             }
         }
 
@@ -217,6 +246,55 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     statusBar.SetText(message);
                 }
+            }
+        }
+
+        private bool TryCreateInfoBarUI(IVsInfoBar infoBar, out IVsInfoBarUIElement uiElement)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            IVsInfoBarUIFactory infoBarUIFactory = ServiceProvider.GlobalProvider.GetService(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
+            if (infoBarUIFactory == null)
+            {
+                uiElement = null;
+                return false;
+            }
+
+            uiElement = infoBarUIFactory.CreateInfoBar(infoBar);
+            return uiElement != null;
+        }
+
+        private IVsInfoBar CreateNuGetInfoBar(string message)
+        {
+            var infoBar = new InfoBarModel(
+                textSpans: new[]
+                {
+                    new InfoBarTextSpan(message)
+                },
+                actionItems: new InfoBarActionItem[]
+                {
+                    new InfoBarHyperlink("Manage NuGet Packages")
+                },
+                image: KnownMonikers.NuGetNoColorError,
+                isCloseButtonVisible: true);
+            return infoBar;
+        }
+
+        private class NuGetInfoBarUIEvents : IVsInfoBarUIEvents
+        {
+            public void OnActionItemClicked(IVsInfoBarUIElement infoBarUIElement, IVsInfoBarActionItem actionItem)
+            {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                if (actionItem is InfoBarHyperlink hyperlink &&
+                    hyperlink.Text == "Manage NuGet Packages")
+                {
+                    var dte = ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                    dte?.ExecuteCommand("Project.ManageNuGetPackages");
+                }
+            }
+
+            public void OnClosed(IVsInfoBarUIElement infoBarUIElement)
+            {
+                // Optional: handle InfoBar closed event if needed
             }
         }
 
