@@ -32,10 +32,10 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
     // Structure to hold deployment package arguments
     struct DeploymentPackageArguments
     {
-        std::wstring identifier;
-        std::filesystem::path packagePath;
-        bool useExistingPackageIfHigherVersion;
-        bool isSingleton;
+        std::wstring identifier{};
+        std::filesystem::path packagePath{};
+        bool useExistingPackageIfHigherVersion{};
+        bool isSingleton{};
     };
 
     // Get deployment package arguments
