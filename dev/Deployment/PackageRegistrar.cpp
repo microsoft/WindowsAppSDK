@@ -22,24 +22,23 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
     {
         deploymentOperation.get();
         const auto deploymentResult{ deploymentOperation.GetResults() };
-        HRESULT deploymentOperationHResult{};
-        HRESULT deploymentOperationExtendedHResult{};
+        HRESULT hrError{};
+        HRESULT hrExtendedError{};
 
         if (deploymentOperation.Status() != winrt::Windows::Foundation::AsyncStatus::Completed)
         {
-            deploymentOperationHResult = static_cast<HRESULT>(deploymentOperation.ErrorCode());
-            deploymentOperationExtendedHResult = deploymentResult.ExtendedErrorCode();
+            hrError = static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            hrExtendedError = deploymentResult.ExtendedErrorCode();
 
             activityContext.SetDeploymentErrorInfo(
-                deploymentOperationExtendedHResult,
+                hrExtendedError,
                 deploymentResult.ErrorText().c_str(),
                 deploymentResult.ActivityId());
         }
 
-        // If deploymentOperationHResult indicates success, take that, ignore deploymentOperationExtendedHResult.
-        // Otherwise, return deploymentOperationExtendedHResult if there is an error in it, if not, return deploymentOperationHResult.
-        return SUCCEEDED(deploymentOperationHResult) ? deploymentOperationHResult :
-            (FAILED(deploymentOperationExtendedHResult) ? deploymentOperationExtendedHResult : deploymentOperationHResult);
+        // If hrError indicates success, take that, ignore hrExtendedError.
+        // Otherwise, return hrExtendedError if there is an error in it, if not, return hrError.
+        return (FAILED(hrError) && FAILED(hrExtendedError) ? hrExtendedError : hrError);
     }
 
     // If useExistingPackageIfHigherVersion == false, Adds the current version package at the passed in path using PackageManager.
