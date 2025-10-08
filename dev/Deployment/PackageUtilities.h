@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 #pragma once
 
+#include <appmodel.h>
 #include <string>
 #include <vector>
+#include <wil/result_macros.h>
 
 namespace WindowsAppRuntime::Deployment::Package
 {
