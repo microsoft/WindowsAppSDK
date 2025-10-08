@@ -7,6 +7,7 @@
 #include <DeploymentActivityContext.h>
 #include <PackageInfo.h>
 #include <Deployer.h>
+#include <LicenseInstallerProxy.h>
 #include "PackageUtilities.h"
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
@@ -344,21 +345,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext)
     {
-        class LicenseInstallerProxy : public ::WindowsAppRuntime::Deployment::Licensing::ILicenseInstaller
-        {
-            ::Microsoft::Windows::ApplicationModel::Licensing::Installer& m_installer;
-
-        public:
-            LicenseInstallerProxy(::Microsoft::Windows::ApplicationModel::Licensing::Installer& installer) : m_installer(installer) {}
-
-            HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
-            {
-                return m_installer.InstallLicenseFile(licenseFilename.c_str());
-            }
-        };
-
         auto licenseInstaller{ ::Microsoft::Windows::ApplicationModel::Licensing::Installer{} };
-        auto licenseInstallerProxy{ LicenseInstallerProxy{ licenseInstaller } };
+        auto licenseInstallerProxy{ ::WindowsAppRuntime::Deployment::Licensing::LicenseInstallerProxy{ licenseInstaller } };
 
         initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
