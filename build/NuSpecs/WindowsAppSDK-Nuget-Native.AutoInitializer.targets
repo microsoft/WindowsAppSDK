@@ -2,36 +2,42 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Target Name="WindowsAppRuntimeAutoInitializer">
-    <PropertyGroup>
-      <WindowsAppRuntimeAutoInitializerPath>$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp</WindowsAppRuntimeAutoInitializerPath>
-      <WindowsAppRuntimeAutoInitializerDefines />
-      <WindowsAppRuntimeAutoInitializerDefines Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">$(WindowsAppRuntimeAutoInitializerDefines);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP</WindowsAppRuntimeAutoInitializerDefines>
-      <WindowsAppRuntimeAutoInitializerDefines Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">$(WindowsAppRuntimeAutoInitializerDefines);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER</WindowsAppRuntimeAutoInitializerDefines>
-      <WindowsAppRuntimeAutoInitializerDefines Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">$(WindowsAppRuntimeAutoInitializerDefines);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT</WindowsAppRuntimeAutoInitializerDefines>
-      <WindowsAppRuntimeAutoInitializerDefines Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">$(WindowsAppRuntimeAutoInitializerDefines);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY</WindowsAppRuntimeAutoInitializerDefines>
-    </PropertyGroup>
+  <PropertyGroup>
+    <WindowsAppRuntimeAutoInitializerPath>$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp</WindowsAppRuntimeAutoInitializerPath>
 
-    <!--
-    Add a ClCompile for the 'WindowsAppRuntimeAutoInitializer'. This is done in two steps;
-      1. Add the ClCompile item with no metadata, so the default metadata is applied.
-      2. Add a second ClCompile item that uses the %(Identity) metadata to force a 'task batch' with just the one item
-          we want to modify. This allows us to use "%(PreprocessorDefinitions)" (without causing more task batching) to
-          append the PreprocessorDefinitions to apply.
-    -->
-    <ItemGroup>
-      <ClCompile Include="$(WindowsAppRuntimeAutoInitializerPath)" />
-      <ClCompile Condition=" '%(Identity)' == '$(WindowsAppRuntimeAutoInitializerPath)' ">
-        <PrecompiledHeader>NotUsing</PrecompiledHeader>
-        <PreprocessorDefinitions>$(WindowsAppRuntimeAutoInitializerDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      </ClCompile>
-    </ItemGroup>
-  </Target>
+    <!-- If any option is set that needs to add a preprocessor definition, enable 'WindowsAppRuntimeAutoInitializerEnabled' -->
+    <WindowsAppRuntimeAutoInitializerEnabled Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">true</WindowsAppRuntimeAutoInitializerEnabled>
+    <WindowsAppRuntimeAutoInitializerEnabled Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">true</WindowsAppRuntimeAutoInitializerEnabled>
+    <WindowsAppRuntimeAutoInitializerEnabled Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">true</WindowsAppRuntimeAutoInitializerEnabled>
+    <WindowsAppRuntimeAutoInitializerEnabled Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">true</WindowsAppRuntimeAutoInitializerEnabled>
+
+    <!-- If no options are set that require the auto-initializer, and a consumer hasn't explicitly set it, default to 'false' -->
+    <WindowsAppRuntimeAutoInitializerEnabled Condition="'$(WindowsAppRuntimeAutoInitializerEnabled)'==''">false</WindowsAppRuntimeAutoInitializerEnabled>
+  </PropertyGroup>
 
   <PropertyGroup>
     <BeforeClCompileTargets>
         $(BeforeClCompileTargets); WindowsAppRuntimeAutoInitializer;
     </BeforeClCompileTargets>
   </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <!-- Add the appropriate definition to the ClCompile ItemDefinitionGroup to apply to all compilations -->
+    <ClCompile>
+      <PreprocessorDefinitions Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <!-- If WindowsAppRuntimeAutoInitializerEnabled is true add a Target to add the WindowsAppRuntimeAutoInitializer.cpp file -->
+  <Target Name="WindowsAppRuntimeAutoInitializer" Condition=" '$(WindowsAppRuntimeAutoInitializerEnabled)'=='true' ">
+    <ItemGroup>
+      <ClCompile Include="$(WindowsAppRuntimeAutoInitializerPath)">
+        <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      </ClCompile>
+    </ItemGroup>
+  </Target>
 
 </Project>
