@@ -120,7 +120,7 @@ The search order for a package's locations is:
 
 ### 3.1.2. Get file path for a package
 
-`Package.GetFilePath([packageFullName, ]filename[, options])` searches the location(s)
+`Package.GetFilePath(filename[packageFullName, [, options]])` searches the location(s)
 of a package for the specified file, per the algorithm:
 
 ```
@@ -165,7 +165,7 @@ package graph for the specified file, per the algorithm:
 
 ```
 FOREACH pkg IN GetPackageGraph():
-    file = Package.GetFilePath(pkg.fullname, filename)
+    file = Package.GetFilePath(filename, pkg.fullname)
     IF file != null
         RETURN file
 NEXT
@@ -233,7 +233,7 @@ using Microsoft.Windows.ApplicationModel;
 
 string GetResourcesPri(string packageFullName)
 {
-    var absoluteFilename = Package.GetFilePath(packageFullName, "resources.pri");
+    var absoluteFilename = Package.GetFilePath("resources.pri", packageFullName);
     if (absoluteFilename == null)
     {
         Console.WriteLine($"ERROR: resources.pri not found for {packageFullName}");
@@ -281,7 +281,7 @@ string GetResourcesPri(string packageFullName)
     var options = GetPackageFilePathOptions.SearchInstallPath |
                   GetPackageFilePathOptions.SearchMachineExternalPath |
                   GetPackageFilePathOptions.SearchUserExternalPath;
-    var absoluteFilename = Package.GetFilePath(packageFullName, "resources.pri", options);
+    var absoluteFilename = Package.GetFilePath("resources.pri", packageFullName, options);
     if (absoluteFilename == null)
     {
         Console.WriteLine($"ERROR: resources.pri not found for {packageFullName}");
@@ -362,7 +362,8 @@ std::wstring GetXamlWinMD()
 
 ## 4.5. Get a file path in the current process' package graph with options
 
-Locate `Microsoft.UI.Xaml.winmd` in the current process' package graph but ignore Mutable locations.
+Locate `Microsoft.UI.Xaml.winmd` in the current process' package graph but ignore Mutable locations,
+Resource packages and HostRuntime dependencies.
 
 ### 4.5.1. C# Example
 
@@ -373,7 +374,12 @@ string GetXamlWinMD()
 {
     var options = GetPackageFilePathOptions.SearchInstallPath |
                   GetPackageFilePathOptions.SearchMachineExternalPath |
-                  GetPackageFilePathOptions.SearchUserExternalPath;
+                  GetPackageFilePathOptions.SearchUserExternalPath |
+                  GetPackageFilePathOptions.SearchMainPackages |
+                  GetPackageFilePathOptions.SearchFrameworkPath |
+                  GetPackageFilePathOptions.SearchOptionalPath |
+                  GetPackageFilePathOptions.SearchStaticDependencies |
+                  GetPackageFilePathOptions.SearchDynamicDependencies;
     var absoluteFilename = PackageGraph.GetFilePath("Microsoft.UI.Xaml.winmd", options);
     if (absoluteFilename == null)
     {
@@ -390,8 +396,13 @@ string GetXamlWinMD()
 std::wstring GetXamlWinMD()
 {
     GetPackageFilePathOptions options{ GetPackageFilePathOptions_SearchInstallPath |
-                                    GetPackageFilePathOptions_SearchMachineExternalPath |
-                                    GetPackageFilePathOptions_SearchUserExternalPath };
+                                       GetPackageFilePathOptions_SearchMachineExternalPath |
+                                       GetPackageFilePathOptions_SearchUserExternalPath |
+                                       GetPackageFilePathOptions_SearchMainPackages |
+                                       GetPackageFilePathOptions_SearchFrameworkPath |
+                                       GetPackageFilePathOptions_SearchOptionalPath |
+                                       GetPackageFilePathOptions_SearchStaticDependencies |
+                                       GetPackageFilePathOptions_SearchDynamicDependencies };
     wil::unique_process_heap_string absoluteFilename;
     const HRESULT hr{ GetPackageFilePathInPackageGraph(
         L"Microsoft.UI.Xaml.winmd", options, wistd::out_param(absoluteFilename)) };
@@ -446,6 +457,27 @@ namespace Microsoft.Windows.ApplicationModel
 
         /// Include the package's User External path (if it has one) in the file search order
         SearchUserExternalPath = 0x0008,
+
+        /// Include Main packages in the file search order
+        SearchMainPackages = 0x0010,
+
+        /// Include Framework packages in the file search order
+        SearchFrameworkPackages = 0x0020,
+
+        /// Include Optional packages in the file search order
+        SearchOptionalPackages = 0x0040,
+
+        /// Include Resource packages in the file search order
+        SearchResourcePackages = 0x0080,
+
+        /// Include HostRuntime dependencies in the file search order
+        SearchHostRuntimeDependencies = 0x0100,
+
+        /// Include Static package dependencies in the file search order
+        SearchStaticDependencies = 0x0200,
+
+        /// Include Dynamic package dependencies in the file search order
+        SearchDynamicDependencies = 0x0400,
     }
 
     [contract(PackageRuntimeContract, 1)]
@@ -463,19 +495,19 @@ namespace Microsoft.Windows.ApplicationModel
         static String GetFilePath(String filename);
 
         /// Return the absolute path to the file in the package.
-        /// @param packageFullName the package.
         /// @param filename file to locate.
+        /// @param packageFullName the package.
         /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
         /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
         /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
         /// @see PackageGraph.GetFilePath
         [method_name("GetFilePathInPackage")]
-        static String GetFilePath(String packageFullName, String filename);
+        static String GetFilePath(String filename, String packageFullName);
 
         /// Return the absolute path to the file in the package.
-        /// @param packageFullName the package.
         /// @param filename file to locate.
+        /// @param packageFullName the package.
         /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
         /// @param options options for the search.
         /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
@@ -483,8 +515,8 @@ namespace Microsoft.Windows.ApplicationModel
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
         /// @see PackageGraph.GetFilePath
         /// @see PackageGraph.GetFilePathOptions
-        [method_name("GetFilePathWithOptions")]
-        static String GetFilePath(String packageFullName, String filename, GetFilePathOptions options);
+        [method_name("GetFilePathInPackageWithOptions")]
+        static String GetFilePath(String filename, String packageFullName, GetFilePathOptions options);
     }
 
     [contract(PackageRuntimeContract, 1)]
@@ -542,6 +574,27 @@ typedef enum GetPackageFilePathOptions
 
     /// Include the package's User External path (if it has one) in the file search order
     GetPackageFilePathOptions_SearchUserExternalPath = 0x0008,
+
+    /// Include Main packages in the file search order
+    GetPackageFilePathOptions_SearchMainPackages = 0x0010,
+
+    /// Include Framework packages in the file search order
+    GetPackageFilePathOptions_SearchFrameworkPackages = 0x0020,
+
+    /// Include Optional packages in the file search order
+    GetPackageFilePathOptions_SearchOptionalPackages = 0x0040,
+
+    /// Include Resource packages in the file search order
+    GetPackageFilePathOptions_SearchResourcePackages = 0x0080,
+
+    /// Include HostRuntime dependencies in the file search order
+    GetPackageFilePathOptions_SearchHostRuntimeDependencies = 0x0100,
+
+    /// Include Static package dependencies in the file search order
+    GetPackageFilePathOptions_SearchStaticDependencies = 0x0200,
+
+    /// Include Dynamic package dependencies in the file search order
+    GetPackageFilePathOptions_SearchDynamicDependencies = 0x0400,
 }
 
 /// Return the absolute path to the file in the package.
