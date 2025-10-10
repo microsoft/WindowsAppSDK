@@ -134,7 +134,9 @@ namespace WindowsAppSDK.TemplateUtilities
                 return;
             }
 
-            List<string> packagesToInstall = new List<string>();
+            // Change to Dictionary<string, string> to capture error messages per package
+            Dictionary<string, string> failedPackages = new Dictionary<string, string>();
+
             // Process each package installation
             foreach (var packageId in _nuGetPackages)
             {
@@ -146,15 +148,16 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
-                    packagesToInstall.Add(packageId);
+                    failedPackages[packageId] = ex.Message;
                 }
             }
 
-            if (packagesToInstall.Count > 0)
+            if (failedPackages.Count > 0)
             {
-                string failedPackages = string.Join(", ", packagesToInstall);
+                // Build error message in the requested format
+                var errorDetails = string.Join(", ", failedPackages.Select(kvp => $"{kvp.Key} ({kvp.Value})"));
+                var errorMessage = $"The following NuGet packages failed to install: {errorDetails}";
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                var errorMessage = $"The following NuGet packages failed to install: {failedPackages}";
                 LogError(errorMessage);
                 var infoBar = CreateNuGetInfoBar(errorMessage);
                 var infoBar2 = TryCreateInfoBarUI(infoBar, out IVsInfoBarUIElement uiElement);
