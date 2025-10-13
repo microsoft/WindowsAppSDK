@@ -13,8 +13,6 @@
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
 #include "WindowsAppRuntime-License.h"
-#include <Security.IntegrityLevel.h>
-#include <Microsoft.Configuration.h>
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
