@@ -4,6 +4,7 @@
 #include "pch.h"
 
 #include <IsWindowsVersion.h>
+#include <TerminalVelocityFeatures-PackageManager.h>
 
 #include "M.W.M.D.StagePackageOptions.h"
 #include "Microsoft.Windows.Management.Deployment.StagePackageOptions.g.cpp"
@@ -126,5 +127,36 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             m_expectedDigests = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, hstring>();
         }
         return m_expectedDigests;
+    }
+
+    bool StagePackageOptions::IsPackageValidatorsSupported()
+    {
+        return WindowsVersion::SupportsIAppxFactory4();
+    }
+    winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> > StagePackageOptions::PackageValidators()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidator::IsEnabled());
+
+        if (!m_packageValidators)
+        {
+            // return an empty view
+            return winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> >().GetView();
+        }
+        else
+        {
+            return m_packageValidators.GetView();
+        }
+    }
+    void StagePackageOptions::AddPackageValidator(winrt::Windows::Foundation::Uri const& packageUri, winrt::Microsoft::Windows::Management::Deployment::IPackageValidator const& validator)
+    {
+        if (!m_packageValidators)
+        {
+            m_packageValidators = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator> >();
+        }
+        if (!m_packageValidators.HasKey(packageUri))
+        {
+            m_packageValidators.Insert(packageUri, winrt::single_threaded_vector<winrt::Microsoft::Windows::Management::Deployment::IPackageValidator>());
+        }
+        m_packageValidators.Lookup(packageUri).Append(validator);
     }
 }

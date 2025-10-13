@@ -17,4 +17,15 @@
             <channelToken>Stable</channelToken>
         </alwaysDisabledChannelTokens>
     </feature>
+
+    <feature>
+        <name>Feature_PackageValidator</name>
+        <description>PackageValidator support in PackageDeploymentManager</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Preview</channelToken>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+
 </features>
