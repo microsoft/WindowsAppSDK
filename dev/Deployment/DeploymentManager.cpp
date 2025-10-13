@@ -13,6 +13,7 @@
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
 #include "WindowsAppRuntime-License.h"
+#include <Security.IntegrityLevel.h>
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -127,7 +128,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
         HRESULT verifyResult{};
 
-        for (const auto package : c_targetPackages)
+        for (const auto &package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
@@ -401,14 +402,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto dependencyPackage{ currentPackageInfo.Package(i) };
 
             // Verify PublisherId matches.
-            if (CompareStringOrdinal(currentPackageInfo.Package(i).packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
+            if (CompareStringOrdinal(dependencyPackage.packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
             {
                 continue;
             }
 
             // Verify that the WindowsAppRuntime prefix identifier is in the name.
             // This should also be the beginning of the name, so its find position is expected to be 0.
-            std::wstring dependencyPackageName{ currentPackageInfo.Package(i).packageId.name };
+            std::wstring dependencyPackageName{ dependencyPackage.packageId.name };
             if (dependencyPackageName.find(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) != 0)
             {
                 continue;
@@ -416,7 +417,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             // On WindowsAppSDK 1.1+, there is no need to check and rule out Main, Singleton and DDLM Package identifiers as their names don't have a overlap with WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX.
 
-            return hstring(currentPackageInfo.Package(i).packageFullName);
+            return hstring(dependencyPackage.packageFullName);
         }
 
         THROW_WIN32(ERROR_NOT_FOUND);

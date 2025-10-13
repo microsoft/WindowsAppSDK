@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <windows.h>
 #include <DeploymentActivityContext.h>
+#include <winrt/Windows.Management.Deployment.h>
 
 namespace WindowsAppRuntime::Deployment::PackageRegistrar
 {
