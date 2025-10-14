@@ -2,7 +2,8 @@
 // Licensed under the MIT License.
 #pragma once
 #include <string>
-#include <winrt/Windows.Foundation.h>
+#include <winrt/base.h>
+#include <windows.h>
 
 constexpr static const int c_phaseTimeout = (30 * 1000); // 30 seconds
 static const std::wstring c_genericTestMoniker = L"this_is_a_test";
