@@ -151,6 +151,15 @@ foreach ($line in $lines)
                     $modifiedArgs += $filePath
                 }
             }
+            elseif ($arg -match '^/Yu(.*)$')
+            {
+                $pchPath = $matches[1].Trim('"')
+                if (-Not ([System.IO.Path]::IsPathRooted($pchPath)))
+                {
+                    $pchPath = Join-Path $contextPath $pchPath
+                }
+                $modifiedArgs += '/Yu"' + $pchPath + '"'
+            }
             else
             {
                 $modifiedArgs += $arg
