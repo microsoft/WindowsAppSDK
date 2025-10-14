@@ -25,13 +25,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
             bool isRepair = false);
 
-    private:
         static WindowsAppRuntime::DeploymentResult _Initialize(
             ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
             hstring const& packageFullName,
             WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
             bool isRepair);
-        
+
         static HRESULT Deploy(
             const std::wstring& frameworkPackageFullName,
             ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
@@ -39,12 +38,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext);
         static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, const bool forceDeployment);
-
-    private:
         static MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName);
-
         static hstring GetCurrentFrameworkPackageFullName();
-
     };
 }
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factory_implementation
