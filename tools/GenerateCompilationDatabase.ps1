@@ -166,6 +166,24 @@ foreach ($line in $lines)
             }
         }
 
+        # Move the /I argument that matches the contextPath to be the first /I argument.
+        # This is to ensure that the context include path is always first and clangd can find the headers
+        # on the correct path. This is important because clangd tries to find headers in the order
+        # of the include paths, but for the precompiled headers that are included with angular brackets
+        # it comes from the context path. The /Yu argument has a absolute path but for
+        # some reason clangd does not use that path to find the precompiled header that is included.
+        $includeArgs = $modifiedArgs | Where-Object { $_ -like '/I*' }
+        $otherArgs = $modifiedArgs | Where-Object { $_ -notlike '/I*' }
+        # Find the /I argument that matches the contextPath ignoring case and the trailing slash
+        $contextIncludeArg = $includeArgs | Where-Object { $_ -ieq ("/I$contextPath") -or $_ -ieq ("/I$contextPath\") } | Select-Object -First 1
+
+        if ($contextIncludeArg)
+        {
+            Write-Host "Moving context include path to the front: $contextIncludeArg"
+            $includeArgs = $includeArgs | Where-Object { $_ -ne $contextIncludeArg }
+            $modifiedArgs = @($contextIncludeArg) + $includeArgs + $otherArgs
+        }
+
         $modifiedLine = "Cl.exe " + ($modifiedArgs -join ' ')
         Add-Content -Path $tempFiltered2Log -Value $modifiedLine
     }
