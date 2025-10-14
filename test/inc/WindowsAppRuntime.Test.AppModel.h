@@ -1,11 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_APPMODEL_H
 #define __WINDOWSAPPRUNTIME_TEST_APPMODEL_H
 
+#include <windows.h>
 #include <appmodel.h>
-
 #include <Verify.h>
 
 namespace Test::AppModel

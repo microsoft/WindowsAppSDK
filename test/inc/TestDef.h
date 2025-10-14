@@ -1,6 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #pragma once
+#include <string>
+#include <winrt/Windows.Foundation.h>
 
 constexpr static const int c_phaseTimeout = (30 * 1000); // 30 seconds
 static const std::wstring c_genericTestMoniker = L"this_is_a_test";

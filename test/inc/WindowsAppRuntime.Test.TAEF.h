@@ -1,8 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_TAEF_H
 #define __WINDOWSAPPRUNTIME_TEST_TAEF_H
+
+#include <WexTestClass.h>
+#include <filesystem>
+#include <windows.h>
 
 namespace Test::TAEF
 {
