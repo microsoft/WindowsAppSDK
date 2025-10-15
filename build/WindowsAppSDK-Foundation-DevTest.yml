@@ -1,0 +1,179 @@
+#####################################################################################################################################
+#                                               OneBranch Pipelines - Official                                                      #
+#####################################################################################################################################
+#                                                                                                                                   #
+# This pipeline was created by EasyStart from a sample located at:                                                                  #
+#                               https://aka.ms/obpipelines/easystart/samples                                                        #
+#                                                                                                                                   #
+# Windows Undocked Wiki:        https://www.osgwiki.com/wiki/Windows_Undocked_Template                                              #
+# General OB Documentation:     https://aka.ms/obpipelines                                                                          #
+# Build MSBuild project:        https://dev.azure.com/onebranch/OneBranch/_wiki/wikis/OneBranch.wiki/6045/Build-MSBuild-project     #
+# Yaml Schema:                  https://aka.ms/obpipelines/yaml/schema                                                              #
+# Retail Tasks:                 https://aka.ms/obpipelines/tasks                                                                    #
+# Support:                      https://aka.ms/onebranchsup                                                                         #
+#                                                                                                                                   #
+#####################################################################################################################################
+
+name: $(version)
+
+# https://aka.ms/obpipelines/triggers
+trigger: none
+
+parameters:
+- name: "IgnoreFailures"
+  type: boolean
+  default: false
+- name: "SignOutput"
+  type: boolean
+  default: true
+- name: runStaticAnalysis
+  displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
+  type: boolean
+  default: true
+- name: "BuildSampleApps"
+  displayName: "Run Build Sample Apps Stage"
+  type: boolean
+  default: true
+- name: "TestSampleApps"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: true
+- name: "TestOnArm64"
+  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
+  type: boolean
+  default: true
+- name: "pushToInternalFeed"
+  displayName: "Push to Internal Feed"
+  type: boolean
+  default: false
+
+variables:
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: WindowsAppSDK-CommonVariables.yml
+- name: maxParallelForBuildSamplesCompatJob_x64
+  value: 20
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  value: 20
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKVersionConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'GitHub - benkuhn - 2-18'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
+
+extends:
+  template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    featureFlags:
+      EnableCDPxPAT: false      
+      WindowsHostVersion:
+        Network: R1
+
+    platform:
+      name: 'windows_undocked' # windows undocked
+
+    cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
+      enabled: false
+
+    globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
+      tsa:
+        enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
+      isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
+      asyncSdl: # https://aka.ms/obpipelines/asyncsdl
+        enabled: false
+      psscriptanalyzer:
+        enable: true
+        break: true
+      tsandjs:
+        enabled: true
+        break: true
+      python:
+        enabled: true
+        break: true
+      credscan:
+        enable: true
+        break: true
+      policheck:
+        enable: true
+        break: true
+      binskim:
+        enabled: true
+        break: true
+        analyzeTargetGlob: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe
+      prefast:
+        ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+          enabled: true
+        ${{ else }}:
+          enabled: false
+        break: true
+        # Use "severity: 'Warning'" to be more sensitive, break on Warnings+Errors.
+        # Use "severity: 'Note'" to be even more sensitive, break on Notes+Warnings+Errors.
+        # Use "severity: 'Default'" to get back to default, i.e., break on Errors. Can't get less sensitive than that.
+        severity: Default
+        # Use "exclusionsFile: <<FILE PATH>>" to apply a local exclusion file.
+      apiscan:
+        # We will enable APIScan on a per-job basis downstream as needed.
+        enabled: false
+        # TODO: Once we've cleared away all existing errors, consider setting this to true.
+        break: false
+
+    stages:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        runApiScan: ${{ parameters.runStaticAnalysis }}
+        runPREFast: false
+        testMatrix: ${{ variables.PipelineTests }}
+    
+    - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+        parameters:
+          SignOutput: ${{ parameters.SignOutput }}
+          runApiScan: false
+          runPREFast: true
+          testMatrix: ${{ variables.PipelineTests }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        PublishPackage: true
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
+      parameters:
+        PublishToMaestro: false
+        IgnoreFailures: ${{ parameters.IgnoreFailures }}
+        TestSampleApps: ${{ parameters.TestSampleApps }}
+        TestOnArm64: ${{ parameters.TestOnArm64 }}
+        MaestroDependOnTestSamples: false
+
+    - ${{ if eq( parameters.BuildSampleApps, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
+        parameters:
+          TestSampleApps: ${{ parameters.TestSampleApps }}
+          TestOnArm64: ${{ parameters.TestOnArm64 }}
+          runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
+          maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
+          maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}
