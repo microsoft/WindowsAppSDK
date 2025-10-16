@@ -1701,5 +1701,19 @@
   "release_x64_Windows11.Enterprise.25h2.Test::ABForward::FunctionalTests::PackageManager",
   "release_x64_Windows11.Enterprise.25h2.Test::ABForward::FunctionalTests::RuntimeVersion",
   "release_x64_Windows11.Enterprise.25h2.Test::ABForward::FunctionalTests::RuntimeCompatibilityOptions",
-  "release_x64_Windows11.Enterprise.25h2.Test::ABForward::FunctionalTests::SecurityAccessControl"
+  "release_x64_Windows11.Enterprise.25h2.Test::ABForward::FunctionalTests::SecurityAccessControl",
+  "release_arm64_Windows11.Professional.25h2.arm64.PackagedTests#metadataSet0::VerifyBadgeNotificationManagerCurrent",
+  "release_arm64_Windows11.Professional.25h2.arm64.PackagedTests#metadataSet1::VerifyBadgeNotificationManagerCurrent",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::ApplicationData",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::AppNotificationsManager",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::AppNotificationsBuilder",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::BackgroundTaskBuilder",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::BadgeNotifications",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::BatteryStatus",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::DeploymentManager",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::EnvironmentManager",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::PackageManager",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::RuntimeVersion",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::RuntimeCompatibilityOptions",
+  "release_arm64_Windows11.Professional.25h2.arm64.Test::ABForward::FunctionalTests::SecurityAccessControl"
 ]
