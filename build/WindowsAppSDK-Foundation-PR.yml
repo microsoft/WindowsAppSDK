@@ -29,7 +29,7 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   type: boolean
   default: false
 - name: "TestOnArm64"
-  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
+  displayName: "Enable running of tests on arm64 platform (Default: false)"
   type: boolean
   default: false
 - name: runStaticAnalysis
