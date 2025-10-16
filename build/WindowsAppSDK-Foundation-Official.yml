@@ -118,4 +118,3 @@ extends:
       parameters:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
-        TestOnArm64: ${{ parameters.TestOnArm64 }}
