@@ -1,3 +1,7 @@
+parameters:
+- name: "TestOnArm64"
+  type: boolean
+  default: false
 stages:
 - stage: Test
   dependsOn: Build
@@ -9,3 +13,4 @@ stages:
     parameters:
       jobName: PipelineTests
       testMatrix: $[ variables.PipelineTests ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+      TestOnArm64: ${{ parameters.TestOnArm64 }}    
