@@ -32,13 +32,13 @@ namespace WindowsAppSDK.TemplateUtilities
             _componentModel = ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel)) as IComponentModel;
             if (_componentModel == null)
             {
-                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IComponentModel service.");
+                System.Diagnostics.Debug.WriteLine(Resources.WarningComponentModelNotAvailable);
             }
             
             _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
             if (_waitDialog == null)
             {
-                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
+                System.Diagnostics.Debug.WriteLine(Resources.WarningThreadedWaitDialogNotAvailable);
             }
             
             if (_componentModel != null)
@@ -88,7 +88,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 // Start the threaded wait dialog
                 if (_waitDialog != null)
                 {
-                    _waitDialog.StartWaitDialog(null, "Installing NuGet packages into project...", null, null, "Operation in progress...", 0, false, true);
+                    _waitDialog.StartWaitDialog(null, Resources.NuGetInstallDialogTitle, null, null, Resources.NuGetInstallDialogStatus, 0, false, true);
                 }
 
                 // Now await the installation task to complete
@@ -115,7 +115,7 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_componentModel == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                LogError("ComponentModel service is not available.");
+                LogError(Resources.ErrorComponentModelNotAvailable);
                 return;
             }
 
@@ -123,14 +123,14 @@ namespace WindowsAppSDK.TemplateUtilities
             if (installer == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                LogError("Could not obtain IVsPackageInstaller service.");
+                LogError(Resources.ErrorPackageInstallerNotAvailable);
                 return;
             }
 
             if (_project == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                LogError("Project reference is null. Likely a ProjectGroup vstemplate.");
+                LogError(Resources.ErrorProjectReferenceNull);
                 return;
             }
 
@@ -147,7 +147,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 catch (Exception ex)
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
+                    LogError(string.Format(Resources.ErrorFailedToInstallPackage, packageId, ex.Message));
                     failedPackages[packageId] = ex.Message;
                 }
             }
@@ -156,7 +156,7 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 // Build error message in the requested format
                 var errorDetails = string.Join(", ", failedPackages.Select(kvp => $"{kvp.Key} ({kvp.Value})"));
-                var errorMessage = $"The following NuGet packages failed to install: {errorDetails}";
+                var errorMessage = string.Format(Resources.ErrorPackagesFailedToInstall, errorDetails);
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 LogError(errorMessage);
                 var infoBar = CreateNuGetInfoBar(errorMessage);
@@ -195,7 +195,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private void SaveAllProjects()
         {
-            ThreadHelper.ThrowIfNotOnUIThread("SaveAllProjects must be called on the UI thread.");
+            ThreadHelper.ThrowIfNotOnUIThread(Resources.ErrorSaveAllProjectsUIThread);
 
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
             if (dte != null && dte.Solution != null && dte.Solution.Projects != null)
@@ -275,7 +275,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 },
                 actionItems: new InfoBarActionItem[]
                 {
-                    new InfoBarHyperlink("Manage NuGet Packages")
+                    new InfoBarHyperlink(Resources.InfoBarManageNuGetPackages)
                 },
                 image: KnownMonikers.NuGetNoColorError,
                 isCloseButtonVisible: true);
@@ -288,7 +288,7 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
                 if (actionItem is InfoBarHyperlink hyperlink &&
-                    hyperlink.Text == "Manage NuGet Packages")
+                    hyperlink.Text == Resources.InfoBarManageNuGetPackages)
                 {
                     var dte = ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
                     dte?.ExecuteCommand("Project.ManageNuGetPackages");

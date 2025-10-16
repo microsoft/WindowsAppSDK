@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, ...</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, ...</value>
+  </resheader>
+  <data name="NuGetInstallDialogTitle" xml:space="preserve">
+    <value>Installing NuGet packages into project...</value>
+  </data>
+  <data name="NuGetInstallDialogStatus" xml:space="preserve">
+    <value>Operation in progress...</value>
+  </data>
+  <data name="WarningComponentModelNotAvailable" xml:space="preserve">
+    <value>Warning: Could not obtain IComponentModel service.</value>
+  </data>
+  <data name="WarningThreadedWaitDialogNotAvailable" xml:space="preserve">
+    <value>Warning: Could not obtain IVsThreadedWaitDialog2 service.</value>
+  </data>
+  <data name="ErrorComponentModelNotAvailable" xml:space="preserve">
+    <value>ComponentModel service is not available.</value>
+  </data>
+  <data name="ErrorPackageInstallerNotAvailable" xml:space="preserve">
+    <value>Could not obtain IVsPackageInstaller service.</value>
+  </data>
+  <data name="ErrorProjectReferenceNull" xml:space="preserve">
+    <value>Project reference is null. Likely a ProjectGroup vstemplate.</value>
+  </data>
+  <data name="ErrorFailedToInstallPackage" xml:space="preserve">
+    <value>Failed to install NuGet package: {0}. Error: {1}</value>
+  </data>
+  <data name="ErrorPackagesFailedToInstall" xml:space="preserve">
+    <value>The following NuGet packages failed to install: {0}</value>
+  </data>
+  <data name="ErrorSaveAllProjectsUIThread" xml:space="preserve">
+    <value>SaveAllProjects must be called on the UI thread.</value>
+  </data>
+  <data name="InfoBarManageNuGetPackages" xml:space="preserve">
+    <value>Manage NuGet Packages</value>
+  </data>
+</root>
