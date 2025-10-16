@@ -24,6 +24,10 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
   default: true
+- name: "TestOnArm64"
+  displayName: "Enable running of tests on arm64 platform (Default: false)"
+  type: boolean
+  default: false
 
 resources:
   repositories:
@@ -98,3 +102,5 @@ extends:
         SignOutput: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+      parameters:
+        TestOnArm64: ${{ parameters.TestOnArm64 }}
