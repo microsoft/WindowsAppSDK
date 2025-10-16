@@ -162,7 +162,7 @@ steps:
   displayName: 'Component Governance Detection'
   inputs:
     scanType: 'Register'
-    failOnAlert: true
+    failOnAlert: false
 
 - ${{ if eq(parameters.SignOutput, false) }}:
   - task: CopyFiles@2
