@@ -1,10 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_FILESYSTEM_H
 #define __WINDOWSAPPRUNTIME_TEST_FILESYSTEM_H
 
 #include <filesystem>
+#include <windows.h>
+#include <Verify.h>
 
 #include <wil/win32_helpers.h>
 #include <wil/resource.h>
