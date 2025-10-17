@@ -1,3 +1,7 @@
+- name: "TestOnArm64"
+  type: boolean
+  default: false
+
 parameters:
 - name: "PublishToMaestro"
   type: boolean
