@@ -39,9 +39,9 @@
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>ce065e8c04cb9d2fd6f8485f931fcac90aacc3c3</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="2.0.250911001-experimental">
+    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="2.0.0-experimental">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
-      <Sha>d88927b82e2fb57c7de7f27f10ba4c1217adbfb4</Sha>
+      <Sha>789871b1aaeceec366705bf09b7318dfaa0ac774</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.0.250925001-experimental">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
