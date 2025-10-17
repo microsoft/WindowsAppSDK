@@ -19,10 +19,11 @@ runtimeclass FileSavePicker
     string CommitButtonText;
     string DefaultFileExtension;
     string SuggestedFileName;
-    string SuggestedFolder;
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
 
+    string SuggestedFolder;
+    String SuggestedStartFolder;
     PickerLocationId SuggestedStartLocation;
 
     Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
@@ -39,6 +40,18 @@ using Microsoft.Windows.Storage.Pickers;
 
 var savePicker = new FileSavePicker(this.AppWindow.Id)
 {
+    // (Optional) Sets the folder that the file save dialog always tries to display when it opens.
+    //     SuggestedFolder will not be overriden by the last picked folder.
+    //     If not specified, or the specified path doesn't exist, defaults to the last folder the user picked.
+    //     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
+    SuggestedFolder = @"C:\MyFiles",
+
+    // (Optional) Sets an initial folder path shown when the picker is first launched.
+    //     Once the user has picked from a directory, SuggestedStartFolder will be silently ignored.
+    //     Takes precedence over SuggestedStartLocation when both defined.
+    //     If this folder is not found, falls back to SuggestedStartLocation.
+    SuggestedStartFolder = @"C:\MyFiles",
+
     // (Optional) Specify the initial location for the picker. 
     //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
     //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
@@ -46,10 +59,6 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     
     // (Optional) specify the default file name. If not specified, use system default.
     SuggestedFileName = "My Document",
-
-    // (Optional) Sets the folder that the file save dialog displays when it opens.
-    //     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
-    SuggestedFolder = @"C:\MyFiles",
 
     // (Optional) specify the text displayed on the commit button. 
     //     If not specified, the system uses a default label of "Save" (suitably translated).
@@ -75,6 +84,18 @@ using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 FileSavePicker savePicker(AppWindow().Id());
 
+// (Optional) Sets the folder that the file save dialog always tries to display when it opens.
+//     SuggestedFolder will not be overriden by the last picked folder.
+//     If not specified, or the specified path doesn't exist, defaults to the last folder the user picked.
+//     On first launch of the picker, SuggestedFolder takes precedence over the SuggestedStartFolder if both set.
+savePicker.SuggestedFolder(L"C:\\MyFiles");
+
+// (Optional) Sets an initial folder path shown when the picker is first launched.
+//     Once the user has picked from a directory, SuggestedStartFolder will be silently ignored.
+//     Takes precedence over SuggestedStartLocation when both defined.
+//     If this folder is not found, falls back to SuggestedStartLocation.
+savePicker.SuggestedStartFolder(L"C:\\MyFiles");
+
 // (Optional) Specify the initial location for the picker. 
 //     If the specified location doesn't exist on the user's machine, it falls back to the DocumentsLibrary.
 //     If not set, it defaults to PickerLocationId.Unspecified, and the system will use its default location.
@@ -82,10 +103,6 @@ savePicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 
 // (Optional) specify the default file name. If not specified, use system default.
 savePicker.SuggestedFileName(L"NewDocument");
-
-// (Optional) Sets the folder that the file save dialog displays when it opens.
-//     If not specified or the specified path doesn't exist, defaults to the last folder the user visited.
-savePicker.SuggestedFolder = L"C:\\MyFiles",
 
 // (Optional) specify the text displayed on the commit button. 
 //     If not specified, the system uses a default label of "Save" (suitably translated).

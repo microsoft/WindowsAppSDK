@@ -10,6 +10,7 @@
 #include <shobjidl_core.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include "TerminalVelocityFeatures-StoragePickers.h"
+#include "TerminalVelocityFeatures-StoragePickers2.h"
 #include "PickerCommon.h"
 #include "PickFileResult.h"
 #include "PickerLocalization.h"
@@ -49,17 +50,46 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
-    winrt::Windows::Foundation::Collections::IVector<hstring> FileOpenPicker::FileTypeFilter()
+    winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> FileOpenPicker::FileTypeChoices()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_fileTypeChoices;
+    }
+    winrt::Windows::Foundation::Collections::IVector<winrt::hstring> FileOpenPicker::FileTypeFilter()
     {
         return m_fileTypeFilter;
+    }
+    winrt::hstring FileOpenPicker::SuggestedFolder()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_suggestedFolder;
+    }
+    void FileOpenPicker::SuggestedFolder(winrt::hstring const& value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateFolderPath(value, "SuggestedFolder");
+        m_suggestedFolder = value;
+    }
+    winrt::hstring FileOpenPicker::SuggestedStartFolder()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_suggestedStartFolder;
+    }
+    void FileOpenPicker::SuggestedStartFolder(winrt::hstring const& value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateFolderPath(value, "SuggestedStartFolder");
+        m_suggestedStartFolder = value;
     }
 
     void FileOpenPicker::CaptureParameters(PickerCommon::PickerParameters& parameters)
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.PickerLocationId = m_suggestedStartLocation;
-        parameters.CaptureFilterSpec(m_fileTypeFilter.GetView());
+        parameters.SuggestedFolder = m_suggestedFolder;
+        parameters.SuggestedStartLocation = m_suggestedStartLocation;
+        parameters.SuggestedStartFolder = m_suggestedStartFolder;
+        parameters.CaptureFilterSpecData(m_fileTypeFilter.GetView(), m_fileTypeChoices.GetView());
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
@@ -87,7 +117,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
         parameters.ConfigureDialog(dialog);
-        check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
 
         {
             auto hr = dialog->Show(parameters.HWnd);
@@ -142,7 +171,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
 
         parameters.ConfigureDialog(dialog);
-        check_hresult(dialog->SetFileTypeIndex(parameters.FileTypeFilterPara.size()));
 
         FILEOPENDIALOGOPTIONS dialogOptions;
         check_hresult(dialog->GetOptions(&dialogOptions));

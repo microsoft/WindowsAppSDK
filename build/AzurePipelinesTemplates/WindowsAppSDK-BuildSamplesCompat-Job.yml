@@ -1,0 +1,398 @@
+# This yml file is used to build sample apps, having the same structure and pattern as Aggregator repo:
+# https://microsoft.visualstudio.com/ProjectReunion/_git/WindowsAppSDKAggregator?path=/build/AzurePipelinesTemplates/WindowsAppSDK-BuildSamplesCompat-Job.yml
+parameters:
+- name: "IsOneBranch"
+  type: boolean
+  default: true
+- name: JobName
+  type: string
+  default: 'SamplesCompatTest'
+- name: FeatureAreas
+  type: object
+  default:
+  - ''
+- name: "BuildConfig"
+  type: object
+  default:
+  - 'Release'
+  - 'Debug'
+- name: "BuildPlatform"
+  type: object
+  default:
+  - 'x64'
+- name: "SamplesArtifactName"
+  displayName: "Supply a valid base name for Sample Apps BuildOutput to trigger publishing of these artifacts"
+  type: string
+  default: ''
+- name: runStaticAnalysis
+  type: boolean
+  default: true
+- name: maxParallel
+  type: number
+  default: 10
+
+jobs:
+- job: ${{ parameters.JobName }}
+  pool:
+    ${{ if parameters.IsOneBranch }}:
+      type: windows
+    ${{ if not( parameters.IsOneBranch ) }}:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022'
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: ${{ parameters.maxParallel }}
+    matrix:
+      ${{ each featureArea in parameters.FeatureAreas }}:
+        ${{ featureArea }}:
+          feature: ${{ featureArea }}
+  variables:
+    ob_outputDirectory: '$(Build.ArtifactStagingDirectory)'
+    ob_sdl_codeSignValidation_excludes: '-|**\*'
+    ob_artifactBaseName: '${{ parameters.SamplesArtifactName }}'
+    ob_artifactSuffix: '_$(feature)'
+    # Currently, the version of PREfast in Guardian does not correctly detect VSBuild tasks, that is a known issue tracked by:
+    #     Feature 190028: Ingest 1ES Template update to successfully detect VSBuild tasks and run PREfast successfully 
+    # Because of that, we've been explicitly invoking the PREfast task instead of relying on Guardian's PREfast. Recently, the
+    # non-functional PREfast task injected via Guardian is starting to emit non-fatal errors (previously, it quietly skipped 
+    # itself), to the effect of "no build operation detected to triggger PREfast for", creating noise in the build output page. 
+    # Therefore, turning off Guardian's PREfast altogether to eliminate the noise. Our pipeline still does our own PREfast scan 
+    # and the "Guardian: Post Analysis" task still analyzes the logs produced by our explicit PREfast scan as usual.
+    ob_sdl_prefast_enabled: false
+    ob_sdl_checkCompliantCompilerWarnings: true # This setting has no effect unless ob_sdl_msbuildOverride below is also set to true.
+    ob_sdl_msbuildOverride: true # Because we are calling MSBuild directly instead of through the MSBuild@1 or VSBuild@1 tasks.
+    ob_sdl_prefast_runDuring: 'Guardian' # The default 'Build' setting does not match the fact that we are calling msbuild.exe directly.
+
+  steps:
+  - checkout: self
+  - checkout: WindowsAppSDKSamples
+
+  # Used to restore Windows SDK projection preview package from MSFTNuGet feed
+  - task: NuGetAuthenticate@1
+    displayName: "NuGet authenticate to restore Windows SDK projection"
+
+  - task: PowerShell@2
+    displayName: 'Add Windows SDK 10.0.22000'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(Build.SourcesDirectory)\$(SelfRepoName)\build\scripts\windows-sdk.ps1
+      # TODO: the SdkVersion parameter does not yet support arbitrary versions.
+      arguments: >
+        -SdkVersion "10.0.22000"
+
+  # Local variable 'feature' used to potentially contain a '\' and that is handy when using
+  # 'feature' as part of a file path. However, when we started using 'feature' as part of
+  # the name of an artifact in OneBranch, the '\' is an illegal character in an artifact
+  # name. Hence, a '-' replaced the '\' in 'feature', and we convert the '-' to '\' in
+  # there to produce variable 'featureForFilePath' and use it as part of a file path.
+  - task: PowerShell@2
+    name: MakeFeatureUsableAsFilePath
+    displayName: Convert feature to featureForFilePath
+    inputs:
+      targetType: 'inline'
+      script: |
+        $tempFeature = '$(feature)'
+        if ($tempFeature.Contains("-"))
+        {
+            $tempFeature = $tempFeature.Replace("--", "TEMPHYPHEN")
+            $tempFeature = $tempFeature.Replace("-", "\")
+            $tempFeature = $tempFeature.Replace("TEMPHYPHEN", "-")
+        }
+        Write-Host "##vso[task.setvariable variable=featureForFilePath;isOutput=true]$tempFeature"
+        Write-Host "##vso[task.setvariable variable=featureForFilePath;]$tempFeature"
+
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download WindowsAppSDK.Foundation'
+    inputs:
+      artifactName: 'TransportPackage'
+      targetPath: '$(Build.SourcesDirectory)\TransportPackage'
+
+  # Copy WindowsAppSDK.Foundation to local package folder
+  - task: CopyFiles@2
+    displayName: 'Copy WindowsAppSDK.Foundation to local package folder'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\TransportPackage'
+      Contents: |
+        Microsoft.WindowsAppSDK.Foundation.[0-9]*.nupkg
+      TargetFolder: '$(Build.SourcesDirectory)\localpackages\NugetPackages'
+
+  # Install Microsoft.WindowsAppSDK.Foundation to get all its dependencies and their version.
+  - task: NuGetCommand@2
+    inputs:
+      command: 'custom'
+      arguments: >
+        install "Microsoft.WindowsAppSDK.Foundation"
+        -Source "$(Build.SourcesDirectory)\localpackages\NugetPackages"
+        -Version "$(FoundationVersion)"
+        -OutputDirectory "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\localpackages"
+        -FallbackSource "https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json"
+
+  # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
+  - script: |
+      "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
+      set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
+      del %TEMP%\vsinstalldir.txt
+      call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
+      echo VCToolsInstallDir = %VCToolsInstallDir%
+      echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+    displayName: 'Retrieve VC tools directory'
+
+  # In Aggregator, we use global.json to specify the .NET SDK version to use.
+  # However, in Foundation it encounters error when using global.json, so we specify the version and call UseDotNet@2 multiple times instead.
+  #====================================================================================================================
+  - task: UseDotNet@2
+    displayName: Use .NET Core SDK 6
+    inputs:
+      packageType: 'sdk'
+      version: '6.0.427'
+  
+  - task: UseDotNet@2
+    displayName: Use .NET Core SDK 8
+    inputs:
+      packageType: 'sdk'
+      version: '8.0.100'
+  
+  - task: UseDotNet@2
+    displayName: Use .NET Core SDK 9
+    inputs:
+      packageType: 'sdk'
+      version: '9.0.200'
+  #====================================================================================================================
+
+  - task: PowerShell@2
+    name: GetWASDKNugetDependencies
+    displayName: 'Get Nuget Dependencies for WindowsAppSDK'
+    inputs:
+      targetType: filePath
+      filePath: $(Build.SourcesDirectory)\$(SelfRepoName)\test\GetNugetDependencies.ps1
+      arguments: >
+        -PackageName "Microsoft.WindowsAppSDK"
+        -OutputVariableName "wasdkDependencies"
+      
+  - task: PowerShell@2
+    displayName: "Modify Sample Apps References" 
+    inputs:
+      filePath: '$(Build.SourcesDirectory)\$(SelfRepoName)\test\ModifySampleAppsReferences.ps1'
+      arguments: >
+        -SampleRepoRoot "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples"
+        -FoundationVersion "$(FoundationVersion)"
+        -FoundationPackagesFolder "$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\localpackages"
+        -WASDKNugetDependencies "$(wasdkDependencies)"
+  
+  # update the nuget.config file to point to the internal feed
+  - powershell: |
+      $nugetConfigPath = "$(Build.SourcesDirectory)/$(SamplesRepoName)/Samples/nuget.config"
+  
+      $sourceName = "WinAppSDK-SampleDeps"
+      $newSourceUrl = "https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json"
+  
+      if (Test-Path $nugetConfigPath) {
+          [xml]$config = Get-Content $nugetConfigPath
+  
+          $packageSources = $config.configuration.packageSources.add
+  
+          $existingSource = $packageSources | Where-Object { $_.key -eq $sourceName }
+  
+          if ($existingSource) {
+              $existingSource.value = $newSourceUrl
+              Write-Host "Updated source '$sourceName' to '$newSourceUrl'"
+                
+              $config.Save($nugetConfigPath)
+              Write-Host "nuget.config updated successfully."
+          } 
+      } else {
+          Write-Host "nuget.config file does not exist."
+      }
+    displayName: 'Modify NuGet.config feed to internal feed'
+
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      feedsToUse: 'config'
+      nugetConfigPath: '.\$(SamplesRepoName)\Samples\nuget.config'
+      restoreSolution: '.\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln'
+      includeNuGetOrg: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy tsaoptions.json from under ~\WindowsAppSDKAggregator\.config to ~\.config for the TSAOption task to find'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\$(SelfRepoName)\.config'
+      Contents: |
+        tsaoptions.json
+      TargetFolder: '$(Build.SourcesDirectory)\.config'
+
+  - task: CopyFiles@2
+    displayName: 'Copy OneBranch.gdnsuppress from under ~\WindowsAppSDKAggregator\.gdn to ~\.gdn for the Guardian: Post Analysis task to find'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\$(SelfRepoName)\.gdn'
+      Contents: |
+        OneBranch.gdnsuppress
+      TargetFolder: '$(Build.SourcesDirectory)\.gdn'
+
+  - ${{ each config in parameters.BuildConfig }}:
+    - ${{ each platform in parameters.BuildPlatform }}:
+      - task: VSBuild@1
+        displayName: 'Restore nuget packages for all solutions'
+        inputs:
+          solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln
+          platform: '${{ platform }}'
+          configuration: '${{ config }}'
+          msbuildArgs: '/t:restore /p:PublishReadyToRun=true /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages\NugetPackages" /binaryLogger:$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\$(feature).restore.${{ platform }}.${{ config }}.binlog'
+          ${{ if and(eq( parameters.EnablePREFast, 'true'), eq(parameters.RunSDLBinaryAnalysis, 'true')) }}:
+            # This property should match that of 'Build all Sample solutions' below. Otherwise, tool
+            # architecture detection in the PreFast task may (incorrectly) choose the tool architecture
+            # deduced from this step and inappropriately use it in the MSBuild commandline for triggering
+            # PREFast. We only need to specify this property for x64, which is currently the only
+            # architecture for which we run PreFast. Guardian PreFast currently does not support arm any
+            # way. Also no need for this property if this pipeline run does not enable PREFast.
+            msbuildArchitecture: x64
+
+      - task: VSBuild@1
+        displayName: 'Build all Sample solutions'
+        inputs:
+          solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln
+          platform: '${{ platform }}'
+          configuration: '${{ config }}'
+          msbuildArgs: '/p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages\NugetPackages" /binaryLogger:$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\$(feature).build.${{ platform }}.${{ config }}.binlog'
+          ${{ if and(eq( parameters.EnablePREFast, 'true'), eq(parameters.RunSDLBinaryAnalysis, 'true')) }}:
+            # This property helps prevent tool architecture detection in the PreFast task to pick x86 (default)
+            # as the "preferred tool architecture", which results in multiple sample apps failing to build due
+            # to "out of heap space" errors, which in turn is due to unfixed memory leaks in the 32-bit favor
+            # of a PREFast tool. We only need to specify this property for x64, which is currently the only
+            # architecture for which we run PreFast. Guardian PreFast currently does not support arm any
+            # way. Also no need for this property if this pipeline run does not enable PREFast.
+            msbuildArchitecture: x64
+
+      - task: CopyFiles@2
+        displayName: 'Copy binlogs'
+        condition: succeededOrFailed()
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
+          Contents: |
+            **/*.binlog
+          TargetFolder: '$(Build.ArtifactStagingDirectory)\$(featureForFilePath)'
+
+      - ${{ if and(eq(parameters.runStaticAnalysis, 'true'), eq(platform, 'x64'), eq(config, 'Release')) }}:
+        # There are currently challenges with PREFast scanning the sample apps:
+        # 1) SDLNativeRules@3 does not seem to support the wild card in the input "solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln" we pass to VSBuild@1
+        #    above, so we need to enumerate the .sln files at the target folder and explicitly pass the full path of each .sln file to a corresponding call to SDLNativeRules@3.
+        # 2) There are currently >71 sample apps. It takes a *long* time for PREFast to finish them.
+        # Given those challenges and that we currently prioritize Sample code over Product code, in this first round we just pick a few a Sample apps to PREFast scan them.
+        # In the future, considering the long time required to scan the Sample apps, it might make more sense to create a separate weekly pipeline to PREFast scan the Sample
+        # apps, for instance.
+        - task: SDLNativeRules@3
+          displayName: PREfast SDL Native Rules for AppLifecycle\Activation\cpp
+          condition: and(succeeded(), eq(variables['featureForFilePath'], 'AppLifecycle\Activation\cpp\cpp-console-unpackaged'))
+          inputs:
+            setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
+            msBuildArchitecture: amd64
+            msBuildCommandline: 'msbuild.exe /nologo /nr:false /p:configuration=${{ config }} /p:platform=${{ platform }} $(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\CppWinRtConsoleActivation.sln'
+            # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+            excludedPaths: |
+              $(Build.SourcesDirectory)\packages
+            # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+            rulesetName: Custom
+            customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+            policyName: 'WindowsUndocked'
+          continueOnError: true
+          env:
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+  - task: PowerShell@2
+    displayName: Display storage and diagnostic info
+    condition: succeededOrFailed()
+    inputs:
+      targetType: 'inline'
+      script: |
+        Get-WmiObject win32_logicaldisk | Format-Table DeviceId, MediaType, @{n="Size";e={[math]::Round($_.Size/1GB,2)}},@{n="FreeSpace";e={[math]::Round($_.FreeSpace/1GB,2)}}, @{n="UsedSpace";e={[math]::Round((($_.Size-$_.FreeSpace)/1GB),2)}}
+        Write-Host '$(feature), $(featureForFilePath), $(SamplesRepoName).'
+
+  # These steps, done on a per-featureArea basis, are only required if we are going to test Sample apps one way or
+  # another in the current pipeline run. OneBranch is limited to publishing 1 artifact per job, and different jobs
+  # can't publish to the same artifact. Therefore, each job in the strategy matrix that builds a specific
+  # featureArea is forced to publish its own featureArea-specific artifact, resulting in many artfacts.
+  - ${{ if ne(parameters.SamplesArtifactName, '') }}:
+    - script: |
+        md $(Build.ArtifactStagingDirectory)\$(featureForFilePath)
+        dir $(Build.ArtifactStagingDirectory)
+        dir $(Build.SourcesDirectory)
+      displayName: Create target folder for staging artifact
+
+    # Reduce the number of files not required for running the tests later by deletion, before copying
+    # them to the staging location. The file copying operations takes 20+ min for big sample apps if we
+    # don't do this filtering first, also the total size of the artifacts gets too big, resulting in
+    # long download time that causes jobs to timeout, and/or out of disk space issues.
+    # It seems to be most helpful to filter out the .pch and .pdb files. There might be more
+    # file types that we can filtered out then those listed below.
+    - task: DeleteFiles@1
+      displayName: 'Delete unneeded Files under: $(Build.ArtifactStagingDirectory)'
+      condition: succeededOrFailed()
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
+        Contents: |
+          **/*.c
+          **/*.config
+          **/*.cpp
+          **/*.cs
+          **/*.csproj
+          **/*.editorconfig
+          **/*.foo
+          **/*.h
+          **/*.hpp
+          **/*.idb
+          **/*.idl
+          **/*.ilk
+          **/*.iobj
+          **/*.ipdb
+          **/*.lib
+          **/*.log
+          **/*.obj
+          **/*.pch
+          **/*.pdb
+          **/*.props
+          **/*.pubxml
+          **/*.sln
+          **/*.targets
+          **/*.tlog
+          **/*.txt
+          **/*.vcxproj*
+          **/*.vcxproj*/**
+          **/*.wapproj
+          **/*.winmd
+          **/*.xaml
+          **/*.xbf
+          **/*.xsd
+          **/*.semmle
+          **/arm/*
+          **/x86/*
+          **/*_Debug_Test/*
+          **/obj/*
+          **/packages/*
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+      condition: succeededOrFailed()
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)\$(featureForFilePath)'
+
+    - script: |
+        dir /s $(Build.ArtifactStagingDirectory)
+      condition: succeededOrFailed()
+      displayName: DIAG - Show staging trees to validate filtering
+
+    - ${{ if not( parameters.IsOneBranch ) }}:
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(ob_outputDirectory)'
+          artifactName: '$(ob_artifactBaseName)$(ob_artifactSuffix)'
+
+# The idea of merging the artifacts for the featureAreas produced by one call to this yml file has
+# been attempted and abandoned. Although this will free the subsequent Stages that run the SampleTests
+# from needing to know the artifacts of the individual featureAreas and downloading them one by one,
+# thus needing to download only 3 bigger artifacts with fixed names, those bigger artifact took up much
+# space and they seem to hit download errors more frequently. The E2E run time of the pipeline is
+# also longer. Therefore, this idea was not adopted.

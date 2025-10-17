@@ -154,6 +154,10 @@ namespace Test::PackageManager::Tests
                 [&](const IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>&, PackageDeploymentProgress progress)
             {
                     WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
+                    if (progress.Progress != 0)
+                    {
+                        VERIFY_ARE_EQUAL(PackageDeploymentProgressStatus::InProgress, progress.Status);
+                    }
                 }
             );
             deploymentOperation.Progress(progressCallback);
