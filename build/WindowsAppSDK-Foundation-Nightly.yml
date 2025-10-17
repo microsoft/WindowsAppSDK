@@ -42,9 +42,10 @@ parameters:
   type: boolean
   default: true
 - name: "TestOnArm64"
-  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
+  displayName: "Enable running of tests on arm64 platform (Default: false)"
   type: boolean
-  default: true
+  # Temporarily default to not testing on arm64 to mitigate arm64 capacity shortage problem.
+  default: false
 - name: "MaestroDependOnTestSamples"
   displayName: "Whether Maestro publishing should depend on successful Sample tests"
   type: boolean
