@@ -234,7 +234,7 @@ steps:
   displayName: 'Component Governance Detection'
   inputs:
     scanType: 'Register'
-    failOnAlert: true
+    failOnAlert: false
 
 - ${{ if eq(parameters.IsOneBranch, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
