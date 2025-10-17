@@ -1,5 +1,6 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
+#pragma once
 #include <pch.h>
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX                       L"Microsoft.WindowsAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_DDLMPREFIX                   L"Microsoft.WinAppRuntime"
