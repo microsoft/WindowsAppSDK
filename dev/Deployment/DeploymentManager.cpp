@@ -212,10 +212,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const int integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
         if (isPackagedProcess && integrityLevel >= SECURITY_MANDATORY_MEDIUM_RID)
         {
+              // Marking the package as full trust because the call originates from a MediumIL package.
+            // For a packaged MediumIL app (with a non-Microsoft publisher) to deploy main and singleton packages, a breakaway helper process is required.
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
         initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
                                                       isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
 
