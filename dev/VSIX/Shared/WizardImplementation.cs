@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
@@ -134,8 +133,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 return;
             }
 
-            // Change to Dictionary<string, string> to capture error messages per package
-            Dictionary<string, string> failedPackages = new Dictionary<string, string>();
+            var failedPackages = new Dictionary<string, string>();
 
             // Process each package installation
             foreach (var packageId in _nuGetPackages)
@@ -171,7 +169,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 // Get the main window's InfoBar host using VSSPROPID_MainWindowInfoBarHost
                 object infoBarHostObj;
                 int hr = shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out infoBarHostObj);
-                if (ErrorHandler.Failed(hr) || !(infoBarHostObj is IVsInfoBarHost infoBarHost))
+                if (!(infoBarHostObj is IVsInfoBarHost infoBarHost))
                 {
                     return;
                 }
@@ -186,11 +184,10 @@ namespace WindowsAppSDK.TemplateUtilities
 
         public void ProjectItemFinishedGenerating(ProjectItem _)
         {
-        }        
+        }
 
         public void RunFinished()
         {
-
         }
 
         private void SaveAllProjects()
@@ -212,15 +209,34 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
         {
-            // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
-            // during solution restore.
-            if (_nugetProjectUpdateEvents == null)
+
+            // Normally, either InstallNuGetPackagesAsync is called from ProjectFinishedGenerating for VC++ projects (C++ templates)
+            // while C# are called here. In the C++ wapproj template, InstallNuGetPackagesAsync would be called twice for the vcxproj,
+            // once from each location. This causes NuGet to throw an InvalidOperationException because the package is already installed.
+            // This check prevents that from happening. Since the check accesses _project, it must be done on the main thread.
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                return;
-            }
-            _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
-            var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
-            _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                Guid _projectGuid;
+                Guid.TryParse(_project.Kind, out _projectGuid);
+                if (_projectGuid.Equals(SolutionVCProjectGuid))
+                {
+                    return;
+                }
+                else
+                {
+                    // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
+                    // during solution restore.
+                    if (_nugetProjectUpdateEvents == null)
+                    {
+                        return;
+                    }
+                    _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
+                    var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
+
+                    _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
+                }
+            });
         }
 
         private void LogError(string message)
