@@ -4,9 +4,9 @@
 #ifndef __WINDOWSAPPRUNTIME_TEST_TAEF_H
 #define __WINDOWSAPPRUNTIME_TEST_TAEF_H
 
-#include <WexTestClass.h>
-#include <filesystem>
 #include <windows.h>
+#include <filesystem>
+#include <WexTestClass.h>
 
 namespace Test::TAEF
 {

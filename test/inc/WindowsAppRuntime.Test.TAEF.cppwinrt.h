@@ -4,9 +4,9 @@
 #ifndef __WINDOWSAPPRUNTIME_TEST_TAEF_CPPWINRT_H
 #define __WINDOWSAPPRUNTIME_TEST_TAEF_CPPWINRT_H
 
-#include <WexTestClass.h>
-#include <winrt/base.h>
 #include <windows.h>
+#include <winrt/base.h>
+#include <WexTestClass.h>
 
 namespace WEX::TestExecution
 {
