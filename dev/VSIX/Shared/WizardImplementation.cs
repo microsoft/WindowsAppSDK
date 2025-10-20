@@ -209,14 +209,17 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
         {
-
-            // Normally, either InstallNuGetPackagesAsync is called from ProjectFinishedGenerating for VC++ projects (C++ templates)
-            // while C# are called here. In the C++ wapproj template, InstallNuGetPackagesAsync would be called twice for the vcxproj,
-            // once from each location. This causes NuGet to throw an InvalidOperationException because the package is already installed.
-            // This check prevents that from happening. Since the check accesses _project, it must be done on the main thread.
             ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
+                // Accessing _project requires the main thread
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                // Normally, either InstallNuGetPackagesAsync is called from ProjectFinishedGenerating
+                // for VC++ projects (C++ templates) or from here for C# and wapproj projects. In the
+                // C++ wapproj template, InstallNuGetPackagesAsync() was called twice for the vcxproj,
+                // once from each location. This caused the NuGet install API to throw an
+                // InvalidOperationException because the package was already installed.
+                // This check prevents the double installation attempt.
                 Guid _projectGuid;
                 Guid.TryParse(_project.Kind, out _projectGuid);
                 if (_projectGuid.Equals(SolutionVCProjectGuid))
