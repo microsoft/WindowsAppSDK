@@ -34,9 +34,9 @@ parameters:
   type: boolean
   default: true
 - name: "TestOnArm64"
-  displayName: "Enable running of tests on arm64 platform (Default: false)"
+  displayName: "Enable running of tests on arm64 platform (Default: true)"
   type: boolean
-  default: false
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
