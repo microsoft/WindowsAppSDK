@@ -253,21 +253,6 @@ namespace WindowsAppSDK.TemplateUtilities
             });
         }
 
-        private void UpdateStatusBar(string message)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            var statusBar = ServiceProvider.GlobalProvider.GetService(typeof(SVsStatusbar)) as IVsStatusbar;
-            if (statusBar != null)
-            {
-                int frozen;
-                statusBar.IsFrozen(out frozen);
-                if (frozen == 0)
-                {
-                    statusBar.SetText(message);
-                }
-            }
-        }
-
         private bool TryCreateInfoBarUI(IVsInfoBar infoBar, out IVsInfoBarUIElement uiElement)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
