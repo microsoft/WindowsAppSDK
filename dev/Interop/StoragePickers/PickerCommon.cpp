@@ -12,6 +12,8 @@
 #include <filesystem>
 #include <format>
 #include <utility>
+#include <string_view>
+#include <cwctype>
 
 
 namespace {
@@ -224,7 +226,7 @@ namespace PickerCommon {
         ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
-    void ValidateSuggestedFolder(winrt::hstring const& path)
+    void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName)
     {
         if (path.empty())
         {
@@ -237,13 +239,14 @@ namespace PickerCommon {
         auto pathObj = std::filesystem::path(path.c_str());
         if (!pathObj.is_absolute())
         {
-            throw std::invalid_argument("SuggestedFolder");
+            throw std::invalid_argument(propertyName);
         }
 
+        // The method SHSimpleIDListFromPath does syntax check on the path string.
         wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
         if (!pidl)
         {
-            throw std::invalid_argument("SuggestedFolder");
+            throw std::invalid_argument(propertyName);
         }
     }
 
@@ -276,6 +279,28 @@ namespace PickerCommon {
             }
         }
         return result;
+    }
+
+    void PickerParameters::CaptureFilterSpecData(
+        winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
+        winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView)
+    {
+        // The FileTypeChoices takes precedence over FileTypeFilter if both are provided.
+        if (fileTypeChoicesView && fileTypeChoicesView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeChoicesView);
+            return;
+        }
+
+        if (fileTypeFilterView && fileTypeFilterView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeFilterView);
+            return;
+        }
+
+        // Even if no filters provided, we still need to set filter to All Files *.*
+        auto emptyFilters = winrt::single_threaded_vector<winrt::hstring>();
+        CaptureFilterSpec(emptyFilters.GetView());
     }
 
     /// <summary>
@@ -330,6 +355,8 @@ namespace PickerCommon {
         {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
+
+        FocusLastFilter = true;
     }
 
     /// <summary>
@@ -372,15 +399,41 @@ namespace PickerCommon {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
         }
 
-        auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
-        if (defaultFolder != nullptr)
+        winrt::com_ptr<IShellItem> defaultFolder{};
+
+        // The SuggestedStartFolder takes precedence over SuggestedStartLocation if both are provided.
+        if (!IsHStringNullOrEmpty(SuggestedStartFolder))
+        {
+            defaultFolder = TryParseFolderItem(SuggestedStartFolder);
+        }
+
+        if (!defaultFolder)
+        {
+            defaultFolder = GetKnownFolderFromId(SuggestedStartLocation);
+        }
+
+        if (defaultFolder)
         {
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
+        }
+
+        // SuggestedFolder takes precedence over SuggestedStartFolder/SuggestedStartLocation if both are provided.
+        if (!IsHStringNullOrEmpty(SuggestedFolder))
+        {
+            if (auto folderItem = TryParseFolderItem(SuggestedFolder))
+            {
+                check_hresult(dialog->SetFolder(folderItem.get()));
+            }
         }
 
         if (FileTypeFilterPara.size() > 0)
         {
             check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+
+            if (FocusLastFilter)
+            {
+                check_hresult(dialog->SetFileTypeIndex(FileTypeFilterPara.size()));
+            }
         }
     }
 
@@ -395,13 +448,5 @@ namespace PickerCommon {
             check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
         }
 
-        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedFolder))
-        {
-            winrt::com_ptr<IShellItem> folderItem = TryParseFolderItem(SuggestedFolder);
-            if (folderItem)
-            {
-                check_hresult(dialog->SetFolder(folderItem.get()));
-            }
-        }
     }
 }

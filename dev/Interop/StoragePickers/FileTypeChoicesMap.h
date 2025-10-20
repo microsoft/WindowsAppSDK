@@ -13,6 +13,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         FileTypeChoicesMap();
 
+        bool ForFeature_StoragePickers2{ false };
+
         // IMap<hstring, IVector<hstring>>
         winrt::Windows::Foundation::Collections::IVector<hstring> Lookup(hstring const& key) const;
         uint32_t Size() const;

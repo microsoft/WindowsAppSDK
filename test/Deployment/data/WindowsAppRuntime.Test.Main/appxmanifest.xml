@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -10,12 +10,12 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.Main.1.0-Test"
+    Name="MicrosoftCorporationII.WinAppRuntime.Main.1.0-T"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>Microsoft.WindowsAppRuntime.Main.Test (aka Microsoft.WindowsAppRuntime.Main) fake for tests</DisplayName>
+    <DisplayName>MicrosoftCorporationII.WinAppRuntime.Main.Test (aka Microsoft.WindowsAppRuntime.Main) fake for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
