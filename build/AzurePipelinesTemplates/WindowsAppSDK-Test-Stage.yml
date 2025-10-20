@@ -1,3 +1,8 @@
+parameters:
+- name: "TestOnArm64"
+  type: boolean
+  default: true
+
 stages:
 - stage: Test_x86
   dependsOn: Build_x86
