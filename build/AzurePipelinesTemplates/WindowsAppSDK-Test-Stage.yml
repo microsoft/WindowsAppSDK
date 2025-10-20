@@ -1,7 +1,7 @@
 parameters:
 - name: "TestOnArm64"
   type: boolean
-  default: false
+  default: true
 
 stages:
 - stage: Test_x86
