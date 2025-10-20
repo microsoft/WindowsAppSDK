@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Microsoft.WindowsAppSDK.Cpp.Dev17.Experimental" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="Microsoft.WindowsAppSDK.Cpp.Dev17" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
     <DisplayName>Windows App SDK C++ VS 2022-2026 Templates</DisplayName>
     <Description xml:space="preserve">The Microsoft Windows App SDK Visual Studio extension adds C++ project and item templates to support building Windows apps and components in VS 2022-2026.</Description>
     <MoreInfo>https://github.com/microsoft/WindowsAppSDK/</MoreInfo>
@@ -11,7 +11,7 @@
     <Icon>WindowsAppSDK.png</Icon>
     <PreviewImage>WindowsAppSDK.png</PreviewImage>
     <Tags>WindowsAppSDK, WinAppSDK, WinUI, XAML, C++, C++/WinRT</Tags>
-    <Preview>true</Preview>
+    <Preview>false</Preview>
   </Metadata>
   <Installation AllUsers="true">
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 19.0)">
