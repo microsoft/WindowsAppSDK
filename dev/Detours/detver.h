@@ -4,7 +4,7 @@
 //
 //  Microsoft Research Detours Package, Version 4.0.1
 //
-//  Copyright (c) Microsoft Corporation and Contributors.  All rights reserved.
+//  Copyright (c) Microsoft Corporation.  All rights reserved.
 //
 
 #define _USING_V110_SDK71_ 1
