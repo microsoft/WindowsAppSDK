@@ -180,12 +180,56 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 if (_failedPackages.Count > 0)
                 {
-                    var errorMessage = CreateErrorInfoBarMessage(ErrorMessageFormat.MessageBox);
+                    var errorMessage = GetDetailedErrorMessage();
                     LogError(errorMessage);
-                    MessageBox.Show(errorMessage, "NuGet Package Installation Error(s)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    
+                    var result = MessageBox.Show(
+                        errorMessage,
+                        "NuGet Package Installation Error(s)",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    
+                    // Show the Output window with the detailed errors
+                    ShowOutputWindow(errorMessage);
                     return;
                 }
                 return;
+            }
+        }
+
+        private void ShowOutputWindow(string errorMessage)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            
+            // Log detailed errors to Output window
+            IVsOutputWindow outputWindow = ServiceProvider.GlobalProvider.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            if (outputWindow != null)
+            {
+                Guid guidGeneral = Microsoft.VisualStudio.VSConstants.GUID_OutWindowGeneralPane;
+                IVsOutputWindowPane pane;
+                int hr = outputWindow.GetPane(ref guidGeneral, out pane);
+                
+                // If the pane doesn't exist, create it
+                if (hr != Microsoft.VisualStudio.VSConstants.S_OK || pane == null)
+                {
+                    outputWindow.CreatePane(ref guidGeneral, "General", 1, 1);
+                    outputWindow.GetPane(ref guidGeneral, out pane);
+                }
+                
+                if (pane != null)
+                {
+                    pane.Activate();
+                    pane.Clear();
+                    pane.OutputStringThreadSafe(errorMessage ?? "No error details available.");
+                    pane.OutputStringThreadSafe("\n");
+                }
+            }
+
+            // Also show the Output window
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
+            if (dte != null)
+            {
+                dte.ExecuteCommand("View.Output");
             }
         }
 
