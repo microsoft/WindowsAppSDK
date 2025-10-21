@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using EnvDTE;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Imaging;
@@ -34,13 +35,13 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IComponentModel service.");
             }
-            
+
             _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
             if (_waitDialog == null)
             {
                 System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
             }
-            
+
             if (_componentModel != null)
             {
                 _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
@@ -54,24 +55,19 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
             }
-        }        
+        }
 
         public void ProjectFinishedGenerating(Project project)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _project = project;
-            Guid _projectGuid;
-            if (project != null)
+            Guid _projectGuid = GetProjectGuid(project);
+            if (_projectGuid.Equals(SolutionVCProjectGuid))
             {
-                Guid.TryParse(project.Kind, out _projectGuid);
-
-                if (_projectGuid.Equals(SolutionVCProjectGuid))
+                ThreadHelper.JoinableTaskFactory.Run(async () =>
                 {
-                    ThreadHelper.JoinableTaskFactory.Run(async () =>
-                    {
-                        await InstallNuGetPackagesAsync();
-                    });
-                }
+                    await InstallNuGetPackagesAsync();
+                });
             }
         }
 
@@ -162,7 +158,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
         public void BeforeOpeningFile(ProjectItem _)
         {
-        }        
+        }
 
         public void ProjectItemFinishedGenerating(ProjectItem _)
         {
@@ -170,6 +166,19 @@ namespace WindowsAppSDK.TemplateUtilities
 
         public void RunFinished()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            Guid _projectGuid = GetProjectGuid(_project);
+            if (_projectGuid.Equals(SolutionVCProjectGuid))
+            {
+                if (_failedPackages.Count > 0)
+                {
+                    var errorMessage = CreateErrorInfoBarMessage();
+                    LogError(errorMessage);
+                    MessageBox.Show(errorMessage, "NuGet Package Installation Error(s)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                return;
+            }
         }
 
         private void SaveAllProjects()
@@ -238,7 +247,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private string CreateErrorInfoBarMessage()
         {
             var errorDetails = string.Join(", ", _failedPackages.Select(kvp => $"{kvp.Key} ({kvp.Value})"));
-            var errorMessage = $"The following NuGet packages failed to install for {_project.Name}: {errorDetails}.\nInstall packages before building.";
+            var errorMessage = $"The following NuGet packages failed to install for {_project.Name}: {errorDetails}.\n\nInstall packages before building.";
             return errorMessage;
         }
 
