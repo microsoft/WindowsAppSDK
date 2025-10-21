@@ -29,17 +29,13 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   type: boolean
   default: false
 - name: "TestOnArm64"
-  displayName: "Enable running of tests on arm64 platform (Default: false)"
+  displayName: "Enable running of tests on arm64 platform (Default: true)"
   type: boolean
-  default: false
+  default: true
 - name: runStaticAnalysis
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
   default: true
-- name: "TestOnArm64"
-  displayName: "Enable running of tests on arm64 platform (Default: false)"
-  type: boolean
-  default: false
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
