@@ -124,7 +124,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
         HRESULT verifyResult{};
 
-        for (const auto package : c_targetPackages)
+        for (const auto &package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
@@ -212,10 +212,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const int integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
         if (isPackagedProcess && integrityLevel >= SECURITY_MANDATORY_MEDIUM_RID)
         {
+              // Marking the package as full trust because the call originates from a MediumIL package.
+            // For a packaged MediumIL app (with a non-Microsoft publisher) to deploy main and singleton packages, a breakaway helper process is required.
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
         initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
                                                       isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
 
@@ -527,6 +528,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
     {
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
         ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
         // Build path for licenses
@@ -554,7 +556,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto licenseFilename{ licensePath };
             licenseFilename /= findFileData.cFileName;
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
             ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetCurrentResourceId(licenseFilename);
 
             RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFilename.c_str()),
@@ -574,15 +575,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment)
     {
         auto initializeActivity{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+        initializeActivity.Reset();
 
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
         const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
 
-        initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
         for (auto package : c_targetPackages)
         {
             auto isSingleton{ CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL };
             initializeActivity.Reset();
+            initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
             initializeActivity.SetCurrentResourceId(package.identifier);
 
             std::filesystem::path packagePath{};
@@ -650,14 +652,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto dependencyPackage{ currentPackageInfo.Package(i) };
 
             // Verify PublisherId matches.
-            if (CompareStringOrdinal(currentPackageInfo.Package(i).packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
+            if (CompareStringOrdinal(dependencyPackage.packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
             {
                 continue;
             }
 
             // Verify that the WindowsAppRuntime prefix identifier is in the name.
             // This should also be the beginning of the name, so its find position is expected to be 0.
-            std::wstring dependencyPackageName{ currentPackageInfo.Package(i).packageId.name };
+            std::wstring dependencyPackageName{ dependencyPackage.packageId.name };
             if (dependencyPackageName.find(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) != 0)
             {
                 continue;
@@ -665,7 +667,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             // On WindowsAppSDK 1.1+, there is no need to check and rule out Main, Singleton and DDLM Package identifiers as their names don't have a overlap with WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX.
 
-            return hstring(currentPackageInfo.Package(i).packageFullName);
+            return hstring(dependencyPackage.packageFullName);
         }
 
         THROW_WIN32(ERROR_NOT_FOUND);

@@ -37,6 +37,5 @@ inline std::wstring GetCurrentProcessPath()
 {
     std::wstring processPath{};
     THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processPath));
-    std::transform(processPath.begin(), processPath.end(), processPath.begin(), ::towlower);
     return processPath;
 };

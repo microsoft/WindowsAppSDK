@@ -128,9 +128,9 @@ namespace DynamicDependencyLifetimeManagerGC1010
 namespace WindowsAppRuntimeFramework
 {
     constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
-    constexpr PCWSTR c_PackageNamePrefix = L"Microsoft.WindowsAppRuntime.Framework";
-    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework.4.1_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.Framework.4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageNamePrefix = L"Microsoft.WindowsAppRuntime";
+    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.4.1_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
     constexpr const PACKAGE_VERSION GetPackageVersion()
     {
         PACKAGE_VERSION version{};

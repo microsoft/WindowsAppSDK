@@ -6,6 +6,7 @@
 #include "AppNotification-Test-Constants.h"
 #include "AppNotifications.Test.h"
 #include "BaseTestSuite.h"
+#include "MddWin11.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -23,6 +24,13 @@ using namespace AppNotifications::Test;
 
 void BaseTestSuite::ClassSetup()
 {
+    // Skip tests on Win10 RS5 and earlier due to COM registration issues
+    if (!WindowsVersion::IsWindows10_19H1OrGreater())
+    {
+        WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"AppNotification require Win10 19H1 or greater due to COM registration compatibility. Skipping tests on this OS version.");
+        return;
+    }
+
     ::Test::Bootstrap::Setup();
 }
 
@@ -36,17 +44,24 @@ void BaseTestSuite::MethodSetup()
     bool isSelfContained{};
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained));
 
-    if (!isSelfContained)
+    PCWSTR testFrameworkPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName };
+    PCWSTR testMainPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName };
+
+    if (isSelfContained)
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
-                                                        ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
-        VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+        testFrameworkPackageFamilyName = testMainPackageFamilyName = c_fakePackageFamilyName;
     }
-    else
+
+    // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
+    // https://github.com/microsoft/WindowsAppSDK/blob/main/dev/Common/WindowsAppRuntime.VersionInfo.cpp#L123-L133
+    if (MddCore::Win11::IsSupported())
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
-        VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+        testMainPackageFamilyName = nullptr;
     }
+
+    ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
+
+    VERIFY_ARE_EQUAL(isSelfContained, ::WindowsAppRuntime::SelfContained::IsSelfContained());
 }
 
 void BaseTestSuite::MethodCleanup()
@@ -369,7 +384,16 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier
         removeNotificationAsync.Cancel();
     });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
+    // On x86, the wait_for may return Error instead of Completed.
+    // We check if the HR is E_INVALIDARG in that case.
+    auto status = removeNotificationAsync.wait_for(c_timeout);
+    VERIFY_IS_TRUE(status == winrt::Windows::Foundation::AsyncStatus::Completed || status == winrt::Windows::Foundation::AsyncStatus::Error);
+
+    if (status == winrt::Windows::Foundation::AsyncStatus::Error)
+    {
+        VERIFY_THROWS_HR(removeNotificationAsync.GetResults(), E_INVALIDARG);
+    }
+
     scope_exit.release();
 }
 

@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Deployment Tests",
+            "Filename": "DeploymentTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
