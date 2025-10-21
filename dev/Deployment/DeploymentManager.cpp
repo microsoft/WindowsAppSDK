@@ -369,7 +369,18 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
         const auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
-        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext, StartupNotificationsLongRunningPlatform));
+        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext));
+
+        // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.
+        for (const auto& package : deploymentPackageArguments)
+        {
+            if (package.isSingleton)
+            {
+                // WIL callback is set up to log telemetry events for Push Notifications LRP.
+                std::ignore = LOG_IF_FAILED(StartupNotificationsLongRunningPlatform());
+                break;
+            }
+        }
         return S_OK;
     }
 

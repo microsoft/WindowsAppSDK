@@ -55,8 +55,7 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
     HRESULT DeployPackages(
         const std::vector<DeploymentPackageArguments>& deploymentPackageArguments,
         const bool forceDeployment,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity,
-        const std::function<HRESULT()>& startupNotificationsLongRunningPlatformFunc)
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity)
     {
         for (auto package : deploymentPackageArguments)
         {
@@ -91,13 +90,6 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
                     packageManager,
                     initializeActivity
                 ));
-            }
-
-            // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.
-            if (package.isSingleton)
-            {
-                // WIL callback is set up to log telemetry events for Push Notifications LRP.
-                std::ignore = LOG_IF_FAILED_MSG(startupNotificationsLongRunningPlatformFunc(), "Failed to restart Notifications' Long Running Process (LRP)");
             }
         }
 
