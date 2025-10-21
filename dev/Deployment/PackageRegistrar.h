@@ -14,11 +14,6 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
 
     std::wstring GenerateDeploymentAgentPath();
 
-    inline HRESULT ProcessDeploymentOperationResult(
-        const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult,
-            winrt::Windows::Management::Deployment::DeploymentProgress>& deploymentOperation,
-        ::WindowsAppRuntime::Deployment::Activity::Context& activityContext);
-
     HRESULT AddOrRegisterPackage(
         const std::filesystem::path& path,
         const bool useExistingPackageIfHigherVersion,
