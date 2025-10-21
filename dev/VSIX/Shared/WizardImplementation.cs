@@ -24,6 +24,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
+        private Dictionary<string, string> _failedPackages = new Dictionary<string, string>();
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -133,48 +134,29 @@ namespace WindowsAppSDK.TemplateUtilities
                 return;
             }
 
-            var failedPackages = new Dictionary<string, string>();
-
             // Process each package installation
             foreach (var packageId in _nuGetPackages)
             {
                 try
                 {
+                    throw new InvalidOperationException("Not a real error. Testing error bar behavior");
                     await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
                 }
                 catch (Exception ex)
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
-                    failedPackages[packageId] = ex.Message;
+                    _failedPackages[packageId] = ex.Message;
                 }
             }
 
-            if (failedPackages.Count > 0)
+            if (_failedPackages.Count > 0)
             {
                 // Build error message in the requested format
-                var errorDetails = string.Join(", ", failedPackages.Select(kvp => $"{kvp.Key} ({kvp.Value})"));
-                var errorMessage = $"The following NuGet packages failed to install: {errorDetails}";
+                var errorMessage = CreateErrorInfoBarMessage();
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 LogError(errorMessage);
-                var infoBar = CreateNuGetInfoBar(errorMessage);
-                var infoBar2 = TryCreateInfoBarUI(infoBar, out IVsInfoBarUIElement uiElement);
-                uiElement.Advise(new NuGetInfoBarUIEvents(), out uint _);
-                IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
-                if (shell == null)
-                {
-                    return;
-                }
-
-                // Get the main window's InfoBar host using VSSPROPID_MainWindowInfoBarHost
-                object infoBarHostObj;
-                int hr = shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out infoBarHostObj);
-                if (!(infoBarHostObj is IVsInfoBarHost infoBarHost))
-                {
-                    return;
-                }
-
-                infoBarHost.AddInfoBar(uiElement);
+                _ = DisplayInfoBarAsync(errorMessage);
             }
         }
 
@@ -214,16 +196,27 @@ namespace WindowsAppSDK.TemplateUtilities
                 // Accessing _project requires the main thread
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
+                if (_project == null)
+                {
+                    return;
+                }
+
                 // Normally, either InstallNuGetPackagesAsync is called from ProjectFinishedGenerating
                 // for VC++ projects (C++ templates) or from here for C# and wapproj projects. In the
                 // C++ wapproj template, InstallNuGetPackagesAsync() was called twice for the vcxproj,
                 // once from each location. This caused the NuGet install API to throw an
                 // InvalidOperationException because the package was already installed.
                 // This check prevents the double installation attempt.
-                Guid _projectGuid;
-                Guid.TryParse(_project.Kind, out _projectGuid);
+                Guid _projectGuid = GetProjectGuid(_project);
                 if (_projectGuid.Equals(SolutionVCProjectGuid))
                 {
+                    if (_failedPackages.Count > 0)
+                    {
+                        var errorMessage = CreateErrorInfoBarMessage();
+                        LogError(errorMessage);
+                        _ = DisplayInfoBarAsync(errorMessage);
+                        return;
+                    }
                     return;
                 }
                 else
@@ -242,6 +235,24 @@ namespace WindowsAppSDK.TemplateUtilities
             });
         }
 
+        private string CreateErrorInfoBarMessage()
+        {
+            var errorDetails = string.Join(", ", _failedPackages.Select(kvp => $"{kvp.Key} ({kvp.Value})"));
+            var errorMessage = $"The following NuGet packages failed to install for {_project.Name}: {errorDetails}.\nInstall packages before building.";
+            return errorMessage;
+        }
+
+        private Guid GetProjectGuid(Project project)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            Guid projectGuid;
+            if (project != null && Guid.TryParse(project.Kind, out projectGuid))
+            {
+                return projectGuid;
+            }
+            return Guid.Empty;
+        }
+
         private void LogError(string message)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -254,6 +265,29 @@ namespace WindowsAppSDK.TemplateUtilities
                     int hr = log.LogEntry((uint)__ACTIVITYLOG_ENTRYTYPE.ALE_ERROR, ToString(), message);
                 }
             });
+        }
+
+        private async Task DisplayInfoBarAsync(string errorMessage)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var infoBar = CreateNuGetInfoBar(errorMessage);
+            var infoBar2 = TryCreateInfoBarUI(infoBar, out IVsInfoBarUIElement uiElement);
+            uiElement.Advise(new NuGetInfoBarUIEvents(), out uint _);
+            IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
+            if (shell == null)
+            {
+                return;
+            }
+
+            // Get the main window's InfoBar host using VSSPROPID_MainWindowInfoBarHost
+            object infoBarHostObj;
+            int hr = shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out infoBarHostObj);
+            if (!(infoBarHostObj is IVsInfoBarHost infoBarHost))
+            {
+                return;
+            }
+
+            infoBarHost.AddInfoBar(uiElement);
         }
 
         private bool TryCreateInfoBarUI(IVsInfoBar infoBar, out IVsInfoBarUIElement uiElement)
@@ -284,25 +318,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 image: KnownMonikers.NuGetNoColorError,
                 isCloseButtonVisible: true);
             return infoBar;
-        }
-
-        private class NuGetInfoBarUIEvents : IVsInfoBarUIEvents
-        {
-            public void OnActionItemClicked(IVsInfoBarUIElement infoBarUIElement, IVsInfoBarActionItem actionItem)
-            {
-                ThreadHelper.ThrowIfNotOnUIThread();
-                if (actionItem is InfoBarHyperlink hyperlink &&
-                    hyperlink.Text == "Manage NuGet Packages")
-                {
-                    var dte = ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-                    dte?.ExecuteCommand("Project.ManageNuGetPackages");
-                }
-            }
-
-            public void OnClosed(IVsInfoBarUIElement infoBarUIElement)
-            {
-                // Optional: handle InfoBar closed event if needed
-            }
         }
 
         public bool ShouldAddProjectItem(string _)
