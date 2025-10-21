@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 #pragma once
 
-#include <Deployer.h>
+#include "Licensing.h"
 #include "WindowsAppRuntime-License.h"
 
 namespace WindowsAppRuntime::Deployment::Licensing
