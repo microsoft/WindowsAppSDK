@@ -17,6 +17,12 @@ using NuGet.VisualStudio;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
+    public enum ErrorMessageFormat
+    {
+        MessageBox,
+        InfoBar
+    }
+
     public partial class NuGetPackageInstaller : IWizard
     {
         internal static Guid SolutionVCProjectGuid = new Guid("8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942");
@@ -26,6 +32,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, string> _failedPackages = new Dictionary<string, string>();
+        private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -143,13 +150,14 @@ namespace WindowsAppSDK.TemplateUtilities
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                     _failedPackages[packageId] = ex.Message;
+                    _failedPackageExceptions[packageId] = ex;
                 }
             }
 
             if (_failedPackages.Count > 0)
             {
                 // Build error message in the requested format
-                var errorMessage = CreateErrorInfoBarMessage();
+                var errorMessage = CreateErrorInfoBarMessage(ErrorMessageFormat.InfoBar);
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 LogError(errorMessage);
                 _ = DisplayInfoBarAsync(errorMessage);
@@ -172,7 +180,7 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 if (_failedPackages.Count > 0)
                 {
-                    var errorMessage = CreateErrorInfoBarMessage();
+                    var errorMessage = CreateErrorInfoBarMessage(ErrorMessageFormat.MessageBox);
                     LogError(errorMessage);
                     MessageBox.Show(errorMessage, "NuGet Package Installation Error(s)", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -221,7 +229,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     if (_failedPackages.Count > 0)
                     {
-                        var errorMessage = CreateErrorInfoBarMessage();
+                        var errorMessage = CreateErrorInfoBarMessage(ErrorMessageFormat.InfoBar);
                         LogError(errorMessage);
                         _ = DisplayInfoBarAsync(errorMessage);
                         return;
@@ -244,11 +252,38 @@ namespace WindowsAppSDK.TemplateUtilities
             });
         }
 
-        private string CreateErrorInfoBarMessage()
+        private string CreateErrorInfoBarMessage(ErrorMessageFormat format)
         {
-            var errorDetails = string.Join(", ", _failedPackages.Select(kvp => $"{kvp.Key} ({kvp.Value})"));
-            var errorMessage = $"The following NuGet packages failed to install for {_project.Name}: {errorDetails}.\n\nInstall packages before building.";
+            var packageNames = string.Join(", ", _failedPackages.Keys);
+            var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
+            var errorMessage = $"The following NuGet packages are missing: {packageNames}.{separator}This is an environment error. Please install these packages before building the project.";
             return errorMessage;
+        }
+
+        private string GetDetailedErrorMessage()
+        {
+            var errorLines = new System.Text.StringBuilder();
+            errorLines.AppendLine($"NuGet Package Installation Errors for {_project?.Name ?? "Unknown Project"}:");
+            errorLines.AppendLine();
+            
+            foreach (var package in _failedPackages)
+            {
+                errorLines.AppendLine($"Package: {package.Key}");
+                
+                // Get the exception type name if available
+                if (_failedPackageExceptions.TryGetValue(package.Key, out Exception ex))
+                {
+                    errorLines.AppendLine($"{ex.GetType().FullName}: {package.Value}");
+                }
+                else
+                {
+                    errorLines.AppendLine($"Error: {package.Value}");
+                }
+                
+                errorLines.AppendLine();
+            }
+            
+            return errorLines.ToString();
         }
 
         private Guid GetProjectGuid(Project project)
@@ -281,7 +316,10 @@ namespace WindowsAppSDK.TemplateUtilities
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var infoBar = CreateNuGetInfoBar(errorMessage);
             var infoBar2 = TryCreateInfoBarUI(infoBar, out IVsInfoBarUIElement uiElement);
-            uiElement.Advise(new NuGetInfoBarUIEvents(), out uint _);
+            
+            var detailedErrorMessage = GetDetailedErrorMessage();
+            uiElement.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
+            
             IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
             if (shell == null)
             {
@@ -322,7 +360,8 @@ namespace WindowsAppSDK.TemplateUtilities
                 },
                 actionItems: new InfoBarActionItem[]
                 {
-                    new InfoBarHyperlink("Manage NuGet Packages")
+                    new InfoBarHyperlink("Manage NuGet Packages"),
+                    new InfoBarHyperlink("See error details")
                 },
                 image: KnownMonikers.NuGetNoColorError,
                 isCloseButtonVisible: true);
