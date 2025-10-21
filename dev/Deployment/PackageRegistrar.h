@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 #pragma once
 
+#include <windows.h>
 #include <string>
 #include <filesystem>
-#include <windows.h>
-#include <DeploymentActivityContext.h>
 #include <winrt/Windows.Management.Deployment.h>
+#include "DeploymentActivityContext.h"
 
 namespace WindowsAppRuntime::Deployment::PackageRegistrar
 {

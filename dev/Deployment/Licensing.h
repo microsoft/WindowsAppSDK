@@ -5,7 +5,7 @@
 #include <string>
 #include <filesystem>
 #include <vector>
-#include <DeploymentActivityContext.h>
+#include "DeploymentActivityContext.h"
 
 namespace WindowsAppRuntime::Deployment::Licensing
 {

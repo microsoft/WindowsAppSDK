@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <vector>
 #include <functional>
-#include <DeploymentActivityContext.h>
+#include "DeploymentActivityContext.h"
 
 namespace WindowsAppRuntime::Deployment::PackageDeployment
 {

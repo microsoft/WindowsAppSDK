@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 #pragma once
 
+#include <windows.h>
 #include <appmodel.h>
 #include <string>
 #include <vector>

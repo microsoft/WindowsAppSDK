@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
-#include <PackageUtilities.h>
-#include <PackageDefinitions.h>
 #include <windows.h>
 #include <wil/resource.h>
-#include <AppModel.Identity.h>
+#include "PackageUtilities.h"
+#include "PackageDefinitions.h"
+#include <appmodel.identity.h>
 
 namespace WindowsAppRuntime::Deployment::Package
 {
