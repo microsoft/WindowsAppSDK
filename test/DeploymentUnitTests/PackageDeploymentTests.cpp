@@ -47,10 +47,8 @@ namespace Test::Deployment::PackageDeployment
                 false
             });
 
-            auto startupFunc = []() -> HRESULT { return S_OK; };
-
             auto hr = ::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(
-                args, false, activityContext, startupFunc);
+                args, false, activityContext);
 
             // Should handle package deployment exceptions gracefully
             VERIFY_IS_TRUE(FAILED(hr));
