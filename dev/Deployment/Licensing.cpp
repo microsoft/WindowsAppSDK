@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
-#include <DeploymentActivityContext.h>
-#include <Licensing.h>
+#include "DeploymentActivityContext.h"
+#include "Licensing.h"
 
 using namespace winrt;
 

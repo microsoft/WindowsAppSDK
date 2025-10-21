@@ -2,12 +2,11 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
-#include <DeploymentActivityContext.h>
-#include <PackageDefinitions.h>
-#include <PackageDeployment.h>
-#include <PackageUtilities.h>
-#include <PackageRegistrar.h>
 #include <functional>
+#include "DeploymentActivityContext.h"
+#include "PackageDefinitions.h"
+#include "PackageDeployment.h"
+#include "PackageRegistrar.h"
 
 using namespace winrt;
 
