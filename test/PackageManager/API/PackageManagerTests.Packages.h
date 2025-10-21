@@ -23,10 +23,10 @@ namespace Framework
 namespace Red
 {
     constexpr PCWSTR c_packageDirName = L"PackageManager.Test.F.Red";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.F.Red_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.F.Red_1.2.3.4_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.F.Red_1.2.3.4_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.F.Red_1.2.3.4_arm64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.F.Red_g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.F.Red_1.2.3.4_x86__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.F.Red_1.2.3.4_x64__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.F.Red_1.2.3.4_arm64__g4ype1skzj3jy";
     constexpr inline PCWSTR GetPackageFullName()
     {
 #if defined(_M_ARM64)
@@ -43,10 +43,10 @@ namespace Red
 namespace Redder
 {
     constexpr PCWSTR c_packageDirName = L"PackageManager.Test.F.Redder";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.F.Red_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.F.Red_2.4.6.8_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.F.Red_2.4.6.8_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.F.Red_2.4.6.8_arm64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.F.Red_g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.F.Red_2.4.6.8_x86__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.F.Red_2.4.6.8_x64__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.F.Red_2.4.6.8_arm64__g4ype1skzj3jy";
     constexpr inline PCWSTR GetPackageFullName()
     {
 #if defined(_M_ARM64)
@@ -63,10 +63,10 @@ namespace Redder
 namespace Green
 {
     constexpr PCWSTR c_packageDirName = L"PackageManager.Test.F.Green";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.F.Green_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.F.Green_1.2.3.4_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.F.Green_1.2.3.4_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.F.Green_1.2.3.4_arm64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.F.Green_g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.F.Green_1.2.3.4_x86__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.F.Green_1.2.3.4_x64__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.F.Green_1.2.3.4_arm64__g4ype1skzj3jy";
     constexpr inline PCWSTR GetPackageFullName()
     {
 #if defined(_M_ARM64)
@@ -83,10 +83,10 @@ namespace Green
 namespace Blue
 {
     constexpr PCWSTR c_packageDirName = L"PackageManager.Test.F.Blue";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.F.Blue_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.F.Blue_1.2.3.4_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.F.Blue_1.2.3.4_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.F.Blue_1.2.3.4_arm64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.F.Blue_g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.F.Blue_1.2.3.4_x86__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.F.Blue_1.2.3.4_x64__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.F.Blue_1.2.3.4_arm64__g4ype1skzj3jy";
     constexpr inline PCWSTR GetPackageFullName()
     {
 #if defined(_M_ARM64)
@@ -106,10 +106,10 @@ namespace Main
 namespace Black
 {
     constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.Black.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.Black_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.Black_1.2.3.4_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.Black_1.2.3.4_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.Black_1.2.3.4_arm64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.Black_g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.Black_1.2.3.4_x86__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.Black_1.2.3.4_x64__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.Black_1.2.3.4_arm64__g4ype1skzj3jy";
     constexpr inline PCWSTR GetPackageFullName()
     {
 #if defined(_M_ARM64)
@@ -122,15 +122,15 @@ namespace Black
 #   error "Unknown processor architecture"
 #endif
     }
-    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.Black_8wekyb3d8bbwe!App";
+    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.Black_g4ype1skzj3jy!App";
 }
 namespace Blacker
 {
     constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.Blacker.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.Black_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.Black_2.4.6.8_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.Black_2.4.6.8_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.Black_2.4.6.8_arm64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.Black_g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.Black_2.4.6.8_x86__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.Black_2.4.6.8_x64__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.Black_2.4.6.8_arm64__g4ype1skzj3jy";
     constexpr inline PCWSTR GetPackageFullName()
     {
 #if defined(_M_ARM64)
@@ -143,15 +143,15 @@ namespace Blacker
 #   error "Unknown processor architecture"
 #endif
     }
-    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.Black_8wekyb3d8bbwe!App";
+    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.Black_g4ype1skzj3jy!App";
 }
 namespace White
 {
     constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.White.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.White_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.White_1.2.3.4_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.White_1.2.3.4_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.White_1.2.3.4_arm64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.White_g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.White_1.2.3.4_x86__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.White_1.2.3.4_x64__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.White_1.2.3.4_arm64__g4ype1skzj3jy";
     constexpr inline PCWSTR GetPackageFullName()
     {
 #if defined(_M_ARM64)
@@ -164,15 +164,15 @@ namespace White
 #   error "Unknown processor architecture"
 #endif
     }
-    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.White_8wekyb3d8bbwe!App";
+    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.White_g4ype1skzj3jy!App";
 }
 namespace Whiter
 {
     constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.Whiter.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.White_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.White_2.4.6.8_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.White_2.4.6.8_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.White_2.4.6.8_arm64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.White_g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.White_2.4.6.8_x86__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.White_2.4.6.8_x64__g4ype1skzj3jy";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.White_2.4.6.8_arm64__g4ype1skzj3jy";
     constexpr inline PCWSTR GetPackageFullName()
     {
 #if defined(_M_ARM64)
@@ -185,7 +185,7 @@ namespace Whiter
 #   error "Unknown processor architecture"
 #endif
     }
-    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.White_8wekyb3d8bbwe!App";
+    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.White_g4ype1skzj3jy!App";
 }
 }
 }

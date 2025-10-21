@@ -32,17 +32,17 @@ namespace Test::AccessControl
 
         static PCWSTR GetTestPackageFullName()
         {
-            return L"AccessControlTestAppPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE "__8wekyb3d8bbwe";
+            return L"AccessControlTestAppPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE "__g4ype1skzj3jy";
         }
 
         static PCWSTR GetTestPackageFamilyName()
         {
-            return L"AccessControlTestAppPackage_8wekyb3d8bbwe";
+            return L"AccessControlTestAppPackage_g4ype1skzj3jy";
         }
 
         static PCWSTR GetTestPackageAppId()
         {
-            return L"AccessControlTestAppPackage_8wekyb3d8bbwe!App";
+            return L"AccessControlTestAppPackage_g4ype1skzj3jy!App";
         }
 
         void RunTestApp()

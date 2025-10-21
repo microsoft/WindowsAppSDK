@@ -463,13 +463,13 @@ void FirstTimeInitialization(
             uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
             PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
 
-            const std::wstring frameworkPackageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
+            const std::wstring frameworkPackageFamilyName{ std::format(L"{}.{}.{}{}{}_g4ype1skzj3jy",
                                                                        g_test_frameworkPackageNamePrefix,
                                                                        majorVersion, minorVersion,
                                                                        packagVersionTagDelimiter, packageVersionTag) };
             FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, frameworkPackageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", frameworkPackageFamilyName.c_str());
 
-            const std::wstring mainPackageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
+            const std::wstring mainPackageFamilyName{ std::format(L"{}.{}.{}{}{}_g4ype1skzj3jy",
                                                                   g_test_mainPackageNamePrefix,
                                                                   majorVersion, minorVersion,
                                                                   packagVersionTagDelimiter, packageVersionTag) };
@@ -508,7 +508,7 @@ std::wstring GetFrameworkPackageFamilyName(
     PCWSTR packageVersionTag{ !versionTag ? L"" : versionTag };
     PCWSTR packageVersionTagDelimiter{ (packageVersionTag[0] == L'\0') ? L"" : L"-"};
 
-    const std::wstring packageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
+    const std::wstring packageFamilyName{ std::format(L"{}.{}.{}{}{}_g4ype1skzj3jy",
                                                       namePrefix, majorVersion, minorVersion,
                                                       packageVersionTagDelimiter, packageVersionTag) };
     THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
@@ -555,7 +555,7 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     // NOTE: The Windows App Runtime DDLM package...
     //          * ...has 1 framework package dependency
     //          * ...its framework package dependency's name starts with "Microsoft.WindowsAppRuntime"
-    //          * ...its publisher id is "8wekyb3d8bbwe"
+    //          * ...its publisher id is "g4ype1skzj3jy"
     // Any failure to find the DDLM's package graph but not find the expected framework dependency
     // implies the DDLM is improperly built and cannot be used. Of course ThisShouldNeverHappen
     // but a little paranoia isn't a bad thing :-)
@@ -569,7 +569,7 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     THROW_HR_IF_MSG(E_UNEXPECTED, CompareStringOrdinal(packageInfo->packageId.name, c_expectedNamePrefixLength, c_expectedNamePrefix, c_expectedNamePrefixLength, TRUE) != CSTR_EQUAL,
                     "PRddlm:%ls Expected.Name:%ls PackageGraph[0].PackageFullName:%ls", packageFullName, c_expectedNamePrefix, packageInfo->packageFullName);
     //
-    PCWSTR c_expectedPublisherId{ L"8wekyb3d8bbwe" };
+    PCWSTR c_expectedPublisherId{ L"g4ype1skzj3jy" };
     THROW_HR_IF_MSG(E_UNEXPECTED, CompareStringOrdinal(packageInfo->packageId.publisherId, -1, c_expectedPublisherId, -1, TRUE) != CSTR_EQUAL,
                     "PRddlm:%ls PackageGraph[0].PackageFullName:%ls", packageFullName, packageInfo->packageFullName);
 
@@ -859,7 +859,7 @@ void FindDDLMViaEnumeration(
     // 1a. Enumerate all Framework packages registered to the user
     // 1b. Only consider packages whose Name starts with "microsoft.winappruntime.ddlm.<minorversion>."
     // 1c. If versiontag is specified, Only consider packages whose Name ends with [-shorttag]
-    // 1d. Only consider packages whose PublisherID = "8wekyb3d8bbwe"
+    // 1d. Only consider packages whose PublisherID = "g4ype1skzj3jy"
     // 2. Check if the package is in the <majorversion>.<minorversion> release
     // 2a. Check if the package's Description starts with "Microsoft Windows App Runtime DDLM <majorversion>.<minorversion> "
     // 3. Check if the architecture matches
@@ -888,7 +888,7 @@ void FindDDLMViaEnumeration(
         packageNameSuffixLength = wcslen(packageNameSuffix);
     }
 
-    PCWSTR expectedPublisherId{ L"8wekyb3d8bbwe" };
+    PCWSTR expectedPublisherId{ L"g4ype1skzj3jy" };
     if (!g_test_ddlmPackagePublisherId.empty())
     {
         expectedPublisherId = g_test_ddlmPackagePublisherId.c_str();

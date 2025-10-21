@@ -21,7 +21,7 @@ using namespace Windows::Management::Deployment;
 namespace TP = ::Test::Packages;
 
 #define WASDK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime"
-#define WASDK_PUBLISHER L"8wekyb3d8bbwe"
+#define WASDK_PUBLISHER L"g4ype1skzj3jy"
 
 namespace Test::ABForward
 {
@@ -83,7 +83,7 @@ namespace Test::ABForward
 
         TEST_METHOD(ApplicationData)
         {
-            winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(L"Microsoft.WindowsAppRuntime.1.6_8wekyb3d8bbwe");
+            winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(L"Microsoft.WindowsAppRuntime.1.6_g4ype1skzj3jy");
         }
 
         TEST_METHOD(AppNotificationsManager)

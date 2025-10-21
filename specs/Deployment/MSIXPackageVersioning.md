@@ -491,8 +491,8 @@ with the following rules:
 This produces a worst case for WARddlm in Windows App SDK 99.888.7777.66 ARM64 Preview 3 to the following identifiers:
 
 * Package Name = `Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3` = 49 characters
-* PackageFullName = `"Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3_99.888.7777.66_arm64__8wekyb3d8bbwe"`
-* PackageFamilyName = `"Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3_8wekyb3d8bbwe"`
+* PackageFullName = `"Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3_99.888.7777.66_arm64__g4ype1skzj3jy"`
+* PackageFamilyName = `"Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3_g4ype1skzj3jy"`
 * PACKAGE_VERSION struct = `99.888.7777.66`
 * PACKAGE_VERSION uint64 = `0x006303781E610042`
 

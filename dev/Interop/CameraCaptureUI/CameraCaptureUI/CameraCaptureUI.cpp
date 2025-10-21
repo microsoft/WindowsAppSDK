@@ -17,7 +17,7 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 
-static constexpr const wchar_t* CameraAppPackageName = L"Microsoft.WindowsCamera_8wekyb3d8bbwe";
+static constexpr const wchar_t* CameraAppPackageName = L"Microsoft.WindowsCamera_g4ype1skzj3jy";
 static constexpr const wchar_t* CameraPickerUri = L"microsoft.windows.camera.picker:";
 
 

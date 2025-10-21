@@ -113,8 +113,8 @@ namespace MyNamespace
 
 #define WINDOWSAPPSDK_RUNTIME_PUBLISHER            "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
 #define WINDOWSAPPSDK_RUNTIME_PUBLISHER_W          L"CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-#define WINDOWSAPPSDK_RUNTIME_PUBLISHERID          "8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PUBLISHERID_W        L"8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PUBLISHERID          "g4ype1skzj3jy"
+#define WINDOWSAPPSDK_RUNTIME_PUBLISHERID_W        L"g4ype1skzj3jy"
 
 #define WINDOWSAPPSDK_RUNTIME_VERSION_MAJOR             0
 #define WINDOWSAPPSDK_RUNTIME_VERSION_MINOR             242
@@ -152,7 +152,7 @@ namespace Microsoft.WindowsAppSDK
     namespace Runtime
     {
         public const string Publisher = "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US";
-        public const string PublisherId = "8wekyb3d8bbwe";
+        public const string PublisherId = "g4ype1skzj3jy";
 
         public class Version
         {
@@ -185,7 +185,7 @@ namespace Microsoft.WindowsAppSDK
     },
     "Runtime" : {
         "Publisher" : "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
-        "PublisherId" : "8wekyb3d8bbwe",
+        "PublisherId" : "g4ype1skzj3jy",
         "Version" : {
             "DotQuadNumber" : "0.242.1826.0",
             "UInt16" : 1039501754368,
@@ -214,7 +214,7 @@ namespace Microsoft.WindowsAppSDK
     </Release>
     <Runtime>
         <Publisher>CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US</Publisher>
-        <PublisherId>8wekyb3d8bbwe</Publisher>
+        <PublisherId>g4ype1skzj3jy</Publisher>
         <Version>
             <DotQuadNumber>0.242.1826.0</DotQuadNumber>
             <UInt16>1039501754368</UInt16>

@@ -6,22 +6,22 @@ namespace Test::Packages
 namespace FrameworkMathAdd
 {
     constexpr PCWSTR c_PackageDirName = L"Framework.Math.Add";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Add_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Add_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Add_g4ype1skzj3jy";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Add_1.2.3.4_neutral__g4ype1skzj3jy";
 }
 
 namespace FrameworkMathMultiply
 {
     constexpr PCWSTR c_PackageDirName = L"Framework.Math.Multiply";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply_g4ype1skzj3jy";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply_1.2.3.4_neutral__g4ype1skzj3jy";
 }
 
 namespace FrameworkWidgets
 {
     constexpr PCWSTR c_PackageDirName = L"Framework.Widgets";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Widgets_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Widgets_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Widgets_g4ype1skzj3jy";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Widgets_1.2.3.4_neutral__g4ype1skzj3jy";
 }
 
 #define TEST_PACKAGE_DDLM_NAMEPREFIX    L"WindowsAppRuntime.Test.DDLM"
@@ -38,7 +38,7 @@ namespace FrameworkWidgets
 #   error "Unknown processor architecture"
 #endif
 #define TEST_PACKAGE_DDLM_NAME          TEST_PACKAGE_DDLM_NAMEPREFIX L"." TEST_PACKAGE_DDLM_VERSION L"-" TEST_PACKAGE_DDLM_ARCHITECTURE
-#define TEST_PACKAGE_DDLM_PUBLISHERID   L"8wekyb3d8bbwe"
+#define TEST_PACKAGE_DDLM_PUBLISHERID   L"g4ype1skzj3jy"
 #define TEST_PACKAGE_DDLM_FAMILYNAME    TEST_PACKAGE_DDLM_NAME L"_" TEST_PACKAGE_DDLM_PUBLISHERID
 #define TEST_PACKAGE_DDLM_FULLNAME      TEST_PACKAGE_DDLM_NAME L"_" TEST_PACKAGE_DDLM_VERSION L"_" TEST_PACKAGE_DDLM_ARCHITECTURE L"__" TEST_PACKAGE_DDLM_PUBLISHERID
 namespace DynamicDependencyLifetimeManager
@@ -129,8 +129,8 @@ namespace WindowsAppRuntimeFramework
 {
     constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
     constexpr PCWSTR c_PackageNamePrefix = L"Microsoft.WindowsAppRuntime";
-    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.4.1_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.4.1_g4ype1skzj3jy";
+    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.4.1_4.1.1967.333_neutral__g4ype1skzj3jy";
     constexpr const PACKAGE_VERSION GetPackageVersion()
     {
         PACKAGE_VERSION version{};
@@ -153,8 +153,8 @@ namespace DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_g4ype1skzj3jy";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_4.1.1967.333_neutral__g4ype1skzj3jy";
 }
 namespace WindowsAppRuntimeMain = DynamicDependencyDataStore;
 

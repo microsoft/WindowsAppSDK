@@ -1,7 +1,7 @@
 ﻿<License xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="3fb8b1a3-cb67-45bf-8564-bb6115bee512" LicenseID="8cb0651a-a19b-ba5e-9954-f600e29dfe6b" ContentID="0332281a-c4f5-6617-a489-b30fc5b5da6b" Version="3" xmlns="urn:schemas-microsoft-com:windows:store:licensing:ls">
     <Binding Binding_Type="Machine">
         <ProductID>9NDSMLH55WPC</ProductID>
-        <PFM>microsoftcorporationii.appnametestpackage_8wekyb3d8bbwe</PFM>
+        <PFM>microsoftcorporationii.appnametestpackage_g4ype1skzj3jy</PFM>
         <LicenseInstanceID>743e853a-f769-4592-934d-cadf19094695</LicenseInstanceID>
         <RequestorID>2c3f1d47-426d-c7d7-face-ef1add208818</RequestorID>
         <LeaseRequired>False</LeaseRequired>

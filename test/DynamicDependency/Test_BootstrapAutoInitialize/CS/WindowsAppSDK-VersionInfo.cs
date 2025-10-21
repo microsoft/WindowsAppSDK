@@ -24,7 +24,7 @@ namespace Microsoft.WindowsAppSDK
         public class Identity
         {
             public const string Publisher = "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US";
-            public const string PublisherId = "8wekyb3d8bbwe";
+            public const string PublisherId = "g4ype1skzj3jy";
         }
 
         public class Version
@@ -41,15 +41,15 @@ namespace Microsoft.WindowsAppSDK
         {
             public class Framework
             {
-                public const string PackageFamilyName = "Microsoft.WindowsAppRuntime.1.1-preview1_8wekyb3d8bbwe";
+                public const string PackageFamilyName = "Microsoft.WindowsAppRuntime.1.1-preview1_g4ype1skzj3jy";
             }
             public class Main
             {
-                public const string PackageFamilyName = "MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_8wekyb3d8bbwe";
+                public const string PackageFamilyName = "MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_g4ype1skzj3jy";
             }
             public class Singleton
             {
-                public const string PackageFamilyName = "MicrosoftCorporationII.WinAppRuntime.Singleton-p1_8wekyb3d8bbwe";
+                public const string PackageFamilyName = "MicrosoftCorporationII.WinAppRuntime.Singleton-p1_g4ype1skzj3jy";
             }
         }
     }

@@ -24,8 +24,8 @@
 // Runtime information
 #define WINDOWSAPPSDK_RUNTIME_IDENTITY_PUBLISHER        "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
 #define WINDOWSAPPSDK_RUNTIME_IDENTITY_PUBLISHER_W      L"CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-#define WINDOWSAPPSDK_RUNTIME_IDENTITY_PUBLISHERID      "8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_IDENTITY_PUBLISHERID_W    L"8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_IDENTITY_PUBLISHERID      "g4ype1skzj3jy"
+#define WINDOWSAPPSDK_RUNTIME_IDENTITY_PUBLISHERID_W    L"g4ype1skzj3jy"
 
 #define WINDOWSAPPSDK_RUNTIME_VERSION_MAJOR             1000
 #define WINDOWSAPPSDK_RUNTIME_VERSION_MINOR             446
@@ -35,12 +35,12 @@
 #define WINDOWSAPPSDK_RUNTIME_VERSION_DOTQUADSTRING     "1000.446.804.0"
 #define WINDOWSAPPSDK_RUNTIME_VERSION_DOTQUADSTRING_W   L"1000.446.804.0"
 
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME   "Microsoft.WindowsAppRuntime.1.1-preview1_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W "Microsoft.WindowsAppRuntime.1.1-preview1_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_MAIN_PACKAGEFAMILYNAME        "MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_MAIN_PACKAGEFAMILYNAME_W      L"MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME   "MicrosoftCorporationII.WinAppRuntime.Singleton-p1_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME_W L"MicrosoftCorporationII.WinAppRuntime.Singleton-p1_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME   "Microsoft.WindowsAppRuntime.1.1-preview1_g4ype1skzj3jy"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W "Microsoft.WindowsAppRuntime.1.1-preview1_g4ype1skzj3jy"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_MAIN_PACKAGEFAMILYNAME        "MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_g4ype1skzj3jy"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_MAIN_PACKAGEFAMILYNAME_W      L"MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_g4ype1skzj3jy"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME   "MicrosoftCorporationII.WinAppRuntime.Singleton-p1_g4ype1skzj3jy"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME_W L"MicrosoftCorporationII.WinAppRuntime.Singleton-p1_g4ype1skzj3jy"
 
 #if defined(__cplusplus)
 namespace Microsoft::WindowsAppSDK
@@ -64,7 +64,7 @@ namespace Microsoft::WindowsAppSDK
         namespace Identity
         {
             constexpr PCWSTR Publisher = L"CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US";
-            constexpr PCWSTR PublisherId = L"8wekyb3d8bbwe";
+            constexpr PCWSTR PublisherId = L"g4ype1skzj3jy";
         }
 
         namespace Version
@@ -81,15 +81,15 @@ namespace Microsoft::WindowsAppSDK
         {
             namespace Framework
             {
-                constexpr PCWSTR PackageFamilyName = L"Microsoft.WindowsAppRuntime.1.1-preview1_8wekyb3d8bbwe";
+                constexpr PCWSTR PackageFamilyName = L"Microsoft.WindowsAppRuntime.1.1-preview1_g4ype1skzj3jy";
             }
             namespace Main
             {
-                constexpr PCWSTR PackageFamilyName = L"MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_8wekyb3d8bbwe";
+                constexpr PCWSTR PackageFamilyName = L"MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_g4ype1skzj3jy";
             }
             namespace Singleton
             {
-                constexpr PCWSTR PackageFamilyName = L"MicrosoftCorporationII.WinAppRuntime.Singleton-p1_8wekyb3d8bbwe";
+                constexpr PCWSTR PackageFamilyName = L"MicrosoftCorporationII.WinAppRuntime.Singleton-p1_g4ype1skzj3jy";
             }
         }
     }

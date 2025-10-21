@@ -34,7 +34,7 @@ namespace Test::AppLifecycle
         const std::wstring c_testPackageFile = g_deploymentDir + L"AppLifecycleTestPackage.msix";
         const std::wstring c_testVCLibsPackageFile = g_deploymentDir + L"VCLibs.appx";
 
-        const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
+        const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__g4ype1skzj3jy";
 
     public:
         BEGIN_TEST_CLASS(FunctionalTests)

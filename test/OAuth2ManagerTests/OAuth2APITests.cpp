@@ -125,7 +125,7 @@ namespace OAuth2ManagerTests
         TEST_CLASS_CLEANUP(Cleanup)
         {
             ::Test::Bootstrap::CleanupPackages();
-            Test::Packages::RemovePackage(L"OAuthTestAppPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe");
+            Test::Packages::RemovePackage(L"OAuthTestAppPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__g4ype1skzj3jy");
 
             // Tear down the HTTP server
             m_serverShutdownEvent.SetEvent();

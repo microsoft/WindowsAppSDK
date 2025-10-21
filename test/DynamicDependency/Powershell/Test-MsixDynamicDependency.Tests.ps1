@@ -20,8 +20,8 @@ $buildOutput = Join-Path $root 'BuildOutput\Debug\x64'
 
 # Test package(s)
 $packageName = 'WindowsAppRuntime.Test.DynDep.Fwk.Widgets'
-$packageFamilyName = 'WindowsAppRuntime.Test.DynDep.Fwk.Widgets_8wekyb3d8bbwe'
-$packageFullName = 'WindowsAppRuntime.Test.DynDep.Fwk.Widgets_1.2.3.4_neutral__8wekyb3d8bbwe'
+$packageFamilyName = 'WindowsAppRuntime.Test.DynDep.Fwk.Widgets_g4ype1skzj3jy'
+$packageFullName = 'WindowsAppRuntime.Test.DynDep.Fwk.Widgets_1.2.3.4_neutral__g4ype1skzj3jy'
 $packageMsixDir = 'Framework.Widgets'
 $packageMsixFilename = 'Framework.Widgets.msix'
 $packageMsixPath = Join-Path $buildOutput $packageMsixDir
