@@ -10,7 +10,7 @@ parameters:
   type: boolean
   default: false
 - name: "TestOnArm64"
-  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
+  displayName: "Enable running of sample tests on arm64 platform (Default: false)"
   type: boolean
   default: false
 - name: "MaestroDependOnTestSamples"
@@ -22,7 +22,8 @@ stages:
   dependsOn:
   - Test_x86
   - Test_x64
-  - Test_arm64
+  - ${{ if eq(parameters.TestOnArm64, true)}}:
+    - Test_arm64
   - StaticValidationTest
   - ${{ if and(eq( parameters.TestSampleApps, true ), eq( parameters.MaestroDependOnTestSamples, true )) }}:
     - TestSampleApps_x64
