@@ -36,7 +36,10 @@
     <ClInclude Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.h">
       <Filter>External\Deployment</Filter>
     </ClInclude>
-    <ClInclude Include="$(RepoRoot)\dev\Deployment\Deployer.h">
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\Licensing.h">
+      <Filter>External\Deployment</Filter>
+    </ClInclude>
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\PackageDeployment.h">
       <Filter>External\Deployment</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,7 +60,10 @@
     <ClCompile Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.cpp">
       <Filter>External\Deployment</Filter>
     </ClCompile>
-    <ClCompile Include="$(RepoRoot)\dev\Deployment\Deployer.cpp">
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\Licensing.cpp">
+      <Filter>External\Deployment</Filter>
+    </ClCompile>
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageDeployment.cpp">
       <Filter>External\Deployment</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,13 +6,14 @@
 #include <DeploymentResult.h>
 #include <DeploymentActivityContext.h>
 #include <PackageInfo.h>
-#include <Deployer.h>
 #include <LicenseInstallerProxy.h>
 #include "PackageUtilities.h"
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
 #include "WindowsAppRuntime-License.h"
+#include "Licensing.h"
+#include "PackageDeployment.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;

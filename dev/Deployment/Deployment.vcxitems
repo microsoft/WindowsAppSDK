@@ -27,7 +27,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentActivityContext.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDefinitions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Deployer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Licensing.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeployment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageUtilities.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageRegistrar.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LicenseInstallerProxy.h" />
@@ -38,7 +39,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentActivityContext.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Deployer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Licensing.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeployment.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageUtilities.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageRegistrar.cpp" />
   </ItemGroup>

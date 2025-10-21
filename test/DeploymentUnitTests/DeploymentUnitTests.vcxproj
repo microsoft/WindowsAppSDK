@@ -211,18 +211,21 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="LicensingTests.cpp" />
+    <ClCompile Include="PackageDeploymentTests.cpp" />
     <ClCompile Include="PackageRegistrarTests.cpp" />
-    <ClCompile Include="DeployerTests.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageRegistrar.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.cpp" />
-    <ClCompile Include="$(RepoRoot)\dev\Deployment\Deployer.cpp" />
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\Licensing.cpp" />
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageDeployment.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="$(RepoRoot)\dev\Deployment\PackageRegistrar.h" />
     <ClInclude Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.h" />
-    <ClInclude Include="$(RepoRoot)\dev\Deployment\Deployer.h" />
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\Licensing.h" />
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\PackageDeployment.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

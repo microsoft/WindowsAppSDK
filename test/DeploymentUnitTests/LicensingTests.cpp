@@ -3,13 +3,12 @@
 
 #include "pch.h"
 #include <TestDef.h>
-#include <Deployer.h>
+#include <Licensing.h>
 #include <DeploymentActivityContext.h>
 #include <string>
 #include <filesystem>
-#include <fstream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <windows.h>
 
 using namespace WEX::Common;
@@ -18,7 +17,7 @@ using namespace WEX::TestExecution;
 
 using namespace winrt;
 
-namespace Test::Deployment
+namespace Test::Deployment::Licensing
 {
     // Mock implementation of ILicenseInstaller for testing
     struct MockLicenseInstaller : public WindowsAppRuntime::Deployment::Licensing::ILicenseInstaller
@@ -66,10 +65,10 @@ namespace Test::Deployment
         size_t GetInstallCount() const { return m_installedFiles.size(); }
     };
 
-    class DeployerTests
+    class LicensingTests
     {
     public:
-        BEGIN_TEST_CLASS(DeployerTests)
+        BEGIN_TEST_CLASS(LicensingTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
         END_TEST_CLASS()
 
@@ -360,29 +359,6 @@ namespace Test::Deployment
 
             // Should handle file system access issues gracefully
             VERIFY_IS_TRUE(SUCCEEDED(hr) || FAILED(hr)); // Either way, shouldn't throw unhandled exception
-            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
-        }
-
-        TEST_METHOD(DeployPackages_PackageManagerException_HandlesGracefully)
-        {
-            std::vector<WindowsAppRuntime::Deployment::PackageDeployment::DeploymentPackageArguments> args;
-            ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
-
-            // Add invalid package argument that could cause exceptions
-            args.push_back({
-                L"TestPackage",
-                std::filesystem::path(L"\\\\invalid\\path\\package.msix"),
-                false,
-                false
-            });
-
-            auto startupFunc = []() -> HRESULT { return S_OK; };
-
-            auto hr = ::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(
-                args, false, activityContext, startupFunc);
-
-            // Should handle package deployment exceptions gracefully
-            VERIFY_IS_TRUE(FAILED(hr));
             VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
         }
     };
