@@ -73,6 +73,11 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'GitHub - benkuhn - 2-18'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
