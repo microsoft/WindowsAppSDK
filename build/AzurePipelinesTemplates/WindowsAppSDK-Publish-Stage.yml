@@ -7,7 +7,7 @@ parameters:
   default: true
 - name: "TestOnArm64"
   type: boolean
-  default: false
+  default: true
 stages:
 - stage: Publish
   dependsOn:
