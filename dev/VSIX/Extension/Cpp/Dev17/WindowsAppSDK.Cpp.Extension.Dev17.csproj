@@ -81,6 +81,7 @@
     <ExtensionDependencies Condition=" '$(ExcludeRestorePackageImports)' != 'true' " Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
     <Compile Include="..\..\..\Shared\WizardImplementation.cs" Link="WizardImplementation.cs" />
     <Compile Include="..\..\..\Shared\WizardInfoBarEvents.cs" Link="WizardInfoBarEvents.cs" />
+    <Compile Include="..\..\..\Shared\OutputWindowHelper.cs" Link="OutputWindowHelper.cs" />
     <Content Include="@(ExtensionDependencies)">
       <VSIXSubPath>.</VSIXSubPath>
       <IncludeInVSIX>true</IncludeInVSIX>
