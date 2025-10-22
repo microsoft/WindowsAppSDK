@@ -8,13 +8,12 @@
 #include "PackageDeployment.h"
 #include "PackageRegistrar.h"
 
-using namespace winrt;
-
 namespace WindowsAppRuntime::Deployment::PackageDeployment
 {
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
         const std::wstring& frameworkPackageFullName,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        const std::map<std::wstring, std::wstring>& existingTargetPackagesIfHigherVersion,
         const std::function<std::wstring(const std::wstring&)>& getPackagePathFunc)
     {
         initializeActivityContext.Reset();
@@ -31,8 +30,8 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
 
             // If there is exisiting target package version higher than that of framework current version package, then re-register it.
             // Otherwise, deploy the target msix package from the current framework package version.
-            auto existingPackageIfHigherVersion = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::g_existingTargetPackagesIfHigherVersion.find(package.identifier);
-            auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::g_existingTargetPackagesIfHigherVersion.end() };
+            auto existingPackageIfHigherVersion = existingTargetPackagesIfHigherVersion.find(package.identifier);
+            auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != existingTargetPackagesIfHigherVersion.end() };
             if (useExistingPackageIfHigherVersion)
             {
                 packagePath = std::filesystem::path(getPackagePathFunc(existingPackageIfHigherVersion->second));

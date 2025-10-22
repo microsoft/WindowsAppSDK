@@ -6,6 +6,7 @@
 #include <DeploymentResult.h>
 #include <DeploymentActivityContext.h>
 #include <LicenseInstallerProxy.h>
+#include "PackageDefinitions.h"
 #include "PackageUtilities.h"
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
@@ -369,7 +370,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, const bool forceDeployment)
     {
         std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
-        const auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, getPackagePathFunc);
+        const auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, g_existingTargetPackagesIfHigherVersion, getPackagePathFunc);
         RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext));
 
         // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.

@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <vector>
 #include <functional>
+#include <map>
 #include "DeploymentActivityContext.h"
 
 namespace WindowsAppRuntime::Deployment::PackageDeployment
@@ -23,6 +24,7 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
         const std::wstring& frameworkPackageFullName,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        const std::map<std::wstring, std::wstring>& existingTargetPackagesIfHigherVersion,
         const std::function<std::wstring(const std::wstring&)>& getPackagePathFunc);
 
     // Package deployment
