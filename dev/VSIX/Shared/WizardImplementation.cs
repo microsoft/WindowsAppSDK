@@ -142,7 +142,6 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 try
                 {
-                    throw new InvalidOperationException("Not a real error. Testing error bar behavior");
                     await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
                 }
                 catch (Exception ex)
@@ -362,17 +361,24 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var infoBar = CreateNuGetInfoBar(errorMessage);
-            var infoBar2 = TryCreateInfoBarUI(infoBar, out IVsInfoBarUIElement uiElement);
-            
+            var infoBarUi = CreateInfoBarUI(infoBar);
+
             // Write detailed error message to output window
             var detailedErrorMessage = CreateDetailedErrorMessage();
             ShowOutputWindow(detailedErrorMessage);
 
-            uiElement.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
+            if (infoBarUi == null)
+            {
+                LogError("Could not create InfoBar UI element. Logged error message to output window.");
+                return;
+            }
+
+            infoBarUi.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
 
             IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
             if (shell == null)
             {
+                LogError("Could not obtain IVsShell service");
                 return;
             }
 
@@ -381,24 +387,30 @@ namespace WindowsAppSDK.TemplateUtilities
             int hr = shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out infoBarHostObj);
             if (!(infoBarHostObj is IVsInfoBarHost infoBarHost))
             {
+                LogError("Could not obtain IVsInfoBarHost service");
                 return;
             }
 
-            infoBarHost.AddInfoBar(uiElement);
+            infoBarHost.AddInfoBar(infoBarUi);
         }
 
-        private bool TryCreateInfoBarUI(IVsInfoBar infoBar, out IVsInfoBarUIElement uiElement)
+        private IVsInfoBarUIElement CreateInfoBarUI(IVsInfoBar infoBar)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            if (infoBar == null)
+            {
+                LogError("InfoBar model is null.");
+                return null;
+            }
+
             IVsInfoBarUIFactory infoBarUIFactory = ServiceProvider.GlobalProvider.GetService(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
             if (infoBarUIFactory == null)
             {
-                uiElement = null;
-                return false;
+                LogError("Could not obtain IVsInfoBarUIFactory service");
+                return null;
             }
 
-            uiElement = infoBarUIFactory.CreateInfoBar(infoBar);
-            return uiElement != null;
+            return infoBarUIFactory.CreateInfoBar(infoBar);
         }
 
         private IVsInfoBar CreateNuGetInfoBar(string message)
