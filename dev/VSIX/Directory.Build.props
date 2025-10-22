@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!-- NOTE: This file does not import Directory.Build.props in parent dirs -->
 
     <!-- Provide default nuget feed (Windows App SDK internal) and package versions for developer builds -->
