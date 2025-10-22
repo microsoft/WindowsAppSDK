@@ -4,6 +4,7 @@
 #include <pch.h>
 #include <windows.h>
 #include <wil/resource.h>
+#include <PackageInfo.h>
 #include "PackageUtilities.h"
 #include "PackageDefinitions.h"
 #include <appmodel.identity.h>
@@ -86,4 +87,54 @@ namespace WindowsAppRuntime::Deployment::Package
         return S_OK;
     }
     CATCH_RETURN()
+
+    MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName)
+    {
+        wil::unique_package_info_reference packageInfoReference;
+        THROW_IF_WIN32_ERROR(OpenPackageInfoByFullName(packageFullName.c_str(), 0, &packageInfoReference));
+        return MddCore::PackageInfo::FromPackageInfoReference(packageInfoReference.get());
+    }
+
+    winrt::hstring GetCurrentFrameworkPackageFullName()
+    {
+        // Get current package identity.
+        WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
+        UINT32 packageFullNameLength{ static_cast<UINT32>(ARRAYSIZE(packageFullName)) };
+        const auto rc{ ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName) };
+        if (rc != ERROR_SUCCESS)
+        {
+            THROW_WIN32(rc);
+        }
+
+        // Get the PackageInfo of current package and it's dependency packages
+        std::wstring currentPackageFullName{ packageFullName };
+        auto currentPackageInfo{ GetPackageInfoForPackage(currentPackageFullName) };
+
+        // Index starts at 1 since the first package is the current package and we are interested in
+        // dependency packages only.
+        for (size_t i = 0; i < currentPackageInfo.Count(); ++i)
+        {
+            auto dependencyPackage{ currentPackageInfo.Package(i) };
+
+            // Verify PublisherId matches.
+            if (CompareStringOrdinal(dependencyPackage.packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
+            {
+                continue;
+            }
+
+            // Verify that the WindowsAppRuntime prefix identifier is in the name.
+            // This should also be the beginning of the name, so its find position is expected to be 0.
+            std::wstring dependencyPackageName{ dependencyPackage.packageId.name };
+            if (dependencyPackageName.find(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) != 0)
+            {
+                continue;
+            }
+
+            // On WindowsAppSDK 1.1+, there is no need to check and rule out Main, Singleton and DDLM Package identifiers as their names don't have a overlap with WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX.
+
+            return winrt::hstring(dependencyPackage.packageFullName);
+        }
+
+        THROW_WIN32(ERROR_NOT_FOUND);
+    }
 }

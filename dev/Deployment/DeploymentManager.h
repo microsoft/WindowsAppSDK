@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #pragma once
-#include <PackageInfo.h>
 #include <PackageDefinitions.h>
 #include <winrt/Windows.Foundation.h>
 #include "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.h"
@@ -38,8 +37,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext);
         static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, const bool forceDeployment);
-        static MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName);
-        static hstring GetCurrentFrameworkPackageFullName();
     };
 }
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factory_implementation

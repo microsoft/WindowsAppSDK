@@ -218,7 +218,6 @@
     <ClCompile Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\Licensing.cpp" />
     <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageDeployment.cpp" />
-    <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
