@@ -142,7 +142,6 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 try
                 {
-                    throw new InvalidOperationException("Not a real error. Testing error bar behavior");
                     await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
                 }
                 catch (Exception ex)
