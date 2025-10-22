@@ -31,7 +31,6 @@ namespace WindowsAppSDK.TemplateUtilities
         private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
-        private Dictionary<string, string> _failedPackages = new Dictionary<string, string>();
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
@@ -148,12 +147,11 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
-                    _failedPackages[packageId] = ex.Message;
                     _failedPackageExceptions[packageId] = ex;
                 }
             }
 
-            if (_failedPackages.Count > 0)
+            if (_failedPackageExceptions.Count > 0)
             {
                 // Build error message in the requested format
                 var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
@@ -177,7 +175,7 @@ namespace WindowsAppSDK.TemplateUtilities
             Guid _projectGuid = GetProjectGuid(_project);
             if (_projectGuid.Equals(SolutionVCProjectGuid))
             {
-                if (_failedPackages.Count > 0)
+                if (_failedPackageExceptions.Count > 0)
                 {
                     var errorMessage = CreateErrorMessage(ErrorMessageFormat.MessageBox);
                     LogError(errorMessage);
@@ -240,7 +238,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 Guid _projectGuid = GetProjectGuid(_project);
                 if (_projectGuid.Equals(SolutionVCProjectGuid))
                 {
-                    if (_failedPackages.Count > 0)
+                    if (_failedPackageExceptions.Count > 0)
                     {
                         var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
                         LogError(errorMessage);
@@ -268,7 +266,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private string CreateErrorMessage(ErrorMessageFormat format)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var packageNames = string.Join(", ", _failedPackages.Keys);
+            var packageNames = string.Join(", ", _failedPackageExceptions.Keys);
             var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
             var projectName = _project?.Name ?? "Unknown Project";
             var errorMessage = format == ErrorMessageFormat.InfoBar ?
@@ -283,17 +281,9 @@ namespace WindowsAppSDK.TemplateUtilities
             var errorLines = new System.Text.StringBuilder();
             errorLines.AppendLine($"Missing Package References for {_project?.Name ?? "Unknown Project"}:");
             
-            foreach (var package in _failedPackages)
+            foreach (var package in _failedPackageExceptions)
             {
-                // Get the exception type name if available
-                if (_failedPackageExceptions.TryGetValue(package.Key, out Exception ex))
-                {
-                    errorLines.AppendLine($"{package.Key} - {ex.GetType().FullName}: {package.Value}");
-                }
-                else
-                {
-                    errorLines.AppendLine($"{package.Key} - {package.Value}");
-                }
+                errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
             }
             
             errorLines.AppendLine();
