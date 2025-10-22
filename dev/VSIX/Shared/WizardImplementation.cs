@@ -185,7 +185,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     
                     var result = MessageBox.Show(
                         errorMessage,
-                        "NuGet Package Installation Error(s)",
+                        "Missing Package Reference(s)",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                     
@@ -303,8 +303,8 @@ namespace WindowsAppSDK.TemplateUtilities
             var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
             var projectName = _project?.Name ?? "Unknown Project";
             var errorMessage = format == ErrorMessageFormat.InfoBar ?
-                $"[{projectName}] The following NuGet packages are missing: {packageNames}.{separator}This is an environment error. Please install these packages before building the project."
-                : $"The following NuGet packages failed to install for {projectName}: {packageNames}.{separator}Please install packages before building.";
+                $"[{projectName}] Unable to add references to the following packages: {packageNames}.{separator}This is an environment error. Please add package references before building the project."
+                : $"Unable to add references to the following packages for {projectName}: {packageNames}.{separator}Please add package references before building.";
             return errorMessage;
         }
 
@@ -312,7 +312,7 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var errorLines = new System.Text.StringBuilder();
-            errorLines.AppendLine($"NuGet Package Installation Errors for {_project?.Name ?? "Unknown Project"}:");
+            errorLines.AppendLine($"Missing Package References for {_project?.Name ?? "Unknown Project"}:");
             
             foreach (var package in _failedPackages)
             {
@@ -328,8 +328,8 @@ namespace WindowsAppSDK.TemplateUtilities
             }
             
             errorLines.AppendLine();
-            errorLines.Append("Please install packages before building.");
-            
+            errorLines.Append("Please manually add package references before building.");
+
             return errorLines.ToString();
         }
 
