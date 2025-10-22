@@ -157,7 +157,7 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_failedPackages.Count > 0)
             {
                 // Build error message in the requested format
-                var errorMessage = CreateErrorInfoBarMessage(ErrorMessageFormat.InfoBar);
+                var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 LogError(errorMessage);
                 _ = DisplayInfoBarAsync(errorMessage);
@@ -180,7 +180,7 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 if (_failedPackages.Count > 0)
                 {
-                    var errorMessage = GetDetailedErrorMessage();
+                    var errorMessage = CreateErrorMessage(ErrorMessageFormat.MessageBox);
                     LogError(errorMessage);
                     
                     var result = MessageBox.Show(
@@ -190,7 +190,7 @@ namespace WindowsAppSDK.TemplateUtilities
                         MessageBoxIcon.Error);
                     
                     // Show the Output window with the detailed errors
-                    ShowOutputWindow(errorMessage);
+                    ShowOutputWindow(CreateDetailedErrorMessage());
                     return;
                 }
                 return;
@@ -273,7 +273,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     if (_failedPackages.Count > 0)
                     {
-                        var errorMessage = CreateErrorInfoBarMessage(ErrorMessageFormat.InfoBar);
+                        var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
                         LogError(errorMessage);
                         _ = DisplayInfoBarAsync(errorMessage);
                         return;
@@ -296,36 +296,39 @@ namespace WindowsAppSDK.TemplateUtilities
             });
         }
 
-        private string CreateErrorInfoBarMessage(ErrorMessageFormat format)
+        private string CreateErrorMessage(ErrorMessageFormat format)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var packageNames = string.Join(", ", _failedPackages.Keys);
             var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
-            var errorMessage = $"The following NuGet packages are missing: {packageNames}.{separator}This is an environment error. Please install these packages before building the project.";
+            var projectName = _project?.Name ?? "Unknown Project";
+            var errorMessage = format == ErrorMessageFormat.InfoBar ?
+                $"[{projectName}] The following NuGet packages are missing: {packageNames}.{separator}This is an environment error. Please install these packages before building the project."
+                : $"The following NuGet packages failed to install for {projectName}: {packageNames}.{separator}Please install packages before building.";
             return errorMessage;
         }
 
-        private string GetDetailedErrorMessage()
+        private string CreateDetailedErrorMessage()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var errorLines = new System.Text.StringBuilder();
             errorLines.AppendLine($"NuGet Package Installation Errors for {_project?.Name ?? "Unknown Project"}:");
-            errorLines.AppendLine();
             
             foreach (var package in _failedPackages)
             {
-                errorLines.AppendLine($"Package: {package.Key}");
-                
                 // Get the exception type name if available
                 if (_failedPackageExceptions.TryGetValue(package.Key, out Exception ex))
                 {
-                    errorLines.AppendLine($"{ex.GetType().FullName}: {package.Value}");
+                    errorLines.AppendLine($"{package.Key} - {ex.GetType().FullName}: {package.Value}");
                 }
                 else
                 {
-                    errorLines.AppendLine($"Error: {package.Value}");
+                    errorLines.AppendLine($"{package.Key} - {package.Value}");
                 }
-                
-                errorLines.AppendLine();
             }
+            
+            errorLines.AppendLine();
+            errorLines.Append("Please install packages before building.");
             
             return errorLines.ToString();
         }
@@ -361,9 +364,12 @@ namespace WindowsAppSDK.TemplateUtilities
             var infoBar = CreateNuGetInfoBar(errorMessage);
             var infoBar2 = TryCreateInfoBarUI(infoBar, out IVsInfoBarUIElement uiElement);
             
-            var detailedErrorMessage = GetDetailedErrorMessage();
+            // Write detailed error message to output window
+            var detailedErrorMessage = CreateDetailedErrorMessage();
+            ShowOutputWindow(detailedErrorMessage);
+
             uiElement.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
-            
+
             IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
             if (shell == null)
             {
