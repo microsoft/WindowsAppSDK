@@ -27,6 +27,9 @@
     <UnitTestPlatformVersion Condition="'$(UnitTestPlatformVersion)' == ''">$(VisualStudioVersion)</UnitTestPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup>
+    <ProjectCapability Include="TestContainer" />
+  </ItemGroup>
   <ItemGroup Condition="'$(VisualStudioVersion)' &gt;= '18.0'">
    <SDKReference Include="CppUnitTestFramework.Universal.Net6, Version=18.0" />
    <SDKReference Include="TestPlatform.Universal, Version=18.1" />
