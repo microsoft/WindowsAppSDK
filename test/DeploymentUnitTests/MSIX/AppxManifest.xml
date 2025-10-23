@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Manifest>
+  <Package>
+    <Identity Name="TestManifest"
+              Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+              Version="1.0" />
+  </Package>
+</Manifest>
