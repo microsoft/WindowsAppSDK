@@ -54,6 +54,7 @@ body:
       multiple: true
       options:
         - "Insider Build (xxxxx)"
+        - "Windows 11 version 25H2 (26200)"
         - "Windows 11 version 24H2 LTSC (26100, June Update)"
         - "Windows 11 version 24H2 (26100, June 2025 Update)"
         - "Windows 11 version 23H2 (22631, June 2025 Update)"
@@ -73,7 +74,7 @@ body:
       description: Which IDE are you using?
       multiple: true
       options:
-        - "Visual Studio 2022-preview"
+        - "Visual Studio 2026 Insiders"
         - "Visual Studio 2022"
         - "Visual Studio 2019"
         - "Other"
