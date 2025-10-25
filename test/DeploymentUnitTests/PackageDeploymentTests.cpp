@@ -54,5 +54,33 @@ namespace Test::Deployment::PackageDeployment
             VERIFY_IS_TRUE(FAILED(hr));
             VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
         }
+
+        TEST_METHOD(GetDeploymentPackageArguments_WithHigherVersionPackage_UsesExistingPath)
+        {
+            std::wstring frameworkFullName = L"Microsoft.WindowsAppRuntime.1.5_x64__8wekyb3d8bbwe";
+            std::wstring frameworkPath = L"C:\\Program Files\\WindowsApps\\Framework.1.5";
+
+            std::map<std::wstring, WindowsAppRuntime::Deployment::PackageDeployment::PackagePathInfo> higherVersionMap;
+            higherVersionMap[L"Main"] = {
+                L"Main.2.0_x64__8wekyb3d8bbwe",
+                L"C:\\Program Files\\WindowsApps\\Main.2.0"
+            };
+
+            ::WindowsAppRuntime::Deployment::Activity::Context context{};
+
+            auto args = WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(
+                frameworkPath,
+                context,
+                higherVersionMap);
+
+            VERIFY_ARE_EQUAL(args.size(), 2u);  // Main and Singleton
+
+            auto& mainPackage = args[0];
+            VERIFY_ARE_EQUAL(mainPackage.identifier, L"Main");
+            VERIFY_IS_TRUE(mainPackage.useExistingPackageIfHigherVersion);
+            VERIFY_ARE_EQUAL(
+                mainPackage.packagePath.wstring(),
+                L"C:\\Program Files\\WindowsApps\\Main.2.0\\AppxManifest.xml");
+        }
     };
 }
