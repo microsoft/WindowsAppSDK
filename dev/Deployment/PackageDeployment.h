@@ -21,8 +21,8 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
 
     struct PackagePathInfo
     {
-        std::wstring packageFullName;
-        std::filesystem::path packagePath;
+        std::wstring packageFullName{};
+        std::filesystem::path packagePath{};
     };
 
     // Get deployment package arguments
