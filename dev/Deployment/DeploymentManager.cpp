@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+#include <filesystem>
 #include <pch.h>
 #include <DeploymentManager.h>
 #include <DeploymentResult.h>
@@ -369,8 +370,19 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext, const bool forceDeployment)
     {
-        std::function<std::wstring(const std::wstring&)> getPackagePathFunc { ::WindowsAppRuntime::Deployment::Package::GetPackagePath };
-        const auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(frameworkPackageFullName, initializeActivityContext, g_existingTargetPackagesIfHigherVersion, getPackagePathFunc);
+        const auto frameworkPackagePath = std::filesystem::path(::WindowsAppRuntime::Deployment::Package::GetPackagePath(frameworkPackageFullName));
+
+        std::map<std::wstring, ::WindowsAppRuntime::Deployment::PackageDeployment::PackagePathInfo> existingTargetPackagesIfHigherVersion;
+        for (const auto& package : winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::g_existingTargetPackagesIfHigherVersion)
+        {
+            const auto& packageIdentifier = package.first;
+            const auto& packageFullName = package.second;
+            const auto packagePath = std::filesystem::path(::WindowsAppRuntime::Deployment::Package::GetPackagePath(packageFullName));
+            existingTargetPackagesIfHigherVersion[packageIdentifier] = ::WindowsAppRuntime::Deployment::PackageDeployment::PackagePathInfo{ packageFullName, packagePath };
+        }
+
+        const auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(frameworkPackagePath, initializeActivityContext, existingTargetPackagesIfHigherVersion);
+
         RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext));
 
         // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.

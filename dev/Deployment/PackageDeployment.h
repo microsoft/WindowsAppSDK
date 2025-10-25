@@ -5,7 +5,6 @@
 #include <string>
 #include <filesystem>
 #include <vector>
-#include <functional>
 #include <map>
 #include "DeploymentActivityContext.h"
 
@@ -20,12 +19,17 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
         bool isSingleton{};
     };
 
+    struct PackagePathInfo
+    {
+        std::wstring packageFullName;
+        std::filesystem::path packagePath;
+    };
+
     // Get deployment package arguments
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
-        const std::wstring& frameworkPackageFullName,
+        const std::filesystem::path& frameworkPackagePath,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-        const std::map<std::wstring, std::wstring>& existingTargetPackagesIfHigherVersion,
-        const std::function<std::wstring(const std::wstring&)>& getPackagePathFunc);
+        const std::map<std::wstring, PackagePathInfo>& existingTargetPackagesIfHigherVersion);
 
     // Package deployment
     HRESULT DeployPackages(

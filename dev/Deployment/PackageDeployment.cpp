@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
-#include <functional>
 #include "DeploymentActivityContext.h"
 #include "PackageDefinitions.h"
 #include "PackageDeployment.h"
@@ -11,17 +10,15 @@
 namespace WindowsAppRuntime::Deployment::PackageDeployment
 {
     std::vector<DeploymentPackageArguments> GetDeploymentPackageArguments(
-        const std::wstring& frameworkPackageFullName,
+        const std::filesystem::path& frameworkPackagePath,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-        const std::map<std::wstring, std::wstring>& existingTargetPackagesIfHigherVersion,
-        const std::function<std::wstring(const std::wstring&)>& getPackagePathFunc)
+        const std::map<std::wstring, PackagePathInfo>& existingTargetPackagesIfHigherVersion)
     {
         initializeActivityContext.Reset();
         initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
 
         std::vector<DeploymentPackageArguments> deploymentPackageArguments;
 
-        const auto frameworkPath{ std::filesystem::path(getPackagePathFunc(frameworkPackageFullName)) };
         for (auto package : winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::c_targetPackages)
         {
             auto isSingleton{ CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL };
@@ -34,12 +31,12 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
             auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != existingTargetPackagesIfHigherVersion.end() };
             if (useExistingPackageIfHigherVersion)
             {
-                packagePath = std::filesystem::path(getPackagePathFunc(existingPackageIfHigherVersion->second));
+                packagePath = existingPackageIfHigherVersion->second.packagePath;
                 packagePath /= WINDOWSAPPRUNTIME_PACKAGE_MANIFEST_FILE;
             }
             else
             {
-                packagePath = frameworkPath;
+                packagePath = frameworkPackagePath;
                 packagePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
                 packagePath /= package.identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
             }
