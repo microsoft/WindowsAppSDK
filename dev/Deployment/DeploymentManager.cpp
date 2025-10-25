@@ -373,12 +373,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const auto frameworkPackagePath = std::filesystem::path(::WindowsAppRuntime::Deployment::Package::GetPackagePath(frameworkPackageFullName));
 
         std::map<std::wstring, ::WindowsAppRuntime::Deployment::PackageDeployment::PackagePathInfo> existingTargetPackagesIfHigherVersion;
-        for (const auto& package : winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::g_existingTargetPackagesIfHigherVersion)
+        for (const auto& [packageIdentifier, packageFullName] : g_existingTargetPackagesIfHigherVersion)
         {
-            const auto& packageIdentifier = package.first;
-            const auto& packageFullName = package.second;
             const auto packagePath = std::filesystem::path(::WindowsAppRuntime::Deployment::Package::GetPackagePath(packageFullName));
-            existingTargetPackagesIfHigherVersion[packageIdentifier] = ::WindowsAppRuntime::Deployment::PackageDeployment::PackagePathInfo{ packageFullName, packagePath };
+            existingTargetPackagesIfHigherVersion[packageIdentifier] = { packageFullName, packagePath };
         }
 
         const auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(frameworkPackagePath, initializeActivityContext, existingTargetPackagesIfHigherVersion);
