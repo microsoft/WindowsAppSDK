@@ -15,6 +15,7 @@
 #include "WindowsAppRuntime-License.h"
 #include "Licensing.h"
 #include "PackageDeployment.h"
+#include "PackageRegistrar.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -381,7 +382,41 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         const auto deploymentPackageArguments = ::WindowsAppRuntime::Deployment::PackageDeployment::GetDeploymentPackageArguments(frameworkPackagePath, initializeActivityContext, existingTargetPackagesIfHigherVersion);
 
-        RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(deploymentPackageArguments, forceDeployment, initializeActivityContext));
+        for (auto package : deploymentPackageArguments)
+        {
+            initializeActivityContext.Reset();
+            initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
+            initializeActivityContext.SetCurrentResourceId(package.identifier);
+            if (package.useExistingPackageIfHigherVersion)
+            {
+                initializeActivityContext.SetUseExistingPackageIfHigherVersion();
+            }
+
+            // If the current application has runFullTrust capability, then Deploy the target package in a Breakaway process.
+            // Otherwise, call PackageManager API to deploy the target package.
+            // The Singleton package will always set true for forceDeployment and the running process will be terminated to update the package.
+            if (initializeActivityContext.GetIsFullTrustPackage())
+            {
+                RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
+                    package.packagePath,
+                    package.useExistingPackageIfHigherVersion,
+                    forceDeployment || package.isSingleton,
+                    initializeActivityContext,
+                    ::WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath()
+                ));
+            }
+            else
+            {
+                auto packageManager = winrt::Windows::Management::Deployment::PackageManager{};
+                RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackage(
+                    package.packagePath,
+                    package.useExistingPackageIfHigherVersion,
+                    forceDeployment || package.isSingleton,
+                    packageManager,
+                    initializeActivityContext
+                ));
+            }
+        }
 
         // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.
         for (const auto& package : deploymentPackageArguments)

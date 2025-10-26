@@ -30,10 +30,4 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
         const std::filesystem::path& frameworkPackagePath,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
         const std::map<std::wstring, PackagePathInfo>& existingTargetPackagesIfHigherVersion);
-
-    // Package deployment
-    HRESULT DeployPackages(
-        const std::vector<DeploymentPackageArguments>& deploymentPackageArguments,
-        const bool forceDeployment,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity);
 }

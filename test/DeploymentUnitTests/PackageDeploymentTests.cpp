@@ -34,27 +34,6 @@ namespace Test::Deployment::PackageDeployment
             return true;
         }
 
-        TEST_METHOD(DeployPackages_PackageManagerException_HandlesGracefully)
-        {
-            std::vector<WindowsAppRuntime::Deployment::PackageDeployment::DeploymentPackageArguments> args;
-            ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
-
-            // Add invalid package argument that could cause exceptions
-            args.push_back({
-                L"TestPackage",
-                std::filesystem::path(L"\\\\invalid\\path\\package.msix"),
-                false,
-                false
-            });
-
-            auto hr = ::WindowsAppRuntime::Deployment::PackageDeployment::DeployPackages(
-                args, false, activityContext);
-
-            // Should handle package deployment exceptions gracefully
-            VERIFY_IS_TRUE(FAILED(hr));
-            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
-        }
-
         TEST_METHOD(GetDeploymentPackageArguments_WithHigherVersionPackage_UsesExistingPath)
         {
             std::wstring frameworkFullName = L"Microsoft.WindowsAppRuntime.1.5_x64__8wekyb3d8bbwe";

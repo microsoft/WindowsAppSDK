@@ -46,48 +46,4 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
 
         return deploymentPackageArguments;
     }
-
-    HRESULT DeployPackages(
-        const std::vector<DeploymentPackageArguments>& deploymentPackageArguments,
-        const bool forceDeployment,
-        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivity)
-    {
-        for (auto package : deploymentPackageArguments)
-        {
-            initializeActivity.Reset();
-            initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
-            initializeActivity.SetCurrentResourceId(package.identifier);
-            if (package.useExistingPackageIfHigherVersion)
-            {
-                initializeActivity.SetUseExistingPackageIfHigherVersion();
-            }
-
-            // If the current application has runFullTrust capability, then Deploy the target package in a Breakaway process.
-            // Otherwise, call PackageManager API to deploy the target package.
-            // The Singleton package will always set true for forceDeployment and the running process will be terminated to update the package.
-            if (initializeActivity.GetIsFullTrustPackage())
-            {
-                RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
-                    package.packagePath,
-                    package.useExistingPackageIfHigherVersion,
-                    forceDeployment || package.isSingleton,
-                    initializeActivity,
-                    ::WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath()
-                ));
-            }
-            else
-            {
-                auto packageManager = winrt::Windows::Management::Deployment::PackageManager{};
-                RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackage(
-                    package.packagePath,
-                    package.useExistingPackageIfHigherVersion,
-                    forceDeployment || package.isSingleton,
-                    packageManager,
-                    initializeActivity
-                ));
-            }
-        }
-
-        return S_OK;
-    }
 }
