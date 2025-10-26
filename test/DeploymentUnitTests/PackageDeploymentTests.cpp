@@ -64,7 +64,7 @@ namespace Test::Deployment::PackageDeployment
             VERIFY_IS_FALSE(singletonPackage.useExistingPackageIfHigherVersion);
             VERIFY_ARE_EQUAL(
                 singletonPackage.packagePath.wstring(),
-                L"C:\\Program Files\\WindowsApps\\Framework.1.5\\WindowsAppRuntime_Framework\\Singleton.msix");
+                L"C:\\Program Files\\WindowsApps\\Framework.1.5\\MSIX\\Singleton.msix");
         }
     };
 }

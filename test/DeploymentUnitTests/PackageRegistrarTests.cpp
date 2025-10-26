@@ -19,6 +19,8 @@ using namespace winrt::Windows::Management::Deployment;
 
 namespace Test::Deployment
 {
+    constexpr HRESULT c_unhandledExceptionHResult = 0x8007023E;
+
     class PackageRegistrarTests
     {
     public:
@@ -37,7 +39,7 @@ namespace Test::Deployment
         }
 
         // Path validation tests
-        TEST_METHOD(PackageRegistrar_GenerateDeploymentAgentPath_PathExists)
+        TEST_METHOD(GenerateDeploymentAgentPath_PathExists)
         {
             Log::Comment(L"Test that generated path points to an existing location");
 
@@ -52,7 +54,7 @@ namespace Test::Deployment
         }
 
         // AddOrRegisterPackageInBreakAwayProcess tests
-        TEST_METHOD(PackageRegistrar_AddOrRegisterPackageInBreakAwayProcess_InvalidPath_ReturnsError)
+        TEST_METHOD(AddOrRegisterPackageInBreakAwayProcess_InvalidPath_ReturnsError)
         {
             Log::Comment(L"Test AddOrRegisterPackageInBreakAwayProcess with invalid path");
 
@@ -70,7 +72,7 @@ namespace Test::Deployment
             VERIFY_IS_TRUE(FAILED(hr));
         }
 
-        TEST_METHOD(PackageRegistrar_AddOrRegisterPackageInBreakAwayProcess_CustomDeploymentAgentPath)
+        TEST_METHOD(AddOrRegisterPackageInBreakAwayProcess_CustomDeploymentAgentPath)
         {
             Log::Comment(L"Test AddOrRegisterPackageInBreakAwayProcess with custom deployment agent path");
 
@@ -92,7 +94,7 @@ namespace Test::Deployment
 
         TEST_METHOD(AddOrRegisterPackage_InvalidPath_HandlesException)
         {
-            // Maybe we should mock PackageManager to throw exceptions?
+            // TODO: Maybe we should mock PackageManager to throw exceptions?
             auto packageManager = winrt::Windows::Management::Deployment::PackageManager{};
             ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
@@ -104,7 +106,7 @@ namespace Test::Deployment
 
             // Should return a proper HRESULT, not throw unhandled exception
             VERIFY_IS_TRUE(FAILED(hr));
-            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E)); // Should not be ERROR_UNHANDLED_EXCEPTION
+            VERIFY_ARE_NOT_EQUAL(hr, c_unhandledExceptionHResult);
         }
 
         TEST_METHOD(AddOrRegisterPackage_CorruptedPackage_HandlesException)
@@ -126,7 +128,7 @@ namespace Test::Deployment
 
             // Should handle the corruption gracefully, not throw unhandled exception
             VERIFY_IS_TRUE(FAILED(hr));
-            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
+            VERIFY_ARE_NOT_EQUAL(hr, c_unhandledExceptionHResult);
         }
 
         TEST_METHOD(AddOrRegisterPackageInBreakAwayProcess_InvalidAgentPath_HandlesException)
@@ -140,19 +142,7 @@ namespace Test::Deployment
 
             // Should fail gracefully, not throw unhandled exception
             VERIFY_IS_TRUE(FAILED(hr));
-            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
-        }
-
-        TEST_METHOD(ProcessDeploymentOperationResult_AsyncOperationException_HandlesGracefully)
-        {
-            // TODO: Mock scenario where deploymentOperation.get() throws
-            // This test would require mocking the async operation to throw exceptions
-            // We'd need to create a mock IAsyncOperationWithProgress that throws
-            // We want to test the function:
-            // HRESULT WindowsAppRuntime::Deployment::PackageRegistrar::ProcessDeploymentOperationResult()
-
-            // For now, keep this as document of a test case that should be implemented
-            Log::Comment(L"Test case: Verify ProcessDeploymentOperationResult handles C++/WinRT exceptions from async operations");
+            VERIFY_ARE_NOT_EQUAL(hr, c_unhandledExceptionHResult);
         }
     };
 }
