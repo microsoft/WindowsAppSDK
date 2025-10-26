@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include <windows.h>
+#include <filesystem>
+#include <vector>
 #include <TestDef.h>
 #include <PackageDeployment.h>
 #include <DeploymentActivityContext.h>
-#include <filesystem>
-#include <vector>
-#include <windows.h>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;

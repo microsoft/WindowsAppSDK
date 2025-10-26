@@ -2,14 +2,14 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include <TestDef.h>
-#include <Licensing.h>
-#include <DeploymentActivityContext.h>
+#include <windows.h>
 #include <string>
 #include <filesystem>
 #include <vector>
 #include <unordered_map>
-#include <windows.h>
+#include <TestDef.h>
+#include <Licensing.h>
+#include <DeploymentActivityContext.h>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;

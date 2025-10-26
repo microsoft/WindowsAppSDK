@@ -20,6 +20,8 @@
 #include <WexTestClass.h>
 
 #include <string>
+#include <filesystem>
+#include <fstream>
 
 #include <wil/result_macros.h>
 
@@ -31,4 +33,3 @@
 #include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
 
 #include <WindowsAppRuntime.Test.Bootstrap.h>
-namespace TP = ::Test::Packages;

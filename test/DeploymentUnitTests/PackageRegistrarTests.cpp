@@ -2,14 +2,14 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include <TestDef.h>
-#include <PackageRegistrar.h>
+#include <windows.h>
 #include <string>
 #include <filesystem>
 #include <fstream>
-#include <windows.h>
-#include <DeploymentActivityContext.h>
 #include <winrt/Windows.Management.Deployment.h>
+#include <TestDef.h>
+#include <PackageRegistrar.h>
+#include <DeploymentActivityContext.h>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
