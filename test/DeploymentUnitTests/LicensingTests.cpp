@@ -17,6 +17,8 @@ using namespace WEX::TestExecution;
 
 namespace Test::Deployment::Licensing
 {
+    constexpr HRESULT c_unhandledExceptionHResult = 0x8007023E;
+
     // Mock implementation of ILicenseInstaller for testing
     struct MockLicenseInstaller : public WindowsAppRuntime::Deployment::Licensing::ILicenseInstaller
     {
@@ -284,7 +286,7 @@ namespace Test::Deployment::Licensing
             MockLicenseInstaller mockInstaller;
             WindowsAppRuntime::Deployment::Activity::Context activityContext;
 
-            // Reset context to known state
+            // Reset context to initial state
             activityContext.Reset();
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
@@ -293,8 +295,14 @@ namespace Test::Deployment::Licensing
             VERIFY_SUCCEEDED(hr);
 
             // The function should have set the install stage
-            // Note: We can't easily verify the stage without exposing it in the API,
-            // but we can verify the operation completed successfully
+            VERIFY_ARE_EQUAL(
+                activityContext.GetInstallStage(),
+                WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
+
+            // The current resource ID should be set to the installed license file
+            std::wstring expectedResourceId = licensePath.wstring() + L"\\test_license.xml";
+            VERIFY_ARE_EQUAL(activityContext.GetCurrentResourceId(), expectedResourceId);
+
             Log::Comment(L"InstallLicenses completed with activity context updates");
         }
 
@@ -344,7 +352,7 @@ namespace Test::Deployment::Licensing
 
             // Should handle license processing exceptions gracefully
             VERIFY_IS_TRUE(FAILED(hr));
-            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
+            VERIFY_ARE_NOT_EQUAL(hr, c_unhandledExceptionHResult);
         }
 
         TEST_METHOD(GetLicenseFiles_FileSystemException_HandlesGracefully)
@@ -357,7 +365,7 @@ namespace Test::Deployment::Licensing
 
             // Should handle file system access issues gracefully
             VERIFY_IS_TRUE(SUCCEEDED(hr) || FAILED(hr)); // Either way, shouldn't throw unhandled exception
-            VERIFY_ARE_NOT_EQUAL(hr, static_cast<HRESULT>(0x8007023E));
+            VERIFY_ARE_NOT_EQUAL(hr, c_unhandledExceptionHResult);
         }
     };
 }
