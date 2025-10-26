@@ -5,7 +5,6 @@
 #include "DeploymentActivityContext.h"
 #include "PackageDefinitions.h"
 #include "PackageDeployment.h"
-#include "PackageRegistrar.h"
 
 namespace WindowsAppRuntime::Deployment::PackageDeployment
 {

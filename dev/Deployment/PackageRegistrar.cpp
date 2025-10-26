@@ -2,14 +2,13 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
-#include <PackageRegistrar.h>
-#include <DeploymentActivityContext.h>
-
+#include <filesystem>
 #include <wil/result.h>
 #include <wil/resource.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Management.Deployment.h>
-#include <filesystem>
+#include "PackageRegistrar.h"
+#include "DeploymentActivityContext.h"
 
 namespace WindowsAppRuntime::Deployment::PackageRegistrar
 {
