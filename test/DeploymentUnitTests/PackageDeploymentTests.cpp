@@ -58,6 +58,13 @@ namespace Test::Deployment::PackageDeployment
             VERIFY_ARE_EQUAL(
                 mainPackage.packagePath.wstring(),
                 L"C:\\Program Files\\WindowsApps\\Main.2.0\\AppxManifest.xml");
+
+            auto& singletonPackage = args[1];
+            VERIFY_ARE_EQUAL(singletonPackage.identifier, L"Singleton");
+            VERIFY_IS_FALSE(singletonPackage.useExistingPackageIfHigherVersion);
+            VERIFY_ARE_EQUAL(
+                singletonPackage.packagePath.wstring(),
+                L"C:\\Program Files\\WindowsApps\\Framework.1.5\\WindowsAppRuntime_Framework\\Singleton.msix");
         }
     };
 }
