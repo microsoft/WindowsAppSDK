@@ -364,7 +364,7 @@ namespace Test::Deployment::Licensing
             auto hr = ::WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(problematicPath, licenseFiles);
 
             // Should handle file system access issues gracefully
-            VERIFY_IS_TRUE(SUCCEEDED(hr) || FAILED(hr)); // Either way, shouldn't throw unhandled exception
+            VERIFY_IS_TRUE(FAILED(hr)); // Either way, shouldn't throw unhandled exception
             VERIFY_ARE_NOT_EQUAL(hr, c_unhandledExceptionHResult);
         }
     };
