@@ -13,8 +13,6 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-using namespace winrt;
-
 namespace Test::Deployment::PackageDeployment
 {
     class PackageDeploymentTests

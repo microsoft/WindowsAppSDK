@@ -15,7 +15,6 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-using namespace winrt;
 using namespace winrt::Windows::Management::Deployment;
 
 namespace Test::Deployment

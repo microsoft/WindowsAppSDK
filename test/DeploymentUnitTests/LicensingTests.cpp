@@ -15,8 +15,6 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-using namespace winrt;
-
 namespace Test::Deployment::Licensing
 {
     // Mock implementation of ILicenseInstaller for testing
