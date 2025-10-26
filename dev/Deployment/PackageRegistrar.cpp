@@ -111,8 +111,7 @@ namespace WindowsAppRuntime::Deployment::PackageRegistrar
         info.lpAttributeList = attributeList;
 
         wil::unique_process_information processInfo;
-        // We would possible like to have a seam here for testing different results from CreateProcess.
-        // Also, we don't want unit tests to run external processes all the time :)
+
         THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, FALSE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &info.StartupInfo, &processInfo));
 
         // This API is designed to only return to the caller on failure, otherwise block until process termination.

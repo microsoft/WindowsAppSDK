@@ -1,18 +1,18 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <filesystem>
 #include <pch.h>
+#include <filesystem>
 #include <DeploymentManager.h>
 #include <DeploymentResult.h>
 #include <DeploymentActivityContext.h>
-#include <LicenseInstallerProxy.h>
-#include "PackageDefinitions.h"
-#include "PackageUtilities.h"
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
 #include "WindowsAppRuntime-License.h"
+#include "LicenseInstallerProxy.h"
+#include "PackageDefinitions.h"
+#include "PackageUtilities.h"
 #include "Licensing.h"
 #include "PackageDeployment.h"
 #include "PackageRegistrar.h"
@@ -296,7 +296,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-
         auto deployPackagesResult{ Deploy(frameworkPackageFullName, initializeActivityContext, deploymentInitializeOptions.ForceDeployment()) };
 
         DeploymentStatus status{};
@@ -336,6 +335,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return winrt::make<implementation::DeploymentResult>(status, deployPackagesResult);
     }
 
+    // Deploys all of the packages carried by the specified framework.
     HRESULT DeploymentManager::Deploy(
         const std::wstring& frameworkPackageFullName,
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
@@ -363,6 +363,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         auto licenseFilespec{ licensePath };
         licenseFilespec /= L"*_license.xml";
 
+        // Deploy the licenses (if any)
         std::vector<std::wstring> licenseFiles;
         RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(licenseFilespec, licenseFiles));
         RETURN_IF_FAILED(::WindowsAppRuntime::Deployment::Licensing::InstallLicenses(licenseFiles, licensePath, licenseInstallerProxy, initializeActivityContext));

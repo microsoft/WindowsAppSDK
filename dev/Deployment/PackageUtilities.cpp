@@ -11,6 +11,8 @@
 
 namespace WindowsAppRuntime::Deployment::Package
 {
+    // Gets the package path, which is a fast and reliable way to check if the package is
+    // at least staged on the device, even without package query capabilities.
     std::wstring GetPackagePath(std::wstring const& packageFullName)
     {
         UINT32 pathLength{};
