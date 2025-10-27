@@ -218,11 +218,11 @@ stages:
             $formattedTag = ''
             if(-not [String]::IsNullOrEmpty($versionTag))
             {
-              $formattedTag = '-' + $versionTag + "+" + $(versionMinDate) + $paddedRevision
+              $formattedTag = '-' + $versionTag + "-" + $(versionMinDate) + $paddedRevision
             }
             else
             {
-              $formattedTag = "+" + $(versionMinDate) + $paddedRevision
+              $formattedTag = "-" + $(versionMinDate) + $paddedRevision
             }
             Write-Host "Using Release Versioning"
             $version = $majorMinorPatchRev + $formattedTag
