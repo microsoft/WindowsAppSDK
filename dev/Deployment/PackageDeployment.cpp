@@ -16,7 +16,7 @@ namespace WindowsAppRuntime::Deployment::PackageDeployment
         initializeActivityContext.Reset();
         initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
 
-        std::vector<DeploymentPackageArguments> deploymentPackageArguments;
+        std::vector<DeploymentPackageArguments> deploymentPackageArguments{};
 
         for (auto package : winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation::c_targetPackages)
         {

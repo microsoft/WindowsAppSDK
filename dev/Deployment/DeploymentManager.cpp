@@ -374,10 +374,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         const auto frameworkPackagePath = std::filesystem::path(::WindowsAppRuntime::Deployment::Package::GetPackagePath(frameworkPackageFullName));
 
-        std::map<std::wstring, ::WindowsAppRuntime::Deployment::PackageDeployment::PackagePathInfo> existingTargetPackagesIfHigherVersion;
+        std::map<std::wstring, ::WindowsAppRuntime::Deployment::PackageDeployment::PackagePathInfo> existingTargetPackagesIfHigherVersion{};
         for (const auto& [packageIdentifier, packageFullName] : g_existingTargetPackagesIfHigherVersion)
         {
-            const auto packagePath = std::filesystem::path(::WindowsAppRuntime::Deployment::Package::GetPackagePath(packageFullName));
+            const auto packagePath{ std::filesystem::path(::WindowsAppRuntime::Deployment::Package::GetPackagePath(packageFullName)) };
             existingTargetPackagesIfHigherVersion[packageIdentifier] = { packageFullName, packagePath };
         }
 
