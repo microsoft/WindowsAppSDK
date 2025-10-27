@@ -24,7 +24,7 @@ namespace Test::Deployment::Licensing
     {
         std::vector<std::wstring> m_installedFiles;
         std::unordered_map<std::wstring, HRESULT> m_expectedFailureMap;
-        bool m_shouldTrhowException = false;
+        bool m_shouldThrowException = false;
 
         MockLicenseInstaller() = default;
 
@@ -36,12 +36,12 @@ namespace Test::Deployment::Licensing
 
         void SetShouldThrowException(bool shouldThrow)
         {
-            m_shouldTrhowException = shouldThrow;
+            m_shouldThrowException = shouldThrow;
         }
 
         HRESULT InstallLicenseFile(const std::wstring& licenseFilename) override
         {
-            if (m_shouldTrhowException)
+            if (m_shouldThrowException)
             {
                 throw std::runtime_error("Test exception");
             }
@@ -68,7 +68,7 @@ namespace Test::Deployment::Licensing
         void Reset() {
             m_installedFiles.clear();
             m_expectedFailureMap.clear();
-            m_shouldTrhowException = false;
+            m_shouldThrowException = false;
         }
 
         size_t GetInstallCount() const {
