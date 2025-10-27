@@ -34,8 +34,8 @@ namespace Test::Deployment::PackageDeployment
 
         TEST_METHOD(GetDeploymentPackageArguments_WithHigherVersionPackage_UsesExistingPath)
         {
-            std::wstring frameworkFullName = L"Microsoft.WindowsAppRuntime.1.5_x64__8wekyb3d8bbwe";
-            std::wstring frameworkPath = L"C:\\Program Files\\WindowsApps\\Framework.1.5";
+            std::wstring frameworkFullName{L"Microsoft.WindowsAppRuntime.1.5_x64__8wekyb3d8bbwe"};
+            std::wstring frameworkPath{L"C:\\Program Files\\WindowsApps\\Framework.1.5"};
 
             std::map<std::wstring, WindowsAppRuntime::Deployment::PackageDeployment::PackagePathInfo> higherVersionMap;
             higherVersionMap[L"Main"] = {
