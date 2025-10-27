@@ -60,9 +60,20 @@ namespace Test::Deployment::Licensing
         }
 
         // Test helper methods
-        const std::vector<std::wstring>& GetInstalledFiles() const { return m_installedFiles; }
-        void Reset() { m_installedFiles.clear(); m_expectedFailureMap.clear(); }
-        size_t GetInstallCount() const { return m_installedFiles.size(); }
+        const std::vector<std::wstring>& GetInstalledFiles() const
+        {
+            return m_installedFiles;
+        }
+
+        void Reset() {
+            m_installedFiles.clear();
+            m_expectedFailureMap.clear();
+            m_shouldTrhowException = false;
+        }
+
+        size_t GetInstallCount() const {
+            return m_installedFiles.size();
+        }
     };
 
     class LicensingTests
@@ -87,8 +98,8 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test GetLicenseFiles with non-existent path returns success with empty vector");
 
-            std::vector<std::wstring> licenseFiles;
-            std::wstring nonExistentPath = L"C:\\NonExistent\\Path\\*_license.xml";
+            std::vector<std::wstring> licenseFiles{};
+            std::wstring nonExistentPath{L"C:\\NonExistent\\Path\\*_license.xml"};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(nonExistentPath, licenseFiles);
 
@@ -101,8 +112,8 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test GetLicenseFiles with empty file specification");
 
-            std::vector<std::wstring> licenseFiles;
-            std::wstring emptyPath = L"";
+            std::vector<std::wstring> licenseFiles{};
+            std::wstring emptyPath{L""};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(emptyPath, licenseFiles);
 
@@ -115,8 +126,8 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test GetLicenseFiles with invalid path characters");
 
-            std::vector<std::wstring> licenseFiles;
-            std::wstring invalidPath = L"C:\\Invalid|Path\\*_license.xml";
+            std::vector<std::wstring> licenseFiles{};
+            std::wstring invalidPath{L"C:\\Invalid|Path\\*_license.xml"};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(invalidPath, licenseFiles);
 
@@ -128,10 +139,11 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test GetLicenseFiles clears the output vector");
 
-            std::vector<std::wstring> licenseFiles;
-            // Pre-populate the vector
-            licenseFiles.push_back(L"existing_file.xml");
-            licenseFiles.push_back(L"another_file.xml");
+            std::vector<std::wstring> licenseFiles {
+                L"existing_file.xml",
+                L"another_file.xml"
+            };
+
             VERIFY_ARE_EQUAL(licenseFiles.size(), 2u);
 
             std::wstring nonExistentPath = L"C:\\NonExistent\\Path\\*_license.xml";
@@ -146,7 +158,7 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test GetLicenseFiles with real mock license files");
 
-            std::vector<std::wstring> licenseFiles;
+            std::vector<std::wstring> licenseFiles{};
 
             // Get the current test directory and construct the MSIX path
             wchar_t currentDir[MAX_PATH];
@@ -171,10 +183,10 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test InstallLicenses with empty license file list");
 
-            std::vector<std::wstring> licenseFiles;
-            std::filesystem::path licensePath = L"C:\\TestPath";
-            MockLicenseInstaller mockInstaller;
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            std::vector<std::wstring> licenseFiles{};
+            std::filesystem::path licensePath{L"C:\\TestPath"};
+            MockLicenseInstaller mockInstaller{};
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
@@ -188,10 +200,10 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test InstallLicenses with single license file");
 
-            std::vector<std::wstring> licenseFiles = { L"test_license.xml" };
-            std::filesystem::path licensePath = L"C:\\TestPath";
-            MockLicenseInstaller mockInstaller;
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            std::vector<std::wstring> licenseFiles{L"test_license.xml"};
+            std::filesystem::path licensePath{L"C:\\TestPath"};
+            MockLicenseInstaller mockInstaller{};
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
@@ -210,14 +222,14 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test InstallLicenses with multiple license files");
 
-            std::vector<std::wstring> licenseFiles = {
+            std::vector<std::wstring> licenseFiles {
                 L"license1.xml",
                 L"license2.xml",
                 L"license3.xml"
             };
-            std::filesystem::path licensePath = L"C:\\TestPath";
-            MockLicenseInstaller mockInstaller;
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            std::filesystem::path licensePath{L"C:\\TestPath"};
+            MockLicenseInstaller mockInstaller{};
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
@@ -237,11 +249,11 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test InstallLicenses when installer fails");
 
-            std::vector<std::wstring> licenseFiles = { L"failing_license.xml" };
-            std::filesystem::path licensePath = L"C:\\TestPath";
-            MockLicenseInstaller mockInstaller;
+            std::vector<std::wstring> licenseFiles{L"failing_license.xml"};
+            std::filesystem::path licensePath{L"C:\\TestPath"};
+            MockLicenseInstaller mockInstaller{};
             mockInstaller.SetupFailureOnFile(L"failing_license.xml", E_ACCESSDENIED);
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
@@ -254,15 +266,15 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test InstallLicenses stops on first error in batch");
 
-            std::vector<std::wstring> licenseFiles = {
+            std::vector<std::wstring> licenseFiles {
                 L"good_license.xml",
                 L"failing_license.xml",
                 L"never_reached.xml"
             };
-            std::filesystem::path licensePath = L"C:\\TestPath";
-            MockLicenseInstaller mockInstaller;
+            std::filesystem::path licensePath{L"C:\\TestPath"};
+            MockLicenseInstaller mockInstaller{};
             mockInstaller.SetupFailureOnFile(L"failing_license.xml", E_FAIL);
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
@@ -281,10 +293,10 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test InstallLicenses updates activity context properly");
 
-            std::vector<std::wstring> licenseFiles = { L"test_license.xml" };
-            std::filesystem::path licensePath = L"C:\\TestPath";
-            MockLicenseInstaller mockInstaller;
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            std::vector<std::wstring> licenseFiles{L"test_license.xml"};
+            std::filesystem::path licensePath{L"C:\\TestPath"};
+            MockLicenseInstaller mockInstaller{};
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             // Reset context to initial state
             activityContext.Reset();
@@ -310,10 +322,10 @@ namespace Test::Deployment::Licensing
         {
             Log::Comment(L"Test InstallLicenses correctly combines path and filename");
 
-            std::vector<std::wstring> licenseFiles = { L"myapp_license.xml" };
-            std::filesystem::path licensePath = L"C:\\Program Files\\TestApp\\Licenses";
-            MockLicenseInstaller mockInstaller;
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
+            std::vector<std::wstring> licenseFiles{L"myapp_license.xml"};
+            std::filesystem::path licensePath{L"C:\\Program Files\\TestApp\\Licenses"};
+            MockLicenseInstaller mockInstaller{};
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::InstallLicenses(
                 licenseFiles, licensePath, mockInstaller, activityContext);
@@ -339,9 +351,9 @@ namespace Test::Deployment::Licensing
                 TEST_METHOD_PROPERTY(L"Ignore", L"True") // Currently failing
             END_TEST_METHOD_PROPERTIES()
 
-            std::vector<std::wstring> licenseFiles = { L"corrupted_license.xml" };
-            std::filesystem::path licensePath = L"C:\\Program Files\\TestApp\\Licenses";
-            MockLicenseInstaller mockInstaller;
+            std::vector<std::wstring> licenseFiles{L"corrupted_license.xml"};
+            std::filesystem::path licensePath{L"C:\\Program Files\\TestApp\\Licenses"};
+            MockLicenseInstaller mockInstaller{};
             ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             // Mock the installer to simulate exception during license processing
@@ -358,8 +370,8 @@ namespace Test::Deployment::Licensing
         TEST_METHOD(GetLicenseFiles_FileSystemException_HandlesGracefully)
         {
             // Test with path that could cause file system exceptions
-            std::wstring problematicPath = L"\\\\?\\C:\\System Volume Information\\*_license.xml"; // Restricted access
-            std::vector<std::wstring> licenseFiles;
+            std::wstring problematicPath{L"\\\\?\\C:\\System Volume Information\\*_license.xml"}; // Restricted access
+            std::vector<std::wstring> licenseFiles{};
 
             auto hr = ::WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(problematicPath, licenseFiles);
 
