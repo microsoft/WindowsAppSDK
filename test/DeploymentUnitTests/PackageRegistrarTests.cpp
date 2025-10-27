@@ -44,7 +44,7 @@ namespace Test::Deployment
             Log::Comment(L"Test that generated path points to an existing location");
 
             auto path = WindowsAppRuntime::Deployment::PackageRegistrar::GenerateDeploymentAgentPath();
-            std::filesystem::path fsPath(path);
+            std::filesystem::path fsPath{ path };
 
             // The directory should exist (even if the exe doesn't)
             auto parentPath = fsPath.parent_path();
@@ -58,8 +58,8 @@ namespace Test::Deployment
         {
             Log::Comment(L"Test AddOrRegisterPackageInBreakAwayProcess with invalid path");
 
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
-            std::filesystem::path invalidPath(L"C:\\NonExistent\\Invalid.msix");
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
+            std::filesystem::path invalidPath{ L"C:\\NonExistent\\Invalid.msix" };
 
             HRESULT hr = WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
                 invalidPath,
@@ -76,9 +76,9 @@ namespace Test::Deployment
         {
             Log::Comment(L"Test AddOrRegisterPackageInBreakAwayProcess with custom deployment agent path");
 
-            WindowsAppRuntime::Deployment::Activity::Context activityContext;
-            std::filesystem::path testPackagePath(L"C:\\test.msix");
-            std::wstring customAgentPath = L"C:\\CustomPath\\DeploymentAgent.exe";
+            WindowsAppRuntime::Deployment::Activity::Context activityContext{};
+            std::filesystem::path testPackagePath{ L"C:\\test.msix" };
+            std::wstring customAgentPath{ L"C:\\CustomPath\\DeploymentAgent.exe" };
 
             // Should fail because neither package nor agent exist, but we're testing parameter handling
             HRESULT hr = WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
@@ -115,8 +115,8 @@ namespace Test::Deployment
             ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
 
             // Create a corrupted/invalid MSIX file
-            std::filesystem::path tempPath = std::filesystem::temp_directory_path() / L"corrupted.msix";
-            std::ofstream corruptedFile(tempPath, std::ios::binary);
+            std::filesystem::path tempPath{ std::filesystem::temp_directory_path() / L"corrupted.msix" };
+            std::ofstream corruptedFile{ tempPath, std::ios::binary };
             corruptedFile << "This is not a valid MSIX file content";
             corruptedFile.close();
 
@@ -134,8 +134,8 @@ namespace Test::Deployment
         TEST_METHOD(AddOrRegisterPackageInBreakAwayProcess_InvalidAgentPath_HandlesException)
         {
             ::WindowsAppRuntime::Deployment::Activity::Context activityContext{};
-            std::filesystem::path validPackagePath = std::filesystem::temp_directory_path() / L"test.msix";
-            std::wstring invalidAgentPath = L"C:\\NonExistent\\deploymentagent.exe";
+            std::filesystem::path validPackagePath{ std::filesystem::temp_directory_path() / L"test.msix" };
+            std::wstring invalidAgentPath{ L"C:\\NonExistent\\deploymentagent.exe" };
 
             auto hr = ::WindowsAppRuntime::Deployment::PackageRegistrar::AddOrRegisterPackageInBreakAwayProcess(
                 validPackagePath, false, false, activityContext, invalidAgentPath);
