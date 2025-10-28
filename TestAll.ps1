@@ -123,7 +123,6 @@ if ($Platform -eq "AMD64")
 }
 
 $StartTime = Get-Date
-$lastexitcode = 0
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
@@ -184,6 +183,12 @@ function Build-Tests
 
         & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
         $projectsBuilt[$projFile.FullName] = $true
+
+        if ($lastexitcode -ne 0)
+        {
+            Write-Error "Build failed for project $($projFile.FullName)"
+            Exit 1
+        }
     }
 }
 
