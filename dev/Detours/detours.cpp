@@ -4,7 +4,7 @@
 //
 //  Microsoft Research Detours Package, Version 4.0.1
 //
-//  Copyright (c) Microsoft Corporation and Contributors.  All rights reserved.
+//  Copyright (c) Microsoft Corporation.  All rights reserved.
 //
 
 
@@ -17,6 +17,27 @@
 #endif
 
 #define NOTHROW
+
+//////////////////////////////////////////////////////////////////////////////
+//
+
+#ifdef _DEBUG
+extern "C" IMAGE_DOS_HEADER __ImageBase;
+int Detour_AssertExprWithFunctionName(int reportType, const char* filename, int linenumber, const char* FunctionName, const char* msg)
+{
+    int nRet = 0;
+    DWORD dwLastError = GetLastError();
+    CHAR szModuleNameWithFunctionName[MAX_PATH * 2];
+    szModuleNameWithFunctionName[0] = 0;
+    GetModuleFileNameA((HMODULE)&__ImageBase, szModuleNameWithFunctionName, ARRAYSIZE(szModuleNameWithFunctionName));
+    StringCchCatNA(szModuleNameWithFunctionName, ARRAYSIZE(szModuleNameWithFunctionName), ",", ARRAYSIZE(szModuleNameWithFunctionName) - strlen(szModuleNameWithFunctionName) - 1);
+    StringCchCatNA(szModuleNameWithFunctionName, ARRAYSIZE(szModuleNameWithFunctionName), FunctionName, ARRAYSIZE(szModuleNameWithFunctionName) - strlen(szModuleNameWithFunctionName) - 1);
+    SetLastError(dwLastError);
+    nRet = _CrtDbgReport(reportType, filename, linenumber, szModuleNameWithFunctionName, msg);
+    SetLastError(dwLastError);
+    return nRet;
+}
+#endif// _DEBUG
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -135,6 +156,8 @@ inline PBYTE detour_gen_brk(PBYTE pbCode, PBYTE pbLimit)
 
 inline PBYTE detour_skip_jmp(PBYTE pbCode, PVOID *ppGlobals)
 {
+    PBYTE pbCodeOriginal;
+
     if (pbCode == NULL) {
         return NULL;
     }
@@ -158,6 +181,7 @@ inline PBYTE detour_skip_jmp(PBYTE pbCode, PVOID *ppGlobals)
         PBYTE pbNew = pbCode + 2 + *(CHAR *)&pbCode[1];
         DETOUR_TRACE(("%p->%p: skipped over short jump.\n", pbCode, pbNew));
         pbCode = pbNew;
+        pbCodeOriginal = pbCode;
 
         // First, skip over the import vector if there is one.
         if (pbCode[0] == 0xff && pbCode[1] == 0x25) {   // jmp [imm32]
@@ -174,6 +198,23 @@ inline PBYTE detour_skip_jmp(PBYTE pbCode, PVOID *ppGlobals)
             pbNew = pbCode + 5 + *(UNALIGNED INT32 *)&pbCode[1];
             DETOUR_TRACE(("%p->%p: skipped over long jump.\n", pbCode, pbNew));
             pbCode = pbNew;
+
+            // Patches applied by the OS will jump through an HPAT page to get
+            // the target function in the patch image. The jump is always performed
+            // to the target function found at the current instruction pointer +
+            // PAGE_SIZE - 6 (size of jump).
+            // If this is an OS patch, we want to detour at the point of the target function
+            // padding in the base image. Ideally, we would detour at the target function, but
+            // since it's patched it begins with a short jump (to padding) which isn't long
+            // enough to hold the detour code bytes.
+            if (pbCode[0] == 0xff &&
+                pbCode[1] == 0x25 &&
+                *(UNALIGNED INT32 *)&pbCode[2] == (UNALIGNED INT32)(pbCode + 0x1000)) {   // jmp [eip+PAGE_SIZE-6]
+
+                DETOUR_TRACE(("%p->%p: OS patch encountered, reset back to long jump 5 bytes prior to target function.\n", pbCode, pbCodeOriginal));
+                pbCode = pbCodeOriginal;
+            }
+
         }
     }
     return pbCode;
@@ -186,7 +227,7 @@ inline void detour_find_jmp_bounds(PBYTE pbCode,
     // We have to place trampolines within +/- 2GB of code.
     ULONG_PTR lo = detour_2gb_below((ULONG_PTR)pbCode);
     ULONG_PTR hi = detour_2gb_above((ULONG_PTR)pbCode);
-    DETOUR_TRACE(("[%p..%p..%p]\n", lo, pbCode, hi));
+    DETOUR_TRACE(("[%p..%p..%p]\n", (PVOID)lo, pbCode, (PVOID)hi));
 
     // And, within +/- 2GB of relative jmp targets.
     if (pbCode[0] == 0xe9) {   // jmp +imm32
@@ -198,7 +239,7 @@ inline void detour_find_jmp_bounds(PBYTE pbCode,
         else {
             lo = detour_2gb_below((ULONG_PTR)pbNew);
         }
-        DETOUR_TRACE(("[%p..%p..%p] +imm32\n", lo, pbCode, hi));
+        DETOUR_TRACE(("[%p..%p..%p] +imm32\n", (PVOID)lo, pbCode, (PVOID)hi));
     }
 
     *ppLower = (PDETOUR_TRAMPOLINE)lo;
@@ -348,6 +389,8 @@ inline PBYTE detour_gen_brk(PBYTE pbCode, PBYTE pbLimit)
 
 inline PBYTE detour_skip_jmp(PBYTE pbCode, PVOID *ppGlobals)
 {
+    PBYTE pbCodeOriginal;
+
     if (pbCode == NULL) {
         return NULL;
     }
@@ -371,6 +414,7 @@ inline PBYTE detour_skip_jmp(PBYTE pbCode, PVOID *ppGlobals)
         PBYTE pbNew = pbCode + 2 + *(CHAR *)&pbCode[1];
         DETOUR_TRACE(("%p->%p: skipped over short jump.\n", pbCode, pbNew));
         pbCode = pbNew;
+        pbCodeOriginal = pbCode;
 
         // First, skip over the import vector if there is one.
         if (pbCode[0] == 0xff && pbCode[1] == 0x25) {   // jmp [+imm32]
@@ -387,6 +431,21 @@ inline PBYTE detour_skip_jmp(PBYTE pbCode, PVOID *ppGlobals)
             pbNew = pbCode + 5 + *(UNALIGNED INT32 *)&pbCode[1];
             DETOUR_TRACE(("%p->%p: skipped over long jump.\n", pbCode, pbNew));
             pbCode = pbNew;
+
+            // Patches applied by the OS will jump through an HPAT page to get
+            // the target function in the patch image. The jump is always performed
+            // to the target function found at the current instruction pointer +
+            // PAGE_SIZE - 6 (size of jump).
+            // If this is an OS patch, we want to detour at the point of the target function
+            // in the base image. Since we need 5 bytes to perform the jump, detour at the
+            // point of the long jump instead of the short jump at the start of the target.
+            if (pbCode[0] == 0xff &&
+                pbCode[1] == 0x25 &&
+                *(UNALIGNED INT32 *)&pbCode[2] == 0xFFA) {   // jmp [rip+PAGE_SIZE-6]
+
+                DETOUR_TRACE(("%p->%p: OS patch encountered, reset back to long jump 5 bytes prior to target function.\n", pbCode, pbCodeOriginal));
+                pbCode = pbCodeOriginal;
+            }
         }
     }
     return pbCode;
@@ -399,7 +458,7 @@ inline void detour_find_jmp_bounds(PBYTE pbCode,
     // We have to place trampolines within +/- 2GB of code.
     ULONG_PTR lo = detour_2gb_below((ULONG_PTR)pbCode);
     ULONG_PTR hi = detour_2gb_above((ULONG_PTR)pbCode);
-    DETOUR_TRACE(("[%p..%p..%p]\n", lo, pbCode, hi));
+    DETOUR_TRACE(("[%p..%p..%p]\n", (PVOID)lo, pbCode, (PVOID)hi));
 
     // And, within +/- 2GB of relative jmp vectors.
     if (pbCode[0] == 0xff && pbCode[1] == 0x25) {   // jmp [+imm32]
@@ -411,7 +470,7 @@ inline void detour_find_jmp_bounds(PBYTE pbCode,
         else {
             lo = detour_2gb_below((ULONG_PTR)pbNew);
         }
-        DETOUR_TRACE(("[%p..%p..%p] [+imm32]\n", lo, pbCode, hi));
+        DETOUR_TRACE(("[%p..%p..%p] [+imm32]\n", (PVOID)lo, pbCode, (PVOID)hi));
     }
     // And, within +/- 2GB of relative jmp targets.
     else if (pbCode[0] == 0xe9) {   // jmp +imm32
@@ -423,7 +482,7 @@ inline void detour_find_jmp_bounds(PBYTE pbCode,
         else {
             lo = detour_2gb_below((ULONG_PTR)pbNew);
         }
-        DETOUR_TRACE(("[%p..%p..%p] +imm32\n", lo, pbCode, hi));
+        DETOUR_TRACE(("[%p..%p..%p] +imm32\n", (PVOID)lo, pbCode, (PVOID)hi));
     }
 
     *ppLower = (PDETOUR_TRAMPOLINE)lo;
@@ -818,7 +877,7 @@ inline void detour_find_jmp_bounds(PBYTE pbCode,
     // We have to place trampolines within +/- 2GB of code.
     ULONG_PTR lo = detour_2gb_below((ULONG_PTR)pbCode);
     ULONG_PTR hi = detour_2gb_above((ULONG_PTR)pbCode);
-    DETOUR_TRACE(("[%p..%p..%p]\n", lo, pbCode, hi));
+    DETOUR_TRACE(("[%p..%p..%p]\n", (PVOID)lo, pbCode, (PVOID)hi));
 
     *ppLower = (PDETOUR_TRAMPOLINE)lo;
     *ppUpper = (PDETOUR_TRAMPOLINE)hi;
@@ -863,7 +922,7 @@ struct _DETOUR_TRAMPOLINE
     // An ARM64 instruction is 4 bytes long.
     //
     // The overwrite is always composed of 3 instructions (12 bytes) which perform an indirect jump
-	// using _DETOUR_TRAMPOLINE::pbDetour as the address holding the target location.
+    // using _DETOUR_TRAMPOLINE::pbDetour as the address holding the target location.
     //
     // Copied instructions can expand.
     //
@@ -1124,16 +1183,52 @@ inline void detour_find_jmp_bounds(PBYTE pbCode,
 
     ULONG_PTR lo = detour_2gb_below((ULONG_PTR)pbCode);
     ULONG_PTR hi = detour_2gb_above((ULONG_PTR)pbCode);
-    DETOUR_TRACE(("[%p..%p..%p]\n", lo, pbCode, hi));
+    DETOUR_TRACE(("[%p..%p..%p]\n", (PVOID)lo, pbCode, (PVOID)hi));
 
     *ppLower = (PDETOUR_TRAMPOLINE)lo;
     *ppUpper = (PDETOUR_TRAMPOLINE)hi;
 }
 
+inline BOOL detour_is_code_os_patched(PBYTE pbCode)
+{
+    // Identify whether the provided code pointer is a OS patch jump.
+    // We can do this by checking if a branch (b <imm26>) is present, and if so,
+    // it must be jumping to an HPAT page containing ldr <reg> [PC+PAGE_SIZE-4], br <reg>.
+    ULONG Opcode = fetch_opcode(pbCode);
+
+    if ((Opcode & 0xfc000000) != 0x14000000) {
+        return FALSE;
+    }
+    // The branch must be jumping forward if it's going into the HPAT.
+    // Check that the sign bit is cleared.
+    if ((Opcode & 0x2000000) != 0) {
+        return FALSE;
+    }
+    ULONG Delta = (ULONG)((Opcode & 0x1FFFFFF) * 4);
+    PBYTE BranchTarget = pbCode + Delta;
+
+    // Now inspect the opcodes of the code we jumped to in order to determine if it's HPAT.
+    ULONG HpatOpcode1 = fetch_opcode(BranchTarget);
+    ULONG HpatOpcode2 = fetch_opcode(BranchTarget + 4);
+
+    if (HpatOpcode1 != 0x58008010) {    // ldr <reg> [PC+PAGE_SIZE]
+        return FALSE;
+    }
+    if (HpatOpcode2 != 0xd61f0200) {    // br <reg>
+        return FALSE;
+    }
+    return TRUE;
+}
+
 inline BOOL detour_does_code_end_function(PBYTE pbCode)
 {
     ULONG Opcode = fetch_opcode(pbCode);
-    if ((Opcode & 0xfffffc1f) == 0xd65f0000 ||      // br <reg>
+    // When the OS has patched a function entry point, it will incorrectly
+    // appear as though the function is just a single branch instruction.
+    if (detour_is_code_os_patched(pbCode)) {
+        return FALSE;
+    }
+    if ((Opcode & 0xffbffc1f) == 0xd61f0000 ||      // ret/br <reg>
         (Opcode & 0xfc000000) == 0x14000000) {      // b <imm26>
         return TRUE;
     }
@@ -1237,7 +1332,7 @@ static PVOID detour_alloc_region_from_lo(PBYTE pbLo, PBYTE pbHi)
             break;
         }
 
-        DETOUR_TRACE(("  Try %p => %p..%p %6x\n",
+        DETOUR_TRACE(("  Try %p => %p..%p %6lx\n",
                       pbTry,
                       mbi.BaseAddress,
                       (PBYTE)mbi.BaseAddress + mbi.RegionSize - 1,
@@ -1287,7 +1382,7 @@ static PVOID detour_alloc_region_from_hi(PBYTE pbLo, PBYTE pbHi)
             break;
         }
 
-        DETOUR_TRACE(("  Try %p => %p..%p %6x\n",
+        DETOUR_TRACE(("  Try %p => %p..%p %6lx\n",
                       pbTry,
                       mbi.BaseAddress,
                       (PBYTE)mbi.BaseAddress + mbi.RegionSize - 1,
@@ -1374,6 +1469,12 @@ PVOID WINAPI DetourAllocateRegionWithinJumpBounds(_In_ LPCVOID pbTarget,
     return pbNewlyAllocated;
 }
 
+BOOL WINAPI DetourIsFunctionImported(_In_ PBYTE pbCode,
+                                     _In_ PBYTE pbAddress)
+{
+    return detour_is_imported(pbCode, pbAddress);
+}
+
 static PDETOUR_TRAMPOLINE detour_alloc_trampoline(PBYTE pbTarget)
 {
     // We have to place trampolines within +/- 2GB of target.
@@ -1416,7 +1517,8 @@ static PDETOUR_TRAMPOLINE detour_alloc_trampoline(PBYTE pbTarget)
     // We need to allocate a new region.
 
     // Round pbTarget down to 64KB block.
-    pbTarget = pbTarget - (PtrToUlong(pbTarget) & 0xffff);
+    // /RTCc RuntimeChecks breaks PtrToUlong.
+    pbTarget = pbTarget - (ULONG)((ULONG_PTR)pbTarget & 0xffff);
 
     PVOID pbNewlyAllocated =
         detour_alloc_trampoline_allocate_new(pbTarget, pLo, pHi);
@@ -1704,7 +1806,7 @@ LONG WINAPI DetourTransactionCommitEx(_Out_opt_ PVOID **pppFailedPointer)
 #endif // DETOURS_ARM
         }
         else {
-            DETOUR_TRACE(("detours: pbTramp =%p, pbRemain=%p, pbDetour=%p, cbRestore=%d\n",
+            DETOUR_TRACE(("detours: pbTramp =%p, pbRemain=%p, pbDetour=%p, cbRestore=%u\n",
                           o->pTrampoline,
                           o->pTrampoline->pbRemain,
                           o->pTrampoline->pbDetour,
@@ -1809,41 +1911,46 @@ LONG WINAPI DetourTransactionCommitEx(_Out_opt_ PVOID **pppFailedPointer)
         }
     }
 
-    // Update any suspended threads.
-    for (t = s_pPendingThreads; t != NULL; t = t->pNext) {
-        CONTEXT cxt;
-        cxt.ContextFlags = CONTEXT_CONTROL;
-
 #undef DETOURS_EIP
+#undef DETOURS_CONTEXT_FLAGS
 
 #ifdef DETOURS_X86
 #define DETOURS_EIP         Eip
+#define DETOURS_CONTEXT_FLAGS CONTEXT_CONTROL
 #endif // DETOURS_X86
 
 #ifdef DETOURS_X64
 #define DETOURS_EIP         Rip
+#define DETOURS_CONTEXT_FLAGS (CONTEXT_CONTROL | CONTEXT_INTEGER)
 #endif // DETOURS_X64
 
 #ifdef DETOURS_IA64
 #define DETOURS_EIP         StIIP
+#define DETOURS_CONTEXT_FLAGS CONTEXT_CONTROL
 #endif // DETOURS_IA64
 
 #ifdef DETOURS_ARM
 #define DETOURS_EIP         Pc
+#define DETOURS_CONTEXT_FLAGS CONTEXT_CONTROL
 #endif // DETOURS_ARM
 
 #ifdef DETOURS_ARM64
 #define DETOURS_EIP         Pc
+#define DETOURS_CONTEXT_FLAGS (CONTEXT_CONTROL | CONTEXT_INTEGER)
 #endif // DETOURS_ARM64
 
 typedef ULONG_PTR DETOURS_EIP_TYPE;
 
+    // Update any suspended threads.
+    for (t = s_pPendingThreads; t != NULL; t = t->pNext) {
+        CONTEXT cxt;
+        cxt.ContextFlags = DETOURS_CONTEXT_FLAGS;
         if (GetThreadContext(t->hThread, &cxt)) {
             for (o = s_pPendingOperations; o != NULL; o = o->pNext) {
                 if (o->fIsRemove) {
                     if (cxt.DETOURS_EIP >= (DETOURS_EIP_TYPE)(ULONG_PTR)o->pTrampoline &&
                         cxt.DETOURS_EIP < (DETOURS_EIP_TYPE)((ULONG_PTR)o->pTrampoline
-                                                             + sizeof(o->pTrampoline))
+                                                             + sizeof(*o->pTrampoline))
                        ) {
 
                         cxt.DETOURS_EIP = (DETOURS_EIP_TYPE)
@@ -1996,13 +2103,13 @@ LONG WINAPI DetourAttachEx(_Inout_ PVOID *ppPointer,
     }
 
     if (s_nPendingThreadId != (LONG)GetCurrentThreadId()) {
-        DETOUR_TRACE(("transaction conflict with thread id=%d\n", s_nPendingThreadId));
+        DETOUR_TRACE(("transaction conflict with thread id=%ld\n", s_nPendingThreadId));
         return ERROR_INVALID_OPERATION;
     }
 
     // If any of the pending operations failed, then we don't need to do this.
     if (s_nPendingError != NO_ERROR) {
-        DETOUR_TRACE(("pending transaction error=%d\n", s_nPendingError));
+        DETOUR_TRACE(("pending transaction error=%ld\n", s_nPendingError));
         return s_nPendingError;
     }
 
@@ -2036,6 +2143,15 @@ LONG WINAPI DetourAttachEx(_Inout_ PVOID *ppPointer,
     DETOUR_TRACE(("  ppldTarget=%p, code=%p [gp=%p]\n",
                   ppldTarget, pbTarget, pTargetGlobals));
 #else // DETOURS_IA64
+#if defined(_M_ARM64EC)
+    if (RtlIsEcCode(reinterpret_cast<DWORD64>(*ppPointer))) {
+        DETOUR_TRACE(("*ppPointer is an Arm64EC address (ppPointer=%p). "
+                      "An Arm64EC address cannot be legitimately detoured with an x64 jmp. "
+                      "Mark the target function with __declspec(hybrid_patchable) to make it detour-able. "
+                      "We still allow an Arm64EC function to be detoured with an x64 jmp to make it easy (crash) to debug.\n", ppPointer));
+        DETOUR_BREAK();
+    }
+#endif
     pbTarget = (PBYTE)DetourCodeFromPointer(pbTarget, NULL);
     pDetour = DetourCodeFromPointer(pDetour, NULL);
 #endif // !DETOURS_IA64
@@ -2076,6 +2192,12 @@ LONG WINAPI DetourAttachEx(_Inout_ PVOID *ppPointer,
         if (o != NULL) {
             delete o;
             o = NULL;
+        }
+        if (ppRealDetour != NULL) {
+            *ppRealDetour = NULL;
+        }
+        if (ppRealTarget != NULL) {
+            *ppRealTarget = NULL;
         }
         s_ppPendingError = ppPointer;
         return error;
@@ -2183,7 +2305,7 @@ LONG WINAPI DetourAttachEx(_Inout_ PVOID *ppPointer,
                 pTrampoline->rAlign[n].obTrampoline == 0) {
                 break;
             }
-            DETOUR_TRACE((" %d/%d",
+            DETOUR_TRACE((" %u/%u",
                           pTrampoline->rAlign[n].obTarget,
                           pTrampoline->rAlign[n].obTrampoline
                           ));
@@ -2549,6 +2671,22 @@ BOOL WINAPI DetourVirtualProtectSameExecute(_In_  PVOID pAddress,
 {
     return DetourVirtualProtectSameExecuteEx(GetCurrentProcess(),
                                              pAddress, nSize, dwNewProtect, pdwOldProtect);
+}
+
+BOOL WINAPI DetourAreSameGuid(_In_ REFGUID left, _In_ REFGUID right)
+{
+    return
+        left.Data1 == right.Data1 &&
+        left.Data2 == right.Data2 &&
+        left.Data3 == right.Data3 &&
+        left.Data4[0] == right.Data4[0] &&
+        left.Data4[1] == right.Data4[1] &&
+        left.Data4[2] == right.Data4[2] &&
+        left.Data4[3] == right.Data4[3] &&
+        left.Data4[4] == right.Data4[4] &&
+        left.Data4[5] == right.Data4[5] &&
+        left.Data4[6] == right.Data4[6] &&
+        left.Data4[7] == right.Data4[7];
 }
 
 //  End of File

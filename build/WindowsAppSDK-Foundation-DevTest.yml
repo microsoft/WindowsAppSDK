@@ -20,9 +20,6 @@ name: $(version)
 trigger: none
 
 parameters:
-- name: "PublishToMaestro"
-  type: boolean
-  default: true
 - name: "IgnoreFailures"
   type: boolean
   default: false
@@ -42,11 +39,11 @@ parameters:
   type: boolean
   default: true
 - name: "TestOnArm64"
-  displayName: "Enable running of tests on arm64 platform (Default: true)"
+  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
   type: boolean
   default: true
-- name: "MaestroDependOnTestSamples"
-  displayName: "Whether Maestro publishing should depend on successful Sample tests"
+- name: "pushToInternalFeed"
+  displayName: "Push to Internal Feed"
   type: boolean
   default: false
 
@@ -166,11 +163,11 @@ extends:
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
-        PublishToMaestro: ${{ parameters.PublishToMaestro }}
+        PublishToMaestro: false
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
         TestSampleApps: ${{ parameters.TestSampleApps }}
         TestOnArm64: ${{ parameters.TestOnArm64 }}
-        MaestroDependOnTestSamples: ${{ parameters.MaestroDependOnTestSamples }}
+        MaestroDependOnTestSamples: false
 
     - ${{ if eq( parameters.BuildSampleApps, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
