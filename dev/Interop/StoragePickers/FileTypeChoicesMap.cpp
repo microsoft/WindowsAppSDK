@@ -12,6 +12,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
     FileTypeChoicesMap::FileTypeChoicesMap()
     {
+        // Pre-allocate capacity for typical file type choices (usually 2-8 items)
+        m_orderedMap.reserve(8);
+        m_keyToIndex.reserve(8);
     }
 
     size_t FileTypeChoicesMap::FindKeyIndex(hstring const& key) const

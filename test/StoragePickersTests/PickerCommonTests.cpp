@@ -215,9 +215,11 @@ namespace Test::PickerCommonTests
             winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
 
             picker.FileTypeChoices().Insert(
-                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc", L".docx" }));
-            picker.FileTypeChoices().Insert(
                 L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg", L".jpeg", L".bmp" }));
+            picker.FileTypeChoices().Insert(
+                L"Adobe Illustrator", winrt::single_threaded_vector<winrt::hstring>({ L".ai" }));
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc", L".docx" }));
 
             // Act.
             PickerParameters parameters{};
@@ -226,14 +228,17 @@ namespace Test::PickerCommonTests
                 picker.FileTypeChoices().GetView());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 2);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
 
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
-                L"*.txt;*.doc;*.docx");
+                L"*.png;*.jpg;*.jpeg;*.bmp");
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
-                L"*.png;*.jpg;*.jpeg;*.bmp");
+                L"*.ai");
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
+                L"*.txt;*.doc;*.docx");
         }
 
         TEST_METHOD(VerifyFilters_FileSavePickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
