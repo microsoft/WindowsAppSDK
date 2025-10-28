@@ -8,6 +8,7 @@ param(
     [string]$SourceDirectory
 )
 
+Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 Write-Host "Installing VCLibs packages for platform: $Platform" -ForegroundColor Green
