@@ -1,4 +1,6 @@
-using System;
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
