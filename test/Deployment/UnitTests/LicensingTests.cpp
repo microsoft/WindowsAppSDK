@@ -163,7 +163,7 @@ namespace Test::Deployment::Licensing
             // Get the current test directory and construct the MSIX path
             wchar_t currentDir[MAX_PATH]{};
             GetCurrentDirectory(MAX_PATH, currentDir);
-            std::wstring testPath{ std::wstring(currentDir) + L"\\test\\DeploymentUnitTests\\MSIX\\*_license.xml" };
+            std::wstring testPath{ std::wstring(currentDir) + L"\\test\\Deployment\\UnitTests\\MSIX\\*_license.xml" };
 
             HRESULT hr = WindowsAppRuntime::Deployment::Licensing::GetLicenseFiles(testPath, licenseFiles);
 
