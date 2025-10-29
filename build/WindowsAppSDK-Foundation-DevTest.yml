@@ -153,7 +153,7 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
-        PublishPackage: true
+        PublishPackage: pushToInternalFeed
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:
