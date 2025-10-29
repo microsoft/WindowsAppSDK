@@ -49,6 +49,15 @@ body:
         - "Unpackaged"
   - type: dropdown
     attributes:
+      label: Deployment model
+      description: Please specify the deployment model you're using.
+      options:
+        - label: "Self-contained app (`<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>` is in the project file or references `Microsoft.WindowsAppSDK.AI`)"
+          value: self-contained
+        - label: "Framework-dependent app (`<WindowsAppSDKSelfContained>` is not in the project file or it is set to false)"
+          value: framework-dependent
+  - type: dropdown
+    attributes:
       label: Windows version
       description: Which Windows versions did you see the issue on?
       multiple: true
