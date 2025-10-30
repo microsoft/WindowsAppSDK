@@ -72,10 +72,6 @@ namespace winrt::Microsoft::Windows::System::Power
         void SystemIdleStatus_Register();
         void SystemIdleStatus_Unregister();
 
-        EventType& EffectivePowerMode_Event();
-        void EffectivePowerMode_Register();
-        void EffectivePowerMode_Unregister();
-        void EffectivePowerMode_Update();
 
         EventType& UserPresenceStatus_Event();
         void UserPresenceStatus_Register();
@@ -202,12 +198,6 @@ namespace winrt::Microsoft::Windows::System::Power
                 &Power::implementation::NoOperation,
                 L"SystemIdleStatus" };
 
-            PowerFunctionDetails effectivePowerModeFunc{
-                &Power::implementation::EffectivePowerMode_Event,
-                &Power::implementation::EffectivePowerMode_Register,
-                &Power::implementation::EffectivePowerMode_Unregister,
-                &Power::implementation::EffectivePowerMode_Update,
-                L"EffectivePowerMode" };
 
             PowerFunctionDetails userPresenceStatusFunc{
                 &Power::implementation::UserPresenceStatus_Event,
@@ -539,14 +529,6 @@ namespace winrt::Microsoft::Windows::System::Power
             }
 
 
-            // EffectivePowerMode Functions
-            winrt::Windows::Foundation::IAsyncOperation<Power::EffectivePowerMode> EffectivePowerMode()
-            {
-                co_await resume_background();
-                UpdateValuesIfNecessary(effectivePowerModeFunc);
-                auto res{ static_cast<Power::EffectivePowerMode>(m_cachedPowerMode) };
-                co_return res;
-            }
 
             Power::EffectivePowerMode EffectivePowerMode2()
             {
