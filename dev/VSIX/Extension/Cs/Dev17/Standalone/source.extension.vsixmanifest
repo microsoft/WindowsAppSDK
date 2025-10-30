@@ -2,7 +2,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Id="Microsoft.WindowsAppSDK.Cs.Dev17" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
-    <DisplayName>Windows App SDK C# VS 2022-2026 Templates</DisplayName>
+    <DisplayName>Windows App SDK C# VS Templates</DisplayName>
     <Description xml:space="preserve">The Microsoft Windows App SDK Visual Studio extension adds C# project and item templates to support building Windows apps and components in VS 2022-2026.</Description>
     <MoreInfo>https://github.com/microsoft/WindowsAppSDK/</MoreInfo>
     <License>LICENSE</License>
