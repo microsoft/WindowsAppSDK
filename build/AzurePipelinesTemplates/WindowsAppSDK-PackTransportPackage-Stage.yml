@@ -185,7 +185,7 @@ stages:
           }
 
           $buildType = '$(channel)'
-          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).0'
+          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).3'
           $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
           
           if ($env:ComponentType)
