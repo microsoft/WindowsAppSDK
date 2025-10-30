@@ -20,9 +20,6 @@ name: $(version)
 trigger: none
 
 parameters:
-- name: "PublishToMaestro"
-  type: boolean
-  default: true
 - name: "IgnoreFailures"
   type: boolean
   default: false
@@ -42,11 +39,11 @@ parameters:
   type: boolean
   default: true
 - name: "TestOnArm64"
-  displayName: "Enable running of tests on arm64 platform (Default: true)"
+  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
   type: boolean
   default: true
-- name: "MaestroDependOnTestSamples"
-  displayName: "Whether Maestro publishing should depend on successful Sample tests"
+- name: "pushToInternalFeed"
+  displayName: "Push to Internal Feed"
   type: boolean
   default: false
 
@@ -72,7 +69,7 @@ resources:
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/release/2.0-stable
+      ref: refs/heads/main
     - repository: WindowsAppSDKSamples
       type: github
       endpoint: 'GitHub - benkuhn - 2-18'
@@ -80,7 +77,7 @@ resources:
       ref: $(SamplesBranch)
 
 extends:
-  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
+  template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     featureFlags:
       EnableCDPxPAT: false      
@@ -101,6 +98,21 @@ extends:
         suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
       asyncSdl: # https://aka.ms/obpipelines/asyncsdl
         enabled: false
+      psscriptanalyzer:
+        enable: true
+        break: true
+      tsandjs:
+        enabled: true
+        break: true
+      python:
+        enabled: true
+        break: true
+      credscan:
+        enable: true
+        break: true
+      policheck:
+        enable: true
+        break: true
       binskim:
         enabled: true
         break: true
@@ -123,7 +135,6 @@ extends:
         break: false
 
     stages:
-    
     - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
@@ -143,24 +154,20 @@ extends:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
-        IsOfficial: true
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-      parameters:
-        TestOnArm64: ${{ parameters.TestOnArm64 }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
-        PublishToMaestro: ${{ parameters.PublishToMaestro }}
+        PublishToMaestro: false
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
         TestSampleApps: ${{ parameters.TestSampleApps }}
         TestOnArm64: ${{ parameters.TestOnArm64 }}
-        MaestroDependOnTestSamples: ${{ parameters.MaestroDependOnTestSamples }}
-
+        MaestroDependOnTestSamples: false
 
     - ${{ if eq( parameters.BuildSampleApps, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
