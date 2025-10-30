@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -27,6 +27,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentActivityContext.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDefinitions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Licensing.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeployment.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageUtilities.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageRegistrar.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LicenseInstallerProxy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentTraceLogging.cpp" />
@@ -34,6 +39,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentActivityContext.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Licensing.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeployment.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageUtilities.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageRegistrar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)DeploymentManagerAutoInitializer.cs" />
