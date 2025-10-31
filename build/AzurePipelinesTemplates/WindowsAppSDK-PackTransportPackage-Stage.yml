@@ -167,12 +167,6 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          if ([int]$(versionCounter) -gt 999)
-          {
-            Write-Host "Revision Number limit reach. Please try again the next day"
-            Write-Host "##vso[task.complete result=Failed;]DONE"
-          }
-
           $buildType = '$(channel)'
           $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).3'
           
