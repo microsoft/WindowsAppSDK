@@ -167,17 +167,6 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          $paddedRevision = '$(versionCounter)'
-          if([int]$(versionCounter) -lt 10)
-          {
-            $paddedRevision = '00' + '$(versionCounter)'
-          }
-          elseif ([int]$(versionCounter) -lt 100)
-          {
-            $paddedRevision = '0' + '$(versionCounter)'
-          }
-          Write-Host "paddedRevision " $paddedRevision
-
           if ([int]$(versionCounter) -gt 999)
           {
             Write-Host "Revision Number limit reach. Please try again the next day"
@@ -186,7 +175,6 @@ stages:
 
           $buildType = '$(channel)'
           $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).2'
-          $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
           
           if ($env:ComponentType)
           {
