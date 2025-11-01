@@ -36,8 +36,11 @@
         ]
     }
 
-.PARAMETER OutputFolder
+.PARAMETER BuildOutputFolder
     Set the base folder for the script to look for testdefs
+
+.PARAMETER TestOutputFolder
+    If set, the test log and screenshots will be copied to this folder after running the tests
 
 .PARAMETER Platform
     Only run tests for the selected platform
@@ -48,147 +51,262 @@
 .PARAMETER List
     List the tests available in BuildOutput with their settings
 
+.PARAMETER BuildTests
+    Builds the tests from source before running them
+
 .PARAMETER Test
     Runs the tests available in BuildOutput
+
+.PARAMETER ShowSystemInfo
+    Show system information before running the tests
+
+.PARAMETER wprProfilePath
+    WPR profile to use for ETW logging
+
+.PARAMETER callingStage
+    If set to 'TestSampleApps', only tests from WindowsAppSDK.Test.SampleTests.dll
+
+.PARAMETER CustomParameters
+    Override test parameters for all executed tests
+
+.PARAMETER FilterTestDef
+    Filter tests by testdef file full name using regex pattern matching
+
+.PARAMETER FilterDescription
+    Filter tests by description field using regex pattern matching
+
+.PARAMETER FilterDllFilename
+    Filter tests by Dll filename using regex pattern matching
+
+.PARAMETER FilterParameters
+    Filter tests by parameters field using regex pattern matching
+
 #>
 
 param(
-        [Parameter(Mandatory=$true)]
-        [string]$OutputFolder,
+        [string]$BuildOutputFolder = (Join-Path $PSScriptRoot "BuildOutput"),
 
-        [Parameter(Mandatory=$true)]
-        [string]$Platform,
+        [string]$TestOutputFolder,
 
-        [Parameter(Mandatory=$true)]
-        [string]$Configuration,
+        [string]$Platform = "$($env:PROCESSOR_ARCHITECTURE)",
 
-        [Parameter(Mandatory=$false)]
+        [string]$Configuration = "Release",
+
         [Switch]$Test,
 
-        [Parameter(Mandatory=$false)]
         [Switch]$List,
 
-        [Parameter(Mandatory=$false)]
-        [Switch]$ShowSystemInfo=$true,
+        [Switch]$BuildTests,
 
-        [Parameter(Mandatory=$true)]
+        [Switch]$ShowSystemInfo = $true,
+
+        [switch]$SaveScreenshots,
+
         [string]$wprProfilePath,
 
-        [Parameter(Mandatory=$false)]
-        [string]$callingStage = ''
+        [string]$callingStage,
+
+        [string]$CustomParameters,
+
+        [string]$FilterTestDef,
+
+        [string]$FilterDescription,
+
+        [string]$FilterDllFilename,
+
+        [string]$FilterParameters
 )
 
+if ($Platform -eq "AMD64")
+{
+    $Platform = "x64"
+}
+
 $StartTime = Get-Date
-$lastexitcode = 0
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
+class TestInfo
+{
+    [string]$Test
+    [string]$Description
+    [ValidateSet("TAEF", "Powershell", IgnoreCase=$true)]
+    [string]$Type
+    [ValidateNotNullOrEmpty()][string]$Filename
+    [string]$Parameters
+    [string[]]$Architectures
+    [string]$Status
+    [ValidateNotNullOrEmpty()][string]$TestDef
+}
+
+function Build-Tests
+{
+    param(
+        [TestInfo[]]$tests,
+        [ValidateSet("Debug", "Release", IgnoreCase=$true)]
+        [string]$Configuration,
+        [ValidateSet("x86", "x64", "arm64", IgnoreCase=$true)]
+        [string]$Platform
+    )
+
+    $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
+    Write-Host "VCToolsInstallDir: $VCToolsInstallDir"
+
+    $msbuildPath = Join-Path $VCToolsInstallDir "MSBuild\Current\Bin\msbuild.exe"
+    Write-Host "MSBuild Path: $msbuildPath"
+
+    # Build each test project once
+    $projectsBuilt = @{}
+
+    foreach ($test in $tests)
+    {
+        $testDefFile = $test.TestDef
+        Write-Host "Building tests for testdef: $testDefFile"
+
+        $testFolder = Split-Path -parent $testDefFile
+        Write-Host "Building tests in folder: $testFolder"
+        $projFile = Get-ChildItem -Filter "*.vcxproj" -Path $testFolder | Select-Object -First 1
+
+        if ($null -eq $projFile)
+        {
+            Write-Error "Could not find a .vcxproj file in $testFolder"
+            Exit 1
+        }
+
+        Write-Host "Found project file: $projFile"
+
+        if ($projectsBuilt.ContainsKey($projFile.FullName))
+        {
+            Write-Host "Project already built. Skipping."
+            continue
+        }
+
+        & $msbuildPath $projFile.FullName /p:Configuration=$Configuration /p:Platform=$Platform /v:minimal
+        $projectsBuilt[$projFile.FullName] = $true
+
+        if ($lastexitcode -ne 0)
+        {
+            Write-Error "Build failed for project $($projFile.FullName)"
+            Exit 1
+        }
+    }
+}
+
+
 function Get-Tests
 {
-    $configPlat = Join-Path $Configuration $Platform
-    $outputFolderPath = Join-Path $OutputFolder $configPlat
+    param([string]$baseFolder)
 
-    $tests = @()
-    foreach ($testdef in (Get-ChildItem -Recurse -Filter "*.testdef" $outputFolderPath))
+    $testDefs = Get-ChildItem -Recurse -Filter "*.testdef" $baseFolder -ErrorAction SilentlyContinue
+
+    $allTests = foreach ($testDefFile in $testDefs)
     {
-        $testJson = Get-Content -Raw $testdef.FullName | ConvertFrom-Json
-
+        $testJson = Get-Content -Raw $testDefFile.FullName | ConvertFrom-Json
         $count = 0
-        $baseId = $testdef.BaseName
+
         foreach ($testConfig in $testJson.Tests)
         {
-            $testConfig | Write-Host
-            if ($testConfig -contains 'Type')
-            {
-                $testType = $testConfig.Type
-            }
-            else
-            {
-                $testType = 'TAEF'
+            $baseId = $testDefFile.BaseName
+            $testType = if ($testConfig.PSObject.Properties['Type']) { $testConfig.Type } else { 'TAEF' }
+
+            [TestInfo]@{
+                Test = "$baseId-Test$count"
+                Description = $testConfig.Description
+                Filename = $testConfig.Filename
+                Parameters = $testConfig.Parameters
+                Architectures = $testConfig.Architectures
+                Status = $testConfig.Status
+                TestDef = $testDefFile.FullName
+                Type = $testType
             }
 
-            $id = $baseId + "-Test$count"
-            $t = [PSCustomObject]@{}
-            $t | Add-Member -MemberType NoteProperty -Name 'Test' -Value $id
-            $t | Add-Member -MemberType NoteProperty -Name 'Description' -Value $testConfig.Description
-            $t | Add-Member -MemberType NoteProperty -Name 'Filename' -Value $testConfig.Filename
-            $t | Add-Member -MemberType NoteProperty -Name 'Parameters' -Value $testConfig.Parameters
-            $t | Add-Member -MemberType NoteProperty -Name 'Architectures' -Value $testConfig.Architectures
-            $t | Add-Member -MemberType NoteProperty -Name 'Status' -Value $testConfig.Status
-            $t | Add-Member -MemberType NoteProperty -Name 'TestDef' -Value $testdef.FullName
-            $t | Add-Member -MemberType NoteProperty -Name 'Type' -Value $testType
-
-            $tests += $t
-            $count += 1
+            $count++
         }
     }
 
-    if ($callingStage -eq 'TestSampleApps')
-    {
-        $tests = $tests | Where-Object { $_.Filename -like "WindowsAppSDK.Test.SampleTests.dll" }
-    }
-    else 
-    {
-        $tests = $tests | Where-Object { $_.Filename -notlike "WindowsAppSDK.Test.SampleTests.dll" }
-    }
-
-    $tests
+    return $allTests
 }
 
 function List-Tests
 {
-    $tests = Get-Tests
+    param([TestInfo[]]$tests)
+
     $tests | Sort-Object -Property Test | Format-Table Test,Description,Type,Filename,Parameters,Architectures,Status -AutoSize | Out-String -Width 512
 }
 
 function Run-TaefTest
 {
-    param($test)
+    param(
+        [TestInfo]$test,
+        [string]$customParameters = "",
+        [string]$additionalParams = ""
+    )
 
     $testFolder = Split-Path -parent $test.TestDef
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
 
-    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
-    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
+    $teParams = @($dllFile)
 
-    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile /testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
-}
+    if ($customParameters) {
+        $test.Parameters = $customParameters
+    }
 
-function Run-PowershellTest
-{
-    param($test)
+    if ($test.Parameters) {
+        $teParams += $test.Parameters.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
+    }
 
-    Write-Host "Powershell tests not supported"
+    $allParams = $teParams + $additionalParams.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
+
+    & $tePath @allParams
 }
 
 function Run-Tests
 {
-    $tests = Get-Tests
+    param(
+        [TestInfo[]]$tests,
+        [ValidateSet("x86", "x64", "arm64", IgnoreCase=$true)]
+        [string]$platform,
+        [switch]$runDisabled = $false,
+        [string]$customParameters = "",
+        [string]$additionalParams = ""
+    )
+
+    Write-Host "Run disabled tests: $runDisabled"
+    Write-Host "Custom parameters: $customParameters"
+    Write-Host "Additional parameters: $additionalParams"
+
+
     foreach ($test in $tests)
     {
+        Write-Host ""
         Write-Host "$($test.Filename) - $($test.Description)"
-        $validPlatform = $test.Architectures.Contains($Platform)
+        Write-Host ""
+
+        $validPlatform = $test.Architectures.Contains($platform)
         $testEnabled = $test.Status -eq "Enabled"
-        if ($validPlatform -and $testEnabled)
+
+        if ($validPlatform -and ($testEnabled -or $runDisabled))
         {
+            Write-Host "Running test for platform $platform..."
             if ($test.Type -eq 'TAEF')
             {
-                Run-TaefTest $test
+                Run-TaefTest $test $customParameters $additionalParams
             }
             elseif ($test.Type -eq 'Powershell')
             {
-                Run-PowershellTest $test
+                Write-Host "Powershell tests not supported."
+                Exit 1
             }
             else
             {
-                Write-Host "Unknown test type '$test.Type'. Not running."
+                Write-Host "Unknown test type '$($test.Type)'. Not running."
                 Exit 1
             }
         }
         elseif (-not($validPlatform))
         {
-            Write-Host "$Platform not listed in supported architectures."
+            Write-Host "$Platform not listed in supported architectures: $($test.Architectures -join ', ')"
         }
         elseif (-not($testEnabled))
         {
@@ -230,63 +348,127 @@ function Get-SystemInfo
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
 }
 
+function Select-Tests
+{
+    param(
+        [TestInfo[]]$tests
+    )
+
+    $filteredTests = $tests | Where-Object {
+        (-not $FilterTestDef -or $_.TestDef -match $FilterTestDef) -and
+        (-not $FilterDescription -or $_.Description -match $FilterDescription) -and
+        (-not $FilterDllFilename -or $_.Filename -match $FilterDllFilename) -and
+        (-not $FilterParameters -or $_.Parameters -match $FilterParameters)
+    }
+
+    if ($callingStage -eq 'TestSampleApps')
+    {
+        $filteredTests = $filteredTests | Where-Object { $_.Filename -like "WindowsAppSDK.Test.SampleTests.dll" }
+    }
+    else
+    {
+        $filteredTests = $filteredTests | Where-Object { $_.Filename -notlike "WindowsAppSDK.Test.SampleTests.dll" }
+    }
+
+    return $filteredTests
+}
+
 $env:Build_Platform = $Platform.ToLower()
 $env:Build_Configuration = $Configuration.ToLower()
 
-if ($ShowSystemInfo -eq $true)
+if ($ShowSystemInfo)
 {
     Get-SystemInfo
 }
 
-if ($List -eq $true)
+if ($BuildTests)
 {
-    List-Tests | Out-String
+    Write-Host ""
+    Write-Host "Building tests" -ForegroundColor Yellow
+    Write-Host ""
+
+    $testsSourceFolder = Join-Path $PSScriptRoot "test"
+
+    $tests = Select-Tests (Get-Tests $testsSourceFolder)
+    Build-Tests $tests -Platform $Platform -Configuration $Configuration
 }
 
-if ($Test -eq $true)
+$outputFolderPath = Join-Path $BuildOutputFolder "$Configuration\$Platform"
+
+$allTests = Select-Tests (Get-Tests $outputFolderPath)
+
+if ($List)
 {
-    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
-    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
+    List-Tests $allTests | Out-String
+}
+
+if ($Test)
+{
+    $additionalParams = @()
+
+    $teLogFile = Join-Path $outputFolderPath "Te.wtl"
     remove-item -Path $teLogFile -ErrorAction Ignore
-    remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
+    $additionalParams += "/logFile:$teLogFile"
 
-    Run-Tests
-
-    # copy test log to TestOutput folder
-    if (Test-Path -Path $teLogFile) {
-        Write-Host "Starting copy test log from '$teLogFile'"
-
-        New-Item -ItemType Directory -Path $teLogPathTo -Force
-        copy-item -Path $teLogFile -Destination $teLogPathTo -Force
-
-        Write-Host "Test log copied to '$teLogPathTo'"
-    }
-
-    # copy screenshots to TestOutput folder
-    $screenshotsFolder = Join-Path $env:Build_SourcesDirectory "WexLogFileOutput"
-    if (Test-Path -Path $screenshotsFolder) {
-        Write-Host "Starting copy screenshots from '$screenshotsFolder'"
-
-        # Copy at most 50 screenshots to the upload path.
-        # In the cases where a large number of tests failed, there is little value in uploading dozens of screenshots
-        $files = Get-ChildItem -Path $screenshotsFolder -Filter *.jpg |Select-Object -First 50
-        foreach($file in $files)
-        {
-            Copy-Item $file.FullName $teLogPathTo -Force
-        }
-
-        # Copy at most 20 tracelogging files to the upload path.
-        $files = Get-ChildItem -Path $screenshotsFolder -Filter *.etl |Select-Object -First 20
-        foreach($file in $files)
-        {
-            Copy-Item $file.FullName $teLogPathTo -Force
-        }
-
-        Write-Host "Test results copied to '$teLogPathTo'"
-    }
-    else
+    if ($wprProfilePath -ne '')
     {
-        Write-Host "WexLogFileOutput not found"
+        $additionalParams += "/enableWttLogging"
+        $additionalParams += "/appendWttLogging"
+        $additionalParams += "/testMode:ETWLogger"
+        $additionalParams += "/EtwLogger:WprProfile=WDGDEPAdex"
+        $additionalParams += "/EtwLogger:SavePoint=TestFailure"
+        $additionalParams += "/EtwLogger:RecordingScope=Execution"
+        $additionalParams += "/EtwLogger:WprProfileFile=$WprProfilePath"
+    }
+
+    if ($SaveScreenshots)
+    {
+        $additionalParams += "/screenCaptureOnError"
+    }
+
+    Run-Tests $allTests -additionalParams $additionalParams -customParameters $CustomParameters -platform $Platform.ToLower()
+
+    if ($TestOutputFolder -ne '')
+    {
+        $teLogPathTo = Join-Path $TestOutputFolder "$Configuration\$Platform"
+        remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
+
+        # copy test log to TestOutput folder
+        if (Test-Path -Path $teLogFile) {
+            Write-Host "Starting copy test log from '$teLogFile'"
+
+            New-Item -ItemType Directory -Path $teLogPathTo -Force
+            copy-item -Path $teLogFile -Destination $teLogPathTo -Force
+
+            Write-Host "Test log copied to '$teLogPathTo'"
+        }
+
+        # copy screenshots to TestOutput folder
+        $screenshotsFolder = Join-Path (Split-Path $BuildOutputFolder -parent) "WexLogFileOutput"
+        if (Test-Path -Path $screenshotsFolder) {
+            Write-Host "Starting copy screenshots from '$screenshotsFolder'"
+
+            # Copy at most 50 screenshots to the upload path.
+            # In the cases where a large number of tests failed, there is little value in uploading dozens of screenshots
+            $files = Get-ChildItem -Path $screenshotsFolder -Filter *.jpg |Select-Object -First 50
+            foreach($file in $files)
+            {
+                Copy-Item $file.FullName $teLogPathTo -Force
+            }
+
+            # Copy at most 20 tracelogging files to the upload path.
+            $files = Get-ChildItem -Path $screenshotsFolder -Filter *.etl |Select-Object -First 20
+            foreach($file in $files)
+            {
+                Copy-Item $file.FullName $teLogPathTo -Force
+            }
+
+            Write-Host "Test results copied to '$teLogPathTo'"
+        }
+        else
+        {
+            Write-Host "WexLogFileOutput not found"
+        }
     }
 }
 
