@@ -14,8 +14,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         // Add real changes here:
 
-        // 1.7.1
-        // ...
+        // 1.8.3
+        OrientedVirtualizingPanel_FixBoundsOverflow = 59890419,
     };
 
     /// Represents a version of the Windows App Runtime.
