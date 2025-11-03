@@ -35,16 +35,20 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowChrome_SetTitleBarCrash = 57693465,
 
         // 1.7.4
-        AppWindow_NoDidPresenterChangeOnRestore = 58567549, 
-        DesktopSiteBridge_ActivationErrorCrash = 58821687, 
-        DispatcherQueue_PropagateException = 58472221, 
-        GetIntermediatePointsImpl_Crash = 58768401, 
-        InputPointerSource_ReentrantDisposedCrash = 58635438, 
-        NavigationView_ClearSelectedItem = 58987595, 
-        XamlIsland_ExitNonClientArea = 58987663, 
+        AppWindow_NoDidPresenterChangeOnRestore = 58567549,
+        DesktopSiteBridge_ActivationErrorCrash = 58821687,
+        DispatcherQueue_PropagateException = 58472221,
+        GetIntermediatePointsImpl_Crash = 58768401,
+        InputPointerSource_ReentrantDisposedCrash = 58635438,
+        NavigationView_ClearSelectedItem = 58987595,
+        XamlIsland_ExitNonClientArea = 58987663,
 
         // 1.7.5
-        InputPointerSource_FixScrollForInactiveWindowSetting = 56681943, 
+        InputPointerSource_FixScrollForInactiveWindowSetting = 56681943,
+
+        // 1.7.6
+        OrientedVirtualizingPanel_FixBoundsOverflow = 59890418,
+        ContentIsland_StartupCrashWhenLongRunning = 59707004,
     };
 
     /// Represents a version of the Windows App Runtime.
