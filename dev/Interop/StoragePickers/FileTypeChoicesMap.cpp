@@ -10,6 +10,11 @@
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
+    namespace
+    {
+        constexpr size_t element_not_found{ SIZE_MAX };
+    }
+
     FileTypeChoicesMap::FileTypeChoicesMap()
     {
         // Pre-allocate capacity for typical file type choices (usually 2-8 items)
@@ -20,19 +25,19 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     size_t FileTypeChoicesMap::FindKeyIndex(hstring const& key) const
     {
         auto it = m_keyToIndex.find(std::wstring(key.c_str()));
-        return (it != m_keyToIndex.end()) ? it->second : SIZE_MAX;
+        return (it != m_keyToIndex.end()) ? it->second : element_not_found;
     }
 
     auto FileTypeChoicesMap::FindKey(hstring const& key) const
     {
         size_t index = FindKeyIndex(key);
-        return (index != SIZE_MAX) ? m_orderedMap.begin() + index : m_orderedMap.end();
+        return (index != element_not_found) ? m_orderedMap.begin() + index : m_orderedMap.end();
     }
 
     auto FileTypeChoicesMap::FindKey(hstring const& key)
     {
         size_t index = FindKeyIndex(key);
-        return (index != SIZE_MAX) ? m_orderedMap.begin() + index : m_orderedMap.end();
+        return (index != element_not_found) ? m_orderedMap.begin() + index : m_orderedMap.end();
     }
 
     bool FileTypeChoicesMap::Insert(hstring const& key, winrt::Windows::Foundation::Collections::IVector<hstring> const& value)
@@ -56,7 +61,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         // Check if key already exists using O(1) lookup
         size_t index = FindKeyIndex(key);
-        if (index != SIZE_MAX)
+        if (index != element_not_found)
         {
             // Key exists, update the value
             m_orderedMap[index].second = validatingVector;
@@ -100,7 +105,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     void FileTypeChoicesMap::Remove(hstring const& key)
     {
         size_t index = FindKeyIndex(key);
-        if (index != SIZE_MAX)
+        if (index != element_not_found)
         {
             // Remove from vector
             m_orderedMap.erase(m_orderedMap.begin() + index);
