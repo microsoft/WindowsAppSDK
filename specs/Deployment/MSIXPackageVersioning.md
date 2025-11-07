@@ -520,3 +520,20 @@ length constraints. The specific packages Names in Windows App SDK 1.0:
 * WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 See [2.5. Decision 5: Package Names](#25-decision-5-package-names) for more details.
+
+
+## Version Starting 2.0
+In 2.0, we will be switching the family name of the MSIX package. The new style will be:
+`Microsoft.WindowsAppRuntime[.SubName].<rmajor>[-tag]` - translated to the individual names as above.
+
+The version will also change:
+<Major>.<Minor>.<Patch>.<securityupdate>
+
+The Major, Minor, and Patch versions are all in a centralized Repo. All Repos that create 
+Metapackages will use the same centralized versions. When a full build of WindowsAppRuntime
+is completed, the Patch version will automatically update. When Major or Minor are manually updated
+the Patch will be reset to 0 at that point.
+
+This change will make it easier for people to know what version they are on. We will be keeping compatibility
+for all previous Minor versions within the same Major version. Developers also won't have to Manually upgrade to get 
+the new Minor Version.
