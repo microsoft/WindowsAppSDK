@@ -38,7 +38,7 @@ body:
       options:
         - "Windows App SDK 1.8.2: 1.8.251003001"
         - "Windows App SDK 1.8 Preview 1: 1.8.250814004-preview1"
-        - "Windows App SDK 2.0 Experimental 1: 2.0.250930001-experimental1"
+        - "Windows App SDK 2.0 Experimental 2: 2.0.0-experimental2"
   - type: dropdown
     attributes:
       label: Packaging type
