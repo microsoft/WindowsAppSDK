@@ -57,6 +57,8 @@
   <ItemGroup>
     <ExtensionDependencies Condition=" '$(ExcludeRestorePackageImports)' != 'true' " Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
     <Compile Include="..\..\..\Shared\WizardImplementation.cs" Link="WizardImplementation.cs" />
+    <Compile Include="..\..\..\Shared\Resources.Designer.cs" Link="Resources\Resources.Designer.cs" />
+    <EmbeddedResource Include="..\..\..\Shared\Resources.resx" Link="Resources\Resources.resx" />
     <Content Include="@(ExtensionDependencies)">
       <VSIXSubPath>.</VSIXSubPath>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -209,12 +211,6 @@
       <Link>Resources\VSPackage.zh-TW.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\..\Shared\Resources.resx" Link="Resources\Resources.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\Shared\Resources.Designer.cs" Link="Resources\Resources.Designer.cs" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
