@@ -530,7 +530,7 @@ The version will also change:
 <Major>.<Minor>.<Patch>.<securityupdate>
 
 The Major, Minor, and Patch versions are all in a centralized Repo. All Repos that create 
-Metapackages will use the same centralized versions. When a full build of WindowsAppRuntime
+Component packages will use the same centralized versions. When a full build of WindowsAppRuntime
 is completed, the Patch version will automatically update. When Major or Minor are manually updated
 the Patch will be reset to 0 at that point.
 
