@@ -153,6 +153,11 @@ where
 * Minor -- minor version of the release, e.g. "0" for Windows App SDK 1.0
 * VersionTag -- optional version tag to distinguish amongst channels and releases of a channel, e.g. "-preview2" for Windows App SDK 1.0 Preview 2
 
+## Change for 2.0
+
+In 2.0, all MSIX names will change to remove the Minor version as follows:
+* Name = Microsoft.WindowsAppRuntime[.SubName].\<Major\>[-VersionTag]
+
 ## 3.1. Package Naming - SubName
 
 The following SubName values are used:
