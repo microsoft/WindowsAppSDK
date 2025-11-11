@@ -36,9 +36,9 @@ body:
       label: NuGet package version
       description: Specify the version of Windows App SDK (or Project Reunion) you're using.
       options:
-        - "Windows App SDK 1.8.2: 1.8.251003001"
+        - "Windows App SDK 1.8.3: 1.8.251106002"
         - "Windows App SDK 1.8 Preview 1: 1.8.250814004-preview1"
-        - "Windows App SDK 2.0 Experimental 2: 2.0.0-experimental2"
+        - "Windows App SDK 2.0 Experimental 3: 2.0.0-experimental3"
   - type: dropdown
     attributes:
       label: Packaging type
