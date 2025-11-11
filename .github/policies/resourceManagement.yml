@@ -299,8 +299,6 @@ configuration:
       - commentContains:
           pattern: 'submit your feedback via the Feedback Hub'
           isRegex: False
-      - commentAuthor:
-          author: 'microsoft-github-policy-service'
       then:
       - closeIssue
 
