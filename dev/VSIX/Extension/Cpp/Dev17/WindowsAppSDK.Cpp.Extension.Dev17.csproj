@@ -82,6 +82,7 @@
     <Compile Include="..\..\..\Shared\WizardImplementation.cs" Link="WizardImplementation.cs" />
     <Compile Include="..\..\..\Shared\WizardInfoBarEvents.cs" Link="WizardInfoBarEvents.cs" />
     <Compile Include="..\..\..\Shared\OutputWindowHelper.cs" Link="OutputWindowHelper.cs" />
+    <Compile Include="..\..\..\Shared\Resources.cs" Link="Resources.cs" />
     <Content Include="@(ExtensionDependencies)">
       <VSIXSubPath>.</VSIXSubPath>
       <IncludeInVSIX>true</IncludeInVSIX>
