@@ -8,17 +8,17 @@ namespace WindowsAppSDK.TemplateUtilities
 {
     internal static class Resources
     {
-        private static ResourceManager s_resourceManager;
+        private static ResourceManager _resourceManager;
 
         private static ResourceManager ResourceManager
         {
             get
             {
-                if (s_resourceManager == null)
+                if (_resourceManager == null)
                 {
-                    s_resourceManager = new ResourceManager("VSPackage", typeof(Resources).Assembly);
+                    _resourceManager = new ResourceManager("VSPackage", typeof(Resources).Assembly);
                 }
-                return s_resourceManager;
+                return _resourceManager;
             }
         }
 
