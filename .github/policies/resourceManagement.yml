@@ -297,8 +297,10 @@ configuration:
           label: area-External
       - isOpen
       - commentContains:
-          pattern: '\/[E|e]xternal'
-          isRegex: True
+          pattern: 'submit your feedback via the Feedback Hub'
+          isRegex: False
+      - commentAuthor:
+          author: 'microsoft-github-policy-service'
       then:
       - closeIssue
 
