@@ -270,16 +270,17 @@ namespace WindowsAppSDK.TemplateUtilities
             var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
             var projectName = _project?.Name ?? "Unknown Project";
             var errorMessage = format == ErrorMessageFormat.InfoBar ?
-     Resources.Format(Resources.UnableToAddReferencesInfoBar, projectName, packageNames)
-  : Resources.Format(Resources.UnableToAddReferencesMessageBox, projectName, packageNames);
-    return errorMessage;
+            Resources.Format(Resources.UnableToAddReferencesInfoBar, projectName, packageNames)
+                : Resources.Format(Resources.UnableToAddReferencesMessageBox, projectName, packageNames);
+            return errorMessage;
         }
 
         private string CreateDetailedErrorMessage()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var errorLines = new System.Text.StringBuilder();
-            errorLines.AppendLine($"Missing Package References for {_project?.Name ?? "Unknown Project"}:");
+            var projectName = _project?.Name ?? "Unknown Project";
+            errorLines.AppendLine(Resources.Format(Resources.MissingPackageReferencesFor, projectName));
             
             foreach (var package in _failedPackageExceptions)
             {
@@ -287,7 +288,7 @@ namespace WindowsAppSDK.TemplateUtilities
             }
             
             errorLines.AppendLine();
-            errorLines.Append("Please manually add package references before building.");
+            errorLines.Append(Resources.PleaseAddPackageReferences);
 
             return errorLines.ToString();
         }
@@ -374,20 +375,20 @@ namespace WindowsAppSDK.TemplateUtilities
         }
 
         private IVsInfoBar CreateNuGetInfoBar(string message)
-   {
-            var infoBar = new InfoBarModel(
-        textSpans: new[]
-      {
-             new InfoBarTextSpan(message)
-    },
-        actionItems: new InfoBarActionItem[]
-                {
-       new InfoBarHyperlink(Resources.ManageNuGetPackages),
-  new InfoBarHyperlink(Resources.SeeErrorDetails)
+        {
+           var infoBar = new InfoBarModel(
+              textSpans: new[]
+              {
+                new InfoBarTextSpan(message)
               },
-        image: KnownMonikers.NuGetNoColorError,
-        isCloseButtonVisible: true);
-      return infoBar;
+              actionItems: new InfoBarActionItem[]
+              {
+                new InfoBarHyperlink(Resources.ManageNuGetPackages),
+                new InfoBarHyperlink(Resources.SeeErrorDetails)
+              },
+               image: KnownMonikers.NuGetNoColorError,
+               isCloseButtonVisible: true);
+           return infoBar;
         }
 
         public bool ShouldAddProjectItem(string _)

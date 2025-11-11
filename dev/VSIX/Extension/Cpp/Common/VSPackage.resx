@@ -229,9 +229,7 @@
     <value>Missing Package Reference(s)</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Unable to add references to the following packages for {0}: {1}.
-
-Please add package references before building.</value>
+    <value>Unable to add references to the following packages for {0}: {1}. Please add package references before building.</value>
   </data>
   <data name="1048" xml:space="preserve">
     <value>[{0}] Unable to add references to the following packages: {1}. This is an environment error. Please add package references before building the project.</value>
@@ -241,5 +239,11 @@ Please add package references before building.</value>
   </data>
   <data name="1050" xml:space="preserve">
     <value>See error details</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>Missing Package References for {0}:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Please manually add package references before building.</value>
   </data>
 </root>
