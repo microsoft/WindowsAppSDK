@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License
 
+using System;
 using System.Globalization;
 using System.Resources;
 
@@ -8,19 +9,10 @@ namespace WindowsAppSDK.TemplateUtilities
 {
     internal static class Resources
     {
-        private static ResourceManager _resourceManager;
+        private static readonly Lazy<ResourceManager> _resourceManager =
+            new Lazy<ResourceManager>(() => new ResourceManager("VSPackage", typeof(Resources).Assembly));
 
-        private static ResourceManager ResourceManager
-        {
-            get
-            {
-                if (_resourceManager == null)
-                {
-                    _resourceManager = new ResourceManager("VSPackage", typeof(Resources).Assembly);
-                }
-                return _resourceManager;
-            }
-        }
+        private static ResourceManager ResourceManager => _resourceManager.Value;
 
         public static string InstallingNuGetPackages => GetString("1044");
         public static string OperationInProgress => GetString("1045");
