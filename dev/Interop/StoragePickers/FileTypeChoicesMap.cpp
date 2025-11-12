@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         m_orderedMap->reserve(8);
     }
 
-    auto FileTypeChoicesMap::FindKey(hstring const& key) const noexcept
+    FileTypeChoiceVector::const_iterator FileTypeChoicesMap::FindKey(hstring const& key) const noexcept
     {
         for (auto it = m_orderedMap->cbegin(); it != m_orderedMap->cend(); ++it)
         {
@@ -28,7 +28,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         return m_orderedMap->cend();
     }
 
-    auto FileTypeChoicesMap::FindKey(hstring const& key) noexcept
+    FileTypeChoiceVector::iterator FileTypeChoicesMap::FindKey(hstring const& key) noexcept
     {
         for (auto it = m_orderedMap->begin(); it != m_orderedMap->end(); ++it)
         {
@@ -161,7 +161,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
     // OrderedMapView implementation
-    auto OrderedMapView::FindKey(hstring const& key) const noexcept -> FileTypeChoiceVector::const_iterator
+    FileTypeChoiceVector::const_iterator OrderedMapView::FindKey(hstring const& key) const noexcept
     {
         if (!m_map)
         {

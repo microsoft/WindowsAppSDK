@@ -42,8 +42,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         std::shared_ptr<FileTypeChoiceVector> m_orderedMap;
 
         // Helper methods
-        auto FindKey(hstring const& key) const noexcept;
-        auto FindKey(hstring const& key) noexcept;
+        FileTypeChoiceVector::const_iterator FindKey(hstring const& key) const noexcept;
+        FileTypeChoiceVector::iterator FindKey(hstring const& key) noexcept;
     };
 
     // Custom iterator to maintain insertion order
