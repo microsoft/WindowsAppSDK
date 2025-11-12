@@ -32,6 +32,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
+        private Resources _resources = new Resources();
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -90,7 +91,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 // Start the threaded wait dialog
                 if (_waitDialog != null)
                 {
-                    _waitDialog.StartWaitDialog(null, Resources.InstallingNuGetPackages, null, null, Resources.OperationInProgress, 0, false, true);
+                    _waitDialog.StartWaitDialog(null, _resources.InstallingNuGetPackages, null, null, _resources.OperationInProgress, 0, false, true);
                 }
 
                 // Now await the installation task to complete
@@ -182,7 +183,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     
                     var result = MessageBox.Show(
                         errorMessage,
-                        Resources.MissingPackageReferences,
+                        _resources.MissingPackageReferences,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                     
@@ -270,8 +271,8 @@ namespace WindowsAppSDK.TemplateUtilities
             var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
             var projectName = _project?.Name ?? "Unknown Project";
             var errorMessage = format == ErrorMessageFormat.InfoBar ?
-            Resources.Format(Resources.UnableToAddReferencesInfoBar, projectName, packageNames)
-                : Resources.Format(Resources.UnableToAddReferencesMessageBox, projectName, packageNames);
+            _resources.Format(_resources.UnableToAddReferencesInfoBar, projectName, packageNames)
+                : _resources.Format(_resources.UnableToAddReferencesMessageBox, projectName, packageNames);
             return errorMessage;
         }
 
@@ -280,7 +281,7 @@ namespace WindowsAppSDK.TemplateUtilities
             ThreadHelper.ThrowIfNotOnUIThread();
             var errorLines = new System.Text.StringBuilder();
             var projectName = _project?.Name ?? "Unknown Project";
-            errorLines.AppendLine(Resources.Format(Resources.MissingPackageReferencesFor, projectName));
+            errorLines.AppendLine(_resources.Format(_resources.MissingPackageReferencesFor, projectName));
             
             foreach (var package in _failedPackageExceptions)
             {
@@ -288,7 +289,7 @@ namespace WindowsAppSDK.TemplateUtilities
             }
             
             errorLines.AppendLine();
-            errorLines.Append(Resources.PleaseAddPackageReferences);
+            errorLines.Append(_resources.PleaseAddPackageReferences);
 
             return errorLines.ToString();
         }
@@ -383,8 +384,8 @@ namespace WindowsAppSDK.TemplateUtilities
               },
               actionItems: new InfoBarActionItem[]
               {
-                new InfoBarHyperlink(Resources.ManageNuGetPackages),
-                new InfoBarHyperlink(Resources.SeeErrorDetails)
+                new InfoBarHyperlink(_resources.ManageNuGetPackages),
+                new InfoBarHyperlink(_resources.SeeErrorDetails)
               },
                image: KnownMonikers.NuGetNoColorError,
                isCloseButtonVisible: true);
