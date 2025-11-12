@@ -90,7 +90,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 // Start the threaded wait dialog
                 if (_waitDialog != null)
                 {
-                    _waitDialog.StartWaitDialog(null, "Installing NuGet packages into project...", null, null, "Operation in progress...", 0, false, true);
+                    _waitDialog.StartWaitDialog(null, Resources.InstallingNuGetPackages, null, null, Resources.OperationInProgress, 0, false, true);
                 }
 
                 // Now await the installation task to complete
@@ -182,7 +182,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     
                     var result = MessageBox.Show(
                         errorMessage,
-                        "Missing Package Reference(s)",
+                        Resources.MissingPackageReferences,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                     
@@ -270,8 +270,8 @@ namespace WindowsAppSDK.TemplateUtilities
             var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
             var projectName = _project?.Name ?? "Unknown Project";
             var errorMessage = format == ErrorMessageFormat.InfoBar ?
-                $"[{projectName}] Unable to add references to the following packages: {packageNames}.{separator}This is an environment error. Please add package references before building the project."
-                : $"Unable to add references to the following packages for {projectName}: {packageNames}.{separator}Please add package references before building.";
+            Resources.Format(Resources.UnableToAddReferencesInfoBar, projectName, packageNames)
+                : Resources.Format(Resources.UnableToAddReferencesMessageBox, projectName, packageNames);
             return errorMessage;
         }
 
@@ -279,7 +279,8 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var errorLines = new System.Text.StringBuilder();
-            errorLines.AppendLine($"Missing Package References for {_project?.Name ?? "Unknown Project"}:");
+            var projectName = _project?.Name ?? "Unknown Project";
+            errorLines.AppendLine(Resources.Format(Resources.MissingPackageReferencesFor, projectName));
             
             foreach (var package in _failedPackageExceptions)
             {
@@ -287,7 +288,7 @@ namespace WindowsAppSDK.TemplateUtilities
             }
             
             errorLines.AppendLine();
-            errorLines.Append("Please manually add package references before building.");
+            errorLines.Append(Resources.PleaseAddPackageReferences);
 
             return errorLines.ToString();
         }
@@ -375,19 +376,19 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private IVsInfoBar CreateNuGetInfoBar(string message)
         {
-            var infoBar = new InfoBarModel(
-                textSpans: new[]
-                {
-                    new InfoBarTextSpan(message)
-                },
-                actionItems: new InfoBarActionItem[]
-                {
-                    new InfoBarHyperlink("Manage NuGet Packages"),
-                    new InfoBarHyperlink("See error details")
-                },
-                image: KnownMonikers.NuGetNoColorError,
-                isCloseButtonVisible: true);
-            return infoBar;
+           var infoBar = new InfoBarModel(
+              textSpans: new[]
+              {
+                new InfoBarTextSpan(message)
+              },
+              actionItems: new InfoBarActionItem[]
+              {
+                new InfoBarHyperlink(Resources.ManageNuGetPackages),
+                new InfoBarHyperlink(Resources.SeeErrorDetails)
+              },
+               image: KnownMonikers.NuGetNoColorError,
+               isCloseButtonVisible: true);
+           return infoBar;
         }
 
         public bool ShouldAddProjectItem(string _)
