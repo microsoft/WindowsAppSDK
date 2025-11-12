@@ -310,6 +310,149 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(std::wstring(documents.Value().GetAt(0)), L".txt");
         }
 
+        TEST_METHOD(VerifyFileTypeChoicesReuseExistingIndexWhenReplacingEntry)
+        {
+            // Arrange. Start with two entries to capture initial ordering.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+            picker.FileTypeChoices().Insert(
+                L"Images", winrt::single_threaded_vector<winrt::hstring>({ L".png" }));
+
+            auto existingView = picker.FileTypeChoices().GetView();
+            auto iterator = existingView.First();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            auto documents = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(documents.Key()), L"Documents");
+            VERIFY_ARE_EQUAL(documents.Value().Size(), 1u);
+            VERIFY_ARE_EQUAL(std::wstring(documents.Value().GetAt(0)), L".txt");
+
+            // Act. Reinsert Documents with new extensions; this should reuse the original slot.
+            // in csharp winrt: picker.FileTypeChoices["Documents"] = new List<string> { ".doc", ".docx" };
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".doc", L".docx" }));
+
+            // Assert. The size remains unchanged and the existing view reflects the updated entry in-place.
+            VERIFY_ARE_EQUAL(2u, picker.FileTypeChoices().Size());
+
+            iterator = existingView.First();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            documents = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(documents.Key()), L"Documents");
+            VERIFY_ARE_EQUAL(documents.Value().Size(), 2u);
+            VERIFY_ARE_EQUAL(std::wstring(documents.Value().GetAt(0)), L".doc");
+            VERIFY_ARE_EQUAL(std::wstring(documents.Value().GetAt(1)), L".docx");
+
+            iterator.MoveNext();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            auto images = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(images.Key()), L"Images");
+            VERIFY_ARE_EQUAL(images.Value().Size(), 1u);
+            VERIFY_ARE_EQUAL(std::wstring(images.Value().GetAt(0)), L".png");
+        }
+
+        TEST_METHOD(VerifyFileTypeChoicesRemoveEntryUpdatesView)
+        {
+            // Arrange. Insert three entries so removals cover middle, head, and no-op cases.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+            picker.FileTypeChoices().Insert(
+                L"Images", winrt::single_threaded_vector<winrt::hstring>({ L".png" }));
+            picker.FileTypeChoices().Insert(
+                L"Adobe Illustrator", winrt::single_threaded_vector<winrt::hstring>({ L".ai" }));
+
+            auto view = picker.FileTypeChoices().GetView();
+
+            auto iterator = view.First();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            auto documents = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(documents.Key()), L"Documents");
+            VERIFY_ARE_EQUAL(1u, documents.Value().Size());
+            VERIFY_ARE_EQUAL(std::wstring(documents.Value().GetAt(0)), L".txt");
+
+            iterator.MoveNext();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            auto images = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(images.Key()), L"Images");
+            VERIFY_ARE_EQUAL(1u, images.Value().Size());
+            VERIFY_ARE_EQUAL(std::wstring(images.Value().GetAt(0)), L".png");
+
+            iterator.MoveNext();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            auto illustrator = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(illustrator.Key()), L"Adobe Illustrator");
+            VERIFY_ARE_EQUAL(1u, illustrator.Value().Size());
+            VERIFY_ARE_EQUAL(std::wstring(illustrator.Value().GetAt(0)), L".ai");
+
+            iterator.MoveNext();
+            VERIFY_IS_FALSE(iterator.HasCurrent());
+
+            // Act 1. Remove the middle entry (Images).
+            picker.FileTypeChoices().Remove(L"Images");
+
+            // Assert 1. Remaining entries stay ordered and view reflects removal.
+            VERIFY_ARE_EQUAL(2u, picker.FileTypeChoices().Size());
+            iterator = view.First();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            documents = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(documents.Key()), L"Documents");
+
+            iterator.MoveNext();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            illustrator = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(illustrator.Key()), L"Adobe Illustrator");
+
+            iterator.MoveNext();
+            VERIFY_IS_FALSE(iterator.HasCurrent());
+            try
+            {
+                (void)view.Lookup(L"Images");
+                VERIFY_FAIL(L"Expected hresult_out_of_bounds for removed middle key.");
+            }
+            catch (winrt::hresult_error const& e)
+            {
+                VERIFY_IS_TRUE(e.code() == winrt::hresult_out_of_bounds());
+            }
+
+            // Act 2. Remove the first entry (Documents).
+            picker.FileTypeChoices().Remove(L"Documents");
+
+            // Assert 2. Only Adobe Illustrator remains.
+            VERIFY_ARE_EQUAL(1u, picker.FileTypeChoices().Size());
+            iterator = view.First();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            illustrator = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(illustrator.Key()), L"Adobe Illustrator");
+            iterator.MoveNext();
+            VERIFY_IS_FALSE(iterator.HasCurrent());
+            try
+            {
+                (void)view.Lookup(L"Documents");
+                VERIFY_FAIL(L"Expected hresult_out_of_bounds for removed head key.");
+            }
+            catch (winrt::hresult_error const& e)
+            {
+                VERIFY_IS_TRUE(e.code() == winrt::hresult_out_of_bounds());
+            }
+
+            // Act 3. Remove Images again to confirm no-op behavior.
+            picker.FileTypeChoices().Remove(L"Images");
+
+            // Assert 3. Map and view remain unchanged.
+            VERIFY_ARE_EQUAL(1u, picker.FileTypeChoices().Size());
+            iterator = view.First();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            illustrator = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(illustrator.Key()), L"Adobe Illustrator");
+            iterator.MoveNext();
+            VERIFY_IS_FALSE(iterator.HasCurrent());
+        }
+
         TEST_METHOD(VerifyFilters_FileSavePickerWhenNoFileTypeChoicesDefinedExpectAsteriskSpec)
         {
             // Note that is is a different behavior than the UWP pickers, where FileTypeChoices are required.
