@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         m_orderedMap->reserve(8);
     }
 
-    auto FileTypeChoicesMap::FindKey(hstring const& key) const
+    auto FileTypeChoicesMap::FindKey(hstring const& key) const noexcept
     {
         for (auto it = m_orderedMap->cbegin(); it != m_orderedMap->cend(); ++it)
         {
@@ -28,7 +28,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         return m_orderedMap->cend();
     }
 
-    auto FileTypeChoicesMap::FindKey(hstring const& key)
+    auto FileTypeChoicesMap::FindKey(hstring const& key) noexcept
     {
         for (auto it = m_orderedMap->begin(); it != m_orderedMap->end(); ++it)
         {
@@ -85,12 +85,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         throw winrt::hresult_out_of_bounds(L"Key not found");
     }
 
-    uint32_t FileTypeChoicesMap::Size() const
+    uint32_t FileTypeChoicesMap::Size() const noexcept
     {
         return static_cast<uint32_t>(m_orderedMap->size());
     }
 
-    bool FileTypeChoicesMap::HasKey(hstring const& key) const
+    bool FileTypeChoicesMap::HasKey(hstring const& key) const noexcept
     {
         return FindKey(key) != m_orderedMap->cend();
     }
@@ -133,12 +133,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         return tempMap.First().Current();
     }
 
-    bool OrderedMapIterator::HasCurrent() const
+    bool OrderedMapIterator::HasCurrent() const noexcept
     {
         return m_map && m_current < m_map->size();
     }
 
-    bool OrderedMapIterator::MoveNext()
+    bool OrderedMapIterator::MoveNext() noexcept
     {
         if (m_map && m_current < m_map->size())
         {
@@ -161,7 +161,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
     // OrderedMapView implementation
-    auto OrderedMapView::FindKey(hstring const& key) const -> FileTypeChoiceVector::const_iterator
+    auto OrderedMapView::FindKey(hstring const& key) const noexcept -> FileTypeChoiceVector::const_iterator
     {
         if (!m_map)
         {
@@ -197,7 +197,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         return m_map ? static_cast<uint32_t>(m_map->size()) : 0;
     }
 
-    bool OrderedMapView::HasKey(hstring const& key) const
+    bool OrderedMapView::HasKey(hstring const& key) const noexcept
     {
         if (!m_map)
         {
@@ -207,7 +207,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
     void OrderedMapView::Split(winrt::Windows::Foundation::Collections::IMapView<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>& first,
-                              winrt::Windows::Foundation::Collections::IMapView<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>& second) const
+        winrt::Windows::Foundation::Collections::IMapView<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>& second) const noexcept
     {
         // For simplicity, not implementing split
         first = nullptr;
