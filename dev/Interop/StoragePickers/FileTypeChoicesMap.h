@@ -5,6 +5,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <vector>
 #include <utility>
+#include <memory>
 #include "FileTypeFilterVector.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
@@ -12,6 +13,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     // Forward declarations
     struct OrderedMapView;
     struct OrderedMapIterator;
+
+    using FileTypeChoiceEntry = std::pair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>;
+    using FileTypeChoiceVector = std::vector<FileTypeChoiceEntry>;
 
     struct FileTypeChoicesMap : implements<FileTypeChoicesMap,
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>,
@@ -34,23 +38,19 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IIterator<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>> First() const;
 
     private:
-        // Use vector to maintain insertion order + hash map for O(1) lookup
-        std::vector<std::pair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>> m_orderedMap;
-        std::unordered_map<std::wstring, size_t> m_keyToIndex; // Maps key to index in m_orderedMap
+        // Shared ownership keeps insertion-ordered entries alive for any outstanding views/iterators.
+        std::shared_ptr<FileTypeChoiceVector> m_orderedMap;
 
         // Helper methods
         auto FindKey(hstring const& key) const;
         auto FindKey(hstring const& key);
-        size_t FindKeyIndex(hstring const& key) const;
     };
 
     // Custom iterator to maintain insertion order
     struct OrderedMapIterator : implements<OrderedMapIterator,
         winrt::Windows::Foundation::Collections::IIterator<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>>
     {
-        using vector_type = std::vector<std::pair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>;
-
-        OrderedMapIterator(vector_type const& map) : m_map(map), m_current(0) {}
+        OrderedMapIterator(std::shared_ptr<FileTypeChoiceVector const> map) : m_map(std::move(map)), m_current(0) {}
 
         winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> Current() const;
         bool HasCurrent() const;
@@ -58,7 +58,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         uint32_t GetMany(array_view<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>> items);
 
     private:
-        vector_type const& m_map;
+        std::shared_ptr<FileTypeChoiceVector const> m_map;
         size_t m_current;
     };
 
@@ -67,9 +67,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IMapView<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>,
         winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>>
     {
-        using vector_type = std::vector<std::pair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>;
-
-        OrderedMapView(vector_type const& map) : m_map(map) {}
+    OrderedMapView(std::shared_ptr<FileTypeChoiceVector const> map) : m_map(std::move(map)) {}
 
         // IMapView
         winrt::Windows::Foundation::Collections::IVector<hstring> Lookup(hstring const& key) const;
@@ -82,7 +80,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IIterator<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>> First() const;
 
     private:
-        vector_type const& m_map;
-        vector_type::const_iterator FindKey(hstring const& key) const;
+        std::shared_ptr<FileTypeChoiceVector const> m_map;
+        FileTypeChoiceVector::const_iterator FindKey(hstring const& key) const;
     };
 }

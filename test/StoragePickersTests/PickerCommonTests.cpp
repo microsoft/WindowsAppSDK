@@ -274,6 +274,42 @@ namespace Test::PickerCommonTests
                 L"*.txt;*.doc;*.docx");
         }
 
+        TEST_METHOD(VerifyFileTypeChoicesViewRemainsValidAfterPickerDestruction)
+        {
+            // Arrange.
+            winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeView{ nullptr };
+
+            {
+                winrt::Microsoft::UI::WindowId windowId{};
+                winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+                picker.FileTypeChoices().Insert(
+                    L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
+                picker.FileTypeChoices().Insert(
+                    L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+
+                fileTypeView = picker.FileTypeChoices().GetView();
+            }
+
+            // Act.
+            auto iterator = fileTypeView.First();
+
+            // Assert.
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            auto pictures = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(pictures.Key()), L"Pictures");
+            VERIFY_ARE_EQUAL(pictures.Value().Size(), 2u);
+            VERIFY_ARE_EQUAL(std::wstring(pictures.Value().GetAt(0)), L".png");
+            VERIFY_ARE_EQUAL(std::wstring(pictures.Value().GetAt(1)), L".jpg");
+
+            iterator.MoveNext();
+            VERIFY_IS_TRUE(iterator.HasCurrent());
+            auto documents = iterator.Current();
+            VERIFY_ARE_EQUAL(std::wstring(documents.Key()), L"Documents");
+            VERIFY_ARE_EQUAL(documents.Value().Size(), 1u);
+            VERIFY_ARE_EQUAL(std::wstring(documents.Value().GetAt(0)), L".txt");
+        }
+
         TEST_METHOD(VerifyFilters_FileSavePickerWhenNoFileTypeChoicesDefinedExpectAsteriskSpec)
         {
             // Note that is is a different behavior than the UWP pickers, where FileTypeChoices are required.
