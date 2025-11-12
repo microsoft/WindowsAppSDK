@@ -14,8 +14,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     struct OrderedMapView;
     struct OrderedMapIterator;
 
-    using FileTypeChoiceEntry = std::pair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>;
-    using FileTypeChoiceVector = std::vector<FileTypeChoiceEntry>;
+    using FileTypeChoiceVector = std::vector<std::pair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>;
 
     struct FileTypeChoicesMap : implements<FileTypeChoicesMap,
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>,
@@ -50,7 +49,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     struct OrderedMapIterator : implements<OrderedMapIterator,
         winrt::Windows::Foundation::Collections::IIterator<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>>
     {
-        OrderedMapIterator(std::shared_ptr<FileTypeChoiceVector const> map) : m_map(std::move(map)), m_current(0) {}
+        OrderedMapIterator(std::shared_ptr<FileTypeChoiceVector const> map);
 
         winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> Current() const;
         bool HasCurrent() const noexcept;
@@ -59,7 +58,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     private:
         std::shared_ptr<FileTypeChoiceVector const> m_map;
-        size_t m_current;
+        size_t m_current{};
     };
 
     // Custom view to maintain insertion order  
@@ -67,7 +66,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IMapView<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>,
         winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>>
     {
-        OrderedMapView(std::shared_ptr<FileTypeChoiceVector const> map) : m_map(std::move(map)) {}
+        OrderedMapView(std::shared_ptr<FileTypeChoiceVector const> map);
 
         // IMapView
         winrt::Windows::Foundation::Collections::IVector<hstring> Lookup(hstring const& key) const;

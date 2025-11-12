@@ -48,7 +48,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         }
 
         // Create a new FileTypeFilterVector and copy all values from the input vector
-        auto validatingVector = make<FileTypeFilterVector>();
+        auto validatingVector{ make<FileTypeFilterVector>() };
 
         if (value)
         {
@@ -60,7 +60,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         }
 
         // Check if key already exists; vector is small so linear scan is sufficient
-        auto existing = FindKey(key);
+        auto existing{ FindKey(key) };
         if (existing != m_orderedMap->end())
         {
             // Key exists, update the value
@@ -77,7 +77,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::Collections::IVector<hstring> FileTypeChoicesMap::Lookup(hstring const& key) const
     {
-        auto it = FindKey(key);
+        auto it{ FindKey(key) };
         if (it != m_orderedMap->cend())
         {
             return it->second;
@@ -102,7 +102,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     void FileTypeChoicesMap::Remove(hstring const& key)
     {
-        auto it = FindKey(key);
+        auto it{ FindKey(key) };
         if (it != m_orderedMap->end())
         {
             // Remove from vector
@@ -121,14 +121,20 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
     // OrderedMapIterator implementation
+    OrderedMapIterator::OrderedMapIterator(std::shared_ptr<FileTypeChoiceVector const> map)
+        : m_map(std::move(map)), m_current(0)
+    {
+    }
+
     winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> OrderedMapIterator::Current() const
     {
         if (!m_map || m_current >= m_map->size())
         {
             throw winrt::hresult_out_of_bounds();
         }
+
         // Create a simple key-value pair
-        auto tempMap = single_threaded_map<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>();
+        auto tempMap{ single_threaded_map<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>() };
         tempMap.Insert((*m_map)[m_current].first, (*m_map)[m_current].second);
         return tempMap.First().Current();
     }
@@ -150,7 +156,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     uint32_t OrderedMapIterator::GetMany(array_view<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>> items)
     {
-        uint32_t copied = 0;
+        uint32_t copied{};
         while (copied < items.size() && HasCurrent())
         {
             items[copied] = Current();
@@ -161,6 +167,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
     // OrderedMapView implementation
+    OrderedMapView::OrderedMapView(std::shared_ptr<FileTypeChoiceVector const> map)
+        : m_map(std::move(map))
+    {
+    }
+
     FileTypeChoiceVector::const_iterator OrderedMapView::FindKey(hstring const& key) const noexcept
     {
         if (!m_map)
@@ -184,7 +195,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             throw winrt::hresult_error(E_ILLEGAL_METHOD_CALL, L"Map view is no longer valid");
         }
 
-        auto it = FindKey(key);
+        auto it{ FindKey(key) };
         if (it != m_map->end())
         {
             return it->second;
