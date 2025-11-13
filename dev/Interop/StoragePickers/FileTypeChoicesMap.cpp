@@ -116,8 +116,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
     // OrderedMapIterator implementation
-    OrderedMapIterator::OrderedMapIterator(std::shared_ptr<FileTypeChoiceVector const> map)
-        : m_map(std::move(map)), m_current(0)
+    OrderedMapIterator::OrderedMapIterator(std::shared_ptr<FileTypeChoiceVector const> const& map)
+        : m_map(map), m_current(0)
     {
     }
 
@@ -162,8 +162,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
 
     // OrderedMapView implementation
-    OrderedMapView::OrderedMapView(std::shared_ptr<FileTypeChoiceVector const> map)
-        : m_map(std::move(map))
+    OrderedMapView::OrderedMapView(std::shared_ptr<FileTypeChoiceVector const> const& map)
+        : m_map(map)
     {
     }
 

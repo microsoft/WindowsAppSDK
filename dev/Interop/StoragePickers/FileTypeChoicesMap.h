@@ -49,7 +49,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     struct OrderedMapIterator : implements<OrderedMapIterator,
         winrt::Windows::Foundation::Collections::IIterator<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>>
     {
-        OrderedMapIterator(std::shared_ptr<FileTypeChoiceVector const> map);
+        OrderedMapIterator(std::shared_ptr<FileTypeChoiceVector const> const& map);
 
         winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> Current() const;
         bool HasCurrent() const noexcept;
@@ -66,7 +66,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IMapView<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>,
         winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>>
     {
-        OrderedMapView(std::shared_ptr<FileTypeChoiceVector const> map);
+        OrderedMapView(std::shared_ptr<FileTypeChoiceVector const> const& map);
 
         // IMapView
         winrt::Windows::Foundation::Collections::IVector<hstring> Lookup(hstring const& key) const;
