@@ -72,7 +72,7 @@ steps:
   name: BuildFoundation
   inputs:
     filePath: 'BuildAll.ps1'
-    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildFoundation"
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildFoundation" -CleanIntermediateFiles
 
 - ${{ if eq(parameters.runPREfast, 'true') }}:
   - task: SDLNativeRules@3
@@ -111,10 +111,10 @@ steps:
         !**\*packages*\**
         !**\*Demoapp*\**
         !**\*Demopackage\**
-        !**\HelloWorldAdvancedC*\**        
+        !**\HelloWorldAdvancedC*\**
         !**\DecimalCalculator_C*\**
-        !**\arm\**        
-        !**\arm64\**     
+        !**\arm\**
+        !**\arm64\**
         !**\te.*exe
         !**\te.*dll
         !**\wex.*exe
