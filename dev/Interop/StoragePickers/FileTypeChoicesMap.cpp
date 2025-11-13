@@ -6,6 +6,7 @@
 #include "FileTypeFilterVector.h"
 #include "TerminalVelocityFeatures-StoragePickers2.h"
 #include <memory>
+#include <ranges>
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -18,26 +19,20 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     FileTypeChoiceVector::const_iterator FileTypeChoicesMap::FindKey(hstring const& key) const noexcept
     {
-        for (auto it = m_orderedMap->cbegin(); it != m_orderedMap->cend(); ++it)
-        {
-            if (it->first == key)
-            {
-                return it;
-            }
-        }
-        return m_orderedMap->cend();
+        return std::ranges::find(
+            m_orderedMap->cbegin(),
+            m_orderedMap->cend(),
+            key,
+            &FileTypeChoiceVector::value_type::first);
     }
 
     FileTypeChoiceVector::iterator FileTypeChoicesMap::FindKey(hstring const& key) noexcept
     {
-        for (auto it = m_orderedMap->begin(); it != m_orderedMap->end(); ++it)
-        {
-            if (it->first == key)
-            {
-                return it;
-            }
-        }
-        return m_orderedMap->end();
+        return std::ranges::find(
+            m_orderedMap->begin(),
+            m_orderedMap->end(),
+            key,
+            &FileTypeChoiceVector::value_type::first);
     }
 
     bool FileTypeChoicesMap::Insert(hstring const& key, winrt::Windows::Foundation::Collections::IVector<hstring> const& value)
@@ -178,14 +173,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         {
             return FileTypeChoiceVector::const_iterator{};
         }
-        for (auto it = m_map->cbegin(); it != m_map->cend(); ++it)
-        {
-            if (it->first == key)
-            {
-                return it;
-            }
-        }
-        return m_map->cend();
+        return std::ranges::find(
+            m_map->cbegin(),
+            m_map->cend(),
+            key,
+            &FileTypeChoiceVector::value_type::first);
     }
 
     winrt::Windows::Foundation::Collections::IVector<hstring> OrderedMapView::Lookup(hstring const& key) const
