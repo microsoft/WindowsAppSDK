@@ -367,6 +367,21 @@ namespace Test::PickerCommonTests
                 L"Adobe Illustrator", winrt::single_threaded_vector<winrt::hstring>({ L".ai" }));
 
             auto view = picker.FileTypeChoices().GetView();
+            auto VerifyLookupThrowsOutOfBounds = [](auto const& mapView, winrt::hstring key, wchar_t const* expectedMessage, wchar_t const* unexpectedMessage)
+            {
+                try
+                {
+                    (void)mapView.Lookup(key);
+                    VERIFY_FAIL(expectedMessage);
+                }
+                catch (winrt::hresult_out_of_bounds const&)
+                {
+                }
+                catch (...)
+                {
+                    VERIFY_FAIL(unexpectedMessage);
+                }
+            };
 
             auto iterator = view.First();
             VERIFY_IS_TRUE(iterator.HasCurrent());
@@ -409,15 +424,11 @@ namespace Test::PickerCommonTests
 
             iterator.MoveNext();
             VERIFY_IS_FALSE(iterator.HasCurrent());
-            try
-            {
-                (void)view.Lookup(L"Images");
-                VERIFY_FAIL(L"Expected hresult_out_of_bounds for removed middle key.");
-            }
-            catch (winrt::hresult_error const& e)
-            {
-                VERIFY_IS_TRUE(e.code() == winrt::hresult_out_of_bounds());
-            }
+            VerifyLookupThrowsOutOfBounds(
+                view,
+                L"Images",
+                L"Expected hresult_out_of_bounds for removed middle key.",
+                L"Unexpected exception type for removed middle key.");
 
             // Act 2. Remove the first entry (Documents).
             picker.FileTypeChoices().Remove(L"Documents");
@@ -430,15 +441,11 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(std::wstring(illustrator.Key()), L"Adobe Illustrator");
             iterator.MoveNext();
             VERIFY_IS_FALSE(iterator.HasCurrent());
-            try
-            {
-                (void)view.Lookup(L"Documents");
-                VERIFY_FAIL(L"Expected hresult_out_of_bounds for removed head key.");
-            }
-            catch (winrt::hresult_error const& e)
-            {
-                VERIFY_IS_TRUE(e.code() == winrt::hresult_out_of_bounds());
-            }
+            VerifyLookupThrowsOutOfBounds(
+                view,
+                L"Documents",
+                L"Expected hresult_out_of_bounds for removed head key.",
+                L"Unexpected exception type for removed head key.");
 
             // Act 3. Remove Images again to confirm no-op behavior.
             picker.FileTypeChoices().Remove(L"Images");
