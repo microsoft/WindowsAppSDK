@@ -1,4 +1,4 @@
-<Project ToolsVersion="Current">
+﻿<Project ToolsVersion="Current">
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -32,6 +32,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);CSHARP_EXTENSION</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="$(VsixManifestSource)">
       <SubType>Designer</SubType>
@@ -59,7 +62,7 @@
     <Compile Include="..\..\..\Shared\WizardImplementation.cs" Link="WizardImplementation.cs" />
     <Compile Include="..\..\..\Shared\WizardInfoBarEvents.cs" Link="WizardInfoBarEvents.cs" />
     <Compile Include="..\..\..\Shared\OutputWindowHelper.cs" Link="OutputWindowHelper.cs" />
-    <Compile Include="..\..\..\Shared\Resources.cs" Link="Resources.cs" />
+    <Compile Include="..\..\..\Shared\WizardStringHelper.cs" Link="WizardStringHelper.cs" />
     <Content Include="@(ExtensionDependencies)">
       <VSIXSubPath>.</VSIXSubPath>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -154,7 +157,9 @@
   <ItemGroup>
     <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx">
       <Link>Resources\VSPackage.resx</Link>
-      <Generator></Generator>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>VSPackage.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>WindowsAppSDK.Cs.Extension.Dev17</CustomToolNamespace>
     </EmbeddedResource>
     <EmbeddedResource Include="$(ExtensionDir)Cs\Common\cs-CZ\VSPackage.cs-CZ.resx">
       <Link>Resources\VSPackage.cs-CZ.resx</Link>
@@ -212,6 +217,9 @@
       <Link>Resources\VSPackage.zh-TW.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />

@@ -16,6 +16,16 @@ using Microsoft.VisualStudio.TemplateWizard;
 using Microsoft.VisualStudio.Threading;
 using NuGet.VisualStudio;
 
+// Although the strings are the same in the wizard for both extensions,
+// they are included with both their respective VSPackages.
+// Strings for both extensions can be found in {PathToWindowsAppSDK}\dev\VSIX\Extension\Cs\Common\VSPackage.resx
+// Wizard strings are numbers 1044 and above.
+#if CSHARP_EXTENSION
+using Resources = WindowsAppSDK.Cs.Extension.Dev17.VSPackage;
+#elif CPP_EXTENSION
+using Resources = WindowsAppSDK.Cpp.Extension.Dev17.VSPackage;
+#endif
+
 namespace WindowsAppSDK.TemplateUtilities
 {
     public enum ErrorMessageFormat
@@ -33,24 +43,11 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
-        private Resources _resources = new Resources();
         private bool _hasLocalizationError = false;
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-
-            // Check for localization errors early
-            try
-            {
-                ValidateResources();
-            }
-            catch (MissingManifestResourceException ex)
-            {
-                _hasLocalizationError = true;
-                ShowLocalizationErrorDialog(ex);
-                throw new WizardCancelledException("Wizard cancelled due to localization error.", ex);
-            }
 
             _componentModel = ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel)) as IComponentModel;
             if (_componentModel == null)
@@ -77,6 +74,18 @@ namespace WindowsAppSDK.TemplateUtilities
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
                 _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
+            }
+
+            // Check for localization errors early
+            try
+            {
+                ValidateResources();
+            }
+            catch (MissingManifestResourceException ex)
+            {
+                _hasLocalizationError = true;
+                ShowLocalizationErrorDialog(ex);
+                throw new WizardCancelledException("Wizard cancelled due to localization error.", ex);
             }
         }
 
@@ -109,7 +118,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     try
                     {
-                        _waitDialog.StartWaitDialog(null, _resources.InstallingNuGetPackages, null, null, _resources.OperationInProgress, 0, false, true);
+                        _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
                     }
                     catch (MissingManifestResourceException ex)
                     {
@@ -208,7 +217,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
                     var result = MessageBox.Show(
                     errorMessage,
-                    _resources.MissingPackageReferences,
+                    Resources._1046,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
@@ -299,8 +308,8 @@ namespace WindowsAppSDK.TemplateUtilities
                 var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
                 var projectName = _project?.Name ?? "Unknown Project";
                 var errorMessage = format == ErrorMessageFormat.InfoBar ?
-                _resources.Format(_resources.UnableToAddReferencesInfoBar, projectName, packageNames)
-                : _resources.Format(_resources.UnableToAddReferencesMessageBox, projectName, packageNames);
+                WizardStringHelper.Format(Resources._1047, projectName, packageNames)
+                : WizardStringHelper.Format(Resources._1048, projectName, packageNames);
                 return errorMessage;
             }
             catch (MissingManifestResourceException ex)
@@ -321,7 +330,7 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 var errorLines = new System.Text.StringBuilder();
                 var projectName = _project?.Name ?? "Unknown Project";
-                errorLines.AppendLine(_resources.Format(_resources.MissingPackageReferencesFor, projectName));
+                errorLines.AppendLine(WizardStringHelper.Format(Resources._1051, projectName));
 
                 foreach (var package in _failedPackageExceptions)
                 {
@@ -329,7 +338,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
 
                 errorLines.AppendLine();
-                errorLines.Append(_resources.PleaseAddPackageReferences);
+                errorLines.Append(Resources._1052);
 
                 return errorLines.ToString();
             }
@@ -384,15 +393,15 @@ namespace WindowsAppSDK.TemplateUtilities
             ThreadHelper.ThrowIfNotOnUIThread();
 
             // Access all resource strings to validate they exist
-            var _ = _resources.InstallingNuGetPackages;
-            _ = _resources.OperationInProgress;
-            _ = _resources.MissingPackageReferences;
-            _ = _resources.UnableToAddReferencesMessageBox;
-            _ = _resources.UnableToAddReferencesInfoBar;
-            _ = _resources.ManageNuGetPackages;
-            _ = _resources.SeeErrorDetails;
-            _ = _resources.MissingPackageReferencesFor;
-            _ = _resources.PleaseAddPackageReferences;
+            _ = Resources._1044;
+            _ = Resources._1045;
+            _ = Resources._1046;
+            _ = Resources._1048;
+            _ = Resources._1047;
+            _ = Resources._1049;
+            _ = Resources._1050;
+            _ = Resources._1051;
+            _ = Resources._1052;
         }
 
         private void ShowLocalizationErrorDialog(MissingManifestResourceException ex)
@@ -480,8 +489,8 @@ namespace WindowsAppSDK.TemplateUtilities
             },
             actionItems: new InfoBarActionItem[]
             {
-                new InfoBarHyperlink(_resources.ManageNuGetPackages),
-                new InfoBarHyperlink(_resources.SeeErrorDetails)
+                new InfoBarHyperlink(Resources._1049),
+                new InfoBarHyperlink(Resources._1050)
             },
             image: KnownMonikers.NuGetNoColorError,
             isCloseButtonVisible: true);
