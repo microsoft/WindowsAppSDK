@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Resources;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using EnvDTE;
@@ -33,10 +34,24 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
         private Resources _resources = new Resources();
+        private bool _hasLocalizationError = false;
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+
+            // Check for localization errors early
+            try
+            {
+                ValidateResources();
+            }
+            catch (MissingManifestResourceException ex)
+            {
+                _hasLocalizationError = true;
+                ShowLocalizationErrorDialog(ex);
+                throw new WizardCancelledException("Wizard cancelled due to localization error.", ex);
+            }
+
             _componentModel = ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel)) as IComponentModel;
             if (_componentModel == null)
             {
@@ -52,6 +67,7 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_componentModel != null)
             {
                 _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
+            
                 if (_nugetProjectUpdateEvents != null)
                 {
                     _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
@@ -91,7 +107,16 @@ namespace WindowsAppSDK.TemplateUtilities
                 // Start the threaded wait dialog
                 if (_waitDialog != null)
                 {
-                    _waitDialog.StartWaitDialog(null, _resources.InstallingNuGetPackages, null, null, _resources.OperationInProgress, 0, false, true);
+                    try
+                    {
+                        _waitDialog.StartWaitDialog(null, _resources.InstallingNuGetPackages, null, null, _resources.OperationInProgress, 0, false, true);
+                    }
+                    catch (MissingManifestResourceException ex)
+                    {
+                        _hasLocalizationError = true;
+                        ShowLocalizationErrorDialog(ex);
+                        return;
+                    }
                 }
 
                 // Now await the installation task to complete
@@ -102,8 +127,8 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     _waitDialog.EndWaitDialog(out canceled);
                 }
-                // If _waitDialog is null, canceled remains 0 (not canceled)
 
+                // If _waitDialog is null, canceled remains 0 (not canceled)
                 // Check if the process was canceled before proceeding
                 if (canceled == 0) // If not canceled, finalize the process
                 {
@@ -180,13 +205,13 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     var errorMessage = CreateErrorMessage(ErrorMessageFormat.MessageBox);
                     LogError(errorMessage);
-                    
+
                     var result = MessageBox.Show(
-                        errorMessage,
-                        _resources.MissingPackageReferences,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    
+                    errorMessage,
+                    _resources.MissingPackageReferences,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
                     // Show the Output window with the detailed errors
                     ShowOutputWindow(CreateDetailedErrorMessage());
                     return;
@@ -246,7 +271,7 @@ namespace WindowsAppSDK.TemplateUtilities
                         _ = DisplayInfoBarAsync(errorMessage);
                         return;
                     }
-                    return;
+                        return;
                 }
                 else
                 {
@@ -267,31 +292,66 @@ namespace WindowsAppSDK.TemplateUtilities
         private string CreateErrorMessage(ErrorMessageFormat format)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var packageNames = string.Join(", ", _failedPackageExceptions.Keys);
-            var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
-            var projectName = _project?.Name ?? "Unknown Project";
-            var errorMessage = format == ErrorMessageFormat.InfoBar ?
-            _resources.Format(_resources.UnableToAddReferencesInfoBar, projectName, packageNames)
+
+            try
+            {
+                var packageNames = string.Join(", ", _failedPackageExceptions.Keys);
+                var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
+                var projectName = _project?.Name ?? "Unknown Project";
+                var errorMessage = format == ErrorMessageFormat.InfoBar ?
+                _resources.Format(_resources.UnableToAddReferencesInfoBar, projectName, packageNames)
                 : _resources.Format(_resources.UnableToAddReferencesMessageBox, projectName, packageNames);
-            return errorMessage;
+                return errorMessage;
+            }
+            catch (MissingManifestResourceException ex)
+            {
+                _hasLocalizationError = true;
+                ShowLocalizationErrorDialog(ex);
+                // Return a fallback message
+                var packageNames = string.Join(", ", _failedPackageExceptions.Keys);
+                return $"Unable to add package references to project: {packageNames}";
+            }
         }
 
         private string CreateDetailedErrorMessage()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var errorLines = new System.Text.StringBuilder();
-            var projectName = _project?.Name ?? "Unknown Project";
-            errorLines.AppendLine(_resources.Format(_resources.MissingPackageReferencesFor, projectName));
-            
-            foreach (var package in _failedPackageExceptions)
-            {
-                errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
-            }
-            
-            errorLines.AppendLine();
-            errorLines.Append(_resources.PleaseAddPackageReferences);
 
-            return errorLines.ToString();
+            try
+            {
+                var errorLines = new System.Text.StringBuilder();
+                var projectName = _project?.Name ?? "Unknown Project";
+                errorLines.AppendLine(_resources.Format(_resources.MissingPackageReferencesFor, projectName));
+
+                foreach (var package in _failedPackageExceptions)
+                {
+                errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
+                }
+
+                errorLines.AppendLine();
+                errorLines.Append(_resources.PleaseAddPackageReferences);
+
+                return errorLines.ToString();
+            }
+            catch (MissingManifestResourceException ex)
+            {
+                _hasLocalizationError = true;
+                ShowLocalizationErrorDialog(ex);
+                // Return a fallback message
+                var errorLines = new System.Text.StringBuilder();
+                var projectName = _project?.Name ?? "Unknown Project";
+                errorLines.AppendLine($"Missing package references for project: {projectName}");
+
+                foreach (var package in _failedPackageExceptions)
+                {
+                errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
+                }
+
+                errorLines.AppendLine();
+                errorLines.Append("Please add the package references manually using NuGet Package Manager.");
+
+                return errorLines.ToString();
+            }
         }
 
         private Guid GetProjectGuid(Project project)
@@ -317,6 +377,42 @@ namespace WindowsAppSDK.TemplateUtilities
                     int hr = log.LogEntry((uint)__ACTIVITYLOG_ENTRYTYPE.ALE_ERROR, ToString(), message);
                 }
             });
+        }
+
+        private void ValidateResources()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            // Access all resource strings to validate they exist
+            var _ = _resources.InstallingNuGetPackages;
+            _ = _resources.OperationInProgress;
+            _ = _resources.MissingPackageReferences;
+            _ = _resources.UnableToAddReferencesMessageBox;
+            _ = _resources.UnableToAddReferencesInfoBar;
+            _ = _resources.ManageNuGetPackages;
+            _ = _resources.SeeErrorDetails;
+            _ = _resources.MissingPackageReferencesFor;
+            _ = _resources.PleaseAddPackageReferences;
+        }
+
+        private void ShowLocalizationErrorDialog(MissingManifestResourceException ex)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            var errorMessage = $"A localization error occurred while loading the template wizard:\n\n{ex.Message}\n\n" +
+            "The template may not have been installed correctly. Please reinstall the Windows App SDK extension.";
+
+            MessageBox.Show(
+                errorMessage,
+                "Localization Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
+            // Also log to activity log
+            LogError($"Localization error: {ex.Message}");
+
+            // Show in output window
+            ShowOutputWindow($"Localization Error:\n{ex.Message}\n{ex.StackTrace}");
         }
 
         private async Task DisplayInfoBarAsync(string errorMessage)
@@ -377,19 +473,19 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private IVsInfoBar CreateNuGetInfoBar(string message)
         {
-           var infoBar = new InfoBarModel(
-              textSpans: new[]
-              {
+            var infoBar = new InfoBarModel(
+            textSpans: new[]
+            {
                 new InfoBarTextSpan(message)
-              },
-              actionItems: new InfoBarActionItem[]
-              {
+            },
+            actionItems: new InfoBarActionItem[]
+            {
                 new InfoBarHyperlink(_resources.ManageNuGetPackages),
                 new InfoBarHyperlink(_resources.SeeErrorDetails)
-              },
-               image: KnownMonikers.NuGetNoColorError,
-               isCloseButtonVisible: true);
-           return infoBar;
+            },
+            image: KnownMonikers.NuGetNoColorError,
+            isCloseButtonVisible: true);
+            return infoBar;
         }
 
         public bool ShouldAddProjectItem(string _)
