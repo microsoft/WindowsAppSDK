@@ -523,17 +523,27 @@ See [2.5. Decision 5: Package Names](#25-decision-5-package-names) for more deta
 
 
 ## Version Starting 2.0
-In 2.0, we will be switching the family name of the MSIX package. The new style will be:
-`Microsoft.WindowsAppRuntime[.SubName].<rmajor>[-tag]` - translated to the individual names as above.
+In 2.0, the family name of the MSIX package changes. The new style will be:
+* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>[-tag]`
+* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>[-shorttag]`
+* WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<Patch>.<BuildNumber>-<shortarchitecture>[-shorttag]`
 
 The version will also change:
-<Major>.<Minor>.<Patch>.<securityupdate>
+<Major>.<Minor>.<Patch>.<BuildNumber>
+The exception to this version change is WARSingleton. This package is still the same family, so
+the version needs to continue to increase. In this case, the Major version is Major+8000 (which forces the Major
+version in the Singleton package to be higher than it was at the time of the switch).
 
-The Major, Minor, and Patch versions are all in a centralized Repo. All Repos that create 
-Component packages will use the same centralized versions. When a full build of WindowsAppRuntime
-is completed, the Patch version will automatically update. When Major or Minor are manually updated
-the Patch will be reset to 0 at that point.
+The Major, Minor, and Patch will all match the Nuget versions from building the Aggregator Repo.
+The BuildNumber is which build for that day. We have the following restrictions on the versions:
 
-This change will make it easier for people to know what version they are on. We will be keeping compatibility
-for all previous Minor versions within the same Major version. Developers also won't have to Manually upgrade to get 
-the new Minor Version.
+Major <= 99
+Minor <= 999
+Patch <= 9999
+BuildNumber <= 99
+
+As with the Aggregator Repo, if the Major updates, Minor resets to 0. Similarly if Minor updates, Patch 
+resets to 0. In the unlikely event that Minor or Patch reach these limits, then the Major (for the Minor)
+or Minor (for the Patch) will bump in order to keep these restrictions. If\When we reach Major version 100, then
+the Major version will be the Actual Major %100.

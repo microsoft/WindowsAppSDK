@@ -155,7 +155,7 @@ where
 
 ## Change for 2.0
 
-In 2.0, all MSIX names will change to remove the Minor version as follows:
+In 2.0 the MSIX package family changes to the format
 * Name = Microsoft.WindowsAppRuntime[.SubName].\<Major\>[-VersionTag]
 
 ## 3.1. Package Naming - SubName
@@ -173,11 +173,11 @@ The following SubName values are used:
 
 The Main package follows a different naming scheme
 
-* Name = MicrosoftCcorporationII.WinAppRuntime.Main.\<ReleaseMajorMinor\>[-ShortVersionTag]
+* Name = MicrosoftCcorporationII.WinAppRuntime.Main.\<ReleaseMajor\>[-ShortVersionTag]
 
 where
 
-* ReleaseMajorMinor = project release major.minor version number. See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
+* ReleaseMajor = project release major version number. See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
 * ShortVersionTag = short form of the VersionTag
 
 ShortVersionTag is derived from a VersionTag by combining the 1st letter and the last digit (if any) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
