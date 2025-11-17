@@ -574,7 +574,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment)
     {
-        auto& initializeActivity{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+        auto initializeActivity{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
         initializeActivity.Reset();
 
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
