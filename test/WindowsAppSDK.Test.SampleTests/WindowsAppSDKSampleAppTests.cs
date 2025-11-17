@@ -702,7 +702,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("SelfContainedDeployment\\cs\\cs-console-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\win10-[BuildArch]\\SelfContainedDeployment.exe");
+            var exePath = GetFullFilePathFromRelativePath("SelfContainedDeployment\\cs\\cs-console-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\win-[BuildArch]\\SelfContainedDeployment.exe");
             LaunchUnpackagedConsoleApp(exePath);
             return;
         }
@@ -717,7 +717,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("SelfContainedDeployment\\cs\\cs-wpf-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.17763.0\\win10-[BuildArch]\\SelfContainedDeployment.exe");
+            var exePath = GetFullFilePathFromRelativePath("SelfContainedDeployment\\cs\\cs-wpf-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.17763.0\\win-[BuildArch]\\SelfContainedDeployment.exe");
             LaunchAndCloseUnpackagedApp(exePath, "MainWindow", "SelfContainedDeployment.exe");
             return;
         }
