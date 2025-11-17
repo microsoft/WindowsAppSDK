@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -41,8 +41,6 @@ namespace WindowsAppRuntime::Deployment::Activity
 
     public:
         static WindowsAppRuntime::Deployment::Activity::Context& Get();
-
-        Context(const Context&) = delete;
 
         void Reset();
 
