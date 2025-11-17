@@ -702,7 +702,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("SelfContainedDeployment\\cs\\cs-console-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\win10-[BuildArch]\\SelfContainedDeployment.exe");
+            var exePath = GetFullFilePathFromRelativePath("SelfContainedDeployment\\cs\\cs-console-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\win10-[BuildArch]\\SelfContainedDeployment.exe");
             LaunchUnpackagedConsoleApp(exePath);
             return;
         }
@@ -717,7 +717,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("SelfContainedDeployment\\cs\\cs-wpf-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.17763.0\\win10-[BuildArch]\\SelfContainedDeployment.exe");
+            var exePath = GetFullFilePathFromRelativePath("SelfContainedDeployment\\cs\\cs-wpf-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.17763.0\\win10-[BuildArch]\\SelfContainedDeployment.exe");
             LaunchAndCloseUnpackagedApp(exePath, "MainWindow", "SelfContainedDeployment.exe");
             return;
         }
@@ -752,7 +752,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Activation\\cs\\cs-console-unpackaged\\CsConsoleActivation\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsConsoleActivation.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Activation\\cs\\cs-console-unpackaged\\CsConsoleActivation\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsConsoleActivation.exe");
             LaunchUnpackagedConsoleApp(exePath);
             return;
         }
@@ -780,7 +780,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Activation\\cs\\cs-winforms-unpackaged\\CsWinFormsActivation\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsWinFormsActivation.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Activation\\cs\\cs-winforms-unpackaged\\CsWinFormsActivation\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsWinFormsActivation.exe");
             LaunchUnpackagedConsoleApp(exePath);
             return;
         }
@@ -794,7 +794,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Activation\\cs\\cs-wpf-unpackaged\\CsWpfActivation\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsWpfActivation.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Activation\\cs\\cs-wpf-unpackaged\\CsWpfActivation\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsWpfActivation.exe");
             LaunchUnpackagedConsoleApp(exePath);
             return;
         }
@@ -849,7 +849,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\EnvironmentVariables\\cs-winforms-unpackaged\\CsWinFormsEnv\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsWinFormsEnv.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\EnvironmentVariables\\cs-winforms-unpackaged\\CsWinFormsEnv\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsWinFormsEnv.exe");
             LaunchAndCloseUnpackagedApp(exePath, null, "CsWinFormsEnv.exe");
             return;
         }
@@ -877,7 +877,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Instancing\\cs\\cs-console-unpackaged\\CsConsoleInstancing\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsConsoleInstancing.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Instancing\\cs\\cs-console-unpackaged\\CsConsoleInstancing\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsConsoleInstancing.exe");
             LaunchUnpackagedConsoleApp(exePath);
             return;
         }
@@ -907,7 +907,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Instancing\\cs\\cs-winforms-unpackaged\\CsWinFormsInstancing\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsWinFormsInstancing.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Instancing\\cs\\cs-winforms-unpackaged\\CsWinFormsInstancing\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsWinFormsInstancing.exe");
 
             // This sample app seems to behave like a console app.
             LaunchUnpackagedConsoleApp(exePath);
@@ -923,7 +923,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Instancing\\cs\\cs-wpf-unpackaged\\CsWpfInstancing\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsWpfInstancing.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\Instancing\\cs\\cs-wpf-unpackaged\\CsWpfInstancing\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsWpfInstancing.exe");
 
             // This sample app seems to behave like a console app.
             LaunchUnpackagedConsoleApp(exePath);
@@ -953,7 +953,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\StateNotifications\\cs\\cs-console-unpackaged\\CsConsoleState\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsConsoleState.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\StateNotifications\\cs\\cs-console-unpackaged\\CsConsoleState\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsConsoleState.exe");
             LaunchUnpackagedConsoleApp(exePath);
             return;
         }
@@ -983,7 +983,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\StateNotifications\\cs\\cs-winforms-unpackaged\\CsWinFormsState\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsWinFormsState.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\StateNotifications\\cs\\cs-winforms-unpackaged\\CsWinFormsState\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsWinFormsState.exe");
 
             // This sample app seems to behave like a console app.
             LaunchUnpackagedConsoleApp(exePath);
@@ -999,7 +999,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\StateNotifications\\cs\\cs-wpf-unpackaged\\CsWpfState\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\CsWpfState.exe");
+            var exePath = GetFullFilePathFromRelativePath("AppLifecycle\\StateNotifications\\cs\\cs-wpf-unpackaged\\CsWpfState\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\CsWpfState.exe");
 
             // This sample app seems to behave like a console app.
             LaunchUnpackagedConsoleApp(exePath);
@@ -1161,7 +1161,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("ResourceManagement\\cs\\cs-winforms-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\winforms_unpackaged_app.exe");
+            var exePath = GetFullFilePathFromRelativePath("ResourceManagement\\cs\\cs-winforms-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\winforms_unpackaged_app.exe");
             LaunchAndCloseUnpackagedApp(exePath, null, "winforms_unpackaged_app.exe");
             return;
         }
@@ -1205,7 +1205,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("Windowing\\cs\\cs-winforms-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\winforms_unpackaged_app.exe");
+            var exePath = GetFullFilePathFromRelativePath("Windowing\\cs\\cs-winforms-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\winforms_unpackaged_app.exe");
 
             // TODO: Missing WASDK 1.2 is blocking winforms_unpackaged_app.exe from activating the app's main window? Temporarily skip looking for the app's main 
             // window, but still look for the expected process name to terminate.
@@ -1265,7 +1265,7 @@ namespace WindowsAppSDK.Test.SampleTests
                 return;
             }
 
-            var exePath = GetFullFilePathFromRelativePath("Unpackaged\\cs-console-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net6.0-windows10.0.19041.0\\Unpackaged.exe");
+            var exePath = GetFullFilePathFromRelativePath("Unpackaged\\cs-console-unpackaged\\bin\\[BuildArch]\\[BuildConfig]\\net8.0-windows10.0.19041.0\\Unpackaged.exe");
             LaunchUnpackagedConsoleApp(exePath);
 
             // TODO: The following stronger verification seems to work fine on a local machine but not in the Azure pipeline. Try harder to enable it.
