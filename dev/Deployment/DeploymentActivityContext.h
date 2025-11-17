@@ -38,6 +38,7 @@ namespace WindowsAppRuntime::Deployment::Activity
         WilFailure m_lastFailure;
         bool m_isFullTrustPackage{};
         bool m_useExistingPackageIfHigherVersion{};
+        Context() = default;
 
     public:
         static WindowsAppRuntime::Deployment::Activity::Context& Get();
