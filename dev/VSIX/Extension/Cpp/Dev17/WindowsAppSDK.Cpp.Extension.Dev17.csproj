@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="Current">
+<Project ToolsVersion="Current">
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -164,7 +164,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx">
+    <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\VSPackage.resx">
      <Link>Resources\VSPackage.resx</Link>
     <Generator>ResXFileCodeGenerator</Generator>
     <LastGenOutput>VSPackage.Designer.cs</LastGenOutput>

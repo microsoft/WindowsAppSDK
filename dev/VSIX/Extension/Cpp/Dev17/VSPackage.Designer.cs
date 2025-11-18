@@ -223,7 +223,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WinUI Class Library.
+        ///   Looks up a localized string similar to WinUI Blank App (Packaged with Windows Application Packaging Project).
         /// </summary>
         internal static string _1025 {
             get {
@@ -232,7 +232,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [Experimental] WinUI Class Library.
+        ///   Looks up a localized string similar to [Experimental] WinUI Blank App (Packaged with Windows Application Packaging Project).
         /// </summary>
         internal static string _1026 {
             get {
@@ -241,7 +241,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A project for creating a managed class library (.dll) (WinUI)..
+        ///   Looks up a localized string similar to A project template for creating a WinUI app. A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store..
         /// </summary>
         internal static string _1027 {
             get {
@@ -250,7 +250,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WinUI Blank App (Packaged with Windows Application Packaging Project).
+        ///   Looks up a localized string similar to WinUI Blank App (Packaged).
         /// </summary>
         internal static string _1029 {
             get {
@@ -259,7 +259,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [Experimental] WinUI Blank App (Packaged with Windows Application Packaging Project).
+        ///   Looks up a localized string similar to [Experimental] WinUI Blank App (Packaged).
         /// </summary>
         internal static string _1030 {
             get {
@@ -268,7 +268,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A project template for creating a WinUI app. A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store..
+        ///   Looks up a localized string similar to A project template for creating a WinUI app along with a MSIX package for side-loading or distribution via the Microsoft Store..
         /// </summary>
         internal static string _1031 {
             get {
@@ -277,7 +277,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WinUI Blank App (Packaged).
+        ///   Looks up a localized string similar to WinUI Windows Runtime Component.
         /// </summary>
         internal static string _1033 {
             get {
@@ -286,7 +286,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [Experimental] WinUI Blank App (Packaged).
+        ///   Looks up a localized string similar to [Experimental] WinUI Windows Runtime Component (C++/WinRT).
         /// </summary>
         internal static string _1034 {
             get {
@@ -295,7 +295,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A project template for creating a WinUI app along with a MSIX package for side-loading or distribution via the Microsoft Store..
+        ///   Looks up a localized string similar to A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both desktop and Universal Windows Platform (UWP) apps, based on WinUI..
         /// </summary>
         internal static string _1035 {
             get {
@@ -322,7 +322,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A project to create a C# unit test app for WinUI using MSTest..
+        ///   Looks up a localized string similar to A project for creating a C++/WinRT unit test app for WinUI using MSTest..
         /// </summary>
         internal static string _1039 {
             get {
