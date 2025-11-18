@@ -86,6 +86,11 @@
     <Compile Include="..\..\..\Shared\WizardInfoBarEvents.cs" Link="WizardInfoBarEvents.cs" />
     <Compile Include="..\..\..\Shared\OutputWindowHelper.cs" Link="OutputWindowHelper.cs" />
     <Compile Include="..\..\..\Shared\WizardStringHelper.cs" Link="WizardStringHelper.cs" />
+    <Compile Include="..\Common\VSPackage.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>VSPackage.resx</DependentUpon>
+    </Compile>
     <Content Include="@(ExtensionDependencies)">
       <VSIXSubPath>.</VSIXSubPath>
       <IncludeInVSIX>true</IncludeInVSIX>
