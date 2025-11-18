@@ -43,7 +43,6 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
-        private bool _hasLocalizationError = false;
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -74,18 +73,6 @@ namespace WindowsAppSDK.TemplateUtilities
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
                 _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
-            }
-
-            // Check for localization errors early
-            try
-            {
-                ValidateResources();
-            }
-            catch (MissingManifestResourceException ex)
-            {
-                _hasLocalizationError = true;
-                ShowLocalizationErrorDialog(ex);
-                throw new WizardCancelledException("Wizard cancelled due to localization error.", ex);
             }
         }
 
@@ -122,7 +109,6 @@ namespace WindowsAppSDK.TemplateUtilities
                     }
                     catch (MissingManifestResourceException ex)
                     {
-                        _hasLocalizationError = true;
                         ShowLocalizationErrorDialog(ex);
                         return;
                     }
@@ -176,6 +162,7 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 try
                 {
+                    throw new InvalidOperationException("Simulated installation failure for testing purposes.");
                     await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
                 }
                 catch (Exception ex)
@@ -314,7 +301,6 @@ namespace WindowsAppSDK.TemplateUtilities
             }
             catch (MissingManifestResourceException ex)
             {
-                _hasLocalizationError = true;
                 ShowLocalizationErrorDialog(ex);
                 // Return a fallback message
                 var packageNames = string.Join(", ", _failedPackageExceptions.Keys);
@@ -334,7 +320,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
                 foreach (var package in _failedPackageExceptions)
                 {
-                errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
+                    errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
                 }
 
                 errorLines.AppendLine();
@@ -344,7 +330,6 @@ namespace WindowsAppSDK.TemplateUtilities
             }
             catch (MissingManifestResourceException ex)
             {
-                _hasLocalizationError = true;
                 ShowLocalizationErrorDialog(ex);
                 // Return a fallback message
                 var errorLines = new System.Text.StringBuilder();
@@ -353,7 +338,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
                 foreach (var package in _failedPackageExceptions)
                 {
-                errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
+                    errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
                 }
 
                 errorLines.AppendLine();
@@ -386,22 +371,6 @@ namespace WindowsAppSDK.TemplateUtilities
                     int hr = log.LogEntry((uint)__ACTIVITYLOG_ENTRYTYPE.ALE_ERROR, ToString(), message);
                 }
             });
-        }
-
-        private void ValidateResources()
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            // Access all resource strings to validate they exist
-            _ = Resources._1044;
-            _ = Resources._1045;
-            _ = Resources._1046;
-            _ = Resources._1048;
-            _ = Resources._1047;
-            _ = Resources._1049;
-            _ = Resources._1050;
-            _ = Resources._1051;
-            _ = Resources._1052;
         }
 
         private void ShowLocalizationErrorDialog(MissingManifestResourceException ex)
@@ -489,8 +458,8 @@ namespace WindowsAppSDK.TemplateUtilities
             },
             actionItems: new InfoBarActionItem[]
             {
-                new InfoBarHyperlink(Resources._1049),
-                new InfoBarHyperlink(Resources._1050)
+                new InfoBarHyperlink(Resources._1049, "ManageNuGetPackages"),
+                new InfoBarHyperlink(Resources._1050, "SeeErrorDetails")
             },
             image: KnownMonikers.NuGetNoColorError,
             isCloseButtonVisible: true);
