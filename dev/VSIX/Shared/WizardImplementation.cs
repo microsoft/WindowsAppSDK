@@ -103,15 +103,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 // Start the threaded wait dialog
                 if (_waitDialog != null)
                 {
-                    try
-                    {
-                        _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
-                    }
-                    catch (MissingManifestResourceException ex)
-                    {
-                        ShowLocalizationErrorDialog(ex);
-                        return;
-                    }
+                    _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
                 }
 
                 // Now await the installation task to complete
@@ -162,7 +154,6 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 try
                 {
-                    throw new InvalidOperationException("Simulated installation failure for testing purposes.");
                     await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
                 }
                 catch (Exception ex)

@@ -207,31 +207,4 @@
   <data name="1039" xml:space="preserve">
     <value>Proyecto para crear una aplicación de prueba unitaria de C++/WinRT para WinUI 3 con MSTest.</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>Wizard localization is working!</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>1045 has been localized!</value>
-  </data>
-  <data name="1046" xml:space="preserve">
-    <value>1046 localized: Missing Package Reference(s) </value>
-  </data>
-  <data name="1047" xml:space="preserve">
-    <value>1047 localized: Unable to add references to the following packages for {0}: {1}. Please add package references before building</value>
-  </data>
-  <data name="1048" xml:space="preserve">
-    <value>1048 localized: [{0}] Unable to add references to the following packages: {1}. This is an environment error. Please add package references before building the project. </value>
-  </data>
-  <data name="1049" xml:space="preserve">
-    <value>1049 localized: Manage NuGet Packages </value>
-  </data>
-  <data name="1050" xml:space="preserve">
-    <value>1050 localized: See error details</value>
-  </data>
-  <data name="1051" xml:space="preserve">
-    <value>1051 localized: Missing Package References for {0}:</value>
-  </data>
-  <data name="1052" xml:space="preserve">
-    <value>1052 localized: Please manually add package references before building.</value>
-  </data>
 </root>

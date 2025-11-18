@@ -185,7 +185,6 @@
     <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\es-ES\VSPackage.es-ES.resx">
       <Link>Resources\VSPackage.es-ES.resx</Link>
       <Generator></Generator>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </EmbeddedResource>
     <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\fr-FR\VSPackage.fr-FR.resx">
       <Link>Resources\VSPackage.fr-FR.resx</Link>
