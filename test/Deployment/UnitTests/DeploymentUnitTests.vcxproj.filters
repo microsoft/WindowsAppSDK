@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Test Data">
+      <UniqueIdentifier>{5F8E8F1A-1B2C-4D3E-9F4A-1B2C3D4E5F6A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test Data\MSIX">
+      <UniqueIdentifier>{6A9B8C7D-2C3D-4E5F-A6B7-2C3D4E5F6A7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+    </Filter>
+    <Filter Include="External\Deployment">
+      <UniqueIdentifier>{A1B2C3D4-E5F6-7890-1234-567890ABCDEF}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <!-- External deployment headers -->
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\PackageRegistrar.h">
+      <Filter>External\Deployment</Filter>
+    </ClInclude>
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.h">
+      <Filter>External\Deployment</Filter>
+    </ClInclude>
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\Licensing.h">
+      <Filter>External\Deployment</Filter>
+    </ClInclude>
+    <ClInclude Include="$(RepoRoot)\dev\Deployment\PackageDeployment.h">
+      <Filter>External\Deployment</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageRegistrarTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeployerTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <!-- External deployment source files -->
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageRegistrar.cpp">
+      <Filter>External\Deployment</Filter>
+    </ClCompile>
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\DeploymentActivityContext.cpp">
+      <Filter>External\Deployment</Filter>
+    </ClCompile>
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\Licensing.cpp">
+      <Filter>External\Deployment</Filter>
+    </ClCompile>
+    <ClCompile Include="$(RepoRoot)\dev\Deployment\PackageDeployment.cpp">
+      <Filter>External\Deployment</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MSIX\a_license.xml">
+      <Filter>Test Data\MSIX</Filter>
+    </Content>
+    <Content Include="MSIX\b_license.xml">
+      <Filter>Test Data\MSIX</Filter>
+    </Content>
+    <Content Include="MSIX\c_License.xml">
+      <Filter>Test Data\MSIX</Filter>
+    </Content>
+    <Content Include="MSIX\AppxManifest.xml">
+      <Filter>Test Data\MSIX</Filter>
+    </Content>
+  </ItemGroup>
+</Project>

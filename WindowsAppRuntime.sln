@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{448ED2E5-0B37-4D97-9E6B-8C10A507976A}"
+	ProjectSection(SolutionItems) = preProject
+		test\Deployment\UnitTests\DeploymentUnitTests.vcxproj = test\Deployment\UnitTests\DeploymentUnitTests.vcxproj
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{F3659DFF-232D-46E0-967E-61FCC9A1132F}"
 	ProjectSection(SolutionItems) = preProject
@@ -745,6 +748,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsAppSDK.Test.NetCore", "test\WindowsAppSDK.Test.NetCore\WindowsAppSDK.Test.NetCore.csproj", "{BF580B26-B869-3AF1-43EC-D0FD55A49E4D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsAppSDK.Test.SampleTests", "test\WindowsAppSDK.Test.SampleTests\WindowsAppSDK.Test.SampleTests.csproj", "{346E099B-45E4-FF40-E63D-8B34915223C1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{E20DA14F-B819-4DE5-865B-CAC91918AA4A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentUnitTests", "test\Deployment\UnitTests\DeploymentUnitTests.vcxproj", "{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StoragePickers", "StoragePickers", "{06AA7FD7-36BE-41AC-9008-56919D1612C6}"
 EndProject
@@ -2626,6 +2633,22 @@ Global
 		{346E099B-45E4-FF40-E63D-8B34915223C1}.Release|x64.Build.0 = Release|x64
 		{346E099B-45E4-FF40-E63D-8B34915223C1}.Release|x86.ActiveCfg = Release|x86
 		{346E099B-45E4-FF40-E63D-8B34915223C1}.Release|x86.Build.0 = Release|x86
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|Any CPU.Build.0 = Debug|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|ARM64.Build.0 = Debug|ARM64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|x64.ActiveCfg = Debug|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|x64.Build.0 = Debug|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|x86.ActiveCfg = Debug|Win32
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Debug|x86.Build.0 = Debug|Win32
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|Any CPU.ActiveCfg = Release|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|Any CPU.Build.0 = Release|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|ARM64.ActiveCfg = Release|ARM64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|ARM64.Build.0 = Release|ARM64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|x64.ActiveCfg = Release|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|x64.Build.0 = Release|x64
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|x86.ActiveCfg = Release|Win32
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2851,6 +2874,8 @@ Global
 		{C40AE1D8-FD5F-472E-86B5-DDA5ABA6FF99} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{BF580B26-B869-3AF1-43EC-D0FD55A49E4D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{346E099B-45E4-FF40-E63D-8B34915223C1} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{E20DA14F-B819-4DE5-865B-CAC91918AA4A} = {68E63911-6283-4212-BFFE-3F972AF8F835}
+		{F2A9B8E7-4C62-4D89-9A4F-829F8E2A7E34} = {E20DA14F-B819-4DE5-865B-CAC91918AA4A}
 		{06AA7FD7-36BE-41AC-9008-56919D1612C6} = {3B706C5C-55E0-4B76-BF59-89E20FE46795}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
@@ -2904,5 +2929,7 @@ Global
 		dev\VersionInfo\VersionInfo.vcxitems*{e3edec7f-a24e-4766-bb1d-6bdfba157c51}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems*{e49329f3-5196-4bba-b5c4-e11ce7efb07a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
+		dev\Common\Common.vcxitems*{f2a9b8e7-4c62-4d89-9a4f-829f8e2a7e34}*SharedItemsImports = 4
+		test\inc\inc.vcxitems*{f2a9b8e7-4c62-4d89-9a4f-829f8e2a7e34}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
