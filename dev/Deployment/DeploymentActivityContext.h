@@ -29,7 +29,6 @@ namespace WindowsAppRuntime::Deployment::Activity
 
     class Context
     {
-        static Context g_DeploymentActivityContext;
         DeploymentStage m_installStage{};
         std::wstring m_currentResourceId;
         HRESULT m_deploymentErrorExtendedHresult{};
@@ -39,10 +38,11 @@ namespace WindowsAppRuntime::Deployment::Activity
         WilFailure m_lastFailure;
         bool m_isFullTrustPackage{};
         bool m_useExistingPackageIfHigherVersion{};
-        Context() = default;
 
     public:
         static WindowsAppRuntime::Deployment::Activity::Context& Get();
+
+        Context() = default;
 
         Context(const Context&) = delete;
 
@@ -130,4 +130,6 @@ namespace WindowsAppRuntime::Deployment::Activity
             m_useExistingPackageIfHigherVersion = true;
         }
     };
+
+    static WindowsAppRuntime::Deployment::Activity::Context g_DeploymentActivityContext;
 }
