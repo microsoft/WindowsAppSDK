@@ -235,6 +235,14 @@
   <ItemGroup>
     <Folder Include="Common\" />
   </ItemGroup>
+  <!-- Include satellite resource assemblies in VSIX -->
+  <Target Name="IncludeSatelliteAssembliesInVSIX" AfterTargets="Build">
+    <ItemGroup>
+      <VSIXSourceItem Include="$(OutDir)**\*.resources.dll">
+        <VSIXSubPath>%(RecursiveDir)</VSIXSubPath>
+      </VSIXSourceItem>
+    </ItemGroup>
+  </Target>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
 </Project>
