@@ -286,8 +286,8 @@ namespace WindowsAppSDK.TemplateUtilities
                 var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
                 var projectName = _project?.Name ?? "Unknown Project";
                 var errorMessage = format == ErrorMessageFormat.InfoBar ?
-                WizardStringHelper.Format(Resources._1047, projectName, packageNames)
-                : WizardStringHelper.Format(Resources._1048, projectName, packageNames);
+                string.Format(Resources._1047, projectName, packageNames)
+                : string.Format(Resources._1048, projectName, packageNames);
                 return errorMessage;
             }
             catch (MissingManifestResourceException ex)
@@ -307,7 +307,7 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 var errorLines = new System.Text.StringBuilder();
                 var projectName = _project?.Name ?? "Unknown Project";
-                errorLines.AppendLine(WizardStringHelper.Format(Resources._1051, projectName));
+                errorLines.AppendLine(string.Format(Resources._1051, projectName));
 
                 foreach (var package in _failedPackageExceptions)
                 {
