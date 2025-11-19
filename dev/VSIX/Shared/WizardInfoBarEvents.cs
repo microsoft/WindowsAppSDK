@@ -23,11 +23,11 @@ namespace WindowsAppSDK.TemplateUtilities
 
             if (infoBarUIElement == null || actionItem == null)
             {
-                OutputWindowHelper.ShowMessageInOutputWindow("InfoBarUIElement or ActionItem is null in OnActionItemClicked.");
+                OutputWindowHelper.ShowMessageInOutputWindow("Hyperlink not found");
                 return;
             }
 
-            if (actionItem is InfoBarHyperlink hyperlink && actionItem != null)
+            if (actionItem is InfoBarHyperlink hyperlink)
             {
                 // ActionContext can be any object, so we need to cast it to a string
                 string actionContext = hyperlink.ActionContext as string;

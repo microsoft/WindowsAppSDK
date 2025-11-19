@@ -63,7 +63,6 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_componentModel != null)
             {
                 _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
-            
                 if (_nugetProjectUpdateEvents != null)
                 {
                     _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
@@ -258,7 +257,7 @@ namespace WindowsAppSDK.TemplateUtilities
                         _ = DisplayInfoBarAsync(errorMessage);
                         return;
                     }
-                        return;
+                    return;
                 }
                 else
                 {
