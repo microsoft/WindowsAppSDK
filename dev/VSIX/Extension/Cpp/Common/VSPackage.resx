@@ -232,7 +232,11 @@
     <value>Unable to add references to the following packages for {0}: {1}. Please add package references before building.</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}] Unable to add references to the following packages: {1}. This is an environment error. Please add package references before building the project.</value>
+    <value>[{0}] Unable to add references to the following packages: {1}.
+
+This is an environment error. Please add package references before building the project.
+
+For more details on the error, check the General tab in the Output window.</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>Manage NuGet Packages</value>
