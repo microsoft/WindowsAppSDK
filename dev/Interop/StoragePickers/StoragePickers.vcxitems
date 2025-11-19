@@ -20,7 +20,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PickFolderResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileTypeFilterVector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileTypeChoicesMap.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)FileTypeChoicesMapUnordered.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FileTypeChoicesMapUnordered.cpp" /> <!-- the map class without fix #5948 -->
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)PickerCommon.h" />
@@ -31,7 +31,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StoragePickersTelemetryHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileTypeFilterVector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileTypeChoicesMap.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)FileTypeChoicesMapUnordered.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FileTypeChoicesMapUnordered.h" /> <!-- the map class without fix #5948 -->
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)FileOpenPicker.cpp" />

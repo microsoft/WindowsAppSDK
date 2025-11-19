@@ -7,6 +7,7 @@
 #include "StoragePickersTelemetryHelper.h"
 #include "FileTypeChoicesMap.h"
 #include "FileTypeChoicesMapUnordered.h"
+#include "TerminalVelocityFeatures-StoragePickers-Fixes.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -39,7 +40,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Microsoft::UI::WindowId m_windowId{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
-        winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMapUnordered>() };
+        winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ 
+            ::Microsoft::Windows::Storage::Pickers::Feature_StoragePickersChoicesInsertionOrder::IsEnabled()? make<FileTypeChoicesMap>():make<FileTypeChoicesMapUnordered>()
+            
+        };
         hstring m_defaultFileExtension{};
         hstring m_suggestedFolder{};
         hstring m_suggestedFileName{};
