@@ -293,7 +293,7 @@ namespace PickerCommon {
         for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(ext);
             FileTypeFilterData.push_back(ext);
 
             allFilesExtensionList += ext;
