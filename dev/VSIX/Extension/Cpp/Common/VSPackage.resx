@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -218,5 +218,36 @@
   </data>
   <data name="1043" xml:space="preserve">
     <value>A project template that creates MSIX packages containing WinUI applications for side-loading or distribution via the Microsoft Store.</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>Installing NuGet packages into project...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Operation in progress...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>Missing Package Reference(s)</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Unable to add references to the following packages for {0}: {1}. Please add package references before building.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] Unable to add references to the following packages: {1}.
+
+This is an environment error. Please add package references before building the project.
+
+For more details on the error, check the General tab in the Output window.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>Manage NuGet Packages</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>See error details</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>Missing Package References for {0}:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Please manually add package references before building.</value>
   </data>
 </root>
