@@ -2,16 +2,16 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "FileTypeChoicesMapUnordered.h"
+#include "FileTypeChoicesMap.h"
 #include "FileTypeFilterVector.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
-    FileTypeChoicesMapUnordered::FileTypeChoicesMapUnordered()
+    FileTypeChoicesMap::FileTypeChoicesMap()
     {
     }
 
-    bool FileTypeChoicesMapUnordered::Insert(hstring const& key, winrt::Windows::Foundation::Collections::IVector<hstring> const& value)
+    bool FileTypeChoicesMap::Insert(hstring const& key, winrt::Windows::Foundation::Collections::IVector<hstring> const& value)
     {
         // Create a new FileTypeFilterVector and copy all values from the input vector
         auto validatingVector = make<FileTypeFilterVector>();
@@ -28,37 +28,37 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         return m_innerMap.Insert(key, validatingVector);
     }
 
-    winrt::Windows::Foundation::Collections::IVector<hstring> FileTypeChoicesMapUnordered::Lookup(hstring const& key) const
+    winrt::Windows::Foundation::Collections::IVector<hstring> FileTypeChoicesMap::Lookup(hstring const& key) const
     {
         return m_innerMap.Lookup(key);
     }
 
-    uint32_t FileTypeChoicesMapUnordered::Size() const
+    uint32_t FileTypeChoicesMap::Size() const
     {
         return m_innerMap.Size();
     }
 
-    bool FileTypeChoicesMapUnordered::HasKey(hstring const& key) const
+    bool FileTypeChoicesMap::HasKey(hstring const& key) const
     {
         return m_innerMap.HasKey(key);
     }
 
-    winrt::Windows::Foundation::Collections::IMapView<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileTypeChoicesMapUnordered::GetView() const
+    winrt::Windows::Foundation::Collections::IMapView<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileTypeChoicesMap::GetView() const
     {
         return m_innerMap.GetView();
     }
 
-    void FileTypeChoicesMapUnordered::Remove(hstring const& key)
+    void FileTypeChoicesMap::Remove(hstring const& key)
     {
         m_innerMap.Remove(key);
     }
 
-    void FileTypeChoicesMapUnordered::Clear()
+    void FileTypeChoicesMap::Clear()
     {
         m_innerMap.Clear();
     }
 
-    winrt::Windows::Foundation::Collections::IIterator<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>> FileTypeChoicesMapUnordered::First() const
+    winrt::Windows::Foundation::Collections::IIterator<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>> FileTypeChoicesMap::First() const
     {
         return m_innerMap.First();
     }

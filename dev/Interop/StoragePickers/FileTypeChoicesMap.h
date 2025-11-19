@@ -7,11 +7,11 @@
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
-    struct FileTypeChoicesMapUnordered : implements<FileTypeChoicesMapUnordered,
+    struct FileTypeChoicesMap : implements<FileTypeChoicesMap,
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>,
         winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::Foundation::Collections::IKeyValuePair<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>>>>
     {
-        FileTypeChoicesMapUnordered();
+        FileTypeChoicesMap();
 
         // IMap<hstring, IVector<hstring>>
         winrt::Windows::Foundation::Collections::IVector<hstring> Lookup(hstring const& key) const;
