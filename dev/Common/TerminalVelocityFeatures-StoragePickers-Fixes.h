@@ -9,7 +9,7 @@
 #if defined(__midlrt)
 namespace features
 {
-    feature_name Feature_StoragePickersChoicesInsertionOrder = { DisabledByDefault, FALSE };
+    feature_name Feature_StoragePickersPreserveFileTypeChoicesInsertionOrder = { DisabledByDefault, FALSE };
 }
 #endif // defined(__midlrt)
 
@@ -22,7 +22,7 @@ namespace Microsoft::Windows::Storage::Pickers
 {
 
 __pragma(detect_mismatch("ODR_violation_WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_STORAGE_PICKERS_FEATURE_STORAGEPICKERSORDEREDCHOICES_ENABLED_mismatch", "AlwaysEnabled"))
-struct Feature_StoragePickersChoicesInsertionOrder
+struct Feature_StoragePickersPreserveFileTypeChoicesInsertionOrder
 {
     static constexpr bool IsEnabled() { return WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_STORAGE_PICKERS_FEATURE_STORAGEPICKERSORDEREDCHOICES_ENABLED == 1; }
 };

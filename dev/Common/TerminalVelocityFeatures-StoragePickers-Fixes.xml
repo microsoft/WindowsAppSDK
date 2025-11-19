@@ -9,7 +9,7 @@
 
   <!-- Enabled variants -->
   <feature>
-    <name>Feature_StoragePickersChoicesInsertionOrder</name>
+    <name>Feature_StoragePickersPreserveFileTypeChoicesInsertionOrder</name>
     <description>StoragePickers with file type choices respecting the insersion order.</description>
     <state>AlwaysEnabled</state>
   </feature>

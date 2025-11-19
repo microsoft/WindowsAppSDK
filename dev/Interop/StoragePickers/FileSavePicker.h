@@ -41,7 +41,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ 
-            ::Microsoft::Windows::Storage::Pickers::Feature_StoragePickersChoicesInsertionOrder::IsEnabled()? make<FileTypeChoicesMap>():make<FileTypeChoicesMapUnordered>()
+            ::Microsoft::Windows::Storage::Pickers::Feature_StoragePickersPreserveFileTypeChoicesInsertionOrder::IsEnabled()? make<FileTypeChoicesMap>():make<FileTypeChoicesMapUnordered>()
             
         };
         hstring m_defaultFileExtension{};
