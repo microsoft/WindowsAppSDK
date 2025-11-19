@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <format>
 #include <utility>
+#include "TerminalVelocityFeatures-StoragePickers-Fixes.h"
 
 
 namespace {
@@ -293,7 +294,16 @@ namespace PickerCommon {
         for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
-            FileTypeFilterData.push_back(ext);
+            
+            if (::Microsoft::Windows::Storage::Pickers::Feature_StoragePickersDisplayFileTypeFilterNames::IsEnabled())
+            {
+                FileTypeFilterData.push_back(ext);
+            }
+            else
+            {
+                FileTypeFilterData.push_back(L"");
+            }
+
             FileTypeFilterData.push_back(ext);
 
             allFilesExtensionList += ext;
