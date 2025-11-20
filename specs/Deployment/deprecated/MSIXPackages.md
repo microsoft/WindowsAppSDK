@@ -110,10 +110,10 @@ SDK 1.0, 1.1 and 2.0 (Stable) are installed on an x86 system, the user will have
 
 * Microsoft.WindowsAppRuntime.1.0
 * Microsoft.WindowsAppRuntime.1.1
-* Microsoft.WindowsAppRuntime.2
+* Microsoft.WindowsAppRuntime.2.0
 * MicrosoftCorporationII.WinAppRuntime.Main.1.0
 * MicrosoftCorporationII.WinAppRuntime.Main.1.1
-* MicrosoftCorporationII.WinAppRuntime.Main.2
+* MicrosoftCorporationII.WinAppRuntime.Main.2.0
 * MicrosoftCorporationII.WinAppRuntime.Singleton (version 2.0)
 * Microsoft.WinAppRuntime.DDLM.0.146.711.0-x8
 * Microsoft.WinAppRuntime.DDLM.1000.328.1510.0-x8
@@ -143,14 +143,15 @@ for more details.
 
 Windows App SDK's MSIX packages use the following naming rules for package identity:
 
-* Name = Microsoft.WindowsAppRuntime[.SubName].\<Major\>[-VersionTag]
+* Name = Microsoft.WindowsAppRuntime[.SubName].\<Major\>.\<Minor\>[-VersionTag]
 * Publisher = "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
 
 where
 
 * SubName -- optional package sub-name. Use to distinguish amongst the different packages
 * Major -- major version of the release, e.g. "1" for Windows App SDK 1.0
-* VersionTag -- optional version tag to distinguish amongst channels, e.g. "-preview" for Windows App SDK Preview
+* Minor -- minor version of the release, e.g. "0" for Windows App SDK 1.0
+* VersionTag -- optional version tag to distinguish amongst channels and releases of a channel, e.g. "-preview2" for Windows App SDK 1.0 Preview 2
 
 ## 3.1. Package Naming - SubName
 
@@ -158,10 +159,10 @@ The following SubName values are used:
 
 | SubName | Package | Example |
 |-|-|-|
-| | Framework | Microsoft.WindowsAppRuntime.2-experimental |
-| Main | Main | MicrosoftCorporationII.WinAppRuntime.Main.2-e |
-| Singleton | Singleton | MicrosoftCorporationII.WinAppRuntime.Singleton-e |
-| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.2.3.11.0-x6-e |
+| | Framework | Microsoft.WindowsAppRuntime.1.0-experimental1 |
+| Main | Main | MicrosoftCorporationII.WinAppRuntime.Main.1.0-e1 |
+| Singleton | Singleton | MicrosoftCorporationII.WinAppRuntime.Singleton-e1 |
+| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.0.146.711.0-x6-e1 |
 
 ## 3.2. Package Naming - Main
 
@@ -201,7 +202,7 @@ where
 * ShortArchitecture = short form of the Architecture (x6=x64, x8=x86, a6=arm64)
 * ShortVersionTag = short form of the VersionTag
 
-ShortVersionTag is derived from a VersionTag by using the 1st letter for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
+ShortVersionTag is derived from a VersionTag by combining the 1st letter and the last digit (if any) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
 
 ```C#
 string ToShortVersionTag(string versionTag)
