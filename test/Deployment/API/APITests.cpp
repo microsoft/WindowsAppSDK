@@ -148,8 +148,13 @@ namespace Test::Deployment
             // Add only the main package externally to the API (e.g. the installer).
             TP::AddPackage_DeploymentWindowsAppRuntimeMain();
 
+            // Verify package status is by default not OK.
+            auto result{ DeploymentManager::GetStatus() };
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::PackageInstallRequired);
+
             // Call Initialize to correct and check status again.
-            auto result = DeploymentManager::Initialize();
+            result = DeploymentManager::Initialize();
             Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", result.ExtendedError().value));
             VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
 
@@ -169,8 +174,13 @@ namespace Test::Deployment
             // Add only the singleton package externally to the API (e.g. the installer).
             TP::AddPackage_DeploymentWindowsAppRuntimeSingleton();
 
+            // Verify package status is by default not OK.
+            auto result{ DeploymentManager::GetStatus() };
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::PackageInstallRequired);
+
             // Call Initialize to correct and check status again.
-            auto result = DeploymentManager::Initialize();
+            result = DeploymentManager::Initialize();
             Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", result.ExtendedError().value));
             VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
 
