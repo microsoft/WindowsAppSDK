@@ -223,7 +223,7 @@
       <Project>{0b01db78-f115-4c90-b28f-7819071303c6}</Project>
     </ProjectReference>
     <ProjectReference Include="$(RepoRoot)\test\Deployment\data\WindowsAppRuntime.Test.Singleton2\WindowsAppRuntime.Test.Singleton2.vcxproj">
-      <Project>{0b01db78-f115-4c90-b28f-7819071303c7}</Project>
+      <Project>{462cf10a-e6b5-4005-8e25-132d1de589b7}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -28,7 +28,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{0B01DB78-F115-4C90-B28F-7819071303C7}</ProjectGuid>
+    <ProjectGuid>{462CF10A-E6B5-4005-8E25-132D1DE589B7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>Deployment.WindowsAppRuntime.Test.Singleton2</ProjectName>
   </PropertyGroup>
