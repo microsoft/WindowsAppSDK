@@ -380,14 +380,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             }
 
             auto packageId{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
-            if (packageId.Version().Version >= targetVersion.Version)
+            if (packageId.Version().Version >= targetVersion.Version && packageId.Version().Version > highestVersionInstalled)
             {
                 match = true;
-                if (packageId.Version().Version > highestVersionInstalled)
-                {
-                    highestVersionInstalled = packageId.Version().Version;
-                    g_existingTargetPackagesIfHigherVersion[packageIdentifier] = packageFullName;
-                }
+                highestVersionInstalled = packageId.Version().Version;
+                g_existingTargetPackagesIfHigherVersion[packageIdentifier] = packageFullName;
             }
         }
 
