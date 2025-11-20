@@ -18,6 +18,7 @@
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include "PickFileResult.h"
+#include "TerminalVelocityFeatures-StoragePickers-Fixes.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -155,10 +156,17 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
 
-        // Create a file. If the file already exists,
-        // since common item dialog prompts to let user select cancel or override, thus we can safely truncate here.
-        // Due to our design spec to align with UWP pickers, we need ensure existance of picked file.
-        auto [handle, _] = wil::try_open_or_truncate_existing_file(pathStr.c_str(), GENERIC_WRITE);
+        if (::Microsoft::Windows::Storage::Pickers::Feature_StoragePickersDoNotTruncateExistingFileOnSave::IsEnabled())
+        {
+            // Create an empty file if the file doesn't exist,
+            // If the file already exists, do nothing.
+            auto [handle, _] = wil::try_open_or_create_file(pathStr.c_str(), GENERIC_WRITE);
+        }
+        else
+        {
+            // Make an empty file, regardless the file exists or not.
+            auto [handle, _] = wil::try_open_or_truncate_existing_file(pathStr.c_str(), GENERIC_WRITE);
+        }
 
         if (cancellationToken())
         {
