@@ -30,7 +30,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{462CF10A-E6B5-4005-8E25-132D1DE589B7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>Deployment.WindowsAppRuntime.Test.Singleton2</ProjectName>
+    <ProjectName>Deployment.WindowsAppRuntime.Test.SingletonHigherVersion</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -93,7 +93,7 @@
     <NMakeReBuildCommandLine>REM TODO Clean then Build</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
 
-    <MakeMsixOutputFilename>Deployment.WindowsAppRuntime.Test.Singleton2.msix</MakeMsixOutputFilename>
+    <MakeMsixOutputFilename>Deployment.WindowsAppRuntime.Test.SingletonHigherVersion.msix</MakeMsixOutputFilename>
   </PropertyGroup>
   <ItemGroup>
     <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />

@@ -39,7 +39,7 @@ namespace Test::Deployment
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            TP::RemovePackage_DeploymentWindowsAppRuntimeSingleton2();
+            TP::RemovePackage_DeploymentWindowsAppRuntimeSingletonHigherVersion();
             TP::RemovePackage_DeploymentWindowsAppRuntimeSingleton();
             TP::RemovePackage_DeploymentWindowsAppRuntimeMain();
             TP::RemovePackage_DeploymentWindowsAppRuntimeFramework();
@@ -188,7 +188,7 @@ namespace Test::Deployment
             END_TEST_METHOD_PROPERTIES();
 
             // Add only the higher version singleton package externally to the API (e.g. the installer).
-            TP::AddPackage_DeploymentWindowsAppRuntimeSingleton2();
+            TP::AddPackage_DeploymentWindowsAppRuntimeSingletonHigherVersion();
 
             // Call Initialize to correct and check status again.
             auto result = DeploymentManager::Initialize();

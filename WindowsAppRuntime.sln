@@ -748,7 +748,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsAppSDK.Test.SampleTe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StoragePickers", "StoragePickers", "{06AA7FD7-36BE-41AC-9008-56919D1612C6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Deployment.WindowsAppRuntime.Test.Singleton2", "test\Deployment\data\WindowsAppRuntime.Test.Singleton2\WindowsAppRuntime.Test.Singleton2.vcxproj", "{462CF10A-E6B5-4005-8E25-132D1DE589B7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Deployment.WindowsAppRuntime.Test.SingletonHigherVersion", "test\Deployment\data\WindowsAppRuntime.Test.SingletonHigherVersion\WindowsAppRuntime.Test.SingletonHigherVersion.vcxproj", "{462CF10A-E6B5-4005-8E25-132D1DE589B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
