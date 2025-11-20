@@ -198,6 +198,9 @@ namespace Test::Deployment
             result = DeploymentManager::GetStatus();
             Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
             VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeSingletonHigherVersion());
+            VERIFY_IS_FALSE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeSingleton());
             return;
         }
 
