@@ -9,6 +9,7 @@
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
+#include "PackageDefinitions.h"
 #include "WindowsAppRuntime-License.h"
 
 using namespace winrt;
@@ -369,6 +370,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
         bool match{};
+        UINT64 highestVersionInstalled{0};
         for (const auto& packageFullName : packageFullNames)
         {
             auto packagePath{ GetPackagePath(packageFullName) };
@@ -381,11 +383,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             if (packageId.Version().Version >= targetVersion.Version)
             {
                 match = true;
-                if (packageId.Version().Version > targetVersion.Version)
+                if (packageId.Version().Version > highestVersionInstalled)
                 {
-                    g_existingTargetPackagesIfHigherVersion.insert(std::make_pair(packageIdentifier, packageFullName));
+                    highestVersionInstalled = packageId.Version().Version;
+                    g_existingTargetPackagesIfHigherVersion[packageIdentifier] = packageFullName;
                 }
-                break;
             }
         }
 
