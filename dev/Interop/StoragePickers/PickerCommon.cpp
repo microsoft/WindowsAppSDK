@@ -297,6 +297,7 @@ namespace PickerCommon {
             
             if (::Microsoft::Windows::Storage::Pickers::Feature_StoragePickersDisplayFileTypeFilterNames::IsEnabled())
             {
+                // Set the filter name.
                 FileTypeFilterData.push_back(ext);
             }
             else
@@ -304,6 +305,7 @@ namespace PickerCommon {
                 FileTypeFilterData.push_back(L"");
             }
 
+            // Set the filter spec.
             FileTypeFilterData.push_back(ext);
 
             allFilesExtensionList += ext;
