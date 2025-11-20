@@ -222,6 +222,9 @@
     <ProjectReference Include="$(RepoRoot)\test\Deployment\data\WindowsAppRuntime.Test.Singleton\WindowsAppRuntime.Test.Singleton.vcxproj">
       <Project>{0b01db78-f115-4c90-b28f-7819071303c6}</Project>
     </ProjectReference>
+    <ProjectReference Include="$(RepoRoot)\test\Deployment\data\WindowsAppRuntime.Test.Singleton2\WindowsAppRuntime.Test.Singleton2.vcxproj">
+      <Project>{0b01db78-f115-4c90-b28f-7819071303c7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-Capabilities-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
