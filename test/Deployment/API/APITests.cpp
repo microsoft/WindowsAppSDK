@@ -39,6 +39,7 @@ namespace Test::Deployment
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
+            TP::RemovePackage_DeploymentWindowsAppRuntimeSingleton2();
             TP::RemovePackage_DeploymentWindowsAppRuntimeSingleton();
             TP::RemovePackage_DeploymentWindowsAppRuntimeMain();
             TP::RemovePackage_DeploymentWindowsAppRuntimeFramework();
@@ -197,8 +198,6 @@ namespace Test::Deployment
             result = DeploymentManager::GetStatus();
             Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
             VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
-
-            TP::RemovePackage_DeploymentWindowsAppRuntimeSingleton2();
             return;
         }
 
