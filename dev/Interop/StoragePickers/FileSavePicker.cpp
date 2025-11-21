@@ -18,7 +18,10 @@
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include "PickFileResult.h"
-#include "TerminalVelocityFeatures-StoragePickers-Fixes.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60257559: [1.8 servicing] Bugfix: FileSavePicker.PickSaveFileAsync() should not truncate file when the picked file exists.
+#define WINAPPSDK_CHANGEID_60257559 60257559, WinAppSDK_1_8_4
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -156,7 +159,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
 
-        if (::Microsoft::Windows::Storage::Pickers::Feature_StoragePickersDoNotTruncateExistingFileOnSave::IsEnabled())
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60257559>())
         {
             // Create an empty file if the file doesn't exist,
             // If the file already exists, do nothing.
