@@ -12,7 +12,10 @@
 #include <filesystem>
 #include <format>
 #include <utility>
-#include "TerminalVelocityFeatures-StoragePickers-Fixes.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60245660: [1.8 servicing] FileTypeFilter become blank when the system doesn't show extensions.
+#define WINAPPSDK_CHANGEID_60245660 60245660, WinAppSDK_1_8_4
 
 
 namespace {
@@ -295,7 +298,7 @@ namespace PickerCommon {
         {
             auto ext = FormatExtensionWithWildcard(filter);
             
-            if (::Microsoft::Windows::Storage::Pickers::Feature_StoragePickersDisplayFileTypeFilterNames::IsEnabled())
+            if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60245660>())
             {
                 // Set the filter name.
                 FileTypeFilterData.push_back(ext);
