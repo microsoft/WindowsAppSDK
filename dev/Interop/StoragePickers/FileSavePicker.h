@@ -6,6 +6,11 @@
 #include "PickerCommon.h"
 #include "StoragePickersTelemetryHelper.h"
 #include "FileTypeChoicesMap.h"
+#include "FileTypeChoicesMapUnordered.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60245168: [1.8 servicing] FileTypeChoices doesn't restore values in insertion order
+#define WINAPPSDK_CHANGEID_60245168 60245168, WinAppSDK_1_8_4
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -38,7 +43,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Microsoft::UI::WindowId m_windowId{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
-        winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };
+        winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ 
+            WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60245168>()? make<FileTypeChoicesMap>():make<FileTypeChoicesMapUnordered>()
+        };
         hstring m_defaultFileExtension{};
         hstring m_suggestedFolder{};
         hstring m_suggestedFileName{};
