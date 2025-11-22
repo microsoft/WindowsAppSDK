@@ -156,13 +156,22 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
 
             VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[0].pszName),
+                L"*.txt");
+            VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*.txt");
 
             VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[1].pszName),
+                L"*.doc");
+            VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
                 L"*.doc");
 
+            VERIFY_ARE_EQUAL(
+                std::wstring(parameters.FileTypeFilterPara[2].pszName),
+                L"All Files");
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
                 L"*.txt;*.doc");
