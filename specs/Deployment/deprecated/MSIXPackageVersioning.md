@@ -255,10 +255,17 @@ version 89 and 92+ are under development.
 * Compatible with MSIX
 * Does not align with common practices and expectations across the industry
 
-***Recommendation:*** 
-For all 1.x, option B was selected, while waiting on tooling to be able to handle the rapid development we want.
-Starting 2.x, option A is selected. This will allow for better stability for external developers. They will 
-know that as long as they are on the same Major, then things should be compatible.
+***Recommendation:*** Option B.
+
+Option B provides a stronger degree of compatibility and risk management than Option A (Major
+version) while still affording a reasonable way for developers to adopt updates.
+
+Windows App SDK aspires to adopt Option A (Major version) but more tooling and infrastructure is
+desired before making that level of guarantee. Option B provides a good balance of rapid
+development and compatibility assurance.
+
+Option A can (and will) be adopted in a future release (no sooner than 2.0) once tooling and
+infrastructure are ready to embrace it.
 
 ### 2.2.1. Current practices in Microsoft-authored Framework packges.
 
@@ -282,10 +289,8 @@ Windows App SDK 0.5 adds a "-preview" tag to the package Name.
 
 Windows App SDK 1.x adds a -channel# tag (e.g. "-preview1") to the package name.
 
-Windows App SDK 2.x goes back to just a "-preview" tag on the package Name.
-
-***Do we need a shorter tag?*** "-preview" adds 8 characters to package Name. "-experiental" adds
-12 characters. Package Name is restricted to 50 characters maximum.
+***Do we need a shorter tag?*** "-preview1" adds 9 characters to package Name. "-experiental1" adds
+13 characters. Package Name is restricted to 50 characters maximum.
 
 **Option A: `-preview`**
 **Option B: `-pre`**
@@ -335,12 +340,10 @@ Examples are provided for the following theoretical versions...
 |D|NPPP.E.B.0|8001.154.123<br>2003.364.123<br>17014.3944.123.0|Minor Patch Elapsed Build|Minor max is 64<br>Patch max is 999<br>Build max is 65535|
 |E|NPP.E.B.0|801.154.123<br>203.364.123<br>1714.3944.123.0|Minor Patch Elapsed Build|Minor max is 99<br>Patch max is 99<br>Build max is 65535|
 
-***Recommendation:*** 
-For 1.x, Option D was selected.
-For 2.x, Option A is selected.
+***Recommendation:*** Option D with Epoch=January 1, 2021.
 
-Option A works is the simplest to release and understand. As long as we don't hit 9999 Patches for the same Major.Minor,
-then we will not run out of space in the DDLM package (more on that in 2.5)
+Option A works for a simple release strategy but doesn't work when there's regular
+(e.g. daily) builds.
 
 Option B worked for WinUI 2.x and Windows App SDK 0.5 but is too limiting given it can't support
 Minor versions beyond 6. It's also a complicated encoding scheme with date injected between Minor
@@ -403,13 +406,6 @@ and release 1.x...
 * WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
 * WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
-and release 2.x, when Breaking Change Boundary changed to 'Major' version...
-
-* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>[-tag]`
-* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>[-shorttag]`
-* WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
-* WARddlm: `Microsoft.WinAppRuntime.DDLM.<rmajor>.<rminor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
-
 where
 
 * rmajor = Major version number of the project release, base-10, no leading zeros (e.g. "1" for WindowsAppSDK 1.2)
@@ -420,14 +416,12 @@ where
 * revision = Revision version number, base-10, no leading zeros
 * architecture = Allowed values: "x86", "x64", "arm64"
 * shortarchitecture = Allowed values: "x8", "x6", "a6"
-* tag = Allowed values: "", "preview", "experimental"
-* shorttag = Allowed values: "", "p", "e"
+* tag = Allowed values: "", "preview[#]", "experimental[#]"
+* shorttag = Allowed values: "", "p[#]", "e[#]"
 
-**NOTE:** rmajor/rminor are the release version, major/minor/patch/revision are the MSIX package
+**NOTE:** rmajor/rminor are the release version, major/minor/build/revision are the MSIX package
 version (Microsoft.ProjectReunion.0.8-preview had a release version of 0.8
-but an MSIX package version of 8000.146.628.0). Starting 2.0, these will now be the same numbers. The exception to that is
-Singleton, since there is one package covering all releases. That package can't "go back" to Major=2, so we will add a
-8000 to the Major for that package.
+but an MSIX package version of 8000.146.628.0).
 
 Version's fields have values 0-65535.
 
@@ -439,24 +433,24 @@ This leads to package Name length issues even for common cases:
 
 |Package|Average|AverageLength|
 | --- | :--- | :---: |
-|WARfwk |Microsoft.WindowsAppRuntime.2-preview|37|
-|WARmain|Microsoft.WindowsAppRuntime.Main.2-preview|42|
-|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview|45|
-|WARddlm|Microsoft.WinAppRuntime.DDLM.1.15.12345.24680-arm64-preview|**<span style="color:red">59</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.1.15-preview1|41|
+|WARmain|Microsoft.WindowsAppRuntime.Main.1.15-preview1|46|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.1.15.12345.24680-arm64-preview1|**<span style="color:red">64</span>**|
 
 |Package|Min|MinLength|
 | --- | :--- | :---: |
-|WARfwk |Microsoft.WindowsAppRuntime.2-preview|37|
-|WARmain|Microsoft.WindowsAppRuntime.Main.1-preview|42|
-|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview|45|
-|WARddlm|Microsoft.WinAppRuntime.DDLM.1.0.0.0-arm64-preview|**<span style="color:red">50</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.1.0-preview1|40|
+|WARmain|Microsoft.WindowsAppRuntime.Main.1.0-preview1|45|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.1.0.0.0-arm64-preview1|**<span style="color:red">52</span>**|
 
 |Package|Max|MaxLength|
 | --- | :--- | :---: |
-|WARfwk |Microsoft.WindowsAppRuntime.65535-preview|41|
-|WARmain|Microsoft.WindowsAppRuntime.Main.65535-preview|46|
-|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview|45|
-|WARddlm|Microsoft.WinAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview|**<span style="color:red">66</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.65535.65535-preview1|48|
+|WARmain|Microsoft.WindowsAppRuntime.Main.65535.65535-preview1|53|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview1|**<span style="color:red">71</span>**|
 
 Possible options we can use to shorten package Name:
 
@@ -474,37 +468,33 @@ WARddlm is needed until Dynamic Dependencies is 100% based on OS DynDep.
 Best case (!) WARddlm exists until the minimum supported Windows release is Cobalt.
 
 ***Recommendation:*** The general package naming syntax is
-`Microsoft.ProjectReunion[.SubName]-<rmajor>[-tag]`. WARddlm and WARsingleton are
+`Microsoft.ProjectReunion[.SubName]-<rmajor>.<rminor>[-tag]`. WARddlm and WARsingleton are
 exceptions to the rule (see below).
 
-Windows App SDK 2.0 will use package Names of...
+Windows App SDK 0.8 will use package Names of...
 
-* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>[-tag]`
-* WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>[-tag]`
+* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
+* WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
 * WARsingleton: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
-* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<patch>.<revision>-<shortarchitecture>[-shorttag]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
-Using Decision 5: Version Encoding = Option D (M.N.P.0) WARddlm's maximum package Name length is
-`Microsoft.WinAppRuntime.DDLM.1714.3944.123.24680-arm64-p` = 58 characters. This can be reduced
+Using Decision 5: Version Encoding = Option D (NPPP.E.B.0) WARddlm's maximum package Name length is
+`Microsoft.WinAppRuntime.DDLM.1714.3944.123.24680-arm64-p3` = 58 characters. This can be reduced
 with the following rules:
 
-* Major version <= 999
+* Major version <= 99
 * Minor version <= 999
-* Patch number <= 9999
+* Build number <= 9999
 * Revision (security update) <= 99
 * Architecture = 2 characters (x8=x86, x6=x64, a6=arm64)
 
-In the unlikely event that Minor or Patch reach these limits, then the Major (for the Minor)
-or Minor (for the Patch) will bump for all packages in order to keep these restrictions. If\When we reach Major version 1000, then
-the Major version will be the Actual Major %1000. This works, since the Major is also included in the name.
-
 This produces a worst case for WARddlm in Windows App SDK 99.888.7777.66 ARM64 Preview 3 to the following identifiers:
 
-* Package Name = `Microsoft.WinAppRuntime.DDLM.999.888.7777.66-a6-p` = 49 characters
-* PackageFullName = `"Microsoft.WinAppRuntime.DDLM.999.888.7777.66-a6-p_999.888.7777.66_arm64__8wekyb3d8bbwe"`
-* PackageFamilyName = `"Microsoft.WinAppRuntime.DDLM.999.888.7777.66-a6-p_8wekyb3d8bbwe"`
-* PACKAGE_VERSION struct = `999.888.7777.66`
-* PACKAGE_VERSION uint64 = `0x03E703781E610042`
+* Package Name = `Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3` = 49 characters
+* PackageFullName = `"Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3_99.888.7777.66_arm64__8wekyb3d8bbwe"`
+* PackageFamilyName = `"Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3_8wekyb3d8bbwe"`
+* PACKAGE_VERSION struct = `99.888.7777.66`
+* PACKAGE_VERSION uint64 = `0x006303781E610042`
 
 # 3. Conclusions
 
@@ -512,22 +502,20 @@ This produces a worst case for WARddlm in Windows App SDK 99.888.7777.66 ARM64 P
 
 **Decision 2:** Windows App SDK version 1.* encodes `Major.Minor` into MSIX package Names.
 
-**Decision 3:** Windows App SDK version 2.* encodes `Major` into MSIX package Names.
-
 **Decision 3:** Windows App SDK supports an optional 'tag' to indicate a non-Stable channel.
 A 'tag' comes in long and short (1-2 character) forms e.g. `-preview` and `-p`,
 or `-preview1` and `-p1` (the digit suffix is optional).
 
-**Decision 4:** Windows App SDK encodes version as `<major>.<minor>.<patch>.<securityupdate>`
-i.e. format encoding `M.N.P.0`. See
+**Decision 4:** Windows App SDK encodes version as `<minor><patch>.<epoch>.<build>.<securityupdate>`
+i.e. format encoding `NPPP.E.B.0`. See
 [2.4. Decision 4: Version Encoding](#24-decision-4-version-encoding) for more details.
 
 **Decision 5:** MSIX package Names use the format
-`Microsoft.WindowsAppRuntime[.SubName]-<rmajor>[-tag]`. WARddlm is an exception due to Name
-length constraints. The specific packages Names in Windows App SDK 2.0:
+`Microsoft.WindowsAppRuntime[.SubName]-<rmajor>.<rminor>[-tag]`. WARddlm is an exception due to Name
+length constraints. The specific packages Names in Windows App SDK 1.0:
 
-* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>[-tag]`
-* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>[-shorttag]`
+* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
+* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>.<rminor>[-shorttag]`
 * WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
 * WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
