@@ -368,7 +368,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const std::wstring& packageIdentifier) try
     {
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
-        UINT64 highestVersionFound{ targetVersion.Version };
+        UINT64 highestVersionFound{ 0 }; // There is no package with version 0
         std::wstring highestVersionPackageFullName{};
         for (const auto& packageFullName : packageFullNames)
         {
@@ -380,7 +380,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             auto packageId{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
             const auto packageVersion{ packageId.Version().Version };
-            if (packageVersion >= highestVersionFound)
+            if (packageVersion > highestVersionFound)
             {
                 highestVersionFound = packageVersion;
                 highestVersionPackageFullName = packageFullName;
@@ -392,7 +392,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             g_existingTargetPackagesIfHigherVersion[packageIdentifier] = highestVersionPackageFullName;
         }
 
-        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), highestVersionPackageFullName.empty());
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), highestVersionFound < targetVersion.Version);
         return S_OK;
     }
     CATCH_RETURN()
