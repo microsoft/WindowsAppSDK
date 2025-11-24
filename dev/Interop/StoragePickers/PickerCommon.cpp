@@ -426,6 +426,17 @@ namespace PickerCommon {
             }
         }
 
+        if (!IsHStringNullOrEmpty(DefaultFileExtension))
+        {
+            // the default extension has a ".", like ".txt". remove the "." (a.k.a "txt") then set it to the dialog
+            //      otherwise, the diaplayed file name would have two "."
+            check_hresult(dialog->SetDefaultExtension(DefaultFileExtension.c_str() + 1));
+        }
+        else
+        {
+            check_hresult(dialog->SetDefaultExtension(L""));
+        }
+
         if (FileTypeFilterPara.size() > 0)
         {
             check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
@@ -433,6 +444,57 @@ namespace PickerCommon {
             if (FocusLastFilter)
             {
                 check_hresult(dialog->SetFileTypeIndex(FileTypeFilterPara.size()));
+            }
+            else if (!IsHStringNullOrEmpty(DefaultFileExtension))
+            {
+                // Search in FileTypeFilterData for the first filter that has DefaultFileExtension and focus it.
+                // If not found, focus the first choice.
+                auto extensionToFocus = FormatExtensionWithWildcard(DefaultFileExtension);
+                std::wstring extensionToFocusStr{ extensionToFocus.c_str() };
+
+                bool matchedExtension = false;
+                for (size_t i = 0; i < FileTypeFilterPara.size(); ++i)
+                {
+                    size_t specIndex = (i * 2) + 1;
+                    if (specIndex >= FileTypeFilterData.size())
+                    {
+                        break;
+                    }
+
+                    std::wstring spec{ FileTypeFilterData.at(specIndex).c_str() };
+                    size_t tokenStart = 0;
+                    while (tokenStart <= spec.size())
+                    {
+                        size_t tokenEnd = spec.find(L';', tokenStart);
+                        std::wstring_view tokenView(
+                            spec.data() + tokenStart,
+                            (tokenEnd == std::wstring::npos ? spec.size() : tokenEnd) - tokenStart);
+
+                        if (!tokenView.empty() && tokenView == extensionToFocusStr)
+                        {
+                            check_hresult(dialog->SetFileTypeIndex(static_cast<UINT>(i + 1)));
+                            matchedExtension = true;
+                            break;
+                        }
+
+                        if (tokenEnd == std::wstring::npos)
+                        {
+                            break;
+                        }
+
+                        tokenStart = tokenEnd + 1;
+                    }
+
+                    if (matchedExtension)
+                    {
+                        break;
+                    }
+                }
+
+                if (!matchedExtension)
+                {
+                    check_hresult(dialog->SetFileTypeIndex(1));
+                }
             }
         }
     }

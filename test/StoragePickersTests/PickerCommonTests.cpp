@@ -117,6 +117,7 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(std::wstring(dialogFolderPath.get()), mockFolderPath,
                 L"The save dialog's folder path should match the suggested folder path.");
         }
+
         TEST_METHOD(VerifyConfigureFileSaveDialog_WhenSuggestedFolderDeleted_ExpectItsNoError)
         {
             // Arrange.
@@ -141,6 +142,107 @@ namespace Test::PickerCommonTests
                 L"The save dialog's file name should match the suggested file name.");
         }
 
+        TEST_METHOD(VerifyFiltersIndex_FileSavePickerWhenDefaultFileExtensionExists)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            picker.DefaultFileExtension(L".jpg");
+
+            // Mock.
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc" }));
+            picker.FileTypeChoices().Insert(
+                L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
+            picker.FileTypeChoices().Insert(
+                L"Adobe Illustrator", winrt::single_threaded_vector<winrt::hstring>({ L".ai" }));
+
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+
+            PickerParameters parameters{};
+            parameters.DefaultFileExtension = picker.DefaultFileExtension();
+
+            // Act.
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
+
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
+
+            // Assert.
+            UINT fileTypeIndex{ 0 };
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_ARE_EQUAL(fileTypeIndex, 2);
+        }
+
+        TEST_METHOD(VerifyFiltersIndex_FileSavePickerWhenDefaultFileExtensionExistsInMultipleChoices)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            picker.DefaultFileExtension(L".jpg");
+
+            // Mock.
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc" }));
+            picker.FileTypeChoices().Insert(
+                L".jpg", winrt::single_threaded_vector<winrt::hstring>({ L".png" }));  // false match in filter name
+            picker.FileTypeChoices().Insert(
+                L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
+            picker.FileTypeChoices().Insert(
+                L"jpg or ai", winrt::single_threaded_vector<winrt::hstring>({ L".jpg", L".ai"}));
+
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+
+            PickerParameters parameters{};
+            parameters.DefaultFileExtension = picker.DefaultFileExtension();
+
+            // Act.
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
+
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
+
+            // Assert.
+            UINT fileTypeIndex{ 0 };
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_ARE_EQUAL(fileTypeIndex, 3);
+        }
+
+        TEST_METHOD(VerifyFiltersIndex_FileSavePickerWhenDefaultFileExtensionNotExist)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            picker.DefaultFileExtension(L".jpeg");
+
+            // Mock.
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc" }));
+            picker.FileTypeChoices().Insert(
+                L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
+            picker.FileTypeChoices().Insert(
+                L"Adobe Illustrator", winrt::single_threaded_vector<winrt::hstring>({ L".ai" }));
+
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+
+            PickerParameters parameters{};
+            parameters.DefaultFileExtension = picker.DefaultFileExtension();
+
+            // Act.
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
+
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
+
+            // Assert.
+            UINT fileTypeIndex{ 0 };
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_ARE_EQUAL(fileTypeIndex, 1);
+        }
+
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeFiltersDefinedExpectAddingUnionedType)
         {
             // Arrange.
@@ -150,9 +252,12 @@ namespace Test::PickerCommonTests
             picker.FileTypeFilter().Append(L".txt");
             picker.FileTypeFilter().Append(L".doc");
 
+            auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+
             // Act.
             PickerParameters parameters{};
             parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
@@ -177,6 +282,10 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
                 L"*.txt;*.doc");
+
+            UINT fileTypeIndex{ 0 };
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_ARE_EQUAL(fileTypeIndex, 3);
         }
 
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenNoFileTypeFiltersDefinedExpectAsteriskSpec)
@@ -185,9 +294,12 @@ namespace Test::PickerCommonTests
             winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
 
+            auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+
             // Act.
             PickerParameters parameters{};
             parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -195,6 +307,10 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
+
+            UINT fileTypeIndex{ 0 };
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_ARE_EQUAL(fileTypeIndex, 1);
         }
 
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenAsteriskFileTypeFilterDefinedExpectAsteriskSpec)
@@ -205,9 +321,12 @@ namespace Test::PickerCommonTests
 
             picker.FileTypeFilter().Append(L"*");
 
+            auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+
             // Act.
             PickerParameters parameters{};
             parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -215,6 +334,10 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
                 L"*");
+
+            UINT fileTypeIndex{ 0 };
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_ARE_EQUAL(fileTypeIndex, 1);
         }
 
         TEST_METHOD(VerifyFilters_FileOpenPickerWhenFileTypeChoicesDefinedExpectMatchingSpec)

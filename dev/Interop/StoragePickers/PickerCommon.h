@@ -41,6 +41,8 @@ namespace PickerCommon {
         winrt::hstring SuggestedFolder;
         winrt::hstring SuggestedStartFolder;
 
+        winrt::hstring DefaultFileExtension;
+
         winrt::hstring FormatExtensionWithWildcard(winrt::hstring extension);
         winrt::hstring JoinExtensions(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> extensions);
 

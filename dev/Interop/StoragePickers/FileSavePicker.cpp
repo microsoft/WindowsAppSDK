@@ -95,6 +95,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
+        parameters.DefaultFileExtension = m_defaultFileExtension;
         parameters.SuggestedFileName = m_suggestedFileName;
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
@@ -116,11 +117,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         CaptureParameters(parameters);
 
-        auto defaultFileExtension = m_defaultFileExtension;
-        auto suggestedFolder = m_suggestedFolder;
-        auto suggestedFileName = m_suggestedFileName;
-        auto fileTypeChoices = m_fileTypeChoices;
-
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
@@ -134,17 +130,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto dialog = create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
         parameters.ConfigureDialog(dialog);
         parameters.ConfigureFileSaveDialog(dialog);
-
-        if (!PickerCommon::IsHStringNullOrEmpty(defaultFileExtension))
-        {
-            // the default extension has a ".", like ".txt". remove the "." (a.k.a "txt") then set it to the dialog
-            //      otherwise, the diaplayed file name would have two "."
-            check_hresult(dialog->SetDefaultExtension(defaultFileExtension.c_str() + 1));
-        }
-        else
-        {
-            check_hresult(dialog->SetDefaultExtension(L""));
-        }
 
         FILEOPENDIALOGOPTIONS dialogOptions;
         check_hresult(dialog->GetOptions(&dialogOptions));
