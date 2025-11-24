@@ -200,6 +200,7 @@ namespace Test::Deployment
 
             // Add only the lower version singleton package externally to the API (e.g. the installer).
             TP::AddPackage_DeploymentWindowsAppRuntimeSingletonLowerVersion();
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeSingletonLowerVersion());
 
             // Verify package status is by default not OK.
             auto result{ DeploymentManager::GetStatus() };
