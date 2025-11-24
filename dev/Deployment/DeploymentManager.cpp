@@ -379,9 +379,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             }
 
             auto packageId{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
-            if (packageId.Version().Version >= highestVersionFound)
+            const auto packageVersion{ packageId.Version().Version };
+            if (packageVersion >= highestVersionFound)
             {
-                highestVersionFound = packageId.Version().Version;
+                highestVersionFound = packageVersion;
                 highestVersionPackageFullName = packageFullName;
             }
         }
