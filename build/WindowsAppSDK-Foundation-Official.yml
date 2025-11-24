@@ -49,6 +49,10 @@ parameters:
   displayName: "Whether Maestro publishing should depend on successful Sample tests"
   type: boolean
   default: false
+- name: "validateRuntimeCompatibility"
+  displayName: "Validate Runtime Compatibility Enums (Servicing builds only)"
+  type: boolean
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
@@ -121,8 +125,8 @@ extends:
 
     - stage: ManualValidation_RuntimeCompatibility
       displayName: 'Manual Validation - RuntimeCompatibilityChange Enums'
-      # Only run this validation for servicing builds (release branches)
-      condition: contains(variables['Build.SourceBranch'], 'release/')
+      # Only run this validation for release branches
+      condition: and(contains(variables['Build.SourceBranch'], 'release/'), eq(parameters.validateRuntimeCompatibility, true))
       dependsOn: []
       jobs:
       - job: waitForValidation
