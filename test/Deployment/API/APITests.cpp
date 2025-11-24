@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -39,6 +39,7 @@ namespace Test::Deployment
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
+            TP::RemovePackage_DeploymentWindowsAppRuntimeSingletonHigherVersion();
             TP::RemovePackage_DeploymentWindowsAppRuntimeSingleton();
             TP::RemovePackage_DeploymentWindowsAppRuntimeMain();
             TP::RemovePackage_DeploymentWindowsAppRuntimeFramework();
@@ -112,6 +113,104 @@ namespace Test::Deployment
             result = DeploymentManager::GetStatus();
             Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
             VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+            return;
+        }
+
+        TEST_METHOD(Initialize_PackagesAlreadyPresent)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-Capabilities-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            // Add the missing packages externally to the API (e.g. the installer).
+            TP::AddPackage_DeploymentWindowsAppRuntimeSingleton();
+            TP::AddPackage_DeploymentWindowsAppRuntimeMain();
+
+            // Call Initialize to verify no issues occur when packages are already present.
+            auto result = DeploymentManager::Initialize();
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+
+            result = DeploymentManager::GetStatus();
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+            return;
+        }
+
+        TEST_METHOD(Initialize_OnlyMainPackagePresent)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-Capabilities-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            // Add only the main package externally to the API (e.g. the installer).
+            TP::AddPackage_DeploymentWindowsAppRuntimeMain();
+
+            // Verify package status is by default not OK.
+            auto result{ DeploymentManager::GetStatus() };
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::PackageInstallRequired);
+
+            // Call Initialize to correct and check status again.
+            result = DeploymentManager::Initialize();
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+
+            result = DeploymentManager::GetStatus();
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+            return;
+        }
+
+        TEST_METHOD(Initialize_OnlySingletonPackagePresent)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-Capabilities-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            // Add only the singleton package externally to the API (e.g. the installer).
+            TP::AddPackage_DeploymentWindowsAppRuntimeSingleton();
+
+            // Verify package status is by default not OK.
+            auto result{ DeploymentManager::GetStatus() };
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::PackageInstallRequired);
+
+            // Call Initialize to correct and check status again.
+            result = DeploymentManager::Initialize();
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+
+            result = DeploymentManager::GetStatus();
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+            return;
+        }
+
+        TEST_METHOD(Initialize_HigherSingletonVersionPresent)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-Capabilities-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            // Add only the higher version singleton package externally to the API (e.g. the installer).
+            TP::AddPackage_DeploymentWindowsAppRuntimeSingletonHigherVersion();
+
+            // Call Initialize to correct and check status again.
+            auto result = DeploymentManager::Initialize();
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+
+            result = DeploymentManager::GetStatus();
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeSingletonHigherVersion());
+            VERIFY_IS_FALSE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeSingleton());
             return;
         }
 

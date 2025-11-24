@@ -127,6 +127,13 @@ namespace DeploymentWindowsAppRuntimeSingleton
     constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
+namespace DeploymentWindowsAppRuntimeSingletonHigherVersion
+{
+    constexpr PCWSTR c_PackageDirName = L"Deployment.WindowsAppRuntime.Test.SingletonHigherVersion";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_4.1.1968.333_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+}
+
 template <typename T=std::wstring>
 inline T GetPackagePath(PCWSTR packageFullName)
 {
@@ -610,6 +617,27 @@ inline void RemovePackage_DeploymentWindowsAppRuntimeSingleton()
 inline bool IsPackageRegistered_DeploymentWindowsAppRuntimeSingleton()
 {
     return IsPackageRegistered(Test::Packages::DeploymentWindowsAppRuntimeSingleton::c_PackageFullName);
+}
+
+inline void AddPackage_DeploymentWindowsAppRuntimeSingletonHigherVersion()
+{
+    AddPackage(Test::Packages::DeploymentWindowsAppRuntimeSingletonHigherVersion::c_PackageDirName, Test::Packages::DeploymentWindowsAppRuntimeSingletonHigherVersion::c_PackageFullName);
+}
+
+inline void RemovePackage_DeploymentWindowsAppRuntimeSingletonHigherVersion()
+{
+    // Best-effort removal. PackageManager.RemovePackage errors if the package
+    // is not registered, but if it's not registered we're good. "'Tis the destination
+    // that matters, not the journey" so regardless how much or little work
+    // we need do, we're happy as long as the package isn't registered when we're done
+    //
+    // Thus, do a *IfNecessary removal
+    RemovePackageIfNecessary(Test::Packages::DeploymentWindowsAppRuntimeSingletonHigherVersion::c_PackageFullName);
+}
+
+inline bool IsPackageRegistered_DeploymentWindowsAppRuntimeSingletonHigherVersion()
+{
+    return IsPackageRegistered(Test::Packages::DeploymentWindowsAppRuntimeSingletonHigherVersion::c_PackageFullName);
 }
 
 inline std::filesystem::path GetWindowsAppRuntimeFrameworkMsixPath()
