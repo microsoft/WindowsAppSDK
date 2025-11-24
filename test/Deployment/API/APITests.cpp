@@ -245,6 +245,33 @@ namespace Test::Deployment
             return;
         }
 
+        TEST_METHOD(Initialize_MultipleVersionPresent_GetsHighest)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-Capabilities-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            // Add both the lower and higher version singleton packages externally to the API (e.g. the installer).
+            TP::AddPackage_DeploymentWindowsAppRuntimeSingletonLowerVersion();
+            TP::AddPackage_DeploymentWindowsAppRuntimeSingleton();
+            TP::AddPackage_DeploymentWindowsAppRuntimeSingletonHigherVersion();
+
+            // Call Initialize to correct and check status again.
+            auto result = DeploymentManager::Initialize();
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+
+            result = DeploymentManager::GetStatus();
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", result.ExtendedError().value));
+            VERIFY_IS_TRUE(result.Status() == DeploymentStatus::Ok);
+
+            VERIFY_IS_FALSE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeSingletonLowerVersion());
+            VERIFY_IS_FALSE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeSingleton());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeSingletonHigherVersion());
+            return;
+        }
+
         TEST_METHOD(Initialize_NoCapabilities)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
