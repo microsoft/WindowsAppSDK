@@ -1966,9 +1966,10 @@ function Install-NugetExe
     $file = [IO.Path]::GetFullPath($NugetExe)
 
     # Create directory if it doesn't exist
-    if (-not(Test-Path -Path ([IO.Path]::GetDirectoryName($file)) -PathType Container))
+    $fileDir = [IO.Path]::GetDirectoryName($file)
+    if (-not(Test-Path -Path $fileDir -PathType Container))
     {
-        $null = New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($file))
+        $null = New-Item -ItemType Directory -Path $fileDir
     }
 
     Write-Host "Downloading nuget.exe from $url..."
