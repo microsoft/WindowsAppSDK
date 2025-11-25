@@ -1964,6 +1964,13 @@ function Install-NugetExe
 
     $url = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
     $file = [IO.Path]::GetFullPath($NugetExe)
+
+    # Create directory if it doesn't exist
+    if (-not(Test-Path -Path ([IO.Path]::GetDirectoryName($file)) -PathType Container))
+    {
+        $null = New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($file))
+    }
+
     Write-Host "Downloading nuget.exe from $url..."
     Write-Verbose "Executing: curl.exe --output $file -L -# $url"
     $null = Start-Process curl.exe -ArgumentList "--output $file -L -# $url" -Wait -NoNewWindow -PassThru
