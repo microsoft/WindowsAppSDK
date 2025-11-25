@@ -394,7 +394,7 @@ following naming patterns release 0.x...
 
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
 * WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
-* WARddlm: `Microsoft.WindowsAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
+* WARddlm: `Microsoft.WindowsAppRuntime.DDLM.<rmajor>.<rminor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 and release 1.x...
 
@@ -408,12 +408,13 @@ and release 2.x, when Breaking Change Boundary changed to 'Major' version...
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>[-tag]`
 * WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>[-shorttag]`
 * WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
-* WARddlm: `Microsoft.WinAppRuntime.DDLM.<rmajor>.<rminor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<rmajor>.<rminor>.<patch>.<revision>-<shortarchitecture>[-shorttag]`
 
 where
 
 * rmajor = Major version number of the project release, base-10, no leading zeros (e.g. "1" for WindowsAppSDK 1.2)
 * rminor  = Minor version number of the project release, base-10, no leading zeros (e.g. "2" for WindowsAppSDK 1.2)
+* patch = Patch version number of the project release, base-10, no leading zeros
 * major = Major version number of the release, base-10, no leading zeros
 * minor  = Minor version number of the release, base-10, no leading zeros
 * build = Build version number, base-10, no leading zeros
@@ -423,11 +424,34 @@ where
 * tag = Allowed values: "", "preview", "experimental"
 * shorttag = Allowed values: "", "p", "e"
 
-**NOTE:** rmajor/rminor are the release version, major/minor/patch/revision are the MSIX package
+**NOTE:** rmajor/rminor/patch are the release version, major/minor/build/revision are the MSIX package
 version (Microsoft.ProjectReunion.0.8-preview had a release version of 0.8
 but an MSIX package version of 8000.146.628.0). Starting 2.0, these will now be the same numbers. The exception to that is
 Singleton, since there is one package covering all releases. That package can't "go back" to Major=2, so we will add a
 8000 to the Major for that package.
+
+Since we will now match the release version with the MSIX, it is worth explaining how that is going to increment.
+Every potential released build (stable, preview, experimental) will increase the Patch, unless the Major or Minor is increased.
+If we notice an issue after building the canditate, we might choose not to release it, at which point the patch could bump twice.
+Major will increase when a stable or preview release contains Breaking Changes from the previous Stable release.
+Minor will increase when a stable release contains new Functionality from the previous Stable release.
+Experimental releases will always be a patch bump from the last release and based on the most recent stable or preview. The Major.Minor 
+will remain the same whether the experimental release contains big fixes, new functionality, or breaking changes. 
+Preview is optional if we feel the need to have a preview to split out the current experimental from the next Major release before
+making an official stable release.
+
+A simplified example is this:
+2.0.0 is the first stable release.
+2.0.1-experimental is the first experimental. (contains 2.0.0 + some exp APIs, and some bug fixes)
+2.0.2 is the 2nd stable release. (bug fixes moved into 2)
+2.0.3-experimental is the 2nd experimental. (contains 2.0.1 + some exp APIs, and some more bug fixes)
+2.0.4-experimental is the 3rd experimental. (contains 2.0.1 + some Breaking Changes, some exp APIs, and some more bug fixes)
+2.1.0 is the 3rd stable release (some of the exp APIs went stable, and some bug fixes)
+2.1.1-experimental is the 4th experimental. (contains 2.1.0 + some Breaking Changes, and some more bug fixes)
+3.0.0-preview is the preview 3 public release
+3.0.1-experimental (contains 3.0.1-preview + some new APIs not in the preview build)
+3.0.3 is the first 3 stable release (we made 3.0.2, noticed issues we had not seen in preview, fixed and rebuilt)
+3.0.4-experimental (contains 3.0.3 + the new APIs from 3.0.1-experimental)
 
 Version's fields have values 0-65535.
 
