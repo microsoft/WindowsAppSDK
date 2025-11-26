@@ -80,7 +80,6 @@ Troubleshoot build problems by enabling binary logging (e.g. `msbuild...-bl`) an
 
 ###### VS ErrorList:
 
-
 ```MSB3073 The command "signtool.exe sign ..." exited with code 1...\MakeMsix.targets...```
 
 ###### Build Output:
