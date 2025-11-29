@@ -46,6 +46,8 @@ extends:
   parameters:
     featureFlags:
       EnableCDPxPAT: false
+      WindowsHostVersion:
+        Version: 2022
     platform:
       name: 'windows_undocked' # windows undocked
 
