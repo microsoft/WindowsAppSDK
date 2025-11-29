@@ -85,6 +85,7 @@ extends:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
+        Version: 2022
         Network: R1
 
     platform:
