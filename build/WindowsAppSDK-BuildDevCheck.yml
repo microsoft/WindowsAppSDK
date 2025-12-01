@@ -31,6 +31,7 @@ extends:
       name: 'windows_undocked' # windows undocked
     featureFlags:
       WindowsHostVersion:
+        Version: 2022
         Network: R1
 
     stages:
