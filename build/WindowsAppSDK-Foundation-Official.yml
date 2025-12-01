@@ -33,6 +33,10 @@ parameters:
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
   default: true
+- name: "validateRuntimeCompatibility"
+  displayName: "Validate Runtime Compatibility Enums (Servicing builds only)"
+  type: boolean
+  default: true
 
 resources:
   repositories:
@@ -91,6 +95,30 @@ extends:
         break: false
 
     stages:
+
+    - stage: ManualValidation_RuntimeCompatibility
+      displayName: 'Manual Validation - RuntimeCompatibilityChange Enums'
+      # Only run this validation for release branches
+      condition: and(contains(variables['Build.SourceBranch'], 'release/'), eq(parameters.validateRuntimeCompatibility, true))
+      dependsOn: []
+      jobs:
+      - job: waitForValidation
+        displayName: 'Wait for external validation'
+        pool: server
+        timeoutInMinutes: 120 # 2 hours timeout
+        steps:
+        - task: ManualValidation@0
+          displayName: 'Confirm RuntimeCompatibilityChange Enums Added'
+          inputs:
+            notifyUsers: ''
+            instructions: |
+              SERVICING BUILD - RuntimeCompatibilityChange VALIDATION
+
+              Verify dev/RuntimeCompatibilityOptions/RuntimeCompatibilityOptions.idl in Foundation
+
+              Unless none of the servicing changes have containment, Foundation MUST include the RuntimeCompatibilityChange
+              enum values associated with this servicing release before kicking off this official build.
+    
     - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
