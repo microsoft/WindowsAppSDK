@@ -43,7 +43,7 @@ inline void Initialize_StopSuccessActivity(
         S_OK,
         static_cast<PCWSTR>(nullptr),
         GUID{},
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetUseExistingPackageIfHigherVersion());
+        initializeActivityContext.GetUseExistingPackageIfHigherVersion());
 }
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
@@ -122,9 +122,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         // Loop through all of the target packages (i.e. main, signleton packages) and capture whether they are all installed or not
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
-        HRESULT verifyResult{};
+        HRESULT statusHResult{};
 
-        for (const auto package : c_targetPackages)
+        for (const auto &package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
@@ -167,15 +167,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
 
-            verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
-            if (FAILED(verifyResult))
+            auto verifyHResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
+            if (FAILED(verifyHResult))
             {
-                break;
+                statusHResult = verifyHResult;
             }
         }
 
         DeploymentStatus status{};
-        if (SUCCEEDED(verifyResult))
+        if (SUCCEEDED(statusHResult))
         {
             status = DeploymentStatus::Ok;
         }
@@ -184,7 +184,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             status = DeploymentStatus::PackageInstallRequired;
         }
 
-        return winrt::make<implementation::DeploymentResult>(status, verifyResult);
+        return winrt::make<implementation::DeploymentResult>(status, statusHResult);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(
@@ -212,10 +212,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const int integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
         if (isPackagedProcess && integrityLevel >= SECURITY_MANDATORY_MEDIUM_RID)
         {
+            // Marking the package as full trust because the call originates from a MediumIL package.
+            // For a packaged MediumIL app (with a non-Microsoft publisher) to deploy main and singleton packages, a breakaway helper process is required.
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
         initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
                                                       isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
 
@@ -289,7 +290,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto deployPackagesResult{ Deploy(frameworkPackageFullName, deploymentInitializeOptions.ForceDeployment()) };
+        auto deployPackagesResult{ Deploy(initializeActivityContext, frameworkPackageFullName, deploymentInitializeOptions.ForceDeployment()) };
         DeploymentStatus status{};
         if (SUCCEEDED(deployPackagesResult))
         {
@@ -416,7 +417,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     // If useExistingPackageIfHigherVersion == false, Adds the current version package at the passed in path using PackageManager.
     // If useExistingPackageIfHigherVersion == true, Registers the higher version package using the passed in path as manifest path and PackageManager.
     // This requires the 'packageManagement' or 'runFullTrust' capabilities.
-    HRESULT DeploymentManager::AddOrRegisterPackage(const std::filesystem::path& path, const bool useExistingPackageIfHigherVersion, const bool forceDeployment) try
+    HRESULT DeploymentManager::AddOrRegisterPackage(
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        const std::filesystem::path& path,
+        const bool useExistingPackageIfHigherVersion,
+        const bool forceDeployment) try
     {
         winrt::Windows::Management::Deployment::PackageManager packageManager;
 
@@ -446,7 +451,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             deploymentOperationHResult = static_cast<HRESULT>(deploymentOperation.ErrorCode());
             deploymentOperationExtendedHResult = deploymentResult.ExtendedErrorCode();
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetDeploymentErrorInfo(
+            initializeActivityContext.SetDeploymentErrorInfo(
                 deploymentOperationExtendedHResult,
                 deploymentResult.ErrorText().c_str(),
                 deploymentResult.ActivityId());
@@ -470,10 +475,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
 
     /// @warning This function is ONLY for processes with package identity. It's the caller's responsibility to ensure this.
-    HRESULT DeploymentManager::AddOrRegisterPackageInBreakAwayProcess(const std::filesystem::path& path, const bool useExistingPackageIfHigherVersion, const bool forceDeployment) try
+    HRESULT DeploymentManager::AddOrRegisterPackageInBreakAwayProcess(
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        const std::filesystem::path& path,
+        const bool useExistingPackageIfHigherVersion,
+        const bool forceDeployment) try
     {
         auto exePath{ GenerateDeploymentAgentPath() };
-        auto activityId{ winrt::to_hstring(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id()) };
+        auto activityId{ winrt::to_hstring(*initializeActivityContext.GetActivity().Id()) };
 
         // <currentdirectory>\deploymentagent.exe <custom arguments passed by caller>
         auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %u \"%s\" %u %s", exePath.c_str(), (useExistingPackageIfHigherVersion ? 1 : 0), path.c_str(), (forceDeployment ? 1 : 0), activityId.c_str()) };
@@ -517,18 +526,23 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     CATCH_RETURN()
 
     // Deploys all of the packages carried by the specified framework.
-    HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
+    HRESULT DeploymentManager::Deploy(
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        const std::wstring& frameworkPackageFullName,
+        const bool forceDeployment) try
     {
-        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName));
-        RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment));
+        RETURN_IF_FAILED(InstallLicenses(initializeActivityContext, frameworkPackageFullName));
+        RETURN_IF_FAILED(DeployPackages(initializeActivityContext, frameworkPackageFullName, forceDeployment));
         return S_OK;
     }
     CATCH_RETURN()
 
-    HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
+    HRESULT DeploymentManager::InstallLicenses(
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        const std::wstring& frameworkPackageFullName)
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
+        initializeActivityContext.Reset();
+        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
         // Build path for licenses
         auto licensePath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
@@ -536,7 +550,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         auto licenseFilespec{ licensePath };
         licenseFilespec /= L"*_license.xml";
 
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
+        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
 
         // Deploy the licenses (if any)
         ::Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
@@ -555,7 +569,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto licenseFilename{ licensePath };
             licenseFilename /= findFileData.cFileName;
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetCurrentResourceId(licenseFilename);
+            initializeActivityContext.SetCurrentResourceId(licenseFilename);
 
             RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFilename.c_str()),
                                  "LicenseFile:%ls", licenseFilename.c_str());
@@ -571,20 +585,22 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return S_OK;
     }
 
-    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment)
+    HRESULT DeploymentManager::DeployPackages(
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        const std::wstring& frameworkPackageFullName,
+        const bool forceDeployment)
     {
-        auto initializeActivity{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
-        initializeActivity.Reset();
+        initializeActivityContext.Reset();
 
-        initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
+        initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
         const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
 
         for (auto package : c_targetPackages)
         {
             auto isSingleton{ CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL };
-            initializeActivity.Reset();
-            initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
-            initializeActivity.SetCurrentResourceId(package.identifier);
+            initializeActivityContext.Reset();
+            initializeActivityContext.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
+            initializeActivityContext.SetCurrentResourceId(package.identifier);
 
             std::filesystem::path packagePath{};
 
@@ -594,7 +610,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != g_existingTargetPackagesIfHigherVersion.end() };
             if (useExistingPackageIfHigherVersion)
             {
-                initializeActivity.SetUseExistingPackageIfHigherVersion();
+                initializeActivityContext.SetUseExistingPackageIfHigherVersion();
                 packagePath = std::filesystem::path(GetPackagePath(existingPackageIfHigherVersion->second));
                 packagePath /= WINDOWSAPPRUNTIME_PACKAGE_MANIFEST_FILE;
             }
@@ -608,14 +624,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             // If the current application has runFullTrust capability, then Deploy the target package in a Breakaway process.
             // Otherwise, call PackageManager API to deploy the target package.
             // The Singleton package will always set true for forceDeployment and the running process will be terminated to update the package.
-            if (initializeActivity.GetIsFullTrustPackage())
+            if (initializeActivityContext.GetIsFullTrustPackage())
             {
 
-                RETURN_IF_FAILED(AddOrRegisterPackageInBreakAwayProcess(packagePath, useExistingPackageIfHigherVersion, forceDeployment || isSingleton));
+                RETURN_IF_FAILED(AddOrRegisterPackageInBreakAwayProcess(initializeActivityContext, packagePath, useExistingPackageIfHigherVersion, forceDeployment || isSingleton));
             }
             else
             {
-                RETURN_IF_FAILED(AddOrRegisterPackage(packagePath, useExistingPackageIfHigherVersion, forceDeployment || isSingleton));
+                RETURN_IF_FAILED(AddOrRegisterPackage(initializeActivityContext, packagePath, useExistingPackageIfHigherVersion, forceDeployment || isSingleton));
             }
 
             // Always restart Push Notifications Long Running Platform when Singleton package is processed and installed.
@@ -651,14 +667,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto dependencyPackage{ currentPackageInfo.Package(i) };
 
             // Verify PublisherId matches.
-            if (CompareStringOrdinal(currentPackageInfo.Package(i).packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
+            if (CompareStringOrdinal(dependencyPackage.packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
             {
                 continue;
             }
 
             // Verify that the WindowsAppRuntime prefix identifier is in the name.
             // This should also be the beginning of the name, so its find position is expected to be 0.
-            std::wstring dependencyPackageName{ currentPackageInfo.Package(i).packageId.name };
+            std::wstring dependencyPackageName{ dependencyPackage.packageId.name };
             if (dependencyPackageName.find(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) != 0)
             {
                 continue;
@@ -666,7 +682,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             // On WindowsAppSDK 1.1+, there is no need to check and rule out Main, Singleton and DDLM Package identifiers as their names don't have a overlap with WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX.
 
-            return hstring(currentPackageInfo.Package(i).packageFullName);
+            return hstring(dependencyPackage.packageFullName);
         }
 
         THROW_WIN32(ERROR_NOT_FOUND);

@@ -42,14 +42,17 @@ parameters:
   type: boolean
   default: true
 - name: "TestOnArm64"
-  displayName: "Enable running of tests on arm64 platform (Default: false)"
+  displayName: "Enable running of tests on arm64 platform (Default: true)"
   type: boolean
-  # Temporarily default to not testing on arm64 to mitigate arm64 capacity shortage problem.
-  default: false
+  default: true
 - name: "MaestroDependOnTestSamples"
   displayName: "Whether Maestro publishing should depend on successful Sample tests"
   type: boolean
   default: false
+- name: "validateRuntimeCompatibility"
+  displayName: "Validate Runtime Compatibility Enums (Servicing builds only)"
+  type: boolean
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
@@ -74,6 +77,11 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'GitHub - benkuhn - 2-18'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
@@ -81,6 +89,7 @@ extends:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
+        Version: 2022
         Network: R1
 
     platform:
@@ -119,6 +128,29 @@ extends:
         break: false
 
     stages:
+
+    - stage: ManualValidation_RuntimeCompatibility
+      displayName: 'Manual Validation - RuntimeCompatibilityChange Enums'
+      # Only run this validation for release branches
+      condition: and(contains(variables['Build.SourceBranch'], 'release/'), eq(parameters.validateRuntimeCompatibility, true))
+      dependsOn: []
+      jobs:
+      - job: waitForValidation
+        displayName: 'Wait for external validation'
+        pool: server
+        timeoutInMinutes: 120 # 2 hours timeout
+        steps:
+        - task: ManualValidation@0
+          displayName: 'Confirm RuntimeCompatibilityChange Enums Added'
+          inputs:
+            notifyUsers: ''
+            instructions: |
+              SERVICING BUILD - RuntimeCompatibilityChange VALIDATION
+
+              Verify dev/RuntimeCompatibilityOptions/RuntimeCompatibilityOptions.idl in Foundation
+
+              Unless none of the servicing changes have containment, Foundation MUST include the RuntimeCompatibilityChange
+              enum values associated with this servicing release before kicking off this official build.
     
     - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:

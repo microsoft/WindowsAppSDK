@@ -3,6 +3,10 @@ param (
     [string]$dest = "",
     [string]$options = "/E /XC /XN /XO /NJH /NJS /NDL /NP /NFL"
 )
+
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $robocopyCmd = "robocopy $source $dest $options"
 
 Invoke-Expression $robocopyCmd

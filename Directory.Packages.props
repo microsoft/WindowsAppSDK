@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)" />
     <PackageVersion Include="Microsoft.FrameworkUDK" Version="$(MicrosoftFrameworkUDKVersion)" />
+    <PackageVersion Include="Microsoft.ServiceHub.Framework" Version="4.8.55" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
     <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
@@ -15,6 +16,7 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageVersion Include="NuGet.VisualStudio" Version="17.6.1" />
     <PackageVersion Include="Microsoft.VisualStudio.TemplateWizardInterface" Version="17.5.33428.366" />
+    <PackageVersion Include="NuGet.VisualStudio.Contracts" Version="17.14.0" />
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <PackageVersion Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118" />
