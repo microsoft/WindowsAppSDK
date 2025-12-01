@@ -3,6 +3,7 @@
 #pragma once
 
 #include <windows.h>
+#include <guiddef.h>
 #include <string>
 #include <winrt/base.h>
 

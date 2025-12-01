@@ -6,7 +6,8 @@
 
 #include <windows.h>
 #include <winrt/base.h>
-#include <WexTestClass.h>
+#include <WexString.h>
+#include <Verify.h>
 
 namespace WEX::TestExecution
 {

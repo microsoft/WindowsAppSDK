@@ -6,7 +6,9 @@
 
 #include <windows.h>
 #include <filesystem>
-#include <WexTestClass.h>
+#include <RuntimeParameters.h>
+#include <WexString.h>
+#include <Verify.h>
 
 namespace Test::TAEF
 {

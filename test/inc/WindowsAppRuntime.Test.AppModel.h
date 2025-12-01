@@ -4,8 +4,9 @@
 #ifndef __WINDOWSAPPRUNTIME_TEST_APPMODEL_H
 #define __WINDOWSAPPRUNTIME_TEST_APPMODEL_H
 
-#include <windows.h>
+#include <basetsd.h>
 #include <appmodel.h>
+
 #include <Verify.h>
 
 namespace Test::AppModel
