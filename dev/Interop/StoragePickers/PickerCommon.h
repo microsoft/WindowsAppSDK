@@ -31,6 +31,7 @@ namespace PickerCommon {
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;
+        winrt::hstring SettingsIdentifier;
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
@@ -50,6 +51,9 @@ namespace PickerCommon {
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
         void ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog);
+
+        winrt::hstring TryGetAppUserModelId();
+        winrt::hstring TryGetProcessFullPath();
 
     private:
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);

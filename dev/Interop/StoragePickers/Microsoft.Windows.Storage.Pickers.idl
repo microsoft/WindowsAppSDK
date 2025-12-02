@@ -43,6 +43,7 @@ namespace Microsoft.Windows.Storage.Pickers
         Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
+        String SettingsIdentifier;
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
@@ -69,6 +70,8 @@ namespace Microsoft.Windows.Storage.Pickers
 
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
+        String SettingsIdentifier;
+
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
         String DefaultFileExtension;
         String SuggestedFileName;
@@ -95,6 +98,7 @@ namespace Microsoft.Windows.Storage.Pickers
         Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
+        String SettingsIdentifier;
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]

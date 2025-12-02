@@ -50,6 +50,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
+    winrt::hstring FileOpenPicker::SettingsIdentifier()
+    {
+        return m_settingsIdentifier;
+    }
+    void FileOpenPicker::SettingsIdentifier(winrt::hstring const& value)
+    {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
+        m_settingsIdentifier = value;
+    }
     winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> FileOpenPicker::FileTypeChoices()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
@@ -86,6 +95,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
+        parameters.SettingsIdentifier = m_settingsIdentifier;
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;

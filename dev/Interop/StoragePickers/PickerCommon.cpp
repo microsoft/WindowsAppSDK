@@ -392,6 +392,16 @@ namespace PickerCommon {
         }
     }
 
+    winrt::hstring PickerParameters::TryGetAppUserModelId()
+    {
+        return winrt::hstring();
+    }
+
+    winrt::hstring PickerParameters::TryGetProcessFullPath()
+    {
+        return winrt::hstring();
+    }
+
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
     {
         if (!IsHStringNullOrEmpty(CommitButtonText))
@@ -435,6 +445,21 @@ namespace PickerCommon {
                 check_hresult(dialog->SetFileTypeIndex(FileTypeFilterPara.size()));
             }
         }
+
+        if (!IsHStringNullOrEmpty(SettingsIdentifier))
+        {
+            auto appDistinctString = TryGetAppUserModelId();
+            if (appDistinctString.empty())
+            {
+                appDistinctString = TryGetProcessFullPath();
+            }
+            if (!appDistinctString.empty())
+            {
+                auto clientId = HashHStringToGuid(appDistinctString + L"|" + SettingsIdentifier);
+                check_hresult(dialog->SetClientGuid(clientId));
+            }
+        }
+
     }
 
     /// <summary>

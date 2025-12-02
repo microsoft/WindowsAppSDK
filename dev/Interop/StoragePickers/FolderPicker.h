@@ -21,6 +21,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring CommitButtonText();
         void CommitButtonText(hstring const& value);
 
+        winrt::hstring SettingsIdentifier();
+        void SettingsIdentifier(winrt::hstring const& value);
+
         hstring SuggestedFolder();
         void SuggestedFolder(hstring const& value);
 
@@ -35,6 +38,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerViewMode m_viewMode{ PickerViewMode::List };
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
+        hstring m_settingsIdentifier{};
         hstring m_suggestedFolder{};
         hstring m_suggestedStartFolder{};
         StoragePickersTelemetryHelper m_telemetryHelper{};

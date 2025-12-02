@@ -24,6 +24,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::hstring CommitButtonText();
         void CommitButtonText(winrt::hstring const& value);
 
+        winrt::hstring SettingsIdentifier();
+        void SettingsIdentifier(winrt::hstring const& value);
+
         winrt::Windows::Foundation::Collections::IVector<winrt::hstring> FileTypeFilter();
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> FileTypeChoices();
 
@@ -41,6 +44,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerViewMode m_viewMode{ PickerViewMode::List };
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         winrt::hstring m_commitButtonText{};
+        winrt::hstring m_settingsIdentifier{};
 
         winrt::Windows::Foundation::Collections::IVector<winrt::hstring> m_fileTypeFilter{ make<FileTypeFilterVector>() };
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> m_fileTypeChoices{
