@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "shellapi.h"
+#include <appmodel.h>
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include <wil/resource.h>
@@ -14,7 +15,7 @@
 #include <utility>
 #include <string_view>
 #include <cwctype>
-
+#include <vector>
 
 namespace {
 
@@ -394,11 +395,47 @@ namespace PickerCommon {
 
     winrt::hstring PickerParameters::TryGetAppUserModelId()
     {
-        return winrt::hstring();
+        UINT32 length = 0;
+        LONG rc = GetCurrentApplicationUserModelId(&length, nullptr);
+        if (rc != ERROR_INSUFFICIENT_BUFFER)
+        {
+            return winrt::hstring();
+        }
+
+        std::wstring aumid;
+        aumid.resize(length);
+        rc = GetCurrentApplicationUserModelId(&length, aumid.data());
+        if (rc != ERROR_SUCCESS)
+        {
+            return winrt::hstring();
+        }
+
+        // Remove null terminator
+        if (!aumid.empty() && aumid.back() == L'\0')
+        {
+            aumid.pop_back();
+        }
+
+        return winrt::hstring(aumid);
     }
 
     winrt::hstring PickerParameters::TryGetProcessFullPath()
     {
+        wchar_t buffer[MAX_PATH];
+        DWORD length = GetModuleFileNameW(nullptr, buffer, ARRAYSIZE(buffer));
+        if (length > 0 && length < ARRAYSIZE(buffer))
+        {
+            return winrt::hstring(buffer);
+        }
+
+        // Handle long paths
+        std::vector<wchar_t> longBuffer(32768);
+        length = GetModuleFileNameW(nullptr, longBuffer.data(), static_cast<DWORD>(longBuffer.size()));
+        if (length > 0)
+        {
+            return winrt::hstring(longBuffer.data());
+        }
+
         return winrt::hstring();
     }
 
