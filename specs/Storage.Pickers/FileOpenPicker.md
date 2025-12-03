@@ -19,9 +19,12 @@ runtimeclass FileOpenPicker
     FileOpenPicker(Microsoft.UI.WindowId windowId);
 
     string CommitButtonText;
+    string Title;
+    string SettingsIdentifier;
 
     IMap<String, IVector<String>> FileTypeChoices{ get; };
     IVector<string> FileTypeFilter{ get; };
+    UInt32 FileTypeIndex;
 
     string SuggestedFolder;
     String SuggestedStartFolder;
@@ -65,6 +68,14 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
     //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Choose selected files",
 
+    // (Optional) specify the title of the picker.
+    //     If not specified, the system uses a default title.
+    Title = "Open File",
+
+    // (Optional) specify the settings identifier of the picker.
+    //     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
+    SettingsIdentifier = "MySettingsIdentifier",
+
     // (Optional) group file types into labeled choices
     //     FileTypeChoices takes precedence over FileTypeFilter when both defined.
     FileTypeChoices = {
@@ -74,6 +85,12 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
 
     // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
     FileTypeFilter = { ".txt", ".pdf", ".doc", ".docx" },
+
+    // (Optional) specify the index of the file type filter to be selected by default. The index is 1-based.
+    // When it is 0 (the default value), the selected filter will be decided by API behavior. That is:
+    //      When FileTypeFilter is in effect, auto-select the last one (All Files).
+    //      Otherwise, auto-select the first one.
+    FileTypeIndex = 1,
 
     // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
     ViewMode = PickerViewMode.List,
@@ -109,6 +126,14 @@ openPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 //     If not specified, the system uses a default label of "Open" (suitably translated).
 openPicker.CommitButtonText(L"Choose selected files");
 
+// (Optional) specify the title of the picker.
+//     If not specified, the system uses a default title.
+openPicker.Title(L"Open File");
+
+// (Optional) specify the settings identifier of the picker.
+//     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
+openPicker.SettingsIdentifier(L"MySettingsIdentifier");
+
 // (Optional) group file types into labeled choices
 //     FileTypeChoices takes precedence over FileTypeFilter when both defined.
 auto choices = openPicker.FileTypeChoices();
@@ -117,6 +142,12 @@ choices.Insert(L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".p
 
 // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
 openPicker.FileTypeFilter().ReplaceAll({ L".txt", L".pdf", L".doc", L".docx" });
+
+// (Optional) specify the index of the file type filter to be selected by default. The index is 1-based.
+// When it is 0 (the default value), the selected filter will be decided by API behavior. That is:
+//      When FileTypeFilter is in effect, auto-select the last one (All Files).
+//      Otherwise, auto-select the first one.
+openPicker.FileTypeIndex(1);
 
 // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
 openPicker.ViewMode(PickerViewMode::List);

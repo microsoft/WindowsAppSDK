@@ -57,6 +57,15 @@ to `SuggestedStartLocation`, then to the system default.
 catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are provided, 
 `FileTypeChoices` is used and `FileTypeFilter` is ignored.
 
+1. Adding `FileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows setting the default selected file type filter index. Note this index is 1-based. When it is 0 (the default value), the selected filter might be override by the API's default behavior.
+
+1. The property `SettingsIdentifier` will be available in the new Storage.Pickers APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, location, etc) across sessions. When two different apps use the same string for SettingsIdentifier property, they will have their respective independent states.
+
+1. Adding `Title` for all 3 pickers. `Title` allows setting the title of the picker dialog.
+
+1. Adding `PickMultipleFoldersAsync` for `FolderPicker`. This allows selecting multiple folders in the folder picker dialog.
+
+
 # Conceptual pages
 
 # API
@@ -119,9 +128,12 @@ namespace Microsoft.Windows.Storage.Pickers
         FileOpenPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+        string Title;
+        string SettingsIdentifier;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
+        int FileTypeIndex;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -138,10 +150,14 @@ namespace Microsoft.Windows.Storage.Pickers
         FileSavePicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+        string Title;
+        string SettingsIdentifier;
+
         string DefaultFileExtension;
         string SuggestedFileName;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
+        int FileTypeIndex;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -155,6 +171,8 @@ namespace Microsoft.Windows.Storage.Pickers
         FolderPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+        string Title;
+        string SettingsIdentifier;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -163,6 +181,7 @@ namespace Microsoft.Windows.Storage.Pickers
         PickerViewMode ViewMode;
 
         Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
+        Windows.Foundation.IAsyncOperation<IVectorView<PickFolderResult>> PickMultipleFoldersAsync();
     }
 }
 ```

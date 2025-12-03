@@ -19,6 +19,8 @@ runtimeclass FolderPicker
     FolderPicker(Microsoft.UI.WindowId windowId);
 
     string CommitButtonText;
+    string Title;
+    string SettingsIdentifier;
 
     string SuggestedFolder;
     String SuggestedStartFolder;
@@ -27,6 +29,7 @@ runtimeclass FolderPicker
     PickerViewMode ViewMode;
 
     Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
+    Windows.Foundation.IAsyncOperation<IVectorView<PickFolderResult>> PickMultipleFoldersAsync();
 }
 ```
 
@@ -66,6 +69,14 @@ var folderPicker = new FolderPicker(this.AppWindow.Id)
     //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Select Folder",
 
+    // (Optional) specify the title of the picker.
+    //     If not specified, the system uses a default title.
+    Title = "Select Folder",
+
+    // (Optional) specify the settings identifier of the picker.
+    //     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
+    SettingsIdentifier = "MySettingsIdentifier",
+
     // (Optional) specify the view mode of the picker dialog. If not specified, default to List.
     ViewMode = PickerViewMode.List,
 };
@@ -99,6 +110,14 @@ folderPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 // (Optional) specify the text displayed on the commit button. 
 //     If not specified, the system uses a default label of "Open" (suitably translated).
 folderPicker.CommitButtonText(L"Select Folder");
+
+// (Optional) specify the title of the picker.
+//     If not specified, the system uses a default title.
+folderPicker.Title(L"Select Folder");
+
+// (Optional) specify the settings identifier of the picker.
+//     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
+folderPicker.SettingsIdentifier(L"MySettingsIdentifier");
 
 // (Optional) specify the view mode of the picker dialog. If not specified, default to List.
 folderPicker.ViewMode(PickerViewMode::List);
@@ -141,6 +160,58 @@ auto result{ co_await folderPicker.PickSingleFolderAsync() };
 if (result)
 {
     auto path{ result.Path() };
+}
+else
+{
+    // error handling.
+}
+```
+
+## FolderPicker.PickMultipleFoldersAsync
+
+Displays a UI element that allows the user to choose multiple folders.
+
+Returns a collection of lightweight objects that have the path of the picked folders.
+
+Returns an empty list (`Count` = 0) if the folder dialog was cancelled or closed without a selection.
+
+### Examples
+
+C#
+
+```C#
+using Microsoft.Windows.Storage.Pickers;
+
+var folderPicker = new FolderPicker(this.AppWindow.Id);
+
+var results = await folderPicker.PickMultipleFoldersAsync();
+if (results.Count > 0)
+{
+    var pickedFolderPaths = results.Select(f => f.Path);
+    foreach (var path in pickedFolderPaths)
+    {
+        // Do something with the folder path
+    }
+}
+else
+{
+    // error handling.
+}
+```
+
+C++
+```C++
+#include <winrt/Microsoft.Windows.Storage.Pickers.h>
+using namespace winrt::Microsoft::Windows::Storage::Pickers;
+
+FolderPicker folderPicker(AppWindow().Id());
+auto results{ co_await folderPicker.PickMultipleFoldersAsync() };
+if (results.Size() > 0)
+{
+    for (auto const& result : results)
+    {
+        auto path{ result.Path() };
+    }
 }
 else
 {

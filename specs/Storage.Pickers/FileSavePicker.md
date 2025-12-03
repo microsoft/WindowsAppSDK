@@ -17,10 +17,14 @@ runtimeclass FileSavePicker
     FileSavePicker(Microsoft.UI.WindowId windowId);
 
     string CommitButtonText;
+    string Title;
+    string SettingsIdentifier;
+
     string DefaultFileExtension;
     string SuggestedFileName;
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
+    UInt32 FileTypeIndex;
 
     string SuggestedFolder;
     String SuggestedStartFolder;
@@ -64,11 +68,23 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     //     If not specified, the system uses a default label of "Save" (suitably translated).
     CommitButtonText = "Save Document",
 
+    // (Optional) specify the title of the picker.
+    //     If not specified, the system uses a default title.
+    Title = "Save File",
+
+    // (Optional) specify the settings identifier of the picker.
+    //     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
+    SettingsIdentifier = "MySettingsIdentifier",
+
     // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
     //     Note that when "All Files (*.*)" is allowed, end users can save a file without an extension.
     FileTypeChoices = {
         { "Documents", new List<string> { ".txt", ".doc", ".docx" } }
     },
+
+    // (Optional) specify the index of the file type filter to be selected by default.
+    //     The index is 1-based.
+    FileTypeIndex = 1,
 
     // (Optional) specify the default file extension (will be appended to SuggestedFileName).
     //      If not specified, no extension will be appended.
@@ -108,9 +124,21 @@ savePicker.SuggestedFileName(L"NewDocument");
 //     If not specified, the system uses a default label of "Save" (suitably translated).
 savePicker.CommitButtonText(L"Save Document");
 
+// (Optional) specify the title of the picker.
+//     If not specified, the system uses a default title.
+savePicker.Title(L"Save File");
+
+// (Optional) specify the settings identifier of the picker.
+//     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
+savePicker.SettingsIdentifier(L"MySettingsIdentifier");
+
 // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
 //     Note that when "All Files (*.*)" is allowed, end users can save a file without an extension.
 savePicker.FileTypeChoices().Insert(L"Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+
+// (Optional) specify the index of the file type filter to be selected by default.
+//     The index is 1-based.
+savePicker.FileTypeIndex(1);
 
 // (Optional) specify the default file extension (will be appended to SuggestedFileName).
 //      If not specified, no extension will be appended.
