@@ -124,4 +124,32 @@ public:
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
+
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(FolderPickerPickMultipleFolder, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(StoragePickersTelemetryHelper& telemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                FolderPickerPickMultipleFolder,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
+
+        DEFINE_ACTIVITY_STOP(StoragePickersTelemetryHelper& telemetryHelper, bool const resultCancelled, bool const resultNotEmpty) noexcept try
+        {
+            TraceLoggingClassWriteStop(
+                FolderPickerPickMultipleFolder,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(resultCancelled, "resultCancelled"),
+                TraceLoggingBool(resultNotEmpty, "resultNotEmpty"),
+                TraceLoggingBool(telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingBool(telemetryHelper.IsRunningAsAdmin(), "IsRunningAsAdmin"),
+                TraceLoggingBool(telemetryHelper.IsRunningInContainer(), "IsRunningInContainer"),
+                TraceLoggingWideString(telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
 };

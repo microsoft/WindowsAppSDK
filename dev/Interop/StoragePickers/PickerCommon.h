@@ -31,11 +31,12 @@ namespace PickerCommon {
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;
+        winrt::hstring Title;
         winrt::hstring SettingsIdentifier;
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
-        bool FocusLastFilter{ false };
+        int FileTypeIndex{ 0 };
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
 
         winrt::hstring SuggestedFileName;

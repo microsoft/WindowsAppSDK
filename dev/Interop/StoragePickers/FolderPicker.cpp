@@ -48,12 +48,25 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
+    winrt::hstring FolderPicker::Title()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_title;
+    }
+    void FolderPicker::Title(winrt::hstring const& value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
+        m_title = value;
+    }
     winrt::hstring FolderPicker::SettingsIdentifier()
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_settingsIdentifier;
     }
     void FolderPicker::SettingsIdentifier(winrt::hstring const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_settingsIdentifier = value;
     }
@@ -84,6 +97,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
+        parameters.Title = m_title;
         parameters.SettingsIdentifier = m_settingsIdentifier;
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
@@ -98,8 +112,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
 
         PickerCommon::PickerParameters parameters{};
-        parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
-
         CaptureParameters(parameters);
         
         auto cancellationToken = co_await winrt::get_cancellation_token();
@@ -140,5 +152,76 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         logTelemetry.Stop(m_telemetryHelper, true);
         co_return result;
+    }
+
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult>> FolderPicker::PickMultipleFoldersAsync()
+    {
+        // TODO: remove get strong reference when telementry is safe stop
+        auto lifetime{ get_strong() };
+
+        auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickMultipleFolder::Start(m_telemetryHelper) };
+
+        // capture parameters to avoid using get strong referece of picker
+        PickerCommon::PickerParameters parameters{};
+        CaptureParameters(parameters);
+        
+        auto cancellationToken = co_await winrt::get_cancellation_token();
+        cancellationToken.enable_propagation(true);
+        co_await winrt::resume_background();
+
+        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> results{ winrt::single_threaded_vector<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult>() };
+        if (cancellationToken())
+        {
+            logTelemetry.Stop(m_telemetryHelper, true, false);
+            co_return results.GetView();
+        }
+
+        auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+
+        FILEOPENDIALOGOPTIONS dialogOptions;
+        check_hresult(dialog->GetOptions(&dialogOptions));
+        check_hresult(dialog->SetOptions(dialogOptions | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_ALLOWMULTISELECT));
+
+        {
+            auto hr = dialog->Show(parameters.HWnd);
+            if (FAILED(hr) || cancellationToken())
+            {
+                logTelemetry.Stop(m_telemetryHelper, true, false);
+                co_return results.GetView();
+            }
+        }
+
+        winrt::com_ptr<IShellItemArray> shellItems{};
+        check_hresult(dialog->GetResults(shellItems.put()));
+
+        DWORD itemCount = 0;
+        check_hresult(shellItems->GetCount(&itemCount));
+
+        winrt::com_ptr<IShellItem> shellItem{};
+        for (DWORD i = 0; i < itemCount; i++)
+        {
+            check_hresult(shellItems->GetItemAt(i, shellItem.put()));
+            auto path = PickerCommon::GetPathFromShellItem(shellItem);
+            auto result{ make<winrt::Microsoft::Windows::Storage::Pickers::implementation::PickFolderResult>(path) };
+            results.Append(result);
+        }
+
+        bool isCancelled = false;
+        if (cancellationToken())
+        {
+            results.Clear();
+            isCancelled = true;
+        }
+        auto resultView = results.GetView();
+
+        if (results.Size() > 0)
+        {
+            logTelemetry.Stop(m_telemetryHelper, isCancelled, true);
+        }
+        else
+        {
+            logTelemetry.Stop(m_telemetryHelper, isCancelled, false);
+        }
+        co_return resultView;
     }
 }

@@ -50,12 +50,25 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
+    winrt::hstring FileOpenPicker::Title()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_title;
+    }
+    void FileOpenPicker::Title(winrt::hstring const& value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
+        m_title = value;
+    }
     winrt::hstring FileOpenPicker::SettingsIdentifier()
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_settingsIdentifier;
     }
     void FileOpenPicker::SettingsIdentifier(winrt::hstring const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_settingsIdentifier = value;
     }
@@ -67,6 +80,16 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     winrt::Windows::Foundation::Collections::IVector<winrt::hstring> FileOpenPicker::FileTypeFilter()
     {
         return m_fileTypeFilter;
+    }
+    int FileOpenPicker::FileTypeIndex()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_fileTypeIndex;
+    }
+    void FileOpenPicker::FileTypeIndex(int value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        m_fileTypeIndex = value;
     }
     winrt::hstring FileOpenPicker::SuggestedFolder()
     {
@@ -95,10 +118,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
+        parameters.Title = m_title;
         parameters.SettingsIdentifier = m_settingsIdentifier;
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
+        
+        // Note: the user-defined index must be written in parameters before capturing filter spec for the open picker.
+        // for the fileTypeFilter may override FileTypeIndex to select "All Files" if the index is not specified by the user.
+        parameters.FileTypeIndex = m_fileTypeIndex;
         parameters.CaptureFilterSpecData(m_fileTypeFilter.GetView(), m_fileTypeChoices.GetView());
     }
 

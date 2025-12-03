@@ -43,6 +43,13 @@ namespace Microsoft.Windows.Storage.Pickers
         Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
+        String Title;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
         String SettingsIdentifier;
 
         [contract(StoragePickersContract, 2.0)]
@@ -50,6 +57,10 @@ namespace Microsoft.Windows.Storage.Pickers
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
 
         Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
+        UInt32 FileTypeIndex;
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
@@ -70,9 +81,21 @@ namespace Microsoft.Windows.Storage.Pickers
 
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
+        String Title;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
         String SettingsIdentifier;
 
         Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
+        UInt32 FileTypeIndex;
+
         String DefaultFileExtension;
         String SuggestedFileName;
         String SuggestedFolder;
@@ -98,6 +121,13 @@ namespace Microsoft.Windows.Storage.Pickers
         Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
         Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
         String CommitButtonText;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
+        String Title;
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
         String SettingsIdentifier;
 
         [contract(StoragePickersContract, 2.0)]
@@ -109,5 +139,9 @@ namespace Microsoft.Windows.Storage.Pickers
         String SuggestedStartFolder;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
+
+        [contract(StoragePickersContract, 2.0)]
+        [feature(Feature_StoragePickers2)]
+        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFolderResult> > PickMultipleFoldersAsync();
     }
 }
