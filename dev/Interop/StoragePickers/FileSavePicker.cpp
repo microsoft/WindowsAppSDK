@@ -46,18 +46,41 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
+    winrt::hstring FileSavePicker::Title()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_title;
+    }
+    void FileSavePicker::Title(winrt::hstring const& value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
+        m_title = value;
+    }
     winrt::hstring FileSavePicker::SettingsIdentifier()
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_settingsIdentifier;
     }
     void FileSavePicker::SettingsIdentifier(winrt::hstring const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_settingsIdentifier = value;
     }
     winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileSavePicker::FileTypeChoices()
     {
         return m_fileTypeChoices;
+    }
+    int FileSavePicker::FileTypeIndex()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_fileTypeIndex;
+    }
+    void FileSavePicker::FileTypeIndex(int value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        m_fileTypeIndex = value;
     }
     hstring FileSavePicker::DefaultFileExtension()
     {
@@ -104,11 +127,14 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
+        parameters.Title = m_title;
         parameters.SettingsIdentifier = m_settingsIdentifier;
         parameters.SuggestedFileName = m_suggestedFileName;
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
+
+        parameters.FileTypeIndex = m_fileTypeIndex;
         parameters.CaptureFilterSpecData(
             winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
             m_fileTypeChoices.GetView());

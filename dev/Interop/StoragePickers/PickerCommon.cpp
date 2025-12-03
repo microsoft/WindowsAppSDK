@@ -357,7 +357,11 @@ namespace PickerCommon {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
 
-        FocusLastFilter = true;
+        if (FileTypeIndex == 0)
+        {
+            // If the FileTypeIndex is not specified by the user, set to focuse the last one ("All Files")
+            FileTypeIndex = static_cast<int>(resultSize);
+        }
     }
 
     /// <summary>
@@ -395,48 +399,30 @@ namespace PickerCommon {
 
     winrt::hstring PickerParameters::TryGetAppUserModelId()
     {
-        UINT32 length = 0;
-        LONG rc = GetCurrentApplicationUserModelId(&length, nullptr);
-        if (rc != ERROR_INSUFFICIENT_BUFFER)
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+        UINT32 appUserModelIdSize{ APPLICATION_USER_MODEL_ID_MAX_LENGTH };
+
+        auto hr{GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId) };
+        if (SUCCEEDED(hr))
         {
-            return winrt::hstring();
+            return winrt::hstring{ appUserModelId };
         }
 
-        std::wstring aumid;
-        aumid.resize(length);
-        rc = GetCurrentApplicationUserModelId(&length, aumid.data());
-        if (rc != ERROR_SUCCESS)
-        {
-            return winrt::hstring();
-        }
-
-        // Remove null terminator
-        if (!aumid.empty() && aumid.back() == L'\0')
-        {
-            aumid.pop_back();
-        }
-
-        return winrt::hstring(aumid);
+        return winrt::hstring{};
     }
 
     winrt::hstring PickerParameters::TryGetProcessFullPath()
     {
-        wchar_t buffer[MAX_PATH];
-        DWORD length = GetModuleFileNameW(nullptr, buffer, ARRAYSIZE(buffer));
-        if (length > 0 && length < ARRAYSIZE(buffer))
+        PCWSTR exeFullPath{};
+        wil::unique_cotaskmem_string module;
+        auto hr{ LOG_IF_FAILED(wil::GetModuleFileNameW(nullptr, module)) };
+        if (SUCCEEDED(hr))
         {
-            return winrt::hstring(buffer);
+            exeFullPath = module.get();
+            return winrt::hstring{ exeFullPath };
         }
 
-        // Handle long paths
-        std::vector<wchar_t> longBuffer(32768);
-        length = GetModuleFileNameW(nullptr, longBuffer.data(), static_cast<DWORD>(longBuffer.size()));
-        if (length > 0)
-        {
-            return winrt::hstring(longBuffer.data());
-        }
-
-        return winrt::hstring();
+        return winrt::hstring{};
     }
 
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
@@ -444,6 +430,11 @@ namespace PickerCommon {
         if (!IsHStringNullOrEmpty(CommitButtonText))
         {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
+        }
+
+        if (!IsHStringNullOrEmpty(Title))
+        {
+            check_hresult(dialog->SetTitle(Title.c_str()));
         }
 
         winrt::com_ptr<IShellItem> defaultFolder{};
@@ -477,9 +468,9 @@ namespace PickerCommon {
         {
             check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
 
-            if (FocusLastFilter)
+            if (FileTypeIndex > 0 && FileTypeIndex <= static_cast<int>(FileTypeFilterPara.size()))
             {
-                check_hresult(dialog->SetFileTypeIndex(FileTypeFilterPara.size()));
+                check_hresult(dialog->SetFileTypeIndex(FileTypeIndex));
             }
         }
 

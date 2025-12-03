@@ -21,10 +21,16 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring CommitButtonText();
         void CommitButtonText(hstring const& value);
 
-        winrt::hstring SettingsIdentifier();
-        void SettingsIdentifier(winrt::hstring const& value);
+        hstring Title();
+        void Title(hstring const& value);
+        
+        hstring SettingsIdentifier();
+        void SettingsIdentifier(hstring const& value);
 
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileTypeChoices();
+
+        int FileTypeIndex();
+        void FileTypeIndex(int value);
 
         hstring DefaultFileExtension();
         void DefaultFileExtension(hstring const& value);
@@ -44,8 +50,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Microsoft::UI::WindowId m_windowId{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
-        winrt::hstring m_settingsIdentifier{};
+        hstring m_title{};
+        hstring m_settingsIdentifier{};
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };
+        int m_fileTypeIndex{ 0 };
         hstring m_defaultFileExtension{};
         hstring m_suggestedFolder{};
         hstring m_suggestedStartFolder{};
