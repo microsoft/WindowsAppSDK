@@ -98,7 +98,8 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     CreateNewFileIfNotExists = true,
 
     // (Optional) specify the default file extension (will be appended to SuggestedFileName).
-    //      If not specified, no extension will be appended.
+    //      Note: the default extension applies when the active filter is "All Files (*)" or includes multiple extensions, and the default extension is one of them.
+    //      If not applied, no extension will be appended.
     DefaultFileExtension = ".txt",
 };
 ```
@@ -160,7 +161,8 @@ savePicker.ShowOverwritePrompt(true);
 savePicker.CreateNewFileIfNotExists(true);
 
 // (Optional) specify the default file extension (will be appended to SuggestedFileName).
-//      If not specified, no extension will be appended.
+//      Note: the default extension applies when the selected filter is "All Files (*)" or includes multiple extensions, and the default extension is one of them.
+//      If not applied, no extension will be appended.
 savePicker.DefaultFileExtension(L".txt");
 ```
 
