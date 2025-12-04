@@ -27,7 +27,6 @@ namespace WindowsAppSDK.TemplateUtilities
         public static void ShowMessageInOutputWindow(string message, bool clearPane = true)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-
             // Log to Output window
             IVsOutputWindow outputWindow = ServiceProvider.GlobalProvider.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             if (outputWindow != null)
@@ -35,7 +34,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 Guid guidGeneral = Microsoft.VisualStudio.VSConstants.GUID_OutWindowGeneralPane;
                 IVsOutputWindowPane pane;
                 int hr = outputWindow.GetPane(ref guidGeneral, out pane);
-
                 // Create pane if it doesn't exist
                 if (pane == null)
                 {
@@ -59,7 +57,6 @@ namespace WindowsAppSDK.TemplateUtilities
                     pane.OutputStringThreadSafe("\n");
                 }
             }
-
             // Show the Output window
             var dte = ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
             if (dte != null)
