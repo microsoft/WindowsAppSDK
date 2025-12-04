@@ -39,7 +39,8 @@ namespace WindowsAppSDK.TemplateUtilities
                 // Create pane if it doesn't exist
                 if (pane == null)
                 {
-                    hr = outputWindow.CreatePane(ref guidGeneral, Resources._1053, 1, 1);
+                    var generalWindowTitle = Resources._1053;
+                    hr = outputWindow.CreatePane(ref guidGeneral, generalWindowTitle, 1, 1);
                     if (hr == Microsoft.VisualStudio.VSConstants.S_OK)
                     {
                         outputWindow.GetPane(ref guidGeneral, out pane);
@@ -53,7 +54,8 @@ namespace WindowsAppSDK.TemplateUtilities
                     {
                         pane.Clear();
                     }
-                    pane.OutputStringThreadSafe(message ?? Resources._1054);
+                    var noOutputString = Resources._1054;
+                    pane.OutputStringThreadSafe(message ?? noOutputString);
                     pane.OutputStringThreadSafe("\n");
                 }
             }
