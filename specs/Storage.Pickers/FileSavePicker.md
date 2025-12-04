@@ -26,6 +26,9 @@ runtimeclass FileSavePicker
     IMap<string, IVector<string>> FileTypeChoices{ get; };
     UInt32 FileTypeIndex;
 
+    Boolean ShowOverwritePrompt;
+    Boolean CreateNewFileIfNotExists;
+
     string SuggestedFolder;
     String SuggestedStartFolder;
     PickerLocationId SuggestedStartLocation;
@@ -86,6 +89,14 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     //     The index is 1-based.
     FileTypeIndex = 1,
 
+    // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
+    //      set to true by default.
+    ShowOverwritePrompt = true,
+
+    // (Optional) create an empty file when the picked file does not yet exist.
+    //      set to true by default.
+    CreateNewFileIfNotExists = true,
+
     // (Optional) specify the default file extension (will be appended to SuggestedFileName).
     //      If not specified, no extension will be appended.
     DefaultFileExtension = ".txt",
@@ -139,6 +150,14 @@ savePicker.FileTypeChoices().Insert(L"Text", winrt::single_threaded_vector<winrt
 // (Optional) specify the index of the file type filter to be selected by default.
 //     The index is 1-based.
 savePicker.FileTypeIndex(1);
+
+// (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
+//      set to true by default.
+savePicker.ShowOverwritePrompt(true);
+
+// (Optional) create an empty file when the picked file does not yet exist.
+//      set to true by default.
+savePicker.CreateNewFileIfNotExists(true);
 
 // (Optional) specify the default file extension (will be appended to SuggestedFileName).
 //      If not specified, no extension will be appended.

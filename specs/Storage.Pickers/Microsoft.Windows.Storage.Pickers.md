@@ -59,7 +59,11 @@ catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are p
 
 1. Adding `FileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows setting the default selected file type filter index. Note this index is 1-based. When it is 0 (the default value), the selected filter might be override by the API's default behavior.
 
-1. The property `SettingsIdentifier` will be available in the new Storage.Pickers APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, location, etc) across sessions. When two different apps use the same string for SettingsIdentifier property, they will have their respective independent states.
+1. The property `SettingsIdentifier` for all 3 pickers will be available in the new Storage.Pickers APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, location, etc) across sessions. When two different apps use the same string for SettingsIdentifier property, they will have their respective independent states.
+
+1. Adding `ShowOverwritePrompt` for `FileSavePicker`. This Boolean properties default to `true` and control whether the picker warns about overwriting when user picked an existing file via FileSavePicker.
+
+1. Adding `CreateNewFileIfNotExists` for `FileSavePicker`. This Boolean properties default to `true` and control whether to auto-create the picked file when it doesn't exist.
 
 1. Adding `Title` for all 3 pickers. `Title` allows setting the title of the picker dialog.
 
@@ -158,6 +162,9 @@ namespace Microsoft.Windows.Storage.Pickers
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         int FileTypeIndex;
+
+        bool ShowOverwritePrompt;
+        bool CreateNewFileIfNotExists;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
