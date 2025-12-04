@@ -501,5 +501,13 @@ namespace PickerCommon {
             check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
         }
 
+        if (!ShowOverwritePrompt)
+        {
+            FILEOPENDIALOGOPTIONS options{};
+            check_hresult(dialog->GetOptions(&options));
+            options = static_cast<FILEOPENDIALOGOPTIONS>(options & ~FOS_OVERWRITEPROMPT);
+			check_hresult(dialog->SetOptions(options));
+        }
+
     }
 }
