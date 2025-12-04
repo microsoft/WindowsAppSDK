@@ -46,14 +46,66 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
+    winrt::hstring FileSavePicker::Title()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_title;
+    }
+    void FileSavePicker::Title(winrt::hstring const& value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
+        m_title = value;
+    }
+    winrt::hstring FileSavePicker::SettingsIdentifier()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_settingsIdentifier;
+    }
+    void FileSavePicker::SettingsIdentifier(winrt::hstring const& value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
+        m_settingsIdentifier = value;
+    }
     winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileSavePicker::FileTypeChoices()
     {
         return m_fileTypeChoices;
+    }
+    int FileSavePicker::FileTypeIndex()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_fileTypeIndex;
+    }
+    void FileSavePicker::FileTypeIndex(int value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        m_fileTypeIndex = value;
     }
     hstring FileSavePicker::DefaultFileExtension()
     {
         return m_defaultFileExtension;
     }
+    bool FileSavePicker::ShowOverwritePrompt()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_showOverwritePrompt;
+	}
+	void FileSavePicker::ShowOverwritePrompt(bool value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+		m_showOverwritePrompt = value;
+	}
+    bool FileSavePicker::CreateNewFileIfNotExists()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_createNewFileIfNotExists;
+	}
+    void FileSavePicker::CreateNewFileIfNotExists(bool value)
+    {
+		THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+		m_createNewFileIfNotExists = value;
+	}
     void FileSavePicker::DefaultFileExtension(hstring const& value)
     {
         m_defaultFileExtension = value;
@@ -95,13 +147,18 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
+        parameters.Title = m_title;
+        parameters.SettingsIdentifier = m_settingsIdentifier;
         parameters.SuggestedFileName = m_suggestedFileName;
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
+
+        parameters.FileTypeIndex = m_fileTypeIndex;
         parameters.CaptureFilterSpecData(
             winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
             m_fileTypeChoices.GetView());
+		parameters.ShowOverwritePrompt = m_showOverwritePrompt;
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
@@ -171,9 +228,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
 
-        // Create an empty file if the file doesn't exist,
-        // If the file already exists, do nothing.
-        auto [handle, _] = wil::try_open_or_create_file(pathStr.c_str(), GENERIC_WRITE);
+        // Feature_StoragePickers2 gives the option to skip creating the picked file when it doesn't exist.
+        if (m_createNewFileIfNotExists || !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled())
+        {
+            // Create an empty file if the file doesn't exist,
+            // If the file already exists, do nothing.
+            auto [handle, _] = wil::try_open_or_create_file(pathStr.c_str(), GENERIC_WRITE);
+        }
 
         if (cancellationToken())
         {
