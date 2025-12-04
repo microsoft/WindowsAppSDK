@@ -56,6 +56,8 @@ namespace PickerCommon {
         winrt::hstring TryGetAppUserModelId();
         winrt::hstring TryGetProcessFullPath();
 
+		bool ShowOverwritePrompt;
+
     private:
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> filters);
