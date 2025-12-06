@@ -18,11 +18,45 @@ using namespace WindowsAppRuntimeInstaller::Console;
 
 namespace WindowsAppRuntimeInstaller
 {
+    static void RenderProgress(uint32_t percent, std::wstring_view label = L"Processing")
+    {
+        const uint32_t bounded = (percent > 100u) ? 100u : percent;
+        constexpr size_t barWidth = 50;
+        const size_t filled = (barWidth * bounded) / 100;
+
+        std::wstring bar;
+        bar.reserve(barWidth);
+        for (size_t i = 0; i < filled; ++i)
+        {
+            bar.push_back(L'=');
+        }
+
+        if (filled < barWidth)
+        {
+            bar.push_back(L'>');
+        }
+
+        for (size_t i = filled + (filled < barWidth ? 1 : 0); i < barWidth; ++i)
+        {
+            bar.push_back(L'.');
+        }
+
+        std::wstringstream percentageStream;
+        percentageStream << std::fixed << std::setprecision(1) << static_cast<double>(bounded) << L"%";
+
+        std::wcout << L"\r" << label << L" [" << bar << L"] " << percentageStream.str();
+        std::wcout.flush();
+    }
 
     HRESULT GetAndLogDeploymentOperationResult(
         WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
         const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation)
     {
+        deploymentOperation.Progress([&](auto const&, winrt::Windows::Management::Deployment::DeploymentProgress const& progress)
+        {
+            RenderProgress(progress.percentage);
+        });
+
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
@@ -335,6 +369,7 @@ namespace WindowsAppRuntimeInstaller
 
         if (!quiet)
         {
+            std::wcout << std::endl;
             std::wcout << L"Deploying package: " << packageProperties->fullName.get() << std::endl;
         }
 
@@ -379,6 +414,7 @@ namespace WindowsAppRuntimeInstaller
         }
         if (!quiet)
         {
+            std::wcout << std::endl;
             std::wcout << "Package deployment result : 0x" << std::hex << hrDeploymentResult << " ";
             DisplayError(hrDeploymentResult);
         }
