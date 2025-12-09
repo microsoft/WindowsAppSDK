@@ -57,17 +57,26 @@ to `SuggestedStartLocation`, then to the system default.
 catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are provided, 
 `FileTypeChoices` is used and `FileTypeFilter` is ignored.
 
-1. Adding `FileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows setting the default selected file type filter index. Note this index is 1-based. When it is 0 (the default value), the selected filter might be override by the API's default behavior.
+1. Adding `DefaultFileTypeFilterIndex` for `FileOpenPicker` and `FileSavePicker`. This allows 
+setting the default selected file type filter index. Note this index is 0-based. When it is 
+-1 (the default value), the selected filter might be override by the API's default behavior.
 
-1. The property `SettingsIdentifier` for all 3 pickers will be available in the new Storage.Pickers APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, location, etc) across sessions. When two different apps use the same string for SettingsIdentifier property, they will have their respective independent states.
+1. The property `SettingsIdentifier` for all 3 pickers will be available in the new Storage.Pickers 
+APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, 
+location, etc) across sessions. When two different apps use the same string for SettingsIdentifier 
+property, they will have their respective independent states (Read more in Note 2).
 
-1. Adding `ShowOverwritePrompt` for `FileSavePicker`. This Boolean properties default to `true` and control whether the picker warns about overwriting when user picked an existing file via FileSavePicker.
+1. Adding `ShowOverwritePrompt` for `FileSavePicker`. This Boolean properties default to `true` and 
+control whether the picker warns about overwriting when user picked an existing file via 
+FileSavePicker.
 
-1. Adding `CreateNewFileIfNotExists` for `FileSavePicker`. This Boolean properties default to `true` and control whether to auto-create the picked file when it doesn't exist.
+1. Adding `CreateNewFileIfNotExists` for `FileSavePicker`. This Boolean properties default to `true` 
+and control whether to auto-create the picked file when it doesn't exist.
 
 1. Adding `Title` for all 3 pickers. `Title` allows setting the title of the picker dialog.
 
-1. Adding `PickMultipleFoldersAsync` for `FolderPicker`. This allows selecting multiple folders in the folder picker dialog.
+1. Adding `PickMultipleFoldersAsync` for `FolderPicker`. This allows selecting multiple folders in 
+the folder picker dialog.
 
 
 # Conceptual pages
@@ -137,7 +146,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
-        int FileTypeIndex;
+        int DefaultFileTypeFilterIndex;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -161,7 +170,7 @@ namespace Microsoft.Windows.Storage.Pickers
         string SuggestedFileName;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
-        int FileTypeIndex;
+        int DefaultFileTypeFilterIndex;
 
         bool ShowOverwritePrompt;
         bool CreateNewFileIfNotExists;
@@ -193,7 +202,9 @@ namespace Microsoft.Windows.Storage.Pickers
 }
 ```
 
-Note: **Understanding SuggestedStartFolder/SuggestedStartLocation vs SuggestedFolder:**
+# Notes
+
+Note 1: **Understanding SuggestedStartFolder/SuggestedStartLocation vs SuggestedFolder:**
 
 These two kinds of properties have fundamentally different behaviors in terms of when and how they 
 affect the picker:
@@ -213,3 +224,22 @@ affect the picker:
     navigation history.
 
     `SuggestedStartFolder` takes precedence over `SuggestedStartLocation` when both specified.
+
+Note 2: **The implementation of SettingsIdentifier**
+
+When an app sets `SettingsIdentifier`, the picker persists its window placement and navigation
+history through the underlying [`IFileDialog::SetClientGuid`](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setclientguid) 
+API. The implementation derives that `ClientGuid` as follows:
+
+- First it tries to obtain the packaged app's Identity via [`GetCurrentApplicationUserModelId`](https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentapplicationusermodelid).
+- If the process has no package identity found (typical for unpackaged apps, win32 apps, etc.), 
+    it falls back to the full path to the running executable retrieved from `wil::GetModuleFileNameW`.
+- The chosen identifier is concatenated with the caller-provided `SettingsIdentifier` value using a
+    `"<app identifier>|<value of SettingsIdentifier>"` format. That string is then hashed with MD5 
+    and coerced into an GUID.
+- The calculated GUID will be passed to set the `ClientGuid`.
+
+This means the feature works for both packaged and unpackaged apps. Packaged apps remain distinct by
+their package identity, while unpackaged apps are differentiated by the absolute path of their
+executable. As long as an app uses a stable combination of package identity (or executable path) and
+`SettingsIdentifier`, the picker will reopen with the same saved settings across sessions.

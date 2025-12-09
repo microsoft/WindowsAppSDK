@@ -24,7 +24,7 @@ runtimeclass FileSavePicker
     string SuggestedFileName;
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
-    UInt32 FileTypeIndex;
+    Int32 DefaultFileTypeFilterIndex;
 
     Boolean ShowOverwritePrompt;
     Boolean CreateNewFileIfNotExists;
@@ -82,12 +82,14 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
     //     Note that when "All Files (*.*)" is allowed, end users can save a file without an extension.
     FileTypeChoices = {
-        { "Documents", new List<string> { ".txt", ".doc", ".docx" } }
+        { "Text", new List<string> {".txt"} },
+        { "Documents", new List<string> { ".doc", ".docx" } }
     },
 
     // (Optional) specify the index of the file type filter to be selected by default.
-    //     The index is 1-based.
-    FileTypeIndex = 1,
+    //     The index is 0-based. 
+    //     When not specified, its value is -1.
+    DefaultFileTypeFilterIndex = 1,  // this will auto-select Documents
 
     // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
     //      set to true by default.
@@ -145,11 +147,13 @@ savePicker.SettingsIdentifier(L"MySettingsIdentifier");
 
 // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
 //     Note that when "All Files (*.*)" is allowed, end users can save a file without an extension.
-savePicker.FileTypeChoices().Insert(L"Text", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+savePicker.FileTypeChoices().Insert(L"Texts", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+savePicker.FileTypeChoices().Insert(L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".doc", L".docx" }));
 
 // (Optional) specify the index of the file type filter to be selected by default.
-//     The index is 1-based.
-savePicker.FileTypeIndex(1);
+//     The index is 0-based. 
+//     When not specified, its value is -1.
+savePicker.DefaultFileTypeFilterIndex(1);    // this will auto-select Documents
 
 // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
 //      set to true by default.

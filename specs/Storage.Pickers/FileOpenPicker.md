@@ -24,7 +24,7 @@ runtimeclass FileOpenPicker
 
     IMap<String, IVector<String>> FileTypeChoices{ get; };
     IVector<string> FileTypeFilter{ get; };
-    UInt32 FileTypeIndex;
+    Int32 DefaultFileTypeFilterIndex;
 
     string SuggestedFolder;
     String SuggestedStartFolder;
@@ -86,11 +86,12 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
     // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
     FileTypeFilter = { ".txt", ".pdf", ".doc", ".docx" },
 
-    // (Optional) specify the index of the file type filter to be selected by default. The index is 1-based.
-    // When it is 0 (the default value), the selected filter will be decided by API behavior. That is:
-    //      When FileTypeFilter is in effect, auto-select the last one (All Files).
-    //      Otherwise, auto-select the first one.
-    FileTypeIndex = 1,
+    // (Optional) specify the index of the file type filter to be selected by default.
+    //     The index is 0-based. 
+    //     When not specified, its value is -1 and the filter follows API's behavior. That is:
+    //          When FileTypeFilter is in effect, auto-select the last one (All Files).
+    //          Otherwise, auto-select the first one.
+    DefaultFileTypeFilterIndex = 1,  // auto select Pictures
 
     // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
     ViewMode = PickerViewMode.List,
@@ -143,11 +144,12 @@ choices.Insert(L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".p
 // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
 openPicker.FileTypeFilter().ReplaceAll({ L".txt", L".pdf", L".doc", L".docx" });
 
-// (Optional) specify the index of the file type filter to be selected by default. The index is 1-based.
-// When it is 0 (the default value), the selected filter will be decided by API behavior. That is:
-//      When FileTypeFilter is in effect, auto-select the last one (All Files).
-//      Otherwise, auto-select the first one.
-openPicker.FileTypeIndex(1);
+// (Optional) specify the index of the file type filter to be selected by default.
+//     The index is 0-based. 
+//     When not specified, its value is -1 and the filter follows API's behavior. That is:
+//          When FileTypeFilter is in effect, auto-select the last one (All Files).
+//          Otherwise, auto-select the first one.
+openPicker.DefaultFileTypeFilterIndex(1);  // auto select Pictures
 
 // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
 openPicker.ViewMode(PickerViewMode::List);
