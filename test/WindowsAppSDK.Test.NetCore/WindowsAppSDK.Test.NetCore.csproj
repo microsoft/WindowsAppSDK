@@ -10,5 +10,24 @@
     <GenerateProjectSpecificOutputFolder>False</GenerateProjectSpecificOutputFolder>
     <Platforms>x86;x64;arm64</Platforms>
   </PropertyGroup>
-
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalOptions>%(AdditionalOptions) /Qspectre</AdditionalOptions>
+      <!-- /GS Enable Control Flow Guard -->
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <!-- Setting this to be compatible with CFG -->
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <!-- dynamicbase is required for enabling CFG -->
+      <AdditionalOptions>%(AdditionalOptions) /dynamicbase</AdditionalOptions>
+      <!-- /GS Enable Control Flow Guard -->
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <!-- /Brepro Enables deterministic output from the compiler toolchain -->
+      <!-- /CETCOMPAT enables Control-flow Enforcement Technology (CET) Shadow Stack mitigation.
+      BinSkim asks for this. /CETCOMPAT does not support arm64 -->
+      <AdditionalOptions>%(AdditionalOptions) /Brepro</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Platform)' != 'arm64' and '$(Platform)' != 'arm64ec'">%(AdditionalOptions) /CETCOMPAT</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
 </Project>
