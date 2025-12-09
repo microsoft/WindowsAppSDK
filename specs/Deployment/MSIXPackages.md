@@ -158,10 +158,10 @@ The following SubName values are used:
 
 | SubName | Package | Example |
 |-|-|-|
-| | Framework | Microsoft.WindowsAppRuntime.2-experimental |
-| Main | Main | MicrosoftCorporationII.WinAppRuntime.Main.2-e |
-| Singleton | Singleton | MicrosoftCorporationII.WinAppRuntime.Singleton-e |
-| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.2.3.11.0-x6-e |
+| | Framework | Microsoft.WindowsAppRuntime.2-experimental00 |
+| Main | Main | MicrosoftCorporationII.WinAppRuntime.Main.2-e00 |
+| Singleton | Singleton | MicrosoftCorporationII.WinAppRuntime.Singleton-e00 |
+| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.2.3.11.0-x6-e00 |
 
 ## 3.2. Package Naming - Main
 
