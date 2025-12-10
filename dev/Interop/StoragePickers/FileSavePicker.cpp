@@ -72,15 +72,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         return m_fileTypeChoices;
     }
-    int FileSavePicker::FileTypeIndex()
+    int FileSavePicker::DefaultFileTypeIndex()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        return m_fileTypeIndex;
+        return m_defaultFileTypeIndex;
     }
-    void FileSavePicker::FileTypeIndex(int value)
+    void FileSavePicker::DefaultFileTypeIndex(int value)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        m_fileTypeIndex = value;
+        m_defaultFileTypeIndex = value;
     }
     hstring FileSavePicker::DefaultFileExtension()
     {
@@ -154,7 +154,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
 
-        parameters.FileTypeIndex = m_fileTypeIndex;
+        parameters.DefaultFileTypeIndex = m_defaultFileTypeIndex;
         parameters.CaptureFilterSpecData(
             winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
             m_fileTypeChoices.GetView());
