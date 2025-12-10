@@ -13,7 +13,7 @@ Supports specifying the initial location, extension filters, and text on commit 
 
 ## Definition
 
-```C#
+```idl
 runtimeclass FileOpenPicker
 {
     FileOpenPicker(Microsoft.UI.WindowId windowId);
@@ -24,7 +24,7 @@ runtimeclass FileOpenPicker
 
     IMap<String, IVector<String>> FileTypeChoices{ get; };
     IVector<string> FileTypeFilter{ get; };
-    Int32 DefaultFileTypeIndex;
+    IReference<UInt32> DefaultFileTypeIndex;
 
     string SuggestedFolder;
     String SuggestedStartFolder;
@@ -88,7 +88,7 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
 
     // (Optional) specify the index of the file type filter to be selected by default.
     //     The index is 0-based. 
-    //     When not specified, its value is -1 and the filter follows API's behavior. That is:
+    //     When not specified, its value is null and the filter follows API's behavior. That is:
     //          When FileTypeFilter is in effect, auto-select the last one (All Files).
     //          Otherwise, auto-select the first one.
     DefaultFileTypeIndex = 1,  // auto select Pictures
@@ -146,7 +146,7 @@ openPicker.FileTypeFilter().ReplaceAll({ L".txt", L".pdf", L".doc", L".docx" });
 
 // (Optional) specify the index of the file type filter to be selected by default.
 //     The index is 0-based. 
-//     When not specified, its value is -1 and the filter follows API's behavior. That is:
+//     When not specified, its value is null and the filter follows API's behavior. That is:
 //          When FileTypeFilter is in effect, auto-select the last one (All Files).
 //          Otherwise, auto-select the first one.
 openPicker.DefaultFileTypeIndex(1);  // auto select Pictures

@@ -59,7 +59,7 @@ catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are p
 
 1. Adding `DefaultFileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows 
 setting the default selected file type filter index. Note this index is 0-based. When it is 
--1 (the default value), the selected filter might be override by the API's default behavior.
+null (the default value), the selected filter might be override by the API's default behavior.
 
 1. The property `SettingsIdentifier` for all 3 pickers will be available in the new Storage.Pickers 
 APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, 
@@ -105,7 +105,7 @@ showing the UI.
 
 ## Definition
 
-```C#
+```idl
 namespace Microsoft.Windows.Storage.Pickers
 {
     enum PickerViewMode
@@ -146,7 +146,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
-        int DefaultFileTypeIndex;
+        IReference<UInt32> DefaultFileTypeIndex;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -170,7 +170,7 @@ namespace Microsoft.Windows.Storage.Pickers
         string SuggestedFileName;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
-        int DefaultFileTypeIndex;
+        IReference<UInt32> DefaultFileTypeIndex;
 
         bool ShowOverwritePrompt;
         bool CreateNewFileIfNotExists;
@@ -273,5 +273,5 @@ active and simply points to the auto-selected entry on dialog launch. For exampl
    
    selects the `Documents` group.
 
-Additionally, if the index falls outside the available range, we treat it as `-1`, meaning the 
+Additionally, if the index falls outside the available range, we treat it as `null`, meaning the 
 picker ignores this setting and follows its built-in default.
