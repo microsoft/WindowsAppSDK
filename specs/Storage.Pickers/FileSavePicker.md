@@ -24,7 +24,7 @@ runtimeclass FileSavePicker
     string SuggestedFileName;
 
     IMap<string, IVector<string>> FileTypeChoices{ get; };
-    Int32 DefaultFileTypeFilterIndex;
+    Int32 DefaultFileTypeIndex;
 
     Boolean ShowOverwritePrompt;
     Boolean CreateNewFileIfNotExists;
@@ -89,7 +89,7 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     // (Optional) specify the index of the file type filter to be selected by default.
     //     The index is 0-based. 
     //     When not specified, its value is -1.
-    DefaultFileTypeFilterIndex = 1,  // this will auto-select Documents
+    DefaultFileTypeIndex = 1,  // this will auto-select Documents
 
     // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
     //      set to true by default.
@@ -155,7 +155,7 @@ savePicker.FileTypeChoices().Insert(L"Documents", winrt::single_threaded_vector<
 // (Optional) specify the index of the file type filter to be selected by default.
 //     The index is 0-based. 
 //     When not specified, its value is -1.
-savePicker.DefaultFileTypeFilterIndex(1);    // this will auto-select Documents
+savePicker.DefaultFileTypeIndex(1);    // this will auto-select Documents
 
 // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
 //      set to true by default.
