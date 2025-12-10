@@ -8,6 +8,7 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>
+#include <optional>
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
@@ -36,7 +37,7 @@ namespace PickerCommon {
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
-        int DefaultFileTypeIndex{ -1 };
+        std::optional<uint32_t> DefaultFileTypeIndex{};
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
 
         winrt::hstring SuggestedFileName;

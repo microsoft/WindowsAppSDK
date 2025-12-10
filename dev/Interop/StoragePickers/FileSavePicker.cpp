@@ -72,15 +72,27 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         return m_fileTypeChoices;
     }
-    int FileSavePicker::DefaultFileTypeIndex()
+    winrt::Windows::Foundation::IReference<uint32_t> FileSavePicker::DefaultFileTypeIndex()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        return m_defaultFileTypeIndex;
+        if (!m_defaultFileTypeIndex.has_value())
+        {
+            return nullptr;
+        }
+
+        return winrt::box_value(*m_defaultFileTypeIndex).as<winrt::Windows::Foundation::IReference<uint32_t>>();
     }
-    void FileSavePicker::DefaultFileTypeIndex(int value)
+    void FileSavePicker::DefaultFileTypeIndex(winrt::Windows::Foundation::IReference<uint32_t> const& value)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        m_defaultFileTypeIndex = value;
+        if (value)
+        {
+            m_defaultFileTypeIndex = value.Value();
+        }
+        else
+        {
+            m_defaultFileTypeIndex.reset();
+        }
     }
     hstring FileSavePicker::DefaultFileExtension()
     {

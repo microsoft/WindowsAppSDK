@@ -81,15 +81,27 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         return m_fileTypeFilter;
     }
-    int FileOpenPicker::DefaultFileTypeIndex()
+    winrt::Windows::Foundation::IReference<uint32_t> FileOpenPicker::DefaultFileTypeIndex()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        return m_defaultFileTypeIndex;
+        if (!m_defaultFileTypeIndex.has_value())
+        {
+            return nullptr;
+        }
+
+        return winrt::box_value(*m_defaultFileTypeIndex).as<winrt::Windows::Foundation::IReference<uint32_t>>();
     }
-    void FileOpenPicker::DefaultFileTypeIndex(int value)
+    void FileOpenPicker::DefaultFileTypeIndex(winrt::Windows::Foundation::IReference<uint32_t> const& value)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        m_defaultFileTypeIndex = value;
+        if (value)
+        {
+            m_defaultFileTypeIndex = value.Value();
+        }
+        else
+        {
+            m_defaultFileTypeIndex.reset();
+        }
     }
     winrt::hstring FileOpenPicker::SuggestedFolder()
     {

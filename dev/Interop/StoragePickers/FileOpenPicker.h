@@ -8,6 +8,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include "FileTypeChoicesMap.h"
 #include "FileTypeFilterVector.h"
+#include <optional>
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -33,8 +34,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IVector<winrt::hstring> FileTypeFilter();
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> FileTypeChoices();
 
-        int DefaultFileTypeIndex();
-        void DefaultFileTypeIndex(int value);
+        winrt::Windows::Foundation::IReference<uint32_t> DefaultFileTypeIndex();
+        void DefaultFileTypeIndex(winrt::Windows::Foundation::IReference<uint32_t> const& value);
 
         winrt::hstring SuggestedFolder();
         void SuggestedFolder(winrt::hstring const& value);
@@ -63,7 +64,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             }()
         };
 
-        int m_defaultFileTypeIndex{ -1 };
+        std::optional<uint32_t> m_defaultFileTypeIndex{};
 
         winrt::hstring m_suggestedFolder{};
         winrt::hstring m_suggestedStartFolder{};
