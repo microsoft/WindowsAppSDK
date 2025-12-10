@@ -60,7 +60,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
-        UInt32 FileTypeIndex;
+        Int32 DefaultFileTypeIndex;
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
@@ -94,7 +94,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
-        UInt32 FileTypeIndex;
+        Int32 DefaultFileTypeIndex;
 
         String DefaultFileExtension;
         String SuggestedFileName;
