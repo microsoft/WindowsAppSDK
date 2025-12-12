@@ -21,7 +21,7 @@ using namespace WindowsAppRuntimeInstaller::Console;
 
 namespace WindowsAppRuntimeInstaller
 {
-    static void RenderProgress(uint32_t percent, const std::wstring& label = L"Processing")
+    static void RenderProgress(uint32_t percent)
     {
         constexpr size_t barWidth = 50;
 
@@ -38,7 +38,7 @@ namespace WindowsAppRuntimeInstaller
         bar.append(static_cast<size_t>(filled), L'\u2588');
         bar.append(static_cast<size_t>(barWidth - filled), L' ');
 
-        wprintf(L"\r%s [%s] %0.2lf", label.c_str(), bar.c_str(), percentAsDouble * 100.0);
+        wprintf(L"\r[%s] %0.2lf", bar.c_str(), percentAsDouble * 100.0);
         fflush(stdout);
     }
 
