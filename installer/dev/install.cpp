@@ -5,6 +5,9 @@
 #include "packages.h"
 #include "install.h"
 #include "MachineTypeAttributes.h"
+#include <fcntl.h>
+#include <io.h>
+#include <mutex>
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -18,44 +21,44 @@ using namespace WindowsAppRuntimeInstaller::Console;
 
 namespace WindowsAppRuntimeInstaller
 {
-    static void RenderProgress(uint32_t percent, std::wstring_view label = L"Processing")
+    static void RenderProgress(uint32_t percent, const std::wstring& label = L"Processing")
     {
-        const uint32_t bounded = (percent > 100u) ? 100u : percent;
         constexpr size_t barWidth = 50;
-        const size_t filled = (barWidth * bounded) / 100;
+
+        double percentAsDouble{ static_cast<double>(percent) / 100.0 };
+        int filled{ static_cast<int>(std::floor(barWidth * percentAsDouble)) };
+        if ((filled == 0) && (percentAsDouble > 0.0))
+        {
+            // Progress is more than 0% so show at least 1 bar
+            filled = 1;
+        }
 
         std::wstring bar;
         bar.reserve(barWidth);
-        for (size_t i = 0; i < filled; ++i)
-        {
-            bar.push_back(L'=');
-        }
+        bar.append(static_cast<size_t>(filled), L'\u2588');
+        bar.append(static_cast<size_t>(barWidth - filled), L' ');
 
-        if (filled < barWidth)
-        {
-            bar.push_back(L'>');
-        }
-
-        for (size_t i = filled + (filled < barWidth ? 1 : 0); i < barWidth; ++i)
-        {
-            bar.push_back(L'.');
-        }
-
-        std::wstringstream percentageStream;
-        percentageStream << std::fixed << std::setprecision(1) << static_cast<double>(bounded) << L"%";
-
-        std::wcout << L"\r" << label << L" [" << bar << L"] " << percentageStream.str();
-        std::wcout.flush();
+        wprintf(L"\r%s [%s] %0.2lf", label.c_str(), bar.c_str(), percentAsDouble * 100.0);
+        fflush(stdout);
     }
 
     HRESULT GetAndLogDeploymentOperationResult(
         WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
         const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation)
     {
-        deploymentOperation.Progress([&](auto const&, winrt::Windows::Management::Deployment::DeploymentProgress const& progress)
+        if (_isatty(_fileno(stdout)))
         {
-            RenderProgress(progress.percentage);
-        });
+            static std::once_flag s_setConsoleUtf16Once;
+            std::call_once(s_setConsoleUtf16Once, []()
+            {
+                _setmode(_fileno(stdout), _O_U16TEXT);
+            });
+
+            deploymentOperation.Progress([&](auto const&, winrt::Windows::Management::Deployment::DeploymentProgress const& progress)
+            {
+                RenderProgress(progress.percentage);
+            });
+        }
 
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
