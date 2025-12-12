@@ -6,6 +6,7 @@
 #include "PickerCommon.h"
 #include "StoragePickersTelemetryHelper.h"
 #include "FileTypeChoicesMap.h"
+#include <optional>
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -21,10 +22,25 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring CommitButtonText();
         void CommitButtonText(hstring const& value);
 
+        hstring Title();
+        void Title(hstring const& value);
+        
+        hstring SettingsIdentifier();
+        void SettingsIdentifier(hstring const& value);
+
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileTypeChoices();
+
+        winrt::Windows::Foundation::IReference<uint32_t> DefaultFileTypeIndex();
+        void DefaultFileTypeIndex(winrt::Windows::Foundation::IReference<uint32_t> const& value);
 
         hstring DefaultFileExtension();
         void DefaultFileExtension(hstring const& value);
+
+		bool ShowOverwritePrompt();
+		void ShowOverwritePrompt(bool value);
+
+		bool CreateNewFileIfNotExists();
+		void CreateNewFileIfNotExists(bool value);
 
         hstring SuggestedFolder();
         void SuggestedFolder(hstring const& value);
@@ -41,8 +57,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Microsoft::UI::WindowId m_windowId{};
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         hstring m_commitButtonText{};
+        hstring m_title{};
+        hstring m_settingsIdentifier{};
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };
+        std::optional<uint32_t> m_defaultFileTypeIndex{};
         hstring m_defaultFileExtension{};
+		bool m_showOverwritePrompt{ true };
+		bool m_createNewFileIfNotExists{ true };
         hstring m_suggestedFolder{};
         hstring m_suggestedStartFolder{};
         hstring m_suggestedFileName{};
