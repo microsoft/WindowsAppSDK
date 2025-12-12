@@ -166,7 +166,7 @@ Param(
 
     [Switch]$NoInteractive=$false,
 
-    [String]$NugetExe='.user\nuget.exe',
+    [String]$NugetExe="$PSScriptRoot\..\..\.user\nuget.exe",
 
     [String]$NugetMinVersion="6.14.0.116",
 
@@ -1964,6 +1964,16 @@ function Install-NugetExe
 
     $url = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
     $file = [IO.Path]::GetFullPath($NugetExe)
+
+    # Check if the directory exists
+    $fileDir = [IO.Path]::GetDirectoryName($file)
+    if (-not(Test-Path -Path $fileDir -PathType Container))
+    {
+        Write-Host "...ERROR: $fileDir doesn't exist" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
     Write-Host "Downloading nuget.exe from $url..."
     Write-Verbose "Executing: curl.exe --output $file -L -# $url"
     $null = Start-Process curl.exe -ArgumentList "--output $file -L -# $url" -Wait -NoNewWindow -PassThru
@@ -2042,6 +2052,10 @@ Write-Verbose "Processor...$cpu"
 
 $project_root = Get-ProjectRoot
 Write-Output "Windows App SDK location...$project_root"
+
+# Ensure .temp and .user exist
+$null = Get-TempPath
+$null = Get-UserPath
 
 if (($CheckAll -ne $false) -Or ($ShowSystemInfo -ne $false))
 {
