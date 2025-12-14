@@ -6,6 +6,7 @@
 #include "PickerCommon.h"
 #include "StoragePickersTelemetryHelper.h"
 #include <winrt/Windows.Foundation.Collections.h>
+#include "FileTypeChoicesMap.h"
 #include "FileTypeFilterVector.h"
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
@@ -23,7 +24,14 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::hstring CommitButtonText();
         void CommitButtonText(winrt::hstring const& value);
 
-        winrt::Windows::Foundation::Collections::IVector<hstring> FileTypeFilter();
+        winrt::Windows::Foundation::Collections::IVector<winrt::hstring> FileTypeFilter();
+        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> FileTypeChoices();
+
+        winrt::hstring SuggestedFolder();
+        void SuggestedFolder(winrt::hstring const& value);
+
+        winrt::hstring SuggestedStartFolder();
+        void SuggestedStartFolder(winrt::hstring const& value);
 
         winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> PickSingleFileAsync();
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult>> PickMultipleFilesAsync();
@@ -34,7 +42,18 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerLocationId m_suggestedStartLocation{ PickerLocationId::Unspecified };
         winrt::hstring m_commitButtonText{};
 
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_fileTypeFilter{ make<FileTypeFilterVector>() };
+        winrt::Windows::Foundation::Collections::IVector<winrt::hstring> m_fileTypeFilter{ make<FileTypeFilterVector>() };
+        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> m_fileTypeChoices{
+            []()
+            {
+                auto map = winrt::make_self<FileTypeChoicesMap>();
+                map->ForFeature_StoragePickers2 = true;
+                return map.as<winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>>>();
+            }()
+        };
+
+        winrt::hstring m_suggestedFolder{};
+        winrt::hstring m_suggestedStartFolder{};
 
         StoragePickersTelemetryHelper m_telemetryHelper{};
 

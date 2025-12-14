@@ -21,14 +21,14 @@
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
 
-#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Framework.4.1"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.4.1"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME      L"WindowsAppRuntime.Test.DDLM"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME      L"WindowsAppRuntime.Test.DynDep.DataStore.4.1"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME L"WindowsAppRuntime.Test.Singleton"
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.1.0-Test"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.Main.1.0-Test"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Singleton-Test"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_MAIN_PACKAGE_NAME      L"MicrosoftCorporationII.WinAppRuntime.Main.1.0-T"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"MicrosoftCorporationII.WinAppRuntime.Singleton-T"
 
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION
@@ -85,7 +85,7 @@ namespace WindowsAppRuntimeFramework
 {
     constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
     constexpr PCWSTR c_PackageMsixFilename = L"Microsoft.WindowsAppRuntime.Framework.msix";
-    constexpr PCWSTR c_PackageNamePrefix = L"Microsoft.WindowsAppRuntime.Framework";
+    constexpr PCWSTR c_PackageNamePrefix = L"Microsoft.WindowsAppRuntime";
     constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
     constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
@@ -125,6 +125,20 @@ namespace DeploymentWindowsAppRuntimeSingleton
     constexpr PCWSTR c_PackageDirName = L"Deployment.WindowsAppRuntime.Test.Singleton";
     constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
     constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+}
+
+namespace DeploymentWindowsAppRuntimeSingletonHigherVersion
+{
+    constexpr PCWSTR c_PackageDirName = L"Deployment.WindowsAppRuntime.Test.SingletonHigherVersion";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_4.1.1968.333_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+}
+
+namespace DeploymentWindowsAppRuntimeSingletonLowerVersion
+{
+    constexpr PCWSTR c_PackageDirName = L"Deployment.WindowsAppRuntime.Test.SingletonLowerVersion";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_4.1.1966.333_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
 template <typename T=std::wstring>
@@ -610,6 +624,48 @@ inline void RemovePackage_DeploymentWindowsAppRuntimeSingleton()
 inline bool IsPackageRegistered_DeploymentWindowsAppRuntimeSingleton()
 {
     return IsPackageRegistered(Test::Packages::DeploymentWindowsAppRuntimeSingleton::c_PackageFullName);
+}
+
+inline void AddPackage_DeploymentWindowsAppRuntimeSingletonHigherVersion()
+{
+    AddPackage(Test::Packages::DeploymentWindowsAppRuntimeSingletonHigherVersion::c_PackageDirName, Test::Packages::DeploymentWindowsAppRuntimeSingletonHigherVersion::c_PackageFullName);
+}
+
+inline void RemovePackage_DeploymentWindowsAppRuntimeSingletonHigherVersion()
+{
+    // Best-effort removal. PackageManager.RemovePackage errors if the package
+    // is not registered, but if it's not registered we're good. "'Tis the destination
+    // that matters, not the journey" so regardless how much or little work
+    // we need do, we're happy as long as the package isn't registered when we're done
+    //
+    // Thus, do a *IfNecessary removal
+    RemovePackageIfNecessary(Test::Packages::DeploymentWindowsAppRuntimeSingletonHigherVersion::c_PackageFullName);
+}
+
+inline bool IsPackageRegistered_DeploymentWindowsAppRuntimeSingletonHigherVersion()
+{
+    return IsPackageRegistered(Test::Packages::DeploymentWindowsAppRuntimeSingletonHigherVersion::c_PackageFullName);
+}
+
+inline void AddPackage_DeploymentWindowsAppRuntimeSingletonLowerVersion()
+{
+    AddPackage(Test::Packages::DeploymentWindowsAppRuntimeSingletonLowerVersion::c_PackageDirName, Test::Packages::DeploymentWindowsAppRuntimeSingletonLowerVersion::c_PackageFullName);
+}
+
+inline void RemovePackage_DeploymentWindowsAppRuntimeSingletonLowerVersion()
+{
+    // Best-effort removal. PackageManager.RemovePackage errors if the package
+    // is not registered, but if it's not registered we're good. "'Tis the destination
+    // that matters, not the journey" so regardless how much or little work
+    // we need do, we're happy as long as the package isn't registered when we're done
+    //
+    // Thus, do a *IfNecessary removal
+    RemovePackageIfNecessary(Test::Packages::DeploymentWindowsAppRuntimeSingletonLowerVersion::c_PackageFullName);
+}
+
+inline bool IsPackageRegistered_DeploymentWindowsAppRuntimeSingletonLowerVersion()
+{
+    return IsPackageRegistered(Test::Packages::DeploymentWindowsAppRuntimeSingletonLowerVersion::c_PackageFullName);
 }
 
 inline std::filesystem::path GetWindowsAppRuntimeFrameworkMsixPath()

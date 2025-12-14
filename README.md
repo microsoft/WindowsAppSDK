@@ -23,7 +23,7 @@
 
 [Windows App SDK](https://aka.ms/winappsdk) (formerly Project Reunion) is a set of libraries, frameworks, components, and tools that you can use in your apps to access powerful Windows platform functionality from all kinds of apps on many versions of Windows. The Windows App SDK combines the powers of Win32 native applications alongside modern API usage techniques, so your apps light up everywhere your users are.
 
-- **WinUI 3 support:** [WinUI](https://aka.ms/winui) embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
+- **WinUI 3 support:** [WinUI](https://learn.microsoft.com/windows/apps/winui/winui3/) embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
 - **Access modern features:** [Modern resource tooling](https://github.com/microsoft/WindowsAppSDK/issues/11), [modern lifecycle helpers](https://github.com/microsoft/WindowsAppSDK/issues/9), [startup tasks](https://github.com/microsoft/WindowsAppSDK/issues/10), and more without having to rewrite your app.
 - **Backwards compatibility:** Down to Windows 10 1809 (build 17763). There may be some API that are dependent on new OS features
 (like new Action Center functionality), however we will do our best to ensure this is the exception and not the norm, and provide reasonable fallbacks when possible.
@@ -32,7 +32,7 @@
 
 ## 📋 Getting started with Windows App SDK
 
-* [Build your first app with Windows App SDK](https://learn.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)
+* [Build your first app with WinUI](https://learn.microsoft.com/windows/apps/get-started/start-here)
 * [Developer documentation](https://aka.ms/windowsappsdkdocs)
 * [Samples & resources](https://learn.microsoft.com/windows/apps/get-started/samples)
   * [Windows App SDK samples](https://github.com/microsoft/WindowsAppSDK-Samples)

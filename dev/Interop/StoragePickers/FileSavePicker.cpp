@@ -15,6 +15,7 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include "TerminalVelocityFeatures-StoragePickers.h"
+#include "TerminalVelocityFeatures-StoragePickers2.h"
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include "PickFileResult.h"
@@ -63,8 +64,20 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     void FileSavePicker::SuggestedFolder(hstring const& value)
     {
-        PickerCommon::ValidateSuggestedFolder(value);
+        PickerCommon::ValidateFolderPath(value, "SuggestedFolder");
         m_suggestedFolder = value;
+    }
+
+    hstring FileSavePicker::SuggestedStartFolder()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        return m_suggestedStartFolder;
+    }
+    void FileSavePicker::SuggestedStartFolder(hstring const& value)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateFolderPath(value, "SuggestedStartFolder");
+        m_suggestedStartFolder = value;
     }
 
     hstring FileSavePicker::SuggestedFileName()
@@ -82,10 +95,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
-        parameters.PickerLocationId = m_suggestedStartLocation;
         parameters.SuggestedFileName = m_suggestedFileName;
         parameters.SuggestedFolder = m_suggestedFolder;
-        parameters.CaptureFilterSpec(m_fileTypeChoices.GetView());
+        parameters.SuggestedStartLocation = m_suggestedStartLocation;
+        parameters.SuggestedStartFolder = m_suggestedStartFolder;
+        parameters.CaptureFilterSpecData(
+            winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+            m_fileTypeChoices.GetView());
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
@@ -155,10 +171,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
 
-        // Create a file. If the file already exists,
-        // since common item dialog prompts to let user select cancel or override, thus we can safely truncate here.
-        // Due to our design spec to align with UWP pickers, we need ensure existance of picked file.
-        auto [handle, _] = wil::try_open_or_truncate_existing_file(pathStr.c_str(), GENERIC_WRITE);
+        // Create an empty file if the file doesn't exist,
+        // If the file already exists, do nothing.
+        auto [handle, _] = wil::try_open_or_create_file(pathStr.c_str(), GENERIC_WRITE);
 
         if (cancellationToken())
         {

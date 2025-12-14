@@ -5,10 +5,32 @@ name: $(version)
 
 trigger: none
 
+parameters:
+- name: "BuildSampleApps"
+  displayName: "Test build of sample apps"
+  type: boolean
+  default: false
+- name: "TestSampleApps"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: false
+- name: "TestOnArm64"
+  displayName: "Enable running of sample tests on arm64 platform (Default: true)"
+  type: boolean
+  default: false
+- name: runStaticAnalysisInBuildAndTestSampleApps
+  displayName: "Run Static Analysis (e.g., PREFast, APIScan) In BuildAndTestSampleApps Stage"
+  type: boolean
+  default: false
+
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
+- name: maxParallelForBuildSamplesCompatJob_x64
+  value: 10
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  value: 10
 
 resources:
   repositories:
@@ -20,8 +42,14 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'GitHub - benkuhn - 2-18'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
 
 stages:
+
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml@self
@@ -49,4 +77,13 @@ stages:
     SignOutput: false
     PublishPackage: false
     IsOneBranch: false
-    BuildMockWindowsAppSDK: false
+
+- ${{ if eq( parameters.BuildSampleApps, true ) }}:
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
+    parameters:
+      IsOneBranch: false
+      TestSampleApps: ${{ parameters.TestSampleApps }}
+      TestOnArm64: ${{ parameters.TestOnArm64 }}
+      runStaticAnalysis: ${{ parameters.runStaticAnalysisInBuildAndTestSampleApps }}
+      maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
+      maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}
