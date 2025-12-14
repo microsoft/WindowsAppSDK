@@ -11,9 +11,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
     {
         Package() = default;
 
-        static hstring FindPackageFile(hstring const& packageFullName, hstring const& filename);
-
-        static hstring FindPackageFileInPackageGraph(hstring const& packageFullName, hstring const& filename);
+        static hstring GetFilePath(hstring const& filename);
+        static hstring GetFilePath(hstring const& filename, hstring const& packageFullName);
+        static hstring GetFilePath(hstring const& filename, hstring const& packageFullName, winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions const& options);
     };
 }
 namespace winrt::Microsoft::Windows::ApplicationModel::factory_implementation

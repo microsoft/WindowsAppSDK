@@ -4,28 +4,78 @@
 #if !defined(PACKAGE_RUNTIME_H)
 #define PACKAGE_RUNTIME_H
 
+/// Options for GetPackageFilePath*() functions
+typedef enum GetPackageFilePathOptions
+{
+    /// Default behavior
+    GetPackageFilePathOptions_None = 0,
+
+    /// Include the package's Install path in the file search order
+    GetPackageFilePathOptions_SearchInstallPath = 0x0001,
+
+    /// Include the package's Mutable path (if it has one) in the file search order
+    GetPackageFilePathOptions_SearchMutablePath = 0x0002,
+
+    /// Include the package's Machine External path (if it has one) in the file search order
+    GetPackageFilePathOptions_SearchMachineExternalPath = 0x0004,
+
+    /// Include the package's User External path (if it has one) in the file search order
+    GetPackageFilePathOptions_SearchUserExternalPath = 0x0008,
+
+    /// Include Main packages in the file search order
+    GetPackageFilePathOptions_SearchMainPackages = 0x0010,
+
+    /// Include Framework packages in the file search order
+    GetPackageFilePathOptions_SearchFrameworkPackages = 0x0020,
+
+    /// Include Optional packages in the file search order
+    GetPackageFilePathOptions_SearchOptionalPackages = 0x0040,
+
+    /// Include Resource packages in the file search order
+    GetPackageFilePathOptions_SearchResourcePackages = 0x0080,
+
+    /// Include HostRuntime dependencies in the file search order
+    GetPackageFilePathOptions_SearchHostRuntimeDependencies = 0x0100,
+
+    /// Include Static package dependencies in the file search order
+    /// @note If both GetPackageFilePathOptions_SearchStaticDependencies and GetPackageFilePathOptions_SearchDynamicDependencies are omitted
+    ///       then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
+    GetPackageFilePathOptions_SearchStaticDependencies = 0x0200,
+
+    /// Include Dynamic package dependencies in the file search order
+    /// @note If both GetPackageFilePathOptions_SearchStaticDependencies and GetPackageFilePathOptions_SearchDynamicDependencies are omitted
+    ///       then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
+    GetPackageFilePathOptions_SearchDynamicDependencies = 0x0400,
+} GetPackageFilePathOptions;
+
 /// Return the absolute path to the file in the package.
 /// @param packageFullName the package, or NULL or "" to use the current process' package identity.
 /// @param filename file to locate.
+/// @param options options for the search.
 /// @param packageFile absolute path to the packaged file, or NULL if not found. Allocated via HeapAlloc; use HeapFree to deallocate
 /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
 /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
 /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
-STDAPI FindPackageFile(
-    _In_ PCWSTR packageFullName,
+/// @see GetPackageFilePathInPackageGraph()
+/// @see GetPackageFilePathOptions
+STDAPI GetPackageFilePath(
+    PCWSTR packageFullName,
     _In_ PCWSTR filename,
+    _In_ GetPackageFilePathOptions options,
     _Outptr_result_maybenull_ PWSTR* packageFile) noexcept;
 
-/// Return the absolute path to the file in the package graph.
-/// @param packageFullName the package, or NULL or "" to use the current process' package identity.
+/// Return the absolute path to the file in the caller's package graph.
 /// @param filename file to locate.
+/// @param options options for the search.
 /// @param packageFile absolute path to the packaged file, or NULL if not found. Allocated via HeapAlloc; use HeapFree to deallocate
-/// @note The package paths search order is External(User or Machine) -> Mutable -> Install.
+/// @note The search order is External(User or Machine) -> Mutable -> Install for each package in the package graph.
 /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
 /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
-STDAPI FindPackageFileInPackageGraph(
-    _In_ PCWSTR packageFullName,
+/// @see GetPackageFilePath()
+/// @see GetPackageFilePathOptions
+STDAPI GetPackageFilePathInPackageGraph(
     _In_ PCWSTR filename,
+    _In_ GetPackageFilePathOptions options,
     _Outptr_result_maybenull_ PWSTR* packageFile) noexcept;
 
 #endif // PACKAGE_RUNTIME_H

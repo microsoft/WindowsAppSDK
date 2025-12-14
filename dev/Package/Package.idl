@@ -1,32 +1,120 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <TerminalVelocityFeatures-package_runtime.h>
+#include <TerminalVelocityFeatures-PackageRuntime.h>
 
 namespace Microsoft.Windows.ApplicationModel
 {
     [contractversion(1)]
     apicontract PackageRuntimeContract{};
 
+    /// Options for GetFilePath*()
+    /// @see Package.GetFilePath
+    /// @see PackageGraph.GetFilePath
+    [contract(PackageRuntimeContract, 1)]
+    [flags]
+    enum GetFilePathOptions
+    {
+        /// Default behavior
+        None = 0,
+
+        /// Include the package's Install path in the file search order
+        SearchInstallPath = 0x0001,
+
+        /// Include the package's Mutable path (if it has one) in the file search order
+        SearchMutablePath = 0x0002,
+
+        /// Include the package's Machine External path (if it has one) in the file search order
+        SearchMachineExternalPath = 0x0004,
+
+        /// Include the package's User External path (if it has one) in the file search order
+        SearchUserExternalPath = 0x0008,
+
+        /// Include Main packages in the file search order
+        SearchMainPackages = 0x0010,
+
+        /// Include Framework packages in the file search order
+        SearchFrameworkPackages = 0x0020,
+
+        /// Include Optional packages in the file search order
+        SearchOptionalPackages = 0x0040,
+
+        /// Include Resource packages in the file search order
+        SearchResourcePackages = 0x0080,
+
+        /// Include HostRuntime dependencies in the file search order
+        SearchHostRuntimeDependencies = 0x0100,
+
+        /// Include Static package dependencies in the file search order
+        /// @note If both SearchStaticDependencies and SearchDynamicDependencies are omitted then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
+        SearchStaticDependencies = 0x0200,
+
+        /// Include Dynamic package dependencies in the file search order
+        /// @note If both SearchStaticDependencies and SearchDynamicDependencies are omitted then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
+        SearchDynamicDependencies = 0x0400,
+    };
+
     [contract(PackageRuntimeContract, 1)]
     runtimeclass Package
     {
-        /// Return the absolute path to the file in the package.
-        /// @param packageFullName the package, or empty string ("") to use the current process' package identity.
+        /// Return the absolute path to the file in the current process' package. This uses the
+        /// current process' package identity, or fails with HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE)
+        /// if the process lacks package identity.
         /// @param filename file to locate.
         /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
         /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
         /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
-        static String FindPackageFile(String packageFullName, String filename);
+        /// @see PackageGraph.GetFilePath
+        static String GetFilePath(String filename);
 
+        /// Return the absolute path to the file in the package.
+        /// @param filename file to locate.
+        /// @param packageFullName the package.
+        /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
+        /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
+        /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
+        /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
+        /// @see PackageGraph.GetFilePath
+        [method_name("GetFilePathInPackage")]
+        static String GetFilePath(String filename, String packageFullName);
+
+        /// Return the absolute path to the file in the package.
+        /// @param filename file to locate.
+        /// @param packageFullName the package.
+        /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
+        /// @param options options for the search.
+        /// @note The package path search order is External(User or Machine) -> Mutable -> Install.
+        /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
+        /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
+        /// @see PackageGraph.GetFilePath
+        /// @see PackageGraph.GetFilePathOptions
+        [method_name("GetFilePathInPackageWithOptions")]
+        static String GetFilePath(String filename, String packageFullName, GetFilePathOptions options);
+    }
+
+    [contract(PackageRuntimeContract, 1)]
+    runtimeclass PackageGraph
+    {
         /// Return the absolute path to the file in the package graph.
-        /// @param packageFullName the package, or empty string ("") to use the current process' package identity.
         /// @param filename file to locate.
         /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
         /// @note The package paths search order is External(User or Machine) -> Mutable -> Install.
         /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
-        static String FindPackageFileInPackageGraph(String packageFullName, String filename);
+        /// @see Package.GetFilePath
+        static String GetFilePath(String filename);
+
+        /// Return the absolute path to the file in the package graph.
+        /// @param filename file to locate.
+        /// @param packageFile absolute path to the packaged file, or empty string ("") if not found.
+        /// @param options options for the search.
+        /// @note The package paths search order is External(User or Machine) -> Mutable -> Install.
+        /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
+        /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
+        /// @see Package.GetFilePath
+        /// @see GetPackageFilePathOptions
+        [method_name("GetFilePathWithOptions")]
+        static String GetFilePath(String filename, GetFilePathOptions options);
     };
 }

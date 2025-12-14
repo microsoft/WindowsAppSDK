@@ -3,8 +3,8 @@
 
 #include "pch.h"
 
-#include "M.W.A.Package.h"
-#include "Microsoft.Windows.ApplicationModel.Package.g.cpp"
+#include "M.W.A.PackageGraph.h"
+#include "Microsoft.Windows.ApplicationModel.PackageGraph.g.cpp"
 
 #include "package_runtime.h"
 
@@ -25,19 +25,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
     static_assert(static_cast<std::int32_t>(GetFilePathOptions::SearchStaticDependencies) == static_cast<std::int32_t>(GetPackageFilePathOptions_SearchStaticDependencies), "GetFilePathOptions::SearchStaticDependencies!= GetPackageFilePathOptions_SearchStaticDependencies");
     static_assert(static_cast<std::int32_t>(GetFilePathOptions::SearchDynamicDependencies) == static_cast<std::int32_t>(GetPackageFilePathOptions_SearchDynamicDependencies), "GetFilePathOptions::SearchDynamicDependencies!= GetPackageFilePathOptions_SearchDynamicDependencies");
 
-    hstring Package::GetFilePath(hstring const& filename)
+    hstring PackageGraph::GetFilePath(hstring const& filename)
     {
-        return GetFilePath(filename, winrt::hstring{});
+        return GetFilePath(filename, GetFilePathOptions::None);
     }
-    hstring Package::GetFilePath(hstring const& filename, hstring const& packageFullName)
-    {
-        return GetFilePath(filename, packageFullName, GetFilePathOptions::None);
-    }
-    hstring Package::GetFilePath(hstring const& filename, hstring const& packageFullName, winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions const& options)
+    hstring PackageGraph::GetFilePath(hstring const& filename, winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions const& options)
     {
         wil::unique_process_heap_ptr<WCHAR> packageFile;
-        THROW_IF_FAILED_MSG(::GetPackageFilePath(packageFullName.c_str(), filename.c_str(), static_cast<::GetPackageFilePathOptions>(options), wil::out_param(packageFile)),
-                            "PackageFullName=%ls Options=0x%X Filename=%ls", packageFullName.c_str(), static_cast<std::int32_t>(options), filename.c_str());
+        THROW_IF_FAILED_MSG(::GetPackageFilePathInPackageGraph(filename.c_str(), static_cast<::GetPackageFilePathOptions>(options), wil::out_param(packageFile)),
+                            "Options=0x%X Filename=%ls", static_cast<std::int32_t>(options), filename.c_str());
         if (!packageFile)
         {
             return winrt::hstring{};

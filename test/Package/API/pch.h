@@ -32,4 +32,6 @@
 #include <WindowsAppRuntime.Test.Bootstrap.h>
 #include <WindowsAppRuntime.Test.TAEF.cppwinrt.h>
 
+#include <PackageTests.Packages.h>
+
 #endif //PCH_H

@@ -110,7 +110,7 @@ namespace Test::ABForward
 
         TEST_METHOD(BatteryStatus)
         {
-            auto batteryStatus{ winrt::Microsoft::Windows::System::Power::PowerManager::BatteryStatus() };
+            [[maybe_unused]] auto batteryStatus{ winrt::Microsoft::Windows::System::Power::PowerManager::BatteryStatus() };
         }
 
         TEST_METHOD(DeploymentManager)

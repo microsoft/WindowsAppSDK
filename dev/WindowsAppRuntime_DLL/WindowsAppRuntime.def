@@ -30,4 +30,5 @@ EXPORTS
 
     WindowsAppRuntime_EnsureIsLoaded
 
-    FindPackageFile
+    GetPackageFilePath
+    GetPackageFilePathInPackageGraph
