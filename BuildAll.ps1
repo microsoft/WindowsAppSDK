@@ -146,7 +146,7 @@ Try {
         {
             $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
-            if (($destinationPaths -ne $null)) 
+            if (($destinationPaths -ne $null))
             {
                 foreach ($destPath in $destinationPaths) {
                 Write-Host 'SourcePath:' $srcPath.FullName
@@ -178,7 +178,6 @@ Try {
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
-                                /p:WindowsAppSDKCleanIntermediateFiles=true `
                                 /p:AppxSymbolPackageEnabled=false `
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
@@ -279,7 +278,7 @@ Try {
         {
             foreach($platformToRun in $platform.Split(","))
             {
-                # TODO: $windowsAppSdkBinariesPath may not be defined. Remove the temp downgrade to 1.0 once this issue has been fixed (b#52130179). 
+                # TODO: $windowsAppSdkBinariesPath may not be defined. Remove the temp downgrade to 1.0 once this issue has been fixed (b#52130179).
                 Set-StrictMode -Version 1.0
                 .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
                 Set-StrictMode -Version 3.0
