@@ -70,27 +70,17 @@ Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
 }
 
 Get-ChildItem -Recurse *.vcxproj -Path $SampleRepoRoot | foreach-object {
+    $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
+    $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK"'
     $content = Get-Content $_.FullName -Raw
-
-    foreach ($nugetPackageToVersion in $packagesToUpdateTable.GetEnumerator())
-    {
-        $newVersionString = "\$($nugetPackageToVersion.Key)." + $nugetPackageToVersion.Value + '\'
-        $oldVersionString = "\\$($nugetPackageToVersion.Key).[0-9][-.0-9a-zA-Z]*\\"
-        $content = $content -replace $oldVersionString, $newVersionString
-    }
-    foreach ($package in $packagesToRemoveList)
-    {
-        $packageReferenceString = "(?m)^.*\\$package\.[0-9][-.0-9a-zA-Z]*\\.*\r?\n?"
-        $content = $content -replace $packageReferenceString, ''
-    }
-
+    $content = $content -replace $oldVersionString, $newVersionString
     Set-Content -Path $_.FullName -Value $content
     Write-Host "Modified " $_.FullName 
 }
 
 Get-ChildItem -Recurse *.wapproj -Path $SampleRepoRoot | foreach-object {
-    $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="'+ $FoundationVersion + '"'
-    $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK" Version="[-.0-9a-zA-Z]*"'
+    $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
+    $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK"'
     $content = Get-Content $_.FullName -Raw
     $content = $content -replace $oldVersionString, $newVersionString
     Set-Content -Path $_.FullName -Value $content
@@ -98,8 +88,8 @@ Get-ChildItem -Recurse *.wapproj -Path $SampleRepoRoot | foreach-object {
 }
 
 Get-ChildItem -Recurse *.csproj -Path $SampleRepoRoot | foreach-object {
-    $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="'+ $FoundationVersion + '"'
-    $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK" Version="[-.0-9a-zA-Z]*"'
+    $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
+    $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK"'
     $content = Get-Content $_.FullName -Raw
     $content = $content -replace $oldVersionString, $newVersionString
     Set-Content -Path $_.FullName -Value $content
