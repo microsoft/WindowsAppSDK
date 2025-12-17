@@ -36,7 +36,7 @@ if (!($FoundationPackagesFolder -eq ""))
 Write-Host "NuGet packages to version table: $($packagesToUpdateTable | Out-String)"
 Write-Host "NuGet packages to remove: $($packagesToRemoveList | Out-String)"
 
-Get-ChildItem -Recurse Directory.Packages.props -Path $PSScriptRoot | foreach-object {
+Get-ChildItem -Recurse Directory.Packages.props -Path $SampleRepoRoot | foreach-object {
     $content = Get-Content $_.FullName -Raw
 
     foreach ($nugetPackageToVersion in $packagesToUpdateTable.GetEnumerator())
