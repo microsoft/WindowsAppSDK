@@ -51,3 +51,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return isSupported;
     }
 }
+
+bool Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig::IsCallingPreviewSupported()
+{
+#if WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_CALLINGPREVIEWSUPPORT_FEATURE_CALLINGPREVIEWSUPPORT_ENABLED == 1
+    return winrt::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig::IsCallingPreviewSupported();
+#else
+    return false;
+#endif
+}

@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "AppNotification.h"
 #include "Microsoft.Windows.AppNotifications.AppNotification.g.cpp"
+#include "AppNotificationConferencingConfig.h"
 
 using namespace winrt::Windows::Data::Xml::Dom;
 
@@ -128,7 +129,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotification::ConferencingConfig(winrt::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig const& conferencingConfig)
     {
-        THROW_HR_IF(E_NOTIMPL, !AppNotificationConferencingConfig::IsCallingPreviewSupported());
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig::IsCallingPreviewSupported());
         auto lock{ m_lock.lock_exclusive() };
         m_conferencingConfig = conferencingConfig;
     }

@@ -9,6 +9,7 @@
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.g.cpp"
 #include "AppNotificationBuilderUtility.h"
+#include "AppNotificationConferencingConfig.h"
 #include <iomanip>
 #include <ctime>
 #include <sstream>
@@ -403,7 +404,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddCameraPreview()
     {
-        THROW_HR_IF(E_NOTIMPL, !AppNotificationConferencingConfig::IsCallingPreviewSupported());
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig::IsCallingPreviewSupported());
 
         THROW_HR_IF_MSG(E_INVALIDARG, m_useCameraPreview, "CameraPreview element is already added, only one is allowed");
 
