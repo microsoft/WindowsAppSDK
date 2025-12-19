@@ -12,10 +12,14 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     {
         None = 0, /// do not use this value
 
-        // Add real changes here:
-
         // 1.8.3
         OrientedVirtualizingPanel_FixBoundsOverflow = 59890419,
+
+        // 1.8.4
+        StoragePickers_PreserveFileTypeChoicesInsertionOrder = 60245168,
+        StoragePickers_DisplayFileTypeFilterNames = 60245660,
+        StoragePickers_DoNotTruncateExistingFileOnSave = 60257559,
+        FixCreateIconElementRendering = 60408488,
     };
 
     /// Represents a version of the Windows App Runtime.
