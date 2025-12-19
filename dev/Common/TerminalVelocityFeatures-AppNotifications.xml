@@ -19,7 +19,6 @@
          <description>Apis for Calling preview feature</description>
          <state>AlwaysEnabled</state>
          <alwaysDisabledChannelTokens>
-             <channelToken>Experimental</channelToken>
              <channelToken>Preview</channelToken>
              <channelToken>Stable</channelToken>
          </alwaysDisabledChannelTokens>
