@@ -76,7 +76,7 @@ resources:
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      ref: refs/heads/release/2.0-stable
     - repository: WindowsAppSDKSamples
       type: github
       endpoint: 'GitHub - benkuhn - 2-18'
@@ -178,6 +178,8 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+      parameters:
+        TestOnArm64: ${{ parameters.TestOnArm64 }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:

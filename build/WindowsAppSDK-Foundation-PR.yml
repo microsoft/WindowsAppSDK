@@ -29,9 +29,9 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   type: boolean
   default: false
 - name: "TestOnArm64"
-  displayName: "Enable running of tests on arm64 platform (Default: false)"
+  displayName: "Enable running of tests on arm64 platform (Default: true)"
   type: boolean
-  default: false
+  default: true
 - name: runStaticAnalysis
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
@@ -59,7 +59,7 @@ resources:
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      ref: refs/heads/release/2.0-stable
     - repository: WindowsAppSDKSamples
       type: github
       endpoint: 'GitHub - benkuhn - 2-18'
@@ -136,7 +136,7 @@ extends:
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
       parameters:
-        testMatrix: ${{ variables.PipelineTests }}
+        TestOnArm64: ${{ parameters.TestOnArm64 }}
 
     - ${{ if eq( parameters.BuildSampleApps, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
