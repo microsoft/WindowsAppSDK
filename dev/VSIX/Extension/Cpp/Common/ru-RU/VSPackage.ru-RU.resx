@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Пустое окно (WinUI 3 в "Классическом приложении")</value>
+    <value>Пустое окно</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Экспериментальная версия] Пустое окно (WinUI 3 в "Классическом приложении")</value>
+    <value>[Экспериментальная функция] Пустое окно</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Пустое окно для классических приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Пустое окно (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>Пустая страница (WinUI 3)</value>
+    <value>Пустая страница</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Экспериментальная версия] Пустая страница (WinUI 3)</value>
+    <value>[Экспериментальная функция] Пустая страница</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Пустая страница для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Пустая страница (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Словарь ресурсов (WinUI 3)</value>
+    <value>Словарь ресурсов</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Экспериментальная версия] Словарь ресурсов (WinUI 3)</value>
+    <value>[Экспериментальная функция] Словарь ресурсов</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Пустая коллекция ресурсов XAML с ключами для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Пустая коллекция ресурсов XAML с ключами (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Файл ресурсов (.resw)</value>
@@ -151,60 +151,109 @@
     <value>[Экспериментальная версия] Файл ресурсов (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Файл для хранения строковых и условных ресурсов для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Файл для хранения строковых и условных ресурсов (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>Пользовательский элемент управления (WinUI 3)</value>
+    <value>Шаблонный элемент управления</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Экспериментальная версия] Пользовательский элемент управления (WinUI 3)</value>
+    <value>[Экспериментальная функция] Шаблонный элемент управления</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Пользовательский элемент управления для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Пустой пользовательский элемент управления с соответствующим стилем по умолчанию (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Пользовательский элемент управления (WinUI 3)</value>
+    <value>Пользовательский элемент управления</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Экспериментальная версия] Пользовательский элемент управления (WinUI 3)</value>
+    <value>[Экспериментальная функция] Пользовательский элемент управления</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Пользовательский элемент управления для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Пустой пользовательский элемент управления (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Пустое приложение, упакованное с помощью проекта упаковки приложений Windows (WinUI 3 на компьютере)</value>
+    <value>Пустое приложение WinUI (упакованное с помощью Проекта упаковки приложений Windows)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Экспериментальная функция] Пустое приложение, упакованное с помощью проекта упаковки приложений Windows (WinUI 3 на компьютере)</value>
+    <value>[Экспериментальная функция] Пустое приложение WinUI (упакованное с помощью Проекта упаковки приложений Windows)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Шаблон проекта для создания классического приложения на основе библиотеки пользовательского интерфейса Windows (WinUI 3). Для создания пакета MSIX для загрузки неопубликованного приложения или распространения через Microsoft Store включен проект упаковки приложений Windows (WAP).</value>
+    <value>Шаблон проекта для создания приложения WinUI. Для создания пакета MSIX с целью загрузки неопубликованного приложения или распространения через Microsoft Store включен проект упаковки приложений Windows (WAP).</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Пустое приложение, упакованное (WinUI 3 в "Классическом приложении")</value>
+    <value>Пустое приложение WinUI (упакованное)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Экспериментальная версия] Пустое приложение, упакованное (WinUI 3 в "Классическом приложении")</value>
+    <value>[Экспериментальная функция] Пустое приложение WinUI (упакованное)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Шаблон проекта для создания классического приложения на основе библиотеки пользовательского интерфейса Windows (WinUI 3) и пакета MSIX для загрузки неопубликованного приложения или распространения через Microsoft Store.</value>
+    <value>Шаблон проекта для создания приложения WinUI вместе с пакетом MSIX с целью загрузки неопубликованного приложения или распространения через Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Компонент среды выполнения Windows (WinUI 3)</value>
+    <value>Компонент среды выполнения Windows WinUI</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Экспериментальная версия] Компонент среды выполнения Windows (WinUI 3)</value>
+    <value>[Экспериментальная функция] Компонент среды выполнения Windows WinUI (C++/WinRT)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Проект по созданию компонента среды выполнения Windows (.winmd) C++/WinRT для классических приложений и приложений на универсальной платформе Windows (UWP) на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Проект создания компонента среды выполнения Windows (.winmd) C++/WinRT для классических приложений и приложений на универсальной платформе Windows (UWP) на основе WinUI.</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Приложение модульного тестирования (WinUI 3)</value>
+    <value>Приложение модульного тестирования WinUI</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Эксперимент] Приложение модульного тестирования (WinUI 3)</value>
+    <value>[Экспериментальная функция] Приложение модульного тестирования WinUI</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Проект по созданию приложения модульного теста C++/WinRT для WinUI 3 с помощью MSTest.</value>
+    <value>Проект создания приложения модульного тестирования C++/WinRT для WinUI 3 с использованием MSTest.</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>Пустое приложение WinUI</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Проект создания пустого приложения WinUI.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>Проект упаковки приложений Windows для WinUI</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Шаблон проекта, который создает пакеты MSIX, содержащие приложения WinUI для загрузки неопубликованного приложения или распространения через Microsoft Store.</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>Установка пакетов NuGet в проект...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Операция выполняется...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>Отсутствуют ссылки на пакеты</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Не удалось добавить ссылки на следующие пакеты для {0}: {1}. Перед сборкой добавьте ссылки на пакеты.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] Не удалось добавить ссылки на следующие пакеты: {1}.
+
+Это ошибка среды. Добавьте ссылки на пакеты перед сборкой проекта.
+
+Дополнительные сведения об ошибке см. проверка вкладке "Общие" в окне вывода.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>Управление пакетами NuGet</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>Просмотреть сведения об ошибке</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>Отсутствуют ссылки на пакеты для {0}:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Вручную добавьте ссылки на пакеты перед сборкой.</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>Общее</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>Информация о выходных данных недоступна.</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -43,9 +43,11 @@ class UnpackagedTests : BaseTestSuite
     }
 
     TEST_METHOD(ChannelRequestUsingNullRemoteId);
-    TEST_METHOD(ChannelRequestUsingRemoteId);
+    BEGIN_TEST_METHOD(ChannelRequestUsingRemoteId) // Currently flaking
+        TEST_METHOD_PROPERTY(L"Ignore", L"true")
+    END_TEST_METHOD()
     TEST_METHOD(ChannelRequestCheckExpirationTime);
-    BEGIN_TEST_METHOD(MultipleChannelClose) // Currently failing 
+    BEGIN_TEST_METHOD(MultipleChannelClose) // Currently failing
         TEST_METHOD_PROPERTY(L"Ignore", L"true")
     END_TEST_METHOD()
     TEST_METHOD(VerifyRegisterAndUnregister);

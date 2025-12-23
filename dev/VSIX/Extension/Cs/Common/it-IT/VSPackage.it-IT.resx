@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Finestra vuota (WinUI 3 su desktop)</value>
+    <value>Finestra vuota</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Esperimento] Finestra vuota (WinUI 3 su desktop)</value>
+    <value>[Sperimentale] Finestra vuota</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Una finestra vuota per le app desktop basata sulla libreria dell'interfaccia utente di Windows (WinUI 3).</value>
+    <value>Una finestra vuota (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>Pagina vuota (WinUI 3)</value>
+    <value>Pagina vuota</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Esperimento] Pagina vuota (WinUI 3)</value>
+    <value>[Sperimentale] Pagina vuota</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Una pagina vuota per le app basata sulla libreria dell'interfaccia utente di Windows (WinUI 3).</value>
+    <value>Una pagina vuota (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Dizionario risorse (WinUI 3)</value>
+    <value>Dizionario risorse</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Esperimento] Dizionario risorse (WinUI 3)</value>
+    <value>[Sperimentale] Dizionario risorse</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Una raccolta vuota con chiave di risorse XAML per le app basate sulla libreria dell'interfaccia utente di Windows (WinUI 3).</value>
+    <value>Raccolta con chiave vuota di risorse XAML (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>File di risorse (.resw)</value>
@@ -151,60 +151,105 @@
     <value>[Esperimento] File di risorse (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Un file per l'archiviazione di risorse di tipo stringa e condizionale per le app basate sulla libreria dell'interfaccia utente di Windows (WinUI 3).</value>
+    <value>File per l'archiviazione di risorse stringa e condizionali (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>Controllo personalizzato (WinUI 3)</value>
+    <value>Controllo con modello</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Esperimento] Controllo personalizzato (WinUI 3)</value>
+    <value>[Sperimentale] Controllo con modello</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Un controllo personalizzato per le app basato sulla libreria dell'interfaccia utente di Windows (WinUI 3).</value>
+    <value>Controllo personalizzato vuoto con lo stile predefinito appropriato (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Controllo utente (WinUI 3)</value>
+    <value>Controllo utente</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Esperimento] Controllo utente (WinUI 3)</value>
+    <value>[Sperimentale] Controllo utente</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Un controllo utente per le app basato sulla Libreria dell'interfaccia utente di Windows (WinUI 3).</value>
+    <value>Un controllo utente vuoto (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Libreria di classi (WinUI 3 su desktop)</value>
+    <value>Libreria di classi WinUI</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Esperimento] Libreria di classi (WinUI 3 su desktop)</value>
+    <value>[Sperimentale] Libreria di classi WinUI</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Un progetto per la creazione di una libreria di classi gestita (.dll) per le app desktop basato sulla libreria dell'interfaccia utente di Windows (WinUI 3).</value>
+    <value>Progetto per la creazione di una libreria di classi gestita (.dll) (WinUI).</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>App vuota, in pacchetto con Progetto di creazione pacchetti per applicazioni Windows (WinUI 3 in desktop)</value>
+    <value>App vuota WinUI (in pacchetto con il Progetto di creazione pacchetti per applicazioni Windows)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Sperimentale] App vuota, in pacchetto con Progetto di creazione pacchetti per applicazioni Windows (WinUI 3 in desktop)</value>
+    <value>[Sperimentale] App vuota WinUI (in pacchetto con il Progetto di creazione pacchetti per applicazioni Windows)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Modello di progetto per la creazione di un'app desktop basata sulla libreria dell'interfaccia utente di Windows (WinUI 3). È incluso un progetto WAP (Progetto di creazione pacchetti per applicazioni Windows) per la creazione di un pacchetto MSIX per il trasferimento locale o la distribuzione tramite il Microsoft Store.</value>
+    <value>Un modello di progetto per la creazione di un'app WinUI. È incluso un progetto WAP (Progetto di creazione pacchetti per applicazioni Windows) per la creazione di un pacchetto MSIX per il trasferimento locale o la distribuzione tramite Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>App vuota, pacchetto (WinUI 3 su desktop)</value>
+    <value>App vuota WinUI (in pacchetto)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Sperimentale] App vuota, in pacchetto (WinUI 3 in desktop)</value>
+    <value>[Sperimentale] App vuota WinUI (in pacchetto)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Modello di progetto per la creazione di un'app desktop basata sulla libreria dell'interfaccia utente di Windows (WinUI 3) insieme a un pacchetto MSIX per il trasferimento locale o la distribuzione tramite il Microsoft Store.</value>
+    <value>Un modello di progetto per la creazione di un'app WinUI insieme a un pacchetto MSIX per il trasferimento locale o la distribuzione tramite Microsoft Store.</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Test unitario app (WinUI 3 in desktop)</value>
+    <value>App di test unità WinUI</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Sperimentale] Test unitario app (WinUI 3 in desktop)</value>
+    <value>[Sperimentale] App di test unità WinUI</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Progetto per creare un'app unit test per le app WinUI 3 con MSTest.</value>
+    <value>Un progetto per creare un'app di test unità C# per WinUI usando MSTest.</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>App vuota WinUI</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Progetto per la creazione di un'app WinUI vuota.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>Progetto di creazione pacchetti per applicazioni Windows per WinUI</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Modello di progetto che crea pacchetti MSIX contenenti applicazioni WinUI per il sideload o la distribuzione tramite il Microsoft Store.</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>Installazione dei pacchetti NuGet nel progetto...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Operazione in corso...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>Riferimenti ai pacchetti mancanti</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Non è possibile aggiungere riferimenti ai pacchetti seguenti per {0}: {1}. Aggiungere i riferimenti al pacchetto prima della compilazione.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] Non è possibile aggiungere riferimenti ai pacchetti seguenti: {1}. Errore di ambiente. Aggiungere i riferimenti al pacchetto prima di compilare il progetto.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>Gestisci pacchetti NuGet</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>Visualizza dettagli errore</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>Riferimenti ai pacchetti mancanti per {0}:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Aggiungi manualmente i riferimenti ai pacchetti prima della compilazione.</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>Generale</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>Nessuna informazione sull'output disponibile.</value>
   </data>
 </root>
