@@ -18,7 +18,7 @@ $MSBuildUninstallParams = "uninstall --norestart --quiet --wait --force --instal
 function Download-MSBuild([string]$OutFile)
 {
     Write-Host -NoNewline "Downloading $OutFile... "
-    Invoke-WebRequest -Uri $MSBuildInstallURI -OutFile $OutFile
+    Invoke-WebRequest -Uri $MSBuildInstallURI -OutFile $OutFile -UseBasicParsing
     Write-Host -ForegroundColor Green Done.
 }
 
