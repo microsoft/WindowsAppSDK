@@ -26,7 +26,7 @@ function Install-EXE
         Write-Host "Downloading $Name..."
         $FilePath = "${env:Temp}\$Name"
 
-        Invoke-WebRequest -Uri $Url -OutFile $FilePath
+        Invoke-WebRequest -Uri $Url -OutFile $FilePath -UseBasicParsing
 
         Write-Host "Starting Install $Name..."
         $process = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -Wait -PassThru
