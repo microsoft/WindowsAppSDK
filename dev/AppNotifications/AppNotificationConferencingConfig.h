@@ -35,8 +35,3 @@ namespace winrt::Microsoft::Windows::AppNotifications::factory_implementation
     {
     };
 }
-
-namespace Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig
-{
-    bool IsCallingPreviewSupported();
-}

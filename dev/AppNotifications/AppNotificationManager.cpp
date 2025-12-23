@@ -55,7 +55,6 @@ namespace PushNotificationHelpers
 
 using namespace Microsoft::Windows::AppNotifications::Helpers;
 using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
-using namespace Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
@@ -436,7 +435,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             notification.Payload(),
             notification.Tag(),
             notification.Group(),
-            IsCallingPreviewSupported()) };
+            AppNotificationConferencingConfig::IsCallingPreviewSupported()) };
 
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 

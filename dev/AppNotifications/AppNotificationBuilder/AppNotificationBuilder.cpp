@@ -404,7 +404,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddCameraPreview()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig::IsCallingPreviewSupported());
+        THROW_HR_IF(E_NOTIMPL, !winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationConferencingConfig::IsCallingPreviewSupported());
 
         THROW_HR_IF_MSG(E_INVALIDARG, m_useCameraPreview, "CameraPreview element is already added, only one is allowed");
 

@@ -129,7 +129,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotification::ConferencingConfig(winrt::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig const& conferencingConfig)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig::IsCallingPreviewSupported());
+        THROW_HR_IF(E_NOTIMPL, !AppNotificationConferencingConfig::IsCallingPreviewSupported());
         auto lock{ m_lock.lock_exclusive() };
         m_conferencingConfig = conferencingConfig;
     }
