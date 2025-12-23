@@ -166,7 +166,7 @@ Param(
 
     [Switch]$NoInteractive=$false,
 
-    [String]$NugetExe="$PSScriptRoot\..\..\.user\nuget.exe",
+    [String]$NugetExe=[IO.Path]::GetFullPath(Join-Path $PSScriptRoot "..\..\.user\nuget.exe"),
 
     [String]$NugetMinVersion="6.14.0.116",
 
