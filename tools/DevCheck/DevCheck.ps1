@@ -683,7 +683,10 @@ function Test-VisualStudioComponent
     try
     {
         $value = Run-Process $vswhere_exe $args -throwIfExitCodeIsFailure $true
-        $path = $path -replace [environment]::NewLine, ''
+        if ([string]::IsNullOrEmpty($value))
+        {
+            throw "Component"
+        }
         Write-Verbose "Visual Studio component $($component) = $($value)"
         return 0
     }

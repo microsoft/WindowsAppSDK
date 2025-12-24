@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Ventana en blanco (WinUI 3 en escritorio)</value>
+    <value>Ventana en blanco</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Experimental] Ventana en blanco (WinUI 3 en escritorio)</value>
+    <value>[Experimental] Ventana en blanco</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Ventana en blanco para aplicaciones de escritorio basadas en la Biblioteca de interfaz de usuario de Windows (WinUI 3).</value>
+    <value>Una ventana en blanco (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>Página en blanco (WinUI 3)</value>
+    <value>Página en blanco</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Experimental] Página en blanco (WinUI 3)</value>
+    <value>[Experimental] Página en blanco</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Página en blanco para aplicaciones basadas en la Biblioteca de interfaz de usuario de Windows (WinUI 3).</value>
+    <value>Una página en blanco (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Diccionario de recursos (WinUI 3)</value>
+    <value>Diccionario de recursos</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Experimental] Diccionario de recursos (WinUI 3)</value>
+    <value>[Experimental] Diccionario de recursos</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Colección vacía con clave de recursos XAML para aplicaciones basadas en la Biblioteca de interfaz de usuario de Windows (WinUI 3).</value>
+    <value>Colección vacía con clave de recursos XAML (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Archivo de recursos (.resw)</value>
@@ -151,60 +151,105 @@
     <value>[Experimental] Archivo de recursos (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Archivo para almacenar recursos condicionales y de cadena para aplicaciones basadas en la Biblioteca de interfaz de usuario de Windows (WinUI 3).</value>
+    <value>Un archivo para almacenar recursos condicionales y de cadena (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>Control personalizado (WinUI 3)</value>
+    <value>Control con plantilla</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Experimental] Control personalizado (WinUI 3)</value>
+    <value>[Experimental] Control con plantilla</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Control personalizado para aplicaciones basadas en la Biblioteca de interfaz de usuario de Windows (WinUI 3).</value>
+    <value>Control personalizado en blanco con el estilo predeterminado adecuado (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Control de usuario (WinUI 3)</value>
+    <value>Control de usuario</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Experimental] Control de usuario (WinUI 3)</value>
+    <value>[Experimental] Control de usuario</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Control de usuario para aplicaciones basadas en la Biblioteca de interfaz de usuario de Windows (WinUI 3).</value>
+    <value>Un control de usuario en blanco (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Biblioteca de clases (WinUI 3 en escritorio)</value>
+    <value>Biblioteca de clases WinUI</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimental] Biblioteca de clases (WinUI 3 en escritorio)</value>
+    <value>[Experimental] Biblioteca de clases WinUI</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Proyecto para crear una biblioteca de clases administrada (.dll) para aplicaciones de escritorio basadas en la Biblioteca de interfaz de usuario de Windows (WinUI 3).</value>
+    <value>Proyecto para crear una biblioteca de clases administradas (.dll) (WinUI).</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Aplicación en blanco, empaquetada con Proyecto de paquete de aplicación de Windows (WinUI 3 en el escritorio)</value>
+    <value>Aplicación en blanco de WinUI (empaquetada con Proyecto de paquete de aplicación de Windows)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Experimental] Aplicación en blanco, empaquetada con Proyecto de paquete de aplicación de Windows (WinUI 3 en el escritorio)</value>
+    <value>[Experimental] Aplicación en blanco de WinUI (empaquetada con Proyecto de paquete de aplicación de Windows)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Plantilla de proyecto para crear una aplicación de escritorio basada en la Biblioteca de interfaz de usuario de Windows (WinUI 3). Se incluye un proyecto de paquete de aplicación de Windows (WAP) para crear un paquete MSIX para la carga lateral o distribución mediante Microsoft Store.</value>
+    <value>Plantilla de proyecto para crear una aplicación WinUI. Se incluye un proyecto de empaquetado de aplicaciones de Windows (WAP) para crear un paquete MSIX para transferencia local o distribución a través de Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Aplicación en blanco, empaquetada (WinUI 3 en escritorio)</value>
+    <value>Aplicación en blanco de WinUI (empaquetada)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimental] Aplicación en blanco, empaquetada (WinUI 3 en escritorio)</value>
+    <value>[Experimental] Aplicación en blanco de WinUI (empaquetada)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Plantilla de proyecto para crear una aplicación de escritorio basada en la Biblioteca de interfaz de usuario de Windows (WinUI 3) junto con un paquete MSIX para la carga lateral o distribución mediante Microsoft Store.</value>
+    <value>Una plantilla de proyecto para crear una aplicación de WinUI junto con un paquete MSIX para la transferencia local o la distribución a través de Microsoft Store.</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Aplicación de prueba unitaria (WinUI 3 en escritorio)</value>
+    <value>Aplicación de prueba unitaria de WinUI</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Experimental] Aplicación de prueba unitaria (WinUI 3 en escritorio)</value>
+    <value>[Experimental] Aplicación de prueba unitaria de WinUI</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Proyecto para crear una aplicación de prueba unitaria para aplicaciones WinUI 3 con MSTest.</value>
+    <value>Proyecto para crear una aplicación de prueba unitaria de C# para WinUI mediante MSTest.</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>Aplicación en blanco de WinUI</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Proyecto para crear una aplicación WinUI vacía.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>Proyecto de paquete de aplicación de Windows para WinUI</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Plantilla de proyecto que crea paquetes MSIX que contienen aplicaciones WinUI para la carga o distribución de prueba mediante el Microsoft Store.</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>Instalando paquetes NuGet en el proyecto...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Operación en progreso...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>Faltan referencias de paquete</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>No se pueden agregar referencias a los siguientes paquetes para {0}: {1}. Agregue referencias de paquete antes de compilar.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] No se pueden agregar referencias a los siguientes paquetes: {1}. Se trata de un error de entorno. Agregue referencias de paquete antes de compilar el proyecto.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>Administrar paquetes NuGet</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>Ver detalles del error</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>Faltan referencias de paquete para {0}:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Agregue manualmente las referencias de paquete antes de compilar.</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>No hay información de salida disponible.</value>
   </data>
 </root>

@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>空白視窗 (桌面中的 WinUI 3)</value>
+    <value>空白視窗</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[實驗性] 空白視窗 (桌面中的 WinUI 3)</value>
+    <value>[實驗性] 空白視窗</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>使用 Windows UI 程式庫 (WinUI 3) 的傳統型應用程式空白視窗。</value>
+    <value>空白視窗 (WinUI)。</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>空白頁 (WinUI 3)</value>
+    <value>空白頁</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[實驗性] 空白頁 (WinUI 3)</value>
+    <value>[實驗性] 空白頁</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>使用 Windows UI 程式庫 (WinUI 3) 的應用程式空白頁面。</value>
+    <value>空白頁 (WinUI)。</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>資源字典 (WinUI 3)</value>
+    <value>資源字典</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[實驗性] 資源字典 (WinUI 3)</value>
+    <value>[實驗性] 資源字典</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>使用 Windows UI 程式庫 (WinUI 3) 之應用程式的 XAML 資源空白金鑰集合。</value>
+    <value>WinUI) (XAML 資源的空白金鑰集合。</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>資源檔 (.resw)</value>
@@ -151,60 +151,109 @@
     <value>[實驗性] 資源檔 (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>檔案，可儲存使用 Windows UI 程式庫 (WinUI 3) 之應用程式的字串和條件式資源。</value>
+    <value>用於在 WinUI) (儲存字串和條件式資源的檔案。</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>自訂控制項 (WinUI 3)</value>
+    <value>範本控制項</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[實驗性] 自訂控制項 (WinUI 3)</value>
+    <value>[實驗性] 範本控制項</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>使用 Windows UI 程式庫 (WinUI 3) 的應用程式自訂控制項。</value>
+    <value>具有適當預設樣式的空白自定義控件 (WinUI)。</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>使用者控制項 (WinUI 3)</value>
+    <value>使用者控制項</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[實驗性] 使用者控制項 (WinUI 3)</value>
+    <value>[實驗性] 使用者控制項</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>使用 Windows UI 程式庫 (WinUI 3) 的應用程式使用者控制項。</value>
+    <value>空白使用者控制項 (WinUI)。</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>空白應用程式，與 Windows 應用程式封裝專案 (電腦版 WinUI 3)</value>
+    <value>WinUI 空白應用程式 (與 Windows 應用程式封裝專案封裝)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[實驗性]空白應用程式，與 Windows 應用程式封裝專案 (電腦版 WinUI 3)</value>
+    <value>[實驗性] WinUI 空白應用程式 (與 Windows 應用程式封裝專案封裝)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>專案範本，用於建立使用 Windows UI 程式庫 (WinUI 3) 的傳統型應用程式。會包含 Windows 應用程式封裝 (WAP) 專案，以建立 MSIX 套件，以便透過 Microsoft Store 側載或散佈。</value>
+    <value>用於建立 WinUI 應用程式的專案範本。會包含 Windows 應用程式封裝 (WAP) 專案，以建立 MSIX 套件，以便透過 Microsoft Store 側載或散佈。</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>空白應用程式，已封裝 (桌面中的 WinUI 3)</value>
+    <value>WinUI 空白應用程式 (已封裝)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[實驗性] 空白應用程式，已封裝 (桌面中的 WinUI 3)</value>
+    <value>[實驗性] WinUI 空白應用程式 (已封裝)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>專案範本，用於建立使用 Windows UI 程式庫 (WinUI 3) 的傳統型應用程式以及 MSIX 套件，以便透過 Microsoft Store 側載或散佈。</value>
+    <value>用於建立 WinUI 應用程式以及 MSIX 套件，以便透過 Microsoft Store 側載或發行的專案範本。</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Windows 執行階段元件 (WinUI 3)</value>
+    <value>WinUI Windows 執行階段元件</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[實驗性] Windows 執行階段元件 (WinUI 3)</value>
+    <value>[實驗性] WinUI Windows 執行階段元件 (C++/WinRT)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>專案，可用於建立使用 Windows UI 程式庫 (WinUI 3) 之桌面及通用 Windows 平台 (UWP) 應用程式的 C++/WinRT Windows 執行階段元件(.winmd)。</value>
+    <value>可用於建立基於 WinUI 之桌面及通用 Windows 平台 (UWP) 應用程式的 C++/WinRT Windows 執行階段元件 (.winmd) 之專案。</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>單元測試應用程式 (WinUI 3)</value>
+    <value>WinUI 單元測試應用程式</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[實驗性] 單元測試應用程式 (WinUI 3)</value>
+    <value>[實驗性] WinUI 單元測試應用程式</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>此專案可用於使用 MSTest 建立 WinUI 3 的 C++/WinRT 單元測試應用程式。</value>
+    <value>用於使用 MSTest 建立 WinUI C++/WinRT 單元測試應用程式的專案。</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>WinUI 空白應用程式</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>用於建立空白 WinUI 應用程式的專案。</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>WinUI 的 Windows 應用程式封裝專案</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>此項目範本會建立 MSIX 套件，其中包含 WinUI 應用程式以透過Microsoft Store側載或散發。</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>正在將 NuGet 套件安裝到專案中...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>操作進行中...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>缺少套件參考</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>無法為以下套件添加參考，{0}：{1}。請在製作前加入套件參考資料。</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}]無法新增以下套件的參考：{1}。
+
+這是環境錯誤。請在建置專案前先加入套件參考。
+
+想了解更多錯誤細節，請查看輸出視窗中的「一般」標籤。</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>管理 NuGet 套件</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>請參閱錯誤詳細資料</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>缺少 {0} 的套件參考:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>請在建置之前手動新增套件參考。</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>一般</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>沒有可用的輸出資訊。</value>
   </data>
 </root>
