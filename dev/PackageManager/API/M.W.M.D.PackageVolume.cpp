@@ -77,17 +77,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         return microsoftPackageVolumes;
     }
-    winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::FindPackageVolumeByPath(hstring const& path)
+    winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::FindPackageVolumeByPath(hstring const& packageStorePath)
     {
         const auto c_volumePathNameMaxLength{ MAX_PATH };
         wchar_t volumePathName[c_volumePathNameMaxLength]{};//AKA volumeMountPoint
-        THROW_IF_WIN32_BOOL_FALSE_MSG(::GetVolumePathNameW(path.c_str(), volumePathName, ARRAYSIZE(volumePathName)), "Path:%ls", path.c_str());
+        THROW_IF_WIN32_BOOL_FALSE_MSG(::GetVolumePathNameW(packageStorePath.c_str(), volumePathName, ARRAYSIZE(volumePathName)), "Path:%ls", packageStorePath.c_str());
         GUID mediaId{};
         const size_t c_volumeNameMaxLength{ 50 };   // "\\?\Volume{GUID}\" == 11 + 11111111-2222-3333-4444-555555555555 + 2 + null-terminator == 11 + 36 + 3 = 50
         wchar_t volumeName[c_volumeNameMaxLength]{};
-        THROW_IF_WIN32_BOOL_FALSE_MSG(::GetVolumeNameForVolumeMountPoint(volumePathName, volumeName, ARRAYSIZE(volumeName)), "Path:%ls VolumePathName:%ls", path.c_str(), volumePathName);
+        THROW_IF_WIN32_BOOL_FALSE_MSG(::GetVolumeNameForVolumeMountPoint(volumePathName, volumeName, ARRAYSIZE(volumeName)), "Path:%ls VolumePathName:%ls", packageStorePath.c_str(), volumePathName);
         const auto volumeNameLength{ wcslen(volumeName) };
-        THROW_HR_IF_MSG(E_UNEXPECTED, volumeNameLength == 0, "Path:%ls VolumePathName:%ls", path.c_str(), volumePathName);
+        THROW_HR_IF_MSG(E_UNEXPECTED, volumeNameLength == 0, "Path:%ls VolumePathName:%ls", packageStorePath.c_str(), volumePathName);
         const auto offset{ volumeNameLength - 1 };
         if (volumeName[offset] == L'\\')
         {

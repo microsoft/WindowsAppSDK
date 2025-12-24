@@ -107,6 +107,11 @@ namespace Microsoft.Windows.Management.Deployment
         static IVector<PackageVolume> FindPackageVolumes();
 
         /// Get the specified volume.
+        /// @param packageStorePath a path on the volume e.g. "F:", "F:\Foo\Bar", "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\"
+        ///                         and "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\Foo\Bar" are equally valid.
+        /// @note The packageStorePath parameter is used to identify the device Volume.
+        ///       The actual path for packages in a PackageVolume is defined by Windows.
+        /// @return the volume or null if not found.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
         /// @see GetPackageVolumeByPath()
         ///
@@ -115,11 +120,15 @@ namespace Microsoft.Windows.Management.Deployment
         static PackageVolume FindPackageVolumeByPath(String packageStorePath);
 
         /// Get the specified volume.
+        /// @param path a path on the volume e.g. "F:", "F:\Foo\Bar", "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\"
+        ///             and "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\Foo\Bar" are equally valid.
+        /// @note The path parameter is used to identify the device Volume.
+        ///       The actual path for packages in a PackageVolume is defined by Windows.
         /// @return the volume or null if not found.
         /// @see GetPackageVolumeByName()
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
         [contract(PackageDeploymentContract, 3)]
-        static PackageVolume GetPackageVolumeByPath(String packageStorePath);
+        static PackageVolume GetPackageVolumeByPath(String path);
 
         /// Get the specified volume.
         /// @name The volume media ID (a GUID value)
@@ -137,28 +146,35 @@ namespace Microsoft.Windows.Management.Deployment
         [contract(PackageDeploymentContract, 3)]
         static PackageVolume GetPackageVolumeByName(String name);
 
+        /// Return true if the package volume is an internal system volume mapped to the %SYSTEMDRIVER% environment variable.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
         Boolean IsSystemVolume{ get; };
 
+        /// Get the path of the last known mount point for the package volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.mountpoint
         String MountPoint{ get; };
 
+        /// Get the media ID of the package volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.name
         String Name{ get; };
 
+        /// Get the absolute path for the Package store on the volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.packagestorepath
         String PackageStorePath{ get; };
 
+        /// Return true if the package volume supports the creation of hard links in its file system.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
         Boolean SupportsHardLinks{ get; };
 
+        /// Return true if APPX installing is supported.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
         Boolean IsAppxInstallSupported{ get; };
 
+        /// Return true if full-trust packages are supported.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
         Boolean IsFullTrustPackageSupported{ get; };
 
-        /// Return the default package volume.
+        /// Return true if the package volume is in an offline state.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isoffline
         [contract(PackageDeploymentContract, 3)]
         Boolean IsOffline();
