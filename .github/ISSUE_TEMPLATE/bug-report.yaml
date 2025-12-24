@@ -74,7 +74,8 @@ body:
       description: Which IDE are you using?
       multiple: true
       options:
-        - "Visual Studio 2026 Insiders"
+        - "Visual Studio Insiders"
+        - "Visual Studio 2026"
         - "Visual Studio 2022"
         - "Visual Studio 2019"
         - "Other"
