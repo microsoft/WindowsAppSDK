@@ -108,12 +108,34 @@ namespace Microsoft.Windows.Management.Deployment
 
         /// Get the specified volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        /// @see GetPackageVolumeByPath()
+        ///
+        /// @note This API is deprecated and will be removed in a future release.
+        ///       Use GetPackageVolumeByPath().
         static PackageVolume FindPackageVolumeByPath(String packageStorePath);
 
         /// Get the specified volume.
-        /// @name The volume media ID (a GUID value)
+        /// @return the volume or null if not found.
+        /// @see GetPackageVolumeByName()
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        static PackageVolume GetPackageVolumeByPath(String packageStorePath);
+
+        /// Get the specified volume.
+        /// @name The volume media ID (a GUID value)
+        /// @see GetPackageVolumeByName()
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        ///
+        /// @note This API is deprecated and will be removed in a future release.
+        ///       Use GetPackageVolumeByName().
         static PackageVolume FindPackageVolumeByName(String name);
+
+        /// Get the specified volume.
+        /// @name The volume media ID (a GUID value)
+        /// @see GetPackageVolumeByPath()
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        static PackageVolume GetPackageVolumeByName(String name);
 
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
         Boolean IsSystemVolume{ get; };

@@ -8,8 +8,8 @@
 
 #include <ShObjIdl.h>
 
-#include <wil/com.h>
 #include <wil/cppwinrt.h>
+#include <wil/com.h>
 #include <wil/filesystem.h>
 
 #include <winrt/Windows.Foundation.h>
@@ -29,6 +29,7 @@
 #include <WindowsAppRuntime.Test.AppModel.h>
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
+#include <WindowsAppRuntime.Test.TAEF.h>
 
 #include "PackageManagerTests.Packages.h"
 

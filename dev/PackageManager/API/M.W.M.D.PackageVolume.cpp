@@ -95,11 +95,46 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         return FindPackageVolumeByName(winrt::hstring{ volumeName });
     }
+    winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::GetPackageVolumeByPath(hstring const& path)
+    {
+        const auto c_volumePathNameMaxLength{ MAX_PATH };
+        wchar_t volumePathName[c_volumePathNameMaxLength]{};//AKA volumeMountPoint
+        THROW_IF_WIN32_BOOL_FALSE_MSG(::GetVolumePathNameW(path.c_str(), volumePathName, ARRAYSIZE(volumePathName)), "Path:%ls", path.c_str());
+        GUID mediaId{};
+        const size_t c_volumeNameMaxLength{ 50 };   // "\\?\Volume{GUID}\" == 11 + 11111111-2222-3333-4444-555555555555 + 2 + null-terminator == 11 + 36 + 3 = 50
+        wchar_t volumeName[c_volumeNameMaxLength]{};
+        THROW_IF_WIN32_BOOL_FALSE_MSG(::GetVolumeNameForVolumeMountPoint(volumePathName, volumeName, ARRAYSIZE(volumeName)), "Path:%ls VolumePathName:%ls", path.c_str(), volumePathName);
+        const auto volumeNameLength{ wcslen(volumeName) };
+        THROW_HR_IF_MSG(E_UNEXPECTED, volumeNameLength == 0, "Path:%ls VolumePathName:%ls", path.c_str(), volumePathName);
+        const auto offset{ volumeNameLength - 1 };
+        if (volumeName[offset] == L'\\')
+        {
+            volumeName[offset] = L'\0';
+        }
+        return GetPackageVolumeByName(winrt::hstring{ volumeName });
+    }
     winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::FindPackageVolumeByName(hstring const& name)
     {
         winrt::Windows::Management::Deployment::PackageManager packageManager;
         winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume{ packageManager.FindPackageVolume(name) };
         return winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageVolume>(windowsPackageVolume);
+    }
+    winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::GetPackageVolumeByName(hstring const& name)
+    {
+        try
+        {
+            winrt::Windows::Management::Deployment::PackageManager packageManager;
+            winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume{ packageManager.FindPackageVolume(name) };
+            return winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageVolume>(windowsPackageVolume);
+        }
+        catch (winrt::hresult_error const& exception)
+        {
+            if (exception.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+            {
+                throw;
+            }
+        }
+        return winrt::Microsoft::Windows::Management::Deployment::PackageVolume(nullptr);
     }
     winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::GetDefault()
     {
@@ -111,8 +146,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         auto logTelemetry{ PackageVolumeTelemetry::Add::Start(packageStorePath) };
 
+        //auto strong{ get_strong() };
+
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
+
+        logTelemetry.IgnoreCurrentThread();
+        co_await resume_background();   // Allow to register the progress and complete handler
 
         winrt::Windows::Management::Deployment::PackageManager packageManager;
         winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume{ co_await packageManager.AddPackageVolumeAsync(packageStorePath) };
@@ -306,7 +346,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::guid activityId{};
         try
         {
-            error = LOG_IF_FAILED_MSG(SetOnline(false, packageDeploymentProgress, progress, extendedError, errorText, activityId),
+            error = LOG_IF_FAILED_MSG(SetOnline(true, packageDeploymentProgress, progress, extendedError, errorText, activityId),
                                       "ExtendedError:0x%08X PackageVolume.SetOnline MountPoint:%ls Name:%ls PackageStorePath:%ls",
                                       extendedError, m_mountPoint.c_str(), m_name.c_str(), m_packageStorePath.c_str());
         }
@@ -419,7 +459,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         activityId = winrt::guid{};
 
         winrt::Windows::Management::Deployment::PackageManager packageManager;
-        auto deploymentOperation{ packageManager.SetPackageVolumeOnlineAsync(m_windowsPackageVolume) };
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation;
+        if (online)
+        {
+            deploymentOperation = packageManager.SetPackageVolumeOnlineAsync(m_windowsPackageVolume);
+        }
+        else
+        {
+            deploymentOperation = packageManager.SetPackageVolumeOfflineAsync(m_windowsPackageVolume);
+        }
         deploymentOperation.Progress([&](winrt::Windows::Foundation::IAsyncOperationWithProgress<
                                             winrt::Windows::Management::Deployment::DeploymentResult,
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,

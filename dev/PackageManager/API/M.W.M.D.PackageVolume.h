@@ -15,7 +15,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         static bool IsFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageVolumeFeature feature);
         static winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> FindPackageVolumes();
         static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByPath(hstring const& packageStorePath);
+        static winrt::Microsoft::Windows::Management::Deployment::PackageVolume GetPackageVolumeByPath(hstring const& packageStorePath);
         static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByName(hstring const& name);
+        static winrt::Microsoft::Windows::Management::Deployment::PackageVolume GetPackageVolumeByName(hstring const& name);
         static winrt::Microsoft::Windows::Management::Deployment::PackageVolume GetDefault();
         static winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> AddAsync(hstring packageStorePath);
 
