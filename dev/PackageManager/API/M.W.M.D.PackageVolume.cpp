@@ -403,7 +403,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
-            packageDeploymentProgress.Progress = progressInfo.percentage;
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
+            packageDeploymentProgress.Progress = static_cast<double>(progressInfo.percentage) / 100.0;
             progress(packageDeploymentProgress);
         });
         deploymentOperation.get();
@@ -473,7 +474,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
-            packageDeploymentProgress.Progress = progressInfo.percentage;
+            packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
+            packageDeploymentProgress.Progress = static_cast<double>(progressInfo.percentage) / 100.0;
             progress(packageDeploymentProgress);
         });
         deploymentOperation.get();

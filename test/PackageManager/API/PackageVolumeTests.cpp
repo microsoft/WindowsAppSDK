@@ -379,6 +379,7 @@ namespace Test::PackageManager::Tests
                 auto packageVolumeBefore{ Dump(GetTempDirectory()) };
                 VERIFY_IS_FALSE(packageVolumeBefore.IsOffline());
 
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"SetOfflineAsync..."));
                 auto deploymentOperation{ packageVolumeAdded.SetOfflineAsync() };
                 auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
                 TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
@@ -392,6 +393,7 @@ namespace Test::PackageManager::Tests
                 auto packageVolumeBefore{ Dump(GetTempDirectory()) };
                 VERIFY_IS_TRUE(packageVolumeBefore.IsOffline());
 
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"SetOfflineAsync..."));
                 auto deploymentOperation{ packageVolumeAdded.SetOfflineAsync() };
                 auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
                 TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
@@ -406,6 +408,7 @@ namespace Test::PackageManager::Tests
                 auto packageVolumeBefore{ Dump(GetTempDirectory()) };
                 VERIFY_IS_TRUE(packageVolumeBefore.IsOffline());
 
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"SetOnlineAsync..."));
                 auto deploymentOperation{ packageVolumeAdded.SetOnlineAsync() };
                 auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
                 TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
@@ -419,6 +422,7 @@ namespace Test::PackageManager::Tests
                 auto packageVolumeBefore{ Dump(GetTempDirectory()) };
                 VERIFY_IS_FALSE(packageVolumeBefore.IsOffline());
 
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"SetOnlineAsync..."));
                 auto deploymentOperation{ packageVolumeAdded.SetOnlineAsync() };
                 auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
                 TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);

@@ -159,13 +159,13 @@ namespace Test::PackageManager::Tests
             AsyncOperationProgressHandler<PackageDeploymentResult, PackageDeploymentProgress> progressCallback(
                 [&](const IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>&, PackageDeploymentProgress progress)
             {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-/****SEEME***
+                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...Status:%d Progress:%lf", static_cast<int>(progress.Status), progress.Progress));
                     VERIFY_IS_LESS_THAN_OR_EQUAL(progress.Progress, 1.0);
                     VERIFY_IS_GREATER_THAN_OR_EQUAL(progress.Progress, 0.0);
                     if (progress.Progress >= 1.0)
                     {
-                        VERIFY_IS_TRUE((progress.Status == PackageDeploymentProgressStatus::CompletedSuccess) ||
+                        VERIFY_IS_TRUE((progress.Status == PackageDeploymentProgressStatus::InProgress) ||
+                                       (progress.Status == PackageDeploymentProgressStatus::CompletedSuccess) ||
                                        (progress.Status == PackageDeploymentProgressStatus::CompletedFailure));
                     }
                     else if (progress.Progress > 0)
@@ -176,7 +176,6 @@ namespace Test::PackageManager::Tests
                     {
                         VERIFY_ARE_EQUAL(PackageDeploymentProgressStatus::Queued, progress.Status);
                     }
-***SEEME****/
                 }
             );
             deploymentOperation.Progress(progressCallback);
@@ -192,7 +191,7 @@ namespace Test::PackageManager::Tests
             AsyncOperationProgressHandler<DeploymentResult, DeploymentProgress> progressCallback(
                 [&](const IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress>&, DeploymentProgress progress)
             {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.state), progress.percentage));
+                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%u", static_cast<int>(progress.state), progress.percentage));
                     VERIFY_IS_LESS_THAN_OR_EQUAL(progress.percentage, 100u);
                     VERIFY_IS_GREATER_THAN_OR_EQUAL(progress.percentage, 0u);
                     if (progress.percentage >= 100u)
