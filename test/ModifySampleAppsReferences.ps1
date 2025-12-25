@@ -70,10 +70,10 @@ Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
 }
 
 $projectFileExtensions = @("*.vcxproj", "*.wapproj", "*.csproj")
+$newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
+$oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
 foreach ($extension in $projectFileExtensions) {
     Get-ChildItem -Recurse $extension -Path $SampleRepoRoot | foreach-object {
-        $newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-        $oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
         $content = Get-Content $_.FullName -Raw
         $content = $content -replace $oldPackageReference, $newPackageReference
         Set-Content -Path $_.FullName -Value $content
