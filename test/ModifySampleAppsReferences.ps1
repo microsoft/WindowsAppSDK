@@ -69,29 +69,13 @@ Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
     Write-Host "Modified " $_.FullName 
 }
 
-Get-ChildItem -Recurse *.vcxproj -Path $SampleRepoRoot | foreach-object {
-    $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK"'
-    $content = Get-Content $_.FullName -Raw
-    $content = $content -replace $oldVersionString, $newVersionString
-    Set-Content -Path $_.FullName -Value $content
-    Write-Host "Modified " $_.FullName 
-}
-
-Get-ChildItem -Recurse *.wapproj -Path $SampleRepoRoot | foreach-object {
-    $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK"'
-    $content = Get-Content $_.FullName -Raw
-    $content = $content -replace $oldVersionString, $newVersionString
-    Set-Content -Path $_.FullName -Value $content
-    Write-Host "Modified " $_.FullName 
-}
-
-Get-ChildItem -Recurse *.csproj -Path $SampleRepoRoot | foreach-object {
-    $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK"'
-    $content = Get-Content $_.FullName -Raw
-    $content = $content -replace $oldVersionString, $newVersionString
-    Set-Content -Path $_.FullName -Value $content
-    Write-Host "Modified " $_.FullName 
+@('*.vcxproj', '*.wapproj', '*.csproj') | ForEach-Object {
+    Get-ChildItem -Recurse $_ -Path $SampleRepoRoot | ForEach-Object {
+        $newVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
+        $oldVersionString = 'PackageReference Include="Microsoft.WindowsAppSDK"'
+        $content = Get-Content $_.FullName -Raw
+        $content = $content -replace $oldVersionString, $newVersionString
+        Set-Content -Path $_.FullName -Value $content
+        Write-Host "Modified " $_.FullName 
+    }
 }

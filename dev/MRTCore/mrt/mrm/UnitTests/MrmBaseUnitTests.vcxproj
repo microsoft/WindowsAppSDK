@@ -246,3 +246,4 @@
     <Copy SkipUnchangedFiles="true" SourceFiles="MrmBaseUnitTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>
+

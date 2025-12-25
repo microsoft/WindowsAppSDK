@@ -70,3 +70,4 @@
     <ProjectReference Include="..\PushNotificationsTestApp\PushNotificationsTestApp.vcxproj" />
   </ItemGroup>
 </Project>
+

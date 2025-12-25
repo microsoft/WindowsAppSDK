@@ -231,3 +231,4 @@
     <Copy SkipUnchangedFiles="true" SourceFiles="$(BaseOutputPath)\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>
+

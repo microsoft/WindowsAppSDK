@@ -269,3 +269,4 @@
     <PublicHeaders Include="$(MSBuildThisFileDirectory)Math.Multiply.h" />
   </ItemGroup>
 </Project>
+

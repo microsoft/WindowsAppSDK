@@ -70,3 +70,4 @@
     <ProjectReference Include="..\AccessControlTestApp\AccessControlTestApp.vcxproj" />
   </ItemGroup>
 </Project>
+

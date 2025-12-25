@@ -108,3 +108,4 @@
     <Copy SkipUnchangedFiles="true" SourceFiles="MrtCoreUnpackagedTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>
+

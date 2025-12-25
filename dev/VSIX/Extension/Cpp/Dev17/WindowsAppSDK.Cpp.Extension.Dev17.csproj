@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="Current">
+<Project ToolsVersion="Current">
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -70,7 +70,7 @@
     <PackageReference Include="Microsoft.Windows.CppWinRT" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" GeneratePathProperty="true">
@@ -245,3 +245,4 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
 </Project>
+

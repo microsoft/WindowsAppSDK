@@ -87,3 +87,4 @@
     <ProjectReference Include="..\ToastNotificationsDemoApp\ToastNotificationsDemoApp.vcxproj" />
   </ItemGroup>
 </Project>
+

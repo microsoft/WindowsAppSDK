@@ -34,3 +34,4 @@
   <Import Project="$(RepoRoot)\test\test.autoinitializer.CS.targets" />
 
 </Project>
+

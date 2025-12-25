@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <!-- This csproj is to facilitate restoring dependencies from Maestro. These versions are pulled from eng/version.details.xml -->
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -19,3 +19,4 @@
     <PackageDownload Include="Microsoft.FrameworkUdk" version="[$(MicrosoftFrameworkUdkPackageVersion)]" />
   </ItemGroup>
 </Project>
+

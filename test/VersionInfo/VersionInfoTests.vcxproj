@@ -149,3 +149,4 @@
     <Copy SkipUnchangedFiles="true" SourceFiles="VersionInfoTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>
+
