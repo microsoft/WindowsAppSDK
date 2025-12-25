@@ -71,7 +71,7 @@ Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
 
 Get-ChildItem -Recurse *.vcxproj -Path $SampleRepoRoot | foreach-object {
     $newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK"'
+    $oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
     $content = Get-Content $_.FullName -Raw
     $content = $content -replace $oldPackageReference, $newPackageReference
     Set-Content -Path $_.FullName -Value $content
@@ -80,7 +80,7 @@ Get-ChildItem -Recurse *.vcxproj -Path $SampleRepoRoot | foreach-object {
 
 Get-ChildItem -Recurse *.wapproj -Path $SampleRepoRoot | foreach-object {
     $newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK"'
+    $oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
     $content = Get-Content $_.FullName -Raw
     $content = $content -replace $oldPackageReference, $newPackageReference
     Set-Content -Path $_.FullName -Value $content
@@ -89,7 +89,7 @@ Get-ChildItem -Recurse *.wapproj -Path $SampleRepoRoot | foreach-object {
 
 Get-ChildItem -Recurse *.csproj -Path $SampleRepoRoot | foreach-object {
     $newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK"'
+    $oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
     $content = Get-Content $_.FullName -Raw
     $content = $content -replace $oldPackageReference, $newPackageReference
     Set-Content -Path $_.FullName -Value $content
