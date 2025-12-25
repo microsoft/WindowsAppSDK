@@ -940,7 +940,7 @@ if (options.IsLimitToExistingPackagesSupported)
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.Management.Deployment
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract PackageDeploymentContract{};
 
     /// Represents a package storage volume.
@@ -957,40 +957,127 @@ namespace Microsoft.Windows.Management.Deployment
         static IVector<PackageVolume> FindPackageVolumes();
 
         /// Get the specified volume.
+        /// @param packageStorePath a path on the volume e.g. "F:", "F:\Foo\Bar", "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\"
+        ///                         and "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\Foo\Bar" are equally valid.
+        /// @note The packageStorePath parameter is used to identify the device Volume.
+        ///       The actual path for packages in a PackageVolume is defined by Windows.
+        /// @return the volume or null if not found.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        /// @see GetPackageVolumeByPath()
+        ///
+        /// @note This API is deprecated and will be removed in a future release.
+        ///       Use GetPackageVolumeByPath().
         static PackageVolume FindPackageVolumeByPath(String packageStorePath);
 
         /// Get the specified volume.
-        /// @name The volume media ID (a GUID value)
+        /// @param path a path on the volume e.g. "F:", "F:\Foo\Bar", "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\"
+        ///             and "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\Foo\Bar" are equally valid.
+        /// @note The path parameter is used to identify the device Volume.
+        ///       The actual path for packages in a PackageVolume is defined by Windows.
+        /// @return the volume or null if not found.
+        /// @see GetPackageVolumeByName()
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        static PackageVolume GetPackageVolumeByPath(String path);
+
+        /// Get the specified volume.
+        /// @name The volume media ID (a GUID value)
+        /// @see GetPackageVolumeByName()
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        ///
+        /// @note This API is deprecated and will be removed in a future release.
+        ///       Use GetPackageVolumeByName().
         static PackageVolume FindPackageVolumeByName(String name);
 
+        /// Get the specified volume.
+        /// @name The volume media ID (a GUID value)
+        /// @see GetPackageVolumeByPath()
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        static PackageVolume GetPackageVolumeByName(String name);
+
+        /// Return true if the package volume is an internal system volume mapped to the %SYSTEMDRIVER% environment variable.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
         Boolean IsSystemVolume{ get; };
 
+        /// Get the path of the last known mount point for the package volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.mountpoint
         String MountPoint{ get; };
 
+        /// Get the media ID of the package volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.name
         String Name{ get; };
 
+        /// Get the absolute path for the Package store on the volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.packagestorepath
         String PackageStorePath{ get; };
 
+        /// Return true if the package volume supports the creation of hard links in its file system.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
         Boolean SupportsHardLinks{ get; };
 
+        /// Return true if APPX installing is supported.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
+        Boolean IsAppxInstallSupported{ get; };
+
+        /// Return true if full-trust packages are supported.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
         Boolean IsFullTrustPackageSupported{ get; };
 
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
-        Boolean IsAppxInstallSupported{ get; };
+        /// Return true if the package volume is in an offline state.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isoffline
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsOffline();
 
         /// Return true if the package volume is damaged and needs to be repaired.
         Boolean IsRepairNeeded();
 
         /// Repair the package volume (if necessary).
         void Repair();
+
+        [contract(PackageDeploymentContract, 3)]
+        static Boolean IsFeatureSupported(PackageVolumeFeature feature);
+
+        /// Return the default package volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.getdefaultpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        static PackageVolume GetDefault();
+
+        /// Set the default package volume.
+        /// @see //learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setdefaultpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        void SetDefault();
+
+        /// Create a new package volume.
+        /// @param packageStorePath The absolute path of the Package store.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.addpackagevolumeasync
+        [contract(PackageDeploymentContract, 3)]
+        static Windows.Foundation.IAsyncOperation<PackageVolume> AddAsync(String packageStorePath);
+
+        /// @note The caller must be running with Medium IL (or higher)
+        ///       OR running in an AppContainer with the packageManagement restricted capability
+        ///       OR caller has package identity and the publisher matches the publisher of the volume being removed.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.removepackagevolumeasync
+        [contract(PackageDeploymentContract, 3)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> RemoveAsync();
+
+        /// Set the package volume to an offline state.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setpackagevolumeofflineasync
+        [contract(PackageDeploymentContract, 3)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> SetOfflineAsync();
+
+        /// Set the package volume to an online state.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setpackagevolumeonlineasync
+        [contract(PackageDeploymentContract, 3)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> SetOnlineAsync();
+
+        /// Get the available space (bytes).
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagevolume.getavailablespaceasync?view=winrt-26100
+        [contract(PackageDeploymentContract, 3)]
+        Windows.Foundation.IAsyncOperation<UInt64> GetAvailableSpaceAsync();
     };
 
     /// Defines the stub behavior for an app package that is being added or staged.
@@ -1048,62 +1135,6 @@ namespace Microsoft.Windows.Management.Deployment
     {
         PackageCertificateEkuValidator(String expectedCertificateEku);
         Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> Handler{ get; };
-    }
-
-    /// The progress status of the deployment request.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state
-    [contract(PackageDeploymentContract, 1)]
-    enum PackageDeploymentProgressStatus
-    {
-        Queued = 0,             // The request is queued
-        InProgress = 1,         // The request is in progress
-        CompletedSuccess = 2,   // The request completed successfully
-        CompletedFailure = 3,   // The request failed with some critical internal error.
-    };
-
-    /// Contains progress information for the deployment request.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress
-    [contract(PackageDeploymentContract, 1)]
-    struct PackageDeploymentProgress
-    {
-        PackageDeploymentProgressStatus Status;
-
-        /// The progress percentage of the deployment request.
-        /// @note This is a double with values 0.0-1.0. Windows.Management.Deployment.DeploymentProgress.percentage is uint32 with values 0-100.
-        Double Progress;
-    };
-
-    /// The status of the deployment request.
-    /// @see PackageDeploymentResult.Status
-    [contract(PackageDeploymentContract, 1)]
-    enum PackageDeploymentStatus
-    {
-        InProgress = 0,         // The request is in progress
-        CompletedSuccess = 1,   // The request completed successfully
-        CompletedFailure = 2,   // The request failed with some critical internal error.
-    };
-
-    /// Provides the result of a deployment request.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageDeploymentResult
-    {
-        PackageDeploymentStatus Status { get; };
-
-        /// The extended error code can be used to distinguish a specific error condition which needs to be handled differently from the general error indicated by the return code. The extended error code may provide a more specific reason for the failure that caused the general error. Also, it usually corresponds directly to the specific message in the ErrorText.
-        HRESULT Error { get; };
-
-        /// The extended error code can be used to distinguish a specific error condition which needs to be handled differently from the general error indicated by the return code. The extended error code may provide a more specific reason for the failure that caused the general error. Also, it usually corresponds directly to the specific message in the ErrorText.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.extendederrorcode
-        HRESULT ExtendedError { get; };
-
-        /// Gets extended error text for the error if the deployment operation is not successful.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.errortext
-        String ErrorText { get; };
-
-        /// Gets the activity identifier used to look up an event in Windows Event Viewer. Gets the activity identifier used to look up an event. All events of a deployment operation are logged with the same activityId.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.activityid
-        Guid ActivityId { get; };
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -1256,7 +1287,7 @@ namespace Microsoft.Windows.Management.Deployment
 
         AddPackageOptions AddPackageOptions { get; };
 
-        [contractversion(2)]
+        [contract(PackageDeploymentContract, 2)]
         Boolean RegisterNewerIfAvailable;
     }
 
@@ -1267,28 +1298,38 @@ namespace Microsoft.Windows.Management.Deployment
         static PackageDeploymentManager GetDefault();
 
         //-------------------------------------------------------------
+        // IsPackageDeploymentFeatureSupported
+
+        [contract(PackageDeploymentContract, 2)]
+        static Boolean IsPackageDeploymentFeatureSupported(PackageDeploymentFeature feature);
+
+        //-------------------------------------------------------------
         // IsReady
 
         // Return true if the package(s) are present and available for use
-
         Boolean IsPackageReady(String package);
 
+        // Return true if the package(s) are present and available for use
         Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are present and available for use
+        /// @note packageSet[Item].PackageUri is optional
         Boolean IsPackageSetReady(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // IsReadyOrNewerAvailable
 
         // Return true if the package(s) are present and available for use
-
-        [contractversion(2)]
+        [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
 
-        [contractversion(2)]
+        // Return true if the package(s) are present and available for use
+        [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
 
-        [contractversion(2)]
+        // Return true if the package(s) are present and available for use
+        /// @note packageSet[Item].PackageUri is optional
+        [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
 
         //-------------------------------------------------------------
@@ -1306,6 +1347,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageReadyByUriAsync(Windows.Foundation.Uri packageUri, EnsureReadyOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageSetReadyAsync(PackageSet packageSet, EnsureReadyOptions options);
 
@@ -1318,6 +1360,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageByUriAsync(Windows.Foundation.Uri packageUri, AddPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageSetAsync(PackageSet packageSet, AddPackageOptions options);
 
@@ -1330,6 +1373,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         StagePackageByUriAsync(Windows.Foundation.Uri packageUri, StagePackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         StagePackageSetAsync(PackageSet packageSet, StagePackageOptions options);
 
@@ -1342,6 +1386,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RegisterPackageByUriAsync(Windows.Foundation.Uri packageUri, RegisterPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RegisterPackageSetAsync(PackageSet packageSet, RegisterPackageOptions options);
 
@@ -1360,6 +1405,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageByUriAsync(Windows.Foundation.Uri packageUri, RemovePackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageSetAsync(PackageSet packageSet, RemovePackageOptions options);
 
@@ -1372,6 +1418,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ResetPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ResetPackageSetAsync(PackageSet packageSet);
 
@@ -1384,6 +1431,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RepairPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RepairPackageSetAsync(PackageSet packageSet);
 
@@ -1391,13 +1439,14 @@ namespace Microsoft.Windows.Management.Deployment
         // IsProvisioned
 
         // Return true if the package(s) are provisioned
-
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisioned(String package);
 
+        // Return true if the package(s) are provisioned
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisionedByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are provisioned
         /// @note packageSet[Item].PackageUri is optional
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageSetProvisioned(PackageSet packageSet);
@@ -1411,6 +1460,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ProvisionPackageByUriAsync(Windows.Foundation.Uri packageUri, ProvisionPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ProvisionPackageSetAsync(PackageSet packageSet, ProvisionPackageOptions options);
 
@@ -1423,15 +1473,20 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         DeprovisionPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         DeprovisionPackageSetAsync(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // IsRegistrationPending
 
-        Boolean IsPackageRegistrationPending(String packageFullName);
+        /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
+        ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
+        Boolean IsPackageRegistrationPending(String packageFamilyName);
 
-        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFullName);
+        /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
+        ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
+        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
     }
 
     [contract(PackageDeploymentContract, 1)]
