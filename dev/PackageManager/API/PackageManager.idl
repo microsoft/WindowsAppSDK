@@ -402,11 +402,12 @@ namespace Microsoft.Windows.Management.Deployment
         // IsReady
 
         // Return true if the package(s) are present and available for use
-
         Boolean IsPackageReady(String package);
 
+        // Return true if the package(s) are present and available for use
         Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are present and available for use
         /// @note packageSet[Item].PackageUri is optional
         Boolean IsPackageSetReady(PackageSet packageSet);
 
@@ -414,13 +415,14 @@ namespace Microsoft.Windows.Management.Deployment
         // IsReadyOrNewerAvailable
 
         // Return true if the package(s) are present and available for use
-
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
 
+        // Return true if the package(s) are present and available for use
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are present and available for use
         /// @note packageSet[Item].PackageUri is optional
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
@@ -532,13 +534,14 @@ namespace Microsoft.Windows.Management.Deployment
         // IsProvisioned
 
         // Return true if the package(s) are provisioned
-
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisioned(String package);
 
+        // Return true if the package(s) are provisioned
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisionedByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are provisioned
         /// @note packageSet[Item].PackageUri is optional
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageSetProvisioned(PackageSet packageSet);
@@ -572,11 +575,11 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // IsRegistrationPending
 
-        /// @warning The parameter is should be "packageFullName" but can't due to http://task.ms/53280356.
+        /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
         ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
         Boolean IsPackageRegistrationPending(String packageFamilyName);
 
-        /// @warning The parameter is should be "packageFullName" but can't due to http://task.ms/53280356.
+        /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
         ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
         Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
     }

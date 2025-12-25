@@ -1100,6 +1100,43 @@ namespace Microsoft.Windows.Management.Deployment
         NewerAvailable       = 2,
     };
 
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageValidationEventArgs
+    {
+        Windows.Foundation.Uri PackageUri{ get; };
+        IInspectable AppxPackagingObject{ get; };
+        Boolean Cancel;
+
+        Windows.Foundation.Deferral GetDeferral();
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageValidationEventSource
+    {
+        event Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> ValidationRequested;
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageFamilyNameValidator
+    {
+        PackageFamilyNameValidator(String packageUri, String expectedPackageFamilyName);
+        Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> Handler{ get; };
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageMinimumVersionValidator
+    {
+        PackageMinimumVersionValidator(Windows.ApplicationModel.PackageVersion minimumVersion);
+        Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> Handler{ get; };
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageCertificateEkuValidator
+    {
+        PackageCertificateEkuValidator(String expectedCertificateEku);
+        Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> Handler{ get; };
+    }
+
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageSetItem
     {
@@ -1151,6 +1188,15 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         Boolean LimitToExistingPackages;
+
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsPackageValidationSupported{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        IMapView<Windows.Foundation.Uri, PackageValidationEventSource> PackageValidators{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        PackageValidationEventSource GetValidationEventSourceForUri(Windows.Foundation.Uri uri);
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -1175,6 +1221,15 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsPackageValidationSupported{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        IMapView<Windows.Foundation.Uri, PackageValidationEventSource> PackageValidators{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        PackageValidationEventSource GetValidationEventSourceForUri(Windows.Foundation.Uri uri);
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -1252,11 +1307,12 @@ namespace Microsoft.Windows.Management.Deployment
         // IsReady
 
         // Return true if the package(s) are present and available for use
-
         Boolean IsPackageReady(String package);
 
+        // Return true if the package(s) are present and available for use
         Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are present and available for use
         /// @note packageSet[Item].PackageUri is optional
         Boolean IsPackageSetReady(PackageSet packageSet);
 
@@ -1264,13 +1320,14 @@ namespace Microsoft.Windows.Management.Deployment
         // IsReadyOrNewerAvailable
 
         // Return true if the package(s) are present and available for use
-
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
 
+        // Return true if the package(s) are present and available for use
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are present and available for use
         /// @note packageSet[Item].PackageUri is optional
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
@@ -1382,13 +1439,14 @@ namespace Microsoft.Windows.Management.Deployment
         // IsProvisioned
 
         // Return true if the package(s) are provisioned
-
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisioned(String package);
 
+        // Return true if the package(s) are provisioned
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisionedByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are provisioned
         /// @note packageSet[Item].PackageUri is optional
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageSetProvisioned(PackageSet packageSet);
@@ -1422,11 +1480,11 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // IsRegistrationPending
 
-        /// @warning The parameter is should be "packageFullName" but can't due to http://task.ms/53280356.
+        /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
         ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
         Boolean IsPackageRegistrationPending(String packageFamilyName);
 
-        /// @warning The parameter is should be "packageFullName" but can't due to http://task.ms/53280356.
+        /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
         ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
         Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
     }
