@@ -69,29 +69,14 @@ Get-ChildItem -Recurse packages.config -Path $SampleRepoRoot | foreach-object {
     Write-Host "Modified " $_.FullName 
 }
 
-Get-ChildItem -Recurse *.vcxproj -Path $SampleRepoRoot | foreach-object {
-    $newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
-    $content = Get-Content $_.FullName -Raw
-    $content = $content -replace $oldPackageReference, $newPackageReference
-    Set-Content -Path $_.FullName -Value $content
-    Write-Host "Modified " $_.FullName 
-}
-
-Get-ChildItem -Recurse *.wapproj -Path $SampleRepoRoot | foreach-object {
-    $newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
-    $content = Get-Content $_.FullName -Raw
-    $content = $content -replace $oldPackageReference, $newPackageReference
-    Set-Content -Path $_.FullName -Value $content
-    Write-Host "Modified " $_.FullName 
-}
-
-Get-ChildItem -Recurse *.csproj -Path $SampleRepoRoot | foreach-object {
-    $newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
-    $oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
-    $content = Get-Content $_.FullName -Raw
-    $content = $content -replace $oldPackageReference, $newPackageReference
-    Set-Content -Path $_.FullName -Value $content
-    Write-Host "Modified " $_.FullName 
+$projectFileExtensions = @("*.vcxproj", "*.wapproj", "*.csproj")
+foreach ($extension in $projectFileExtensions) {
+    Get-ChildItem -Recurse $extension -Path $SampleRepoRoot | foreach-object {
+        $newPackageReference = 'PackageReference Include="Microsoft.WindowsAppSDK.Foundation"'
+        $oldPackageReference = 'PackageReference Include="Microsoft\.WindowsAppSDK"'
+        $content = Get-Content $_.FullName -Raw
+        $content = $content -replace $oldPackageReference, $newPackageReference
+        Set-Content -Path $_.FullName -Value $content
+        Write-Host "Modified " $_.FullName 
+    }
 }
