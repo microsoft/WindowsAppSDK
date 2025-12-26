@@ -8,6 +8,7 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>
+#include <optional>
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
@@ -31,10 +32,12 @@ namespace PickerCommon {
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;
+        winrt::hstring Title;
+        winrt::hstring SettingsIdentifier;
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
-        bool FocusLastFilter{ false };
+        std::optional<uint32_t> DefaultFileTypeIndex{};
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
 
         winrt::hstring SuggestedFileName;
@@ -50,6 +53,11 @@ namespace PickerCommon {
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
         void ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog);
+
+        winrt::hstring TryGetAppUserModelId();
+        winrt::hstring TryGetProcessFullPath();
+
+		bool ShowOverwritePrompt;
 
     private:
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);

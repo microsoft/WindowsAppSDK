@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "shellapi.h"
+#include <appmodel.h>
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include <wil/resource.h>
@@ -14,7 +15,7 @@
 #include <utility>
 #include <string_view>
 #include <cwctype>
-
+#include <vector>
 
 namespace {
 
@@ -356,7 +357,11 @@ namespace PickerCommon {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
 
-        FocusLastFilter = true;
+        if (!DefaultFileTypeIndex.has_value())
+        {
+            // If the DefaultFileTypeIndex is not specified by the user, set to focuse the last one ("All Files")
+            DefaultFileTypeIndex = static_cast<uint32_t>(resultSize - 1);
+        }
     }
 
     /// <summary>
@@ -392,11 +397,44 @@ namespace PickerCommon {
         }
     }
 
+    winrt::hstring PickerParameters::TryGetAppUserModelId()
+    {
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+        UINT32 appUserModelIdSize{ APPLICATION_USER_MODEL_ID_MAX_LENGTH };
+
+        auto hr{GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId) };
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ appUserModelId };
+        }
+
+        return winrt::hstring{};
+    }
+
+    winrt::hstring PickerParameters::TryGetProcessFullPath()
+    {
+        PCWSTR exeFullPath{};
+        wil::unique_cotaskmem_string module;
+        auto hr{ LOG_IF_FAILED(wil::GetModuleFileNameW(nullptr, module)) };
+        if (SUCCEEDED(hr))
+        {
+            exeFullPath = module.get();
+            return winrt::hstring{ exeFullPath };
+        }
+
+        return winrt::hstring{};
+    }
+
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
     {
         if (!IsHStringNullOrEmpty(CommitButtonText))
         {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
+        }
+
+        if (!IsHStringNullOrEmpty(Title))
+        {
+            check_hresult(dialog->SetTitle(Title.c_str()));
         }
 
         winrt::com_ptr<IShellItem> defaultFolder{};
@@ -430,11 +468,26 @@ namespace PickerCommon {
         {
             check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
 
-            if (FocusLastFilter)
+            if (DefaultFileTypeIndex.has_value() && *DefaultFileTypeIndex < static_cast<uint32_t>(FileTypeFilterPara.size()))
             {
-                check_hresult(dialog->SetFileTypeIndex(FileTypeFilterPara.size()));
+                check_hresult(dialog->SetFileTypeIndex(static_cast<UINT>(*DefaultFileTypeIndex + 1))); // COMDLG file type index is 1-based
             }
         }
+
+        if (!IsHStringNullOrEmpty(SettingsIdentifier))
+        {
+            auto appDistinctString = TryGetAppUserModelId();
+            if (appDistinctString.empty())
+            {
+                appDistinctString = TryGetProcessFullPath();
+            }
+            if (!appDistinctString.empty())
+            {
+                auto clientId = HashHStringToGuid(appDistinctString + L"|" + SettingsIdentifier);
+                check_hresult(dialog->SetClientGuid(clientId));
+            }
+        }
+
     }
 
     /// <summary>
@@ -446,6 +499,14 @@ namespace PickerCommon {
         if (!IsHStringNullOrEmpty(SuggestedFileName))
         {
             check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
+        }
+
+        if (!ShowOverwritePrompt)
+        {
+            FILEOPENDIALOGOPTIONS options{};
+            check_hresult(dialog->GetOptions(&options));
+            options = static_cast<FILEOPENDIALOGOPTIONS>(options & ~FOS_OVERWRITEPROMPT);
+			check_hresult(dialog->SetOptions(options));
         }
 
     }
