@@ -57,6 +57,28 @@ to `SuggestedStartLocation`, then to the system default.
 catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are provided, 
 `FileTypeChoices` is used and `FileTypeFilter` is ignored.
 
+1. Adding `DefaultFileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows 
+setting the default selected file type filter index. Note this index is 0-based. When it is 
+null (the default value), the selected filter might be override by the API's default behavior.
+
+1. The property `SettingsIdentifier` for all 3 pickers will be available in the new Storage.Pickers 
+APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, 
+location, etc) across sessions. When two different apps use the same string for SettingsIdentifier 
+property, they will have their respective independent states (Read more in Note 2).
+
+1. Adding `ShowOverwritePrompt` for `FileSavePicker`. This Boolean properties default to `true` and 
+control whether the picker warns about overwriting when user picked an existing file via 
+FileSavePicker.
+
+1. Adding `CreateNewFileIfNotExists` for `FileSavePicker`. This Boolean properties default to `true` 
+and control whether to auto-create the picked file when it doesn't exist.
+
+1. Adding `Title` for all 3 pickers. `Title` allows setting the title of the picker dialog.
+
+1. Adding `PickMultipleFoldersAsync` for `FolderPicker`. This allows selecting multiple folders in 
+the folder picker dialog.
+
+
 # Conceptual pages
 
 # API
@@ -83,7 +105,7 @@ showing the UI.
 
 ## Definition
 
-```C#
+```idl
 namespace Microsoft.Windows.Storage.Pickers
 {
     enum PickerViewMode
@@ -119,9 +141,12 @@ namespace Microsoft.Windows.Storage.Pickers
         FileOpenPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+        string Title;
+        string SettingsIdentifier;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
+        IReference<UInt32> DefaultFileTypeIndex;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -138,10 +163,17 @@ namespace Microsoft.Windows.Storage.Pickers
         FileSavePicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+        string Title;
+        string SettingsIdentifier;
+
         string DefaultFileExtension;
         string SuggestedFileName;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
+        IReference<UInt32> DefaultFileTypeIndex;
+
+        bool ShowOverwritePrompt;
+        bool CreateNewFileIfNotExists;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -155,6 +187,8 @@ namespace Microsoft.Windows.Storage.Pickers
         FolderPicker(Microsoft.UI.WindowId windowId);
 
         string CommitButtonText;
+        string Title;
+        string SettingsIdentifier;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -163,11 +197,14 @@ namespace Microsoft.Windows.Storage.Pickers
         PickerViewMode ViewMode;
 
         Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
+        Windows.Foundation.IAsyncOperation<IVectorView<PickFolderResult>> PickMultipleFoldersAsync();
     }
 }
 ```
 
-Note: **Understanding SuggestedStartFolder/SuggestedStartLocation vs SuggestedFolder:**
+# Notes
+
+#### Note 1: Understanding SuggestedStartFolder/SuggestedStartLocation vs SuggestedFolder
 
 These two kinds of properties have fundamentally different behaviors in terms of when and how they 
 affect the picker:
@@ -187,3 +224,54 @@ affect the picker:
     navigation history.
 
     `SuggestedStartFolder` takes precedence over `SuggestedStartLocation` when both specified.
+
+#### Note 2: The implementation of SettingsIdentifier
+
+When an app sets `SettingsIdentifier`, the picker persists its window placement and navigation
+history through the underlying [`IFileDialog::SetClientGuid`](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setclientguid) 
+API. The implementation derives that `ClientGuid` as follows:
+
+- First it tries to obtain the packaged app's Identity via [`GetCurrentApplicationUserModelId`](https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentapplicationusermodelid).
+- If the process has no package identity found (typical for unpackaged apps, win32 apps, etc.), 
+    it falls back to the full path to the running executable retrieved from `wil::GetModuleFileNameW`.
+- The chosen identifier is concatenated with the caller-provided `SettingsIdentifier` value using a
+    `"<app identifier>|<value of SettingsIdentifier>"` format. That string is then hashed with MD5 
+    and coerced into an GUID.
+- The calculated GUID will be passed to set the `ClientGuid`.
+
+This means the feature works for both packaged and unpackaged apps. Packaged apps remain distinct by
+their package identity, while unpackaged apps are differentiated by the absolute path of their
+executable. As long as an app uses a stable combination of package identity (or executable path) and
+`SettingsIdentifier`, the picker will reopen with the same saved settings across sessions.
+
+#### Note 3: Properties for File Types and Their Default Index
+
+**(1) Background of FileTypeFilter & FileTypeChoices**
+
+We can think of the grouped, map-like `FileTypeChoices` as an evolution of the vector-style
+`FileTypeFilter`: The UWP pickers originally paired `FileOpenPicker` with `FileTypeFilter` and 
+`FileSavePicker` with `FileTypeChoices`, so the first release of the `Microsoft.Windows.Storage.Pickers` 
+retained both properties for backward compatibility.
+
+Later on, with developers' requests for a categorized experience in `FileOpenPicker`, we added 
+`FileTypeChoices` for FileOpenPicker as well. 
+When both properties are specified in `FileOpenPicker`, `FileTypeChoices` takes precedence.
+
+**(2) The DefaultFileTypeIndex**
+
+In this spec, we're adding `DefaultFileTypeIndex`. It applies to whichever file type collection is 
+active and simply points to the auto-selected entry on dialog launch. For example:
+
+- `FileTypeFilter` = `[".txt", ".doc", ".docx"]` 
+
+    with `DefaultFileTypeIndex = 1` 
+    
+    selects `".doc"`.
+- `FileTypeChoices` = `{ "Texts": [".txt"], "Documents": [".doc", ".docx"] }` 
+
+   with `DefaultFileTypeIndex = 1` 
+   
+   selects the `Documents` group.
+
+Additionally, if the index falls outside the available range, we treat it as `null`, meaning the 
+picker ignores this setting and follows its built-in default.
