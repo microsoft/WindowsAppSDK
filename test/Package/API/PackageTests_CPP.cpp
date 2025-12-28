@@ -18,6 +18,7 @@ namespace Test::Package::Tests
 {
     const auto Main_PackageFullName{ ::TP::WindowsAppRuntimeMain::c_PackageFullName };
     const auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
+    const auto Mutable_PackageFullName{ ::TP::Mutable::c_packageFullName };
 
     class PackageTests_CPP
     {
@@ -33,9 +34,9 @@ namespace Test::Package::Tests
 
             //RemovePackage_MachineExternal();
             //RemovePackage_UserExternal();
-            //RemovePackage_Mutable();
+            RemovePackage_Mutable();
 
-            //AddPackage_Mutable();
+            AddPackage_Mutable();
             //AddPackage_UserExternal();
             //AddPackage_MachineExternal();
 
@@ -92,12 +93,19 @@ namespace Test::Package::Tests
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
-            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)),
+                             WEX::Common::String().Format(L"AbsoluteFilename:%s", absoluteFilename.get()));
             //TODO
         }
 
         TEST_METHOD(GetPackageFilePath_MutablePath)
         {
+            PCWSTR packageFullName{ Mutable_PackageFullName };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchMutablePath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)),
+                             WEX::Common::String().Format(L"AbsoluteFilename:%s", absoluteFilename.get()));
             //TODO
         }
 

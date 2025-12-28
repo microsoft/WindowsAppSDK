@@ -16,6 +16,7 @@ namespace Test::Package::Tests
 {
     const auto Main_PackageFullName{ ::TP::WindowsAppRuntimeMain::c_PackageFullName };
     const auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
+    const auto Mutable_PackageFullName{ ::TP::Mutable::c_packageFullName };
 
     class PackageTests_WinRT
     {
@@ -31,9 +32,9 @@ namespace Test::Package::Tests
 
             //RemovePackage_MachineExternal();
             //RemovePackage_UserExternal();
-            //RemovePackage_Mutable();
+            RemovePackage_Mutable();
 
-            //AddPackage_Mutable();
+            AddPackage_Mutable();
             //AddPackage_UserExternal();
             //AddPackage_MachineExternal();
 

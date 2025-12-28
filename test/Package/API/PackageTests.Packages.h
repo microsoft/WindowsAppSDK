@@ -35,7 +35,6 @@ namespace MachineExternal
 namespace Test::Package::Tests
 {
     namespace TP = ::Test::Packages;
-    //namespace TPF = ::Test::Packages::Framework;
 
     inline bool IsPackageRegistered_Mutable()
     {
