@@ -1,0 +1,116 @@
+parameters:
+- name: CurrentPackagePath
+  type: string
+  default: ''
+- name: OutputDirectory
+  type: string
+  default: '$(Build.ArtifactStagingDirectory)\ApiDiffArtifacts'
+- name: WorkingDirectory
+  type: string
+  default: '$(Build.ArtifactStagingDirectory)\TempoDiffWork'
+- name: ArtifactName
+  type: string
+  default: 'ApiDiff'
+- name: AdditionalArguments
+  type: string
+  default: ''
+- name: SummaryMarkdownFileName
+  type: string
+  default: 'ApiChanges.md'
+- name: SummaryVariableName
+  type: string
+  default: 'TempoDiffSummaryMarkdownPath'
+- name: UploadMarkdownSummary
+  type: boolean
+  default: true
+
+steps:
+- task: PowerShell@2
+  name: InvokeTempoDiff
+  displayName: 'Run Tempo API diff'
+  condition: and(succeeded(), ne('${{ parameters.CurrentPackagePath }}', ''))
+  continueOnError: true
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\Scripts\Invoke-TempoApiDiff.ps1'
+    arguments: >
+      -CurrentPackagePath "${{ parameters.CurrentPackagePath }}"
+      -OutputDirectory "${{ parameters.OutputDirectory }}"
+      -WorkingDirectory "${{ parameters.WorkingDirectory }}"
+      ${{ parameters.AdditionalArguments }}
+    pwsh: true
+
+- task: PowerShell@2
+  displayName: 'Capture TempoDiff failure details'
+  condition: and(always(), ne(variables['InvokeTempoDiff.ExitCode'], '0'))
+  continueOnError: true
+  inputs:
+    targetType: inline
+    pwsh: true
+    script: |
+      $outputDir = "${{ parameters.OutputDirectory }}"
+      if (-not (Test-Path -LiteralPath $outputDir)) {
+        New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+      }
+
+      $logPath = Join-Path $outputDir 'TempoDiff.Error.txt'
+      $timestamp = Get-Date -Format 'u'
+      $message = @(
+        'TempoDiff invocation failed. Review the previous step log for full details.',
+        "Timestamp: $timestamp",
+        "Script path: $(Build.SourcesDirectory)\\build\\Scripts\\Invoke-TempoApiDiff.ps1"
+      )
+      $message | Set-Content -Path $logPath -Encoding UTF8
+
+      Write-Host "TempoDiff failure log saved to $logPath"
+
+- task: PowerShell@2
+  displayName: 'Ensure API diff output directory'
+  condition: always()
+  inputs:
+    targetType: inline
+    pwsh: true
+    script: |
+      $outputDir = "${{ parameters.OutputDirectory }}"
+      if ([string]::IsNullOrWhiteSpace($outputDir)) {
+        return
+      }
+
+      if (-not (Test-Path -LiteralPath $outputDir)) {
+        New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+      }
+
+- task: PowerShell@2
+  displayName: 'Upload API diff markdown summary'
+  condition: and(always(), eq(${{ parameters.UploadMarkdownSummary }}, true))
+  continueOnError: true
+  inputs:
+    targetType: inline
+    pwsh: true
+    script: |
+      $summaryPath = $null
+      $variableName = '${{ parameters.SummaryVariableName }}'
+      if (-not [string]::IsNullOrWhiteSpace($variableName)) {
+        $summaryPath = [System.Environment]::GetEnvironmentVariable($variableName, 'Process')
+      }
+
+      if ([string]::IsNullOrWhiteSpace($summaryPath)) {
+        $fallback = Join-Path "${{ parameters.OutputDirectory }}" "${{ parameters.SummaryMarkdownFileName }}"
+        if (Test-Path -LiteralPath $fallback) {
+          $summaryPath = $fallback
+        }
+      }
+
+      if (-not [string]::IsNullOrWhiteSpace($summaryPath) -and (Test-Path -LiteralPath $summaryPath)) {
+        Write-Host "Uploading markdown summary from $summaryPath"
+        Write-Host "##vso[task.uploadsummary]$summaryPath"
+      } else {
+        Write-Host 'No markdown summary found to upload.'
+      }
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish API diff artifacts'
+  condition: always()
+  inputs:
+    targetPath: '${{ parameters.OutputDirectory }}'
+    artifactName: '${{ parameters.ArtifactName }}'

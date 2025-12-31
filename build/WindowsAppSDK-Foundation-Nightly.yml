@@ -162,6 +162,7 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+        RunApiDiff: true
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 

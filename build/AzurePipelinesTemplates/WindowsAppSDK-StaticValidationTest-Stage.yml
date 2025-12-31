@@ -2,6 +2,9 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
+- name: "RunApiDiff"
+  type: boolean
+  default: false
 
 stages:
 - stage: StaticValidationTest
@@ -42,6 +45,34 @@ stages:
         Contents: |
           **/*.nupkg
         targetFolder: $(Build.SourcesDirectory)\localpackages
+
+    - ${{ if eq(parameters.RunApiDiff, true) }}:
+      - task: PowerShell@2
+        name: LocateApiDiffPackage
+        displayName: 'Locate package for API diff'
+        inputs:
+          targetType: inline
+          pwsh: true
+          script: |
+            $root = "$(Build.SourcesDirectory)\localpackages"
+            if (-not (Test-Path -LiteralPath $root)) {
+              throw "API diff package directory '$root' was not found."
+            }
+
+            $pattern = 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+
+            $packages = Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Name -like $pattern }
+            if (-not $packages -or $packages.Count -eq 0) {
+              throw "No packages matching pattern '$pattern' were found under '$root'."
+            }
+
+            $selected = $packages | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            Write-Host "Using package $($selected.FullName)"
+            Write-Host "##vso[task.setvariable variable=ApiDiffPackagePath;]$($selected.FullName)"
+
+      - template: WindowsAppSDK-RunApiDiff-Steps.yml@self
+        parameters:
+          CurrentPackagePath: '$(ApiDiffPackagePath)'
 
     - task: PowerShell@2
       name: ExtractWindowsAppSDKVersion
