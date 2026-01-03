@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #pragma once
 
@@ -19,10 +19,13 @@ public:
     {
         m_name = name;
 
-        auto createdFile = OpenInternal(size);
+        // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
+        auto createdFile = OpenInternal(size + sizeof(size_t));
         if (createdFile)
         {
             Clear();
+
+            // We only store size of the request.
             m_view.get()->size = size;
         }
         else
@@ -31,7 +34,9 @@ public:
             auto newSize = m_view.get()->size;
             m_view.reset();
             m_file.reset();
-            OpenInternal(newSize);
+
+            // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
+            OpenInternal(newSize + sizeof(size_t));
         }
 
         return createdFile;
@@ -45,6 +50,7 @@ public:
     void Clear()
     {
         // Clear only the data portion, not the size.
+        // and Size() accounts for only requested size. See comment in Open().
         memset(Get(), 0, Size());
     }
 
@@ -54,7 +60,9 @@ public:
         Reset();
 
         m_name = name;
-        OpenInternal(size);
+
+        // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
+        OpenInternal(size + sizeof(size_t));
         m_view.get()->size = size;
     }
 

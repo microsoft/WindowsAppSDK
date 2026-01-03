@@ -1,10 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
     <ItemsProjectGuid>{E3A522A3-6635-4A42-BDED-1AF46A15F63C}</ItemsProjectGuid>
     <ItemsProjectName>AppLifecycle</ItemsProjectName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EnablePREfast>true</EnablePREfast>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

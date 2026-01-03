@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include <pch.h>
@@ -170,24 +170,31 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     GUID AppInstance::DequeueRedirectionRequestId()
     {
+        __debugbreak();
         auto releaseOnExit = m_dataMutex.acquire();
+        AppLifecycleTelemetry::DequeueRedirectionRequestId();
         auto id = m_redirectionArgs.Dequeue();
         return id;
     }
 
     void AppInstance::EnqueueRedirectionRequestId(GUID id)
     {
+        __debugbreak();
         auto releaseOnExit = m_dataMutex.acquire();
+        AppLifecycleTelemetry::EnqueueRedirectionRequestId(id);
         m_redirectionArgs.Enqueue(id);
     }
 
     void AppInstance::ProcessRedirectionRequests()
     {
+        __debugbreak();
+        auto activity{ AppLifecycleTelemetry::ProcessRedirectionRequests::Start(m_processId, m_isCurrent) };
         m_innerActivated.ResetEvent();
 
         GUID id;
         while ((id = DequeueRedirectionRequestId()) != GUID_NULL)
         {
+            activity.DequeueRedirectionRequest(id);
             wil::unique_cotaskmem_string idString;
             THROW_IF_FAILED(StringFromCLSID(id, &idString));
 
@@ -199,6 +206,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             // Notify the app that the redirection request is here.
             m_activatedEvent(*this, args);
+            activity.ActivatedEvent(id);
 
             std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
@@ -207,7 +215,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 // If the event is missing, it means the waiter gave up.  Ignore the error.
                 cleanupEvent.SetEvent();
             }
+            activity.RequestCleanupEvent(id);
         }
+
+        activity.Stop();
     }
 
     IAsyncAction AppInstance::QueueRequest(AppLifecycle::AppActivationArguments args)
@@ -229,6 +240,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         GUID id;
         THROW_IF_FAILED(CoCreateGuid(&id));
+        auto activity{ AppLifecycleTelemetry::QueueRequest::Start(m_processId, m_isCurrent, id) };
 
         wil::unique_cotaskmem_string idString;
         THROW_IF_FAILED(StringFromCLSID(id, &idString));
@@ -248,9 +260,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         // Signal the activation.
         m_innerActivated.SetEvent();
+        activity.InnerActivatedEvent(id);
 
         // Wait for the other instance to open the memory mapped file before exiting and cleaning our interest in it.
         cleanupEvent.wait();
+        activity.Stop();
         co_return;
     }
 
@@ -559,11 +573,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     event_token AppInstance::Activated(EventHandler<Microsoft::Windows::AppLifecycle::AppActivationArguments> const& handler)
     {
+        AppLifecycleTelemetry::ActivatedEventAdd();
         return m_activatedEvent.add(handler);
     }
 
     void AppInstance::Activated(event_token const& token) noexcept
     {
+        AppLifecycleTelemetry::ActivatedEventRemove();
         m_activatedEvent.remove(token);
     }
 

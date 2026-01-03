@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #pragma once
 #include "SharedMemory.h"
@@ -7,6 +7,8 @@
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
+    constexpr size_t c_queueSize = 4;
+
     class RedirectionRequestQueue
     {
         struct QueueItem
@@ -16,19 +18,30 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             GUID id{ 0 };
         };
 
+
     public:
         void Init(const std::wstring& name)
         {
+            __debugbreak();
             m_name = name;
 
             // We store the head pointer at the beginning of the memory, and then items in the queue after.
-            m_data.Open(name, (sizeof(QueueItem) * 4096) + sizeof(QueueItem*));
-#pragma warning(suppress: 6305) // C6305: PREFast does not know m_data.Get() is compatible with "sizeof(size_t)".
-            m_dataStart = reinterpret_cast<QueueItem*>(m_data.Get() + sizeof(size_t));
+            auto headPointerSizeInBytes = sizeof(size_t);
+            auto queueSizeInBytes = sizeof(QueueItem) * c_queueSize;
+
+            auto totalSharedMemoryDataSizeInBytes = queueSizeInBytes + headPointerSizeInBytes;
+
+            m_data.Open(name, totalSharedMemoryDataSizeInBytes);
+
+// TBR? #pragma warning(suppress: 6305) // C6305: PREFast does not know m_data.Get() is compatible with "sizeof(size_t)".
+            auto sharedMemoryBase = reinterpret_cast<std::byte*>(m_data.Get());
+            auto queueStartInSharedMemory = sharedMemoryBase + headPointerSizeInBytes;
+            m_dataStart = reinterpret_cast<QueueItem*>(queueStartInSharedMemory);
         }
 
         void Enqueue(const GUID& itemId)
         {
+            //__debugbreak();
             auto newItem = AllocateItem();
             auto cur = GetHead();
 
@@ -60,6 +73,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         GUID Dequeue()
         {
+            //__debugbreak();
             auto head = GetHead();
             if (head != nullptr)
             {
@@ -120,23 +134,21 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         QueueItem* AllocateItem()
         {
-            QueueItem* upperBounds = reinterpret_cast<QueueItem*>(m_data.Get()) + m_data.Size();
+            __debugbreak();
+            QueueItem* upperBounds = m_dataStart + c_queueSize;
             auto cur = m_dataStart;
 
-#pragma warning(suppress: 6305) // C6305: PREFast does not know upperBounds was also computed in byte count so it is compatible with "sizeof(QueueItem)".
-            while (cur < (upperBounds - sizeof(QueueItem)) && cur->inUse)
+            while (cur < upperBounds && cur->inUse)
             {
-#pragma warning(suppress: 6305) // C6305: PREFast does not know cur was also computed in byte count so it is compatible with "sizeof(QueueItem)".
-                cur += sizeof(QueueItem);
+                cur++;
             }
 
-#pragma warning(suppress: 6305) // C6305: PREFast does not know upperBounds was also computed in byte count so it is compatible with "sizeof(QueueItem)".
-            THROW_HR_IF(E_OUTOFMEMORY, cur >= (upperBounds - sizeof(QueueItem)));
+            THROW_HR_IF(E_OUTOFMEMORY, cur >= upperBounds);
             return cur;
         }
 
         std::wstring m_name;
-        QueueItem* m_dataStart{ nullptr };
+        QueueItem* m_dataStart{ nullptr }; // First "QueueItem" in the shared memory after the head pointer.
         SharedMemory<size_t> m_data;
     };
 }
