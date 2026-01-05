@@ -208,191 +208,198 @@ jobs:
       }
     displayName: 'Modify NuGet.config feed to internal feed'
 
-  - task: NuGetCommand@2
-    inputs:
-      command: 'restore'
-      feedsToUse: 'config'
-      nugetConfigPath: '.\$(SamplesRepoName)\Samples\nuget.config'
-      restoreSolution: '.\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln'
-      includeNuGetOrg: false
-
   - task: CopyFiles@2
-    displayName: 'Copy tsaoptions.json from under ~\WindowsAppSDKAggregator\.config to ~\.config for the TSAOption task to find'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\$(SelfRepoName)\.config'
-      Contents: |
-        tsaoptions.json
-      TargetFolder: '$(Build.SourcesDirectory)\.config'
-
-  - task: CopyFiles@2
-    displayName: 'Copy OneBranch.gdnsuppress from under ~\WindowsAppSDKAggregator\.gdn to ~\.gdn for the Guardian: Post Analysis task to find'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\$(SelfRepoName)\.gdn'
-      Contents: |
-        OneBranch.gdnsuppress
-      TargetFolder: '$(Build.SourcesDirectory)\.gdn'
-
-  - ${{ each config in parameters.BuildConfig }}:
-    - ${{ each platform in parameters.BuildPlatform }}:
-      - task: VSBuild@1
-        displayName: 'Restore nuget packages for all solutions'
-        inputs:
-          solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln
-          platform: '${{ platform }}'
-          configuration: '${{ config }}'
-          msbuildArgs: '/t:restore /p:PublishReadyToRun=true /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages\NugetPackages" /binaryLogger:$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\$(feature).restore.${{ platform }}.${{ config }}.binlog'
-          ${{ if and(eq( parameters.EnablePREFast, 'true'), eq(parameters.RunSDLBinaryAnalysis, 'true')) }}:
-            # This property should match that of 'Build all Sample solutions' below. Otherwise, tool
-            # architecture detection in the PreFast task may (incorrectly) choose the tool architecture
-            # deduced from this step and inappropriately use it in the MSBuild commandline for triggering
-            # PREFast. We only need to specify this property for x64, which is currently the only
-            # architecture for which we run PreFast. Guardian PreFast currently does not support arm any
-            # way. Also no need for this property if this pipeline run does not enable PREFast.
-            msbuildArchitecture: x64
-
-      - task: VSBuild@1
-        displayName: 'Build all Sample solutions'
-        inputs:
-          solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln
-          platform: '${{ platform }}'
-          configuration: '${{ config }}'
-          msbuildArgs: '/p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages\NugetPackages" /binaryLogger:$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\$(feature).build.${{ platform }}.${{ config }}.binlog'
-          ${{ if and(eq( parameters.EnablePREFast, 'true'), eq(parameters.RunSDLBinaryAnalysis, 'true')) }}:
-            # This property helps prevent tool architecture detection in the PreFast task to pick x86 (default)
-            # as the "preferred tool architecture", which results in multiple sample apps failing to build due
-            # to "out of heap space" errors, which in turn is due to unfixed memory leaks in the 32-bit favor
-            # of a PREFast tool. We only need to specify this property for x64, which is currently the only
-            # architecture for which we run PreFast. Guardian PreFast currently does not support arm any
-            # way. Also no need for this property if this pipeline run does not enable PREFast.
-            msbuildArchitecture: x64
-
-      - task: CopyFiles@2
-        displayName: 'Copy binlogs'
-        condition: succeededOrFailed()
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
-          Contents: |
-            **/*.binlog
-          TargetFolder: '$(Build.ArtifactStagingDirectory)\$(featureForFilePath)'
-
-      - ${{ if and(eq(parameters.runStaticAnalysis, 'true'), eq(platform, 'x64'), eq(config, 'Release')) }}:
-        # There are currently challenges with PREFast scanning the sample apps:
-        # 1) SDLNativeRules@3 does not seem to support the wild card in the input "solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln" we pass to VSBuild@1
-        #    above, so we need to enumerate the .sln files at the target folder and explicitly pass the full path of each .sln file to a corresponding call to SDLNativeRules@3.
-        # 2) There are currently >71 sample apps. It takes a *long* time for PREFast to finish them.
-        # Given those challenges and that we currently prioritize Sample code over Product code, in this first round we just pick a few a Sample apps to PREFast scan them.
-        # In the future, considering the long time required to scan the Sample apps, it might make more sense to create a separate weekly pipeline to PREFast scan the Sample
-        # apps, for instance.
-        - task: SDLNativeRules@3
-          displayName: PREfast SDL Native Rules for AppLifecycle\Activation\cpp
-          condition: and(succeeded(), eq(variables['featureForFilePath'], 'AppLifecycle\Activation\cpp\cpp-console-unpackaged'))
-          inputs:
-            setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
-            msBuildArchitecture: amd64
-            msBuildCommandline: 'msbuild.exe /nologo /nr:false /p:configuration=${{ config }} /p:platform=${{ platform }} $(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\CppWinRtConsoleActivation.sln'
-            # Generally speaking, we leave it to the external repos to scan the bits in their packages.
-            excludedPaths: |
-              $(Build.SourcesDirectory)\packages
-            # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
-            rulesetName: Custom
-            customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
-            policyName: 'WindowsUndocked'
-          continueOnError: true
-          env:
-            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
-  - task: PowerShell@2
-    displayName: Display storage and diagnostic info
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
     condition: succeededOrFailed()
     inputs:
-      targetType: 'inline'
-      script: |
-        Get-WmiObject win32_logicaldisk | Format-Table DeviceId, MediaType, @{n="Size";e={[math]::Round($_.Size/1GB,2)}},@{n="FreeSpace";e={[math]::Round($_.FreeSpace/1GB,2)}}, @{n="UsedSpace";e={[math]::Round((($_.Size-$_.FreeSpace)/1GB),2)}}
-        Write-Host '$(feature), $(featureForFilePath), $(SamplesRepoName).'
+      SourceFolder: '$(Build.SourcesDirectory)'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\$(featureForFilePath)'
 
-  # These steps, done on a per-featureArea basis, are only required if we are going to test Sample apps one way or
-  # another in the current pipeline run. OneBranch is limited to publishing 1 artifact per job, and different jobs
-  # can't publish to the same artifact. Therefore, each job in the strategy matrix that builds a specific
-  # featureArea is forced to publish its own featureArea-specific artifact, resulting in many artfacts.
-  - ${{ if ne(parameters.SamplesArtifactName, '') }}:
-    - script: |
-        md $(Build.ArtifactStagingDirectory)\$(featureForFilePath)
-        dir $(Build.ArtifactStagingDirectory)
-        dir $(Build.SourcesDirectory)
-      displayName: Create target folder for staging artifact
+#   - task: NuGetCommand@2
+#     inputs:
+#       command: 'restore'
+#       feedsToUse: 'config'
+#       nugetConfigPath: '.\$(SamplesRepoName)\Samples\nuget.config'
+#       restoreSolution: '.\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln'
+#       includeNuGetOrg: false
 
-    # Reduce the number of files not required for running the tests later by deletion, before copying
-    # them to the staging location. The file copying operations takes 20+ min for big sample apps if we
-    # don't do this filtering first, also the total size of the artifacts gets too big, resulting in
-    # long download time that causes jobs to timeout, and/or out of disk space issues.
-    # It seems to be most helpful to filter out the .pch and .pdb files. There might be more
-    # file types that we can filtered out then those listed below.
-    - task: DeleteFiles@1
-      displayName: 'Delete unneeded Files under: $(Build.ArtifactStagingDirectory)'
-      condition: succeededOrFailed()
-      inputs:
-        SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
-        Contents: |
-          **/*.c
-          **/*.config
-          **/*.cpp
-          **/*.cs
-          **/*.csproj
-          **/*.editorconfig
-          **/*.foo
-          **/*.h
-          **/*.hpp
-          **/*.idb
-          **/*.idl
-          **/*.ilk
-          **/*.iobj
-          **/*.ipdb
-          **/*.lib
-          **/*.log
-          **/*.obj
-          **/*.pch
-          **/*.pdb
-          **/*.props
-          **/*.pubxml
-          **/*.sln
-          **/*.targets
-          **/*.tlog
-          **/*.txt
-          **/*.vcxproj*
-          **/*.vcxproj*/**
-          **/*.wapproj
-          **/*.winmd
-          **/*.xaml
-          **/*.xbf
-          **/*.xsd
-          **/*.semmle
-          **/arm/*
-          **/x86/*
-          **/*_Debug_Test/*
-          **/obj/*
-          **/packages/*
+#   - task: CopyFiles@2
+#     displayName: 'Copy tsaoptions.json from under ~\WindowsAppSDKAggregator\.config to ~\.config for the TSAOption task to find'
+#     inputs:
+#       SourceFolder: '$(Build.SourcesDirectory)\$(SelfRepoName)\.config'
+#       Contents: |
+#         tsaoptions.json
+#       TargetFolder: '$(Build.SourcesDirectory)\.config'
 
-    - task: CopyFiles@2
-      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-      condition: succeededOrFailed()
-      inputs:
-        SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)\$(featureForFilePath)'
+#   - task: CopyFiles@2
+#     displayName: 'Copy OneBranch.gdnsuppress from under ~\WindowsAppSDKAggregator\.gdn to ~\.gdn for the Guardian: Post Analysis task to find'
+#     inputs:
+#       SourceFolder: '$(Build.SourcesDirectory)\$(SelfRepoName)\.gdn'
+#       Contents: |
+#         OneBranch.gdnsuppress
+#       TargetFolder: '$(Build.SourcesDirectory)\.gdn'
 
-    - script: |
-        dir /s $(Build.ArtifactStagingDirectory)
-      condition: succeededOrFailed()
-      displayName: DIAG - Show staging trees to validate filtering
+#   - ${{ each config in parameters.BuildConfig }}:
+#     - ${{ each platform in parameters.BuildPlatform }}:
+#       - task: VSBuild@1
+#         displayName: 'Restore nuget packages for all solutions'
+#         inputs:
+#           solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln
+#           platform: '${{ platform }}'
+#           configuration: '${{ config }}'
+#           msbuildArgs: '/t:restore /p:PublishReadyToRun=true /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages\NugetPackages" /binaryLogger:$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\$(feature).restore.${{ platform }}.${{ config }}.binlog'
+#           ${{ if and(eq( parameters.EnablePREFast, 'true'), eq(parameters.RunSDLBinaryAnalysis, 'true')) }}:
+#             # This property should match that of 'Build all Sample solutions' below. Otherwise, tool
+#             # architecture detection in the PreFast task may (incorrectly) choose the tool architecture
+#             # deduced from this step and inappropriately use it in the MSBuild commandline for triggering
+#             # PREFast. We only need to specify this property for x64, which is currently the only
+#             # architecture for which we run PreFast. Guardian PreFast currently does not support arm any
+#             # way. Also no need for this property if this pipeline run does not enable PREFast.
+#             msbuildArchitecture: x64
 
-    - ${{ if not( parameters.IsOneBranch ) }}:
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(ob_outputDirectory)'
-          artifactName: '$(ob_artifactBaseName)$(ob_artifactSuffix)'
+#       - task: VSBuild@1
+#         displayName: 'Build all Sample solutions'
+#         inputs:
+#           solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln
+#           platform: '${{ platform }}'
+#           configuration: '${{ config }}'
+#           msbuildArgs: '/p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages\NugetPackages" /binaryLogger:$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\$(feature).build.${{ platform }}.${{ config }}.binlog'
+#           ${{ if and(eq( parameters.EnablePREFast, 'true'), eq(parameters.RunSDLBinaryAnalysis, 'true')) }}:
+#             # This property helps prevent tool architecture detection in the PreFast task to pick x86 (default)
+#             # as the "preferred tool architecture", which results in multiple sample apps failing to build due
+#             # to "out of heap space" errors, which in turn is due to unfixed memory leaks in the 32-bit favor
+#             # of a PREFast tool. We only need to specify this property for x64, which is currently the only
+#             # architecture for which we run PreFast. Guardian PreFast currently does not support arm any
+#             # way. Also no need for this property if this pipeline run does not enable PREFast.
+#             msbuildArchitecture: x64
 
-# The idea of merging the artifacts for the featureAreas produced by one call to this yml file has
-# been attempted and abandoned. Although this will free the subsequent Stages that run the SampleTests
-# from needing to know the artifacts of the individual featureAreas and downloading them one by one,
-# thus needing to download only 3 bigger artifacts with fixed names, those bigger artifact took up much
-# space and they seem to hit download errors more frequently. The E2E run time of the pipeline is
-# also longer. Therefore, this idea was not adopted.
+#       - task: CopyFiles@2
+#         displayName: 'Copy binlogs'
+#         condition: succeededOrFailed()
+#         inputs:
+#           SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
+#           Contents: |
+#             **/*.binlog
+#           TargetFolder: '$(Build.ArtifactStagingDirectory)\$(featureForFilePath)'
+
+#       - ${{ if and(eq(parameters.runStaticAnalysis, 'true'), eq(platform, 'x64'), eq(config, 'Release')) }}:
+#         # There are currently challenges with PREFast scanning the sample apps:
+#         # 1) SDLNativeRules@3 does not seem to support the wild card in the input "solution: .\$(SamplesRepoName)\Samples\$(featureForFilePath)\**\*.sln" we pass to VSBuild@1
+#         #    above, so we need to enumerate the .sln files at the target folder and explicitly pass the full path of each .sln file to a corresponding call to SDLNativeRules@3.
+#         # 2) There are currently >71 sample apps. It takes a *long* time for PREFast to finish them.
+#         # Given those challenges and that we currently prioritize Sample code over Product code, in this first round we just pick a few a Sample apps to PREFast scan them.
+#         # In the future, considering the long time required to scan the Sample apps, it might make more sense to create a separate weekly pipeline to PREFast scan the Sample
+#         # apps, for instance.
+#         - task: SDLNativeRules@3
+#           displayName: PREfast SDL Native Rules for AppLifecycle\Activation\cpp
+#           condition: and(succeeded(), eq(variables['featureForFilePath'], 'AppLifecycle\Activation\cpp\cpp-console-unpackaged'))
+#           inputs:
+#             setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
+#             msBuildArchitecture: amd64
+#             msBuildCommandline: 'msbuild.exe /nologo /nr:false /p:configuration=${{ config }} /p:platform=${{ platform }} $(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)\CppWinRtConsoleActivation.sln'
+#             # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+#             excludedPaths: |
+#               $(Build.SourcesDirectory)\packages
+#             # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+#             rulesetName: Custom
+#             customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+#             policyName: 'WindowsUndocked'
+#           continueOnError: true
+#           env:
+#             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+#   - task: PowerShell@2
+#     displayName: Display storage and diagnostic info
+#     condition: succeededOrFailed()
+#     inputs:
+#       targetType: 'inline'
+#       script: |
+#         Get-WmiObject win32_logicaldisk | Format-Table DeviceId, MediaType, @{n="Size";e={[math]::Round($_.Size/1GB,2)}},@{n="FreeSpace";e={[math]::Round($_.FreeSpace/1GB,2)}}, @{n="UsedSpace";e={[math]::Round((($_.Size-$_.FreeSpace)/1GB),2)}}
+#         Write-Host '$(feature), $(featureForFilePath), $(SamplesRepoName).'
+
+#   # These steps, done on a per-featureArea basis, are only required if we are going to test Sample apps one way or
+#   # another in the current pipeline run. OneBranch is limited to publishing 1 artifact per job, and different jobs
+#   # can't publish to the same artifact. Therefore, each job in the strategy matrix that builds a specific
+#   # featureArea is forced to publish its own featureArea-specific artifact, resulting in many artfacts.
+#   - ${{ if ne(parameters.SamplesArtifactName, '') }}:
+#     - script: |
+#         md $(Build.ArtifactStagingDirectory)\$(featureForFilePath)
+#         dir $(Build.ArtifactStagingDirectory)
+#         dir $(Build.SourcesDirectory)
+#       displayName: Create target folder for staging artifact
+
+#     # Reduce the number of files not required for running the tests later by deletion, before copying
+#     # them to the staging location. The file copying operations takes 20+ min for big sample apps if we
+#     # don't do this filtering first, also the total size of the artifacts gets too big, resulting in
+#     # long download time that causes jobs to timeout, and/or out of disk space issues.
+#     # It seems to be most helpful to filter out the .pch and .pdb files. There might be more
+#     # file types that we can filtered out then those listed below.
+#     - task: DeleteFiles@1
+#       displayName: 'Delete unneeded Files under: $(Build.ArtifactStagingDirectory)'
+#       condition: succeededOrFailed()
+#       inputs:
+#         SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
+#         Contents: |
+#           **/*.c
+#           **/*.config
+#           **/*.cpp
+#           **/*.cs
+#           **/*.csproj
+#           **/*.editorconfig
+#           **/*.foo
+#           **/*.h
+#           **/*.hpp
+#           **/*.idb
+#           **/*.idl
+#           **/*.ilk
+#           **/*.iobj
+#           **/*.ipdb
+#           **/*.lib
+#           **/*.log
+#           **/*.obj
+#           **/*.pch
+#           **/*.pdb
+#           **/*.props
+#           **/*.pubxml
+#           **/*.sln
+#           **/*.targets
+#           **/*.tlog
+#           **/*.txt
+#           **/*.vcxproj*
+#           **/*.vcxproj*/**
+#           **/*.wapproj
+#           **/*.winmd
+#           **/*.xaml
+#           **/*.xbf
+#           **/*.xsd
+#           **/*.semmle
+#           **/arm/*
+#           **/x86/*
+#           **/*_Debug_Test/*
+#           **/obj/*
+#           **/packages/*
+
+#     - task: CopyFiles@2
+#       displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+#       condition: succeededOrFailed()
+#       inputs:
+#         SourceFolder: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples\$(featureForFilePath)'
+#         TargetFolder: '$(Build.ArtifactStagingDirectory)\$(featureForFilePath)'
+
+#     - script: |
+#         dir /s $(Build.ArtifactStagingDirectory)
+#       condition: succeededOrFailed()
+#       displayName: DIAG - Show staging trees to validate filtering
+
+#     - ${{ if not( parameters.IsOneBranch ) }}:
+#       - task: PublishBuildArtifacts@1
+#         inputs:
+#           PathtoPublish: '$(ob_outputDirectory)'
+#           artifactName: '$(ob_artifactBaseName)$(ob_artifactSuffix)'
+
+# # The idea of merging the artifacts for the featureAreas produced by one call to this yml file has
+# # been attempted and abandoned. Although this will free the subsequent Stages that run the SampleTests
+# # from needing to know the artifacts of the individual featureAreas and downloading them one by one,
+# # thus needing to download only 3 bigger artifacts with fixed names, those bigger artifact took up much
+# # space and they seem to hit download errors more frequently. The E2E run time of the pipeline is
+# # also longer. Therefore, this idea was not adopted.
