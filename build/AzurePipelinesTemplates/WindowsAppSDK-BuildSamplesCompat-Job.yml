@@ -391,11 +391,11 @@ jobs:
 #       condition: succeededOrFailed()
 #       displayName: DIAG - Show staging trees to validate filtering
 
-#     - ${{ if not( parameters.IsOneBranch ) }}:
-#       - task: PublishBuildArtifacts@1
-#         inputs:
-#           PathtoPublish: '$(ob_outputDirectory)'
-#           artifactName: '$(ob_artifactBaseName)$(ob_artifactSuffix)'
+  - ${{ if not( parameters.IsOneBranch ) }}:
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(ob_outputDirectory)'
+        artifactName: '$(ob_artifactBaseName)$(ob_artifactSuffix)'
 
 # # The idea of merging the artifacts for the featureAreas produced by one call to this yml file has
 # # been attempted and abandoned. Although this will free the subsequent Stages that run the SampleTests
