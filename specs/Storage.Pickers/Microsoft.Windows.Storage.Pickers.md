@@ -255,7 +255,10 @@ retained both properties for backward compatibility.
 
 Later on, with developers' requests for a categorized experience in `FileOpenPicker`, we added 
 `FileTypeChoices` for FileOpenPicker as well. 
-When both properties are specified in `FileOpenPicker`, `FileTypeChoices` takes precedence.
+
+Because `FileTypeChoices` can be considered an enhanced version of `FileTypeFilter`, when both 
+properties are set in a `FileOpenPicker`, the `FileTypeChoices` property takes precedence and the 
+`FileTypeFilter` is ignored.
 
 **(2) The DefaultFileTypeIndex**
 
