@@ -25,7 +25,7 @@ namespace WindowsAppRuntimeInstaller
     {
         constexpr size_t barWidth{ 50 };
 
-        constexpr double percentAsDouble{ static_cast<double>(percent) / 100.0 };
+        double percentAsDouble{ static_cast<double>(percent) / 100.0 };
         int filled{ static_cast<int>(std::floor(barWidth * percentAsDouble)) };
         if ((filled == 0) && (percentAsDouble > 0.0))
         {
