@@ -18,6 +18,21 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             GUID id{ 0 };
         };
 
+        // NOTE: SharedMemory layout
+        // In shared memory, we store headpointer (sizeof(size_t)) followed by c_queueSize QueueItems.
+        // But shared memory also stores the above requested size (head + queue) at the beginning of the memory
+        //      See SharedMemory.h:
+        //          Result of MapViewOfFile() is stored in m_view, which is of type DynamicSharedMemory<T>*.
+        //          DynamicSharedMemory has a "size" member at the beginning, followed by "data" member.
+        // m_data.Get() returns pointer to "data" member of above DynamicSharedMemory. This is our "usable" region i.e. head + queue.
+        // So the overall layout in memory can be represented as below:
+        // | DynamicSharedMemory.size |                             DynamicSharedMemory.data                          |
+        //
+        //                              m_data.Get() (start of head pointer storage)
+        //                              v
+        // | DynamicSharedMemory.size | head pointer | QueueItem[0] | QueueItem[1] | ... | QueueItem[c_queueSize - 1] |
+        //                                             ^
+        //                                             m_dataStart (first QueueItem in shared memory)
 
     public:
         void Init(const std::wstring& name)
@@ -33,7 +48,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             m_data.Open(name, totalSharedMemoryDataSizeInBytes);
 
-// TBR? #pragma warning(suppress: 6305) // C6305: PREFast does not know m_data.Get() is compatible with "sizeof(size_t)".
             auto sharedMemoryBase = reinterpret_cast<std::byte*>(m_data.Get());
             auto queueStartInSharedMemory = sharedMemoryBase + headPointerSizeInBytes;
             m_dataStart = reinterpret_cast<QueueItem*>(queueStartInSharedMemory);
@@ -135,12 +149,20 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         QueueItem* AllocateItem()
         {
             __debugbreak();
+            // m_dataStart points to the first QueueItem in the shared memory.
+            // The total size of the queue is c_queueSize items.
+            // m_dataStart + c_queueSize will point to one past the end of the queue
+            // For example, if c_queueSize is 4, and m_dataStart is at address 0x22506a80010
+            // then m_dataStart + c_queueSize is at address 0x0000022506a80090.
+            // Valid items are at:
+            //    0x0000022506a80010, 0x0000022506a80030, 0x0000022506a80050, 0x0000022506a80070
+            // Since cur is of type QueueItem*, incrementing it moves by sizeof(QueueItem) in below loop.
             QueueItem* upperBounds = m_dataStart + c_queueSize;
             auto cur = m_dataStart;
 
             while (cur < upperBounds && cur->inUse)
             {
-                cur++;
+                cur++; // cur is of type QueueItem*, so ++ moves by sizeof(QueueItem).
             }
 
             THROW_HR_IF(E_OUTOFMEMORY, cur >= upperBounds);

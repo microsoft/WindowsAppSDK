@@ -6,10 +6,6 @@
     <ItemsProjectGuid>{E3A522A3-6635-4A42-BDED-1AF46A15F63C}</ItemsProjectGuid>
     <ItemsProjectName>AppLifecycle</ItemsProjectName>
   </PropertyGroup>
-  <PropertyGroup>
-    <EnablePREfast>true</EnablePREfast>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
