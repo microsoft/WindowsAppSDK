@@ -26,7 +26,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         //          DynamicSharedMemory has a "size" member at the beginning, followed by "data" member.
         // m_data.Get() returns pointer to "data" member of above DynamicSharedMemory. This is our "usable" region i.e. head + queue.
         // So the overall layout in memory can be represented as below:
-        // | DynamicSharedMemory.size |                             DynamicSharedMemory.data                          |
+        // | DynamicSharedMemory.size |-------------------------- DynamicSharedMemory.data ---------------------------|
         //
         //                              m_data.Get() (start of head pointer storage)
         //                              v
