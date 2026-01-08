@@ -170,7 +170,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     GUID AppInstance::DequeueRedirectionRequestId()
     {
-        __debugbreak();
         auto releaseOnExit = m_dataMutex.acquire();
         AppLifecycleTelemetry::DequeueRedirectionRequestId();
         auto id = m_redirectionArgs.Dequeue();
@@ -179,7 +178,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     void AppInstance::EnqueueRedirectionRequestId(GUID id)
     {
-        __debugbreak();
         auto releaseOnExit = m_dataMutex.acquire();
         AppLifecycleTelemetry::EnqueueRedirectionRequestId(id);
         m_redirectionArgs.Enqueue(id);
@@ -187,7 +185,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     void AppInstance::ProcessRedirectionRequests()
     {
-        __debugbreak();
         auto activity{ AppLifecycleTelemetry::ProcessRedirectionRequests::Start(m_processId, m_isCurrent) };
         m_innerActivated.ResetEvent();
 

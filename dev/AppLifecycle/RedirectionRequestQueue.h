@@ -7,7 +7,7 @@
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
-    constexpr size_t c_queueSize = 4;
+    constexpr size_t c_queueSize = 4096;
 
     class RedirectionRequestQueue
     {
@@ -37,7 +37,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     public:
         void Init(const std::wstring& name)
         {
-            __debugbreak();
             m_name = name;
 
             // We store the head pointer at the beginning of the memory, and then items in the queue after.
@@ -55,7 +54,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         void Enqueue(const GUID& itemId)
         {
-            //__debugbreak();
             auto newItem = AllocateItem();
             auto cur = GetHead();
 
@@ -87,7 +85,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         GUID Dequeue()
         {
-            //__debugbreak();
             auto head = GetHead();
             if (head != nullptr)
             {
@@ -148,7 +145,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         QueueItem* AllocateItem()
         {
-            __debugbreak();
             // m_dataStart points to the first QueueItem in the shared memory.
             // The total size of the queue is c_queueSize items.
             // m_dataStart + c_queueSize will point to one past the end of the queue.
