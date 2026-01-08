@@ -206,7 +206,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             // Notify the app that the redirection request is here.
             m_activatedEvent(*this, args);
-            activity.ActivatedEvent(id);
+            activity.RedrectionActivatedEvent(id);
 
             std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
@@ -573,13 +573,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     event_token AppInstance::Activated(EventHandler<Microsoft::Windows::AppLifecycle::AppActivationArguments> const& handler)
     {
-        AppLifecycleTelemetry::ActivatedEventAdd();
+        AppLifecycleTelemetry::ActivatedEventAdd(m_processId);
         return m_activatedEvent.add(handler);
     }
 
     void AppInstance::Activated(event_token const& token) noexcept
     {
-        AppLifecycleTelemetry::ActivatedEventRemove();
+        AppLifecycleTelemetry::ActivatedEventRemove(m_processId);
         m_activatedEvent.remove(token);
     }
 

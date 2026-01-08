@@ -18,8 +18,8 @@ public:
     DEFINE_COMPLIANT_MEASURES_EVENT(ActivationRegistrationManager, PDT_ProductAndServiceUsage);
     DEFINE_COMPLIANT_MEASURES_EVENT(Restart, PDT_ProductAndServiceUsage);
 
-    DEFINE_COMPLIANT_MEASURES_EVENT(ActivatedEventAdd, PDT_ProductAndServiceUsage);
-    DEFINE_COMPLIANT_MEASURES_EVENT(ActivatedEventRemove, PDT_ProductAndServiceUsage);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM1(ActivatedEventAdd, PDT_ProductAndServiceUsage, uint32_t processId);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM1(ActivatedEventRemove, PDT_ProductAndServiceUsage, uint32_t processId);
 
     DEFINE_COMPLIANT_MEASURES_EVENT_PARAM1(EnqueueRedirectionRequestId, PDT_ProductAndServiceUsage, GUID, requestId);
     DEFINE_COMPLIANT_MEASURES_EVENT(DequeueRedirectionRequestId, PDT_ProductAndServiceUsage);

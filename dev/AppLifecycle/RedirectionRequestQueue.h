@@ -151,7 +151,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             __debugbreak();
             // m_dataStart points to the first QueueItem in the shared memory.
             // The total size of the queue is c_queueSize items.
-            // m_dataStart + c_queueSize will point to one past the end of the queue
+            // m_dataStart + c_queueSize will point to one past the end of the queue.
             // For example, if c_queueSize is 4, and m_dataStart is at address 0x22506a80010
             // then m_dataStart + c_queueSize is at address 0x0000022506a80090.
             // Valid items are at:
