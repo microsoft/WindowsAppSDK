@@ -72,3 +72,22 @@ void Test::PackageManager::Tests::VerifyDeploymentSucceeded(
                    deploymentResult.Status(), deploymentResult.Error(), deploymentResult.ExtendedError(),
                    deploymentResult.ErrorText().c_str(), message));
 }
+
+void Test::PackageManager::Tests::VerifyDeploymentSucceeded(
+    const winrt::Windows::Management::Deployment::DeploymentResult& deploymentResult,
+    PCSTR filename,
+    int line,
+    PCSTR function)
+{
+    WEX::Common::String source;
+    source.Format(L"File: %hs, Function: %hs, Line: %d", filename, function, line);
+    PCWSTR message{ static_cast<PCWSTR>(source) };
+
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"VERIFY Deployment Suceeded: %ls", message));
+
+    const bool ok{ (deploymentResult.ExtendedErrorCode() == S_OK) &&
+                   deploymentResult.ErrorText().empty() };
+    VERIFY_IS_TRUE(ok, WEX::Common::String().Format(L"ExtendedError:0x%X ErrorText:%ls %ls",
+                   deploymentResult.ExtendedErrorCode(),
+                   deploymentResult.ErrorText().c_str(), message));
+}

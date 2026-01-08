@@ -7,7 +7,7 @@ import "M.AM.DynamicDependency.idl";
 
 namespace Microsoft.Windows.Management.Deployment
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract PackageDeploymentContract{};
 
     /// Features can be queried if currently available/enabled.
@@ -23,74 +23,18 @@ namespace Microsoft.Windows.Management.Deployment
         ProvisionPackage_Framework          = 6,
     };
 
-    /// Represents a package storage volume.
-    /// @note A volume 'name' is the volume's media ID (you can treat 'Volume Name' == 'Volume Media ID').
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
-    /// @see https://learn.microsoft.com/windows/win32/properties/props-system-volumeid
-    /// @see https://learn.microsoft.com/sysinternals/downloads/volumeid
-    /// @see https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-getvolumenameforvolumemountpointw
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageVolume
+    /// Features can be queried if currently available/enabled.
+    /// @see PackageVolume.IsFeatureSupported()
+    [contract(PackageDeploymentContract, 3)]
+    enum PackageVolumeFeature
     {
-        /// Gets all the known volumes, regardless of their current state.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
-        static IVector<PackageVolume> FindPackageVolumes();
-
-        /// Get the specified volume.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByPath(String packageStorePath);
-
-        /// Get the specified volume.
-        /// @name The volume media ID (a GUID value)
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByName(String name);
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
-        Boolean IsSystemVolume{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.mountpoint
-        String MountPoint{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.name
-        String Name{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.packagestorepath
-        String PackageStorePath{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
-        Boolean SupportsHardLinks{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
-        Boolean IsFullTrustPackageSupported{ get; };
-
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
-        Boolean IsAppxInstallSupported{ get; };
-
-        /// Return true if the package volume is damaged and needs to be repaired.
-        Boolean IsRepairNeeded();
-
-        /// Repair the package volume (if necessary).
-        void Repair();
-    };
-
-    /// Defines the stub behavior for an app package that is being added or staged.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.stubpackageoption
-    [contract(PackageDeploymentContract, 1)]
-    enum StubPackageOption
-    {
-        Default,
-        InstallFull,
-        InstallStub,
-        UsePreference,
-    };
-
-    /// Defines the stub behavior for an app package that is being added or staged.
-    [contract(PackageDeploymentContract, 2)]
-    enum PackageReadyOrNewerAvailableStatus
-    {
-        NotReady             = 0,
-        Ready                = 1,
-        NewerAvailable       = 2,
+        GetDefault          = 1,
+        SetDefault          = 2,
+        Add                 = 3,
+        Remove              = 4,
+        SetOffline          = 5,
+        SetOnline           = 6,
+        GetAvailableSpace   = 7,
     };
 
     /// The progress status of the deployment request.
@@ -148,6 +92,163 @@ namespace Microsoft.Windows.Management.Deployment
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.activityid
         Guid ActivityId { get; };
     }
+
+    /// Represents a package storage volume.
+    /// @note A volume 'name' is the volume's media ID (you can treat 'Volume Name' == 'Volume Media ID').
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
+    /// @see https://learn.microsoft.com/windows/win32/properties/props-system-volumeid
+    /// @see https://learn.microsoft.com/sysinternals/downloads/volumeid
+    /// @see https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-getvolumenameforvolumemountpointw
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageVolume
+    {
+        /// Gets all the known volumes, regardless of their current state.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
+        static IVector<PackageVolume> FindPackageVolumes();
+
+        /// Get the specified volume.
+        /// @param packageStorePath a path on the volume e.g. "F:", "F:\Foo\Bar", "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\"
+        ///                         and "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\Foo\Bar" are equally valid.
+        /// @note The packageStorePath parameter is used to identify the device Volume.
+        ///       The actual path for packages in a PackageVolume is defined by Windows.
+        /// @return the volume or null if not found.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        /// @see GetPackageVolumeByPath()
+        ///
+        /// @note This API is deprecated and will be removed in a future release.
+        ///       Use GetPackageVolumeByPath().
+        static PackageVolume FindPackageVolumeByPath(String packageStorePath);
+
+        /// Get the specified volume.
+        /// @param path a path on the volume e.g. "F:", "F:\Foo\Bar", "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\"
+        ///             and "\\?\Volume{dd992d3d-8505-4adb-a622-82cdc2398a29}\Foo\Bar" are equally valid.
+        /// @note The path parameter is used to identify the device Volume.
+        ///       The actual path for packages in a PackageVolume is defined by Windows.
+        /// @return the volume or null if not found.
+        /// @see GetPackageVolumeByName()
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        static PackageVolume GetPackageVolumeByPath(String path);
+
+        /// Get the specified volume.
+        /// @name The volume media ID (a GUID value)
+        /// @see GetPackageVolumeByName()
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        ///
+        /// @note This API is deprecated and will be removed in a future release.
+        ///       Use GetPackageVolumeByName().
+        static PackageVolume FindPackageVolumeByName(String name);
+
+        /// Get the specified volume.
+        /// @name The volume media ID (a GUID value)
+        /// @see GetPackageVolumeByPath()
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        static PackageVolume GetPackageVolumeByName(String name);
+
+        /// Return true if the package volume is an internal system volume mapped to the %SYSTEMDRIVER% environment variable.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
+        Boolean IsSystemVolume{ get; };
+
+        /// Get the path of the last known mount point for the package volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.mountpoint
+        String MountPoint{ get; };
+
+        /// Get the media ID of the package volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.name
+        String Name{ get; };
+
+        /// Get the absolute path for the Package store on the volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.packagestorepath
+        String PackageStorePath{ get; };
+
+        /// Return true if the package volume supports the creation of hard links in its file system.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
+        Boolean SupportsHardLinks{ get; };
+
+        /// Return true if APPX installing is supported.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
+        Boolean IsAppxInstallSupported{ get; };
+
+        /// Return true if full-trust packages are supported.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
+        Boolean IsFullTrustPackageSupported{ get; };
+
+        /// Return true if the package volume is in an offline state.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isoffline
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsOffline();
+
+        /// Return true if the package volume is damaged and needs to be repaired.
+        Boolean IsRepairNeeded();
+
+        /// Repair the package volume (if necessary).
+        void Repair();
+
+        [contract(PackageDeploymentContract, 3)]
+        static Boolean IsFeatureSupported(PackageVolumeFeature feature);
+
+        /// Return the default package volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.getdefaultpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        static PackageVolume GetDefault();
+
+        /// Set the default package volume.
+        /// @see //learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setdefaultpackagevolume
+        [contract(PackageDeploymentContract, 3)]
+        void SetDefault();
+
+        /// Create a new package volume.
+        /// @param packageStorePath The absolute path of the Package store.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.addpackagevolumeasync
+        [contract(PackageDeploymentContract, 3)]
+        static Windows.Foundation.IAsyncOperation<PackageVolume> AddAsync(String packageStorePath);
+
+        /// @note The caller must be running with Medium IL (or higher)
+        ///       OR running in an AppContainer with the packageManagement restricted capability
+        ///       OR caller has package identity and the publisher matches the publisher of the volume being removed.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.removepackagevolumeasync
+        [contract(PackageDeploymentContract, 3)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> RemoveAsync();
+
+        /// Set the package volume to an offline state.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setpackagevolumeofflineasync
+        [contract(PackageDeploymentContract, 3)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> SetOfflineAsync();
+
+        /// Set the package volume to an online state.
+        /// @note This requires admin privilege.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.setpackagevolumeonlineasync
+        [contract(PackageDeploymentContract, 3)]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> SetOnlineAsync();
+
+        /// Get the available space (bytes).
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagevolume.getavailablespaceasync?view=winrt-26100
+        [contract(PackageDeploymentContract, 3)]
+        Windows.Foundation.IAsyncOperation<UInt64> GetAvailableSpaceAsync();
+    };
+
+    /// Defines the stub behavior for an app package that is being added or staged.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.stubpackageoption
+    [contract(PackageDeploymentContract, 1)]
+    enum StubPackageOption
+    {
+        Default,
+        InstallFull,
+        InstallStub,
+        UsePreference,
+    };
+
+    /// Defines the stub behavior for an app package that is being added or staged.
+    [contract(PackageDeploymentContract, 2)]
+    enum PackageReadyOrNewerAvailableStatus
+    {
+        NotReady             = 0,
+        Ready                = 1,
+        NewerAvailable       = 2,
+    };
 
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageSetItem
@@ -301,11 +402,12 @@ namespace Microsoft.Windows.Management.Deployment
         // IsReady
 
         // Return true if the package(s) are present and available for use
-
         Boolean IsPackageReady(String package);
 
+        // Return true if the package(s) are present and available for use
         Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are present and available for use
         /// @note packageSet[Item].PackageUri is optional
         Boolean IsPackageSetReady(PackageSet packageSet);
 
@@ -313,13 +415,14 @@ namespace Microsoft.Windows.Management.Deployment
         // IsReadyOrNewerAvailable
 
         // Return true if the package(s) are present and available for use
-
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
 
+        // Return true if the package(s) are present and available for use
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are present and available for use
         /// @note packageSet[Item].PackageUri is optional
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
@@ -431,13 +534,14 @@ namespace Microsoft.Windows.Management.Deployment
         // IsProvisioned
 
         // Return true if the package(s) are provisioned
-
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisioned(String package);
 
+        // Return true if the package(s) are provisioned
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisionedByUri(Windows.Foundation.Uri packageUri);
 
+        // Return true if the package(s) are provisioned
         /// @note packageSet[Item].PackageUri is optional
         [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageSetProvisioned(PackageSet packageSet);
@@ -471,11 +575,11 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // IsRegistrationPending
 
-        /// @warning The parameter is should be "packageFullName" but can't due to http://task.ms/53280356.
+        /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
         ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
         Boolean IsPackageRegistrationPending(String packageFamilyName);
 
-        /// @warning The parameter is should be "packageFullName" but can't due to http://task.ms/53280356.
+        /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
         ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
         Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
     }

@@ -192,7 +192,6 @@ namespace Test::StoragePickersTests
 
         TEST_METHOD(VerifyFolderPickerOptionsAreReadCorrectly)
         {
-            auto parentWindow = ::GetForegroundWindow();
             winrt::Microsoft::UI::WindowId windowId{};
             winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker(windowId);
 
