@@ -94,9 +94,9 @@ Skills can include additional files that Copilot accesses on-demand:
 | Folder | Purpose | Loaded into Context? | Example Files |
 |--------|---------|---------------------|---------------|
 | `scripts/` | Executable automation that performs specific operations | When executed | `helper.py`, `validate.sh`, `build.ts` |
-| `references/` | Documentation Claude reads to inform decisions | Yes, when referenced | `api_reference.md`, `schema.md`, `workflow_guide.md` |
-| `assets/` | **Static files used AS-IS** in output (not modified by Claude) | No | `logo.png`, `brand-template.pptx`, `custom-font.ttf` |
-| `templates/` | **Starter code/scaffolds that Claude MODIFIES** and builds upon | Yes, when referenced | `viewer.html` (insert algorithm), `hello-world/` (extend) |
+| `references/` | Documentation the AI agent reads to inform decisions | Yes, when referenced | `api_reference.md`, `schema.md`, `workflow_guide.md` |
+| `assets/` | **Static files used AS-IS** in output (not modified by the AI agent) | No | `logo.png`, `brand-template.pptx`, `custom-font.ttf` |
+| `templates/` | **Starter code/scaffolds that the AI agent MODIFIES** and builds upon | Yes, when referenced | `viewer.html` (insert algorithm), `hello-world/` (extend) |
 
 ### Directory Structure Example
 
@@ -114,9 +114,9 @@ Skills can include additional files that Copilot accesses on-demand:
 ├── assets/               # Optional: Static files used AS-IS in output
 │   ├── baseline.png      # Reference image for comparison
 │   └── report-template.html
-└── templates/            # Optional: Starter code Claude modifies
-    ├── scaffold.py       # Code scaffold Claude customizes
-    └── config.template   # Config template Claude fills in
+└── templates/            # Optional: Starter code the AI agent modifies
+    ├── scaffold.py       # Code scaffold the AI agent customizes
+    └── config.template   # Config template the AI agent fills in
 ```
 
 > **LICENSE.txt**: When creating a skill, download the Apache 2.0 license text from https://www.apache.org/licenses/LICENSE-2.0.txt and save as `LICENSE.txt`. Update the copyright year and owner in the appendix section.
@@ -128,12 +128,12 @@ Skills can include additional files that Copilot accesses on-demand:
 - A `report-template.html` copied as output format
 - A `custom-font.ttf` applied to text rendering
 
-**Templates** are starter code/scaffolds that **Claude actively modifies**:
-- A `scaffold.py` where Claude inserts logic
-- A `config.template` where Claude fills in values based on user requirements
-- A `hello-world/` project directory that Claude extends with new features
+**Templates** are starter code/scaffolds that **the AI agent actively modifies**:
+- A `scaffold.py` where the AI agent inserts logic
+- A `config.template` where the AI agent fills in values based on user requirements
+- A `hello-world/` project directory that the AI agent extends with new features
 
-**Rule of thumb**: If Claude reads and builds upon the file content → `templates/`. If the file is used as-is in output → `assets/`.
+**Rule of thumb**: If the AI agent reads and builds upon the file content → `templates/`. If the file is used as-is in output → `assets/`.
 
 ### Referencing Resources in SKILL.md
 
@@ -201,7 +201,7 @@ Include scripts in your skill when:
 - Testability matters — scripts can be unit tested and validated
 - Predictable behavior is preferred over dynamic generation
 
-Scripts enable evolution: even simple operations benefit from being scriptified when they may grow in complexity, need consistent behavior across invocations, or require future extensibility.
+Scripts enable evolution: even simple operations benefit from being implemented as scripts when they may grow in complexity, need consistent behavior across invocations, or require future extensibility.
 
 ### Security Considerations
 
