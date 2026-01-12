@@ -286,7 +286,7 @@ Windows App SDK 1.x adds a -channel# tag (e.g. "-preview1") to the package name.
 
 Windows App SDK 2.x goes back to just a "-preview" tag on the package Name.
 
-***Shorter Tags as needed*** "-preview" adds 8 characters to package Name. "-experiental" adds
+***Shorter Tags as needed*** "-preview" adds 8 characters to package Name. "-experimental" adds
 12 characters. Package Name is restricted to 50 characters maximum.
 
 **Option A: `-preview`**
@@ -440,7 +440,7 @@ no more than once per year.
 per month.
 * Every potential released build (stable, preview, experimental) will increase the Patch, unless the Major or Minor is increased.
 No 2 builds will share the same Major.Minor.Patch version.
-If we notice an issue after building a canditate(stable, preview, or experimental), we will choose not to release it, at which 
+If we notice an issue after building a canditate (stable, preview, or experimental), we will choose not to release it, at which 
 point the patch will bump again.
 This means that there will be times when there is a patch number that will not be released at all.
 * Note: We see experimental releases as "containing" the closest stable + some experimental stuff, rather than "previewing" what is coming. We 
