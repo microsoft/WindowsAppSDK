@@ -37,56 +37,42 @@ This skill provides helper scripts and workflows for creating and managing Git w
 
 ## Available Scripts
 
-This skill provides a unified helper script for all worktree operations.
+This skill provides focused scripts for each worktree operation.
 
-### worktree-helper.ps1
-
-**Location**: `.github/skills/worktree-manager/scripts/worktree-helper.ps1`
-
-> **Note**: Examples below use relative paths from the skill folder. When running from repo root, prefix with `.github/skills/worktree-manager/`.
-
-**Usage**:
-```powershell
-./scripts/worktree-helper.ps1 <action> [options]
-```
-
-| Action | Description |
-|--------|-------------|
-| `list` | List all existing worktrees |
-| `new-branch` | Create worktree from existing branch |
-| `new-issue` | Create worktree for a new work item branch |
-| `delete` | Delete a worktree by pattern match |
-| `help` | Show help message |
-
-#### new-branch
+### New-WorktreeFromBranch.ps1
 
 Create or reuse a worktree for an existing local or remote branch.
 
+**Location**: `./scripts/New-WorktreeFromBranch.ps1`
+
 ```powershell
-./scripts/worktree-helper.ps1 new-branch -Branch <branch-name>
+./scripts/New-WorktreeFromBranch.ps1 -Branch <branch-name> [-NoFetch]
 ```
 
 | Parameter | Required | Default | Description |
 |-----------|----------|---------|-------------|
 | `-Branch` | Yes | - | Branch name (local or `origin/<name>` form) |
+| `-NoFetch` | No | `$false` | Skip remote fetch if branch missing locally |
 
 **Examples**:
 ```powershell
 # From a local or remote branch
-./scripts/worktree-helper.ps1 new-branch -Branch feature/login
+./scripts/New-WorktreeFromBranch.ps1 -Branch feature/login
 
 # From origin remote (normalizes automatically)
-./scripts/worktree-helper.ps1 new-branch -Branch origin/bugfix/nullref
+./scripts/New-WorktreeFromBranch.ps1 -Branch origin/bugfix/nullref
 ```
 
 ---
 
-#### new-issue
+### New-WorktreeFromIssue.ps1
 
 Start a new work item branch with consistent naming and create a worktree for it.
 
+**Location**: `./scripts/New-WorktreeFromIssue.ps1`
+
 ```powershell
-./scripts/worktree-helper.ps1 new-issue -Number <workitem-number> [-Title <description>] [-Base <ref>]
+./scripts/New-WorktreeFromIssue.ps1 -Number <workitem-number> [-Title <description>] [-Base <ref>]
 ```
 
 | Parameter | Required | Default | Description |
@@ -98,25 +84,27 @@ Start a new work item branch with consistent naming and create a worktree for it
 **Examples**:
 ```powershell
 # Work item branch with title
-./scripts/worktree-helper.ps1 new-issue -Number 1234 -Title "Crash on launch"
+./scripts/New-WorktreeFromIssue.ps1 -Number 1234 -Title "Crash on launch"
 # Creates: workitem/1234-crash-on-launch
 
 # Work item branch from different base
-./scripts/worktree-helper.ps1 new-issue -Number 42 -Base origin/develop
+./scripts/New-WorktreeFromIssue.ps1 -Number 42 -Base origin/develop
 
 # Simple work item branch (no title slug)
-./scripts/worktree-helper.ps1 new-issue -Number 999
+./scripts/New-WorktreeFromIssue.ps1 -Number 999
 # Creates: workitem/999
 ```
 
 ---
 
-#### delete
+### Delete-Worktree.ps1
 
 Remove a worktree and optionally its associated branch.
 
+**Location**: `./scripts/Delete-Worktree.ps1`
+
 ```powershell
-./scripts/worktree-helper.ps1 delete -Pattern <pattern> [-Force] [-KeepBranch]
+./scripts/Delete-Worktree.ps1 -Pattern <pattern> [-Force] [-KeepBranch]
 ```
 
 | Parameter | Required | Default | Description |
@@ -128,23 +116,23 @@ Remove a worktree and optionally its associated branch.
 **Examples**:
 ```powershell
 # Delete worktree by branch pattern
-./scripts/worktree-helper.ps1 delete -Pattern feature/perf-tweak
+./scripts/Delete-Worktree.ps1 -Pattern feature/perf-tweak
 
 # Force delete with uncommitted changes
-./scripts/worktree-helper.ps1 delete -Pattern workitem/1234 -Force
+./scripts/Delete-Worktree.ps1 -Pattern workitem/1234 -Force
 
 # Delete worktree but keep the branch
-./scripts/worktree-helper.ps1 delete -Pattern feature/ui -KeepBranch
+./scripts/Delete-Worktree.ps1 -Pattern feature/ui -KeepBranch
 ```
 
 ---
 
-#### list
+### List Worktrees
 
-List all existing worktrees.
+Use Git directly to list worktrees:
 
 ```powershell
-./scripts/worktree-helper.ps1 list
+git worktree list --porcelain
 ```
 
 ## Step-by-Step Workflows
@@ -154,21 +142,21 @@ List all existing worktrees.
 1. Note the work item number and title
 2. Create work item branch and worktree:
    ```powershell
-   ./scripts/worktree-helper.ps1 new-issue -Number 1234 -Title "Fix null reference"
+   ./scripts/New-WorktreeFromIssue.ps1 -Number 1234 -Title "Fix null reference"
    ```
 3. Build, test, and develop as normal
 4. Commit, push, and open PR
 5. Delete worktree when PR is merged:
    ```powershell
-   ./scripts/worktree-helper.ps1 delete -Pattern workitem/1234
+   ./scripts/Delete-Worktree.ps1 -Pattern workitem/1234
    ```
 
 ### Workflow 2: Parallel Feature Development
 
 1. Create worktrees for each feature:
    ```powershell
-   ./scripts/worktree-helper.ps1 new-branch -Branch feature/login
-   ./scripts/worktree-helper.ps1 new-branch -Branch feature/dashboard
+   ./scripts/New-WorktreeFromBranch.ps1 -Branch feature/login
+   ./scripts/New-WorktreeFromBranch.ps1 -Branch feature/dashboard
    ```
 2. Work on each independently (different VS Code windows)
 3. Keep ≤3 active worktrees to manage cognitive load
@@ -225,13 +213,16 @@ git worktree remove --force <path>
 
 ## Script Locations
 
-Skill-bundled script (primary interface):
-- [worktree-helper.ps1](./scripts/worktree-helper.ps1) — unified wrapper for all operations
-- [worktree-helper.cmd](./scripts/worktree-helper.cmd) — Windows batch launcher
+All implementation is self-contained within this skill folder:
 
-Underlying implementation (in `tools/git/`):
-- [New-WorktreeFromBranch.ps1](tools/git/New-WorktreeFromBranch.ps1)
-- [New-WorktreeFromIssue.ps1](tools/git/New-WorktreeFromIssue.ps1)
-- [Delete-Worktree.ps1](tools/git/Delete-Worktree.ps1)
-- [WorktreeLib.ps1](tools/git/WorktreeLib.ps1) — shared helpers
-- [Worktree-Guidelines.md](tools/git/Worktree-Guidelines.md) — detailed documentation
+**Scripts** (master source):
+- [New-WorktreeFromBranch.ps1](./scripts/New-WorktreeFromBranch.ps1) — create worktree from branch
+- [New-WorktreeFromIssue.ps1](./scripts/New-WorktreeFromIssue.ps1) — create worktree for work item
+- [Delete-Worktree.ps1](./scripts/Delete-Worktree.ps1) — remove worktree and branch
+- [WorktreeLib.ps1](./scripts/WorktreeLib.ps1) — shared helper functions
+
+**Human-friendly wrappers** (in `tools/git/`):
+- `tools/git/New-WorktreeFromBranch.cmd` — delegates to skill's master script
+- `tools/git/New-WorktreeFromIssue.cmd` — delegates to skill's master script  
+- `tools/git/Delete-Worktree.cmd` — delegates to skill's master script
+- `tools/git/Worktree-Guidelines.md` — quick reference for developers

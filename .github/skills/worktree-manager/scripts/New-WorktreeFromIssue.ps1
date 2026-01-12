@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 <#!
 .SYNOPSIS
     Create (or reuse) a worktree for a new work item branch derived from a base ref.

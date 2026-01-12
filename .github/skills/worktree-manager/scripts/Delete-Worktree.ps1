@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 <#!
 .SYNOPSIS
     Remove a Git worktree and optionally its associated branch.

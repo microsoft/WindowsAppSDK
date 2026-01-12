@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 <#!
 .SYNOPSIS
     Create (or reuse) a worktree for an existing local or remote (origin) branch.

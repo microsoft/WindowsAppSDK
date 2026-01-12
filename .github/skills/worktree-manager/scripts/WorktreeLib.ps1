@@ -1,4 +1,8 @@
-# WorktreeLib.ps1 - shared helpers
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# WorktreeLib.ps1 - Shared helpers for worktree management
+# This is the master source for the worktree-manager skill
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
