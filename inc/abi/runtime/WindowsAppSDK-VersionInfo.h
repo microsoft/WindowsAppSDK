@@ -7,7 +7,7 @@
 // Release information
 #define WINDOWSAPPSDK_RELEASE_MAJOR                         1
 #define WINDOWSAPPSDK_RELEASE_MINOR                         8
-#define WINDOWSAPPSDK_RELEASE_PATCH                         250916
+#define WINDOWSAPPSDK_RELEASE_PATCH                         251106
 #define WINDOWSAPPSDK_RELEASE_MAJORMINOR                    0x00010008
 
 #define WINDOWSAPPSDK_RELEASE_CHANNEL                       "stable"
@@ -32,12 +32,12 @@
 #define WINDOWSAPPSDK_RUNTIME_IDENTITY_PUBLISHERID_W    L"8wekyb3d8bbwe"
 
 #define WINDOWSAPPSDK_RUNTIME_VERSION_MAJOR             8000u
-#define WINDOWSAPPSDK_RUNTIME_VERSION_MINOR             625u
-#define WINDOWSAPPSDK_RUNTIME_VERSION_BUILD             330u
+#define WINDOWSAPPSDK_RUNTIME_VERSION_MINOR             675u
+#define WINDOWSAPPSDK_RUNTIME_VERSION_BUILD             1142u
 #define WINDOWSAPPSDK_RUNTIME_VERSION_REVISION          0u
-#define WINDOWSAPPSDK_RUNTIME_VERSION_UINT64            0x1F400271014A0000u
-#define WINDOWSAPPSDK_RUNTIME_VERSION_DOTQUADSTRING     "8000.625.330.0"
-#define WINDOWSAPPSDK_RUNTIME_VERSION_DOTQUADSTRING_W   L"8000.625.330.0"
+#define WINDOWSAPPSDK_RUNTIME_VERSION_UINT64            0x1F4002A304760000u
+#define WINDOWSAPPSDK_RUNTIME_VERSION_DOTQUADSTRING     "8000.675.1142.0"
+#define WINDOWSAPPSDK_RUNTIME_VERSION_DOTQUADSTRING_W   L"8000.675.1142.0"
 
 #define WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME   "Microsoft.WindowsAppRuntime.1.8_8wekyb3d8bbwe"
 #define WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W L"Microsoft.WindowsAppRuntime.1.8_8wekyb3d8bbwe"
@@ -45,12 +45,12 @@
 #define WINDOWSAPPSDK_RUNTIME_PACKAGE_MAIN_PACKAGEFAMILYNAME_W      L"MicrosoftCorporationII.WinAppRuntime.Main.1.8_8wekyb3d8bbwe"
 #define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME       "MicrosoftCorporationII.WinAppRuntime.Singleton_8wekyb3d8bbwe"
 #define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME_W     L"MicrosoftCorporationII.WinAppRuntime.Singleton_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_X86_PACKAGEFAMILYNAME        "Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x8_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_X86_PACKAGEFAMILYNAME_W      L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x8_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_X64_PACKAGEFAMILYNAME        "Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x6_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_X64_PACKAGEFAMILYNAME_W      L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x6_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_ARM64_PACKAGEFAMILYNAME      "Microsoft.WinAppRuntime.DDLM.8000.625.330.0-a6_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_ARM64_PACKAGEFAMILYNAME_W    L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-a6_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_X86_PACKAGEFAMILYNAME        "Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x8_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_X86_PACKAGEFAMILYNAME_W      L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x8_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_X64_PACKAGEFAMILYNAME        "Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x6_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_X64_PACKAGEFAMILYNAME_W      L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x6_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_ARM64_PACKAGEFAMILYNAME      "Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-a6_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_DDLM_ARM64_PACKAGEFAMILYNAME_W    L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-a6_8wekyb3d8bbwe"
 
 #ifdef RC_INVOKED
 // Only first 31 characters are significant for ResourceCompiler macro names (anything beyond that's silently ignored)
@@ -65,7 +65,7 @@
 // Release information
 #define WAS_RELEASE_MAJOR               1
 #define WAS_RELEASE_MINOR               8
-#define WAS_RELEASE_PATCH               250916
+#define WAS_RELEASE_PATCH               251106
 #define WAS_RELEASE_MAJORMINOR          0x00010008
 
 #define WAS_RELEASE_CHANNEL             "stable"
@@ -90,12 +90,12 @@
 #define WASR_IDENTITY_PUBLISHERID_W     L"8wekyb3d8bbwe"
 
 #define WASR_VERSION_MAJOR              8000
-#define WASR_VERSION_MINOR              625
-#define WASR_VERSION_BUILD              330
+#define WASR_VERSION_MINOR              675
+#define WASR_VERSION_BUILD              1142
 #define WASR_VERSION_REVISION           0
-#define WASR_VERSION_UINT64             0x1F400271014A0000
-#define WASR_VERSION_DOTQUADSTRING      "8000.625.330.0"
-#define WASR_VERSION_DOTQUADSTRING_W    L"8000.625.330.0"
+#define WASR_VERSION_UINT64             0x1F4002A304760000
+#define WASR_VERSION_DOTQUADSTRING      "8000.675.1142.0"
+#define WASR_VERSION_DOTQUADSTRING_W    L"8000.675.1142.0"
 
 #define WASR_PKG_FRAMEWORK_FAMILY       "Microsoft.WindowsAppRuntime.1.8_8wekyb3d8bbwe"
 #define WASR_PKG_FRAMEWORK_FAMILY_W     L"Microsoft.WindowsAppRuntime.1.8_8wekyb3d8bbwe"
@@ -103,12 +103,12 @@
 #define WASR_PKG_MAIN_FAMILY_W          L"MicrosoftCorporationII.WinAppRuntime.Main.1.8_8wekyb3d8bbwe"
 #define WASR_PKG_SINGLETON_FAMILY       "MicrosoftCorporationII.WinAppRuntime.Singleton_8wekyb3d8bbwe"
 #define WASR_PKG_SINGLETON_FAMILY_W     L"MicrosoftCorporationII.WinAppRuntime.Singleton_8wekyb3d8bbwe"
-#define WASR_PKG_DDLM_X86_FAMILY        "Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x8_8wekyb3d8bbwe"
-#define WASR_PKG_DDLM_X86_FAMILY_W      L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x8_8wekyb3d8bbwe"
-#define WASR_PKG_DDLM_X64_FAMILY        "Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x6_8wekyb3d8bbwe"
-#define WASR_PKG_DDLM_X64_FAMILY_W      L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x6_8wekyb3d8bbwe"
-#define WASR_PKG_DDLM_ARM64_FAMILY      "Microsoft.WinAppRuntime.DDLM.8000.625.330.0-a6_8wekyb3d8bbwe"
-#define WASR_PKG_DDLM_ARM64_FAMILY_W    L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-a6_8wekyb3d8bbwe"
+#define WASR_PKG_DDLM_X86_FAMILY        "Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x8_8wekyb3d8bbwe"
+#define WASR_PKG_DDLM_X86_FAMILY_W      L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x8_8wekyb3d8bbwe"
+#define WASR_PKG_DDLM_X64_FAMILY        "Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x6_8wekyb3d8bbwe"
+#define WASR_PKG_DDLM_X64_FAMILY_W      L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x6_8wekyb3d8bbwe"
+#define WASR_PKG_DDLM_ARM64_FAMILY      "Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-a6_8wekyb3d8bbwe"
+#define WASR_PKG_DDLM_ARM64_FAMILY_W    L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-a6_8wekyb3d8bbwe"
 #endif
 
 #ifdef __cplusplus
@@ -125,7 +125,7 @@ namespace Microsoft::WindowsAppSDK
         constexpr uint16_t Minor = 8;
 
         /// The patch version of the Windows App SDK release.
-        constexpr uint16_t Patch = 916;
+        constexpr uint16_t Patch = 1106;
 
         /// The major and minor version of the Windows App SDK release, encoded as a uint32_t (0xMMMMNNNN where M=major, N=minor).
         constexpr uint32_t MajorMinor = 0x00010008;
@@ -164,19 +164,19 @@ namespace Microsoft::WindowsAppSDK
             constexpr uint16_t Major = 8000;
 
             /// The minor version of the Windows App SDK runtime; for example, 446.
-            constexpr uint16_t Minor = 625;
+            constexpr uint16_t Minor = 675;
 
             /// The build version of the Windows App SDK runtime; for example, 804.
-            constexpr uint16_t Build = 330;
+            constexpr uint16_t Build = 1142;
 
             /// The revision version of the Windows App SDK runtime; for example, 0.
             constexpr uint16_t Revision = 0;
 
             /// The version of the Windows App SDK runtime, as a uint64l for example, 0x03E801BE03240000.
-            constexpr uint64_t UInt64 = 0x1F400271014A0000;
+            constexpr uint64_t UInt64 = 0x1F4002A304760000;
 
             /// The version of the Windows App SDK runtime, as a string (const wchar_t*); for example, "1000.446.804.0".
-            constexpr PCWSTR DotQuadString = L"8000.625.330.0";
+            constexpr PCWSTR DotQuadString = L"8000.675.1142.0";
         }
 
         namespace Packages
@@ -201,17 +201,17 @@ namespace Microsoft::WindowsAppSDK
                 namespace X86
                 {
                     /// The Windows App SDK runtime's Dynamic Dependency Lifetime Manager (DDLM) package's family name, for x86.
-                    constexpr PCWSTR PackageFamilyName = L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x8_8wekyb3d8bbwe";
+                    constexpr PCWSTR PackageFamilyName = L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x8_8wekyb3d8bbwe";
                 }
                 namespace X64
                 {
                     /// The Windows App SDK runtime's Dynamic Dependency Lifetime Manager (DDLM) package's family name, for x64.
-                    constexpr PCWSTR PackageFamilyName = L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-x6_8wekyb3d8bbwe";
+                    constexpr PCWSTR PackageFamilyName = L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-x6_8wekyb3d8bbwe";
                 }
                 namespace Arm64
                 {
                     /// The Windows App SDK runtime's Dynamic Dependency Lifetime Manager (DDLM) package's family name, for arm64.
-                    constexpr PCWSTR PackageFamilyName = L"Microsoft.WinAppRuntime.DDLM.8000.625.330.0-a6_8wekyb3d8bbwe";
+                    constexpr PCWSTR PackageFamilyName = L"Microsoft.WinAppRuntime.DDLM.8000.675.1142.0-a6_8wekyb3d8bbwe";
                 }
             }
         }

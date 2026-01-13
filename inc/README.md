@@ -1,9 +1,11 @@
 # Producing the Projection Headers
 
-Current projection packages:
-
-* [Microsoft.WindowsAppSDK.ML v1.8.2091](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.ML/1.8.2091)
-* [Microsoft.WindowsAppSDK.Runtime v1.8.250916003](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.Runtime/1.8.250916003)
+Current projection packages, for [Microsoft.WindowsAppSDK v1.8.251106002](https://www.nuget.org/packages/Microsoft.WindowsAppSDK/1.8.251106002):
+* [Microsoft.WindowsAppSDK.InteractiveExperiences v1.8.251104001](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.InteractiveExperiences/1.8.251104001)
+* [Microsoft.WindowsAppSDK.Foundation v1.8.251104000](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.Foundation/1.8.251104000)
+* [Microsoft.WindowsAppSDK.AI v1.8.39](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.AI/1.8.39)
+* [Microsoft.WindowsAppSDK.ML v1.8.2109](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.ML/1.8.2109)
+* [Microsoft.WindowsAppSDK.Runtime v1.8.251106002](https://www.nuget.org/packages/Microsoft.WindowsAppSDK.Runtime/1.8.251106002)
 
 ## Acquire Tooling
 
@@ -24,12 +26,22 @@ nuget install Microsoft.Windows.AbiWinRT -OutputDirectory $working_dir\packages
 
 ## Acquire metadata from latest release
 
-Fetch the package from nuget using the above package names:
+Fetch component packages from nuget using the above package names:
 
 ```pwsh
-$ml_version = "1.8.2091"
-$runtime_version = "1.8.250916003"
+$ixp_version = "1.8.251104001"
+nuget install Microsoft.WindowsAppSDK.InteractiveExperiences -Version $ixp_version -OutputDirectory $working_dir\packages
+
+$foundation_version = "1.8.251104000"
+nuget install Microsoft.WindowsAppSDK.Foundation -Version $foundation_version -OutputDirectory $working_dir\packages
+
+$ai_version = "1.8.39"
+nuget install Microsoft.WindowsAppSDK.AI -Version $ai_version -OutputDirectory $working_dir\packages
+
+$ml_version = "1.8.2109"
 nuget install Microsoft.WindowsAppSDK.ML -Version $ml_version -OutputDirectory $working_dir\packages
+
+$runtime_version = "1.8.251106002"
 nuget install Microsoft.WindowsAppSDK.Runtime -Version $runtime_version -OutputDirectory $working_dir\packages
 ```
 
@@ -41,11 +53,26 @@ File a new issue to request inclusion of other content.
 From the root of the repo:
 
 ```pwsh
-# Generate WinML projections, copy headers (replace inc\abi\winml with inc\abi\othercomponent as needed)
-mkdir inc\abi\winml -ErrorAction SilentlyContinue
+# Generate and copy projection headers for a selection of components
 $abiwinrt = gci -r $working_dir\packages\*abi*\abi.exe
-$metadata = gci -r $working_dir\packages\microsoft.windowsappsdk.ml.$ml_version\metadata
-& $abiwinrt -input $metadata -reference sdk -output inc\abi\winml -lowercase-include-guard -ns-prefix always
+
+mkdir inc\abi\interactiveexperiences -ErrorAction SilentlyContinue
+$ixp_metadata = gci -r "$working_dir\packages\microsoft.windowsappsdk.interactiveexperiences.$ixp_version\metadata\10.0.17763.0\*.winmd"
+& $abiwinrt -input $ixp_metadata.FullName -reference sdk -output inc\abi\interactiveexperiences -lowercase-include-guard -ns-prefix always
+copy $working_dir\packages\microsoft.windowsappsdk.interactiveexperiences.$ixp_version\include\* inc\abi\interactiveexperiences -recurse -force
+
+mkdir inc\abi\foundation -ErrorAction SilentlyContinue
+$foundation_metadata = gci -r "$working_dir\packages\microsoft.windowsappsdk.foundation.$foundation_version\metadata\*.winmd"
+& $abiwinrt -input $foundation_metadata.FullName -reference sdk $ixp_metadata.FullName -output inc\abi\foundation -lowercase-include-guard -ns-prefix always
+copy $working_dir\packages\microsoft.windowsappsdk.foundation.$foundation_version\include\* inc\abi\foundation -recurse -force
+
+mkdir inc\abi\winai -ErrorAction SilentlyContinue
+$ai_metadata = gci -r "$working_dir\packages\microsoft.windowsappsdk.ai.$ai_version\metadata\*.winmd"
+& $abiwinrt -input $ai_metadata.FullName -reference sdk -output inc\abi\winai -lowercase-include-guard -ns-prefix always
+
+mkdir inc\abi\winml -ErrorAction SilentlyContinue
+$ml_metadata = gci -r "$working_dir\packages\microsoft.windowsappsdk.ml.$ml_version\metadata\*.winmd"
+& $abiwinrt -input $ml_metadata.FullName -reference sdk -output inc\abi\winml -lowercase-include-guard -ns-prefix always
 copy $working_dir\packages\microsoft.windowsappsdk.ml.$ml_version\include\* inc\abi\winml -recurse -force
 
 # Copy common runtime headers
