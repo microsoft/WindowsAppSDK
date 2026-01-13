@@ -51,7 +51,7 @@ $ErrorActionPreference = 'Stop'
 if ($Help -or -not $Branch) { Show-FileEmbeddedHelp -ScriptPath $MyInvocation.MyCommand.Path; return }
 
 # Normalize origin/<name> to <name>
-if ($Branch -match '^(origin|upstream|main|master)/.+') {
+if ($Branch -match '^(origin|upstream)/.+') {
     if ($Branch -match '^(origin|upstream)/(.+)$') { $Branch = $Matches[2] }
 }
 

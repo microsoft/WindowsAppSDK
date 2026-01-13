@@ -159,7 +159,7 @@ git worktree list --porcelain
    ./scripts/New-WorktreeFromBranch.ps1 -Branch feature/dashboard
    ```
 2. Work on each independently (different VS Code windows)
-3. Keep ≤3 active worktrees to manage cognitive load
+3. Keep ≤ 3 active worktrees to manage cognitive load
 
 ## Worktree Naming & Locations
 
@@ -172,7 +172,7 @@ Worktrees are created as **sibling folders** to the repository root (e.g., `MyRe
 
 ## Best Practices
 
-- **Keep ≤3 active worktrees** per developer to reduce cognitive load
+- **Keep ≤ 3 active worktrees** per developer to reduce cognitive load
 - **Delete stale worktrees early** — each adds file watchers and build churn
 - **Avoid editing the same file** across multiple worktrees simultaneously
 - **Run `git fetch --all --prune`** periodically in the primary repo, not every worktree
