@@ -50,11 +50,11 @@ license: Complete terms in LICENSE.txt
 
 ### Description Best Practices
 
-**CRITICAL**: The `description` field is the PRIMARY mechanism for automatic skill discovery. Copilot reads ONLY the `name` and `description` to decide whether to load a skill. If your description is vague, the skill will never be activated.
+**CRITICAL**: The `description` field is the PRIMARY mechanism for automatic skill discovery. Copilot reads **only** the `name` and `description` to decide whether to load a skill. If your description is vague, the skill will never be activated.
 
 **What to include in description:**
-1. **WHAT** the skill does (capabilities)
-2. **WHEN** to use it (specific triggers, scenarios, file types, or user requests)
+1. **What** the skill does (capabilities)
+2. **When** to use it (specific triggers, scenarios, file types, or user requests)
 3. **Keywords** that users might mention in their prompts
 
 **Good description:**
@@ -95,8 +95,8 @@ Skills can include additional files that Copilot accesses on-demand:
 |--------|---------|---------------------|---------------|
 | `scripts/` | Executable automation that performs specific operations | When executed | `helper.py`, `validate.sh`, `build.ts` |
 | `references/` | Documentation the AI agent reads to inform decisions | Yes, when referenced | `api_reference.md`, `schema.md`, `workflow_guide.md` |
-| `assets/` | **Static files used AS-IS** in output (not modified by the AI agent) | No | `logo.png`, `brand-template.pptx`, `custom-font.ttf` |
-| `templates/` | **Starter code/scaffolds that the AI agent MODIFIES** and builds upon | Yes, when referenced | `viewer.html` (insert algorithm), `hello-world/` (extend) |
+| `assets/` | **Static files used as-is** in output (not modified by the AI agent) | No | `logo.png`, `brand-template.pptx`, `custom-font.ttf` |
+| `templates/` | **Starter code/scaffolds that the AI agent modifies** and builds upon | Yes, when referenced | `viewer.html` (insert algorithm), `hello-world/` (extend) |
 
 ### Directory Structure Example
 

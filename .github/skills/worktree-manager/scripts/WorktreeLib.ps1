@@ -305,7 +305,7 @@ function Show-WorktreeExecutionSummary {
 
 .DESCRIPTION
     Reads a PowerShell script file and extracts the help text from a special
-    embedded help block (delimited by angle-bracket-hash-exclamation markers),
+    embedded help block (delimited by <#! and #> markers),
     then displays it along with common manual steps.
 
 .PARAMETER ScriptPath

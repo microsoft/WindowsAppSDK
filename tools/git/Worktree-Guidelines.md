@@ -32,9 +32,9 @@ Git worktrees let you have several checked-out branches sharing a single `.git` 
 - Fast context switching: no re-clone, no duplicate large binary/object downloads
 - Lower disk usage versus multiple full clones
 - Keeps each change isolated in its own folder so you can run builds/tests independently
-- Enables working in parallel with Copilot-generated branches while the main clone stays clean
+- Enables working in parallel with branches created using GitHub Copilot assistance or by Copilot agents while the main clone stays clean
 
-Recommended: keep active parallel worktrees to **≤ 3** per developer to reduce cognitive load and avoid excessive incremental build invalidations.
+Recommended: keep active parallel worktrees to **up to 3** per developer to reduce cognitive load and avoid excessive incremental build invalidations.
 
 ## Scripts Overview
 
@@ -71,7 +71,7 @@ If only one match, removes the worktree directory. Add `-Force` to discard local
 
 ## Best Practices
 
-- Keep ≤ 3 active parallel worktrees (e.g., main dev, a long-lived feature, a quick fix / experiment) plus the root clone
+- Keep up to 3 active parallel worktrees (e.g., main dev, a long-lived feature, a quick fix / experiment) plus the root clone
 - Delete stale worktrees early; each adds file watchers & potential incremental build churn
 - Avoid editing the same file across multiple worktrees simultaneously to reduce merge friction
 - Run `git fetch --all --prune` periodically in the primary repo, not in every worktree
