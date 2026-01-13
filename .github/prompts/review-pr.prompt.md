@@ -8,44 +8,26 @@ description: 'Perform a comprehensive PR review with per-step Markdown and machi
 
 **Goal**: Given `{{pr_number}}`, run a *one-topic-per-step* review. Write files to `Generated Files/prReview/{{pr_number}}/` (replace `{{pr_number}}` with the integer). Emit machine‑readable blocks for a GitHub MCP to post review comments.
 
-## Prerequisites — GitHub MCP availability
+## Step 0: Fetch PR data (ALWAYS start here)
 
-Before starting, verify the GitHub MCP tools are available by checking if `mcp_github_pull_request_read` can be invoked.
+Use whatever GitHub MCP/API tools are available to fetch PR details. Common tool names include:
+- `mcp_github_pull_request_read` (with method: "get")
+- `github-pull-request_activePullRequest`
+- `activate_pull_request_management_tools`
 
-### If MCP is unavailable
-
-Display this message to the user and pause:
-
-> **GitHub MCP not detected.** This prompt requires the GitHub Pull Requests MCP for full functionality.
->
-> **Install options:**
-> 1. **VS Code extension** (recommended): Install [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) extension, then enable MCP in settings
-> 2. **Manual MCP setup**: Follow [GitHub MCP documentation](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-in-vs-code/using-model-context-protocol-servers-in-vs-code)
->
-> After installation, restart VS Code and re-run this prompt.
-
-### Fallback mode (limited functionality)
-
-If the user chooses to proceed without MCP:
-- Use `gh` CLI commands as fallback (requires GitHub CLI installed and authenticated)
-- PR discovery: `gh pr list --assignee @me --state open --json number,updatedAt --limit 20`
-- PR details: `gh pr view {{pr_number}} --json number,baseRefName,headRefName,baseRefOid,headRefOid,files`
-- Changed files: `gh api repos/:owner/:repo/pulls/{{pr_number}}/files?per_page=250`
-- **Note**: Review comment posting will be disabled in fallback mode; findings will only be written to local files.
+**Just try calling one of these tools** to get PR info for PR #6130 (or the PR from context). The call will either succeed or fail - that tells you which tools work.
 
 ## PR selection
 Resolve the target PR using these fallbacks in order:
 1. Parse the invocation text for an explicit identifier (first integer following patterns such as a leading hash and digits or the text `PR:` followed by digits).
 2. If no PR is found yet, locate the newest `Generated Files/prReview/_batch/batch-overview-*.md` file (highest timestamp in filename, fallback newest mtime) and take the first entry in its `## PRs` list whose review folder is missing `00-OVERVIEW.md` or contains `__error.flag`.
-3. If the batch file has no pending PRs, use `mcp_github_search_pull_requests` with `query: "assignee:@me is:open"`, `sort: "updated"`, `order: "desc"`, `perPage: 20` and pick the most recently updated PR that does not already have a completed review folder.
-4. If still unknown, use `mcp_github_list_pull_requests` filtered by the current branch name (`head` parameter) and use that result when it is unambiguous.
+3. If the batch file has no pending PRs, activate GitHub search tools and call `github-pull-request_doSearch` with `query: "assignee:@me is:open"` plus `sort: updated`, `order: desc`, `perPage: 20`; pick the most recently updated PR that does not already have a completed review folder.
+4. If still unknown, use `github-pull-request_doSearch` with `query: "head:${currentBranch}"` and use that result when it is unambiguous.
 5. If every step above fails, prompt the user for a PR number before proceeding.
 
-## Fetch PR data with GitHub MCP
+## Additional MCP methods
 
-### Core PR information
-Use `mcp_github_pull_request_read` (owner, repo, pullNumber required):
-- `method: "get"` → returns number, baseRefName, headRefName, baseRefOid, headRefOid, title, body, state
+Once MCP is confirmed working (Step 0 succeeded), use these additional methods:
 - `method: "get_files"` → returns list of changed files with filename, status, additions, deletions, patch
 - `method: "get_diff"` → returns unified diff with patch hunks for line mapping
 
@@ -56,7 +38,7 @@ Use `activate_file_management_tools` → `Get file contents`:
 ### Incremental review workflow
 1. **Check for existing review**: Read `Generated Files/prReview/{{pr_number}}/00-OVERVIEW.md`
 2. **Extract state**: Parse `Last reviewed SHA:` from review metadata section
-3. **Detect changes**: Use `activate_branch_and_commit_management_tools` → `List commits` on the head branch to check if `last_sha` exists in recent history. Then use `mcp_github_pull_request_read` with `method: "get_files"` to get current changed files and compare against cached file list from previous iteration.
+3. **Detect changes**: Use commit listing tools to check if `last_sha` exists in recent history. Then use PR file listing tools to get current changed files and compare against cached file list from previous iteration.
 4. **Analyze result**:
    - If force-push detected (last SHA not in commit history) → Full review needed
    - If commits added since last review → Review only changed files (diff current vs cached file list)
@@ -189,7 +171,7 @@ Create a local scratch workspace to progressively summarize diffs and reload sta
 ```
 
 ### Phases (stateful; resume-safe)
-0. **Discover** PR + SHAs: Use `mcp_github_pull_request_read` with `method: "get"` for refs/SHAs, then `method: "get_files"` for changed files list.
+0. **Discover** PR + SHAs: Use available GitHub PR tools to get refs/SHAs and changed files list.
 1. **Chunk** each changed file (head): split into ~300–600 LOC or ~4k chars; stable `chunk_id` = hash(path+start).
    - Save `chunk` records. Optionally write `file-<hash>.txt` for expensive chunks.
 2. **Summarize** per chunk: intent, APIs, risks per TODO step; emit `summary` records (≤600 tokens each).
@@ -205,7 +187,7 @@ Create a local scratch workspace to progressively summarize diffs and reload sta
 
 ### Original vs diff
 - Fetch base content when needed: prefer `git show <baseRefName>:<path>`; fallback `activate_file_management_tools` → `Get file contents` with `ref` set to base SHA.
-- Use patch hunks from `mcp_github_pull_request_read` with `method: "get_files"` or `method: "get_diff"` to compute **head** line numbers.
+- Use patch hunks from PR diff/files tools to compute **head** line numbers.
 
 ### Queue-driven loop
 - Seed `todo-queue.json` with all changed files.
