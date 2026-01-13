@@ -11,11 +11,56 @@ For **#{{issue_number}}** produce:
 1) `Generated Files/issueReview/{{issue_number}}/overview.md`
 2) `Generated Files/issueReview/{{issue_number}}/implementation-plan.md`
 
+## Prerequisites — GitHub MCP availability
+
+Before starting, verify the GitHub MCP tools are available by checking if `activate_repository_information_tools` can be invoked.
+
+### If MCP is unavailable
+
+Display this message to the user and pause:
+
+> **GitHub MCP not detected.** This prompt requires the GitHub MCP for full functionality.
+>
+> **Install options:**
+> 1. **VS Code extension** (recommended): Install [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) extension, then enable MCP in settings
+> 2. **Manual MCP setup**: Follow [GitHub MCP documentation](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-in-vs-code/using-model-context-protocol-servers-in-vs-code)
+>
+> After installation, restart VS Code and re-run this prompt.
+
+### Fallback mode (limited functionality)
+
+If the user chooses to proceed without MCP:
+- Use `gh` CLI commands as fallback (requires GitHub CLI installed and authenticated)
+- Issue details: `gh issue view {{issue_number}} --json number,title,body,author,createdAt,updatedAt,state,labels,milestone,reactions,comments,linkedPullRequests`
+- Search issues: `gh issue list --search "keywords" --state all --json number,title,state,closedAt`
+- **Note**: Some advanced issue analysis features may be limited in fallback mode.
+
 ## Inputs
 Figure out required inputs {{issue_number}} from the invocation context; if anything is missing, ask for the value or note it as a gap.
 
+## Fetch Issue Data with GitHub MCP
+
+### Core issue information
+Use `activate_repository_information_tools` to access issue tools:
+- `Get issue` → returns number, title, body, author, state, labels, milestone, reactions, comments, linkedPullRequests
+- `List issues` → search and filter issues by state, labels, assignee
+
+### Search for similar issues
+Use `activate_github_search_tools`:
+- `github-pull-request_formSearchQuery` → convert natural language to GitHub search query
+- `github-pull-request_doSearch` → execute the search
+
+### Quick fix suggestions
+Use `github-pull-request_suggest-fix`:
+- Provide `issueNumber`, `repo.owner`, `repo.name`
+- Returns summarized issue with suggested fix approach
+
+### Render issue results
+Use `github-pull-request_renderIssues`:
+- Pass array of issues to render as markdown table for display
+
 # CONTEXT (brief)
-Ground evidence using `gh issue view {{issue_number}} --json number,title,body,author,createdAt,updatedAt,state,labels,milestone,reactions,comments,linkedPullRequests`, and download images to better understand the issue context.
+Use the MCP tools above to gather issue data, and download images to better understand the issue context.
 Locate source code in the current workspace; feel free to use `rg`/`git grep`. Link related issues and PRs.
 
 # OVERVIEW.MD
@@ -85,7 +130,7 @@ Provide actionable recommendations for issue triage and assignment:
 - If current labels are incorrect or incomplete, provide specific label changes with rationale
 
 ### C) Find Similar Issues & Past Fixes
-- Search for similar issues using `gh issue list --search "keywords" --state all --json number,title,state,closedAt`
+- Use `activate_github_search_tools` → `github-pull-request_doSearch` to search for similar issues
 - Identify patterns: duplicate issues, related bugs, or similar feature requests
 - For closed issues, find linked PRs that fixed them: check `linkedPullRequests` in issue data
 - Provide 3-5 examples of similar issues with format: `#<number> - <title> (closed by PR #<pr>)` or `(still open)`
