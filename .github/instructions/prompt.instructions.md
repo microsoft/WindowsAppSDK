@@ -9,7 +9,7 @@ Instructions for creating effective and maintainable prompt files that guide Git
 
 ## Scope and Principles
 - Target audience: maintainers and contributors authoring reusable prompts for Copilot Chat.
-- Goals: predictable behaviour, clear expectations, minimal permissions, and portability across repositories.
+- Goals: predictable behavior, clear expectations, minimal permissions, and portability across repositories.
 - Primary references: VS Code documentation on prompt files and organization-specific conventions.
 
 ## Frontmatter Requirements
@@ -50,7 +50,7 @@ Every prompt file should include YAML frontmatter with the following fields:
 
 ## Tool and Permission Guidance
 - Limit `tools` to the smallest set that enables the task. List them in the preferred execution order when the sequence matters.
-- If the prompt inherits tools from a chat mode, mention that relationship and state any critical tool behaviours or side effects.
+- If the prompt inherits tools from a chat mode, mention that relationship and state any critical tool behaviors or side effects.
 - Warn about destructive operations (file creation, edits, terminal commands) and include guard rails or confirmation steps in the workflow.
 
 ## Instruction Tone and Style
@@ -70,7 +70,7 @@ Every prompt file should include YAML frontmatter with the following fields:
 
 ## Quality Assurance Checklist
 - [ ] Frontmatter fields are complete, accurate, and least-privilege.
-- [ ] Inputs include placeholders, default behaviours, and fallbacks.
+- [ ] Inputs include placeholders, default behaviors, and fallbacks.
 - [ ] Workflow covers preparation, execution, and post-processing without gaps.
 - [ ] Output expectations include formatting and storage details.
 - [ ] Validation steps are actionable (commands, diff checks, review prompts).
