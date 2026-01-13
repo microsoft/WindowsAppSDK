@@ -9,7 +9,6 @@ This folder contains convenience wrapper scripts for human users. The **master i
 ├── SKILL.md                           # Skill documentation
 └── scripts/
     ├── WorktreeLib.ps1                # Shared helpers (master)
-    ├── worktree-helper.ps1            # Unified entry point
     ├── New-WorktreeFromBranch.ps1     # Implementation
     ├── New-WorktreeFromIssue.ps1      # Implementation
     └── Delete-Worktree.ps1            # Implementation
