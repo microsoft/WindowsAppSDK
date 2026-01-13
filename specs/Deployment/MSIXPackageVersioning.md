@@ -447,7 +447,8 @@ This means that there will be times when there is a patch number that will not b
 do not bump the Major/Minor for experimental things because the new/breaking things will at least sometimes not be in the next stable release, 
 and may even be removed before the next experimental release. 
 * Preview releases are optional if we feel the need to have a preview of nearly stable things without anything currently marked experimental.
-This will only happen on the next Major release before making an official stable release.
+This will only happen on the next Major release before making an official stable release. When we do have a Preview build, all Previews and 
+Experimental releases will be X.0.0-<pre or Exp><Num> until we release the first Stable release.
 
 A simplified example is this:
 * 2.0.0 is the first stable release.
@@ -457,10 +458,14 @@ A simplified example is this:
 * 2.0.4-experimental is the 3rd experimental. (contains 2.0.1 + some Breaking Changes, some exp APIs, and some more bug fixes)
 * 2.1.0 is the 3rd stable release (some of the exp APIs went stable, and some bug fixes)
 * 2.1.1-experimental is the 4th experimental. (contains 2.1.0 + some Breaking Changes, and some more bug fixes)
-* 3.0.0-preview is the preview 3 public release
-* 3.0.1-experimental (contains 3.0.1-preview + some new APIs not in the preview build)
-* 3.0.3 is the first 3 stable release (we made 3.0.2, noticed issues we had not seen in preview, fixed and rebuilt)
-* 3.0.4-experimental (contains 3.0.3 + the new APIs from 3.0.1-experimental)
+* 3.0.0-preview1 is the preview 3 public release
+* 3.0.0-experimental1 (contains 3.0.0-preview1 + some new APIs not in the preview build)
+* 3.0.0-experimental2 (contains 3.0.0-preview1 + even more new APIs not in the preview build)
+* 3.0.0-preview2 (one of the experimental APIs went public, but still not ready to release)
+* 3.0.0-experimental3 (contains 3.0.0-preview2 + the experimental API and some bug fixes)
+* 3.0.0 is the first 3 stable release
+* 3.0.1-experimental (contains 3.0.0 + the new APIs from 3.0.0-experimental1)
+* 3.0.3 is the 2nd stable release(we made 3.0.2, noticed issues, fixed and rebuilt)
 
 Version's fields have values 0-65535.
 
