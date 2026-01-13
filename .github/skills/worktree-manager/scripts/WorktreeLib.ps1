@@ -169,7 +169,8 @@ function New-WorktreeForExistingBranch {
   $folderName = "$(Split-Path -Leaf $repoRoot)-$hash"
   $base = Get-WorktreeBasePath -RepoRoot $repoRoot
   $folder = Join-Path $base $folderName
-  git worktree add $folder $Branch
+  $worktreeOutput = git worktree add $folder $Branch 2>&1
+  if ($LASTEXITCODE -ne 0) { throw "Failed to create worktree at '$folder' for branch '$Branch': $worktreeOutput" }
   $inited = Initialize-SubmodulesIfAny -RepoRoot $repoRoot -WorktreePath $folder
   code --new-window "$folder" --profile "$VSCodeProfile" | Out-Null
   Info "Created worktree for branch '$Branch' at $folder."; if ($inited) { Info 'Submodules initialized.' }
@@ -197,9 +198,9 @@ function Get-WorktreeEntries {
   # Returns objects with Path and Branch (branch without refs/heads/ prefix)
   $lines = git worktree list --porcelain 2>$null
   if (-not $lines) { return @() }
-  $entries = @(); $current=@{}
+  $entries = @(); $current=@{ path=$null; branch=$null }
   foreach($l in $lines){
-    if ($l -eq '') { if ($current.path -and $current.branch){ $entries += ,([pscustomobject]@{ Path=$current.path; Branch=($current.branch -replace '^refs/heads/','') }) }; $current=@{}; continue }
+    if ($l -eq '') { if ($current.path -and $current.branch){ $entries += ,([pscustomobject]@{ Path=$current.path; Branch=($current.branch -replace '^refs/heads/','') }) }; $current=@{ path=$null; branch=$null }; continue }
     if ($l -like 'worktree *'){ $current.path = ($l -split ' ',2)[1] }
     elseif ($l -like 'branch *'){ $current.branch = ($l -split ' ',2)[1].Trim() }
   }
@@ -303,8 +304,9 @@ function Show-WorktreeExecutionSummary {
     Displays embedded help from a script file's comment block.
 
 .DESCRIPTION
-    Reads a PowerShell script file and extracts the help text from the special
-    <#! ... #> comment block, then displays it along with common manual steps.
+    Reads a PowerShell script file and extracts the help text from a special
+    embedded help block (delimited by angle-bracket-hash-exclamation markers),
+    then displays it along with common manual steps.
 
 .PARAMETER ScriptPath
     The full path to the script file containing embedded help.
@@ -313,7 +315,7 @@ function Show-WorktreeExecutionSummary {
     Show-FileEmbeddedHelp -ScriptPath 'C:\scripts\New-WorktreeFromBranch.ps1'
 
 .NOTES
-    The script must contain a <#! ... #> block with help content.
+    The script must contain an embedded help block with the special marker syntax.
 #>
 function Show-FileEmbeddedHelp {
   param([string]$ScriptPath)

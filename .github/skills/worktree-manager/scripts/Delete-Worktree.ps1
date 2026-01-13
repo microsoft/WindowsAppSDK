@@ -52,7 +52,7 @@ if ($Help -or -not $Pattern) { Show-FileEmbeddedHelp -ScriptPath $MyInvocation.M
 
 try {
     $repoRoot = Get-RepoRoot
-    $entries = Get-WorktreeEntries
+    $entries = @(Get-WorktreeEntries)
     
     if ($entries.Count -eq 0) {
         Info "No worktrees found."
@@ -60,9 +60,9 @@ try {
     }
     
     # Find matching worktrees (by branch or path)
-    $matchedEntries = $entries | Where-Object { 
+    $matchedEntries = @($entries | Where-Object { 
         $_.Branch -like "*$Pattern*" -or $_.Path -like "*$Pattern*" 
-    }
+    })
     
     if ($matchedEntries.Count -eq 0) {
         Err "No worktree found matching pattern: $Pattern"

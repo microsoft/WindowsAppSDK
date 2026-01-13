@@ -73,7 +73,8 @@ try {
 
     New-WorktreeForExistingBranch -Branch $branch -VSCodeProfile $VSCodeProfile
     $after = Get-WorktreeEntries | Where-Object { $_.Branch -eq $branch }
-    $path = ($after | Select-Object -First 1).Path
+    $entry = $after | Select-Object -First 1
+    $path = if ($entry) { $entry.Path } else { $null }
     Show-WorktreeExecutionSummary -CurrentBranch $branch -WorktreePath $path
     exit 0
 } catch {
