@@ -32,7 +32,7 @@ Git worktrees let you have several checked-out branches sharing a single `.git` 
 - Fast context switching: no re-clone, no duplicate large binary/object downloads
 - Lower disk usage versus multiple full clones
 - Keeps each change isolated in its own folder so you can run builds/tests independently
-- Enables working in parallel with Copilot-generated branches while the main clone stays clean
+- Enables working in parallel with branches created using GitHub Copilot assistance or by Copilot agents while the main clone stays clean
 
 Recommended: keep active parallel worktrees to **≤ 3** per developer to reduce cognitive load and avoid excessive incremental build invalidations.
 
