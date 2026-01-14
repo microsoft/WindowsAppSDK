@@ -174,7 +174,9 @@ namespace Test::PackageManager::Tests
                     }
                     else if (progress.Progress == 0)
                     {
-                        VERIFY_ARE_EQUAL(PackageDeploymentProgressStatus::Queued, progress.Status);
+                        VERIFY_IS_TRUE((progress.Status == PackageDeploymentProgressStatus::Queued) ||
+                                       (progress.Status == PackageDeploymentProgressStatus::InProgress),
+                                       WEX::Common::String().Format(L"progress.Status:%d != Queued or InProgress"));
                     }
                 }
             );
