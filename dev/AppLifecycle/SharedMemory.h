@@ -19,8 +19,7 @@ public:
     {
         m_name = name;
 
-        // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
-        auto createdFile = OpenInternal(size + sizeof(size_t));
+        auto createdFile = OpenInternal(size);
         if (createdFile)
         {
             Clear();
@@ -35,8 +34,7 @@ public:
             m_view.reset();
             m_file.reset();
 
-            // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
-            OpenInternal(newSize + sizeof(size_t));
+            OpenInternal(newSize);
         }
 
         return createdFile;
@@ -61,8 +59,7 @@ public:
 
         m_name = name;
 
-        // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
-        OpenInternal(size + sizeof(size_t));
+        OpenInternal(size);
         m_view.get()->size = size;
     }
 
@@ -96,11 +93,13 @@ public:
 protected:
     bool OpenInternal(size_t size)
     {
-        m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(size), m_name.c_str()));
+        // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
+        size_t totalSize = size + sizeof(size_t);
+        m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(totalSize), m_name.c_str()));
         THROW_LAST_ERROR_IF_NULL(m_file);
 
         bool createdFile = (GetLastError() != ERROR_ALREADY_EXISTS);
-        m_view.reset(reinterpret_cast<DynamicSharedMemory<T>*>(MapViewOfFile(m_file.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, size)));
+        m_view.reset(reinterpret_cast<DynamicSharedMemory<T>*>(MapViewOfFile(m_file.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, totalSize)));
         THROW_LAST_ERROR_IF_NULL(m_view);
 
         return createdFile;
