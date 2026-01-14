@@ -164,7 +164,7 @@ See the examples in [Note 2: The use case and implementation of SettingsIdentifi
 
 The InitialFileTypeIndex is a 0-based value deciding the auto-selected file type on dialog launch. 
 
-See the examples in [Note 3: Properties for File Types and The Initial Index (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-3-properties-for-file-types-and-the-initial-index)
+See the examples in [Note 3: Properties for File Types and The Initial Index (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-3-properties-for-file-types-and-its-auto-selection-on-launch)
 
 ## Methods
 

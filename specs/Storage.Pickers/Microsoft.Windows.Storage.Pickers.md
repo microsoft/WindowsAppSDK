@@ -54,11 +54,11 @@ takes precedence over `SuggestedStartLocation`; when its folder not found, the p
 to `SuggestedStartLocation`, then to the system default.
 
 1. Adding `FileTypeChoices` for `FileOpenPicker`. This allows the dialog of FileOpenPicker to have 
-catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are provided, 
+categorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are provided, 
 `FileTypeChoices` is used and `FileTypeFilter` is ignored.
 
 1. Adding `InitialFileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows 
-setting the intitial file type filter selected. Note this index is 0-based. When it is 
+setting the initial file type filter selected. Note this index is 0-based. When it is 
 -1 (the default value), the system decides the selected filter on launch.
 
 1. Adding `SettingsIdentifier` for all 3 pickers. This allows the picker to hold its own state 
@@ -232,7 +232,7 @@ The SettingsIdentifier property allows the picker object to remember its own sta
 
 For example, here're 2 picker objects, one selects video files, the other one selects music files:
 ```C#
-async Task<String> PickMovieClipAsync()
+async Task<PickFileResult> PickMovieClipAsync()
 {
     var picker = new FileOpenPicker {
         SuggestedStartLocation = PickerLocationId.VideosLibrary,
@@ -242,7 +242,7 @@ async Task<String> PickMovieClipAsync()
     return await picker.PickSingleFileAsync();
 }
 
-async Task<String> PickBackgroundMusicAsync()
+async Task<PickFileResult> PickBackgroundMusicAsync()
 {
     var picker = new FileOpenPicker {
         SuggestedStartLocation = PickerLocationId.MusicLibrary,
@@ -256,7 +256,7 @@ async Task<String> PickBackgroundMusicAsync()
 Assigning the `SettingsIdentifier` to each picker keeps their memory distinct. Now, when the user 
 picks a movie clip file, they default to the folder that they most recently used to pick movie clips. 
 And similarly for background music. This functionality follows the behavior of the UWP pickers'
-`SettingIdentifier` property. We can read more about how UWP pickers handle settings identifiers 
+`SettingsIdentifier` property. We can read more about how UWP pickers handle settings identifiers 
 in this post: 
 [The SettingsIdentifier property of the various file pickers lets you give names to your pickers](https://devblogs.microsoft.com/oldnewthing/20200525-00/?p=103789)
 

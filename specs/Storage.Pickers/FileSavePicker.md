@@ -88,7 +88,7 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
 
     // (Optional) specify the index of the file type filter to be selected by default.
     //     The index is 0-based. 
-    //     When not specified, its value is null.
+    //     When not specified, its value is -1.
     InitialFileTypeIndex = 1,  // this will auto-select Documents
 
     // (Optional) Show a warning prompt of file overwrite when the user tries to pick an existing file.
@@ -151,7 +151,7 @@ savePicker.FileTypeChoices().Insert(L"Documents", winrt::single_threaded_vector<
 
 // (Optional) specify the index of the file type filter to be selected by default.
 //     The index is 0-based. 
-//     When not specified, its value is null.
+//     When not specified, its value is -1.
 savePicker.InitialFileTypeIndex(1);    // this will auto-select Documents
 
 // (Optional) Show a warning prompt of file overwrite when the user tries to pick an existing file.
@@ -182,7 +182,7 @@ See the examples in [Note 2: The use case and implementation of SettingsIdentifi
 
 The `InitialFileTypeIndex` property is 0-based. It decides the auto-selected file type on dialog launch.
 
-See the examples in [Note 3: Properties for File Types and The Initial Index (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-3-properties-for-file-types-and-the-initial-index)
+See the examples in [Note 3: Properties for File Types and The Initial Index (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-3-properties-for-file-types-and-its-auto-selection-on-launch)
 
 ### FileSavePicker.ShowOverwritePrompt
 
