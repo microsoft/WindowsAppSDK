@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
 
