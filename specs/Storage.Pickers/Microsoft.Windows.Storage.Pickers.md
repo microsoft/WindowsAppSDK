@@ -69,8 +69,9 @@ setting the intitial file type filter selected. Note this index is 0-based. When
 control whether the picker warns about overwriting when user picked an existing file via 
 FileSavePicker.
 
-1. Adding `CreateNewFileIfNotExists` for `FileSavePicker`. This Boolean properties default to `true` 
-and control whether to auto-create the picked file when it doesn't exist.
+1. Beginning with WindowsAppSDK version 2.0, the `FileSavePicker` no longer creates an empty file 
+when the selected file does not already exist. Instead, it simply returns the path chosen by the user, 
+allowing developers to determine when to create a new file or overwrite the existing one.
 
 1. Adding `Title` for all 3 pickers. `Title` allows setting the title of the picker dialog.
 
@@ -172,7 +173,6 @@ namespace Microsoft.Windows.Storage.Pickers
         Int32 InitialFileTypeIndex;
 
         bool ShowOverwritePrompt;
-        bool CreateNewFileIfNotExists;
 
         string SuggestedFolder;
         string SuggestedStartFolder;

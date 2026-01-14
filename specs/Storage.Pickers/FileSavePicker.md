@@ -27,7 +27,6 @@ runtimeclass FileSavePicker
     Int32 InitialFileTypeIndex;
 
     Boolean ShowOverwritePrompt;
-    Boolean CreateNewFileIfNotExists;
 
     string SuggestedFolder;
     String SuggestedStartFolder;
@@ -96,10 +95,6 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     //      set to true by default.
     ShowOverwritePrompt = true,
 
-    // (Optional) create an empty file when the picked file does not yet exist.
-    //      set to true by default.
-    CreateNewFileIfNotExists = true,
-
     // (Optional) specify the default file extension (will be appended to SuggestedFileName).
     //     Note: the default extension applies when the active filter is "All Files (*)" 
     //         or includes multiple extensions, and the default extension is one of them.
@@ -162,10 +157,6 @@ savePicker.InitialFileTypeIndex(1);    // this will auto-select Documents
 // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
 //      set to true by default.
 savePicker.ShowOverwritePrompt(true);
-
-// (Optional) create an empty file when the picked file does not yet exist.
-//      set to true by default.
-savePicker.CreateNewFileIfNotExists(true);
 
 // (Optional) specify the default file extension (will be appended to SuggestedFileName).
 //     Note: the default extension applies when the selected filter is "All Files (*)" 
