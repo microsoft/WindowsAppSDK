@@ -73,9 +73,10 @@ var folderPicker = new FolderPicker(this.AppWindow.Id)
     //     If not specified, the system uses a default title.
     Title = "Select Folder",
 
-    // (Optional) specify the settings identifier of the picker.
-    //     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
-    SettingsIdentifier = "MySettingsIdentifier",
+    // (Optional) allows customization of the settings name, to distinguish picker instances.
+    //     Without the SettingsIdentifier specified, pickers in one app share the state together.
+    //     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+    SettingsIdentifier = "BookContents",
 
     // (Optional) specify the view mode of the picker dialog. If not specified, default to List.
     ViewMode = PickerViewMode.List,
@@ -115,15 +116,31 @@ folderPicker.CommitButtonText(L"Select Folder");
 //     If not specified, the system uses a default title.
 folderPicker.Title(L"Select Folder");
 
-// (Optional) specify the settings identifier of the picker.
-//     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
-folderPicker.SettingsIdentifier(L"MySettingsIdentifier");
+// (Optional) allows customization of the settings name, to distinguish picker instances.
+//     Without the SettingsIdentifier specified, pickers in one app share the state together.
+//     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+folderPicker.SettingsIdentifier(L"BookContents");
 
 // (Optional) specify the view mode of the picker dialog. If not specified, default to List.
 folderPicker.ViewMode(PickerViewMode::List);
 ```
 
-## FolderPicker.PickSingleFolderAsync
+## New Properties
+
+### FolderPicker.Title
+
+Allow customizing the title of file dialog. It's based on the 
+[IFileDialog::SetTitle method](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-settitle)
+
+### FolderPicker.SettingsIdentifier
+
+The SettingsIdentifier property allows the picker object to remember its own states.
+
+See the examples in [Note 2: The use case and implementation of SettingsIdentifier (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-2-the-use-case-and-implementation-of-settingsidentifier)
+
+## Methods
+
+### FolderPicker.PickSingleFolderAsync
 
 Displays a UI element that allows the user to choose a folder.
 
@@ -131,7 +148,7 @@ Returns a lightweight object that has the path of the picked folder.
 
 Returns `null` if the file dialog was cancelled or closed without a selection.
 
-### Examples
+**Examples**
 
 C#
 
@@ -167,7 +184,7 @@ else
 }
 ```
 
-## FolderPicker.PickMultipleFoldersAsync
+### FolderPicker.PickMultipleFoldersAsync
 
 Displays a UI element that allows the user to choose multiple folders.
 
@@ -175,7 +192,7 @@ Returns a collection of lightweight objects that have the path of the picked fol
 
 Returns an empty list (`Count` = 0) if the folder dialog was cancelled or closed without a selection.
 
-### Examples
+**Examples**
 
 C#
 

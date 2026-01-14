@@ -75,9 +75,10 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     //     If not specified, the system uses a default title.
     Title = "Save File",
 
-    // (Optional) specify the settings identifier of the picker.
-    //     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
-    SettingsIdentifier = "MySettingsIdentifier",
+    // (Optional) allows customization of the settings name, to distinguish picker instances.
+    //     Without the SettingsIdentifier specified, pickers in one app share the state together.
+    //     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+    SettingsIdentifier = "BookContents",
 
     // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
     //     Note that when "All Files (*.*)" is allowed, end users can save a file without an extension.
@@ -89,7 +90,7 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     // (Optional) specify the index of the file type filter to be selected by default.
     //     The index is 0-based. 
     //     When not specified, its value is null.
-    InitialFileTypeIndex = 1u,  // this will auto-select Documents
+    InitialFileTypeIndex = 1,  // this will auto-select Documents
 
     // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
     //      set to true by default.
@@ -143,9 +144,10 @@ savePicker.CommitButtonText(L"Save Document");
 //     If not specified, the system uses a default title.
 savePicker.Title(L"Save File");
 
-// (Optional) specify the settings identifier of the picker.
-//     It allows the picker to remember its state (e.g. size, location, etc) across sessions.
-savePicker.SettingsIdentifier(L"MySettingsIdentifier");
+// (Optional) allows customization of the settings name, to distinguish picker instances.
+//     Without the SettingsIdentifier specified, pickers in one app share the state together.
+//     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+savePicker.SettingsIdentifier(L"BookContents");
 
 // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
 //     Note that when "All Files (*.*)" is allowed, end users can save a file without an extension.
@@ -155,7 +157,7 @@ savePicker.FileTypeChoices().Insert(L"Documents", winrt::single_threaded_vector<
 // (Optional) specify the index of the file type filter to be selected by default.
 //     The index is 0-based. 
 //     When not specified, its value is null.
-savePicker.InitialFileTypeIndex(1u);    // this will auto-select Documents
+savePicker.InitialFileTypeIndex(1);    // this will auto-select Documents
 
 // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
 //      set to true by default.
@@ -172,7 +174,28 @@ savePicker.CreateNewFileIfNotExists(true);
 savePicker.DefaultFileExtension(L".txt");
 ```
 
-## FileSavePicker.PickSaveFileAsync
+## New properties
+
+### FileSavePicker.Title
+
+Allow customizing the title of file dialog. It's based on the 
+[IFileDialog::SetTitle method](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-settitle)
+
+### FileSavePicker.SettingsIdentifier
+
+The SettingsIdentifier property allows the picker object to remember its own states.
+
+See the examples in [Note 2: The use case and implementation of SettingsIdentifier (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-2-the-use-case-and-implementation-of-settingsidentifier)
+
+### FileSavePicker.InitialFileTypeIndex
+
+The InitialFileTypeIndex is a 0-based value deciding the auto-selected file type on dialog launch. 
+
+See the examples in [Note 3: Properties for File Types and The Initial Index (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-3-properties-for-file-types-and-the-initial-index)
+
+## Methods
+
+### FileSavePicker.PickSaveFileAsync
 
 Displays a UI element that allows the user to configure the file path to save.
 
@@ -180,7 +203,7 @@ Returns a lightweight object that has the path of the saved file.
 
 Returns `null` if the file dialog was cancelled or closed without saving a file.
 
-### Examples
+**Examples**
 
 C#
 

@@ -61,10 +61,9 @@ catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are p
 setting the intitial file type filter selected. Note this index is 0-based. When it is 
 -1 (the default value), the initially-selected filter is the system default.
 
-1. The property `SettingsIdentifier` for all 3 pickers will be available in the new Storage.Pickers 
-APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, 
-location, etc) across sessions. When two different apps use the same string for SettingsIdentifier 
-property, they will have their respective independent states (Read more in Note 2).
+1. Adding `SettingsIdentifier` for all 3 pickers. This allows the picker to hold its own state 
+(e.g. size, location, etc) across sessions. The `SettingsIdentifier` is scoped to the app.
+(Read more in [Note 2](#note-2-the-use-case-and-implementation-of-settingsidentifier) below).
 
 1. Adding `ShowOverwritePrompt` for `FileSavePicker`. This Boolean properties default to `true` and 
 control whether the picker warns about overwriting when user picked an existing file via 
@@ -225,7 +224,43 @@ affect the picker:
 
     `SuggestedStartFolder` takes precedence over `SuggestedStartLocation` when both specified.
 
-#### Note 2: The implementation of SettingsIdentifier
+#### Note 2: The use case and implementation of SettingsIdentifier
+
+**The use case**
+
+The SettingsIdentifier property allows the picker object to remember its own states.
+
+For example, here're 2 picker objects, one selects video files, the other one selects music files:
+```C#
+async Task<String> PickMovieClipAsync()
+{
+    var picker = new FileOpenPicker {
+        SuggestedStartLocation = PickerLocationId.VideosLibrary,
+        FileTypeFilter = { ".mp4", ".wmv" },
+        SettingsIdentifier = "MovieClip"
+    };
+    return await picker.PickSingleFileAsync();
+}
+
+async Task<String> PickBackgroundMusicAsync()
+{
+    var picker = new FileOpenPicker {
+        SuggestedStartLocation = PickerLocationId.MusicLibrary,
+        FileTypeFilter = { ".mp3", ".m4a", ".wav", ".wma" },
+        SettingsIdentifier = "BackgroundMusic"
+    };
+    return await picker.PickSingleFileAsync();
+}
+```
+
+Assigning the `SettingsIdentifier` to each picker keeps their memory distinct. Now, when the user 
+picks a movie clip file, they default to the folder that they most recently used to pick movie clips. 
+And similarly for background music. This functionality follows the behavior of the UWP pickers'
+`SettingIdentifier` property. We can read more about how UWP pickers handle settings identifiers 
+in this post: 
+[The SettingsIdentifier property of the various file pickers lets you give names to your pickers](https://devblogs.microsoft.com/oldnewthing/20200525-00/?p=103789)
+
+**The implementation**
 
 When an app sets `SettingsIdentifier`, the picker persists its window placement and navigation
 history through the underlying [`IFileDialog::SetClientGuid`](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-setclientguid) 
@@ -244,7 +279,7 @@ their package identity, while unpackaged apps are differentiated by the absolute
 executable. As long as an app uses a stable combination of package identity (or executable path) and
 `SettingsIdentifier`, the picker will reopen with the same saved settings across sessions.
 
-#### Note 3: Properties for File Types and Their Default Index
+#### Note 3: Properties for File Types and The Initial Index
 
 **(1) Background of FileTypeFilter & FileTypeChoices**
 
@@ -262,19 +297,43 @@ properties are set in a `FileOpenPicker`, the `FileTypeChoices` property takes p
 
 **(2) The InitialFileTypeIndex**
 
-In this spec, we're adding `InitialFileTypeIndex`. It applies to whichever file type collection is 
-active and simply points to the auto-selected entry on dialog launch. For example:
+In this spec, we're adding `InitialFileTypeIndex`. It is a 0-based value applying to the active file 
+type collection and deciding the auto-selected file type on dialog launch. 
 
-- `FileTypeFilter` = `[".txt", ".doc", ".docx"]` 
+For example, when:
 
-    with `InitialFileTypeIndex = 1` 
+- `FileTypeFilter = [".txt", ".doc", ".docx"]`,
+
+    with `InitialFileTypeIndex = 1`,
     
-    initially selects `".doc"`.
-- `FileTypeChoices` = `{ "Texts": [".txt"], "Documents": [".doc", ".docx"] }` 
+    the file dialog initially selects `".doc"`;
 
-   with `InitialFileTypeIndex = 1` 
+    with `InitialFileTypeIndex = -1` or not specified by developer,
+
+    the file dialog initially selects the `All files | .txt, .doc, .docx` category that is 
+    automatically appended by the `FileOpenPicker`.
+
+- `FileTypeChoices = { "Texts": [".txt"], "Documents": [".doc", ".docx"] }`,
+
+    with `InitialFileTypeIndex = 1`,
    
-   initially selects the `Documents` category.
+    the file dialog initially selects the `Documents` category;
 
-Additionally, if the index falls outside the available range, we treat it as `-1`, meaning the 
-picker ignores this setting and follows the system default.
+    with `InitialFileTypeIndex = -1` or not specified by developer,
+
+    the file dialog initially selects the first - the `"Texts"` - category.
+
+- In `FileOpenPicker`, if (by mistake), both above `FileTypeFilter` and `FileTypeChoices` values are
+defined,
+
+    with `InitialFileTypeIndex = 1`,
+
+    the file dialog shows the filters in `FileTypeChoices` and initially selects the `Documents` 
+    category;
+    
+    with `InitialFileTypeIndex = -1` or not specified by developer,
+
+    the file dialog shows the filters in `FileTypeChoices` and initially selects its `"Texts"`
+    (which is its first) category, as `FileTypeChoices` takes precedence over the `FileTypeFilter`.
+
+Additionally, if the index falls outside the available range, we treat it as `-1` (not specified).
