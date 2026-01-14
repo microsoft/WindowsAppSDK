@@ -65,12 +65,12 @@ setting the intitial file type filter selected. Note this index is 0-based. When
 (e.g. size, location, etc) across sessions. The `SettingsIdentifier` is scoped to the app.
 (Read more in [Note 2](#note-2-the-use-case-and-implementation-of-settingsidentifier) below).
 
-1. Adding `ShowOverwritePrompt` for `FileSavePicker`. This Boolean properties default to `true` and 
-control whether the picker warns about overwriting when user picked an existing file via 
+1. Adding `ShowOverwritePrompt` for `FileSavePicker`. This Boolean property defaults to `true` and 
+controls whether the picker warns about overwriting when the user picked an existing file via 
 FileSavePicker.
 
-1. Beginning with WindowsAppSDK version 2.0, the `FileSavePicker` no longer creates an empty file 
-when the selected file does not already exist. Instead, it simply returns the path chosen by the user, 
+1. Beginning with WindowsAppSDK 2.0, the `FileSavePicker` no longer creates an empty file when the 
+selected file does not already exist. Instead, it simply returns the path chosen by the user, 
 allowing developers to determine when to create a new file or overwrite the existing one.
 
 1. Adding `Title` for all 3 pickers. `Title` allows setting the title of the picker dialog.
@@ -267,11 +267,11 @@ history through the underlying [`IFileDialog::SetClientGuid`](https://learn.micr
 API. The implementation derives that `ClientGuid` as follows:
 
 - First it tries to obtain the packaged app's Identity via [`GetCurrentApplicationUserModelId`](https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentapplicationusermodelid).
-- If the process has no package identity found (typical for unpackaged apps, win32 apps, etc.), 
+- If the process has no package identity (typical for unpackaged apps, win32 apps, etc.), 
     it falls back to the full path to the running executable retrieved from `wil::GetModuleFileNameW`.
 - The chosen identifier is concatenated with the caller-provided `SettingsIdentifier` value using a
     `"<app identifier>|<value of SettingsIdentifier>"` format. That string is then hashed with MD5 
-    and coerced into an GUID.
+    and coerced into a GUID.
 - The calculated GUID will be passed to set the `ClientGuid`.
 
 This means the feature works for both packaged and unpackaged apps. Packaged apps remain distinct by

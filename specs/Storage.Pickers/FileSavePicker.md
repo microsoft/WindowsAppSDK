@@ -91,8 +91,8 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     //     When not specified, its value is null.
     InitialFileTypeIndex = 1,  // this will auto-select Documents
 
-    // (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
-    //      set to true by default.
+    // (Optional) Show a warning prompt of file overwrite when the user tries to pick an existing file.
+    //      Set to true by default.
     ShowOverwritePrompt = true,
 
     // (Optional) specify the default file extension (will be appended to SuggestedFileName).
@@ -154,8 +154,8 @@ savePicker.FileTypeChoices().Insert(L"Documents", winrt::single_threaded_vector<
 //     When not specified, its value is null.
 savePicker.InitialFileTypeIndex(1);    // this will auto-select Documents
 
-// (Optional) Show a warning prompt of file overwrite when user tries to pick an existing file.
-//      set to true by default.
+// (Optional) Show a warning prompt of file overwrite when the user tries to pick an existing file.
+//      Set to true by default.
 savePicker.ShowOverwritePrompt(true);
 
 // (Optional) specify the default file extension (will be appended to SuggestedFileName).
