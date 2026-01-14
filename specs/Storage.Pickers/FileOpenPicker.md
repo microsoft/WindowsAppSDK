@@ -72,9 +72,10 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
     //     If not specified, the system uses a default title.
     Title = "Open File",
 
-    // (Optional) allows customization of the settings name, to distinguish picker instances.
-    //     Without the SettingsIdentifier specified, pickers in one app share the state together.
-    //     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+    // (Optional) Allows customization of the settings name, to distinguish picker instances.
+    //     Pickers in one app share state by default. Use this property only when you need
+    //     multiple distinct picker states within the same app.
+    //     See: https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.fileopenpicker.settingsidentifier
     SettingsIdentifier = "BookContents",
 
     // (Optional) group file types into labeled choices
@@ -127,9 +128,10 @@ openPicker.CommitButtonText(L"Choose selected files");
 //     If not specified, the system uses a default title.
 openPicker.Title(L"Open File");
 
-// (Optional) allows customization of the settings name, to distinguish picker instances.
-//     Without the SettingsIdentifier specified, pickers in one app share the state together.
-//     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+// (Optional) Allows customization of the settings name, to distinguish picker instances.
+//     Pickers in one app share state by default. Use this property only when you need
+//     multiple distinct picker states within the same app.
+//     See: https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.fileopenpicker.settingsidentifier
 openPicker.SettingsIdentifier(L"BookContents");
 
 // (Optional) group file types into labeled choices

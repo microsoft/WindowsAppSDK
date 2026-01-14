@@ -63,7 +63,7 @@ setting the initial file type filter selected. Note this index is 0-based. When 
 
 1. Adding `SettingsIdentifier` for all 3 pickers. This allows the picker to hold its own state 
 (e.g. size, location, etc) across sessions. The `SettingsIdentifier` is scoped to the app.
-(Read more in [Note 2](#note-2-the-use-case-and-implementation-of-settingsidentifier) below).
+(See [Note 2](#note-2-the-use-case-and-implementation-of-settingsidentifier) for more details).
 
 1. Adding `ShowOverwritePrompt` for `FileSavePicker`. This Boolean property defaults to `true` and 
 controls whether the picker warns about overwriting when the user picked an existing file via 

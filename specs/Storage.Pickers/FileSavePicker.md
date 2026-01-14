@@ -74,9 +74,10 @@ var savePicker = new FileSavePicker(this.AppWindow.Id)
     //     If not specified, the system uses a default title.
     Title = "Save File",
 
-    // (Optional) allows customization of the settings name, to distinguish picker instances.
-    //     Without the SettingsIdentifier specified, pickers in one app share the state together.
-    //     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+    // (Optional) Allows customization of the settings name, to distinguish picker instances.
+    //     Pickers in one app share state by default. Use this property only when you need
+    //     multiple distinct picker states within the same app.
+    //     See: https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.filesavepicker.settingsidentifier
     SettingsIdentifier = "BookContents",
 
     // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
@@ -139,9 +140,10 @@ savePicker.CommitButtonText(L"Save Document");
 //     If not specified, the system uses a default title.
 savePicker.Title(L"Save File");
 
-// (Optional) allows customization of the settings name, to distinguish picker instances.
-//     Without the SettingsIdentifier specified, pickers in one app share the state together.
-//     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+// (Optional) Allows customization of the settings name, to distinguish picker instances.
+//     Pickers in one app share state by default. Use this property only when you need
+//     multiple distinct picker states within the same app.
+//     See: https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.filesavepicker.settingsidentifier
 savePicker.SettingsIdentifier(L"BookContents");
 
 // (Optional) categorized extension types. If not specified, "All Files (*.*)" is allowed.
