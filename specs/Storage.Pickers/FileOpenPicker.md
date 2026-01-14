@@ -24,7 +24,7 @@ runtimeclass FileOpenPicker
 
     IMap<String, IVector<String>> FileTypeChoices{ get; };
     IVector<string> FileTypeFilter{ get; };
-    IReference<UInt32> DefaultFileTypeIndex;
+    Int32 InitialFileTypeIndex;
 
     string SuggestedFolder;
     String SuggestedStartFolder;
@@ -91,7 +91,7 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
     //     When not specified, its value is null and the filter follows API's behavior. That is:
     //          When FileTypeFilter is in effect, auto-select the last one (All Files).
     //          Otherwise, auto-select the first one.
-    DefaultFileTypeIndex = 1u,  // auto select Pictures
+    InitialFileTypeIndex = 1u,  // auto select Pictures
 
     // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
     ViewMode = PickerViewMode.List,
@@ -149,7 +149,7 @@ openPicker.FileTypeFilter().ReplaceAll({ L".txt", L".pdf", L".doc", L".docx" });
 //     When not specified, its value is null and the filter follows API's behavior. That is:
 //          When FileTypeFilter is in effect, auto-select the last one (All Files).
 //          Otherwise, auto-select the first one.
-openPicker.DefaultFileTypeIndex(1u);  // auto select Pictures
+openPicker.InitialFileTypeIndex(1u);  // auto select Pictures
 
 // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
 openPicker.ViewMode(PickerViewMode::List);

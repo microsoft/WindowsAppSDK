@@ -57,9 +57,9 @@ to `SuggestedStartLocation`, then to the system default.
 catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are provided, 
 `FileTypeChoices` is used and `FileTypeFilter` is ignored.
 
-1. Adding `DefaultFileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows 
-setting the default selected file type filter index. Note this index is 0-based. When it is 
-null (the default value), the selected filter might be override by the API's default behavior.
+1. Adding `InitialFileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows 
+setting the intitial file type filter selected. Note this index is 0-based. When it is 
+-1 (the default value), the initially-selected filter is the system default.
 
 1. The property `SettingsIdentifier` for all 3 pickers will be available in the new Storage.Pickers 
 APIs from WindowsAppSDK2.0. `SettingsIdentifier` allows the picker to remember its state (e.g. size, 
@@ -146,7 +146,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
         IVector<string> FileTypeFilter{ get; };
-        IReference<UInt32> DefaultFileTypeIndex;
+        Int32 InitialFileTypeIndex;
 
         string SuggestedFolder;
         string SuggestedStartFolder;
@@ -170,7 +170,7 @@ namespace Microsoft.Windows.Storage.Pickers
         string SuggestedFileName;
 
         IMap<string, IVector<string>> FileTypeChoices{ get; };
-        IReference<UInt32> DefaultFileTypeIndex;
+        Int32 InitialFileTypeIndex;
 
         bool ShowOverwritePrompt;
         bool CreateNewFileIfNotExists;
@@ -260,21 +260,21 @@ Because `FileTypeChoices` can be considered an enhanced version of `FileTypeFilt
 properties are set in a `FileOpenPicker`, the `FileTypeChoices` property takes precedence and the 
 `FileTypeFilter` is ignored.
 
-**(2) The DefaultFileTypeIndex**
+**(2) The InitialFileTypeIndex**
 
-In this spec, we're adding `DefaultFileTypeIndex`. It applies to whichever file type collection is 
+In this spec, we're adding `InitialFileTypeIndex`. It applies to whichever file type collection is 
 active and simply points to the auto-selected entry on dialog launch. For example:
 
 - `FileTypeFilter` = `[".txt", ".doc", ".docx"]` 
 
-    with `DefaultFileTypeIndex = 1` 
+    with `InitialFileTypeIndex = 1` 
     
-    selects `".doc"`.
+    initially selects `".doc"`.
 - `FileTypeChoices` = `{ "Texts": [".txt"], "Documents": [".doc", ".docx"] }` 
 
-   with `DefaultFileTypeIndex = 1` 
+   with `InitialFileTypeIndex = 1` 
    
-   selects the `Documents` group.
+   initially selects the `Documents` category.
 
-Additionally, if the index falls outside the available range, we treat it as `null`, meaning the 
-picker ignores this setting and follows its built-in default.
+Additionally, if the index falls outside the available range, we treat it as `-1`, meaning the 
+picker ignores this setting and follows the system default.
