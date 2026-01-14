@@ -59,7 +59,7 @@ catagorized filter types. When both `FileTypeChoices` and `FileTypeFilter` are p
 
 1. Adding `InitialFileTypeIndex` for `FileOpenPicker` and `FileSavePicker`. This allows 
 setting the intitial file type filter selected. Note this index is 0-based. When it is 
--1 (the default value), the initially-selected filter is the system default.
+-1 (the default value), the system decides the selected filter on launch.
 
 1. Adding `SettingsIdentifier` for all 3 pickers. This allows the picker to hold its own state 
 (e.g. size, location, etc) across sessions. The `SettingsIdentifier` is scoped to the app.
