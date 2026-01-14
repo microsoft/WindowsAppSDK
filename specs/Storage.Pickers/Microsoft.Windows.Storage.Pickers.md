@@ -279,7 +279,7 @@ their package identity, while unpackaged apps are differentiated by the absolute
 executable. As long as an app uses a stable combination of package identity (or executable path) and
 `SettingsIdentifier`, the picker will reopen with the same saved settings across sessions.
 
-#### Note 3: Properties for File Types and The Initial Index
+#### Note 3: Properties for File Types and Its Auto-Selection on Launch
 
 **(1) Background of FileTypeFilter & FileTypeChoices**
 
@@ -295,7 +295,13 @@ Because `FileTypeChoices` can be considered an enhanced version of `FileTypeFilt
 properties are set in a `FileOpenPicker`, the `FileTypeChoices` property takes precedence and the 
 `FileTypeFilter` is ignored.
 
-**(2) The InitialFileTypeIndex**
+**(2) Input Validation**
+
+Both `FileTypeFilter` and `FileTypeChoices` reject filter strings containing specific wildcard 
+patterns (e.g., `".p*f"`). The only exception is a single `*` - `"*"` can be passed as a filter 
+string, meaning "no filtering" and displaying all files.
+
+**(3) The InitialFileTypeIndex**
 
 In this spec, we're adding `InitialFileTypeIndex`. It is a 0-based value applying to the active file 
 type collection and deciding the auto-selected file type on dialog launch. 
