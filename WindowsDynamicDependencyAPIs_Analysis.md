@@ -32,7 +32,7 @@ The following APIs are part of the Windows SDK's Dynamic Dependency support in `
 7. **GetResolvedPackageFullNameForPackageDependency**
    - Returns the resolved package full name for a package dependency
 
-8. **GetResolvedPackageFull NameForPackageDependency2**
+8. **GetResolvedPackageFullNameForPackageDependency2**
    - Extended version with different error handling (returns ERROR_NOT_FOUND for unknown IDs)
    - Available in Windows 11 and later
 

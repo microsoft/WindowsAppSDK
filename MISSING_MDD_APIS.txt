@@ -1,0 +1,34 @@
+===============================================================================
+WINDOWS DYNAMIC DEPENDENCY APIs WITHOUT MATCHING Mdd* APIs
+===============================================================================
+
+This file lists Windows Dynamic Dependency APIs (from Windows SDK's appmodel.h)
+that do NOT have a corresponding Mdd* API in msixdynamicdependency.h.
+
+-------------------------------------------------------------------------------
+MISSING APIs
+-------------------------------------------------------------------------------
+
+1. TryCreatePackageDependency2
+   Expected: MddTryCreatePackageDependency2 (NOT FOUND)
+   Windows API: Added in Windows 11 24H1
+   Description: Extended version with PackageDependencyLifetimeArtifactType parameter
+   Reference: dev/Common/IsWindowsVersion.h lines 57-58
+
+2. AddPackageDependency2
+   Expected: MddAddPackageDependency2 (NOT FOUND)
+   Windows API: Added in Windows 11 23H2
+   Description: Extended version with additional options
+   Reference: Not yet referenced in codebase
+
+-------------------------------------------------------------------------------
+SUMMARY
+-------------------------------------------------------------------------------
+
+Total Windows Dynamic Dependency APIs: 10
+APIs with Mdd* equivalents: 8
+APIs WITHOUT Mdd* equivalents: 2
+
+For detailed analysis, see: WindowsDynamicDependencyAPIs_Analysis.md
+
+===============================================================================
