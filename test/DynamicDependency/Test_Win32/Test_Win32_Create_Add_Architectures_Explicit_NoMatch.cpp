@@ -55,6 +55,7 @@ void Test::DynamicDependency::Test_Win32::Create_Add_Architectures_Explicit_NoMa
         const HRESULT expectedHR{ STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED };
         wil::unique_process_heap_string packageFullName_FrameworkMathAdd;
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{ Mdd_Add(expectedHR, packageDependencyId_FrameworkMathAdd.get(), packageFullName_FrameworkMathAdd) };
+        VERIFY_IS_NULL(packageDependencyContext_FrameworkMathAdd);
         VERIFY_IS_NULL(packageFullName_FrameworkMathAdd.get(), WEX::Common::String().Format(L"PackageFullName=%s Expected=not-<null>", !packageFullName_FrameworkMathAdd ? L"<null>" : packageFullName_FrameworkMathAdd.get()));
         VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
         VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
