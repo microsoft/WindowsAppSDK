@@ -367,7 +367,7 @@ where
 Singleton, since there is one package covering all releases. That package can't "go back" to Major=2, so we will add a
 8000 to the Major for that package.
 
-For Information on how WindowsAppSDK Projects determines these versions, see the [WindowsAppSDKVersioning spec](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/WindowsAppSDKVersioning.md)
+For Information on how WindowsAppSDK Projects determines these versions, see the [WindowsAppSDKVersioning spec](WindowsAppSDKVersioning.md)
 
 Version's fields have values 0-65535.
 
