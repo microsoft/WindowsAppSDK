@@ -6,7 +6,7 @@ per month.
 * Every potential released build (stable, preview, experimental) will increase the Patch, unless the Major or Minor is increased.
 No 2 builds will share the same Major.Minor.Patch version. The exception to that is X.Y.0, which could have muiltiple "preview" and
 "experimental" releases prior to the X.Y.0 stable release.
-If we notice an issue after building a canditate (stable, preview, or experimental), we will choose not to release it, at which 
+If we notice an issue after building a candidate (stable, preview, or experimental), we will choose not to release it, at which 
 point the patch will bump again.
 This means that there will be times when there is a patch number that will not be released at all.
 * Note: We see experimental releases as "containing" the closest stable + some experimental stuff, rather than "previewing" what is coming. We 
