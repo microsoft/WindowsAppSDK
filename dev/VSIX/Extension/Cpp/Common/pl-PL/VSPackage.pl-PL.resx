@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Puste okno (WinUI 3 na pulpicie)</value>
+    <value>Puste okno</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Eksperymentalne] Puste okno (WinUI 3 na pulpicie)</value>
+    <value>[Eksperymentalne] Puste okno</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Puste okno dla aplikacji klasycznych opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Puste okno (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>Pusta strona (WinUI 3)</value>
+    <value>Pusta strona</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Eksperymentalne] Pusta strona (WinUI 3)</value>
+    <value>[Eksperymentalne] Pusta strona</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Pusta strona dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Pusta strona (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Słownik zasobów (WinUI 3)</value>
+    <value>Słownik zasobów</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Eksperymentalne] Słownik zasobów (WinUI 3)</value>
+    <value>[Eksperymentalne] Słownik zasobów</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Pusta kolekcja kluczy zasobów XAML dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Pusta kolekcja kluczy zasobów XAML (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Plik zasobów (resw)</value>
@@ -151,60 +151,109 @@
     <value>[Eksperymentalne] Plik zasobów (resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Plik do przechowywania ciągów i zasobów warunkowych dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Plik do przechowywania ciągów i zasobów warunkowych (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>Kontrolka niestandardowa (WinUI 3)</value>
+    <value>Kontrolka z szablonem</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Eksperymentalne] Kontrolka niestandardowa (WinUI 3)</value>
+    <value>[Eksperymentalne] Kontrolka z szablonem</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Kontrolka niestandardowa dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Pusta kontrolka niestandardowa z odpowiednim domyślnym stylem (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Kontrolka użytkownika (WinUI 3)</value>
+    <value>Kontrola użytkownika</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Eksperymentalne] Kontrolka użytkownika (WinUI 3)</value>
+    <value>[Eksperymentalne] Kontrola użytkownika</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Kontrolka użytkownika dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Pusta kontrolka użytkownika (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Pusta aplikacja, spakietyzowana za pomocą projektu pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
+    <value>Pusta aplikacja WinUI (spakowana z projektem pakietu aplikacji systemu Windows)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Eksperymentalne] Pusta aplikacja spakowana z projekt pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
+    <value>[Eksperymentalne] Pusta aplikacja WinUI (spakowana z projektem pakietu aplikacji systemu Windows)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Szablon projektu służący do tworzenia aplikacji klasycznej na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
+    <value>Szablon projektu do tworzenia aplikacji WinUI. Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Pusta aplikacja, spakowana (WinUI 3 na pulpicie)</value>
+    <value>Pusta aplikacja WinUI (spakowana)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Eksperymentalne] Pusta aplikacja, spakowana (WinUI 3 na pulpicie)</value>
+    <value>[Eksperymentalne] Pusta aplikacja WinUI (spakowana)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Szablon projektu służący do tworzenia aplikacji klasycznej opartej na bibliotece interfejsu użytkownika systemu Windows (WinUI 3) wraz z pakietem MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
+    <value>Szablon projektu do tworzenia aplikacji WinUI wraz z pakietem MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Składnik środowiska wykonawczego systemu Windows (WinUI 3)</value>
+    <value>Składnik środowiska wykonawczego systemu Windows WinUI</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Eksperymentalne] Składnik środowiska wykonawczego systemu Windows (WinUI 3)</value>
+    <value>[Eksperymentalne] Składnik środowiska wykonawczego systemu Windows WinUI (C++/WinRT)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Projekt służący do tworzenia składnika środowiska wykonawczego systemu Windows C++/WinRT (winmd) dla aplikacji klasycznych i platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Projekt służący do tworzenia składnika środowiska wykonawczego systemu Windows C++/WinRT (.winmd) dla aplikacji klasycznych i platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki WinUI.</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Aplikacja testów jednostkowych (WinUI 3)</value>
+    <value>Aplikacja testów jednostkowych WinUI</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Eksperymentalne] Aplikacja testów jednostkowych (WinUI 3)</value>
+    <value>[Eksperymentalne] Aplikacja testów jednostkowych WinUI</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Projekt do tworzenia aplikacji testów jednostkowych C++/WinRT dla WinUI 3 przy użyciu platformy MSTest.</value>
+    <value>Projekt do tworzenia aplikacji testów jednostkowych C++/WinRT dla WinUI przy użyciu platformy MSTest.</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>Pusta aplikacja WinUI</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Projekt służący do tworzenia pustej aplikacji WinUI.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>Projekt pakietu aplikacji systemu Windows dla WinUI</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Szablon projektu, który tworzy pakiety MSIX zawierające aplikacje WinUI na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem Microsoft Store.</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>Trwa instalowanie pakietów NuGet w projekcie...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Operacja w toku...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>Brak odwołań do pakietu</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Nie można dodać odwołań do następujących pakietów dla {0}: {1}. Przed skompilowaniem dodaj odwołania do pakietu.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] Nie można dodać odwołań do następujących pakietów: {1}.
+
+To jest błąd środowiska. Przed skompilowaniem projektu dodaj odwołania do pakietu.
+
+Aby uzyskać więcej informacji o błędzie, sprawdź kartę Ogólne w oknie Dane wyjściowe.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>Zarządzanie pakietami NuGet</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>Zobacz szczegóły błędu</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>Brak odwołań do pakietu dla {0}:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Przed kompilacją ręcznie dodaj odwołania do pakietów.</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>Ogólne</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>Brak dostępnych informacji wyjściowych.</value>
   </data>
 </root>

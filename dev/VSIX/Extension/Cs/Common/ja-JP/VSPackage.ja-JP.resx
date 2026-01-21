@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>空白のウィンドウ (デスクトップの WinUI 3)</value>
+    <value>空のウィンドウ</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[試験段階] 空白のウィンドウ (デスクトップの WinUI 3)</value>
+    <value>[試験段階] 空のウィンドウ</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づくデスクトップ アプリの空白のウィンドウです。</value>
+    <value>空白のウィンドウ (WinUI)。</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>空白のページ (WinUI 3)</value>
+    <value>空白のページ</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[試験段階] 空白のページ (WinUI 3)</value>
+    <value>[試験段階] 空のページ</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づくアプリの空白のページ。</value>
+    <value>空のページ (WinUI)。</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>リソース ディクショナリ (WinUI 3)</value>
+    <value>リソース ディクショナリ</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[試験段階] リソース ディクショナリ (WinUI 3)</value>
+    <value>[試験段階] リソース ディクショナリ</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づくアプリの XAML リソースの、空のキー付きコレクションです。</value>
+    <value>XAML リソースの空のキー化されたコレクション (WinUI)。</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>リソース ファイル (.resw)</value>
@@ -151,60 +151,105 @@
     <value>[試験段階] リソース ファイル (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてアプリの文字列と条件付きリソースを格納するためのファイルです。</value>
+    <value>文字列と条件付きリソース (WinUI) を格納するためのファイルです。</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>カスタム コントロール (WinUI 3)</value>
+    <value>テンプレート化されたコントロール</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[試験段階] カスタム コントロール (WinUI 3)</value>
+    <value>[試験段階] テンプレート化されたコントロール</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づくアプリのカスタム コントロール。</value>
+    <value>適切な既定のスタイルを持つ空のカスタム コントロール (WinUI)。</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>ユーザー コントロール (WinUI 3)</value>
+    <value>ユーザー コントロール</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[試験段階] ユーザー コントロール (WinUI 3)</value>
+    <value>[試験段階] ユーザー コントロール</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づくアプリのユーザー コントロール。</value>
+    <value>空のユーザー コントロール (WinUI)。</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>クラス ライブラリ (デスクトップの WinUI 3)</value>
+    <value>WinUI クラス ライブラリ</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[試験段階] クラス ライブラリ (デスクトップの WinUI 3)</value>
+    <value>[試験段階] WinUI クラス ライブラリ</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリ用のマネージド クラス ライブラリ (.dll) を作成するためのプロジェクトです。</value>
+    <value>マネージ クラス ライブラリ (.dll) (WinUI) を作成するためのプロジェクトです。</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>空白のアプリ、Windows アプリケーション パッケージ プロジェクトでパッケージ化 (デスクトップの WinUI 3)</value>
+    <value>WinUI の空のアプリ (Windows アプリケーション パッケージ プロジェクトでパッケージ化)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[試験段階]空のアプリ、Windows アプリケーション パッケージ プロジェクトでパッケージ化 (デスクトップの WinUI 3)</value>
+    <value>[試験段階] WinUI の空のアプリ (Windows アプリケーション パッケージ プロジェクトでパッケージ化)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレートです。Microsoft Store を介してサイドローディングまたは配布するための MSIX パッケージを作成するために Windows アプリケーション パッケージ (WAP) プロジェクトが含まれています。</value>
+    <value>WinUI アプリを作成するためのプロジェクト テンプレート。サイドローディングまたは Microsoft Store を介した配布のための MSIX パッケージを作成するために Windows アプリケーション パッケージ (WAP) プロジェクトが含まれています。</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>空のアプリ、パッケージ化 (デスクトップの WinUI 3)</value>
+    <value>WinUI の空のアプリ (パッケージ化)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[試験段階]空のアプリ、パッケージ化 (デスクトップの WinUI 3)</value>
+    <value>[試験段階] WinUI の空のアプリ (パッケージ化)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレートと、Microsoft Store を介したサイドローディングまたは配布用の MSIX パッケージです。</value>
+    <value>サイドローディングまたは Microsoft Store を介した配布のための MSIX パッケージを利用した WinUI アプリを作成するためのプロジェクト テンプレート。</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>単体テスト アプリ (デスクトップの WinUI 3)</value>
+    <value>WinUI 単体テスト アプリ</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>(試験段階) 単体テスト アプリ (デスクトップの WinUI 3)</value>
+    <value>[試験段階] WinUI 単体テスト アプリ</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>MSTest を使用して WinUI 3 アプリの単体テスト アプリを作成するプロジェクトです。</value>
+    <value>MSTest を使用して WinUI の C# 単体テスト アプリを作成するプロジェクトです。</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>WinUI の空のアプリ</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>空の WinUI アプリを作成するためのプロジェクトです。</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>WinUI 用の Windows アプリケーション パッケージ プロジェクト</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Microsoft Storeを使用してサイドローディングまたはディストリビューションを行う WinUI アプリケーションを含む MSIX パッケージを作成するプロジェクト テンプレートです。</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>NuGet パッケージをプロジェクトにインストールしています...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>操作は実行中です...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>パッケージ参照がありません</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>{0} の次のパッケージへの参照を追加できません: {1}。ビルドする前にパッケージ参照を追加してください。</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}]次のパッケージへの参照を追加できません: {1}。これは環境エラーです。プロジェクトをビルドする前に、パッケージ参照を追加してください。</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>NuGet パッケージの管理</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>エラーの詳細を表示</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>{0} のパッケージ参照がありません:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>ビルドする前に、パッケージ参照を手動で追加してください。</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>全般</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>使用できる出力情報がありません。</value>
   </data>
 </root>

@@ -32,8 +32,10 @@ variables:
   ob_sdl_msbuildOverride: true
 
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
-  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
 
   Codeql.Enabled: true #  CodeQL runs every 3 days on the default branch for all languages its applicable to in that pipeline.
   
   enableTestPass: true
+
+  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe;-:f|**\WindowsAppSDK.Test.NetCore\net**

@@ -490,8 +490,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         HRESULT extendedError{};
         winrt::hstring errorText;
         winrt::guid activityId{};
+        auto progressAfterPackageSetItemCompletes{ c_progressPercentageStartOfInstalls };
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
+            progressAfterPackageSetItemCompletes += progressIncrementPerPackageSetItem;
+
             const auto packageFamilyName{ packageSetItem.PackageFamilyName() };
             const auto packageUri{ GetEffectivePackageUri(packageSet, packageSetItem) };
             try
@@ -510,7 +513,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 co_return winrt::make<PackageDeploymentResult>(
                     PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
             }
-            packageDeploymentProgress.Progress = packageDeploymentProgress.Progress + progressIncrementPerPackageSetItem;
+
+            if (packageDeploymentProgress.Progress < progressAfterPackageSetItemCompletes)
+            {
+                packageDeploymentProgress.Progress = progressAfterPackageSetItemCompletes;
+            }
             progress(packageDeploymentProgress);
         }
 
