@@ -72,15 +72,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         return m_fileTypeChoices;
     }
-    int FileSavePicker::DefaultFileTypeIndex()
+    int FileSavePicker::InitialFileTypeIndex()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        return m_defaultFileTypeIndex;
+        return m_initialFileTypeIndex;
     }
-    void FileSavePicker::DefaultFileTypeIndex(int value)
+    void FileSavePicker::InitialFileTypeIndex(int value)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        m_defaultFileTypeIndex = value;
+        m_initialFileTypeIndex = value;
     }
     hstring FileSavePicker::DefaultFileExtension()
     {
@@ -95,16 +95,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
 		m_showOverwritePrompt = value;
-	}
-    bool FileSavePicker::CreateNewFileIfNotExists()
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        return m_createNewFileIfNotExists;
-	}
-    void FileSavePicker::CreateNewFileIfNotExists(bool value)
-    {
-		THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-		m_createNewFileIfNotExists = value;
 	}
     void FileSavePicker::DefaultFileExtension(hstring const& value)
     {
@@ -154,7 +144,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
 
-        parameters.DefaultFileTypeIndex = m_defaultFileTypeIndex;
+        parameters.InitialFileTypeIndex = m_initialFileTypeIndex;
         parameters.CaptureFilterSpecData(
             winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
             m_fileTypeChoices.GetView());
@@ -227,14 +217,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         wil::unique_cotaskmem_string fileName;
         check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
-
-        // Feature_StoragePickers2 gives the option to skip creating the picked file when it doesn't exist.
-        if (m_createNewFileIfNotExists || !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled())
-        {
-            // Create an empty file if the file doesn't exist,
-            // If the file already exists, do nothing.
-            auto [handle, _] = wil::try_open_or_create_file(pathStr.c_str(), GENERIC_WRITE);
-        }
 
         if (cancellationToken())
         {

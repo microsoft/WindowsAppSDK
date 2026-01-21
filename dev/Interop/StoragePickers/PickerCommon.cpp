@@ -357,10 +357,10 @@ namespace PickerCommon {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
 
-        if (DefaultFileTypeIndex == -1)
+        if (InitialFileTypeIndex == -1)
         {
-            // If the DefaultFileTypeIndex is not specified by the user, set to focuse the last one ("All Files")
-            DefaultFileTypeIndex = static_cast<int>(resultSize) - 1;
+            // If no valid InitialFileTypeIndex specified, focus the last one ("All Files" - the auto-added unioned category)
+            InitialFileTypeIndex = static_cast<int>(resultSize) - 1;
         }
     }
 
@@ -468,9 +468,9 @@ namespace PickerCommon {
         {
             check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
 
-            if (DefaultFileTypeIndex != -1 && DefaultFileTypeIndex < static_cast<int>(FileTypeFilterPara.size()))
+            if (InitialFileTypeIndex != -1 && InitialFileTypeIndex < static_cast<int>(FileTypeFilterPara.size()))
             {
-                check_hresult(dialog->SetFileTypeIndex(DefaultFileTypeIndex + 1)); // COMDLG file type index is 1-based
+                check_hresult(dialog->SetFileTypeIndex(InitialFileTypeIndex + 1)); // COMDLG file type index is 1-based
             }
         }
 

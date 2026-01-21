@@ -250,6 +250,53 @@ namespace Test::PickerCommonTests
                 L"*.txt;*.doc;*.docx");
         }
 
+        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndexApplied)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+            picker.FileTypeFilter().Append(L".txt");
+            picker.FileTypeFilter().Append(L".doc");
+            picker.InitialFileTypeIndex(0); // pick the first explicit filter
+
+            PickerParameters parameters{};
+            parameters.InitialFileTypeIndex = picker.InitialFileTypeIndex();
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog);
+
+            UINT fileTypeIndex{};
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+
+            // Assert. COM dialog uses 1-based indices.
+            VERIFY_ARE_EQUAL(1u, fileTypeIndex);
+        }
+
+        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndexDefaultsToAllFilesWhenUnspecified)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+            picker.FileTypeFilter().Append(L".txt");
+            picker.FileTypeFilter().Append(L".doc");
+
+            PickerParameters parameters{}; // InitialFileTypeIndex defaults to -1
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog);
+
+            UINT fileTypeIndex{};
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+
+            // Assert. Expect focus on the unioned "All Files" entry (third item, 1-based index = 3).
+            VERIFY_ARE_EQUAL(2, parameters.InitialFileTypeIndex); // zero-based stored value
+            VERIFY_ARE_EQUAL(3u, fileTypeIndex);                 // one-based dialog value
+        }
+
         TEST_METHOD(VerifyFilters_FileSavePickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
         {
             // Arrange.
@@ -281,6 +328,35 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(
                 std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
                 L"*.txt;*.doc;*.docx");
+        }
+
+        TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndexApplied)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt" }));
+            picker.FileTypeChoices().Insert(
+                L"Images", winrt::single_threaded_vector<winrt::hstring>({ L".png" }));
+            picker.InitialFileTypeIndex(1); // select "Images"
+
+            PickerParameters parameters{};
+            parameters.InitialFileTypeIndex = picker.InitialFileTypeIndex();
+            parameters.CaptureFilterSpecData(
+                winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
+                picker.FileTypeChoices().GetView());
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
+            parameters.ConfigureFileSaveDialog(dialog);
+
+            UINT fileTypeIndex{};
+            dialog->GetFileTypeIndex(&fileTypeIndex);
+
+            // Assert. Second entry should be selected (1-based = 2).
+            VERIFY_ARE_EQUAL(2u, fileTypeIndex);
         }
 
         TEST_METHOD(VerifyFileTypeChoicesViewRemainsValidAfterPickerDestruction)
@@ -533,6 +609,31 @@ namespace Test::PickerCommonTests
             wil::unique_cotaskmem_string fileName{};
             dialog->GetFileName(fileName.put());
             VERIFY_ARE_EQUAL(L"MyFile1.txt", std::wstring(fileName.get()));
+        }
+
+        TEST_METHOD(VerifyConfigureFileSaveDialog_ShowOverwritePromptToggle)
+        {
+            // Arrange: start with prompt enabled (default behavior).
+            PickerParameters promptOnParameters{};
+            promptOnParameters.ShowOverwritePrompt = true;
+            auto dialogWithPrompt = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            promptOnParameters.ConfigureDialog(dialogWithPrompt.as<IFileDialog>());
+            promptOnParameters.ConfigureFileSaveDialog(dialogWithPrompt);
+
+            FILEOPENDIALOGOPTIONS promptOptions{};
+            dialogWithPrompt->GetOptions(&promptOptions);
+            VERIFY_IS_TRUE((promptOptions & FOS_OVERWRITEPROMPT) == FOS_OVERWRITEPROMPT);
+
+            // Arrange: disable prompt.
+            PickerParameters promptOffParameters{};
+            promptOffParameters.ShowOverwritePrompt = false;
+            auto dialogWithoutPrompt = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            promptOffParameters.ConfigureDialog(dialogWithoutPrompt.as<IFileDialog>());
+            promptOffParameters.ConfigureFileSaveDialog(dialogWithoutPrompt);
+
+            FILEOPENDIALOGOPTIONS noPromptOptions{};
+            dialogWithoutPrompt->GetOptions(&noPromptOptions);
+            VERIFY_IS_FALSE((noPromptOptions & FOS_OVERWRITEPROMPT) == FOS_OVERWRITEPROMPT);
         }
 
         TEST_METHOD(VerifyTryParseFolderItem)

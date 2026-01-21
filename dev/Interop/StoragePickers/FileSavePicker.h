@@ -29,17 +29,14 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileTypeChoices();
 
-        int DefaultFileTypeIndex();
-        void DefaultFileTypeIndex(int value);
+        int InitialFileTypeIndex();
+        void InitialFileTypeIndex(int value);
 
         hstring DefaultFileExtension();
         void DefaultFileExtension(hstring const& value);
 
 		bool ShowOverwritePrompt();
 		void ShowOverwritePrompt(bool value);
-
-		bool CreateNewFileIfNotExists();
-		void CreateNewFileIfNotExists(bool value);
 
         hstring SuggestedFolder();
         void SuggestedFolder(hstring const& value);
@@ -59,10 +56,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring m_title{};
         hstring m_settingsIdentifier{};
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };
-        int m_defaultFileTypeIndex{ -1 };
+        int m_initialFileTypeIndex{ -1 };
         hstring m_defaultFileExtension{};
 		bool m_showOverwritePrompt{ true };
-		bool m_createNewFileIfNotExists{ true };
         hstring m_suggestedFolder{};
         hstring m_suggestedStartFolder{};
         hstring m_suggestedFileName{};

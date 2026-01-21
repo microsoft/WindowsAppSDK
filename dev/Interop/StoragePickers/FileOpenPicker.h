@@ -33,8 +33,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         winrt::Windows::Foundation::Collections::IVector<winrt::hstring> FileTypeFilter();
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> FileTypeChoices();
 
-        int DefaultFileTypeIndex();
-        void DefaultFileTypeIndex(int value);
+        int InitialFileTypeIndex();
+        void InitialFileTypeIndex(int value);
 
         winrt::hstring SuggestedFolder();
         void SuggestedFolder(winrt::hstring const& value);
@@ -63,7 +63,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             }()
         };
 
-        int m_defaultFileTypeIndex{ -1 };
+        int m_initialFileTypeIndex{ -1 };
 
         winrt::hstring m_suggestedFolder{};
         winrt::hstring m_suggestedStartFolder{};

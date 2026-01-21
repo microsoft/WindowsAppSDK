@@ -81,15 +81,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         return m_fileTypeFilter;
     }
-    int FileOpenPicker::DefaultFileTypeIndex()
+    int FileOpenPicker::InitialFileTypeIndex()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        return m_defaultFileTypeIndex;
+        return m_initialFileTypeIndex;
     }
-    void FileOpenPicker::DefaultFileTypeIndex(int value)
+    void FileOpenPicker::InitialFileTypeIndex(int value)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
-        m_defaultFileTypeIndex = value;
+        m_initialFileTypeIndex = value;
     }
     winrt::hstring FileOpenPicker::SuggestedFolder()
     {
@@ -124,9 +124,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
         
-        // Note: the user-defined index must be written in parameters before capturing filter spec for the open picker.
-        // for the fileTypeFilter may override DefaultFileTypeIndex to select "All Files" if the index is not specified by the user.
-        parameters.DefaultFileTypeIndex = m_defaultFileTypeIndex;
+        // Note: write the user-defined index before capturing filter spec so the filter logic can honor it.
+        parameters.InitialFileTypeIndex = m_initialFileTypeIndex;
         parameters.CaptureFilterSpecData(m_fileTypeFilter.GetView(), m_fileTypeChoices.GetView());
     }
 

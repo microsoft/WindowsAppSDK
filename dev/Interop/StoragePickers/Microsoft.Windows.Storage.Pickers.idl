@@ -60,7 +60,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
-        Int32 DefaultFileTypeIndex;
+        Int32 InitialFileTypeIndex;
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
@@ -94,7 +94,7 @@ namespace Microsoft.Windows.Storage.Pickers
 
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
-        Int32 DefaultFileTypeIndex;
+        Int32 InitialFileTypeIndex;
 
         String DefaultFileExtension;
         String SuggestedFileName;
@@ -107,10 +107,6 @@ namespace Microsoft.Windows.Storage.Pickers
         [contract(StoragePickersContract, 2.0)]
         [feature(Feature_StoragePickers2)]
 		Boolean ShowOverwritePrompt;
-
-        [contract(StoragePickersContract, 2.0)]
-        [feature(Feature_StoragePickers2)]
-		Boolean CreateNewFileIfNotExists;
 
         [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
     }
