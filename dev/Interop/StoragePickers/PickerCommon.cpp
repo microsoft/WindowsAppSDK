@@ -181,7 +181,7 @@ namespace PickerCommon {
             return;
         }
 
-        for (int i = 0; i < value.size(); i++)
+        for (size_t i = 0; i < value.size(); i++)
         {
             if (value[i] == L'\0')
             {
@@ -204,7 +204,7 @@ namespace PickerCommon {
                 PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
         }
 
-        for (int i = 1; i < filter.size(); i++)
+        for (size_t i = 1; i < filter.size(); i++)
         {
             if (filter[i] == L'.' || filter[i] == L'*' || filter[i] == L'?')
             {
@@ -244,7 +244,7 @@ namespace PickerCommon {
         }
 
         // The method SHSimpleIDListFromPath does syntax check on the path string.
-        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
+        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl{ SHSimpleIDListFromPath(path.c_str()) };
         if (!pidl)
         {
             throw std::invalid_argument(propertyName);
@@ -466,7 +466,7 @@ namespace PickerCommon {
 
         if (FileTypeFilterPara.size() > 0)
         {
-            check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+            check_hresult(dialog->SetFileTypes(static_cast<UINT>(FileTypeFilterPara.size()), FileTypeFilterPara.data()));
 
             if (InitialFileTypeIndex != -1 && InitialFileTypeIndex < static_cast<int>(FileTypeFilterPara.size()))
             {
