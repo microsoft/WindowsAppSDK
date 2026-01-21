@@ -105,7 +105,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         // Loop through all of the target packages (i.e. main, signleton packages) and capture whether they are all installed or not
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
-        HRESULT statusHResult{};
+        HRESULT verifyResult{};
 
         for (const auto package : c_targetPackages)
         {
@@ -132,15 +132,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
 
-            auto verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
+            verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
             if (FAILED(verifyResult))
             {
-                statusHResult = verifyResult;
+                break;
             }
         }
 
         DeploymentStatus status{};
-        if (SUCCEEDED(statusHResult))
+        if (SUCCEEDED(verifyResult))
         {
             status = DeploymentStatus::Ok;
         }
@@ -149,7 +149,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             status = DeploymentStatus::PackageInstallRequired;
         }
 
-        return winrt::make<implementation::DeploymentResult>(status, statusHResult);
+        return winrt::make<implementation::DeploymentResult>(status, verifyResult);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(
@@ -260,7 +260,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         else
         {
-            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) &&
+            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) && 
                 (isRepair))
             {
                 status = DeploymentStatus::PackageRepairFailed;
