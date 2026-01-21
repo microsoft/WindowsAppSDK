@@ -11,14 +11,13 @@
   - [1.5. Dynamic Dependencies](#15-dynamic-dependencies)
   - [1.6. Windows App SDK Versioning Requirements](#16-windows-app-sdk-versioning-requirements)
 - [2. Decisions](#2-decisions)
-  - [2.1. Decision 1: Breaking Change Boundary for Version 0.*](#21-decision-1-breaking-change-boundary-for-version-0)
-  - [2.2. Decision 2: Breaking Change Boundary for Version 1.x](#22-decision-2-breaking-change-boundary-for-version-1x)
-    - [2.2.1. Current practices in Microsoft-authored Framework packges.](#221-current-practices-in-microsoft-authored-framework-packges)
-  - [2.3. Decision 3: Release Tags (Stable, Preview, ...)](#23-decision-3-release-tags-stable-preview-)
-  - [2.4. Decision 4: Version Encoding](#24-decision-4-version-encoding)
-    - [2.4.1. Windows App SDK 0.5 Notation](#241-windows-app-sdk-05-notation)
-    - [2.4.2. WinUI 2.x Notation](#242-winui-2x-notation)
-  - [2.5. Decision 5: Package Names](#25-decision-5-package-names)
+  - [2.1. Decision 1: Breaking Change Boundary for Version 2.*+](#21-decision-1-breaking-change-boundary-for-version-0)
+    - [2.1.1 Current practices in Microsoft-authored Framework packges](#211-current-practices-in-microsoft-authored-framework-packges)
+  - [2.2. Decision 2: Release Tags (Stable, Preview, ...)](#22-decision-3-release-tags-stable-preview-)
+  - [2.3. Decision 3: Version Encoding](#23-decision-3-version-encoding)
+    - [2.3.1. Windows App SDK 0.5 Notation](#231-windows-app-sdk-05-notation)
+    - [2.3.2. WinUI 2.x Notation](#232-winui-2x-notation)
+  - [2.4. Decision 4: Package Names](#24-decision-4-package-names)
 - [3. Conclusions](#3-conclusions)
 
 # 1. Background
@@ -177,7 +176,7 @@ unpackaged apps). These issues are noted with solutions and the recommended path
 Jump ahead to [3. Conclusions](#3-conclusions) to skip the alternatives considered,
 detailed explanations and why the recommended solutions are chosen.
 
-## 2.1. Decision 1: Breaking Change Boundary for Version 0.*
+## 2.1. Decision 1: Breaking Change Boundary for Version 2.*+
 
 Per [SemVer section 4](https://semver.org/#spec-item-4)
 
@@ -221,48 +220,12 @@ the highest version (per `VersionSupercedence`<sup>1</sup>).
 are always used, even if a lower version than other applicable packages. Other exotic cases exist but
 the overwhelming norm without exception is 'highest version wins'.
 
-***Recommendation:*** Option B.
-
-This provides for rapid evolution balanced with stability for supported use.
-
-## 2.2. Decision 2: Breaking Change Boundary for Version 1.x
-
-SemVer defines the binary incompatibility (breaking change) boundary as the MAJOR version.
-
-MSIX defines the binary incompatibility (breaking change) boundary as the package family. The
-version number has no inherent binary incompatibility boundary but one can vary package family name
-to provide an incompatibility boundary. We can include as much (or little) of the version number in
-the package Name as we desire to provide a compatibility boundary.
-
-**Option A: Incompatibility boundary is the `Major` version**
-
-* Aligns with SemVer
-* Compatible with MSIX
-* Aligns with common practices and expectations across the industry (glibc, Linux kernel, many more)
-
-Chrome and Edge are clear examples of Option A. Stable Chrome and Edge releases are currently
-version 89 and 92+ are under development.
-
-**Option B: Incompatibility boundary is the `Major.Minor` version**
-
-* Does not align with SemVer
-* Compatible with MSIX
-* Aligns with some practices and expectations across the industry
-
-**Option C: Incompatibility boundary is the `Major.Minor.Build` version**
-
-* Does not align with SemVer
-* Compatible with MSIX
-* Does not align with common practices and expectations across the industry
-
 ***Recommendation:*** 
-For all 1.x, option B was selected, while waiting on tooling to be able to handle the rapid development we want.
 
-## Decision 2.1: Breaking Change for version 2.x
-Starting 2.x, option A is selected. This will allow for better stability for external developers. They will 
-know that as long as they are on the same Major, then things will be compatible.
+## Decision 1: Breaking Change for version 2.x+
+Option A is selected. This provides better stability for developers. Given the same Major version the newer version is backwards compatible with previous releases in the same Major version.
 
-### 2.2.1. Current practices in Microsoft-authored Framework packges.
+### 2.1.1. Current practices in Microsoft-authored Framework packges.
 
 There is no consistency of version in package Name amongst existing Framework packages. Per
 `powershell -c "$(get-appxpackage -packagetypefilter framework).packagefamilyname|sort"` one can see
@@ -276,34 +239,27 @@ VCLibs sometimes goes further with additional qualifiers in their Name including
 No version in Name implies the framework has yet to produce a breaking change, i.e. in SemVer-speak
 these frameworks are still MAJOR=X and yet to produce MAJOR=X+1.
 
-## 2.3. Decision 3: Release Tags (Stable, Preview, ...)
+## 2.2. Decision 2: Release Tags (Stable, Preview, ...)
 
 How do we distinguish release across channels, e.g. a 'Stable' package from a 'Preview' package?
 
-Windows App SDK 0.5 adds a "-preview" tag to the package Name.
+* Windows App SDK adds a "-preview##" tag to the package Name. The ## is a 1 or 2 digit base-36 number[0-9a-z] to distinguish one release within the channel from another one.
 
-Windows App SDK 1.x adds a -channel# tag (e.g. "-preview1") to the package name.
+***Shorter Tags as needed*** "-preview##" adds 10 characters to package Name. "-experimental##" adds
+14 characters. Package Name is restricted to 50 characters maximum.
 
-Windows App SDK 2.x goes back to just a "-preview" tag on the package Name.
+**Option A: `-preview##`**
+**Option B: `-pre##`**
+**Option C: `-p##`**
 
-***Shorter Tags as needed*** "-preview" adds 8 characters to package Name. "-experimental" adds
-12 characters. Package Name is restricted to 50 characters maximum.
-
-**Option A: `-preview`**
-**Option B: `-pre`**
-**Option C: `-p`**
-
-These may optionally include a trailing digit indicating the Nth release of a channel for a version
-of the project.
-
-***Recommendation:*** Option A and C (when necessary).
+***Recommendation:*** Option A and C (for packages where this could ever be necessary).
 
 All tags have a long name (Option A) and a short (1-2 characters) name (Option C).
 
 Option C is used when Option A doesn't work due to package Name length restrictions.
-Currently WARddlm is the only instance using Option C.
+Currently WARddlm and Singleton use Option C.
 
-## 2.4. Decision 4: Version Encoding
+## 2.3. Decision 3: Version Encoding
 
 What data's encoded in the MSIX Version, and how?
 
@@ -338,11 +294,11 @@ Examples are provided for the following theoretical versions...
 |E|NPP.E.B.0|801.154.123<br>203.364.123<br>1714.3944.123.0|Minor Patch Elapsed Build|Minor max is 99<br>Patch max is 99<br>Build max is 65535|
 
 ***Recommendation:*** 
-For 1.x, Option D was selected.
-For 2.x, Option A is selected.
+For 2.x+, Option A is selected.
 
-Option A works is the simplest to release and understand. As long as we don't hit 999 Patches for the same Major.Minor,
-then we will not run out of space in the DDLM package (more on that in 2.5)
+Option A works. This is the simplest option to release and understand.
+
+NOTE: A Major.Minor is constrained to 999 Patches (to avoid exceeding DDLM limits). See 2.5. Decision 5: Package Names for more details.
 
 Option B worked for WinUI 2.x and Windows App SDK 0.5 but is too limiting given it can't support
 Minor versions beyond 6. It's also a complicated encoding scheme with date injected between Minor
@@ -357,7 +313,7 @@ while supporting 20+ years with only 4 digits.
 Option E is a variant of Option D except Patch version is restricted to 2 digits, but it's an
 unnecessary simplification.
 
-### 2.4.1. Windows App SDK 0.5 Notation
+### 2.3.1. Windows App SDK 0.5 Notation
 
 Windows App SDK 0.5 encodes MSIX versions as `M.NYYMM.DDPPP.0`
 
@@ -380,92 +336,38 @@ All fields are fixed-size with leading zeroes as needed. For example, Windows Ap
 This doesn't scale going forward e.g. MSIX version is a DotQuadNumber aka `uint16[4]`. If 0.8 was
 released on May'31, 2021 MSIX version would be `0.82105.31000.0`
 
-### 2.4.2. WinUI 2.x Notation
+### 2.3.2. WinUI 2.x Notation
 
 WinUI 2.x encodes MSIX versions as `M.NYYMM.DDPPP.0` (same as Windows App SDK 0.5). This runs into
 issues starting with WinUI 2.7, as identified by [WinUI version schema sometime can't applied to
 MinVersion
 #4008](https://github.com/microsoft/microsoft-ui-xaml/issues/4008#issuecomment-765633788).
 
-## 2.5. Decision 5: Package Names
+## 2.4. Decision 4: Package Names
 
-Windows App SDK 0.8+ has 3 MSIX packages. We have choices for package Name patterns for 0.8 and 1.x.
+Windows App SDK 2.0+ has 4 MSIX packages. 
 
-Assuming Breaking Change Boundary for v0.x and v1+'s decision are `Major.Minor` version we have the
-following naming patterns release 0.x...
-
-* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
-* WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
-* WARddlm: `Microsoft.WindowsAppRuntime.DDLM.<rmajor>.<rminor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
-
-and release 1.x...
-
-* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
-* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>.<rminor>[-shorttag]`
-* WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
-* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
-
-and release 2.x, when Breaking Change Boundary changed to 'Major' version...
-
-* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>[-tag##]`
-* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>[-shorttag##]`
+* WARfwk: `Microsoft.WindowsAppRuntime.<major>[-tag##]`
+* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<major>[-tag##]`
 * WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag##]`
-* WARddlm: `Microsoft.WinAppRuntime.DDLM.<rmajor>.<rminor>.<patch>.<revision>-<shortarchitecture>[-shorttag##]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<patch>.<revision>-<shortarchitecture>[-shorttag##]`
 
 where
 
-* rmajor = Major version number of the project release, base-10, no leading zeros (e.g. "1" for WindowsAppSDK 1.2)
-* rminor  = Minor version number of the project release, base-10, no leading zeros (e.g. "2" for WindowsAppSDK 1.2)
-* patch = Patch version number of the project release, base-10, no leading zeros
 * major = Major version number of the release, base-10, no leading zeros
 * minor  = Minor version number of the release, base-10, no leading zeros
-* build = Build version number, base-10, no leading zeros
+* patch = Patch version number of the release, base-10, no leading zeros
 * revision = Revision version number, base-10, no leading zeros
-* architecture = Allowed values: "x86", "x64", "arm64"
 * shortarchitecture = Allowed values: "x8", "x6", "a6"
 * tag = Allowed values: "", "preview", "experimental"
 * shorttag = Allowed values: "", "p", "e"
-* "##" = the current build bumber for that release type. 2 characters long. Each caharacter could be [a-z,0-9].
+* "##" = the current build number for that release type. It is a 1 or 2 digit base-36 number[0-9a-z].
 
-**NOTE:** rmajor/rminor/patch are the release version, major/minor/build/revision are the MSIX package
-version (Microsoft.ProjectReunion.0.8-preview had a release version of 0.8
-but an MSIX package version of 8000.146.628.0). Starting 2.0, these will now be the same numbers. The exception to that is
+**NOTE:**  Starting 2.0, the major, minor, and patch versions will now be the same as the project release versions. The exception to that is
 Singleton, since there is one package covering all releases. That package can't "go back" to Major=2, so we will add a
 8000 to the Major for that package.
 
-Since we will now match the release version with the MSIX, it is worth explaining how that is going to increment.
-* Major will increase when a stable or preview release contains Breaking Changes from the previous Stable release. This will happen 
-no more than once per year.
-* Minor will increase when a stable release contains new Functionality from the previous Stable release. This will happen no more than once 
-per month.
-* Every potential released build (stable, preview, experimental) will increase the Patch, unless the Major or Minor is increased.
-No 2 builds will share the same Major.Minor.Patch version.
-If we notice an issue after building a canditate (stable, preview, or experimental), we will choose not to release it, at which 
-point the patch will bump again.
-This means that there will be times when there is a patch number that will not be released at all.
-* Note: We see experimental releases as "containing" the closest stable + some experimental stuff, rather than "previewing" what is coming. We 
-do not bump the Major/Minor for experimental things because the new/breaking things will at least sometimes not be in the next stable release, 
-and may even be removed before the next experimental release. 
-* Preview releases are optional if we feel the need to have a preview of nearly stable things without anything currently marked experimental.
-This will only happen on the next Major release before making an official stable release. When we do have a Preview build, all Previews and 
-Experimental releases will be X.0.0-<pre or Exp><Num> until we release the first Stable release.
-
-A simplified example is this:
-* 2.0.0 is the first stable release.
-* 2.0.1-experimental is the first experimental. (contains 2.0.0 + some exp APIs, and some bug fixes)
-* 2.0.2 is the 2nd stable release. (bug fixes moved into 2)
-* 2.0.3-experimental is the 2nd experimental. (contains 2.0.1 + some exp APIs, and some more bug fixes)
-* 2.0.4-experimental is the 3rd experimental. (contains 2.0.1 + some Breaking Changes, some exp APIs, and some more bug fixes)
-* 2.1.0 is the 3rd stable release (some of the exp APIs went stable, and some bug fixes)
-* 2.1.1-experimental is the 4th experimental. (contains 2.1.0 + some Breaking Changes, and some more bug fixes)
-* 3.0.0-preview1 is the preview 3 public release
-* 3.0.0-experimental1 (contains 3.0.0-preview1 + some new APIs not in the preview build)
-* 3.0.0-experimental2 (contains 3.0.0-preview1 + even more new APIs not in the preview build)
-* 3.0.0-preview2 (one of the experimental APIs went public, but still not ready to release)
-* 3.0.0-experimental3 (contains 3.0.0-preview2 + the experimental API and some bug fixes)
-* 3.0.0 is the first 3 stable release
-* 3.0.1-experimental (contains 3.0.0 + the new APIs from 3.0.0-experimental1)
-* 3.0.3 is the 2nd stable release(we made 3.0.2, noticed issues, fixed and rebuilt)
+For Information on how WindowsAppSDK Projects determines these versions, see the [WindowsAppSDKVersioning spec](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/WindowsAppSDKVersioning.md)
 
 Version's fields have values 0-65535.
 
@@ -477,24 +379,24 @@ This leads to package Name length issues even for common cases:
 
 |Package|Average|AverageLength|
 | --- | :--- | :---: |
-|WARfwk |Microsoft.WindowsAppRuntime.2-preview00|39|
-|WARmain|Microsoft.WindowsAppRuntime.Main.2-preview00|44|
-|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview00|47|
-|WARddlm|Microsoft.WinAppRuntime.DDLM.1.15.12345.24680-arm64-preview00|**<span style="color:red">61</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.2-experimental10|44|
+|WARmain|Microsoft.WindowsAppRuntime.Main.2-experimental10|46|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-experimental10|**<span style="color:red">52</span>**|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.1.15.12345.24680-arm64-preview10|**<span style="color:red">61</span>**|
 
 |Package|Min|MinLength|
 | --- | :--- | :---: |
-|WARfwk |Microsoft.WindowsAppRuntime.2-preview00|39|
-|WARmain|Microsoft.WindowsAppRuntime.Main.1-preview00|44|
-|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview00|47|
-|WARddlm|Microsoft.WinAppRuntime.DDLM.1.0.0.0-arm64-preview00|**<span style="color:red">52</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.2-preview0|38|
+|WARmain|Microsoft.WindowsAppRuntime.Main.1-preview0|43|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview0|46|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.1.0.0.0-arm64-preview0|**<span style="color:red">51</span>**|
 
 |Package|Max|MaxLength|
 | --- | :--- | :---: |
-|WARfwk |Microsoft.WindowsAppRuntime.65535-preview00|43|
-|WARmain|Microsoft.WindowsAppRuntime.Main.65535-preview00|48|
-|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview00|47|
-|WARddlm|Microsoft.WinAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview00|**<span style="color:red">68</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.65535-experimental10|48|
+|WARmain|Microsoft.WindowsAppRuntime.Main.65535-experimental10|**<span style="color:red">53</span>**|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-experimental10|**<span style="color:red">52</span>**|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview10|**<span style="color:red">68</span>**|
 
 Possible options we can use to shorten package Name:
 
@@ -511,17 +413,17 @@ WARddlm is needed until Dynamic Dependencies is 100% based on OS DynDep.
 Best case (!) WARddlm exists until the minimum supported Windows release is Cobalt.
 
 ***Recommendation:*** The general package naming syntax is
-`Microsoft.ProjectReunion[.SubName]-<rmajor>[-tag]`. WARddlm and WARsingleton are
+`Microsoft.ProjectReunion[.SubName]-<major>[-tag##]`. WARddlm and WARsingleton are
 exceptions to the rule (see below).
 
 Windows App SDK 2.0 will use package Names of...
 
-* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>[-tag]`
-* WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>[-tag]`
-* WARsingleton: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
-* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<patch>.<revision>-<shortarchitecture>[-shorttag]`
+* WARfwk: `Microsoft.WindowsAppRuntime.<major>[-tag##]`
+* WARmain: `Microsoft.WindowsAppRuntime.Main.<major>[-tag##]`
+* WARsingleton: `Microsoft.WindowsAppRuntime.Singleton[-shorttag##]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<patch>.<revision>-<shortarchitecture>[-shorttag##]`
 
-Using Decision 5: Version Encoding = Option D (M.N.P.0) WARddlm's maximum package Name length is
+Using Decision 4: Version Encoding = Option D (M.N.P.0) WARddlm's maximum package Name length is
 `Microsoft.WinAppRuntime.DDLM.12345.12345.12345.12345-arm64-p01` = 62 characters. This can be reduced
 with the following rules:
 
@@ -545,27 +447,26 @@ This produces a worst case for WARddlm in Windows App SDK 99.888.777.66 ARM64 Pr
 
 # 3. Conclusions
 
-**Decision 1:** Windows App SDK version 0.* encodes `Major.Minor` into MSIX package Names starting with version 0.8.0.0.
+**Decision 1:** Windows App SDK version 2.*+ encodes `Major` into MSIX package Names.
 
-**Decision 2:** Windows App SDK version 1.* encodes `Major.Minor` into MSIX package Names.
+**Decision 2:** Windows App SDK supports an optional 'tag' to indicate a non-Stable channel.
+A 'tag' comes in long and short (2-3 character) forms e.g. `-preview##` and `-p##`.
 
-**Decision 2.1:** Windows App SDK version 2.* encodes `Major` into MSIX package Names.
+The following are valid 'tag's:
+*-experimental##, -e##
+*-preview##, -p##
 
-**Decision 3:** Windows App SDK supports an optional 'tag' to indicate a non-Stable channel.
-A 'tag' comes in long and short (1-2 character) forms e.g. `-preview` and `-p`,
-or `-preview1` and `-p1` (the digit suffix is optional).
-
-**Decision 4:** Windows App SDK encodes version as `<major>.<minor>.<patch>.<securityupdate>`
+**Decision 3:** Windows App SDK encodes version as `<major>.<minor>.<patch>.<revision>`
 i.e. format encoding `M.N.P.0`. See
-[2.4. Decision 4: Version Encoding](#24-decision-4-version-encoding) for more details.
+[2.4. Decision 3: Version Encoding](#24-decision-4-version-encoding) for more details.
 
-**Decision 5:** MSIX package Names use the format
-`Microsoft.WindowsAppRuntime[.SubName]-<rmajor>[-tag]`. WARddlm is an exception due to Name
+**Decision 4:** MSIX package Names use the format
+`Microsoft.WindowsAppRuntime[.SubName]-<major>[-tag]`. WARddlm is an exception due to Name
 length constraints. The specific packages Names in Windows App SDK 2.0:
 
-* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>[-tag]`
-* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>[-shorttag]`
+* WARfwk: `Microsoft.WindowsAppRuntime.<major>[-tag]`
+* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<major>[-shorttag]`
 * WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
-* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<patch>.<revision>-<shortarchitecture>[-shorttag]`
 
-See [2.5. Decision 5: Package Names](#25-decision-5-package-names) for more details.
+See [2.4. Decision 4: Package Names](#24-decision-4-package-names) for more details.
