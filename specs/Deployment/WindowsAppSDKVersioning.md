@@ -14,7 +14,7 @@ do not bump the Major/Minor for experimental things because the new/breaking thi
 and may even be removed before the next experimental release. 
 * Preview releases are optional if we feel the need to have a preview of nearly stable things without anything currently marked experimental.
 This will only happen on the next Major release before making an official stable release. When we do have a Preview build, all Previews and 
-Experimental releases will be X.0.0-<pre or Exp><Num> until we release the first Stable release.
+Experimental releases will be X.0.0-\<pre or Exp\>\<Num\> until we release the first Stable release.
 
 A simplified example is this:
 * 2.0.0 is the first stable release.
