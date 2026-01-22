@@ -19,6 +19,7 @@ namespace PickerCommon {
     const winrt::hstring ImproperFileExtensionLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_IMPROPERFILEEXTENSION"};
     const winrt::hstring StringNoEmbeddedNullsLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"};
     const winrt::hstring MaxSaveFileLengthExceededLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"};
+    const winrt::hstring InvalidInitialFileTypeIndexLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDINITIALFILETYPEINDEX"};
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
     void ValidateStringNoEmbeddedNulls(winrt::hstring const& value);
@@ -27,6 +28,7 @@ namespace PickerCommon {
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
     void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName);
+    void ValidateInitialFileTypeIndex(int const& value);
 
     struct PickerParameters {
         HWND HWnd{};
@@ -56,7 +58,7 @@ namespace PickerCommon {
         winrt::hstring TryGetAppUserModelId();
         winrt::hstring TryGetProcessFullPath();
 
-		bool ShowOverwritePrompt;
+		bool ShowOverwritePrompt{ true };
 
     private:
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);

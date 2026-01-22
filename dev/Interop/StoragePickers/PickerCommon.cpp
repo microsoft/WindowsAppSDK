@@ -251,6 +251,15 @@ namespace PickerCommon {
         }
     }
 
+    void ValidateInitialFileTypeIndex(int const& value)
+    {
+        if (value < -1)
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
+        }
+    }
+
     winrt::hstring PickerParameters::FormatExtensionWithWildcard(winrt::hstring extension)
     {
         if (!extension.empty() && extension[0] == L'*')

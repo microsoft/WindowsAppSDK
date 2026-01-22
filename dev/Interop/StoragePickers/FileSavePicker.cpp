@@ -80,6 +80,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     void FileSavePicker::InitialFileTypeIndex(int value)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
+        PickerCommon::ValidateInitialFileTypeIndex(value);
         m_initialFileTypeIndex = value;
     }
     hstring FileSavePicker::DefaultFileExtension()
