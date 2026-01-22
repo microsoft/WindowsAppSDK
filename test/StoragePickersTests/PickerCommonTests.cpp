@@ -152,7 +152,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
@@ -187,7 +187,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -207,7 +207,7 @@ namespace Test::PickerCommonTests
 
             // Act.
             PickerParameters parameters{};
-            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -234,7 +234,8 @@ namespace Test::PickerCommonTests
             PickerParameters parameters{};
             parameters.CaptureFilterSpecData(
                 winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
-                picker.FileTypeChoices().GetView());
+                picker.FileTypeChoices().GetView(),
+                picker.InitialFileTypeIndex());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
@@ -260,8 +261,7 @@ namespace Test::PickerCommonTests
             picker.InitialFileTypeIndex(0); // pick the first explicit filter
 
             PickerParameters parameters{};
-            parameters.InitialFileTypeIndex = picker.InitialFileTypeIndex();
-            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
 
             // Act.
             auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
@@ -283,7 +283,7 @@ namespace Test::PickerCommonTests
             picker.FileTypeFilter().Append(L".doc");
 
             PickerParameters parameters{}; // InitialFileTypeIndex defaults to -1
-            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr);
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
 
             // Act.
             auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
@@ -314,7 +314,8 @@ namespace Test::PickerCommonTests
             PickerParameters parameters{};
             parameters.CaptureFilterSpecData(
                 winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
-                picker.FileTypeChoices().GetView());
+                picker.FileTypeChoices().GetView(),
+                picker.InitialFileTypeIndex());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
@@ -342,10 +343,10 @@ namespace Test::PickerCommonTests
             picker.InitialFileTypeIndex(1); // select "Images"
 
             PickerParameters parameters{};
-            parameters.InitialFileTypeIndex = picker.InitialFileTypeIndex();
             parameters.CaptureFilterSpecData(
                 winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
-                picker.FileTypeChoices().GetView());
+                picker.FileTypeChoices().GetView(),
+                picker.InitialFileTypeIndex());
 
             // Act.
             auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
@@ -557,7 +558,8 @@ namespace Test::PickerCommonTests
             PickerParameters parameters{};
             parameters.CaptureFilterSpecData(
                 winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
-                picker.FileTypeChoices().GetView());
+                picker.FileTypeChoices().GetView(),
+                picker.InitialFileTypeIndex());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
@@ -585,7 +587,8 @@ namespace Test::PickerCommonTests
             PickerParameters parameters{};
             parameters.CaptureFilterSpecData(
                 winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
-                picker.FileTypeChoices().GetView());
+                picker.FileTypeChoices().GetView(),
+                picker.InitialFileTypeIndex());
 
             // Assert.
             VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);

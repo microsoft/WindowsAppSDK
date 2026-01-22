@@ -50,7 +50,8 @@ namespace PickerCommon {
 
         void CaptureFilterSpecData(
             winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
-            winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView);
+            winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView,
+            int initialFileTypeIndex);
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
         void ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog);

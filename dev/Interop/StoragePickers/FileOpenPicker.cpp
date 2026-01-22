@@ -123,10 +123,8 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
-        
-        // Note: write the user-defined index before capturing filter spec so the filter logic can honor it.
-        parameters.InitialFileTypeIndex = m_initialFileTypeIndex;
-        parameters.CaptureFilterSpecData(m_fileTypeFilter.GetView(), m_fileTypeChoices.GetView());
+        // Note: the InitialFileTypeIndex will be decided while capturing the filter spec data.
+        parameters.CaptureFilterSpecData(m_fileTypeFilter.GetView(), m_fileTypeChoices.GetView(), m_initialFileTypeIndex);
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()

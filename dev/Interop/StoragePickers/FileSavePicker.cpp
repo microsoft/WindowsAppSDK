@@ -145,11 +145,12 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
 
-        parameters.InitialFileTypeIndex = m_initialFileTypeIndex;
+        // Note: the InitialFileTypeIndex will be decided while capturing the filter spec data.
         parameters.CaptureFilterSpecData(
             winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
-            m_fileTypeChoices.GetView());
-		parameters.ShowOverwritePrompt = m_showOverwritePrompt;
+            m_fileTypeChoices.GetView(),
+            m_initialFileTypeIndex);
+        parameters.ShowOverwritePrompt = m_showOverwritePrompt;
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
