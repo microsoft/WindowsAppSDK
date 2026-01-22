@@ -10,6 +10,10 @@
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
 #include "WindowsAppRuntime-License.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60760194: [1.8 servicing] DeploymentManager failing with error package downgrade
+#define WINAPPSDK_CHANGEID_60760194 60760194, WinAppSDK_1_8_5
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -107,7 +111,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         // Loop through all of the target packages (i.e. main, signleton packages) and capture whether they are all installed or not
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
-        HRESULT verifyResult{};
+        HRESULT statusHResult{};
 
         for (const auto package : c_targetPackages)
         {
@@ -134,15 +138,19 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
 
-            verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
+            auto verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
             if (FAILED(verifyResult))
             {
-                break;
+                statusHResult = verifyResult;
+                if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60760194>())
+                {
+                    break;
+                }
             }
         }
 
         DeploymentStatus status{};
-        if (SUCCEEDED(verifyResult))
+        if (SUCCEEDED(statusHResult))
         {
             status = DeploymentStatus::Ok;
         }
@@ -151,7 +159,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             status = DeploymentStatus::PackageInstallRequired;
         }
 
-        return winrt::make<implementation::DeploymentResult>(status, verifyResult);
+        return winrt::make<implementation::DeploymentResult>(status, statusHResult);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(
