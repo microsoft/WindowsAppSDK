@@ -303,8 +303,8 @@ string, meaning "no filtering" and displaying all files.
 
 **(3) The InitialFileTypeIndex**
 
-In this spec, we're adding `InitialFileTypeIndex`. It is a 0-based value applying to the active file 
-type collection and deciding the auto-selected file type on dialog launch. 
+In this spec, we're adding `InitialFileTypeIndex`, deciding the auto-selected file type on dialog 
+launch. It is a 0-based value or defaults to `-1` for system behavior.
 
 For example, when:
 
@@ -342,4 +342,6 @@ defined,
     the file dialog shows the filters in `FileTypeChoices` and initially selects its `"Texts"`
     (which is its first) category, as `FileTypeChoices` takes precedence over the `FileTypeFilter`.
 
-Additionally, if the index falls outside the available range, we treat it as `-1` (not specified).
+Additionally,
+- `InitialFileTypeIndex` cannot be set to a value smaller than `-1`;
+- if the index falls outside the available range, we treat it as `-1` (not specified).
