@@ -311,7 +311,10 @@ namespace Test::PickerCommonTests
             picker.FileTypeFilter().Append(L".doc");
 
             PickerParameters parameters{}; // InitialFileTypeIndex defaults to -1
-            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
+            parameters.CaptureFilterSpecData(
+                picker.FileTypeFilter().GetView(),
+                picker.FileTypeChoices().GetView(),
+                picker.InitialFileTypeIndex());
 
             // Act.
             auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
@@ -325,7 +328,7 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(3u, fileTypeIndex);                  // one-based dialog value
         }
 
-        TEST_METHOD(VerifyFileOpenPickerFileTypeChoicesWithInitialFileTypeIndex_DefaultsToFirstOneWhenUnspecified)
+        TEST_METHOD(VerifyFileOpenPickerFileTypeChoicesWithoutInitialFileTypeIndex_SystemDefaultWhenUnspecified)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
@@ -336,7 +339,10 @@ namespace Test::PickerCommonTests
                 L"Images", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
 
             PickerParameters parameters{}; // InitialFileTypeIndex defaults to -1
-            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
+            parameters.CaptureFilterSpecData(
+                picker.FileTypeFilter().GetView(),
+                picker.FileTypeChoices().GetView(),
+                picker.InitialFileTypeIndex());
 
             // Act.
             auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
@@ -345,20 +351,23 @@ namespace Test::PickerCommonTests
             UINT fileTypeIndex{};
             VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
 
-            // Assert. Expect focus on the unioned "All Files" entry (third item, 1-based index = 3).
-            VERIFY_ARE_EQUAL(1, parameters.InitialFileTypeIndex); // zero-based stored value
-            VERIFY_ARE_EQUAL(2u, fileTypeIndex);                  // one-based dialog value
+            // Assert. Expect no special configuration, apply the system default (will focus on the first item).
+            VERIFY_ARE_EQUAL(-1, parameters.InitialFileTypeIndex); // zero-based stored value
+            VERIFY_ARE_EQUAL(0u, fileTypeIndex);                   // one-based dialog value
         }
 
-        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndex_ThrowsWhenSmallerThanMinusOne)
+        TEST_METHOD(VerifyValidateInitialFileTypeIndex)
         {
-            // Arrange.
-            winrt::Microsoft::UI::WindowId windowId{};
-            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+            // Act / Assert accepting values larger than -1.
+            PickerCommon::ValidateInitialFileTypeIndex(-1);
 
-            // Act / Assert.
+            PickerCommon::ValidateInitialFileTypeIndex(0);
+
+            PickerCommon::ValidateInitialFileTypeIndex(5);
+
+            // Act / Assert rejecting values smaller than -1.
             VERIFY_THROWS_HR(
-                picker.InitialFileTypeIndex(-2),
+                PickerCommon::ValidateInitialFileTypeIndex(-2),
                 E_INVALIDARG);
         }
 
@@ -463,21 +472,9 @@ namespace Test::PickerCommonTests
             UINT fileTypeIndex{};
             VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
 
-            // Assert. Expect focus on the unioned "All Files" entry (third item, 1-based index = 3).
-            VERIFY_ARE_EQUAL(2, parameters.InitialFileTypeIndex); // zero-based stored value
-            VERIFY_ARE_EQUAL(1u, fileTypeIndex);                  // one-based dialog value
-        }
-
-        TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndex_ThrowsWhenSmallerThanMinusOne)
-        {
-            // Arrange.
-            winrt::Microsoft::UI::WindowId windowId{};
-            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
-
-            // Act / Assert.
-            VERIFY_THROWS_HR(
-                picker.InitialFileTypeIndex(-2),
-                E_INVALIDARG);
+            // Assert. Expect no specified value, apply the system default (will focus on the first item).
+            VERIFY_ARE_EQUAL(-1, parameters.InitialFileTypeIndex); // zero-based stored value
+            VERIFY_ARE_EQUAL(0u, fileTypeIndex);                   // one-based dialog value
         }
 
         TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndex_ThrowsWhenLargerThanFilterCount)

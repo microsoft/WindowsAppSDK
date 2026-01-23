@@ -17,7 +17,7 @@ Test code (C++):
 winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ AppWindow().Id() };
 picker.FileTypeFilter().Append(L".jpg");
 picker.FileTypeFilter().Append(L".png");
-auto& file = co_await picker.PickSingleFileAsync();
+auto file = co_await picker.PickSingleFileAsync();
 ```
 1. When `FileTypeFilters` are defined, append a file type filter that includes all the already 
    defined file types.
@@ -36,7 +36,7 @@ Test code (C++):
 winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker{ AppWindow().Id() };
 picker.FileTypeChoices().Insert(L"Documents", single_threaded_vector<hstring>({ L".txt", L".doc", L".docx", L".pdf"}));
 picker.FileTypeChoices().Insert(L"Pictures", single_threaded_vector<hstring>({ L".jpg", L"jpeg", L".png", L".bmp"}));
-auto& file = co_await picker.PickSaveFileAsync();
+auto file = co_await picker.PickSaveFileAsync();
 ```
 
 1. When `FileTypeChoices` are defined and a file is saved with an extension not listed in the chosen 
@@ -60,7 +60,7 @@ auto& file = co_await picker.PickSaveFileAsync();
 Test code (C++):
 ```C++
 winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker{ AppWindow().Id() };
-auto& results = co_await picker.PickMultipleFoldersAsync();
+auto results{ co_await picker.PickMultipleFoldersAsync() };
 
 // Manually select some folders.
 
