@@ -328,7 +328,7 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(3u, fileTypeIndex);                  // one-based dialog value
         }
 
-        TEST_METHOD(VerifyFileOpenPickerFileTypeChoicesWithoutInitialFileTypeIndex_SystemDefaultWhenUnspecified)
+        TEST_METHOD(VerifyFileOpenPickerFileTypeChoicesWithoutInitialFileTypeIndex_ComDialogDefaultWhenUnspecified)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
@@ -351,7 +351,7 @@ namespace Test::PickerCommonTests
             UINT fileTypeIndex{};
             VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
 
-            // Assert. Expect no special configuration, apply the system default (will focus on the first item).
+            // Assert. Expect no special configuration, apply the COM dialog default (will focus on the first item).
             VERIFY_ARE_EQUAL(-1, parameters.InitialFileTypeIndex); // zero-based stored value
             VERIFY_ARE_EQUAL(0u, fileTypeIndex);                   // one-based dialog value
         }
@@ -451,7 +451,7 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(2u, fileTypeIndex);
         }
 
-        TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndexDefaultsToFirstWhenUnspecified)
+        TEST_METHOD(VerifyFileSavePickerFileTypeChoicesWithoutInitialFileTypeIndex_ComDialogDefaultWhenUnspecified)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
@@ -472,7 +472,7 @@ namespace Test::PickerCommonTests
             UINT fileTypeIndex{};
             VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
 
-            // Assert. Expect no specified value, apply the system default (will focus on the first item).
+            // Assert. Expect no specified value, apply the COM dialog default (will focus on the first item).
             VERIFY_ARE_EQUAL(-1, parameters.InitialFileTypeIndex); // zero-based stored value
             VERIFY_ARE_EQUAL(0u, fileTypeIndex);                   // one-based dialog value
         }
