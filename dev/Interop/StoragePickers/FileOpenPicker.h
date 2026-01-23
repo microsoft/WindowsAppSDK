@@ -63,7 +63,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             }()
         };
 
-        int m_initialFileTypeIndex{ -1 };
+        int m_initialFileTypeIndex{ PickerCommon::DefaultInitialFileTypeIndex };
 
         winrt::hstring m_suggestedFolder{};
         winrt::hstring m_suggestedStartFolder{};

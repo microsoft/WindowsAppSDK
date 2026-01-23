@@ -56,7 +56,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         hstring m_title{};
         hstring m_settingsIdentifier{};
         winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> m_fileTypeChoices{ make<FileTypeChoicesMap>() };
-        int m_initialFileTypeIndex{ -1 };
+        int m_initialFileTypeIndex{ PickerCommon::DefaultInitialFileTypeIndex };
         hstring m_defaultFileExtension{};
 		bool m_showOverwritePrompt{ true };
         hstring m_suggestedFolder{};

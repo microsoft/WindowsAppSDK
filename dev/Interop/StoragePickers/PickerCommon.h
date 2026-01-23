@@ -20,6 +20,7 @@ namespace PickerCommon {
     const winrt::hstring StringNoEmbeddedNullsLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"};
     const winrt::hstring MaxSaveFileLengthExceededLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"};
     const winrt::hstring InvalidInitialFileTypeIndexLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDINITIALFILETYPEINDEX"};
+    constexpr int DefaultInitialFileTypeIndex{ -1 };
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
     void ValidateStringNoEmbeddedNulls(winrt::hstring const& value);
@@ -38,7 +39,7 @@ namespace PickerCommon {
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation;
         std::vector<winrt::hstring> FileTypeFilterData{};
         std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
-        int InitialFileTypeIndex{ -1 };
+        int InitialFileTypeIndex{ DefaultInitialFileTypeIndex };
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
 
         winrt::hstring SuggestedFileName;

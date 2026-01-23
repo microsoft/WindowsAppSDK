@@ -253,7 +253,7 @@ namespace PickerCommon {
 
     void ValidateInitialFileTypeIndex(int const& value)
     {
-        if (value < -1)
+        if (value < DefaultInitialFileTypeIndex)
         {
             throw winrt::hresult_invalid_argument(
                 PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
@@ -369,7 +369,7 @@ namespace PickerCommon {
             FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
 
-        if (InitialFileTypeIndex == -1)
+        if (InitialFileTypeIndex == DefaultInitialFileTypeIndex)
         {
             // If no valid InitialFileTypeIndex specified, focus the last one ("All Files" - the auto-added unioned category)
             InitialFileTypeIndex = static_cast<int>(resultSize) - 1;
@@ -480,7 +480,7 @@ namespace PickerCommon {
         {
             check_hresult(dialog->SetFileTypes(static_cast<UINT>(FileTypeFilterPara.size()), FileTypeFilterPara.data()));
 
-            if (InitialFileTypeIndex != -1 && InitialFileTypeIndex < static_cast<int>(FileTypeFilterPara.size()))
+            if (InitialFileTypeIndex != DefaultInitialFileTypeIndex && InitialFileTypeIndex < static_cast<int>(FileTypeFilterPara.size()))
             {
                 check_hresult(dialog->SetFileTypeIndex(InitialFileTypeIndex + 1)); // COMDLG file type index is 1-based
             }
