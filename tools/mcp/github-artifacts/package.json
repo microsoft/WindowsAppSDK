@@ -1,7 +1,7 @@
 {
   "name": "github-artifacts",
   "version": "1.0.0",
-  "description": "",
+  "description": "MCP server for downloading and analyzing images and ZIP attachments from GitHub issues and pull requests",
   "main": "server.js",
   "scripts": {
     "test": "node test-github_issue_images.js && node test-github_issue_attachments.js",
