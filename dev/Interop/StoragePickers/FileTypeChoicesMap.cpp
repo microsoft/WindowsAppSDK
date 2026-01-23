@@ -37,10 +37,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     bool FileTypeChoicesMap::Insert(hstring const& key, winrt::Windows::Foundation::Collections::IVector<hstring> const& value)
     {
-        if (ForFeature_StoragePickers2)
-        {
-        }
-
         // Create a new FileTypeFilterVector and copy all values from the input vector
         auto validatingVector{ make<FileTypeFilterVector>() };
 
