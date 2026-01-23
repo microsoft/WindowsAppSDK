@@ -56,5 +56,24 @@ auto& file = co_await picker.PickSaveFileAsync();
     **Example of unexpected behavior - without the fix:**
     ![alter-extension-with-choices-beforefix](./media/alter-extension-with-choices-beforefix.gif)
 
+### FolderPicker.PickMultipleFoldersAsync
+Test code (C++):
+```C++
+winrt::Microsoft::Windows::Storage::Pickers::FolderPicker picker{ AppWindow().Id() };
+auto& results = co_await picker.PickMultipleFoldersAsync();
 
+// Manually select some folders.
 
+if (results.Size() == 0)
+{
+    std::wcout << L"no folders picked" << std::endl;
+}
+else
+{
+    for (auto const& result : results)
+    {
+        std::wcout << result.Path().c_str() << std::endl;
+    }
+}
+```
+Expect to print out all selected folders.
