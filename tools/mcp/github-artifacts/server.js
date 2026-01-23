@@ -6,7 +6,7 @@ import path from "path";
 import { execFile } from "child_process";
 
 const server = new McpServer({
-  name: "issue-images",
+  name: "github-artifacts",
   version: "0.1.0"
 });
 
