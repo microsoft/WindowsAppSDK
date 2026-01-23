@@ -509,7 +509,7 @@ namespace PickerCommon {
             else
             {
                 throw winrt::hresult_invalid_argument(
-                    PickerLocalization::GetStoragePickersLocalizationText(InvalidSettingsIdentifierLocalizationKey));
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidAppIdForSettingsIdentifierLocalizationKey));
             }
         }
 

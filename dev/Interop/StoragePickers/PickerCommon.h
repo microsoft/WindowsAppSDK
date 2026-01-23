@@ -20,6 +20,7 @@ namespace PickerCommon {
     const winrt::hstring StringNoEmbeddedNullsLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"};
     const winrt::hstring MaxSaveFileLengthExceededLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"};
     const winrt::hstring InvalidInitialFileTypeIndexLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDINITIALFILETYPEINDEX"};
+    const winrt::hstring InvalidAppIdForSettingsIdentifierLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDAPPIDFORSETTINGSIDENTIFIER"};
     constexpr int DefaultInitialFileTypeIndex{ -1 };
 
     bool IsHStringNullOrEmpty(winrt::hstring value);

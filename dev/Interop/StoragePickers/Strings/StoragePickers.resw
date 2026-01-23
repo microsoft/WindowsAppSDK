@@ -138,4 +138,7 @@
   <data name="IDS_APIERROR_INVALIDINITIALFILETYPEINDEX" xml:space="preserve">
     <value>The InitialFileTypeIndex cannot be less than -1 or out of range.</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDAPPIDFORSETTINGSIDENTIFIER" xml:space="preserve">
+    <value>Unable to determine app identity for SettingsIdentifier.</value>
+  </data>
 </root>
