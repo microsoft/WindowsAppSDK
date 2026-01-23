@@ -362,11 +362,11 @@ namespace PickerCommon {
             FileTypeFilterData.push_back(allFilesExtensionList.c_str());
         }
 
-        FileTypeFilterPara.clear();
-        FileTypeFilterPara.reserve(resultSize);
+        FileTypeFilterParams.clear();
+        FileTypeFilterParams.reserve(resultSize);
         for (size_t i = 0; i < resultSize; i++)
         {
-            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
+            FileTypeFilterParams.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
 
         if (InitialFileTypeIndex == DefaultInitialFileTypeIndex)
@@ -401,11 +401,11 @@ namespace PickerCommon {
             resultSize = 1;
         }
 
-        FileTypeFilterPara.clear();
-        FileTypeFilterPara.reserve(resultSize);
+        FileTypeFilterParams.clear();
+        FileTypeFilterParams.reserve(resultSize);
         for (size_t i = 0; i < resultSize; i++)
         {
-            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
+            FileTypeFilterParams.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
     }
 
@@ -476,11 +476,11 @@ namespace PickerCommon {
             }
         }
 
-        if (FileTypeFilterPara.size() > 0)
+        if (FileTypeFilterParams.size() > 0)
         {
-            check_hresult(dialog->SetFileTypes(static_cast<UINT>(FileTypeFilterPara.size()), FileTypeFilterPara.data()));
+            check_hresult(dialog->SetFileTypes(static_cast<UINT>(FileTypeFilterParams.size()), FileTypeFilterParams.data()));
 
-            if (InitialFileTypeIndex != DefaultInitialFileTypeIndex && InitialFileTypeIndex < static_cast<int>(FileTypeFilterPara.size()))
+            if (InitialFileTypeIndex != DefaultInitialFileTypeIndex && InitialFileTypeIndex < static_cast<int>(FileTypeFilterParams.size()))
             {
                 check_hresult(dialog->SetFileTypeIndex(InitialFileTypeIndex + 1)); // COMDLG file type index is 1-based
             }

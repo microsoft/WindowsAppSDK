@@ -38,7 +38,7 @@ namespace PickerCommon {
         winrt::hstring SettingsIdentifier;
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation;
         std::vector<winrt::hstring> FileTypeFilterData{};
-        std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
+        std::vector<COMDLG_FILTERSPEC> FileTypeFilterParams{};
         int InitialFileTypeIndex{ DefaultInitialFileTypeIndex };
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
 

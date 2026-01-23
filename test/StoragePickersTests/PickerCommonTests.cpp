@@ -155,27 +155,27 @@ namespace Test::PickerCommonTests
             parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterParams.size(), 3);
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszName),
+                std::wstring(parameters.FileTypeFilterParams[0].pszName),
                 L"*.txt");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[0].pszSpec),
                 L"*.txt");
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[1].pszName),
+                std::wstring(parameters.FileTypeFilterParams[1].pszName),
                 L"*.doc");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[1].pszSpec),
                 L"*.doc");
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[2].pszName),
+                std::wstring(parameters.FileTypeFilterParams[2].pszName),
                 L"All Files");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[2].pszSpec),
                 L"*.txt;*.doc");
         }
 
@@ -190,10 +190,10 @@ namespace Test::PickerCommonTests
             parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterParams.size(), 1);
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[0].pszSpec),
                 L"*");
         }
 
@@ -210,10 +210,10 @@ namespace Test::PickerCommonTests
             parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterParams.size(), 1);
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[0].pszSpec),
                 L"*");
         }
 
@@ -238,16 +238,16 @@ namespace Test::PickerCommonTests
                 picker.InitialFileTypeIndex());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterParams.size(), 3);
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[0].pszSpec),
                 L"*.png;*.jpg;*.jpeg;*.bmp");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[1].pszSpec),
                 L"*.ai");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[2].pszSpec),
                 L"*.txt;*.doc;*.docx");
         }
 
@@ -318,16 +318,16 @@ namespace Test::PickerCommonTests
                 picker.InitialFileTypeIndex());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 3);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterParams.size(), 3);
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[0].pszSpec),
                 L"*.png;*.jpg;*.jpeg;*.bmp");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[1].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[1].pszSpec),
                 L"*.ai");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[2].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[2].pszSpec),
                 L"*.txt;*.doc;*.docx");
         }
 
@@ -562,13 +562,13 @@ namespace Test::PickerCommonTests
                 picker.InitialFileTypeIndex());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterParams.size(), 1);
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[0].pszSpec),
                 L"*");
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszName),
+                std::wstring(parameters.FileTypeFilterParams[0].pszName),
                 L"All Files");
         }
 
@@ -591,10 +591,10 @@ namespace Test::PickerCommonTests
                 picker.InitialFileTypeIndex());
 
             // Assert.
-            VERIFY_ARE_EQUAL(parameters.FileTypeFilterPara.size(), 1);
+            VERIFY_ARE_EQUAL(parameters.FileTypeFilterParams.size(), 1);
 
             VERIFY_ARE_EQUAL(
-                std::wstring(parameters.FileTypeFilterPara[0].pszSpec),
+                std::wstring(parameters.FileTypeFilterParams[0].pszSpec),
                 L"*");
         }
 
