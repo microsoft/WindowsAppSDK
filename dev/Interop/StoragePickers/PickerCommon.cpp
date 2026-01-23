@@ -302,12 +302,22 @@ namespace PickerCommon {
         if (fileTypeChoicesView && fileTypeChoicesView.Size() > 0)
         {
             CaptureFilterSpec(fileTypeChoicesView);
+            if (InitialFileTypeIndex > static_cast<int>(FileTypeFilterParams.size() - 1))
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
+            }
             return;
         }
 
         if (fileTypeFilterView && fileTypeFilterView.Size() > 0)
         {
             CaptureFilterSpec(fileTypeFilterView);
+            if (InitialFileTypeIndex > static_cast<int>(FileTypeFilterParams.size() - 1))
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
+            }
             return;
         }
 
@@ -495,6 +505,11 @@ namespace PickerCommon {
             {
                 auto clientId = HashHStringToGuid(appDistinctString + L"|" + SettingsIdentifier);
                 check_hresult(dialog->SetClientGuid(clientId));
+            }
+            else
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidSettingsIdentifierLocalizationKey));
             }
         }
 

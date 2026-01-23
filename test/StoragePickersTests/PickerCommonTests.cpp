@@ -251,7 +251,7 @@ namespace Test::PickerCommonTests
                 L"*.txt;*.doc;*.docx");
         }
 
-        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndexApplied)
+        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndexAppliedToFileTypeFilter)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
@@ -261,7 +261,8 @@ namespace Test::PickerCommonTests
             picker.InitialFileTypeIndex(0); // pick the first explicit filter
 
             PickerParameters parameters{};
-            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
+            parameters.CaptureFilterSpecData(
+                picker.FileTypeFilter().GetView(), picker.FileTypeChoices().GetView(), picker.InitialFileTypeIndex());
 
             // Act.
             auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
@@ -274,7 +275,34 @@ namespace Test::PickerCommonTests
             VERIFY_ARE_EQUAL(1u, fileTypeIndex);
         }
 
-        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndexDefaultsToAllFilesWhenUnspecified)
+        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndexAppliedToFileTypeChoices)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".doc", L".docx" }));
+            picker.FileTypeChoices().Insert(
+                L"Images", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
+
+            picker.InitialFileTypeIndex(0); // pick the first explicit filter
+
+            PickerParameters parameters{};
+            parameters.CaptureFilterSpecData(
+                picker.FileTypeFilter().GetView(), picker.FileTypeChoices().GetView(), picker.InitialFileTypeIndex());
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog);
+
+            UINT fileTypeIndex{};
+            VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
+
+            // Assert. COM dialog uses 1-based indices.
+            VERIFY_ARE_EQUAL(1u, fileTypeIndex);
+        }
+
+        TEST_METHOD(VerifyFileOpenPickerFileTypeFilterWithInitialFileTypeIndex_DefaultsToLastOneWhenUnspecified)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
@@ -294,7 +322,61 @@ namespace Test::PickerCommonTests
 
             // Assert. Expect focus on the unioned "All Files" entry (third item, 1-based index = 3).
             VERIFY_ARE_EQUAL(2, parameters.InitialFileTypeIndex); // zero-based stored value
-            VERIFY_ARE_EQUAL(3u, fileTypeIndex);                 // one-based dialog value
+            VERIFY_ARE_EQUAL(3u, fileTypeIndex);                  // one-based dialog value
+        }
+
+        TEST_METHOD(VerifyFileOpenPickerFileTypeChoicesWithInitialFileTypeIndex_DefaultsToFirstOneWhenUnspecified)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".doc", L".docx" }));
+            picker.FileTypeChoices().Insert(
+                L"Images", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
+
+            PickerParameters parameters{}; // InitialFileTypeIndex defaults to -1
+            parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), nullptr, picker.InitialFileTypeIndex());
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog);
+
+            UINT fileTypeIndex{};
+            VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
+
+            // Assert. Expect focus on the unioned "All Files" entry (third item, 1-based index = 3).
+            VERIFY_ARE_EQUAL(1, parameters.InitialFileTypeIndex); // zero-based stored value
+            VERIFY_ARE_EQUAL(2u, fileTypeIndex);                  // one-based dialog value
+        }
+
+        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndex_ThrowsWhenSmallerThanMinusOne)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+
+            // Act / Assert.
+            VERIFY_THROWS_HR(
+                picker.InitialFileTypeIndex(-2),
+                E_INVALIDARG);
+        }
+
+        TEST_METHOD(VerifyFileOpenPickerInitialFileTypeIndex_ThrowsWhenLargerThanFilterCount)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker(windowId);
+            picker.FileTypeFilter().Append(L".txt");
+            picker.FileTypeFilter().Append(L".doc");
+
+            PickerCommon::PickerParameters parameters{};
+
+            // Act / Assert.
+            picker.InitialFileTypeIndex(3);
+            VERIFY_THROWS_HR(
+                parameters.CaptureFilterSpecData(picker.FileTypeFilter().GetView(), picker.FileTypeChoices().GetView(), picker.InitialFileTypeIndex()),
+                E_INVALIDARG);
         }
 
         TEST_METHOD(VerifyFilters_FileSavePickerWhenFileTypeChoicesDefinedExpectMatchingSpec)
@@ -331,7 +413,7 @@ namespace Test::PickerCommonTests
                 L"*.txt;*.doc;*.docx");
         }
 
-        TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndexApplied)
+        TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndexAppliedToFileTypeChoices)
         {
             // Arrange.
             winrt::Microsoft::UI::WindowId windowId{};
@@ -358,6 +440,63 @@ namespace Test::PickerCommonTests
 
             // Assert. Second entry should be selected (1-based = 2).
             VERIFY_ARE_EQUAL(2u, fileTypeIndex);
+        }
+
+        TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndexDefaultsToFirstWhenUnspecified)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".doc", L".docx" }));
+            picker.FileTypeChoices().Insert(
+                L"Images", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
+
+            PickerParameters parameters{}; // When not specified, InitialFileTypeIndex defaults to -1
+            parameters.CaptureFilterSpecData(nullptr, picker.FileTypeChoices().GetView(), picker.InitialFileTypeIndex());
+
+            // Act.
+            auto dialog = winrt::create_instance<IFileSaveDialog>(CLSID_FileSaveDialog, CLSCTX_INPROC_SERVER);
+            parameters.ConfigureDialog(dialog.as<IFileDialog>());
+            parameters.ConfigureFileSaveDialog(dialog);
+
+            UINT fileTypeIndex{};
+            VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
+
+            // Assert. Expect focus on the unioned "All Files" entry (third item, 1-based index = 3).
+            VERIFY_ARE_EQUAL(2, parameters.InitialFileTypeIndex); // zero-based stored value
+            VERIFY_ARE_EQUAL(1u, fileTypeIndex);                  // one-based dialog value
+        }
+
+        TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndex_ThrowsWhenSmallerThanMinusOne)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+
+            // Act / Assert.
+            VERIFY_THROWS_HR(
+                picker.InitialFileTypeIndex(-2),
+                E_INVALIDARG);
+        }
+
+        TEST_METHOD(VerifyFileSavePickerInitialFileTypeIndex_ThrowsWhenLargerThanFilterCount)
+        {
+            // Arrange.
+            winrt::Microsoft::UI::WindowId windowId{};
+            winrt::Microsoft::Windows::Storage::Pickers::FileSavePicker picker(windowId);
+            picker.FileTypeChoices().Insert(
+                L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".doc", L".docx" }));
+            picker.FileTypeChoices().Insert(
+                L"Images", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg" }));
+
+            // Act / Assert.
+            picker.InitialFileTypeIndex(2);
+            PickerCommon::PickerParameters parameters{};
+
+            VERIFY_THROWS_HR(
+                parameters.CaptureFilterSpecData(nullptr, picker.FileTypeChoices().GetView(), picker.InitialFileTypeIndex()),
+                E_INVALIDARG);
         }
 
         TEST_METHOD(VerifyFileTypeChoicesViewRemainsValidAfterPickerDestruction)

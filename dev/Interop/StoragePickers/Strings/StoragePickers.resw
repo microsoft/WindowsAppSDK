@@ -136,6 +136,6 @@
     <value>The suggested file name exceeds the maximum number of characters allowed.</value>
   </data>
   <data name="IDS_APIERROR_INVALIDINITIALFILETYPEINDEX" xml:space="preserve">
-    <value>The InitialFileTypeIndex cannot be less than -1.</value>
+    <value>The InitialFileTypeIndex cannot be less than -1 or out of range.</value>
   </data>
 </root>
