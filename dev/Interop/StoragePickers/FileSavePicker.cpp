@@ -199,13 +199,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_STRICTFILETYPES));
 
+        if (FAILED(dialog->Show(parameters.HWnd)))
         {
-            auto hr = dialog->Show(parameters.HWnd);
-            if (FAILED(hr))
-            {
-                logTelemetry.Stop(m_telemetryHelper, false);
-                co_return nullptr;
-            }
+            logTelemetry.Stop(m_telemetryHelper, false);
+            co_return nullptr;
         }
 
         winrt::com_ptr<IShellItem> shellItem{};

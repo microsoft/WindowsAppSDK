@@ -129,13 +129,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.ConfigureDialog(dialog);
         dialog->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
 
+        if (FAILED(dialog->Show(parameters.HWnd)) || cancellationToken())
         {
-            auto hr = dialog->Show(parameters.HWnd);
-            if (FAILED(hr) || cancellationToken())
-            {
-                logTelemetry.Stop(m_telemetryHelper, false);
-                co_return nullptr;
-            }
+            logTelemetry.Stop(m_telemetryHelper, false);
+            co_return nullptr;
         }
 
         winrt::com_ptr<IShellItem> shellItem{};
@@ -182,13 +179,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_ALLOWMULTISELECT));
 
+        if (FAILED(dialog->Show(parameters.HWnd)) || cancellationToken())
         {
-            auto hr = dialog->Show(parameters.HWnd);
-            if (FAILED(hr) || cancellationToken())
-            {
-                logTelemetry.Stop(m_telemetryHelper, true, false);
-                co_return results.GetView();
-            }
+            logTelemetry.Stop(m_telemetryHelper, true, false);
+            co_return results.GetView();
         }
 
         winrt::com_ptr<IShellItemArray> shellItems{};
@@ -212,7 +206,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
             results.Clear();
             isCancelled = true;
         }
-        auto resultView = results.GetView();
 
         if (results.Size() > 0)
         {
@@ -222,6 +215,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         {
             logTelemetry.Stop(m_telemetryHelper, isCancelled, false);
         }
-        co_return resultView;
+
+        co_return results.GetView();
     }
 }
