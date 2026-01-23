@@ -274,6 +274,9 @@ API. The implementation derives that `ClientGuid` as follows:
     and coerced into a GUID.
 - The calculated GUID will be passed to set the `ClientGuid`.
 
+If the picker cannot determine either the package identity or the process executable path, it will
+fail to launch and throw an error.
+
 This means the feature works for both packaged and unpackaged apps. Packaged apps remain distinct by
 their package identity, while unpackaged apps are differentiated by the absolute path of their
 executable. As long as an app uses a stable combination of package identity (or executable path) and
@@ -343,5 +346,5 @@ defined,
     (which is its first) category, as `FileTypeChoices` takes precedence over the `FileTypeFilter`.
 
 Additionally,
-- `InitialFileTypeIndex` cannot be set to a value smaller than `-1`;
-- if the index falls outside the available range, we treat it as `-1` (not specified).
+- `InitialFileTypeIndex` cannot be set to a value smaller than `-1` or out of range;
+- if the index falls outside the available range, the dialog will fail to launch.

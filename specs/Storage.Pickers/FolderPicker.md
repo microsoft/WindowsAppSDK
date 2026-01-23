@@ -136,6 +136,9 @@ Allow customizing the title of file dialog. It's based on the
 
 The SettingsIdentifier property allows the picker object to remember its own states.
 
+If the picker cannot determine the app identity (package identity or executable path), it will
+fail to launch and throw an error.
+
 See the examples in [Note 2: The use case and implementation of SettingsIdentifier (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-2-the-use-case-and-implementation-of-settingsidentifier)
 
 ## Methods

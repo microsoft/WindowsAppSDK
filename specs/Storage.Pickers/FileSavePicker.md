@@ -176,11 +176,16 @@ Allow customizing the title of file dialog. It's based on the
 
 The `SettingsIdentifier` property allows the picker object to remember its own states.
 
+If the picker cannot determine the app identity (package identity or executable path), it will
+fail to launch and throw an error.
+
 See the examples in [Note 2: The use case and implementation of SettingsIdentifier (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-2-the-use-case-and-implementation-of-settingsidentifier)
 
 ### FileSavePicker.InitialFileTypeIndex
 
 The `InitialFileTypeIndex` property is 0-based. It decides the auto-selected file type on dialog launch.
+
+Values smaller than `-1` or outside the available range will cause the picker to fail to launch.
 
 See the examples in [Note 3: Properties for File Types and The Initial Index (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-3-properties-for-file-types-and-its-auto-selection-on-launch)
 
