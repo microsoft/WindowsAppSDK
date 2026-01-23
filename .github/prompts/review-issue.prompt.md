@@ -38,6 +38,13 @@ If the user chooses to proceed without MCP:
 ## Inputs
 Figure out required inputs {{issue_number}} from the invocation context; if anything is missing, ask for the value or note it as a gap.
 
+## When to call MCP tools (github-artifacts)
+If the MCP "github-artifacts" tools are available in the environment, use them:
+- `github_issue_images`: use when the issue likely contains screenshots or other visual evidence (UI bugs, layout glitches, design problems).
+- `github_issue_attachments`: use when the issue mentions attached ZIPs or diagnostic bundles (for example, `*.zip`, `logs.zip`, `debug.zip`). Always provide `extractFolder` as `Generated Files/issueReview/{{issue_number}}/logs`.
+
+If these tools are not available, start the MCP server in `tools/mcp/github-artifacts/launch.js` and retry.
+
 ## Fetch Issue Data with GitHub MCP
 
 ### Core issue information
@@ -60,8 +67,7 @@ Use `github-pull-request_renderIssues`:
 - Pass array of issues to render as markdown table for display
 
 # CONTEXT (brief)
-Use the MCP tools above to gather issue data, and download images to better understand the issue context.
-Locate source code in the current workspace; feel free to use `rg`/`git grep`. Link related issues and PRs.
+Use the MCP tools above to gather issue data. Download images via MCP `github_issue_images` to better understand the issue context. Finally, use MCP `github_issue_attachments` to download logs with parameter `extractFolder` as `Generated Files/issueReview/{{issue_number}}/logs`, and analyze the downloaded logs if available to identify relevant issues. Locate source code in the current workspace; feel free to use `rg`/`git grep`. Link related issues and PRs.
 
 # OVERVIEW.MD
 ## Summary

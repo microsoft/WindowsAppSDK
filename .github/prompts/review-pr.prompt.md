@@ -17,6 +17,13 @@ Use whatever GitHub MCP/API tools are available to fetch PR details. Common tool
 
 **Just try calling one of these tools** to get PR info for PR #6130 (or the PR from context). The call will either succeed or fail - that tells you which tools work.
 
+## Issue/PR artifacts (github-artifacts MCP)
+If the MCP "github-artifacts" tools are available in the environment, use them to pull supporting evidence linked from the PR or linked issues:
+- `github_issue_images`: use when linked issues or PR discussion include screenshots (UI bugs, layout, design).
+- `github_issue_attachments`: use when linked issues mention attached ZIPs or diagnostic bundles. Always provide `extractFolder` as `Generated Files/prReview/{{pr_number}}/issue-artifacts/<issue_number>`.
+
+If these tools are not available, start the MCP server in `tools/mcp/github-artifacts/launch.js` and retry.
+
 ## PR selection
 Resolve the target PR using these fallbacks in order:
 1. Parse the invocation text for an explicit identifier (first integer following patterns such as a leading hash and digits or the text `PR:` followed by digits).
