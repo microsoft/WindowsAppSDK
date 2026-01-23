@@ -53,6 +53,10 @@ parameters:
   displayName: "Validate Runtime Compatibility Enums (Servicing builds only)"
   type: boolean
   default: true
+- name: "CheckApiChanges"
+  displayName: "Run WindowsAppSDK-CheckApiChanges stage"
+  type: boolean
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
@@ -173,6 +177,11 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
         IsOfficial: true
+
+    - ${{ if eq( parameters.CheckApiChanges, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self
+        parameters:
+          CompareAgainstExperimental: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:
