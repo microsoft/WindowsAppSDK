@@ -106,7 +106,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult> FolderPicker::PickSingleFolderAsync()
     {
-        // TODO: remove get strong reference when telementry is safe stop
+        // Keep a strong ref so m_telemetryHelper (a member of the picker) stays valid after co_awaits.
         auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickSingleFolder::Start(m_telemetryHelper) };
@@ -156,12 +156,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult>> FolderPicker::PickMultipleFoldersAsync()
     {
-        // TODO: remove get strong reference when telementry is safe stop
+        // Keep a strong ref so m_telemetryHelper (a member of the picker) stays valid after co_awaits.
         auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FolderPickerPickMultipleFolder::Start(m_telemetryHelper) };
 
-        // capture parameters to avoid using get strong referece of picker
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
         
@@ -177,6 +176,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         }
 
         auto dialog = create_instance<IFileOpenDialog>(CLSID_FileOpenDialog, CLSCTX_INPROC_SERVER);
+        parameters.ConfigureDialog(dialog);
 
         FILEOPENDIALOGOPTIONS dialogOptions;
         check_hresult(dialog->GetOptions(&dialogOptions));

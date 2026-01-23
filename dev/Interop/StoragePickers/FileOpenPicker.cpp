@@ -130,7 +130,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileOpenPicker::PickSingleFileAsync()
     {
-        // TODO: remove get strong reference when telementry is safe stop
+        // Keep a strong ref so m_telemetryHelper (a member of the picker) stays valid after co_awaits.
         auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickSingleFile::Start(m_telemetryHelper) };
@@ -181,12 +181,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> > FileOpenPicker::PickMultipleFilesAsync()
     {
-        // TODO: remove get strong reference when telementry is safe stop
+        // Keep a strong ref so m_telemetryHelper (a member of the picker) stays valid after co_awaits.
         auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FileOpenPickerPickMultipleFile::Start(m_telemetryHelper) };
 
-        // capture parameters to avoid using get strong referece of picker
         PickerCommon::PickerParameters parameters{};
         parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 

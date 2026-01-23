@@ -155,7 +155,7 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
     {
-        // TODO: remove get strong reference when telementry is safe stop
+        // Keep a strong ref so m_telemetryHelper (a member of the picker) stays valid after co_awaits.
         auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
