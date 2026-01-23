@@ -412,7 +412,7 @@ namespace PickerCommon {
     winrt::hstring PickerParameters::TryGetAppUserModelId()
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
-        UINT32 appUserModelIdSize{ APPLICATION_USER_MODEL_ID_MAX_LENGTH };
+        UINT32 appUserModelIdSize{ _countof(appUserModelId) };
 
         auto hr{GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId) };
         if (SUCCEEDED(hr))
@@ -420,21 +420,19 @@ namespace PickerCommon {
             return winrt::hstring{ appUserModelId };
         }
 
-        return winrt::hstring{};
+        return {};
     }
 
     winrt::hstring PickerParameters::TryGetProcessFullPath()
     {
-        PCWSTR exeFullPath{};
         wil::unique_cotaskmem_string module;
         auto hr{ LOG_IF_FAILED(wil::GetModuleFileNameW(nullptr, module)) };
         if (SUCCEEDED(hr))
         {
-            exeFullPath = module.get();
-            return winrt::hstring{ exeFullPath };
+            return winrt::hstring{ module.get() };
         }
 
-        return winrt::hstring{};
+        return {};
     }
 
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
