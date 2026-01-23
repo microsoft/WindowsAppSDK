@@ -104,16 +104,16 @@ namespace Test::PickerCommonTests
 
             // Assert.
             wil::unique_cotaskmem_string dialogFileName{};
-            dialog->GetFileName(dialogFileName.put());
+            VERIFY_SUCCEEDED(dialog->GetFileName(dialogFileName.put()));
             VERIFY_ARE_EQUAL(std::wstring(dialogFileName.get()), mockFileName,
                 L"The save dialog's file name should match the suggested file name.");
 
             winrt::com_ptr<IShellItem> dialogFolder{};
-            dialog->GetFolder(dialogFolder.put());
+            VERIFY_SUCCEEDED(dialog->GetFolder(dialogFolder.put()));
             VERIFY_IS_NOT_NULL(dialogFolder.get(), L"The save dialog's folder should not be null.");
 
             wil::unique_cotaskmem_string dialogFolderPath{};
-            dialogFolder->GetDisplayName(SIGDN_FILESYSPATH, dialogFolderPath.put());
+            VERIFY_SUCCEEDED(dialogFolder->GetDisplayName(SIGDN_FILESYSPATH, dialogFolderPath.put()));
             VERIFY_ARE_EQUAL(std::wstring(dialogFolderPath.get()), mockFolderPath,
                 L"The save dialog's folder path should match the suggested folder path.");
         }
@@ -136,7 +136,7 @@ namespace Test::PickerCommonTests
 
             // Assert.
             wil::unique_cotaskmem_string dialogFileName{};
-            dialog->GetFileName(dialogFileName.put());
+            VERIFY_SUCCEEDED(dialog->GetFileName(dialogFileName.put()));
             VERIFY_ARE_EQUAL(mockFileName, std::wstring(dialogFileName.get()),
                 L"The save dialog's file name should match the suggested file name.");
         }
@@ -268,7 +268,7 @@ namespace Test::PickerCommonTests
             parameters.ConfigureDialog(dialog);
 
             UINT fileTypeIndex{};
-            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
 
             // Assert. COM dialog uses 1-based indices.
             VERIFY_ARE_EQUAL(1u, fileTypeIndex);
@@ -290,7 +290,7 @@ namespace Test::PickerCommonTests
             parameters.ConfigureDialog(dialog);
 
             UINT fileTypeIndex{};
-            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
 
             // Assert. Expect focus on the unioned "All Files" entry (third item, 1-based index = 3).
             VERIFY_ARE_EQUAL(2, parameters.InitialFileTypeIndex); // zero-based stored value
@@ -354,7 +354,7 @@ namespace Test::PickerCommonTests
             parameters.ConfigureFileSaveDialog(dialog);
 
             UINT fileTypeIndex{};
-            dialog->GetFileTypeIndex(&fileTypeIndex);
+            VERIFY_SUCCEEDED(dialog->GetFileTypeIndex(&fileTypeIndex));
 
             // Assert. Second entry should be selected (1-based = 2).
             VERIFY_ARE_EQUAL(2u, fileTypeIndex);
@@ -610,7 +610,7 @@ namespace Test::PickerCommonTests
 
             // Assert.
             wil::unique_cotaskmem_string fileName{};
-            dialog->GetFileName(fileName.put());
+            VERIFY_SUCCEEDED(dialog->GetFileName(fileName.put()));
             VERIFY_ARE_EQUAL(L"MyFile1.txt", std::wstring(fileName.get()));
         }
 
@@ -624,7 +624,7 @@ namespace Test::PickerCommonTests
             promptOnParameters.ConfigureFileSaveDialog(dialogWithPrompt);
 
             FILEOPENDIALOGOPTIONS promptOptions{};
-            dialogWithPrompt->GetOptions(&promptOptions);
+            VERIFY_SUCCEEDED(dialogWithPrompt->GetOptions(&promptOptions));
             VERIFY_IS_TRUE((promptOptions & FOS_OVERWRITEPROMPT) == FOS_OVERWRITEPROMPT);
 
             // Arrange: disable prompt.
@@ -635,7 +635,7 @@ namespace Test::PickerCommonTests
             promptOffParameters.ConfigureFileSaveDialog(dialogWithoutPrompt);
 
             FILEOPENDIALOGOPTIONS noPromptOptions{};
-            dialogWithoutPrompt->GetOptions(&noPromptOptions);
+            VERIFY_SUCCEEDED(dialogWithoutPrompt->GetOptions(&noPromptOptions));
             VERIFY_IS_FALSE((noPromptOptions & FOS_OVERWRITEPROMPT) == FOS_OVERWRITEPROMPT);
         }
 
@@ -684,7 +684,7 @@ namespace Test::PickerCommonTests
                     VERIFY_ARE_NOT_EQUAL(nullptr, folderItem, message.c_str());
 
                     wil::unique_cotaskmem_string resultFolderPath{};
-                    folderItem->GetDisplayName(SIGDN_FILESYSPATH, resultFolderPath.put());
+                    VERIFY_SUCCEEDED(folderItem->GetDisplayName(SIGDN_FILESYSPATH, resultFolderPath.put()));
                     winrt::hstring resultFolderPathString(resultFolderPath.get());
 
                      // Do a case insensitive comparison for the folder path.
