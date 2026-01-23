@@ -26,7 +26,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     FileSavePicker::FileSavePicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileSavePicker::SuggestedStartLocation()
     {
@@ -48,23 +47,19 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     winrt::hstring FileSavePicker::Title()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_title;
     }
     void FileSavePicker::Title(winrt::hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_title = value;
     }
     winrt::hstring FileSavePicker::SettingsIdentifier()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_settingsIdentifier;
     }
     void FileSavePicker::SettingsIdentifier(winrt::hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_settingsIdentifier = value;
     }
@@ -74,12 +69,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     int FileSavePicker::InitialFileTypeIndex()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_initialFileTypeIndex;
     }
     void FileSavePicker::InitialFileTypeIndex(int value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateInitialFileTypeIndex(value);
         m_initialFileTypeIndex = value;
     }
@@ -89,12 +82,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     bool FileSavePicker::ShowOverwritePrompt()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_showOverwritePrompt;
 	}
 	void FileSavePicker::ShowOverwritePrompt(bool value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
 		m_showOverwritePrompt = value;
 	}
     void FileSavePicker::DefaultFileExtension(hstring const& value)
@@ -113,12 +104,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     hstring FileSavePicker::SuggestedStartFolder()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_suggestedStartFolder;
     }
     void FileSavePicker::SuggestedStartFolder(hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateFolderPath(value, "SuggestedStartFolder");
         m_suggestedStartFolder = value;
     }

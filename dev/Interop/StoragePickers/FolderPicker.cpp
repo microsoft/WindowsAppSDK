@@ -19,7 +19,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     FolderPicker::FolderPicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerViewMode FolderPicker::ViewMode()
     {
@@ -50,45 +49,37 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     }
     winrt::hstring FolderPicker::Title()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_title;
     }
     void FolderPicker::Title(winrt::hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_title = value;
     }
     winrt::hstring FolderPicker::SettingsIdentifier()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_settingsIdentifier;
     }
     void FolderPicker::SettingsIdentifier(winrt::hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_settingsIdentifier = value;
     }
     hstring FolderPicker::SuggestedFolder()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_suggestedFolder;
     }
     void FolderPicker::SuggestedFolder(hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateFolderPath(value, "SuggestedFolder");
         m_suggestedFolder = value;
     }
     hstring FolderPicker::SuggestedStartFolder()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_suggestedStartFolder;
     }
     void FolderPicker::SuggestedStartFolder(hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateFolderPath(value, "SuggestedStartFolder");
         m_suggestedStartFolder = value;
     }

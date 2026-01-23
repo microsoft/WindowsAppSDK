@@ -39,7 +39,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         if (ForFeature_StoragePickers2)
         {
-            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         }
 
         // Create a new FileTypeFilterVector and copy all values from the input vector
