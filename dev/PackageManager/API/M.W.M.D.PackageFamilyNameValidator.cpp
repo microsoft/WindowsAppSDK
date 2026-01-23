@@ -1,7 +1,9 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "M.W.M.D.PackageFamilyNameValidator.h"
 #include "Microsoft.Windows.Management.Deployment.PackageFamilyNameValidator.g.cpp"
-#include <TerminalVelocityFeatures-PackageManager.h>
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
@@ -13,8 +15,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     bool PackageFamilyNameValidator::IsPackageValid(winrt::Windows::Foundation::IInspectable const& appxPackagingObject)
     {
         winrt::com_ptr<IAppxPackageReader> packageReader;
-        winrt::com_ptr<IAppxBundleReader> bundleReader;
-
         if (SUCCEEDED(appxPackagingObject.as(IID_PPV_ARGS(&packageReader))))
         {
             winrt::com_ptr<IAppxManifestReader> manifestReader;
@@ -25,7 +25,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
             return CheckIdentity(packageId.get());
         }
-        else if (SUCCEEDED(appxPackagingObject.as(IID_PPV_ARGS(&bundleReader))))
+
+        winrt::com_ptr<IAppxBundleReader> bundleReader;
+        if (SUCCEEDED(appxPackagingObject.as(IID_PPV_ARGS(&bundleReader))))
         {
             winrt::com_ptr<IAppxBundleManifestReader> manifestReader;
             THROW_IF_FAILED(bundleReader->GetManifest(manifestReader.put()));
@@ -35,10 +37,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
             return CheckIdentity(packageId.get());
         }
-        else
-        {
-            THROW_WIN32(ERROR_NOT_SUPPORTED);
-        }
+
+        THROW_HR(APPX_E_CORRUPT_CONTENT);
     }
 
     bool PackageFamilyNameValidator::CheckIdentity(IAppxManifestPackageId* packageId)
@@ -46,6 +46,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         wil::unique_cotaskmem_string familyName;
         THROW_IF_FAILED(packageId->GetPackageFamilyName(&familyName));
 
-        return (CSTR_EQUAL == CompareStringOrdinal(familyName.get(), -1, m_packageFamilyName.c_str(), -1, true));
+        if (CSTR_EQUAL == CompareStringOrdinal(familyName.get(), -1, m_packageFamilyName.c_str(), -1, TRUE))
+        {
+            return true;
+        }
+        else
+        {
+            std::ignore = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_BAD_FORMAT), "FamilyName=%ws", familyName.get());
+            return false;
+        }
     }
 }

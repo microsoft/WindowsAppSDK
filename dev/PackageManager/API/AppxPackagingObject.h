@@ -1,7 +1,9 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #pragma once
 
-#include <winrt/base.h>
-#include <wil/com.h>
+#include <pch.h>
 #include <AppxPackaging.h>
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
@@ -21,5 +23,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     private:
         winrt::com_ptr<IUnknown> m_object;
     };
+}
 
+namespace WindowsVersion
+{
+    inline bool SupportsIAppxFactory4()
+    {
+        return wil::CoCreateInstanceNoThrow<AppxFactory, IAppxFactory4>().get() != nullptr;
+    }
 }

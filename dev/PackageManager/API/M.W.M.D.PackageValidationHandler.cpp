@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "M.W.M.D.PackageValidationHandler.h"
 #include "Microsoft.Windows.Management.Deployment.PackageValidationHandler.g.cpp"
@@ -11,7 +14,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventArgs> PackageValidationHandler::Handler()
     {
-        return [this](winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource const& sender, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventArgs const& args)
+        return [this](winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource const& /*sender*/, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventArgs const& args)
         {
             auto deferral = args.GetDeferral();
 

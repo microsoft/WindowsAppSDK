@@ -1965,11 +1965,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             return S_OK;
         }
 
-        if (::Microsoft::Windows::Management::Deployment::Feature_PackageValidation::IsEnabled())
-        {
-            auto expectedDigests{ options.AddPackageOptions().ExpectedDigests() };
-            ValidatePackagesAndUpdateExpectedDigests(options.AddPackageOptions().PackageValidators(), expectedDigests);
-        }
+        auto expectedDigests{ options.AddPackageOptions().ExpectedDigests() };
+        ValidatePackagesAndUpdateExpectedDigests(options.AddPackageOptions().PackageValidators(), expectedDigests);
 
         const auto progressBefore{ packageDeploymentProgress.Progress };
         winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
@@ -2038,11 +2035,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
-        if (::Microsoft::Windows::Management::Deployment::Feature_PackageValidation::IsEnabled())
-        {
-            auto expectedDigests{ options.ExpectedDigests() };
-            ValidatePackagesAndUpdateExpectedDigests(options.PackageValidators(), expectedDigests);
-        }
+        auto expectedDigests{ options.ExpectedDigests() };
+        ValidatePackagesAndUpdateExpectedDigests(options.PackageValidators(), expectedDigests);
 
         winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
         const auto progressBefore{ packageDeploymentProgress.Progress };
@@ -2121,11 +2115,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
-        if (::Microsoft::Windows::Management::Deployment::Feature_PackageValidation::IsEnabled())
-        {
-            auto expectedDigests{ options.ExpectedDigests() };
-            ValidatePackagesAndUpdateExpectedDigests(options.PackageValidators(), expectedDigests);
-        }
+        auto expectedDigests{ options.ExpectedDigests() };
+        ValidatePackagesAndUpdateExpectedDigests(options.PackageValidators(), expectedDigests);
 
         winrt::Windows::Management::Deployment::StagePackageOptions stageOptions{ ToOptions(options) };
         const auto progressBefore{ packageDeploymentProgress.Progress };
@@ -3688,8 +3679,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring>& expectedDigests
     )
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidation::IsEnabled());
-
         for (const auto pair : packageValidators)
         {
             const auto packageUri{ pair.Key() };
@@ -3699,7 +3688,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 continue;
             }
 
-            THROW_HR_IF(APPX_E_DIGEST_MISMATCH, !validators.as<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageValidationEventSource>()->Run(packageUri, expectedDigests));
+            THROW_HR_IF_MSG(APPX_E_DIGEST_MISMATCH, !validators.as<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageValidationEventSource>()->Run(packageUri, expectedDigests),
+                "Uri=%ls", packageUri.AbsoluteUri().c_str());
         }
     }
 

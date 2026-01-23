@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #pragma once
 #include "Microsoft.Windows.Management.Deployment.PackageMinimumVersionValidator.g.h"
 
@@ -13,7 +16,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     private:
         bool CheckIdentity(IAppxManifestPackageId* packageId);
 
-        UINT64 m_minimumVersion;
+        UINT64 m_minimumVersion{};
     };
 }
 

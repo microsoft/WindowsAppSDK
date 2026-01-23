@@ -70,3 +70,4 @@
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixPackageManager.h" />
   </ItemGroup>
 </Project>
+

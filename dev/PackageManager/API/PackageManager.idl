@@ -272,7 +272,6 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<PackageSetItem> Items { get; };
     }
 
-    [feature(Feature_PackageValidation)]
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageValidationEventArgs
     {
@@ -283,14 +282,12 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.Deferral GetDeferral();
     }
 
-    [feature(Feature_PackageValidation)]
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageValidationEventSource
     {
         event Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> ValidationRequested;
     }
 
-    [feature(Feature_PackageValidation)]
     [contract(PackageDeploymentContract, 3)]
     interface IPackageValidator
     {
@@ -300,7 +297,6 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsPackageValid(IInspectable appxPackagingObject);
     }
 
-    [feature(Feature_PackageValidation)]
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageValidationHandler
     {
@@ -308,21 +304,18 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> Handler{ get; };
     }
 
-    [feature(Feature_PackageValidation)]
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageFamilyNameValidator : [default] IPackageValidator
     {
         PackageFamilyNameValidator(String expectedPackageFamilyName);
     }
 
-    [feature(Feature_PackageValidation)]
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageMinimumVersionValidator : [default] IPackageValidator
     {
         PackageMinimumVersionValidator(Windows.ApplicationModel.PackageVersion minimumVersion);
     }
 
-    [feature(Feature_PackageValidation)]
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageCertificateEkuValidator : [default] IPackageValidator
     {
@@ -359,15 +352,12 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         Boolean LimitToExistingPackages;
 
-        [feature(Feature_PackageValidation)]
         [contract(PackageDeploymentContract, 3)]
         Boolean IsPackageValidationSupported{ get; };
 
-        [feature(Feature_PackageValidation)]
         [contract(PackageDeploymentContract, 3)]
         IMapView<Windows.Foundation.Uri, PackageValidationEventSource> PackageValidators{ get; };
 
-        [feature(Feature_PackageValidation)]
         [contract(PackageDeploymentContract, 3)]
         PackageValidationEventSource GetValidationEventSourceForUri(Windows.Foundation.Uri uri);
     }
@@ -395,15 +385,12 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
 
-        [feature(Feature_PackageValidation)]
         [contract(PackageDeploymentContract, 3)]
         Boolean IsPackageValidationSupported{ get; };
 
-        [feature(Feature_PackageValidation)]
         [contract(PackageDeploymentContract, 3)]
         IMapView<Windows.Foundation.Uri, PackageValidationEventSource> PackageValidators{ get; };
 
-        [feature(Feature_PackageValidation)]
         [contract(PackageDeploymentContract, 3)]
         PackageValidationEventSource GetValidationEventSourceForUri(Windows.Foundation.Uri uri);
     }

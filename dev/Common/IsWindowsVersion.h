@@ -1,12 +1,10 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __ISWINDOWSVERSION_H
 #define __ISWINDOWSVERSION_H
 
 #include <VersionHelpers.h>
-#include <wil/com.h>
-#include <AppxPackaging.h>
 
 namespace WindowsVersion
 {
@@ -64,12 +62,6 @@ inline bool IsWindows11_24H2OrGreater()
     // MsixIsPackageFeatureSupported() added to  in Windows 11 24H2 (aka NTDDI_WIN11_GE)
     return IsExportPresent(L"appxdeploymentclient.dll", "MsixIsPackageFeatureSupported");
 }
-
-inline bool SupportsIAppxFactory4()
-{
-    return wil::CoCreateInstanceNoThrow<AppxFactory, IAppxFactory4>().get() != nullptr;
-}
-
 }
 
 #endif // __ISWINDOWSVERSION_H

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 
 #include "M.W.M.D.PackageValidationEventArgs.h"
@@ -9,7 +12,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         m_packageUri = packageUri;
         m_appxObject = appxObject;
-        m_cancel = false;
     }
 
     winrt::Windows::Foundation::Uri PackageValidationEventArgs::PackageUri()

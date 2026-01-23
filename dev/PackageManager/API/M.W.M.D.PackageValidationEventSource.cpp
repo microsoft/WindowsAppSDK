@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "Microsoft.Windows.Management.Deployment.PackageValidationEventSource.g.cpp"
 
@@ -33,7 +36,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         else
         {
-            THROW_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED);
+            THROW_HR(APPX_E_CORRUPT_CONTENT);
         }
 
         auto args{ winrt::make<PackageValidationEventArgs>(packageUri, appxObject) };
@@ -44,17 +47,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             return false;
         }
-        else
-        {
-            if (!expectedDigestString)
-            {
-                wil::unique_cotaskmem_string digest;
-                THROW_IF_FAILED(digestProvider->GetDigest(&digest));
 
-                expectedDigests.Insert(packageUri, digest.get());
-            }
-            return true;
+        if (!expectedDigestString)
+        {
+            wil::unique_cotaskmem_string digest;
+            THROW_IF_FAILED(digestProvider->GetDigest(&digest));
+
+            expectedDigests.Insert(packageUri, digest.get());
         }
+        return true;
     }
 
     winrt::event_token PackageValidationEventSource::ValidationRequested(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventArgs> const& handler)

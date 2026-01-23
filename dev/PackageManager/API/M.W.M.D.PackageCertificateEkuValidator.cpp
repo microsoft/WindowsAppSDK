@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "M.W.M.D.PackageCertificateEkuValidator.h"
 #include "Microsoft.Windows.Management.Deployment.PackageCertificateEkuValidator.g.cpp"
-#include <TerminalVelocityFeatures-PackageManager.h>
+#include <Microsoft.Utf8.h>
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
@@ -13,36 +16,30 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     bool PackageCertificateEkuValidator::IsPackageValid(winrt::Windows::Foundation::IInspectable const& appxPackagingObject)
     {
         winrt::com_ptr<IAppxPackageReader> packageReader;
-        winrt::com_ptr<IAppxBundleReader> bundleReader;
-
         if (SUCCEEDED(appxPackagingObject.as(IID_PPV_ARGS(&packageReader))))
         {
             winrt::com_ptr<IAppxFile> signatureFile;
-            if (SUCCEEDED(packageReader->GetFootprintFile(APPX_FOOTPRINT_FILE_TYPE_SIGNATURE, signatureFile.put())))
+            if (FAILED_LOG(packageReader->GetFootprintFile(APPX_FOOTPRINT_FILE_TYPE_SIGNATURE, signatureFile.put())))
             {
-                return CheckSignature(signatureFile.get());
+                return false;
             }
-            else
-            {
-                return false; // package is not valid because there is no signature present
-            }
+
+            return CheckSignature(signatureFile.get());
         }
-        else if (SUCCEEDED(appxPackagingObject.as(IID_PPV_ARGS(&bundleReader))))
+
+        winrt::com_ptr<IAppxBundleReader> bundleReader;
+        if (SUCCEEDED(appxPackagingObject.as(IID_PPV_ARGS(&bundleReader))))
         {
             winrt::com_ptr<IAppxFile> signatureFile;
-            if (SUCCEEDED(bundleReader->GetFootprintFile(APPX_BUNDLE_FOOTPRINT_FILE_TYPE_SIGNATURE, signatureFile.put())))
+            if (FAILED_LOG(bundleReader->GetFootprintFile(APPX_BUNDLE_FOOTPRINT_FILE_TYPE_SIGNATURE, signatureFile.put())))
             {
-                return CheckSignature(signatureFile.get());
+                return false;
             }
-            else
-            {
-                return false; // package is not valid because there is no signature present
-            }
+
+            return CheckSignature(signatureFile.get());
         }
-        else
-        {
-            THROW_WIN32(ERROR_NOT_SUPPORTED);
-        }
+
+        THROW_HR(APPX_E_CORRUPT_CONTENT);
     }
 
     bool PackageCertificateEkuValidator::CheckSignature(IAppxFile* signatureFile)
@@ -51,17 +48,18 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         THROW_IF_FAILED(signatureFile->GetStream(signatureStream.put()));
 
         // The p7x signature should have a leading 4-byte PKCX header
-        static const DWORD P7xFileId = 0x58434b50; // PKCX
-        static const DWORD P7xFileIdSize = sizeof(P7xFileId);
+        static constexpr DWORD P7xFileId{ 0x58434b50 }; // PKCX
+        static constexpr DWORD P7xFileIdSize{ sizeof(P7xFileId) };
 
         STATSTG streamStats{};
         THROW_IF_FAILED(signatureStream->Stat(&streamStats, STATFLAG_NONAME));
         if (streamStats.cbSize.HighPart > 0 || streamStats.cbSize.LowPart < P7xFileIdSize)
         {
-            return false; // The signature has unexpected size
+            std::ignore = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_BAD_FORMAT), "StreamSize=0x%08X%08X", streamStats.cbSize.HighPart, streamStats.cbSize.LowPart);
+            return false;
         }
 
-        DWORD streamSize = streamStats.cbSize.LowPart;
+        const DWORD streamSize{ streamStats.cbSize.LowPart };
         auto streamBuffer{ wil::make_unique_nothrow<BYTE[]>(streamSize) };
         THROW_IF_NULL_ALLOC(streamBuffer);
 
@@ -69,9 +67,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         THROW_IF_FAILED(signatureStream->Read(streamBuffer.get(), streamSize, &bytesRead));
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_BAD_FORMAT), bytesRead != streamSize);
 
-        if (*reinterpret_cast<DWORD*>(streamBuffer.get()) != P7xFileId)
+        const auto streamFileId{ *reinterpret_cast<DWORD*>(streamBuffer.get()) };
+        if (streamFileId != P7xFileId)
         {
-            return false; // The signature does not have expected header
+            std::ignore = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_BAD_FORMAT), "FileId=0x%08X", streamFileId);
+            return false;
         }
 
         CRYPT_DATA_BLOB signatureBlob{};
@@ -80,48 +80,52 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         wil::unique_hcertstore certStore;
         wil::unique_hcryptmsg signedMessage;
-        DWORD queryContentType = 0;
-        DWORD queryFormatType = 0;
+        DWORD queryContentType{};
+        DWORD queryFormatType{};
         if (!CryptQueryObject(
             CERT_QUERY_OBJECT_BLOB,
             &signatureBlob,
             CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED,
             CERT_QUERY_FORMAT_FLAG_BINARY,
             0,      // Reserved parameter
-            NULL,   // No encoding info needed
+            nullptr,   // No encoding info needed
             &queryContentType,
             &queryFormatType,
             &certStore,
             &signedMessage,
-            NULL    // No additional params for signed message output
+            nullptr    // No additional params for signed message output
         ))
         {
-            return false; // CryptQueryObject could not read the signature
+            std::ignore = LOG_LAST_ERROR();
+            return false;
         }
 
         if (queryContentType != CERT_QUERY_CONTENT_PKCS7_SIGNED || queryFormatType != CERT_QUERY_FORMAT_BINARY || !certStore || !signedMessage)
         {
-            return false; // CryptQueryObject returned unexpected data
+            std::ignore = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_BAD_FORMAT), "ContentType=%u, FormatType=%u", queryContentType, queryFormatType);
+            return false;
         }
 
-        CMSG_SIGNER_INFO* signerInfo = NULL;
-        DWORD signerInfoSize = 0;
-        if (!CryptMsgGetParam(signedMessage.get(), CMSG_SIGNER_INFO_PARAM, 0, NULL, &signerInfoSize))
+        DWORD signerInfoSize{};
+        if (!CryptMsgGetParam(signedMessage.get(), CMSG_SIGNER_INFO_PARAM, 0, nullptr, &signerInfoSize))
         {
-            return false; // CryptMsgGetParam could not read the signature
+            std::ignore = LOG_LAST_ERROR();
+            return false;
         }
 
         if (signerInfoSize == 0 || signerInfoSize >= STRSAFE_MAX_CCH)
         {
-            return false; // Signer info has unexpected size
+            std::ignore = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_BAD_FORMAT), "SignerInfoSize=%u", signerInfoSize);
+            return false;
         }
 
         auto signerInfoBuffer{ wil::make_unique_nothrow<BYTE[]>(signerInfoSize) };
         THROW_IF_NULL_ALLOC(signerInfoBuffer);
-        signerInfo = reinterpret_cast<CMSG_SIGNER_INFO*>(signerInfoBuffer.get());
+        CMSG_SIGNER_INFO* signerInfo{ reinterpret_cast<CMSG_SIGNER_INFO*>(signerInfoBuffer.get()) };
         if (!CryptMsgGetParam(signedMessage.get(), CMSG_SIGNER_INFO_PARAM, 0, signerInfo, &signerInfoSize))
         {
-            return false; // CryptMsgGetParam could not read the signature
+            std::ignore = LOG_LAST_ERROR();
+            return false;
         }
 
         // Get the signing certificate from the certificate store based on the issuer and serial number of the signer info
@@ -137,53 +141,50 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         };
         if (!certContext)
         {
-            return false; // CertGetSubjectCertificateFromStore could not find a cert context
+            std::ignore = LOG_LAST_ERROR();
+            return false;
         }
 
-        DWORD ekuBufferSize = 0;
+        DWORD ekuBufferSize{};
         if (!CertGetEnhancedKeyUsage(
             certContext.get(),
             0, // Accept EKU from EKU extension or EKU extended properties
-            NULL,
+            nullptr,
             &ekuBufferSize))
         {
-            return false; // CertGetEnhancedKeyUsage could not read EKUs
+            std::ignore = LOG_LAST_ERROR();
+            return false;
         }
 
         if (ekuBufferSize < sizeof(CERT_ENHKEY_USAGE))
         {
-            return false; // No EKUs are found in the signature
+            std::ignore = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_BAD_FORMAT), "Size=%u", ekuBufferSize);
+            return false;
         }
 
         auto ekuBuffer{ wil::make_unique_nothrow<BYTE[]>(ekuBufferSize)};
         THROW_IF_NULL_ALLOC(ekuBuffer);
-        PCERT_ENHKEY_USAGE ekusFound = reinterpret_cast<PCERT_ENHKEY_USAGE>(ekuBuffer.get());
+        PCERT_ENHKEY_USAGE ekusFound{ reinterpret_cast<PCERT_ENHKEY_USAGE>(ekuBuffer.get()) };
         if (!CertGetEnhancedKeyUsage(
             certContext.get(),
             0, // Accept EKU from EKU extension or EKU extended properties
             ekusFound,
             &ekuBufferSize))
         {
-            return false; // CertGetEnhancedKeyUsage could not read EKUs
+            std::ignore = LOG_LAST_ERROR();
+            return false;
         }
 
         for (DWORD i = 0; i < ekusFound->cUsageIdentifier; i++)
         {
-            auto eku{ ekusFound->rgpszUsageIdentifier[i] };
-
-            int length = MultiByteToWideChar(CP_ACP, 0, eku, -1, nullptr, 0);
-            auto ekuWcharBuffer{ wil::make_unique_nothrow<WCHAR[]>(length) };
-            THROW_IF_NULL_ALLOC(ekuWcharBuffer);
-
-            MultiByteToWideChar(CP_ACP, 0, eku, -1, ekuWcharBuffer.get(), length);
-
-            if (wcscmp(ekuWcharBuffer.get(), m_expectedEku.c_str()) == 0)
+            const auto ekuUtf18{ ::Microsoft::Utf8::ToUtf16<std::unique_ptr<WCHAR[]>>(ekusFound->rgpszUsageIdentifier[i]) };
+            if (wcscmp(ekuUtf18.get(), m_expectedEku.c_str()) == 0)
             {
-                return true; // Found expected EKU
+                return true;
             }
         }
 
-        return false; // Did not find expected EKU
+        std::ignore = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_BAD_FORMAT), "EKU not found");
+        return false;
     }
-
 }

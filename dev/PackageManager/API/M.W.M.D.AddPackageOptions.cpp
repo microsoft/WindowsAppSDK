@@ -4,11 +4,11 @@
 #include "pch.h"
 
 #include <IsWindowsVersion.h>
-#include <TerminalVelocityFeatures-PackageManager.h>
 
 #include "M.W.M.D.PackageValidationEventSource.h"
 #include "M.W.M.D.AddPackageOptions.h"
 #include "Microsoft.Windows.Management.Deployment.AddPackageOptions.g.cpp"
+#include "AppxPackagingObject.h"
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
@@ -182,8 +182,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource AddPackageOptions::GetValidationEventSourceForUri(winrt::Windows::Foundation::Uri const& uri)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidation::IsEnabled());
-
         if (!m_packageValidators)
         {
             m_packageValidators = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource>();
@@ -198,16 +196,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource> AddPackageOptions::PackageValidators()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Management::Deployment::Feature_PackageValidation::IsEnabled());
-
         if (!m_packageValidators)
         {
-            // return an empty view
-            return winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource>().GetView();
+            m_packageValidators = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource>();
         }
-        else
-        {
-            return m_packageValidators.GetView();
-        }
+
+        return m_packageValidators.GetView();
     }
 }
