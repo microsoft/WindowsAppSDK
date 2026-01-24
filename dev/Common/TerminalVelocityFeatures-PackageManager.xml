@@ -17,4 +17,13 @@
             <channelToken>Stable</channelToken>
         </alwaysDisabledChannelTokens>
     </feature>
+  <feature>
+    <name>Feature_PackageValidator</name>
+    <description>Package Validator APIs</description>
+    <state>AlwaysEnabled</state>
+    <alwaysDisabledChannelTokens>
+      <channelToken>Preview</channelToken>
+      <channelToken>Stable</channelToken>
+    </alwaysDisabledChannelTokens>
+  </feature>
 </features>

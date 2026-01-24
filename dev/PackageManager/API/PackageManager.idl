@@ -301,6 +301,14 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         Boolean LimitToExistingPackages;
+
+        [contract(PackageDeploymentContract, 3)]
+        [feature(Feature_PackageValidator)]
+        Boolean IsPackageValidatorsSupported{ get; };           // Requires Windows >= 10.0.26100.0 (aka Win11 24H2)
+
+        [contract(PackageDeploymentContract, 3)]
+        [feature(Feature_PackageValidator)]
+        IVector<PackageValidatorEntry> PackageValidators{ get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -325,6 +333,14 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        [feature(Feature_PackageValidator)]
+        Boolean IsPackageValidatorsSupported{ get; };           // Requires Windows >= 10.0.26100.0 (aka Win11 24H2)
+
+        [contract(PackageDeploymentContract, 3)]
+        [feature(Feature_PackageValidator)]
+        IVector<PackageValidatorEntry> PackageValidators{ get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -628,5 +644,47 @@ namespace Microsoft.Windows.Management.Deployment
 
         void RemovePackageSet(
             Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition packageSetRuntimeDisposition);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    [feature(Feature_PackageValidator)]
+    [default_interface]
+    runtimeclass AppxPackagingObject
+    {
+        // This is an interop class for COM types defined in AppxPackaging.idl.
+        // The WinRT side has no methods or properties, but the object supports QueryInterface into the COM interfaces 
+        // IAppxPackageReader or IAppxBundleReader, whichever is relevant for the object being read.
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    [feature(Feature_PackageValidator)]
+    interface IPackageValidator
+    {
+        // One can create custom validators if and when the need arises
+        Boolean IsPackageValid(AppxPackagingObject packagingObject);        
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    [feature(Feature_PackageValidator)]
+    runtimeclass PackageIdentityValidator : [default] IPackageValidator
+    {
+        PackageIdentityValidator(String expectedPackageFamilyName, Int64 expectedMinimumVersion);
+        Boolean IsPackageValid(AppxPackagingObject packagingObject);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    [feature(Feature_PackageValidator)]
+    runtimeclass PackageCertificateEkuValidator : [default] IPackageValidator
+    {
+        PackageCertificateEkuValidator(String expectedCertificateEku);
+        Boolean IsPackageValid(AppxPackagingObject packagingObject);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    [feature(Feature_PackageValidator)]
+    runtimeclass PackageValidatorEntry
+    {
+        Windows.Foundation.Uri Uri;
+        IPackageValidator Validator;
     }
 }

@@ -10,11 +10,13 @@
 namespace features
 {
     feature_name Feature_PackageManager = { DisabledByDefault, FALSE };
+    feature_name Feature_PackageValidator = { DisabledByDefault, FALSE };
 }
 #endif // defined(__midlrt)
 
 // Feature constants
 #define WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_MANAGEMENT_DEPLOYMENT_FEATURE_PACKAGEMANAGER_ENABLED 1
+#define WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_MANAGEMENT_DEPLOYMENT_FEATURE_PACKAGEVALIDATOR_ENABLED 1
 
 #if defined(__cplusplus)
 
@@ -25,6 +27,12 @@ __pragma(detect_mismatch("ODR_violation_WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_MANA
 struct Feature_PackageManager
 {
     static constexpr bool IsEnabled() { return WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_MANAGEMENT_DEPLOYMENT_FEATURE_PACKAGEMANAGER_ENABLED == 1; }
+};
+
+__pragma(detect_mismatch("ODR_violation_WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_MANAGEMENT_DEPLOYMENT_FEATURE_PACKAGEVALIDATOR_ENABLED_mismatch", "AlwaysEnabled"))
+struct Feature_PackageValidator
+{
+    static constexpr bool IsEnabled() { return WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_MANAGEMENT_DEPLOYMENT_FEATURE_PACKAGEVALIDATOR_ENABLED == 1; }
 };
 
 } // namespace Microsoft.Windows.Management.Deployment
