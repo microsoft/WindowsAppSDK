@@ -13,15 +13,18 @@ Supports specifying the initial location, extension filters, and text on commit 
 
 ## Definition
 
-```C#
+```idl
 runtimeclass FileOpenPicker
 {
     FileOpenPicker(Microsoft.UI.WindowId windowId);
 
     string CommitButtonText;
+    string Title;
+    string SettingsIdentifier;
 
     IMap<String, IVector<String>> FileTypeChoices{ get; };
     IVector<string> FileTypeFilter{ get; };
+    Int32 InitialFileTypeIndex;
 
     string SuggestedFolder;
     String SuggestedStartFolder;
@@ -65,6 +68,15 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
     //     If not specified, the system uses a default label of "Open" (suitably translated).
     CommitButtonText = "Choose selected files",
 
+    // (Optional) specify the title of the picker.
+    //     If not specified, the system uses a default title.
+    Title = "Open File",
+
+    // (Optional) allows customization of the settings name, to distinguish picker instances.
+    //     Without the SettingsIdentifier specified, pickers in one app share the state together.
+    //     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+    SettingsIdentifier = "BookContents",
+
     // (Optional) group file types into labeled choices
     //     FileTypeChoices takes precedence over FileTypeFilter when both defined.
     FileTypeChoices = {
@@ -72,8 +84,10 @@ var openPicker = new FileOpenPicker(this.AppWindow.Id)
         { "Pictures", new List<string> { ".png", ".jpg", ".jpeg", ".bmp" } }
     },
 
-    // (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
-    FileTypeFilter = { ".txt", ".pdf", ".doc", ".docx" },
+    // (Optional) specify which file type to be automatically selected on dialog launch.
+    //     The index is 0-based. 
+    //     When not specified, its value is -1 and the dialog follows default behavior.
+    InitialFileTypeIndex = 1,  // auto select Pictures
 
     // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
     ViewMode = PickerViewMode.List,
@@ -109,20 +123,57 @@ openPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
 //     If not specified, the system uses a default label of "Open" (suitably translated).
 openPicker.CommitButtonText(L"Choose selected files");
 
+// (Optional) specify the title of the picker.
+//     If not specified, the system uses a default title.
+openPicker.Title(L"Open File");
+
+// (Optional) allows customization of the settings name, to distinguish picker instances.
+//     Without the SettingsIdentifier specified, pickers in one app share the state together.
+//     Only specify this when a picker needs to track its own state (e.g. size, location, etc).
+openPicker.SettingsIdentifier(L"BookContents");
+
 // (Optional) group file types into labeled choices
 //     FileTypeChoices takes precedence over FileTypeFilter when both defined.
 auto choices = openPicker.FileTypeChoices();
 choices.Insert(L"Documents", winrt::single_threaded_vector<winrt::hstring>({ L".txt", L".doc", L".docx" }));
 choices.Insert(L"Pictures", winrt::single_threaded_vector<winrt::hstring>({ L".png", L".jpg", L".jpeg", L".bmp" }));
 
-// (Optional) specify file extension filters. If not specified, defaults to all files (*.*).
-openPicker.FileTypeFilter().ReplaceAll({ L".txt", L".pdf", L".doc", L".docx" });
+// (Optional) specify which file type to be automatically selected on dialog launch.
+//     The index is 0-based. 
+//     When not specified, its value is -1 and the dialog follows default behavior.
+openPicker.InitialFileTypeIndex(1);  // auto select Pictures
 
 // (Optional) specify the view mode of the picker dialog. If not specified, defaults to List.
 openPicker.ViewMode(PickerViewMode::List);
 ```
 
-## FileOpenPicker.PickSingleFileAsync
+## New Properties
+
+### FileOpenPicker.Title
+
+Allow customizing the title of file dialog. It's based on the 
+[IFileDialog::SetTitle method](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialog-settitle)
+
+### FileOpenPicker.SettingsIdentifier
+
+The SettingsIdentifier property allows the picker object to remember its own states.
+
+If the picker cannot determine the app identity (package identity or executable path), it will
+fail to launch and throw an error.
+
+See the examples in [Note 2: The use case and implementation of SettingsIdentifier (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-2-the-use-case-and-implementation-of-settingsidentifier)
+
+### FileOpenPicker.InitialFileTypeIndex
+
+The InitialFileTypeIndex is a 0-based value deciding the auto-selected file type on dialog launch. 
+
+Values smaller than `-1` or outside the available range will cause the picker to fail to launch.
+
+See the examples in [Note 3: Properties for File Types and The Initial Index (Microsoft.Windows.Storage.Pickers.md)](./Microsoft.Windows.Storage.Pickers.md#note-3-properties-for-file-types-and-its-auto-selection-on-launch)
+
+## Methods
+
+### FileOpenPicker.PickSingleFileAsync
 
 Displays a UI element that allows the user to choose and open one file.
 
@@ -130,7 +181,7 @@ Returns a lightweight object that has the path of the picked file.
 
 Returns `null` if the file dialog was cancelled or closed without a selection.
 
-### Examples
+**Examples**
 
 C#
 
@@ -171,7 +222,7 @@ else
 }
 ```
 
-## FileOpenPicker.PickMultipleFilesAsync
+### FileOpenPicker.PickMultipleFilesAsync
 
 Displays a UI element that allows the user to choose and open multiple files.
 
@@ -179,7 +230,7 @@ Returns a collection of lightweight objects that have the path of the picked fil
 
 Returns an empty list (`Count` = 0) if the file dialog was cancelled or closed without a selection.
 
-### Examples
+**Examples**
 
 C#
 
