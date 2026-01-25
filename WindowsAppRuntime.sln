@@ -548,6 +548,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OAuth", "dev\OAuth\OAuth.vcxitems", "{3E7FD510-8B66-40E7-A80B-780CB8972F83}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Security.Authentication.OAuth.Projection", "dev\Projections\CS\Microsoft.Security.Authentication.OAuth\Microsoft.Security.Authentication.OAuth.Projection.csproj", "{1D24CC70-85B1-4864-B847-3328F40AF01E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interop", "Interop", "{3B706C5C-55E0-4B76-BF59-89E20FE46795}"
 EndProject
@@ -564,6 +567,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraCaptureUITests", "tes
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Media.Capture.Projection", "dev\Projections\CS\Microsoft.Windows.Media.Capture.Projection\Microsoft.Windows.Media.Capture.Projection.csproj", "{97AB4F8D-DF7E-4BA8-9B06-E7B79AF616D6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BackgroundTaskBuilder", "BackgroundTaskBuilder", "{F425452A-3597-4A7A-BA0A-0C3C76A9F5CD}"
 EndProject
@@ -680,6 +686,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BadgeNotificationTest", "test\BadgeNotificationTest\BadgeNotificationTest.vcxproj", "{7C8BEED1-7B27-41C5-A22F-9D6B4468F52A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.Storage.Pickers.Projection", "dev\Projections\CS\Microsoft.Windows.Storage.Pickers.Projection\Microsoft.Windows.Storage.Pickers.Projection.csproj", "{8E01AA4F-A16A-4E3F-A59F-6D49422B4410}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StoragePickers", "dev\Interop\StoragePickers\StoragePickers.vcxitems", "{A39E7B2F-5F67-47DD-8443-531D095CA7F3}"
 EndProject
