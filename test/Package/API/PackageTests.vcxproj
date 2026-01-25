@@ -88,6 +88,7 @@
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">

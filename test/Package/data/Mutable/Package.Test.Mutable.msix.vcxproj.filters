@@ -7,6 +7,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="appxmanifest.xml" />
+    <None Include="appxmanifest-arm64.xml" />
+    <None Include="appxmanifest-x64.xml" />
+    <None Include="appxmanifest-x86.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

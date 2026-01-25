@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap uap10">
 
   <Identity
-    Name="Test.Package.Mutable"
+    Name="Test.Package.MachineExternal"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.2.3.4"
     ProcessorArchitecture="neutral" />

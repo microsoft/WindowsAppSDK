@@ -109,17 +109,17 @@ namespace Test::Package::Tests
     }
     inline void AddPackage_UserExternal()
     {
-        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName) };
+        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName).parent_path()};
         TP::AddPackageIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName, path.c_str());
     }
     inline void AddPackageDefer_UserExternal()
     {
-        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName) };
+        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName).parent_path() };
         TP::AddPackageDeferIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName, path.c_str());
     }
     inline void StagePackage_UserExternal()
     {
-        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName) };
+        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName).parent_path() };
         TP::StagePackageIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName, path.c_str());
     }
     inline void RemovePackage_UserExternal()

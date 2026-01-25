@@ -118,7 +118,7 @@ STDAPI GetPackageFilePath(
     if (::Microsoft::Foundation::String::IsNullOrEmpty(packageFullName))
     {
         uint32_t packageFullNameBufferLength{ ARRAYSIZE(packageFullNameBuffer) };
-        THROW_IF_FAILED(::GetCurrentPackageFullName(&packageFullNameBufferLength, packageFullNameBuffer));
+        RETURN_IF_WIN32_ERROR(::GetCurrentPackageFullName(&packageFullNameBufferLength, packageFullNameBuffer));
         packageFullName = packageFullNameBuffer;
     }
 
