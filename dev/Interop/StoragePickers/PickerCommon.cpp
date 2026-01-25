@@ -432,7 +432,7 @@ namespace PickerCommon {
 
             if (FocusLastFilter)
             {
-                check_hresult(dialog->SetFileTypeIndex(FileTypeFilterPara.size()));
+                check_hresult(dialog->SetFileTypeIndex(static_cast<UINT>(FileTypeFilterPara.size())));
             }
         }
     }

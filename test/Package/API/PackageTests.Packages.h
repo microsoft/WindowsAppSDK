@@ -109,19 +109,18 @@ namespace Test::Package::Tests
     }
     inline void AddPackage_UserExternal()
     {
-        TP::AddPackageIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName);
+        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName) };
+        TP::AddPackageIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName, path.c_str());
     }
     inline void AddPackageDefer_UserExternal()
     {
-        TP::AddPackageDeferIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName);
+        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName) };
+        TP::AddPackageDeferIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName, path.c_str());
     }
     inline void StagePackage_UserExternal()
     {
-        TP::StagePackageIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName);
-    }
-    inline void RegisterPackage_UserExternal()
-    {
-        TP::RegisterPackageIfNecessary(TP::UserExternal::c_packageFullName);
+        const auto path{ TP::GetMsixPackagePath(TP::UserExternal::c_packageDirName) };
+        TP::StagePackageIfNecessary(TP::UserExternal::c_packageDirName, TP::UserExternal::c_packageFullName, path.c_str());
     }
     inline void RemovePackage_UserExternal()
     {
