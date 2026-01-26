@@ -509,11 +509,19 @@ namespace Microsoft.Windows.ApplicationModel
         SearchHostRuntimeDependencies = 0x0200,
 
         /// Include Static package dependencies in the file search order
-        /// @note If both SearchStaticDependencies and SearchDynamicDependencies are omitted then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
+        /// @note If both SearchStaticDependencies and SearchDynamicDependencies are omitted then both static and
+        ///       dynamic packages are searched (i.e. specify both or neither yields the same result).
+        /// @note This option is only relevant when searching the package graph i.e. methods of PackageGraph.
+        /// @see PackageGraph::GetFilePath()
+        /// @see SearchDynamicDependencies
         SearchStaticDependencies = 0x0400,
 
         /// Include Dynamic package dependencies in the file search order
-        /// @note If both SearchStaticDependencies and SearchDynamicDependencies are omitted then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
+        /// @note If both SearchStaticDependencies and SearchDynamicDependencies are omitted then both static and
+        ///       dynamic packages are searched (i.e. specify both or neither yields the same result).
+        /// @note This option is only relevant when searching the package graph i.e. methods of PackageGraph.
+        /// @see PackageGraph::GetFilePath()
+        /// @see SearchStaticDependencies
         SearchDynamicDependencies = 0x0800,
     };
 
@@ -669,11 +677,17 @@ typedef enum GetPackageFilePathOptions
     /// Include Static package dependencies in the file search order
     /// @note If both GetPackageFilePathOptions_SearchStaticDependencies and GetPackageFilePathOptions_SearchDynamicDependencies are omitted
     ///       then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
+    /// @note This option is only relevant when searching the package graph i.e. GetPackageFilePathInPackageGraph();
+    /// @see GetPackageFilePathInPackageGraph()
+    /// @see GetPackageFilePathOptions_SearchDynamicDependencies
     GetPackageFilePathOptions_SearchStaticDependencies = 0x0400,
 
     /// Include Dynamic package dependencies in the file search order
     /// @note If both GetPackageFilePathOptions_SearchStaticDependencies and GetPackageFilePathOptions_SearchDynamicDependencies are omitted
     ///       then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
+    /// @note This option is only relevant when searching the package graph i.e. GetPackageFilePathInPackageGraph();
+    /// @see GetPackageFilePathInPackageGraph()
+    /// @see GetPackageFilePathOptions_SearchStaticDependencies
     GetPackageFilePathOptions_SearchDynamicDependencies = 0x0800,
 } GetPackageFilePathOptions;
 DEFINE_ENUM_FLAG_OPERATORS(GetPackageFilePathOptions)

@@ -31,6 +31,7 @@
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
 #include <WindowsAppRuntime.Test.TAEF.cppwinrt.h>
+#include <WindowsAppRuntime.Test.TAEF.stl.h>
 
 #include <PackageTests.Packages.h>
 

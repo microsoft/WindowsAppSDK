@@ -19,6 +19,8 @@ namespace Test::Package::Tests
     const auto Main_PackageFullName{ ::TP::WindowsAppRuntimeMain::c_PackageFullName };
     const auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
     const auto Mutable_PackageFullName{ ::TP::Mutable::c_packageFullName };
+    const auto UserExternal_PackageFullName{ ::TP::UserExternal::c_packageFullName };
+    const auto MachineExternal_PackageFullName{ ::TP::MachineExternal::c_packageFullName };
 
     class PackageTests_CPP
     {
@@ -55,6 +57,17 @@ namespace Test::Package::Tests
             return true;
         }
 
+        std::filesystem::path ToAbsoluteFilename(
+            PCWSTR packageFullName,
+            PCWSTR filename,
+            PackagePathType packageType)
+        {
+            const auto path{ ::AppModel::Package::GetPath<std::wstring>(packageFullName, packageType) };
+            std::filesystem::path absoluteFilename{ path };
+            absoluteFilename /= filename;
+            return absoluteFilename;
+        }
+
         TEST_METHOD(GetPackageFilePath_InvalidParameter)
         {
             PCWSTR packageFullName{ Framework_PackageFullName };
@@ -85,8 +98,11 @@ namespace Test::Package::Tests
             const auto options{ GetPackageFilePathOptions_None };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
-            //TODO
+
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ToAbsoluteFilename(packageFullName, fileName, PackagePathType_Effective) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
         TEST_METHOD(GetPackageFilePath_InstallPath)
@@ -95,9 +111,12 @@ namespace Test::Package::Tests
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
-            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)),
-                             WEX::Common::String().Format(L"AbsoluteFilename:%s", absoluteFilename.get()));
-            //TODO
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ToAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
         TEST_METHOD(GetPackageFilePath_MutablePath)
@@ -106,39 +125,87 @@ namespace Test::Package::Tests
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchMutablePath };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
-            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)),
-                             WEX::Common::String().Format(L"AbsoluteFilename:%s", absoluteFilename.get()));
-            //TODO
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ToAbsoluteFilename(packageFullName, fileName, PackagePathType_Mutable) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
         TEST_METHOD(GetPackageFilePath_MachineExternalPath)
         {
-            //TODO
+            PCWSTR packageFullName{ MachineExternal_PackageFullName };
+            PCWSTR fileName{ L"msix\\AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchMachineExternalPath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ToAbsoluteFilename(packageFullName, fileName, PackagePathType_MachineExternal) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
         TEST_METHOD(GetPackageFilePath_UserExternalPath)
         {
-            //TODO
+            PCWSTR packageFullName{ UserExternal_PackageFullName };
+            PCWSTR fileName{ L"msix\\AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchUserExternalPath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ToAbsoluteFilename(packageFullName, fileName, PackagePathType_UserExternal) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
         TEST_METHOD(GetPackageFilePath_FilterPackageType_Main_NoMatch)
         {
-            //TODO
+            PCWSTR packageFullName{ Main_PackageFullName };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchFrameworkPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+            VERIFY_IS_NULL(absoluteFilename);
         }
 
         TEST_METHOD(GetPackageFilePath_FilterPackageType_Framework_NoMatch)
         {
-            //TODO
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchMainPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+            VERIFY_IS_NULL(absoluteFilename);
         }
 
+#if 0
         TEST_METHOD(GetPackageFilePath_Filter_Static_NoMatch)
         {
-            //TODO
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchFrameworkPackages |
+                                GetPackageFilePathOptions_SearchStaticDependencies };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+            VERIFY_IS_NULL(absoluteFilename);
         }
 
         TEST_METHOD(GetPackageFilePath_Filter_Dynamic_NoMatch)
         {
-            //TODO
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchFrameworkPackages |
+                                GetPackageFilePathOptions_SearchDynamicDependencies };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+            VERIFY_IS_NULL(absoluteFilename);
         }
 
         TEST_METHOD(GetPackageFilePath_Filter_Static)
@@ -150,5 +217,6 @@ namespace Test::Package::Tests
         {
             //TODO
         }
+#endif
     };
 }

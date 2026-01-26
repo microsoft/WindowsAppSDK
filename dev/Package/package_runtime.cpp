@@ -7,26 +7,53 @@
 
 namespace appmodel
 {
-inline LONG get_package_info(
-    _In_opt_ PACKAGE_INFO_REFERENCE packageInfoReference,
-    UINT32 flags,
-    _Inout_ BYTE* bufferLength,
-    _Out_writes_bytes_opt_(*bufferLength) BYTE* buffer,
-    _Out_opt_ std::uint32 count)
+inline GetPackageFilePathOptions package_properties_to_options(
+    PCWSTR packageFullName,
+    std::uint32_t packageInfoFlags)
 {
-    return packageInfoReference ?
-        ::GetPackageInfo(packageInfoReference, flags, bufferLength, buffer, count) :
-        ::GetCurrentPackageInfo(flags, bufferLength, buffer, count);
+    const auto hostRuntimeMatch{ WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_HOSTRUNTIME) ?
+                                   GetPackageFilePathOptions_SearchHostRuntimeDependencies :
+                                   GetPackageFilePathOptions_None };
+    const auto isStaticDependency{ WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_STATIC) ?
+                                   GetPackageFilePathOptions_SearchStaticDependencies :
+                                   GetPackageFilePathOptions_None };
+    const auto isDynamicDependency{ WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_DYNAMIC) ?
+                                   GetPackageFilePathOptions_SearchDynamicDependencies :
+                                   GetPackageFilePathOptions_None };
+    if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_FRAMEWORK))
+    {
+        return GetPackageFilePathOptions_SearchFrameworkPackages | hostRuntimeMatch;
+    }
+    else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_OPTIONAL))
+    {
+        return GetPackageFilePathOptions_SearchOptionalPackages | hostRuntimeMatch;
+    }
+    else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_RESOURCE))
+    {
+        return GetPackageFilePathOptions_SearchResourcePackages | hostRuntimeMatch;
+    }
+    else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_BUNDLE))
+    {
+        return GetPackageFilePathOptions_SearchBundlePackages | hostRuntimeMatch;
+    }
+    else
+    {
+        // PACKAGE_INFO.flags has no PACKAGE_PROPERTY_MAIN so we can only determine PackageType=Main
+        // by first verifying it's not any other type of package (Bundle|Framework|Optional|Resource).
+        // When all else is ruled out what we're left with must be a Main package
+        return GetPackageFilePathOptions_SearchMainPackages | hostRuntimeMatch;
+    }
 }
 
 inline GetPackageFilePathOptions get_package_properties(
     PCWSTR packageFullName,
     PACKAGE_INFO_REFERENCE packageInfoReference)
 {
+    // Fetch the package's properties
     constexpr auto flags{ PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_RESOURCE | PACKAGE_FILTER_OPTIONAL | PACKAGE_FILTER_HOSTRUNTIME | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
     std::uint32_t bufferLength{};
     std::uint32_t count{};
-    auto rc{ get_package_info(packageInfoReference, flags, &bufferLength, nullptr, &count) };
+    auto rc{ ::GetPackageInfo(packageInfoReference, flags, &bufferLength, nullptr, &count) };
     if (rc != ERROR_INSUFFICIENT_BUFFER)
     {
         if (rc == ERROR_SUCCESS)
@@ -41,49 +68,49 @@ inline GetPackageFilePathOptions get_package_properties(
         THROW_WIN32_MSG(rc, "GetPackageInfo(...query...) %ls", packageFullName);
     }
     std::unique_ptr<BYTE[]> buffer{ std::make_unique<BYTE[]>(bufferLength) };
-    THROW_IF_WIN32_ERROR_MSG(::GetPackageInfo(packageInfoReference.get(), flags, &bufferLength, buffer.get(), &count),
+    THROW_IF_WIN32_ERROR_MSG(::GetPackageInfo(packageInfoReference, flags, &bufferLength, buffer.get(), &count),
                              "GetPackageInfo: %ls", packageFullName);
     THROW_HR_IF(E_UNEXPECTED, count == 0);  // This should never occur
     const auto& packageInfo{ *reinterpret_cast<PACKAGE_INFO*>(buffer.get()) };
 
-    const auto hostRuntimeMatch{ WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_HOSTRUNTIME) ?
-                                   GetPackageFilePathOptions_SearchHostRuntimeDependencies :
-                                   GetPackageFilePathOptions_None };
-    const auto isStaticDependency{ WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_STATIC) ?
-                                   GetPackageFilePathOptions_SearchStaticDependencies :
-                                   GetPackageFilePathOptions_None };
-    const auto isDynamicDependency{ WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_DYNAMIC) ?
-                                   GetPackageFilePathOptions_SearchDynamicDependencies :
-                                   GetPackageFilePathOptions_None };
-    if (WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_FRAMEWORK))
-    {
-        return GetPackageFilePathOptions_SearchFrameworkPackages | hostRuntimeMatch;
-    }
-    else if (WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_OPTIONAL))
-    {
-        return GetPackageFilePathOptions_SearchOptionalPackages | hostRuntimeMatch;
-    }
-    else if (WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_RESOURCE))
-    {
-        return GetPackageFilePathOptions_SearchResourcePackages | hostRuntimeMatch;
-    }
-    else if (WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_BUNDLE))
-    {
-        return GetPackageFilePathOptions_SearchBundlePackages | hostRuntimeMatch;
-    }
-    else
-    {
-        // PACKAGE_INFO.Flags has no PACKAGE_PROPERTY_MAIN so we can only determine PackageType=Main
-        // by first verifying it's not any other type of package (Bundle|Framework|Optional|Resource).
-        // When all else is ruled out what we're left with must be a Main package
-        return GetPackageFilePathOptions_SearchMainPackages | hostRuntimeMatch;
-    }
+    // Convert the package properties to options
+    return package_properties_to_options(packageFullName, packageInfo.flags);
 }
 
 inline bool is_match_for_package_properties(
     PCWSTR packageFullName,
     _In_ GetPackageFilePathOptions options,
     PACKAGE_INFO_REFERENCE packageInfoReference)
+{
+    // We're processing a package definition i.e. always static information.
+    // Thus ignore GetPackageFilePathOptions_SearchStaticDependencies
+    // and GetPackageFilePathOptions_SearchDynamicDependencies options.
+
+    // Detect PackageType|HostRuntimeDependency
+    //
+    // If options = All or None specified then all packages are a match thus no need to fetch the package's properties
+    constexpr auto maskMatchPackageType{ GetPackageFilePathOptions_SearchMainPackages |
+                                         GetPackageFilePathOptions_SearchFrameworkPackages |
+                                         GetPackageFilePathOptions_SearchOptionalPackages |
+                                         GetPackageFilePathOptions_SearchResourcePackages |
+                                         GetPackageFilePathOptions_SearchBundlePackages |
+                                         GetPackageFilePathOptions_SearchHostRuntimeDependencies };
+    const auto optionsToMatch{ options & maskMatchPackageType };
+    if ((optionsToMatch == GetPackageFilePathOptions_None) || (optionsToMatch == maskMatchPackageType))
+    {
+        return true;
+    }
+
+    // Fetch the package's properties
+    const auto packageProperties{ get_package_properties(packageFullName, packageInfoReference) };
+
+    // Does this package meet the criteria?
+    return WI_IsAnyFlagSet(packageProperties, optionsToMatch);
+}
+
+inline bool is_match_for_package_properties(
+    _In_ GetPackageFilePathOptions options,
+    std::uint32_t packageInfoFlags)
 {
     // Detect PackageType|HostRuntimeDependency and Static|DynamicDependency
     //
@@ -103,15 +130,11 @@ inline bool is_match_for_package_properties(
         return true;
     }
 
-    // Fetch the package's properties
-    const auto packageProperties{ get_package_properties(packageFullName, packageInfoReference) };
-
     // Does this package meet the criteria?
-    const auto optionsToMatchPackageType{ options & maskMatchPackageType };
-    return WI_IsAnyFlagSet(packageProperties, maskMatchPackageType) && WI_IsAnyFlagSet(packageProperties, maskMatchStaticDynamic);
+    return WI_IsAnyFlagSet(packageInfoFlags, maskMatchPackageType) && WI_IsAnyFlagSet(packageInfoFlags, maskMatchStaticDynamic);
 }
 
-inline std::filesystem::path get_package_file(
+inline std::filesystem::path get_package_file_for_location(
     PCWSTR packageFullName,
     _In_ PCWSTR filename,
     _In_ GetPackageFilePathOptions options,
@@ -135,15 +158,8 @@ inline std::filesystem::path get_package_file(
 inline std::filesystem::path get_package_file(
     PCWSTR packageFullName,
     _In_ PCWSTR filename,
-    _In_ GetPackageFilePathOptions effectiveOptions,
-    PACKAGE_INFO_REFERENCE packageInfoReference)
+    _In_ GetPackageFilePathOptions options)
 {
-    // Restrict matches to specific package types?
-    if (!is_match_for_package_properties(packageFullName, effectiveOptions, packageInfoReference))
-    {
-        return std::filesystem::path{};
-    }
-
     // Search External location
     std::filesystem::path path;
     if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchUserExternalPath))
@@ -151,34 +167,50 @@ inline std::filesystem::path get_package_file(
         if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMachineExternalPath))
         {
             // EffectiveExternal == UserExternal if package/user has one else MachineExternal
-            path = get_package_file(packageFullName, filename, effectiveOptions, PackagePathType_EffectiveExternal);
+            path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_EffectiveExternal);
         }
         else
         {
-            path = get_package_file(packageFullName, filename, effectiveOptions, PackagePathType_UserExternal);
+            path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_UserExternal);
         }
     }
     else if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMachineExternalPath))
     {
-        path = get_package_file(packageFullName, filename, effectiveOptions, PackagePathType_MachineExternal);
+        path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_MachineExternal);
     }
     if (path.empty())
     {
         // Search Mutable location
         if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMutablePath))
         {
-            path = get_package_file(packageFullName, filename, effectiveOptions, PackagePathType_Mutable);
+            path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_Mutable);
         }
         if (path.empty())
         {
             // Search Install location
             if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchInstallPath))
             {
-                path = get_package_file(packageFullName, filename, effectiveOptions, PackagePathType_Install);
+                path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_Install);
             }
         }
     }
     return path;
+}
+
+inline std::filesystem::path get_package_file(
+    PCWSTR packageFullName,
+    _In_ PCWSTR filename,
+    _In_ GetPackageFilePathOptions effectiveOptions,
+    PACKAGE_INFO_REFERENCE packageInfoReference)
+{
+    // Does the package's properties match our search criteria?
+    if (!is_match_for_package_properties(packageFullName, effectiveOptions, packageInfoReference))
+    {
+        return std::filesystem::path{};
+    }
+
+    // Search the package's locations for the file
+    return get_package_file(packageFullName, filename, effectiveOptions);
 }
 
 inline GetPackageFilePathOptions ToEffectiveOptions(
@@ -268,14 +300,6 @@ STDAPI GetPackageFilePath(
 }
 CATCH_RETURN();
 
-/// Is a PACKAGE_INFO entry a Main package?
-/// @note There's no direct propery to check indicating a Main package.
-///       That's only detectable by the absence of any other type of package.
-inline constexpr bool IsMainPackage(const UINT32 packageInfoFlags)
-{
-    return WI_AreAllFlagsClear(packageInfoFlags, PACKAGE_PROPERTY_BUNDLE | PACKAGE_PROPERTY_FRAMEWORK | PACKAGE_PROPERTY_OPTIONAL | PACKAGE_PROPERTY_RESOURCE);
-}
-
 STDAPI GetPackageFilePathInPackageGraph(
     _In_ PCWSTR filename,
     _In_ GetPackageFilePathOptions options,
@@ -288,56 +312,28 @@ STDAPI GetPackageFilePathInPackageGraph(
     // Compute the effective options
     const auto effectiveOptions{ appmodel::ToEffectiveOptions(options) };
 
-    // Ideally we'd pass our filtering needs down to package graph query API (e.g. GetCurrentPackageGraph)
-    // but it doesn't quite give us the semantics we need, so we'll do it the hard way.
-    //
-    // We can (partially) optimize filtering checks for PackageType=Framework|Resource|Optional|Bundle and HostRuntime|Static|Dynamic
-    // by a simple bitmask check. We can only determine if PackageType=Main by the absence of other properties.
-    const UINT32 flagsMask{ (WI_IsFlagSet(effectiveOptions, GetPackageFilePathOptions_SearchFrameworkPackages) ? PACKAGE_PROPERTY_FRAMEWORK : 0u) |
-                            (WI_IsFlagSet(effectiveOptions, GetPackageFilePathOptions_SearchOptionalPackages) ? PACKAGE_PROPERTY_OPTIONAL : 0u) |
-                            (WI_IsFlagSet(effectiveOptions, GetPackageFilePathOptions_SearchResourcePackages) ? PACKAGE_PROPERTY_RESOURCE : 0u) |
-                            (WI_IsFlagSet(effectiveOptions, GetPackageFilePathOptions_SearchBundlePackages) ? PACKAGE_PROPERTY_BUNDLE : 0u) |
-                            (WI_IsFlagSet(effectiveOptions, GetPackageFilePathOptions_SearchHostRuntimeDependencies) ? PACKAGE_PROPERTY_HOSTRUNTIME : 0u) |
-                            (WI_IsFlagSet(effectiveOptions, GetPackageFilePathOptions_SearchStaticDependencies) ? PACKAGE_PROPERTY_STATIC : 0u) |
-                            (WI_IsFlagSet(effectiveOptions, GetPackageFilePathOptions_SearchDynamicDependencies) ? PACKAGE_PROPERTY_DYNAMIC : 0u) };
-
     // Search the package graph
-    UINT32 flags{ PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_RESOURCE | PACKAGE_FILTER_OPTIONAL | PACKAGE_FILTER_HOSTRUNTIME | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
+    //
+    // Ideally we'd pass our filtering needs down to package graph query API (e.g. GetCurrentPackageGraph)
+    // but it doesn't quite give us the semantics we need, so we'll do it the hard way
+    constexpr std::uint32_t flags{ PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_RESOURCE | PACKAGE_FILTER_OPTIONAL | PACKAGE_FILTER_HOSTRUNTIME | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
     std::uint32_t packageGraphCount{};
-    const PACKAGE_INFO* packageInfo{};
+    const PACKAGE_INFO* packageInfos{};
     wil::unique_cotaskmem_ptr<BYTE[]> buffer;
-    RETURN_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageGraphCount, packageInfo, buffer));
+    RETURN_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageGraphCount, packageInfos, buffer));
     for (std::uint32_t index=0; index < packageGraphCount; ++index)
     {
-        const auto& pi{ packageInfo[index] };
+        const auto& packageInfo{ packageInfos[index] };
 
-        // Default behavior is search everything. Do we need to filter to a subset?
-        if (options != GetPackageFilePathOptions_None)
+        // Does the package's properties match our search criteria?
+        const auto packageFullName{ packageInfo.packageFullName };
+        if (!appmodel::is_match_for_package_properties(effectiveOptions, packageInfo.flags))
         {
-            // Does this package meet any of the simple filtering criteria: Framework|Resource|Optional|HostRuntime|Static|Dynamic
-            if (WI_AreAllFlagsClear(pi.flags, flagsMask))
-            {
-                // Nope! Complex filtering time. Is this a Main package?
-                if (IsMainPackage(pi.flags))
-                {
-                    // Are Main packages included in our search?
-                    if (WI_IsFlagClear(options, GetPackageFilePathOptions::GetPackageFilePathOptions_SearchMainPackages))
-                    {
-                        // It's a Main package but we're not interested in Main packages. Skip it
-                        continue;
-                    }
-                }
-                else
-                {
-                    // It's not a Main package, and it doesn't meet any other filter criteria. Skip it
-                    continue;
-                }
-            }
+            continue;
         }
 
         // This package is included in our search. Check for the file
-        const auto packageFullName{ pi.packageFullName };
-        auto path{ appmodel::get_package_file(packageFullName, filename, options, nullptr) };
+        auto path{ appmodel::get_package_file(packageFullName, filename, options) };
         if (!path.empty())
         {
             auto absoluteFilename{ wil::make_process_heap_string(path.c_str()) };
