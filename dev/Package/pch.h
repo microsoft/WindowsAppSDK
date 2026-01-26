@@ -15,6 +15,7 @@
 #include <wil/cppwinrt.h>
 #include <wil/filesystem.h>
 #include <wil/registry.h>
+#include <wil/stl.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <wil/token_helpers.h>
@@ -27,4 +28,5 @@
 #include <winrt/Windows.System.h>
 
 #include <appmodel.identity.h>
+#include <appmodel.package.h>
 #include <microsoft.foundation.string.h>

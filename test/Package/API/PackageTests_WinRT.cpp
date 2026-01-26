@@ -31,11 +31,11 @@ namespace Test::Package::Tests
             ::TB::Setup();
 
             //RemovePackage_MachineExternal();
-            //RemovePackage_UserExternal();
+            RemovePackage_UserExternal();
             RemovePackage_Mutable();
 
             AddPackage_Mutable();
-            //AddPackage_UserExternal();
+            AddPackage_UserExternal();
             //AddPackage_MachineExternal();
 
             return true;
@@ -58,7 +58,7 @@ namespace Test::Package::Tests
             {
                 winrt::hstring packageFullName{ Framework_PackageFullName };
                 winrt::hstring noFileName;
-                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(packageFullName, noFileName);
+                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(noFileName, packageFullName);
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -71,7 +71,7 @@ namespace Test::Package::Tests
                 winrt::hstring packageFullName{ Framework_PackageFullName };
                 winrt::hstring noFileName;
                 const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::None };
-                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(packageFullName, noFileName, options);
+                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(noFileName, packageFullName, options);
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -86,7 +86,7 @@ namespace Test::Package::Tests
             {
                 winrt::hstring noPackageFullName;
                 winrt::hstring fileName{ L"AppxManifest.xml" };
-                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(noPackageFullName, fileName);
+                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, noPackageFullName);
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -99,7 +99,7 @@ namespace Test::Package::Tests
                 winrt::hstring noPackageFullName;
                 winrt::hstring fileName{ L"AppxManifest.xml" };
                 const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::None };
-                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(noPackageFullName, fileName, options);
+                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, noPackageFullName, options);
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)

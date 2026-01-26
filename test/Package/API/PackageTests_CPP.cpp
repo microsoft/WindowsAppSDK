@@ -32,13 +32,14 @@ namespace Test::Package::Tests
         {
             ::TB::Setup();
 
-            //RemovePackage_MachineExternal();
+            RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
             RemovePackage_Mutable();
 
             AddPackage_Mutable();
             AddPackage_UserExternal();
-            //AddPackage_MachineExternal();
+            StagePackage_MachineExternal();
+            AddPackage_MachineExternal();
 
             return true;
         }
@@ -85,6 +86,7 @@ namespace Test::Package::Tests
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
             //TODO
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
         }
 
         TEST_METHOD(GetPackageFilePath_InstallPath)

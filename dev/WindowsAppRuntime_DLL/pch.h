@@ -54,6 +54,7 @@
 #include <MsixDynamicDependency.h>
 
 #include <appmodel.identity.h>
+#include <appmodel.package.h>
 #include <appmodel.packagegraph.h>
 #include <microsoft.configuration.h>
 #include <microsoft.foundation.string.h>

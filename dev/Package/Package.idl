@@ -19,39 +19,74 @@ namespace Microsoft.Windows.ApplicationModel
         None = 0,
 
         /// Include the package's Install path in the file search order
+        /// @note If SearchInstallPath, SearchMutablePath, SearchMachineExternalPath and SearchUserExternalPath
+        ///        are omitted then all locations are searched (i.e. specify all or none yields the same result).
         SearchInstallPath = 0x0001,
 
         /// Include the package's Mutable path (if it has one) in the file search order
+        /// @note If SearchInstallPath, SearchMutablePath, SearchMachineExternalPath and SearchUserExternalPath
+        ///        are omitted then all locations are searched (i.e. specify all or none yields the same result).
         SearchMutablePath = 0x0002,
 
         /// Include the package's Machine External path (if it has one) in the file search order
+        /// @note If SearchInstallPath, SearchMutablePath, SearchMachineExternalPath and SearchUserExternalPath
+        ///        are omitted then all locations are searched (i.e. specify all or none yields the same result).
         SearchMachineExternalPath = 0x0004,
 
         /// Include the package's User External path (if it has one) in the file search order
+        /// @note If SearchInstallPath, SearchMutablePath, SearchMachineExternalPath and SearchUserExternalPath
+        ///        are omitted then all locations are searched (i.e. specify all or none yields the same result).
         SearchUserExternalPath = 0x0008,
 
         /// Include Main packages in the file search order
+        /// @note If SearchMainPackages, SearchFrameworkPackages, SearchOptionalPackages,
+        ///       SearchResourcePackages, SearchBundlePackages and SearchHostRuntimeDependencies
+        ///       are omitted then all package types are searched (i.e. specify all or none
+        ///       yields the same result).
         SearchMainPackages = 0x0010,
 
         /// Include Framework packages in the file search order
+        /// @note If SearchMainPackages, SearchFrameworkPackages, SearchOptionalPackages,
+        ///       SearchResourcePackages, SearchBundlePackages and SearchHostRuntimeDependencies
+        ///       are omitted then all package types are searched (i.e. specify all or none
+        ///       yields the same result).
         SearchFrameworkPackages = 0x0020,
 
         /// Include Optional packages in the file search order
+        /// @note If SearchMainPackages, SearchFrameworkPackages, SearchOptionalPackages,
+        ///       SearchResourcePackages, SearchBundlePackages and SearchHostRuntimeDependencies
+        ///       are omitted then all package types are searched (i.e. specify all or none
+        ///       yields the same result).
         SearchOptionalPackages = 0x0040,
 
         /// Include Resource packages in the file search order
+        /// @note If SearchMainPackages, SearchFrameworkPackages, SearchOptionalPackages,
+        ///       SearchResourcePackages, SearchBundlePackages and SearchHostRuntimeDependencies
+        ///       are omitted then all package types are searched (i.e. specify all or none
+        ///       yields the same result).
         SearchResourcePackages = 0x0080,
 
+        /// Include Bundle packages in the file search order
+        /// @note If SearchMainPackages, SearchFrameworkPackages, SearchOptionalPackages,
+        ///       SearchResourcePackages, SearchBundlePackages and SearchHostRuntimeDependencies
+        ///       are omitted then all package types are searched (i.e. specify all or none
+        ///       yields the same result).
+        SearchBundlePackages = 0x0100,
+
         /// Include HostRuntime dependencies in the file search order
-        SearchHostRuntimeDependencies = 0x0100,
+        /// @note If SearchMainPackages, SearchFrameworkPackages, SearchOptionalPackages,
+        ///       SearchResourcePackages, SearchBundlePackages and SearchHostRuntimeDependencies
+        ///       are omitted then all package types are searched (i.e. specify all or none
+        ///       yields the same result).
+        SearchHostRuntimeDependencies = 0x0200,
 
         /// Include Static package dependencies in the file search order
         /// @note If both SearchStaticDependencies and SearchDynamicDependencies are omitted then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
-        SearchStaticDependencies = 0x0200,
+        SearchStaticDependencies = 0x0400,
 
         /// Include Dynamic package dependencies in the file search order
         /// @note If both SearchStaticDependencies and SearchDynamicDependencies are omitted then both static and dynamic packages are searched (i.e. specify both or neither yields the same result).
-        SearchDynamicDependencies = 0x0400,
+        SearchDynamicDependencies = 0x0800,
     };
 
     [contract(PackageRuntimeContract, 1)]
