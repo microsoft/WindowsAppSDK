@@ -40,6 +40,16 @@ namespace WindowsAppRuntimeInstaller {
         MSIX_FRAMEWORK_X86_LISTENTRY
     #endif
 
+    #if defined(MSIX_MLFRAMEWORK_ARM64_LISTENTRY)
+        MSIX_MLFRAMEWORK_ARM64_LISTENTRY
+    #endif
+    #if defined(MSIX_MLFRAMEWORK_X64_LISTENTRY)
+        MSIX_MLFRAMEWORK_X64_LISTENTRY
+    #endif
+    #if defined(MSIX_MLFRAMEWORK_X86_LISTENTRY)
+        MSIX_MLFRAMEWORK_X86_LISTENTRY
+    #endif
+
     #if defined(MSIX_MAIN_ARM64_LISTENTRY)
         MSIX_MAIN_ARM64_LISTENTRY
     #endif
