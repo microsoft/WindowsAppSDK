@@ -272,6 +272,56 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<PackageSetItem> Items { get; };
     }
 
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageValidationEventArgs
+    {
+        Windows.Foundation.Uri PackageUri{ get; };
+        IInspectable AppxPackagingObject{ get; };
+        Boolean Cancel;
+
+        Windows.Foundation.Deferral GetDeferral();
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageValidationEventSource
+    {
+        event Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> ValidationRequested;
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    interface IPackageValidator
+    {
+        // This IInspectable will support QueryInterface into either IAppxPackageReader or
+        // IAppxBundleReader (these are COM interfaces from AppxPackaging.h).
+        // One of these interfaces will be available depending on the type of file being validated.
+        Boolean IsPackageValid(IInspectable appxPackagingObject);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageValidationHandler
+    {
+        PackageValidationHandler(IPackageValidator validator);
+        Windows.Foundation.TypedEventHandler<PackageValidationEventSource, PackageValidationEventArgs> Handler{ get; };
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageFamilyNameValidator : [default] IPackageValidator
+    {
+        PackageFamilyNameValidator(String expectedPackageFamilyName);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageMinimumVersionValidator : [default] IPackageValidator
+    {
+        PackageMinimumVersionValidator(Windows.ApplicationModel.PackageVersion minimumVersion);
+    }
+
+    [contract(PackageDeploymentContract, 3)]
+    runtimeclass PackageCertificateEkuValidator : [default] IPackageValidator
+    {
+        PackageCertificateEkuValidator(String expectedCertificateEku);
+    }
+
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
     [contract(PackageDeploymentContract, 1)]
     runtimeclass AddPackageOptions
@@ -301,6 +351,15 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         Boolean LimitToExistingPackages;
+
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsPackageValidationSupported{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        IMapView<Windows.Foundation.Uri, PackageValidationEventSource> PackageValidators{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        PackageValidationEventSource GetValidationEventSourceForUri(Windows.Foundation.Uri uri);
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -325,6 +384,15 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        Boolean IsPackageValidationSupported{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        IMapView<Windows.Foundation.Uri, PackageValidationEventSource> PackageValidators{ get; };
+
+        [contract(PackageDeploymentContract, 3)]
+        PackageValidationEventSource GetValidationEventSourceForUri(Windows.Foundation.Uri uri);
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
