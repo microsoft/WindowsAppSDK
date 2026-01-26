@@ -29,6 +29,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Common
 #if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY
             Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Compatibility.AutoInitialize.ConfigureRuntimeCompatibility();
 #endif
+
+            // ML framework initialization
+#if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_ML
+            Microsoft.Windows.AI.MachineLearning.CS.AutoInitialize.AccessMLFramework();
+#endif
         }
     }
 }
