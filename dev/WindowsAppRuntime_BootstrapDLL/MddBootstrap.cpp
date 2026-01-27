@@ -29,6 +29,9 @@ void FirstTimeInitialization(
 std::wstring GetFrameworkPackageFamilyName(
     UINT32 majorMinorVersion,
     PCWSTR versionTag);
+std::wstring GetMLFrameworkPackageFamilyName(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag);
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo);
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
@@ -90,6 +93,9 @@ static wil::unique_hmodule g_windowsAppRuntimeDll;
 static wil::unique_process_heap_string g_packageDependencyId;
 static MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 
+static wil::unique_process_heap_string g_mlPackageDependencyId;
+static MDD_PACKAGEDEPENDENCY_CONTEXT g_mlPackageDependencyContext{};
+
 static UINT32 g_initializationMajorMinorVersion{};
 static std::wstring g_initializationVersionTag;
 static PACKAGE_VERSION g_initializationFrameworkPackageVersion{};
@@ -98,6 +104,8 @@ static std::wstring g_test_ddlmPackageNamePrefix;
 static std::wstring g_test_ddlmPackagePublisherId;
 static std::wstring g_test_frameworkPackageNamePrefix;
 static std::wstring g_test_mainPackageNamePrefix;
+
+static bool g_initializeMLFramework{};
 
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
@@ -243,6 +251,16 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
     if (initializationCount == 1)
     {
         // Last one out turn out the lights...
+
+        // Shutdown ML framework package first (reverse order of initialization)
+        if (g_mlPackageDependencyContext)
+        {
+            MddRemovePackageDependency(g_mlPackageDependencyContext);
+            g_mlPackageDependencyContext = nullptr;
+        }
+
+        g_mlPackageDependencyId.reset();
+
         if (g_packageDependencyContext)
         {
             MddRemovePackageDependency(g_packageDependencyContext);
@@ -313,6 +331,11 @@ STDAPI MddBootstrapTestInitialize(
     return S_OK;
 } CATCH_RETURN();
 
+STDAPI_(void) MddBootstrapInitializeML() noexcept
+{
+    g_initializeMLFramework = true;
+}
+
 void VerifyInitializationIsCompatible(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -325,6 +348,13 @@ void VerifyInitializationIsCompatible(
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId == nullptr);
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext == nullptr);
     FAIL_FAST_HR_IF(E_UNEXPECTED, (g_usingWin11Support == UsingWin11Support::No) && (g_windowsAppRuntimeDll == nullptr));
+
+    // ML framework package: verify presence if auto-initialize is enabled
+    if (g_initializeMLFramework)
+    {
+        FAIL_FAST_HR_IF(E_UNEXPECTED, g_mlPackageDependencyId == nullptr);
+        FAIL_FAST_HR_IF(E_UNEXPECTED, g_mlPackageDependencyContext == nullptr);
+    }
 
     // Verify the parameter(s)
     // NOTE: GetFrameworkPackageFamilyName() verifies the resulting package family name is valid.
@@ -390,6 +420,16 @@ void FirstTimeInitialization(
         wil::unique_process_heap_string packageFullName;
         THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, &packageFullName));
 
+        // Initialize ML framework package if auto-initialize is enabled
+        wil::unique_process_heap_string mlPackageDependencyId;
+        MDD_PACKAGEDEPENDENCY_CONTEXT mlPackageDependencyContext{};
+        if (g_initializeMLFramework)
+        {
+            const std::wstring mlPackageFamilyName{ GetMLFrameworkPackageFamilyName(majorMinorVersion, packageVersionTag.c_str()) };
+            THROW_IF_FAILED(MddCore::Win11::TryCreatePackageDependency(nullptr, mlPackageFamilyName.c_str(), minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &mlPackageDependencyId));
+            THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(mlPackageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &mlPackageDependencyContext, nullptr));
+        }
+
         // Update the activity context
         auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
         activityContext.SetInitializationPackageFullName(packageFullName.get());
@@ -409,6 +449,8 @@ void FirstTimeInitialization(
         //
         g_packageDependencyId = std::move(packageDependencyId);
         g_packageDependencyContext = packageDependencyContext;
+        g_mlPackageDependencyId = std::move(mlPackageDependencyId);
+        g_mlPackageDependencyContext = mlPackageDependencyContext;
         //
         g_initializationMajorMinorVersion = majorMinorVersion;
         g_initializationVersionTag = std::move(packageVersionTag);
@@ -448,6 +490,16 @@ void FirstTimeInitialization(
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
         THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
 
+        // Initialize ML framework package if auto-initialize is enabled
+        wil::unique_process_heap_string mlPackageDependencyId;
+        MDD_PACKAGEDEPENDENCY_CONTEXT mlPackageDependencyContext{};
+        if (g_initializeMLFramework)
+        {
+            const std::wstring mlPackageFamilyName{ GetMLFrameworkPackageFamilyName(majorMinorVersion, packageVersionTag.c_str()) };
+            THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, mlPackageFamilyName.c_str(), minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &mlPackageDependencyId));
+            THROW_IF_FAILED(MddAddPackageDependency(mlPackageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &mlPackageDependencyContext, nullptr));
+        }
+
         // Remove our temporary path addition
         RemoveFrameworkFromPath(frameworkPackageInfo->path);
         dllDirectoryCookie.reset();
@@ -486,6 +538,8 @@ void FirstTimeInitialization(
         g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
         g_packageDependencyId = std::move(packageDependencyId);
         g_packageDependencyContext = packageDependencyContext;
+        g_mlPackageDependencyId = std::move(mlPackageDependencyId);
+        g_mlPackageDependencyContext = mlPackageDependencyContext;
         //
         g_initializationMajorMinorVersion = majorMinorVersion;
         g_initializationVersionTag = std::move(packageVersionTag);
@@ -510,6 +564,25 @@ std::wstring GetFrameworkPackageFamilyName(
 
     const std::wstring packageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
                                                       namePrefix, majorVersion, minorVersion,
+                                                      packageVersionTagDelimiter, packageVersionTag) };
+    THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
+
+    return packageFamilyName;
+}
+
+/// Determine the package family name for the Windows ML Framework package
+std::wstring GetMLFrameworkPackageFamilyName(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag)
+{
+    const uint16_t majorVersion{ static_cast<uint16_t>(majorMinorVersion >> 16) };
+    const uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
+
+    PCWSTR packageVersionTag{ !versionTag ? L"" : versionTag };
+    PCWSTR packageVersionTagDelimiter{ (packageVersionTag[0] == L'\0') ? L"" : L"-"};
+
+    const std::wstring packageFamilyName{ std::format(L"Microsoft.WindowsAppRuntime.ML.{}.{}{}{}_8wekyb3d8bbwe",
+                                                      majorVersion, minorVersion,
                                                       packageVersionTagDelimiter, packageVersionTag) };
     THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
 

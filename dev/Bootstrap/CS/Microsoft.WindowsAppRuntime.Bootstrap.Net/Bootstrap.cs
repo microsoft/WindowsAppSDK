@@ -79,6 +79,9 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 
         [DllImport("Microsoft.WindowsAppRuntime.Bootstrap.dll", ExactSpelling = true)]
         internal static extern void MddBootstrapShutdown();
+
+        [DllImport("Microsoft.WindowsAppRuntime.Bootstrap.dll", ExactSpelling = true)]
+        internal static extern void MddBootstrapInitializeML();
     }
 
     // The Windows App SDK bootstrap initialization API.
@@ -285,6 +288,19 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         public static void Shutdown()
         {
             NativeMethods.MddBootstrapShutdown();
+        }
+
+        /// Enable initialization of the Windows App SDK ML framework package.
+        ///
+        /// This must be called before Initialize() to take effect.
+        ///
+        /// @see Initialize(uint)
+        /// @see Initialize(uint, string)
+        /// @see Initialize(uint, string, PackageVersion)
+        /// @see Initialize(uint, string, PackageVersion, InitializeOptions)
+        public static void InitializeML()
+        {
+            NativeMethods.MddBootstrapInitializeML();
         }
     }
 }
