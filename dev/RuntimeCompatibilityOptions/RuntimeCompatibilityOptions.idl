@@ -49,6 +49,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         // 1.7.6
         OrientedVirtualizingPanel_FixBoundsOverflow = 59890418,
         ContentIsland_StartupCrashWhenLongRunning = 59707004,
+
+        // 1.7.8
+        DeploymentManager_PackageDowngradeFix = 60760239,
     };
 
     /// Represents a version of the Windows App Runtime.
