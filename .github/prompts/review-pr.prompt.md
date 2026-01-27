@@ -21,7 +21,7 @@ If the MCP "github-artifacts" tools are available in the environment, use them t
 - `github_issue_images`: use when linked issues or PR discussion include screenshots (UI bugs, layout, design).
 - `github_issue_attachments`: use when linked issues mention attached ZIPs or diagnostic bundles. Always provide `extractFolder` as `Generated Files/prReview/{{pr_number}}/issue-artifacts/<issue_number>`.
 
-If these tools are not available, start the MCP server in `tools/mcp/github-artifacts/launch.js` and retry.
+If these tools are not available, ensure the `github-artifacts` MCP server is started and available, then retry.
 
 ## PR selection
 Resolve the target PR using these fallbacks in order:

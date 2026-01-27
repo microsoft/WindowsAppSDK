@@ -42,7 +42,7 @@ If the MCP "github-artifacts" tools are available in the environment, use them:
 - `github_issue_images`: use when the issue likely contains screenshots or other visual evidence (UI bugs, layout glitches, design problems).
 - `github_issue_attachments`: use when the issue mentions attached ZIPs or diagnostic bundles (for example, `*.zip`, `logs.zip`, `debug.zip`). Always provide `extractFolder` as `Generated Files/issueReview/{{issue_number}}/logs`.
 
-If these tools are not available, start the MCP server in `tools/mcp/github-artifacts/launch.js` and retry.
+If these tools are not available, ensure the `github-artifacts` MCP server is started and available, then retry.
 
 ## Fetch Issue Data with GitHub MCP
 
