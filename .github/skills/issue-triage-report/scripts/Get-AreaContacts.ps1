@@ -131,9 +131,10 @@ function Update-AreaContact {
             secondary = if ($newSecondary) { $newSecondary } elseif ($newSecondary -eq "") { $null } else { $current.secondary }
         }
 
-        # Save to file
+        # Save to file using .NET for consistent UTF-8 without BOM across PS versions
         $json = @{ areaContacts = $Contacts; lastUpdated = (Get-Date -Format "yyyy-MM") }
-        $json | ConvertTo-Json -Depth 5 | Set-Content $OutputPath -Encoding UTF8
+        $jsonContent = $json | ConvertTo-Json -Depth 5
+        [System.IO.File]::WriteAllText($OutputPath, $jsonContent, [System.Text.UTF8Encoding]::new($false))
 
         Write-Host "Contact updated successfully!" -ForegroundColor Green
     }

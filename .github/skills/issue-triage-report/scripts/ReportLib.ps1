@@ -130,9 +130,18 @@ function Get-AreaContacts {
 
     if ($ContactsPath -and (Test-Path $ContactsPath)) {
         try {
-            $loaded = Get-Content $ContactsPath -Raw | ConvertFrom-Json -AsHashtable
+            $loaded = Get-Content $ContactsPath -Raw | ConvertFrom-Json
             if ($loaded.areaContacts) {
-                return $loaded.areaContacts
+                # Convert PSObject to hashtable for PS 5.1 compatibility
+                # (ConvertFrom-Json -AsHashtable is only available in PS 6.0+)
+                $hashtable = @{}
+                foreach ($prop in $loaded.areaContacts.PSObject.Properties) {
+                    $hashtable[$prop.Name] = @{
+                        primary = $prop.Value.primary
+                        secondary = $prop.Value.secondary
+                    }
+                }
+                return $hashtable
             }
         }
         catch {
@@ -257,4 +266,244 @@ function Write-ColoredStatus {
     }
 
     Write-Host $Message -ForegroundColor $color
+}
+
+function Test-IsMicrosoftMember {
+    <#
+    .SYNOPSIS
+        Checks if a GitHub user is likely a Microsoft organization member using heuristics.
+
+    .DESCRIPTION
+        LIMITATION: This function uses a simple regex heuristic, NOT actual GitHub org membership.
+        
+        Accuracy implications:
+        - False positives (external user classified as MS): Users with logins starting with
+          'microsoft-', 'msft-', 'azure-', 'dotnet-' or ending in 'bot' are assumed internal.
+          This reduces their External score (up to 15 points lost).
+        - False negatives (MS employee classified as external): Actual Microsoft employees
+          without these patterns receive undeserved External contributor points.
+        
+        For production accuracy, consider implementing GitHub API org membership check:
+          gh api /orgs/microsoft/members/{username} --silent && return $true
+        However, this requires authentication and incurs API rate limit costs.
+
+    .PARAMETER Login
+        The GitHub username to check.
+
+    .OUTPUTS
+        [bool] True if the user is likely a Microsoft member, False otherwise.
+    #>
+    param([string]$Login)
+
+    # Heuristic check: common Microsoft-associated username patterns
+    # This catches service accounts and official bots but may miss individual employees
+    if ($Login -match "^(microsoft|msft|azure|dotnet)-") {
+        return $true
+    }
+    if ($Login -match "bot$") {
+        return $true
+    }
+
+    # Default: cannot determine with certainty, assume potentially external
+    # This errs on the side of giving external contributor credit
+    return $false
+}
+
+function Get-IssueScore {
+    <#
+    .SYNOPSIS
+        Calculates the highlight score for a single issue.
+
+    .DESCRIPTION
+        This is the canonical scoring implementation used by both Generate-FeatureAreaReport.ps1
+        and Get-HighlightScore.ps1 to ensure consistent scoring across the skill.
+
+    .PARAMETER Issue
+        The GitHub issue object with properties: reactionGroups, createdAt, comments, author, labels.
+
+    .PARAMETER Config
+        The scoring configuration hashtable containing weights and thresholds.
+
+    .OUTPUTS
+        [hashtable] Score breakdown with individual factor scores and total.
+    #>
+    param(
+        [object]$Issue,
+        [hashtable]$Config
+    )
+
+    $weights = $Config.weights
+    $thresholds = $Config.thresholds
+
+    $score = @{
+        Reactions = 0
+        Age = 0
+        Comments = 0
+        External = 0
+        Severity = 0
+        Blockers = 0
+        Total = 0
+        # Additional metadata for detailed reporting
+        RawReactions = 0
+        RawAge = 0
+        RawComments = 0
+        IsExternal = $false
+        SeverityLabel = ""
+        IsBlocker = $false
+    }
+
+    # 1. Reactions score
+    $totalReactions = Get-TotalReactions -ReactionGroups $Issue.reactionGroups
+    $score.RawReactions = $totalReactions
+
+    $score.Reactions = switch ([int]$totalReactions) {
+        { $_ -ge 50 } { $weights.reactions; break }
+        { $_ -ge 20 } { [math]::Floor($weights.reactions * 0.8); break }
+        { $_ -ge 10 } { [math]::Floor($weights.reactions * 0.6); break }
+        { $_ -ge 5 }  { [math]::Floor($weights.reactions * 0.4); break }
+        { $_ -ge 1 }  { [math]::Floor($weights.reactions * 0.2); break }
+        default { 0 }
+    }
+
+    # 2. Age score (use UTC for consistency)
+    $ageInDays = Get-IssueAgeInDays -CreatedAt $Issue.createdAt
+    $score.RawAge = $ageInDays
+
+    $score.Age = switch ($ageInDays) {
+        { $_ -ge 181 } { $weights.age; break }
+        { $_ -ge 91 }  { [math]::Floor($weights.age * 0.75); break }
+        { $_ -ge 61 }  { [math]::Floor($weights.age * 0.5); break }
+        { $_ -ge 31 }  { [math]::Floor($weights.age * 0.25); break }
+        default { 0 }
+    }
+
+    # 3. Comments score
+    $commentCount = 0
+    if ($Issue.comments) {
+        if ($Issue.comments -is [System.Collections.ICollection]) {
+            $commentCount = $Issue.comments.Count
+        } elseif ($Issue.comments.totalCount) {
+            $commentCount = [int]$Issue.comments.totalCount
+        }
+    }
+    $score.RawComments = $commentCount
+
+    $score.Comments = switch ($commentCount) {
+        { $_ -ge 11 } { $weights.comments; break }
+        { $_ -ge 6 }  { [math]::Floor($weights.comments * 0.67); break }
+        { $_ -ge 3 }  { [math]::Floor($weights.comments * 0.4); break }
+        { $_ -ge 1 }  { [math]::Floor($weights.comments * 0.2); break }
+        default { 0 }
+    }
+
+    # 4. External contributor score
+    $authorLogin = if ($Issue.author) { $Issue.author.login } else { "" }
+    $isExternal = -not (Test-IsMicrosoftMember -Login $authorLogin)
+    $score.IsExternal = $isExternal
+    if ($isExternal -and $authorLogin) {
+        $score.External = [math]::Floor($weights.external * 0.67)
+    }
+
+    # 5. Severity score
+    $labelNames = @()
+    if ($Issue.labels) {
+        $labelNames = @($Issue.labels | ForEach-Object { $_.name })
+    }
+
+    if ($labelNames -contains "regression") {
+        $score.Severity = $weights.severity
+        $score.SeverityLabel = "regression"
+    }
+    else {
+        $hasCrash = @($labelNames | Where-Object { $_ -match "crash|hang|data-loss" }).Count -gt 0
+        if ($hasCrash) {
+            $score.Severity = [math]::Floor($weights.severity * 0.8)
+            $score.SeverityLabel = "crash/hang"
+        }
+        elseif ($labelNames -contains "bug") {
+            $score.Severity = [math]::Floor($weights.severity * 0.53)
+            $score.SeverityLabel = "bug"
+        }
+        elseif ($labelNames -contains "performance") {
+            $score.Severity = [math]::Floor($weights.severity * 0.4)
+            $score.SeverityLabel = "performance"
+        }
+    }
+
+    # 6. Blocker score
+    $hasBlocker = @($labelNames | Where-Object { $_ -match "block|blocker|blocking" }).Count -gt 0
+    $score.IsBlocker = $hasBlocker
+    if ($hasBlocker) {
+        $score.Blockers = $weights.blockers
+    }
+
+    # Calculate total
+    $score.Total = [int]$score.Reactions + [int]$score.Age + [int]$score.Comments +
+                   [int]$score.External + [int]$score.Severity + [int]$score.Blockers
+
+    return $score
+}
+
+function Get-HighlightLabels {
+    <#
+    .SYNOPSIS
+        Determines which highlight labels to apply based on score factors.
+
+    .DESCRIPTION
+        This is the canonical label assignment implementation used across the skill.
+
+    .PARAMETER Issue
+        The GitHub issue object.
+
+    .PARAMETER Score
+        The score hashtable from Get-IssueScore.
+
+    .PARAMETER Config
+        The scoring configuration hashtable.
+
+    .OUTPUTS
+        [array] Array of highlight label strings (e.g., "🔥 Hot", "⏰ Aging").
+    #>
+    param(
+        [object]$Issue,
+        [hashtable]$Score,
+        [hashtable]$Config
+    )
+
+    $labels = @()
+    $thresholds = $Config.thresholds
+    $maxLabels = $Config.maxLabelsPerIssue
+
+    $labelNames = @()
+    if ($Issue.labels) {
+        $labelNames = @($Issue.labels | ForEach-Object { $_.name })
+    }
+
+    # Check conditions in priority order
+    if ($labelNames -contains "regression") {
+        $labels += "🐛 Regression"
+    }
+    if ($Score.IsBlocker) {
+        $labels += "🚧 Blocker"
+    }
+    if ($Score.RawReactions -ge $thresholds.hot_reactions) {
+        $labels += "🔥 Hot"
+    }
+    if ($Score.RawAge -gt $thresholds.aging_days -and $labelNames -contains "needs-triage") {
+        $labels += "⏰ Aging"
+    }
+    if ($Score.RawComments -ge $thresholds.trending_comments) {
+        $labels += "📈 Trending"
+    }
+    if ($Score.IsExternal) {
+        $labels += "👥 External"
+    }
+
+    $hasFeatureProposal = $labelNames -contains "feature proposal" -or $labelNames -contains "feature-proposal"
+    if ($hasFeatureProposal -and $Score.RawReactions -ge $thresholds.popular_reactions) {
+        $labels += "📢 Popular"
+    }
+
+    # Return only top N labels
+    return $labels | Select-Object -First $maxLabels
 }

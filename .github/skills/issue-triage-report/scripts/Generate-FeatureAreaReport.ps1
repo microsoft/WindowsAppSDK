@@ -35,6 +35,7 @@
 [CmdletBinding()]
 param(
     [Parameter()]
+    [ValidatePattern('^[\w-]+/[\w.-]+$')]
     [string]$Repo = "microsoft/WindowsAppSDK",
 
     [Parameter()]
@@ -172,214 +173,8 @@ function Get-HighlightedIssues {
     return $highlights
 }
 
-function Get-IssueScore {
-    <#
-    .SYNOPSIS
-        Calculates the highlight score for a single issue.
-    #>
-    param(
-        [object]$Issue,
-        [hashtable]$Config
-    )
-
-    $weights = $Config.weights
-    $thresholds = $Config.thresholds
-
-    $score = @{
-        Reactions = 0
-        Age = 0
-        Comments = 0
-        External = 0
-        Severity = 0
-        Blockers = 0
-        Total = 0
-    }
-
-    # 1. Reactions score
-    $totalReactions = 0
-    if ($Issue.reactionGroups -and $Issue.reactionGroups.Count -gt 0) {
-        foreach ($rg in $Issue.reactionGroups) {
-            if ($null -ne $rg.users) {
-                if ($rg.users -is [System.Collections.ICollection]) {
-                    $totalReactions += $rg.users.Count
-                } elseif ($rg.users.totalCount) {
-                    $totalReactions += [int]$rg.users.totalCount
-                }
-            }
-        }
-    }
-
-    $score.Reactions = switch ([int]$totalReactions) {
-        { $_ -ge 50 } { $weights.reactions; break }
-        { $_ -ge 20 } { [math]::Floor($weights.reactions * 0.8); break }
-        { $_ -ge 10 } { [math]::Floor($weights.reactions * 0.6); break }
-        { $_ -ge 5 }  { [math]::Floor($weights.reactions * 0.4); break }
-        { $_ -ge 1 }  { [math]::Floor($weights.reactions * 0.2); break }
-        default { 0 }
-    }
-
-    # 2. Age score
-    $createdAt = [datetime]$Issue.createdAt
-    $ageInDays = ([datetime]::Now - $createdAt).Days
-
-    $score.Age = switch ($ageInDays) {
-        { $_ -ge 181 } { $weights.age; break }
-        { $_ -ge 91 }  { [math]::Floor($weights.age * 0.75); break }
-        { $_ -ge 61 }  { [math]::Floor($weights.age * 0.5); break }
-        { $_ -ge 31 }  { [math]::Floor($weights.age * 0.25); break }
-        default { 0 }
-    }
-
-    # 3. Comments score
-    $commentCount = if ($Issue.comments) { $Issue.comments.Count } else { 0 }
-
-    $score.Comments = switch ($commentCount) {
-        { $_ -ge 11 } { $weights.comments; break }
-        { $_ -ge 6 }  { [math]::Floor($weights.comments * 0.67); break }
-        { $_ -ge 3 }  { [math]::Floor($weights.comments * 0.4); break }
-        { $_ -ge 1 }  { [math]::Floor($weights.comments * 0.2); break }
-        default { 0 }
-    }
-
-    # 4. External contributor score
-    $authorLogin = if ($Issue.author) { $Issue.author.login } else { "" }
-    $isExternal = -not (Test-IsMicrosoftMember -Login $authorLogin)
-    if ($isExternal -and $authorLogin) {
-        $score.External = [math]::Floor($weights.external * 0.67)
-    }
-
-    # 5. Severity score
-    $labelNames = @()
-    if ($Issue.labels) {
-        $labelNames = @($Issue.labels | ForEach-Object { $_.name })
-    }
-
-    if ($labelNames -contains "regression") {
-        $score.Severity = $weights.severity
-    }
-    else {
-        $hasCrash = @($labelNames | Where-Object { $_ -match "crash|hang|data-loss" }).Count -gt 0
-        if ($hasCrash) {
-            $score.Severity = [math]::Floor($weights.severity * 0.8)
-        }
-        elseif ($labelNames -contains "bug") {
-            $score.Severity = [math]::Floor($weights.severity * 0.53)
-        }
-        elseif ($labelNames -contains "performance") {
-            $score.Severity = [math]::Floor($weights.severity * 0.4)
-        }
-    }
-
-    # 6. Blocker score
-    $hasBlocker = @($labelNames | Where-Object { $_ -match "block|blocker|blocking" }).Count -gt 0
-    if ($hasBlocker) {
-        $score.Blockers = $weights.blockers
-    }
-
-    # Calculate total
-    $score.Total = [int]$score.Reactions + [int]$score.Age + [int]$score.Comments +
-                   [int]$score.External + [int]$score.Severity + [int]$score.Blockers
-
-    return $score
-}
-
-function Get-HighlightLabels {
-    <#
-    .SYNOPSIS
-        Determines which highlight labels to apply based on score factors.
-    #>
-    param(
-        [object]$Issue,
-        [hashtable]$Score,
-        [hashtable]$Config
-    )
-
-    $labels = @()
-    $thresholds = $Config.thresholds
-    $maxLabels = $Config.maxLabelsPerIssue
-
-    $labelNames = @()
-    if ($Issue.labels) {
-        $labelNames = @($Issue.labels | ForEach-Object { $_.name })
-    }
-    
-    $totalReactions = 0
-    if ($Issue.reactionGroups -and $Issue.reactionGroups.Count -gt 0) {
-        foreach ($rg in $Issue.reactionGroups) {
-            if ($null -ne $rg.users) {
-                if ($rg.users -is [System.Collections.ICollection]) {
-                    $totalReactions += $rg.users.Count
-                } elseif ($rg.users.totalCount) {
-                    $totalReactions += [int]$rg.users.totalCount
-                }
-            }
-        }
-    }
-
-    $createdAt = [datetime]$Issue.createdAt
-    $ageInDays = ([datetime]::Now - $createdAt).Days
-
-    $commentCount = 0
-    if ($null -ne $Issue.comments) {
-        if ($Issue.comments -is [System.Collections.ICollection]) {
-            $commentCount = $Issue.comments.Count
-        }
-    }
-
-    # Check conditions in priority order
-    if ($labelNames -contains "regression") {
-        $labels += "🐛 Regression"
-    }
-    $hasBlocker = @($labelNames | Where-Object { $_ -match "block|blocker|blocking" }).Count -gt 0
-    if ($hasBlocker) {
-        $labels += "🚧 Blocker"
-    }
-    if ($totalReactions -ge $thresholds.hot_reactions) {
-        $labels += "🔥 Hot"
-    }
-    if ($ageInDays -gt $thresholds.aging_days -and $labelNames -contains "needs-triage") {
-        $labels += "⏰ Aging"
-    }
-    if ($commentCount -ge $thresholds.trending_comments) {
-        $labels += "📈 Trending"
-    }
-
-    $authorLogin = if ($Issue.author) { $Issue.author.login } else { "" }
-    $isExternal = -not (Test-IsMicrosoftMember -Login $authorLogin)
-    if ($isExternal -and $authorLogin) {
-        $labels += "👥 External"
-    }
-
-    $hasFeatureProposal = $labelNames -contains "feature proposal" -or $labelNames -contains "feature-proposal"
-    if ($hasFeatureProposal -and $totalReactions -ge $thresholds.popular_reactions) {
-        $labels += "📢 Popular"
-    }
-
-    # Return only top N labels
-    return $labels | Select-Object -First $maxLabels
-}
-
-function Test-IsMicrosoftMember {
-    <#
-    .SYNOPSIS
-        Checks if a GitHub user is a Microsoft organization member.
-        Note: This is a heuristic - may need refinement.
-    #>
-    param([string]$Login)
-
-    # Simple heuristic: check if user is in known Microsoft users or has @microsoft email
-    # In practice, you might query the GitHub API for org membership
-    # For now, assume non-bot accounts might be external
-    if ($Login -match "^(microsoft|msft|azure|dotnet)-") {
-        return $true
-    }
-    if ($Login -match "bot$") {
-        return $true
-    }
-
-    # Default: cannot determine, assume potentially external
-    return $false
-}
+# Note: Get-IssueScore, Get-HighlightLabels, and Test-IsMicrosoftMember are now defined in ReportLib.ps1
+# to provide a single source of truth for scoring logic across the skill.
 
 function Format-HighlightsMarkdown {
     <#
@@ -478,92 +273,99 @@ function Format-ReportMarkdown {
 # Main Execution
 # ============================================================================
 
-Write-Host "Generating Feature Area Status Report for $Repo..." -ForegroundColor Cyan
-Write-Host ""
-
-# Verify GitHub CLI is available and authenticated
 try {
-    $null = gh auth status 2>&1
+    Write-Host "Generating Feature Area Status Report for $Repo..." -ForegroundColor Cyan
+    Write-Host ""
+
+    # Verify GitHub CLI is available and authenticated
+    try {
+        $null = gh auth status 2>&1
+    }
+    catch {
+        Write-Error "GitHub CLI not authenticated. Run 'gh auth login' first."
+        exit 1
+    }
+
+    # Get all area labels
+    $areaLabels = Get-AllAreaLabels -Repository $Repo
+    Write-Host "Found $($areaLabels.Count) feature area labels" -ForegroundColor Green
+
+    $areaReports = @()
+
+    foreach ($areaLabel in $areaLabels) {
+        Write-Host "  Processing $areaLabel..." -ForegroundColor Gray
+
+        # Get open issues
+        $openIssues = Get-IssuesForArea -Repository $Repo -AreaLabel $areaLabel
+
+        # Get closed issues if requested
+        $closedCount = "-"
+        if ($IncludeClosed) {
+            $closedIssues = Get-IssuesForArea -Repository $Repo -AreaLabel $areaLabel -GetClosed
+            # Filter to last 30 days
+            $thirtyDaysAgo = (Get-Date).AddDays(-30)
+            $recentlyClosed = $closedIssues | Where-Object {
+                [datetime]$_.updatedAt -gt $thirtyDaysAgo
+            }
+            $closedCount = $recentlyClosed.Count
+        }
+
+        # Calculate stats
+        $stats = Get-IssueStats -Issues $openIssues -Config $Config
+
+        # Get highlights
+        $highlights = Get-HighlightedIssues -Issues $openIssues -Config $Config -MaxHighlights $HighlightCount
+        $highlightsFormatted = Format-HighlightsMarkdown -Highlights $highlights -Repository $Repo
+
+        # Get contact
+        $contact = if ($AreaContacts[$areaLabel]) {
+            $c = $AreaContacts[$areaLabel]
+            if ($c.secondary) { "$($c.primary), $($c.secondary)" } else { $c.primary }
+        } else {
+            "TBD"
+        }
+
+        $areaReports += @{
+            AreaLabel = $areaLabel
+            Contact = $contact
+            Stats = $stats
+            ClosedCount = $closedCount
+            Highlights = $highlightsFormatted
+        }
+    }
+
+    # Sort by area label
+    $areaReports = $areaReports | Sort-Object { $_.AreaLabel }
+
+    # Generate output
+    switch ($OutputFormat) {
+        "markdown" {
+            $report = Format-ReportMarkdown -AreaReports $areaReports -Repository $Repo -IncludeClosed:$IncludeClosed
+            Write-Output $report
+        }
+        "json" {
+            $areaReports | ConvertTo-Json -Depth 10
+        }
+        "csv" {
+            $csvData = $areaReports | ForEach-Object {
+                [PSCustomObject]@{
+                    FeatureArea = $_.AreaLabel
+                    Contact = $_.Contact
+                    OpenIssues = $_.Stats.Total
+                    NeedsTriage = $_.Stats.NeedsTriage
+                    FeatureProposals = $_.Stats.FeatureProposals
+                    Highlights = $_.Highlights
+                }
+            }
+            $csvData | ConvertTo-Csv -NoTypeInformation
+        }
+    }
+
+    Write-Host ""
+    Write-Host "Report generation complete!" -ForegroundColor Green
+    exit 0
 }
 catch {
-    Write-Error "GitHub CLI not authenticated. Run 'gh auth login' first."
+    Write-Error "Report generation failed: $_"
     exit 1
 }
-
-# Get all area labels
-$areaLabels = Get-AllAreaLabels -Repository $Repo
-Write-Host "Found $($areaLabels.Count) feature area labels" -ForegroundColor Green
-
-$areaReports = @()
-
-foreach ($areaLabel in $areaLabels) {
-    Write-Host "  Processing $areaLabel..." -ForegroundColor Gray
-
-    # Get open issues
-    $openIssues = Get-IssuesForArea -Repository $Repo -AreaLabel $areaLabel
-
-    # Get closed issues if requested
-    $closedCount = "-"
-    if ($IncludeClosed) {
-        $closedIssues = Get-IssuesForArea -Repository $Repo -AreaLabel $areaLabel -GetClosed
-        # Filter to last 30 days
-        $thirtyDaysAgo = (Get-Date).AddDays(-30)
-        $recentlyClosed = $closedIssues | Where-Object {
-            [datetime]$_.updatedAt -gt $thirtyDaysAgo
-        }
-        $closedCount = $recentlyClosed.Count
-    }
-
-    # Calculate stats
-    $stats = Get-IssueStats -Issues $openIssues -Config $Config
-
-    # Get highlights
-    $highlights = Get-HighlightedIssues -Issues $openIssues -Config $Config -MaxHighlights $HighlightCount
-    $highlightsFormatted = Format-HighlightsMarkdown -Highlights $highlights -Repository $Repo
-
-    # Get contact
-    $contact = if ($AreaContacts[$areaLabel]) {
-        $c = $AreaContacts[$areaLabel]
-        if ($c.secondary) { "$($c.primary), $($c.secondary)" } else { $c.primary }
-    } else {
-        "TBD"
-    }
-
-    $areaReports += @{
-        AreaLabel = $areaLabel
-        Contact = $contact
-        Stats = $stats
-        ClosedCount = $closedCount
-        Highlights = $highlightsFormatted
-    }
-}
-
-# Sort by area label
-$areaReports = $areaReports | Sort-Object { $_.AreaLabel }
-
-# Generate output
-switch ($OutputFormat) {
-    "markdown" {
-        $report = Format-ReportMarkdown -AreaReports $areaReports -Repository $Repo -IncludeClosed:$IncludeClosed
-        Write-Output $report
-    }
-    "json" {
-        $areaReports | ConvertTo-Json -Depth 10
-    }
-    "csv" {
-        $csvData = $areaReports | ForEach-Object {
-            [PSCustomObject]@{
-                FeatureArea = $_.AreaLabel
-                Contact = $_.Contact
-                OpenIssues = $_.Stats.Total
-                NeedsTriage = $_.Stats.NeedsTriage
-                FeatureProposals = $_.Stats.FeatureProposals
-                Highlights = $_.Highlights
-            }
-        }
-        $csvData | ConvertTo-Csv -NoTypeInformation
-    }
-}
-
-Write-Host ""
-Write-Host "Report generation complete!" -ForegroundColor Green

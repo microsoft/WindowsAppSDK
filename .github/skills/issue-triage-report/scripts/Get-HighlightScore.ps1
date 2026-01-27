@@ -32,6 +32,7 @@ param(
     [int]$IssueNumber,
 
     [Parameter()]
+    [ValidatePattern('^[\w-]+/[\w.-]+$')]
     [string]$Repo = "microsoft/WindowsAppSDK",
 
     [Parameter()]
@@ -131,8 +132,8 @@ function Get-DetailedIssueScore {
 
     # 4. External contributor
     $authorLogin = $Issue.author.login
-    # Simple heuristic - in production, would check org membership via API
-    $isExternal = -not ($authorLogin -match "^(microsoft|msft|azure|dotnet)-" -or $authorLogin -match "bot$")
+    # Use shared heuristic from ReportLib.ps1
+    $isExternal = -not (Test-IsMicrosoftMember -Login $authorLogin)
     $breakdown.External.Raw = $isExternal
 
     if ($isExternal) {
