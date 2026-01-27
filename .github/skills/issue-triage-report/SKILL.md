@@ -163,7 +163,7 @@ The report adds reason labels to highlighted issues:
 | `⏰ Aging` | Open > 90 days without triage |
 | `🐛 Regression` | Marked as regression or recent breakage |
 | `🚧 Blocker` | Blocking other issues or teams |
-| `💬 Active` | High comment activity recently |
+| `📈 Trending` | High comment activity recently |
 | ` Popular` | Feature proposal with significant support |
 
 ## Report Output Format
@@ -174,7 +174,7 @@ The report adds reason labels to highlighted issues:
 | Feature Area | Area Contact | Open | Triage | Proposals | Closed | Highlights |
 |--------------|--------------|------|--------|-----------|--------|------------|
 | area-Notification | Vivek Khare | 34 | 8 | 11 | 0 | 🔥 [#2894](link) Hot, ⏰ [#3001](link) Aging |
-| area-Widgets | Pranav Gupta | 21 | 10 | 4 | 0 | 💬 [#3958](link) Active |
+| area-Widgets | Pranav Gupta | 21 | 10 | 4 | 0 | 📈 [#3958](link) Trending |
 ```
 
 ### Special Status Indicators
@@ -207,7 +207,7 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
   "thresholds": {
     "hot_reactions": 10,
     "aging_days": 90,
-    "active_comments": 5
+    "trending_comments": 5
   }
 }
 ```

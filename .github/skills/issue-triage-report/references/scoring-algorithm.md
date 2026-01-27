@@ -179,8 +179,8 @@ These thresholds can be adjusted in `ScoringConfig.json`:
   "thresholds": {
     "hot_reactions": 10,
     "aging_days": 90,
-    "active_comments": 5,
-    "active_days": 14,
+    "trending_comments": 5,
+    "trending_days": 14,
     "popular_reactions": 5
   },
   "labelPriority": [
@@ -188,7 +188,7 @@ These thresholds can be adjusted in `ScoringConfig.json`:
     "blocker",
     "hot",
     "aging",
-    "active",
+    "trending",
     "popular"
   ],
   "maxLabelsPerIssue": 2
