@@ -8,7 +8,7 @@
 .DESCRIPTION
     This script fetches issue details and calculates a priority score (0-100)
     based on multiple factors including reactions, age, comments, severity,
-    and external contributor status.
+    and blocker status.
 
 .PARAMETER IssueNumber
     The GitHub issue number to analyze.
@@ -69,7 +69,6 @@ function Get-DetailedIssueScore {
         Reactions = @{ Raw = 0; Score = 0; MaxScore = $weights.reactions; Reason = "" }
         Age = @{ Raw = 0; Score = 0; MaxScore = $weights.age; Reason = "" }
         Comments = @{ Raw = 0; Score = 0; MaxScore = $weights.comments; Reason = "" }
-        External = @{ Raw = $false; Score = 0; MaxScore = $weights.external; Reason = "" }
         Severity = @{ Raw = ""; Score = 0; MaxScore = $weights.severity; Reason = "" }
         Blockers = @{ Raw = $false; Score = 0; MaxScore = $weights.blockers; Reason = "" }
     }
@@ -130,18 +129,7 @@ function Get-DetailedIssueScore {
         $breakdown.Comments.Reason = "📈 Trending ($commentCount comments recently)"
     }
 
-    # 4. External contributor
-    $authorLogin = $Issue.author.login
-    # Use shared heuristic from ReportLib.ps1
-    $isExternal = -not (Test-IsMicrosoftMember -Login $authorLogin)
-    $breakdown.External.Raw = $isExternal
-
-    if ($isExternal) {
-        $breakdown.External.Score = [math]::Floor($weights.external * 0.67)
-        $breakdown.External.Reason = "👥 External contributor (@$authorLogin)"
-    }
-
-    # 5. Severity
+    # 4. Severity
     $severityLabel = ""
     if (Test-HasLabel -Labels $Issue.labels -LabelName "regression") {
         $severityLabel = "regression"
@@ -165,7 +153,7 @@ function Get-DetailedIssueScore {
     }
     $breakdown.Severity.Raw = $severityLabel
 
-    # 6. Blockers
+    # 5. Blockers
     $isBlocker = Test-HasLabelMatching -Labels $Issue.labels -Pattern "block|blocker|blocking"
     $breakdown.Blockers.Raw = $isBlocker
 
@@ -176,7 +164,7 @@ function Get-DetailedIssueScore {
 
     # Calculate total
     $totalScore = $breakdown.Reactions.Score + $breakdown.Age.Score +
-                  $breakdown.Comments.Score + $breakdown.External.Score +
+                  $breakdown.Comments.Score +
                   $breakdown.Severity.Score + $breakdown.Blockers.Score
 
     return @{
@@ -216,7 +204,7 @@ function Format-ScoreBreakdown {
 
     $breakdown = $ScoreResult.Breakdown
 
-    foreach ($factor in @("Reactions", "Age", "Comments", "External", "Severity", "Blockers")) {
+    foreach ($factor in @("Reactions", "Age", "Comments", "Severity", "Blockers")) {
         $data = $breakdown[$factor]
         $score = $data.Score
         $max = $data.MaxScore
@@ -263,7 +251,7 @@ function Format-ScoreBreakdown {
 # Main Execution
 # ============================================================================
 
-Write-Host "Fetching issue #$IssueNumber from $Repo..." -ForegroundColor Cyan
+Write-Host "Fetching issue #$($IssueNumber) from $Repo..." -ForegroundColor Cyan
 
 # Verify GitHub CLI is available
 try {
@@ -279,14 +267,14 @@ $jsonFields = "number,title,createdAt,updatedAt,labels,reactionGroups,comments,a
 $issueJson = gh issue view $IssueNumber --repo $Repo --json $jsonFields 2>&1
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to fetch issue #$IssueNumber: $issueJson"
+    Write-Error "Failed to fetch issue #$($IssueNumber): $issueJson"
     exit 1
 }
 
 $issue = $issueJson | ConvertFrom-Json
 
 if ($issue.state -ne "OPEN") {
-    Write-Warning "Note: Issue #$IssueNumber is $($issue.state.ToLower()), not open."
+    Write-Warning "Note: Issue #$($IssueNumber) is $($issue.state.ToLower()), not open."
 }
 
 # Calculate score
@@ -300,13 +288,13 @@ if ($VerbosePreference -eq "Continue" -or $PSBoundParameters.ContainsKey('Verbos
 else {
     # Simple output
     Write-Host ""
-    Write-Host "Issue #$IssueNumber Score: $($scoreResult.TotalScore)/100" -ForegroundColor Green
+    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore)/100" -ForegroundColor Green
     Write-Host ""
 
     # Show top contributing factors
     $breakdown = $scoreResult.Breakdown
     $factors = @()
-    foreach ($factor in @("Reactions", "Age", "Comments", "External", "Severity", "Blockers")) {
+    foreach ($factor in @("Reactions", "Age", "Comments", "Severity", "Blockers")) {
         if ($breakdown[$factor].Reason) {
             $factors += $breakdown[$factor].Reason
         }

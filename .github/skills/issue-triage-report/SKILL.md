@@ -14,7 +14,7 @@ This skill generates comprehensive GitHub Feature Area Status reports that help 
 
 1. **Engineering triage meetings** — Create status reports showing open issues, needs-triage counts, and highlighted issues per feature area.
 
-2. **Priority analysis requests** — Identify which issues should get engineering focus based on multi-factor scoring (reactions, age, external impact, blockers).
+2. **Priority analysis requests** — Identify which issues should get engineering focus based on multi-factor scoring (reactions, age, severity, blockers).
 
 3. **Feature area health checks** — Assess the health of specific areas by analyzing issue distribution, triage backlog, and proposal counts.
 
@@ -147,10 +147,9 @@ Issues are scored (0-100) based on multiple factors. See [scoring-algorithm.md](
 
 | Factor | Weight | Description |
 |--------|--------|-------------|
-| **Reactions** | 25 | Total reactions (👍, ❤️, 🚀, etc.) indicate community interest |
-| **Age** | 20 | Older untriaged issues get higher priority |
-| **Comments** | 15 | Active discussion indicates importance |
-| **External** | 15 | Issues from external contributors get boost |
+| **Reactions** | 30 | Total reactions (👍, ❤️, 🚀, etc.) indicate community interest |
+| **Age** | 25 | Older untriaged issues get higher priority |
+| **Comments** | 20 | Active discussion indicates importance |
 | **Severity** | 15 | Labels like `bug`, `regression`, `crash` increase score |
 | **Blockers** | 10 | Issues blocking other work get prioritized |
 
@@ -165,8 +164,7 @@ The report adds reason labels to highlighted issues:
 | `🐛 Regression` | Marked as regression or recent breakage |
 | `🚧 Blocker` | Blocking other issues or teams |
 | `💬 Active` | High comment activity recently |
-| `👥 External` | Filed by external contributor |
-| `📢 Popular` | Feature proposal with significant support |
+| ` Popular` | Feature proposal with significant support |
 
 ## Report Output Format
 
@@ -200,10 +198,9 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
 ```json
 {
   "weights": {
-    "reactions": 25,
-    "age": 20,
-    "comments": 15,
-    "external": 15,
+    "reactions": 30,
+    "age": 25,
+    "comments": 20,
     "severity": 15,
     "blockers": 10
   },

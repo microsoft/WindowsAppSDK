@@ -20,10 +20,9 @@ function Get-ScoringConfig {
 
     $defaultConfig = @{
         weights = @{
-            reactions = 25
-            age = 20
-            comments = 15
-            external = 15
+            reactions = 30
+            age = 25
+            comments = 20
             severity = 15
             blockers = 10
         }
@@ -40,7 +39,6 @@ function Get-ScoringConfig {
             "hot"
             "aging"
             "trending"
-            "external"
             "popular"
         )
         maxLabelsPerIssue = 2
@@ -54,7 +52,6 @@ function Get-ScoringConfig {
                 $defaultConfig.weights.reactions = [int]$loaded.weights.reactions
                 $defaultConfig.weights.age = [int]$loaded.weights.age
                 $defaultConfig.weights.comments = [int]$loaded.weights.comments
-                $defaultConfig.weights.external = [int]$loaded.weights.external
                 $defaultConfig.weights.severity = [int]$loaded.weights.severity
                 $defaultConfig.weights.blockers = [int]$loaded.weights.blockers
             }
@@ -244,7 +241,7 @@ function Format-IssueLink {
         [string]$Repository
     )
 
-    return "[#$IssueNumber](https://github.com/$Repository/issues/$IssueNumber)"
+    return "[#$($IssueNumber)](https://github.com/$Repository/issues/$IssueNumber)"
 }
 
 function Write-ColoredStatus {
@@ -266,47 +263,6 @@ function Write-ColoredStatus {
     }
 
     Write-Host $Message -ForegroundColor $color
-}
-
-function Test-IsMicrosoftMember {
-    <#
-    .SYNOPSIS
-        Checks if a GitHub user is likely a Microsoft organization member using heuristics.
-
-    .DESCRIPTION
-        LIMITATION: This function uses a simple regex heuristic, NOT actual GitHub org membership.
-        
-        Accuracy implications:
-        - False positives (external user classified as MS): Users with logins starting with
-          'microsoft-', 'msft-', 'azure-', 'dotnet-' or ending in 'bot' are assumed internal.
-          This reduces their External score (up to 15 points lost).
-        - False negatives (MS employee classified as external): Actual Microsoft employees
-          without these patterns receive undeserved External contributor points.
-        
-        For production accuracy, consider implementing GitHub API org membership check:
-          gh api /orgs/microsoft/members/{username} --silent && return $true
-        However, this requires authentication and incurs API rate limit costs.
-
-    .PARAMETER Login
-        The GitHub username to check.
-
-    .OUTPUTS
-        [bool] True if the user is likely a Microsoft member, False otherwise.
-    #>
-    param([string]$Login)
-
-    # Heuristic check: common Microsoft-associated username patterns
-    # This catches service accounts and official bots but may miss individual employees
-    if ($Login -match "^(microsoft|msft|azure|dotnet)-") {
-        return $true
-    }
-    if ($Login -match "bot$") {
-        return $true
-    }
-
-    # Default: cannot determine with certainty, assume potentially external
-    # This errs on the side of giving external contributor credit
-    return $false
 }
 
 function Get-IssueScore {
@@ -339,7 +295,6 @@ function Get-IssueScore {
         Reactions = 0
         Age = 0
         Comments = 0
-        External = 0
         Severity = 0
         Blockers = 0
         Total = 0
@@ -347,7 +302,6 @@ function Get-IssueScore {
         RawReactions = 0
         RawAge = 0
         RawComments = 0
-        IsExternal = $false
         SeverityLabel = ""
         IsBlocker = $false
     }
@@ -396,15 +350,7 @@ function Get-IssueScore {
         default { 0 }
     }
 
-    # 4. External contributor score
-    $authorLogin = if ($Issue.author) { $Issue.author.login } else { "" }
-    $isExternal = -not (Test-IsMicrosoftMember -Login $authorLogin)
-    $score.IsExternal = $isExternal
-    if ($isExternal -and $authorLogin) {
-        $score.External = [math]::Floor($weights.external * 0.67)
-    }
-
-    # 5. Severity score
+    # 4. Severity score
     $labelNames = @()
     if ($Issue.labels) {
         $labelNames = @($Issue.labels | ForEach-Object { $_.name })
@@ -430,7 +376,7 @@ function Get-IssueScore {
         }
     }
 
-    # 6. Blocker score
+    # 5. Blocker score
     $hasBlocker = @($labelNames | Where-Object { $_ -match "block|blocker|blocking" }).Count -gt 0
     $score.IsBlocker = $hasBlocker
     if ($hasBlocker) {
@@ -439,7 +385,7 @@ function Get-IssueScore {
 
     # Calculate total
     $score.Total = [int]$score.Reactions + [int]$score.Age + [int]$score.Comments +
-                   [int]$score.External + [int]$score.Severity + [int]$score.Blockers
+                   [int]$score.Severity + [int]$score.Blockers
 
     return $score
 }
@@ -494,9 +440,6 @@ function Get-HighlightLabels {
     }
     if ($Score.RawComments -ge $thresholds.trending_comments) {
         $labels += "📈 Trending"
-    }
-    if ($Score.IsExternal) {
-        $labels += "👥 External"
     }
 
     $hasFeatureProposal = $labelNames -contains "feature proposal" -or $labelNames -contains "feature-proposal"

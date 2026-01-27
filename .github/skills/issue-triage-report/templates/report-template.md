@@ -29,8 +29,7 @@
 | 🐛 Regression | Marked as regression | Direct user impact |
 | 🚧 Blocker | Blocking other work | Multiplicative impact |
 | 💬 Active | High comment activity (≥5) | Ongoing relevance |
-| 👥 External | Filed by external contributor | Community engagement |
-| 📢 Popular | Feature proposal with support | Voted feature request |
+|  Popular | Feature proposal with support | Voted feature request |
 | 0️⃣🐛🥳 | Zero open bugs | Celebrate! |
 | 🆕 | Newly created area | No historical data |
 
@@ -38,12 +37,11 @@
 
 Issues receive a score from 0-100 based on:
 
-1. **Reactions (25 pts)** - Community interest (👍, ❤️, 🚀)
-2. **Age (20 pts)** - Older untriaged issues score higher
-3. **Comments (15 pts)** - Active discussion indicates importance
-4. **External (15 pts)** - External contributors get engagement boost
-5. **Severity (15 pts)** - Regressions and crashes prioritized
-6. **Blockers (10 pts)** - Issues blocking others get prioritized
+1. **Reactions (30 pts)** - Community interest (👍, ❤️, 🚀)
+2. **Age (25 pts)** - Older untriaged issues score higher
+3. **Comments (20 pts)** - Active discussion indicates importance
+4. **Severity (15 pts)** - Regressions and crashes prioritized
+5. **Blockers (10 pts)** - Issues blocking others get prioritized
 
 ## Notes
 

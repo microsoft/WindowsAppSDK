@@ -1,9 +1,8 @@
 {
   "weights": {
-    "reactions": 25,
-    "age": 20,
-    "comments": 15,
-    "external": 15,
+    "reactions": 30,
+    "age": 25,
+    "comments": 20,
     "severity": 15,
     "blockers": 10
   },
@@ -20,7 +19,6 @@
     "hot",
     "aging",
     "trending",
-    "external",
     "popular"
   ],
   "maxLabelsPerIssue": 2,

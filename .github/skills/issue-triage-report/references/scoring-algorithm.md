@@ -65,23 +65,7 @@ Discussion activity measured by comment count.
 
 ---
 
-### 4. External Contributor (Weight: 15 points max)
-
-Issues filed by external (non-Microsoft) contributors.
-
-| Condition | Score |
-|-----------|-------|
-| Author is Microsoft org member | 0 |
-| Author is external contributor | 10 |
-| External + first contribution | 15 |
-
-**Rationale**: External issues represent community needs and should be prioritized for engagement.
-
-**Highlight Label**: `👥 External` when author is external
-
----
-
-### 5. Severity Labels (Weight: 15 points max)
+### 4. Severity Labels (Weight: 15 points max)
 
 Priority based on issue labels indicating severity or type.
 
@@ -130,14 +114,13 @@ Normalized Score = (Total Score / 100) × 100
 ### Example Calculation
 
 Issue #2894:
-- Reactions: 25 (score: 20)
-- Age: 120 days (score: 15)
-- Comments: 8 (score: 10)
-- External: Yes (score: 10)
+- Reactions: 25 (score: 24)
+- Age: 120 days (score: 18)
+- Comments: 8 (score: 13)
 - Labels: `bug` (score: 8)
 - Blocker: No (score: 0)
 
-**Total**: 20 + 15 + 10 + 10 + 8 + 0 = **63/100**
+**Total**: 24 + 18 + 13 + 8 + 0 = **63/100**
 
 ---
 
@@ -152,8 +135,7 @@ After scoring, assign labels based on the highest-scoring factors:
 | 3 | `🔥 Hot` | Reactions ≥ 10 (all-time popularity) |
 | 4 | `⏰ Aging` | Days > 90 + needs-triage |
 | 5 | `📈 Trending` | Comments ≥ 5 + recent activity (heating up NOW) |
-| 6 | `👥 External` | External author |
-| 7 | `📢 Popular` | Feature proposal + reactions ≥ 5 |
+| 6 | ` Popular` | Feature proposal + reactions ≥ 5 |
 
 **Rule**: Each issue gets **at most 2 labels** (most relevant based on score contribution).
 
@@ -173,11 +155,11 @@ When a feature area was recently created or has no historical data:
 - Display: `🆕`
 - Skip historical comparisons
 
-### External Area
+### Redirect Area (area-External)
 
-For `area-External` (issues to redirect elsewhere):
+For `area-External` label (issues to redirect to other teams):
 - Display: `N/A` for highlights
-- Note: "Current backlog contains external issues for redirection"
+- Note: "Current backlog contains issues for redirection to other teams"
 
 ---
 
@@ -188,10 +170,9 @@ These thresholds can be adjusted in `ScoringConfig.json`:
 ```json
 {
   "weights": {
-    "reactions": 25,
-    "age": 20,
-    "comments": 15,
-    "external": 15,
+    "reactions": 30,
+    "age": 25,
+    "comments": 20,
     "severity": 15,
     "blockers": 10
   },
@@ -208,7 +189,6 @@ These thresholds can be adjusted in `ScoringConfig.json`:
     "hot",
     "aging",
     "active",
-    "external",
     "popular"
   ],
   "maxLabelsPerIssue": 2
@@ -253,7 +233,7 @@ To calculate scores, fetch these fields per issue:
     {"content": "HEART", "users": {"totalCount": 5}}
   ],
   "comments": {"totalCount": 8},
-  "author": {"login": "externaluser"},
+  "author": {"login": "contributor"},
   "linkedIssues": [...]
 }
 ```

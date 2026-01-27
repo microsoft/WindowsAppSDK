@@ -173,7 +173,7 @@ function Get-HighlightedIssues {
     return $highlights
 }
 
-# Note: Get-IssueScore, Get-HighlightLabels, and Test-IsMicrosoftMember are now defined in ReportLib.ps1
+# Note: Get-IssueScore and Get-HighlightLabels are now defined in ReportLib.ps1
 # to provide a single source of truth for scoring logic across the skill.
 
 function Format-HighlightsMarkdown {
@@ -255,7 +255,7 @@ function Format-ReportMarkdown {
         if ($area.Stats.Total -eq 0 -and $area.Stats.Bugs -eq 0) {
             $row += "| 0️⃣🐛🥳 |"
         }
-        # Special case: external area
+        # Special case: redirect area (issues for other teams)
         elseif ($area.AreaLabel -eq "area-External") {
             $row += "| N/A (redirect backlog) |"
         }
