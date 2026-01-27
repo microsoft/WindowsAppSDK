@@ -26,7 +26,7 @@ STDMETHODIMP NotificationConferencingConfig::get_AudioInputDeviceId(_Out_ HSTRIN
     winrt::copy_to_abi(m_conferencingConfig.AudioInputDeviceId(), reinterpret_cast<void*&>(value));
     return S_OK;
 }
-CATCH_RETURN() 
+CATCH_RETURN()
 
 
 STDMETHODIMP NotificationConferencingConfig::get_AudioOutputDeviceId(_Out_ HSTRING* value) noexcept try
