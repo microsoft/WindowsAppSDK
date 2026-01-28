@@ -75,9 +75,6 @@
                              @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)ml_framework_$(PlatformTarget).msix >NUL</NMakeReBuildCommandLine>
   </PropertyGroup>
   <ItemGroup>
-    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x86.xml" Condition="'$(PlatformTarget)' == 'x86'">
-      <TargetFile>appxmanifest.xml</TargetFile>
-    </MakeMsixInputsWithLocations>
     <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x64.xml" Condition="'$(PlatformTarget)' == 'x64'">
       <TargetFile>appxmanifest.xml</TargetFile>
     </MakeMsixInputsWithLocations>
@@ -92,7 +89,6 @@
   </PropertyGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <ItemGroup>
-    <Xml Include="appxmanifest-x86.xml" />
     <Xml Include="appxmanifest-x64.xml" />
     <Xml Include="appxmanifest-arm64.xml" />
   </ItemGroup>

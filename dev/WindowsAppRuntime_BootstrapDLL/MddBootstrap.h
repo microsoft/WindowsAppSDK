@@ -86,6 +86,9 @@ STDAPI_(void) MddBootstrapShutdown() MDDBOOTSTRAP_NOEXCEPT;
 ///
 /// Call this before MddBootstrapInitialize() to include the Windows ML
 /// framework package in the bootstrap initialization process.
+///
+/// @note This function is a no-op on x86 builds because the ML framework
+/// package does not support the x86 architecture.
 STDAPI_(void) MddBootstrapInitializeML() MDDBOOTSTRAP_NOEXCEPT;
 
 // C++ friendly APIs

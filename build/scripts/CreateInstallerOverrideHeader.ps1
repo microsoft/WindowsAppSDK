@@ -68,10 +68,6 @@ $packageMapping = @(
         Identifier='MSIX_DDLM_ARM64_PATH'
     }
     [pscustomobject]@{
-        Package='ml_framework_x86.msix';
-        Identifier='MSIX_MLFRAMEWORK_X86_PATH'
-    }
-    [pscustomobject]@{
         Package='ml_framework_x64.msix';
         Identifier='MSIX_MLFRAMEWORK_X64_PATH'
     }

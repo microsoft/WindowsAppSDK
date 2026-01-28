@@ -333,7 +333,10 @@ STDAPI MddBootstrapTestInitialize(
 
 STDAPI_(void) MddBootstrapInitializeML() noexcept
 {
+    // ML framework package is not supported on x86 - no-op on x86 builds
+#if !defined(_M_IX86)
     g_initializeMLFramework = true;
+#endif
 }
 
 void VerifyInitializationIsCompatible(

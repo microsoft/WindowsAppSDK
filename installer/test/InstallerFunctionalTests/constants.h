@@ -48,7 +48,6 @@ namespace WindowsAppRuntimeInstallerTests
     static const std::wstring c_x64DDLMFamilyName{ L"WindowsAppRuntime.Test.InstallerDDLM-arm64_8wekyb3d8bbwe" };
     static const std::wstring c_arm64DDLMFamilyName{ L"WindowsAppRuntime.Test.InstallerDDLM-arm64_8wekyb3d8bbwe" };
 
-    static const std::wstring c_x86MLFrameworkName{ L"WindowsAppRuntime.Test.InstallerMLFramework_1.0.0.0_x86__8wekyb3d8bbwe" };
     static const std::wstring c_x64MLFrameworkName{ L"WindowsAppRuntime.Test.InstallerMLFramework_1.0.0.0_x64__8wekyb3d8bbwe" };
     static const std::wstring c_arm64MLFrameworkName{ L"WindowsAppRuntime.Test.InstallerMLFramework_1.0.0.0_arm64__8wekyb3d8bbwe" };
 
@@ -62,7 +61,6 @@ namespace WindowsAppRuntimeInstallerTests
         c_x86DDLMName,
         c_x64DDLMName,
         c_arm64DDLMName,
-        c_x86MLFrameworkName,
         c_x64MLFrameworkName,
         c_arm64MLFrameworkName,
         c_x86FrameworkName,

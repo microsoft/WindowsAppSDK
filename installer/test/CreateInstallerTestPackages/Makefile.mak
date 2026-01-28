@@ -43,7 +43,6 @@ Singleton_license=$(InstallerPackagesDir)\singleton_license.xml
 DDLM_x86=$(InstallerPackagesDir)\ddlm_x86.msix
 DDLM_x64=$(InstallerPackagesDir)\ddlm_x64.msix
 DDLM_arm64=$(InstallerPackagesDir)\ddlm_arm64.msix
-MLFramework_x86=$(InstallerPackagesDir)\ml_framework_x86.msix
 MLFramework_x64=$(InstallerPackagesDir)\ml_framework_x64.msix
 MLFramework_arm64=$(InstallerPackagesDir)\ml_framework_arm64.msix
 
@@ -75,10 +74,6 @@ $(OutMsix_x86): $(ProjectDir)appxmanifest_fw_x86.xml
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x86) /p $(OutMsix_x86)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x86)
     @copy /Y $(OutMsix_x86) $(DDLM_x86) >NUL
-    @copy /Y $(ProjectDir)appxmanifest_mlfw_x86.xml $(WorkDir_x86)\appxmanifest.xml >NUL
-    @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x86) /p $(OutMsix_x86)
-    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x86)
-    @copy /Y $(OutMsix_x86) $(MLFramework_x86) >NUL
 
 $(OutMsix_x64): $(ProjectDir)appxmanifest_fw_x64.xml
     @if not exist $(WorkDir_x64) md $(WorkDir_x64) >NUL
