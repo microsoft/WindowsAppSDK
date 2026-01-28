@@ -12,13 +12,19 @@
     </ClCompile>
   </ItemDefinitionGroup>
 
+  <!-- ARM64EC + LTCG ICE workaround: auto-enabled when conditions met, customers can override -->
+  <PropertyGroup>
+    <WindowsAppSDK_Arm64EcCompilerWorkaround Condition="'$(WindowsAppSDK_Arm64EcCompilerWorkaround)'==''
+        And '$(Platform)'=='ARM64EC'
+        And ('$(WholeProgramOptimization)'=='true' Or '$(LinkTimeCodeGeneration)'=='true')">true</WindowsAppSDK_Arm64EcCompilerWorkaround>
+  </PropertyGroup>
+
   <Target Name="WindowsAppRuntimeAutoInitializer">
     <ItemGroup>
       <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
       </ClCompile>
-      <!-- Workaround: ARM64EC + LTCG causes ICE (C1001/LNK1000). Adding a duplicate obj file changes LTCG optimization path and avoids the compiler bug. -->
-      <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp" Condition="'$(WindowsAppSDK_Arm64EcCompilerWorkaround)'=='true'">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
         <ObjectFileName>$(IntDir)WindowsAppRuntimeAutoInitializer_dup.obj</ObjectFileName>
       </ClCompile>
