@@ -79,51 +79,20 @@ function Get-AreaContacts {
     <#
     .SYNOPSIS
         Loads the area-to-contact mapping from JSON file.
+
+    .DESCRIPTION
+        Loads contacts from the specified path. If no contacts file is found,
+        returns an empty hashtable and writes a warning.
+
+        Users should create their own area-contacts.json file at:
+        <repo-root>/.user/issue-triage-report/area-contacts.json
+
+        See the template at:
+        .github/skills/issue-triage-report/references/area-contacts.json
     #>
     param(
         [string]$ContactsPath
     )
-
-    $defaultContacts = @{
-        "area-Activation" = @{ primary = "Tim Kurtzman"; secondary = $null }
-        "area-AOT" = @{ primary = "Scott Jones"; secondary = "Manodasan Wignarajah" }
-        "area-AppContainer" = @{ primary = "Alex Lam"; secondary = $null }
-        "area-AppExtension" = @{ primary = "Carl Russell"; secondary = $null }
-        "area-ApplicationData" = @{ primary = "Carl Russell"; secondary = $null }
-        "area-BackgroundTask" = @{ primary = "Godly Alias"; secondary = $null }
-        "area-Decimal" = @{ primary = "Carl Russell"; secondary = $null }
-        "area-DeveloperTools" = @{ primary = "James Pike"; secondary = $null }
-        "area-dotnet" = @{ primary = "Scott Jones"; secondary = "Manodasan Wignarajah" }
-        "area-DWriteCore" = @{ primary = "Leonardo Blanco"; secondary = $null }
-        "area-DynamicDependencies" = @{ primary = "Carl Russell"; secondary = $null }
-        "area-Elevation" = @{ primary = "Sarah Paracha"; secondary = $null }
-        "area-External" = @{ primary = "Sarah Paracha"; secondary = $null }
-        "area-File access" = @{ primary = "Gordon Lam"; secondary = "Dinah Gao, Xiang Hong" }
-        "area-Graphics" = @{ primary = "Zachary Northrup"; secondary = "Saharsh Jaiswal" }
-        "area-Infrastructure" = @{ primary = "Alex Lam"; secondary = "Felipe da Conceicao Guimaraes" }
-        "area-Installer" = @{ primary = "Sarah Paracha"; secondary = $null }
-        "area-Lifecycle" = @{ primary = "Tim Kurtzman"; secondary = $null }
-        "area-Metapackage" = @{ primary = "Scott Jones"; secondary = "Manodasan Wignarajah" }
-        "area-MRTCore" = @{ primary = "Kent Shipley"; secondary = $null }
-        "area-Notification" = @{ primary = "Vivek Khare"; secondary = $null }
-        "area-PackageManagement" = @{ primary = "Carl Russell"; secondary = $null }
-        "area-Packaging" = @{ primary = "James Pike"; secondary = $null }
-        "area-Power" = @{ primary = "Anis Mohammed Khaja Mohideen"; secondary = $null }
-        "area-Projections" = @{ primary = "Scott Jones"; secondary = "Manodasan Wignarajah" }
-        "area-Security" = @{ primary = "Steve Syfuhs"; secondary = $null }
-        "area-SelfContained" = @{ primary = "Scott Jones"; secondary = "Manodasan Wignarajah" }
-        "area-Shell UX" = @{ primary = "Sarah Paracha"; secondary = $null }
-        "area-UndockedRegFreeWinRT" = @{ primary = "Carl Russell"; secondary = $null }
-        "area-VersionInfo" = @{ primary = "Chris Wall"; secondary = $null }
-        "area-WCR" = @{ primary = "Connor Al-Joundi"; secondary = "Aditi Narvekar" }
-        "area-WebView" = @{ primary = "Sandeep Chadda"; secondary = "Hemant Kumar" }
-        "area-Widgets" = @{ primary = "Pranav Gupta"; secondary = $null }
-        "area-WinAppSDK:Templates" = @{ primary = "Lauren Ciha"; secondary = $null }
-        "area-WinAppSDKDeployment" = @{ primary = "James Pike"; secondary = $null }
-        "area-Windowing" = @{ primary = "Chris Raubecher"; secondary = $null }
-        "area-WinML" = @{ primary = "Andrew Leader"; secondary = "Aditya Rastogi, Jason Holmes, Nick Eubanks" }
-        "area-WinUI" = @{ primary = "Ajit Surana"; secondary = "Snigdha" }
-    }
 
     if ($ContactsPath -and (Test-Path $ContactsPath)) {
         try {
@@ -142,11 +111,16 @@ function Get-AreaContacts {
             }
         }
         catch {
-            Write-Warning "Failed to load contacts from $ContactsPath, using defaults: $_"
+            Write-Warning "Failed to load contacts from $ContactsPath`: $_"
         }
     }
+    else {
+        Write-Warning "Area contacts file not found at: $ContactsPath"
+        Write-Warning "Please create your contacts file at: <repo-root>/.user/issue-triage-report/area-contacts.json"
+        Write-Warning "See template at: .github/skills/issue-triage-report/references/area-contacts.json"
+    }
 
-    return $defaultContacts
+    return @{}
 }
 
 function Get-TotalReactions {

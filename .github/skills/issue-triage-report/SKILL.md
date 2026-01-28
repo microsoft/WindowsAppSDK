@@ -30,6 +30,43 @@ This skill generates comprehensive GitHub Feature Area Status reports that help 
 - GitHub CLI (`gh`) installed and authenticated
 - PowerShell 5.1+ (Windows) or PowerShell Core (cross-platform)
 - Access to the target GitHub repository (microsoft/WindowsAppSDK)
+- **Area contacts configuration** (see below)
+
+### Setting Up Area Contacts
+
+The area contacts file maps feature areas to team members. This file is **required** for contact lookups and is stored in your local `.user/` folder (not committed to the repository).
+
+1. Create the directory structure:
+   ```powershell
+   mkdir -p .user/issue-triage-report
+   ```
+
+2. Copy the template and customize:
+   ```powershell
+   cp .github/skills/issue-triage-report/references/area-contacts.json .user/issue-triage-report/area-contacts.json
+   ```
+
+3. Edit `.user/issue-triage-report/area-contacts.json` with your team's actual contacts:
+   ```json
+   {
+     "areaContacts": {
+       "area-FeatureName": {
+         "primary": "Primary Contact Name",
+         "secondary": "Secondary Contact or null",
+         "notes": "Optional notes"
+       }
+     },
+     "specialAreas": {
+       "triageOnly": ["area-TriageOnlyExample"],
+       "crossFunctional": {
+         "area-CrossTeam": "org/related-repo"
+       }
+     },
+     "lastUpdated": "YYYY-MM"
+   }
+   ```
+
+> **Note**: The `.user/` folder is gitignored, so your team contacts remain private.
 
 ## Available Scripts
 

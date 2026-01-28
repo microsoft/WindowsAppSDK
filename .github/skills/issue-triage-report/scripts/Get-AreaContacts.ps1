@@ -49,8 +49,22 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 . "$ScriptDir\ReportLib.ps1"
 
-# Load contacts
-$ContactsPath = Join-Path (Split-Path $ScriptDir -Parent) "references\area-contacts.json"
+# Load contacts - prefer .user folder, fall back to references template
+$SkillDir = Split-Path $ScriptDir -Parent
+$RepoRoot = Split-Path (Split-Path (Split-Path $SkillDir -Parent) -Parent) -Parent
+$UserContactsPath = Join-Path $RepoRoot ".user\issue-triage-report\area-contacts.json"
+$TemplateContactsPath = Join-Path $SkillDir "references\area-contacts.json"
+
+if (Test-Path $UserContactsPath) {
+    $ContactsPath = $UserContactsPath
+}
+else {
+    Write-Warning "User contacts not found at: $UserContactsPath"
+    Write-Warning "Using template file (contains example data only)."
+    Write-Warning "Create your own contacts file by copying the template to .user/issue-triage-report/area-contacts.json"
+    $ContactsPath = $TemplateContactsPath
+}
+
 $AreaContacts = Get-AreaContacts -ContactsPath $ContactsPath
 
 function Format-ContactsTable {

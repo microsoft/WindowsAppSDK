@@ -1,51 +1,16 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Area contacts configuration. Create your own copy at .user/issue-triage-report/area-contacts.json with actual team contacts.",
   "areaContacts": {
-    "area-Activation": { "primary": "Tim Kurtzman", "secondary": null },
-    "area-AOT": { "primary": "Scott Jones", "secondary": "Manodasan Wignarajah" },
-    "area-AppContainer": { "primary": "Alex Lam", "secondary": null },
-    "area-AppExtension": { "primary": "Carl Russell", "secondary": null },
-    "area-ApplicationData": { "primary": "Carl Russell", "secondary": null },
-    "area-BackgroundTask": { "primary": "Godly Alias", "secondary": null },
-    "area-Decimal": { "primary": "Carl Russell", "secondary": null },
-    "area-DeveloperTools": { "primary": "James Pike", "secondary": null },
-    "area-dotnet": { "primary": "Scott Jones", "secondary": "Manodasan Wignarajah" },
-    "area-DWriteCore": { "primary": "Leonardo Blanco", "secondary": null },
-    "area-DynamicDependencies": { "primary": "Carl Russell", "secondary": null },
-    "area-Elevation": { "primary": "Sarah Paracha", "secondary": null, "notes": "Triage driver" },
-    "area-External": { "primary": "Sarah Paracha", "secondary": null, "notes": "Triage driver - redirect" },
-    "area-File access": { "primary": "Gordon Lam", "secondary": "Dinah Gao, Xiang Hong" },
-    "area-Graphics": { "primary": "Zachary Northrup", "secondary": "Saharsh Jaiswal", "notes": "DisplayInfo, Camera Capture" },
-    "area-Infrastructure": { "primary": "Alex Lam", "secondary": "Felipe da Conceicao Guimaraes" },
-    "area-Installer": { "primary": "Sarah Paracha", "secondary": null },
-    "area-Lifecycle": { "primary": "Tim Kurtzman", "secondary": null },
-    "area-Metapackage": { "primary": "Scott Jones", "secondary": "Manodasan Wignarajah" },
-    "area-MRTCore": { "primary": "Kent Shipley", "secondary": null },
-    "area-Notification": { "primary": "Vivek Khare", "secondary": null },
-    "area-PackageManagement": { "primary": "Carl Russell", "secondary": null },
-    "area-Packaging": { "primary": "James Pike", "secondary": null },
-    "area-Power": { "primary": "Anis Mohammed Khaja Mohideen", "secondary": null },
-    "area-Projections": { "primary": "Scott Jones", "secondary": "Manodasan Wignarajah" },
-    "area-Security": { "primary": "Steve Syfuhs", "secondary": null },
-    "area-SelfContained": { "primary": "Scott Jones", "secondary": "Manodasan Wignarajah" },
-    "area-Shell UX": { "primary": "Sarah Paracha", "secondary": null, "notes": "Interim triage" },
-    "area-UndockedRegFreeWinRT": { "primary": "Carl Russell", "secondary": null },
-    "area-VersionInfo": { "primary": "Chris Wall", "secondary": null },
-    "area-WCR": { "primary": "Connor Al-Joundi", "secondary": "Aditi Narvekar" },
-    "area-WebView": { "primary": "Sandeep Chadda", "secondary": "Hemant Kumar" },
-    "area-Widgets": { "primary": "Pranav Gupta", "secondary": null },
-    "area-WinAppSDK:Templates": { "primary": "Lauren Ciha", "secondary": null },
-    "area-WinAppSDKDeployment": { "primary": "James Pike", "secondary": null },
-    "area-Windowing": { "primary": "Chris Raubecher", "secondary": null },
-    "area-WinML": { "primary": "Andrew Leader", "secondary": "Aditya Rastogi, Jason Holmes, Nick Eubanks" },
-    "area-WinUI": { "primary": "Ajit Surana", "secondary": "Snigdha" }
+    "area-ExampleFeature": { "primary": "Primary Contact Name", "secondary": null },
+    "area-AnotherFeature": { "primary": "Primary Contact", "secondary": "Secondary Contact" },
+    "area-FeatureWithNotes": { "primary": "Contact Name", "secondary": null, "notes": "Special handling notes" }
   },
   "specialAreas": {
-    "triageOnly": ["area-External", "area-Elevation", "area-Shell UX"],
+    "triageOnly": ["area-TriageOnlyExample"],
     "crossFunctional": {
-      "area-WinUI": "microsoft/microsoft-ui-xaml",
-      "area-WebView": "MicrosoftEdge/WebView2Feedback",
-      "area-Widgets": "Windows Widgets team"
+      "area-CrossTeam": "org/related-repo"
     }
   },
-  "lastUpdated": "2026-01"
+  "lastUpdated": "YYYY-MM"
 }
