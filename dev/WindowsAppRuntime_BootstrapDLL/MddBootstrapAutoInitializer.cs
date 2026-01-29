@@ -31,9 +31,6 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
         // Called by WindowsAppRuntimeAutoInitializer.cs
         internal static void AccessWindowsAppSDK()
         {
-#if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_ML
-            global::Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap.InitializeML();
-#endif
             uint majorMinorVersion = global::Microsoft.WindowsAppSDK.Release.MajorMinor;
             string versionTag = global::Microsoft.WindowsAppSDK.Release.VersionTag;
             var minVersion = new PackageVersion(global::Microsoft.WindowsAppSDK.Runtime.Version.UInt64);

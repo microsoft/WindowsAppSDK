@@ -65,9 +65,6 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
         // Called by WindowsAppRuntimeAutoInitializer.cpp
         void Initialize()
         {
-#if defined(MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_ML)
-            ::MddBootstrapInitializeML();
-#endif
             const UINT32 c_majorMinorVersion{ WINDOWSAPPSDK_RELEASE_MAJORMINOR };
             PCWSTR c_versionTag{ WINDOWSAPPSDK_RELEASE_VERSION_TAG_W };
             const PACKAGE_VERSION c_minVersion{ WINDOWSAPPSDK_RUNTIME_VERSION_UINT64 };
