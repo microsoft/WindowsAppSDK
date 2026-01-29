@@ -87,7 +87,7 @@ function Extract-MSIXFromNuget ($NugetPath)
         # Find ML Framework (x64 and arm64 only - no x86 ML package)
         if ($filename -match '^.*(x64|arm64)\\Microsoft\.WindowsAppRuntime\.ML([-.](\d+\.\d+))(-[a-z]+[0-9]*)?(\.appx|\.msix)$')
         {
-            $DestFilename = 'ml_framework_' + $Matches[1] + '.msix'
+            $DestFilename = 'ml_' + $Matches[1] + '.msix'
         }
 
         # If this item has a new destination name then do the extract and rename.

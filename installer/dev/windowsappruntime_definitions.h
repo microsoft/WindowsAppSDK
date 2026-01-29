@@ -168,7 +168,7 @@
 #define MSIX_MLFRAMEWORK_X64_RCTYPE PACKAGE
 #define MSIX_MLFRAMEWORK_X64_BEHAVIOR DeploymentBehavior::Framework
 #ifndef MSIX_MLFRAMEWORK_X64_PATH
-    #define MSIX_MLFRAMEWORK_X64_PATH "..\\test\\testpackages\\ml_framework_x64.msix"
+    #define MSIX_MLFRAMEWORK_X64_PATH "..\\test\\testpackages\\ml_x64.msix"
 #endif
 
 // arm64 ML Framework
@@ -178,7 +178,7 @@
 #define MSIX_MLFRAMEWORK_ARM64_RCTYPE PACKAGE
 #define MSIX_MLFRAMEWORK_ARM64_BEHAVIOR DeploymentBehavior::Framework
 #ifndef MSIX_MLFRAMEWORK_ARM64_PATH
-    #define MSIX_MLFRAMEWORK_ARM64_PATH "..\\test\\testpackages\\ml_framework_arm64.msix"
+    #define MSIX_MLFRAMEWORK_ARM64_PATH "..\\test\\testpackages\\ml_arm64.msix"
 #endif
 
 

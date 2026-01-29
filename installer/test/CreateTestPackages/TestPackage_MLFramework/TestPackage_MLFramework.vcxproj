@@ -54,11 +54,11 @@
     <InstallerPackagesDir>$(RepoRoot)\installer\test\testpackages\</InstallerPackagesDir>
 
     <NMakeBuildCommandLine>@IF NOT EXIST $(InstallerPackagesDir) MKDIR $(InstallerPackagesDir)
-                           @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)ml_framework_$(PlatformTarget).msix
-                           @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)ml_framework_$(PlatformTarget).msix >NUL</NMakeBuildCommandLine>
+                           @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)ml_$(PlatformTarget).msix
+                           @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)ml_$(PlatformTarget).msix >NUL</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>@IF NOT EXIST $(InstallerPackagesDir) MKDIR $(InstallerPackagesDir)
-                             @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)ml_framework_$(PlatformTarget).msix
-                             @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)ml_framework_$(PlatformTarget).msix >NUL</NMakeReBuildCommandLine>
+                             @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)ml_$(PlatformTarget).msix
+                             @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)ml_$(PlatformTarget).msix >NUL</NMakeReBuildCommandLine>
   </PropertyGroup>
   <ItemGroup>
     <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x64.xml" Condition="'$(PlatformTarget)' == 'x64'">

@@ -43,8 +43,8 @@ Singleton_license=$(InstallerPackagesDir)\singleton_license.xml
 DDLM_x86=$(InstallerPackagesDir)\ddlm_x86.msix
 DDLM_x64=$(InstallerPackagesDir)\ddlm_x64.msix
 DDLM_arm64=$(InstallerPackagesDir)\ddlm_arm64.msix
-MLFramework_x64=$(InstallerPackagesDir)\ml_framework_x64.msix
-MLFramework_arm64=$(InstallerPackagesDir)\ml_framework_arm64.msix
+MLFramework_x64=$(InstallerPackagesDir)\ml_x64.msix
+MLFramework_arm64=$(InstallerPackagesDir)\ml_arm64.msix
 
 verifypfx:
     @if not exist $(MSTestPfx) echo Missing $(MSTestPfx), please run DevCheck.cmd to set up your developer environment. && exit /b 1
