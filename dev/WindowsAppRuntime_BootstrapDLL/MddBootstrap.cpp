@@ -333,8 +333,8 @@ STDAPI MddBootstrapTestInitialize(
 
 STDAPI_(void) MddBootstrapInitializeML() noexcept
 {
-    // ML framework package is not supported on x86 - no-op on x86 builds
-#if !defined(_M_IX86)
+    // ML framework package is supported only on x64 and arm64
+#if defined(_M_X64) || defined(_M_ARM64)
     g_initializeMLFramework = true;
 #endif
 }
@@ -423,7 +423,7 @@ void FirstTimeInitialization(
         wil::unique_process_heap_string packageFullName;
         THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, &packageFullName));
 
-        // Initialize ML framework package if auto-initialize is enabled
+        // Add the ML framework package to the package graph (if necessary)
         wil::unique_process_heap_string mlPackageDependencyId;
         MDD_PACKAGEDEPENDENCY_CONTEXT mlPackageDependencyContext{};
         if (g_initializeMLFramework)
@@ -493,7 +493,7 @@ void FirstTimeInitialization(
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
         THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
 
-        // Initialize ML framework package if auto-initialize is enabled
+        // Add the ML framework package to the package graph (if necessary)
         wil::unique_process_heap_string mlPackageDependencyId;
         MDD_PACKAGEDEPENDENCY_CONTEXT mlPackageDependencyContext{};
         if (g_initializeMLFramework)
