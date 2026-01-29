@@ -4,10 +4,12 @@
         <!-- Add the appropriate definition to the ClCompile ItemDefinitionGroup to apply to all compilations -->
         <ClCompile>
             <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_Default)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_None)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak_IfDebuggerAttached)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_FailFast)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnNoMatch_ShowUI)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>            <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnNoMatch_ShowUI)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <PreprocessorDefinitions>%(PreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE=1</PreprocessorDefinitions>
         </ClCompile>
     </ItemDefinitionGroup>

@@ -21,7 +21,7 @@
 
   <Target Name="WindowsAppRuntimeAutoInitializer">
     <ItemGroup>
-      <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp">
+      <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp" Condition="'$(WindowsAppSDK_Arm64EcCompilerWorkaround)'!='true'">
         <PrecompiledHeader>NotUsing</PrecompiledHeader>
       </ClCompile>
       <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\WindowsAppRuntimeAutoInitializer.cpp" Condition="'$(WindowsAppSDK_Arm64EcCompilerWorkaround)'=='true'">

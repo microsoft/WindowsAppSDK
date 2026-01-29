@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'">
         <!-- Add the appropriate definition to the ClCompile ItemDefinitionGroup to apply to all compilations -->
         <ClCompile>
             <PreprocessorDefinitions>MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -8,7 +8,7 @@
         </ClCompile>
     </ItemDefinitionGroup>
 
-    <Target Name="GenerateUndockedRegFreeWinRTCpp">
+    <Target Name="GenerateUndockedRegFreeWinRTCpp" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'">
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\UndockedRegFreeWinRT-AutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
