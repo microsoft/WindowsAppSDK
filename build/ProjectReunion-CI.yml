@@ -16,7 +16,7 @@ resources:
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      ref: refs/heads/release/2.0-stable
 
 jobs:
 - job: PreChecks
