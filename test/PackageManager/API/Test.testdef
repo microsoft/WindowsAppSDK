@@ -90,6 +90,13 @@
             "Parameters": "/name=Test::PackageManager::Tests::PackageDeploymentManagerTests_Stage*",
             "Architectures": ["x86", "x64"],
             "Status": "Enabled"
+        },
+        {
+            "Description": "PackageManagerTests.PackageVolume* tests for feature PackageManager (arm64 not currently enabled)",
+            "Filename": "PackageManagerTests.dll",
+            "Parameters": "/name=Test::PackageManager::Tests::PackageVolumeTests*",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
         }
     ]
 }
