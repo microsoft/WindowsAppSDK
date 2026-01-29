@@ -243,7 +243,6 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
     if (initializationCount == 1)
     {
         // Last one out turn out the lights...
-
         if (g_packageDependencyContext)
         {
             MddRemovePackageDependency(g_packageDependencyContext);

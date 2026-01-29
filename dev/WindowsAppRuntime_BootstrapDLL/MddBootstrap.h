@@ -82,7 +82,6 @@ STDAPI MddBootstrapInitialize2(
 ///          the Dynamic Dependencies API should not be used after this call.
 STDAPI_(void) MddBootstrapShutdown() MDDBOOTSTRAP_NOEXCEPT;
 
-
 // C++ friendly APIs
 #if defined(__cplusplus)
 #if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
