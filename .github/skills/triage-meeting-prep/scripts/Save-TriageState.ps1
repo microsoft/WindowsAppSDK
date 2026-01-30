@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 <#
 .SYNOPSIS
     Save the current triage state for future diff comparisons.
@@ -33,6 +36,9 @@ param(
     [Parameter()]
     [string]$TriageDate = (Get-Date -Format "yyyy-MM-dd")
 )
+
+Set-StrictMode -Version 2.0
+$ErrorActionPreference = 'Stop'
 
 begin {
     $inputData = @()
@@ -70,18 +76,23 @@ end {
 
     foreach ($issue in $issues) {
         $issueNumber = $issue.number.ToString()
+        
+        # Safely handle potentially null nested properties under strict mode
+        $authorLogin = if ($null -ne $issue.author) { $issue.author.login } else { $null }
+        $milestoneTitle = if ($null -ne $issue.milestone) { $issue.milestone.title } else { $null }
+        
         $state.issues[$issueNumber] = @{
             number = $issue.number
             title = $issue.title
             state = $issue.state
-            author = $issue.author.login
+            author = $authorLogin
             createdAt = $issue.createdAt
             updatedAt = $issue.updatedAt
             closedAt = $issue.closedAt
             commentCount = $issue.comments.Count
-            reactionCount = ($issue.reactions.PSObject.Properties | Where-Object { $_.Name -ne 'url' } | ForEach-Object { $_.Value } | Measure-Object -Sum).Sum
+            reactionCount = ($issue.reactions.PSObject.Properties | Where-Object { $_.Name -ne 'url' } | ForEach-Object { $_.Value } | Measure-Object -Sum).Sum -as [int]
             labels = @($issue.labels | ForEach-Object { $_.name })
-            milestone = $issue.milestone.title
+            milestone = $milestoneTitle
         }
     }
 
@@ -107,4 +118,6 @@ end {
     }
     $state | ConvertTo-Json -Depth 10 | Set-Content -Path $backupPath -Encoding UTF8
     Write-Host "Saved backup to: $backupPath" -ForegroundColor Green
+    
+    exit 0
 }

@@ -1,6 +1,7 @@
 ---
 name: triage-meeting-prep
 description: Prepare weekly triage meeting summary for WinAppSDK Needs-Triage issues. Use when preparing for triage meetings, reviewing Needs-Triage issues, generating diff reports since last triage, summarizing new or updated issues, or creating action item recommendations. Triggers on requests involving triage preparation, Needs-Triage review, meeting summary, triage diff, or weekly issue analysis.
+license: Complete terms in LICENSE.txt
 ---
 
 # Triage Meeting Preparation

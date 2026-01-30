@@ -84,7 +84,7 @@ For each issue in Query 1 results:
 - Comment count and last comment date
 - Linked PRs
 
-### Step 2.2: Load Previous Triage State
+### Step 2.3: Load Previous Triage State
 
 Check for previous state file:
 ```
@@ -412,11 +412,11 @@ Create `summary.md` using [template-summary.md](../templates/template-summary.md
 4. **Closed issues with suggested replies** — Including confidence level and reasoning
 5. Consolidated action items (copy-paste ready)
 
-### Step 5.2: Generate Action Items File
+### Step 6.2: Generate Action Items File
 
 Create `action-items.md` with all consolidated actions for easy reference.
 
-### Step 5.3: Save Current State for Next Diff
+### Step 6.3: Save Current State for Next Diff
 
 Create `previous-state.json` with current snapshot:
 ```
@@ -430,16 +430,16 @@ Generated Files/triageMeeting/<YYYY-MM-DD>/state-snapshot.json
 
 ---
 
-## Phase 6: Presentation
+## Phase 7: Presentation
 
-### Step 6.1: Display Summary to User
+### Step 7.1: Display Summary to User
 
 Show the key sections of `summary.md`:
 - Quick stats table
 - High-priority items
 - Action items requiring discussion
 
-### Step 6.2: Offer Follow-up Actions
+### Step 7.2: Offer Follow-up Actions
 
 Prompt the user with available next steps:
 1. "View detailed analysis for issue #X"

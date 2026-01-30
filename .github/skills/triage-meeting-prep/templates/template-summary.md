@@ -11,7 +11,7 @@
 | Metric | Count | Description |
 |--------|-------|-------------|
 | 🔥 **Hot Issues** | {{hot_count}} | ≥5 combined comments + reactions increase |
-| �️ **Needing Area Label** | {{no_area_count}} | Open + Needs-Triage + no area label |
+| 🏷️ **Needing Area Label** | {{no_area_count}} | Open + Needs-Triage + no area label |
 | ↳ 🆕 Created This Week | {{new_this_week_count}} | New issues (created since last weekly triage) |
 | ↳ ⏳ Older | {{older_pending_count}} | Older issues still pending |
 | ✅ **Resolved** | {{resolved_count}} | Issues that got area labels or properly closed |

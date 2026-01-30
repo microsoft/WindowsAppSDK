@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 <#
 .SYNOPSIS
     Compare current issues against previous triage state to identify changes.
@@ -38,6 +41,9 @@ param(
     [ValidateSet('json', 'summary')]
     [string]$OutputFormat = 'json'
 )
+
+Set-StrictMode -Version 2.0
+$ErrorActionPreference = 'Stop'
 
 begin {
     $inputData = @()
@@ -138,7 +144,7 @@ end {
                     $changes += "Comments: $($prev.commentCount) → $currentCommentCount (+$($currentCommentCount - $prev.commentCount))"
                 }
 
-                $currentReactionCount = ($issue.reactions.PSObject.Properties | Where-Object { $_.Name -ne 'url' } | ForEach-Object { $_.Value } | Measure-Object -Sum).Sum
+                $currentReactionCount = (($issue.reactions.PSObject.Properties | Where-Object { $_.Name -ne 'url' } | ForEach-Object { $_.Value } | Measure-Object -Sum).Sum -as [int])
                 if ($currentReactionCount -gt $prev.reactionCount) {
                     $changes += "Reactions: $($prev.reactionCount) → $currentReactionCount (+$($currentReactionCount - $prev.reactionCount))"
                 }
@@ -153,11 +159,16 @@ end {
         }
 
         # Add to result
+        $authorLogin = $null
+        if ($null -ne $issue.author -and $issue.author.PSObject.Properties['login']) {
+            $authorLogin = $issue.author.login
+        }
+        
         $issueEntry = @{
             number = $issue.number
             title = $issue.title
             state = $issue.state
-            author = $issue.author.login
+            author = $authorLogin
             url = $issue.url
             createdAt = $issue.createdAt
             updatedAt = $issue.updatedAt
@@ -216,4 +227,6 @@ end {
     else {
         $result | ConvertTo-Json -Depth 10
     }
+    
+    exit 0
 }
