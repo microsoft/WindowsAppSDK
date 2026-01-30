@@ -45,7 +45,7 @@
       </uap:VisualElements>
       <Extensions>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="microsoft.winappruntime.ddlm-4.1-x8"
+          <uap3:AppExtension Name="microsoft.winappruntime.ddlm-4-x8"
                              Id="ddlm-GC-1.0.0.0-x86"
                              PublicFolder="public\ddlm"
                              DisplayName="Windows App Runtime DynamicDependency LifetimeManager Extension (4.1.* x86)">
