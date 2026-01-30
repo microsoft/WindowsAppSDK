@@ -1,0 +1,29 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+<Window
+    x:Class="StoragePickersTestApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:StoragePickersTestApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Storage Pickers Test">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+        <TextBlock Text="Storage Pickers Test App" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+        <TextBlock Text="This app tests Microsoft.Windows.Storage.Pickers APIs" HorizontalAlignment="Center"/>
+        
+        <StackPanel Spacing="10">
+            <Button Content="Test File Open Picker" Click="TestFileOpenPicker_Click" HorizontalAlignment="Stretch"/>
+            <Button Content="Test File Save Picker" Click="TestFileSavePicker_Click" HorizontalAlignment="Stretch"/>
+            <Button Content="Test Folder Picker" Click="TestFolderPicker_Click" HorizontalAlignment="Stretch"/>
+        </StackPanel>
+        
+        <TextBlock Text="Results:" FontWeight="SemiBold" Margin="0,20,0,0"/>
+        <ScrollViewer MaxHeight="200" BorderThickness="1" BorderBrush="Gray" Padding="8">
+            <TextBlock x:Name="ResultsText" TextWrapping="Wrap" Text="Click a button to test the pickers..."/>
+        </ScrollViewer>
+    </StackPanel>
+
+</Window>
