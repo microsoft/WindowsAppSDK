@@ -690,6 +690,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Decimal", "Decimal", "{5012149E-F09F-4F18-A03C-FFE597203821}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.Foundation.Projection", "dev\Projections\CS\Microsoft.Windows.Foundation\Microsoft.Windows.Foundation.Projection.csproj", "{8EBA8758-19D5-AE31-FD9C-86BBA3BFF6CA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CPP", "CPP", "{7C0F3E70-BDB3-40B2-84E1-B1B77A80CB53}"
 EndProject

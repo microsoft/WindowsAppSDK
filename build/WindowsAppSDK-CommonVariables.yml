@@ -37,3 +37,5 @@ variables:
   Codeql.Enabled: true #  CodeQL runs every 3 days on the default branch for all languages its applicable to in that pipeline.
   
   enableTestPass: true
+
+  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe;-:f|**\WindowsAppSDK.Test.NetCore\net**

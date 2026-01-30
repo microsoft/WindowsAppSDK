@@ -26,7 +26,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     FileSavePicker::FileSavePicker(winrt::Microsoft::UI::WindowId const& windowId)
         : m_windowId(windowId)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers::IsEnabled());
     }
     winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId FileSavePicker::SuggestedStartLocation()
     {
@@ -46,14 +45,49 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::ValidateStringNoEmbeddedNulls(value);
         m_commitButtonText = value;
     }
+    winrt::hstring FileSavePicker::Title()
+    {
+        return m_title;
+    }
+    void FileSavePicker::Title(winrt::hstring const& value)
+    {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
+        m_title = value;
+    }
+    winrt::hstring FileSavePicker::SettingsIdentifier()
+    {
+        return m_settingsIdentifier;
+    }
+    void FileSavePicker::SettingsIdentifier(winrt::hstring const& value)
+    {
+        PickerCommon::ValidateStringNoEmbeddedNulls(value);
+        m_settingsIdentifier = value;
+    }
     winrt::Windows::Foundation::Collections::IMap<hstring, winrt::Windows::Foundation::Collections::IVector<hstring>> FileSavePicker::FileTypeChoices()
     {
         return m_fileTypeChoices;
+    }
+    int FileSavePicker::InitialFileTypeIndex()
+    {
+        return m_initialFileTypeIndex;
+    }
+    void FileSavePicker::InitialFileTypeIndex(int value)
+    {
+        PickerCommon::ValidateInitialFileTypeIndex(value);
+        m_initialFileTypeIndex = value;
     }
     hstring FileSavePicker::DefaultFileExtension()
     {
         return m_defaultFileExtension;
     }
+    bool FileSavePicker::ShowOverwritePrompt()
+    {
+        return m_showOverwritePrompt;
+	}
+	void FileSavePicker::ShowOverwritePrompt(bool value)
+    {
+		m_showOverwritePrompt = value;
+	}
     void FileSavePicker::DefaultFileExtension(hstring const& value)
     {
         m_defaultFileExtension = value;
@@ -70,12 +104,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
     hstring FileSavePicker::SuggestedStartFolder()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         return m_suggestedStartFolder;
     }
     void FileSavePicker::SuggestedStartFolder(hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::Pickers::Feature_StoragePickers2::IsEnabled());
         PickerCommon::ValidateFolderPath(value, "SuggestedStartFolder");
         m_suggestedStartFolder = value;
     }
@@ -95,18 +127,24 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
     {
         parameters.HWnd = winrt::Microsoft::UI::GetWindowFromWindowId(m_windowId);
         parameters.CommitButtonText = m_commitButtonText;
+        parameters.Title = m_title;
+        parameters.SettingsIdentifier = m_settingsIdentifier;
         parameters.SuggestedFileName = m_suggestedFileName;
         parameters.SuggestedFolder = m_suggestedFolder;
         parameters.SuggestedStartLocation = m_suggestedStartLocation;
         parameters.SuggestedStartFolder = m_suggestedStartFolder;
+
+        // Note: the InitialFileTypeIndex will be decided while capturing the filter spec data.
         parameters.CaptureFilterSpecData(
             winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring>{},
-            m_fileTypeChoices.GetView());
+            m_fileTypeChoices.GetView(),
+            m_initialFileTypeIndex);
+        parameters.ShowOverwritePrompt = m_showOverwritePrompt;
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult> FileSavePicker::PickSaveFileAsync()
     {
-        // TODO: remove get strong reference when telementry is safe stop
+        // Keep a strong ref so m_telemetryHelper (a member of the picker) stays valid after co_awaits.
         auto lifetime{ get_strong() };
 
         auto logTelemetry{ StoragePickersTelemetry::FileSavePickerPickSingleFile::Start(m_telemetryHelper) };
@@ -150,13 +188,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_STRICTFILETYPES));
 
+        if (FAILED(dialog->Show(parameters.HWnd)))
         {
-            auto hr = dialog->Show(parameters.HWnd);
-            if (FAILED(hr))
-            {
-                logTelemetry.Stop(m_telemetryHelper, false);
-                co_return nullptr;
-            }
+            logTelemetry.Stop(m_telemetryHelper, false);
+            co_return nullptr;
         }
 
         winrt::com_ptr<IShellItem> shellItem{};
@@ -170,10 +205,6 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         wil::unique_cotaskmem_string fileName;
         check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
-
-        // Create an empty file if the file doesn't exist,
-        // If the file already exists, do nothing.
-        auto [handle, _] = wil::try_open_or_create_file(pathStr.c_str(), GENERIC_WRITE);
 
         if (cancellationToken())
         {
