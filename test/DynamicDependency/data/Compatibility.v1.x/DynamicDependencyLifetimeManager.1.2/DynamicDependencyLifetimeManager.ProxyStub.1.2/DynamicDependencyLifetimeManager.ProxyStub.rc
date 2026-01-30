@@ -1,0 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <winresrc.h>
+#define VERSIONINFO_FILENAME "DynamicDependencyLifetimeManager.ProxyStub.1.2.dll"
+#include "build\VersionInfo\AssemblyInfo.ver"

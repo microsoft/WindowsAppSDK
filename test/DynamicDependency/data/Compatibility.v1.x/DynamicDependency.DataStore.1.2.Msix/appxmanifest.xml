@@ -10,19 +10,19 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="WindowsAppRuntime.Test.DynDep.DataStore.4"
+    Name="WindowsAppRuntime.Test.DynDep.DataStore.1.2"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="4.1.1967.333" />
+    Version="1.2.3.4" />
 
   <Properties>
-    <DisplayName>WindowsAppRuntime.Test.DynDep.DataStore v4.* (aka MicrosoftCorporationII.WinAppRuntime.Main) fake for tests</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.DynDep.DataStore v1.2 (aka MicrosoftCorporationII.WinAppRuntime.Main) fake for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="Microsoft.WindowsAppRuntime.4" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.1.2" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -31,10 +31,10 @@
 
   <Applications>
     <Application Id="App"
-      Executable="DynamicDependency.DataStore.exe"
+      Executable="DynamicDependency.DataStore.1.2.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="WindowsAppRuntime.Test.DynDep.DataStore.4"
+        DisplayName="WindowsAppRuntime.Test.DynDep.DataStore.1.2"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="Windows App SDK Test DynamicDependency DataStore"
@@ -45,15 +45,15 @@
       <Extensions>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="DynamicDependency.DataStore.exe" DisplayName="Windows App SDK Test DynamicDependency DataStore">
-              <com:Class Id="D1AD16C7-EC59-4765-BF95-9A243EB00507" DisplayName="Windows App SDK Test DynamicDependency DataStore"/>
+            <com:ExeServer Executable="DynamicDependency.DataStore.1.2.exe" DisplayName="Windows App SDK Test DynamicDependency DataStore 1.2">
+              <com:Class Id="89EC5F0D-882E-4363-B057-752E8D57E67C" DisplayName="Windows App SDK Test DynamicDependency DataStore 1.2"/>
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <com:Extension Category="windows.comInterface">
           <com:ComInterface>
-            <com:ProxyStub Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" DisplayName="DynamicDependency.DataStore ProxyStub" Path="DynamicDependency.DataStore.ProxyStub.dll"/>
-            <com:Interface Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" ProxyStubClsid="DDEB4D6A-E146-476d-B729-0BFB1A29A86E"/> <!-- IID_IDynamicDependencyDataStore -->
+            <com:ProxyStub Id="BC33F8EF-C50C-4b6e-BD9E-F6ACA9D33329" DisplayName="DynamicDependency.DataStore ProxyStub" Path="DynamicDependency.DataStore.ProxyStub.1.2.dll"/>
+            <com:Interface Id="BC33F8EF-C50C-4b6e-BD9E-F6ACA9D33329" ProxyStubClsid="BC33F8EF-C50C-4b6e-BD9E-F6ACA9D33329"/> <!-- IID_IDynamicDependencyDataStore -->
           </com:ComInterface>
         </com:Extension>
       </Extensions>

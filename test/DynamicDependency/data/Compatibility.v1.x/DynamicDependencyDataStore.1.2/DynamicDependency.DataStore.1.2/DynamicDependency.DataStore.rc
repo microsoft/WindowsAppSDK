@@ -1,0 +1,7 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <winresrc.h>
+#define VERSIONINFO_FILENAME "DynamicDependency.DataStore.1.2.exe"
+#define VERSIONINFO_FILETYPE VFT_APP
+#include "build\VersionInfo\AssemblyInfo.ver"

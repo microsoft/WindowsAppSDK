@@ -16,11 +16,14 @@ namespace Test::Bootstrap
 {
     enum class Packages
     {
-        None = 0,
-        Framework = 0x0001,
-        Main = 0x0002,
-        DDLM = 0x0004,
-        Singleton = 0x0008,
+        None         = 0,
+        Framework    = 0x0001,
+        Main         = 0x0002,
+        DDLM         = 0x0004,
+        Singleton    = 0x0008,
+        Framework_1X = 0x0010,
+        Main_1X      = 0x0020,
+        DDLM_1X      = 0x0040,
 
         Default = Framework | Main | DDLM | Singleton,
     };
@@ -59,8 +62,32 @@ namespace Test::Bootstrap
         {
             TP::RemovePackage_WindowsAppRuntimeFramework();
         }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::DDLM_1X))
+        {
+            TP::RemovePackage_DynamicDependencyLifetimeManager1X();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Main_1X))
+        {
+            TP::RemovePackage_DynamicDependencyDataStore1X();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework_1X))
+        {
+            TP::RemovePackage_WindowsAppRuntimeFramework1X();
+        }
 
         // Install our needed packages
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework_1X))
+        {
+            TP::AddPackage_WindowsAppRuntimeFramework1X();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Main_1X))
+        {
+            TP::AddPackage_DynamicDependencyDataStore1X();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::DDLM_1X))
+        {
+            TP::AddPackage_DynamicDependencyLifetimeManager1X();
+        }
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework))
         {
             TP::AddPackage_WindowsAppRuntimeFramework();
@@ -97,6 +124,18 @@ namespace Test::Bootstrap
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework))
         {
             TP::RemovePackage_WindowsAppRuntimeFramework();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::DDLM_1X))
+        {
+            TP::RemovePackage_DynamicDependencyLifetimeManager1X();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Main_1X))
+        {
+            TP::RemovePackage_DynamicDependencyDataStore1X();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework_1X))
+        {
+            TP::RemovePackage_WindowsAppRuntimeFramework1X();
         }
     }
 

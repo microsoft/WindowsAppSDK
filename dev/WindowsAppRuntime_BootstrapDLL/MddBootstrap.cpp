@@ -169,10 +169,20 @@ STDAPI MddBootstrapInitialize2(
         if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_FailFast) ||
             IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_FAILFAST"))
         {
-            FAIL_FAST_HR_MSG(hr,
-                             "Bootstrap initialize(0x%08X, '%ls', %hu.%hu.%hu.%hu)",
-                             majorMinorVersion, (!versionTag ? L"" : versionTag),
-                             minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+            if (majorMinorVersion >= 0x00020000)
+            {
+                FAIL_FAST_HR_MSG(hr,
+                                 "Bootstrap initialize(0x%04Xxxxx, '%ls', %hu.%hu.%hu.%hu)",
+                                 ((majorMinorVersion >> 16) & 0x0000FFFFu), (!versionTag ? L"" : versionTag),
+                                 minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+            }
+            else
+            {
+                FAIL_FAST_HR_MSG(hr,
+                                 "Bootstrap initialize(0x%08X, '%ls', %hu.%hu.%hu.%hu)",
+                                 majorMinorVersion, (!versionTag ? L"" : versionTag),
+                                 minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+            }
         }
         activityContext.StopActivityForWilReturnHR(true);
         RETURN_HR(hr);
@@ -332,30 +342,60 @@ void VerifyInitializationIsCompatible(
     GetFrameworkPackageFamilyName(majorMinorVersion, versionTag);
 
     // Is the initialization request compatible with the current initialization state?
-    THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
-                    majorMinorVersion != g_initializationMajorMinorVersion,
-                    "MddBootstrapInitialize(***0x%08X***, '%ls', %hu.%hu.%hu.%hu) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
-                    majorMinorVersion, (!versionTag ? L"" : versionTag),
-                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
-                    g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
-                    g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
-                    g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
-    THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
-                    CompareStringOrdinal((!versionTag ? L"" : versionTag), -1, g_initializationVersionTag.c_str(), -1, TRUE) != CSTR_EQUAL,
-                    "MddBootstrapInitialize(0x%08X, ***'%ls'***, %hu.%hu.%hu.%hu) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
-                    majorMinorVersion, (!versionTag ? L"" : versionTag),
-                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
-                    g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
-                    g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
-                    g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
-    THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
-                    minVersion.Version > g_initializationFrameworkPackageVersion.Version,
-                    "MddBootstrapInitialize(0x%08X, '%ls', ***%hu.%hu.%hu.%hu***) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
-                    majorMinorVersion, (!versionTag ? L"" : versionTag),
-                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
-                    g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
-                    g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
-                    g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+    if (majorMinorVersion >= 0x00020000)
+    {
+        THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                        majorMinorVersion != g_initializationMajorMinorVersion,
+                        "MddBootstrapInitialize(***0x%04Xxxxx***, '%ls', %hu.%hu.%hu.%hu) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                        ((majorMinorVersion >> 16) & 0x0000FFFFu), (!versionTag ? L"" : versionTag),
+                        minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                        g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                        g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                        g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+        THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                        CompareStringOrdinal((!versionTag ? L"" : versionTag), -1, g_initializationVersionTag.c_str(), -1, TRUE) != CSTR_EQUAL,
+                        "MddBootstrapInitialize(0x%04Xxxxx, ***'%ls'***, %hu.%hu.%hu.%hu) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                        ((majorMinorVersion >> 16) & 0x0000FFFFu), (!versionTag ? L"" : versionTag),
+                        minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                        g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                        g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                        g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+        THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                        minVersion.Version > g_initializationFrameworkPackageVersion.Version,
+                        "MddBootstrapInitialize(0x%04Xxxxx, '%ls', ***%hu.%hu.%hu.%hu***) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                        ((majorMinorVersion >> 16) & 0x0000FFFFu), (!versionTag ? L"" : versionTag),
+                        minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                        g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                        g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                        g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+    }
+    else
+    {
+        THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                        majorMinorVersion != g_initializationMajorMinorVersion,
+                        "MddBootstrapInitialize(***0x%08X***, '%ls', %hu.%hu.%hu.%hu) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                        majorMinorVersion, (!versionTag ? L"" : versionTag),
+                        minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                        g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                        g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                        g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+        THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                        CompareStringOrdinal((!versionTag ? L"" : versionTag), -1, g_initializationVersionTag.c_str(), -1, TRUE) != CSTR_EQUAL,
+                        "MddBootstrapInitialize(0x%08X, ***'%ls'***, %hu.%hu.%hu.%hu) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                        majorMinorVersion, (!versionTag ? L"" : versionTag),
+                        minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                        g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                        g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                        g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+        THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                        minVersion.Version > g_initializationFrameworkPackageVersion.Version,
+                        "MddBootstrapInitialize(0x%08X, '%ls', ***%hu.%hu.%hu.%hu***) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                        majorMinorVersion, (!versionTag ? L"" : versionTag),
+                        minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                        g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                        g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                        g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+    }
 }
 
 void FirstTimeInitialization(
@@ -463,16 +503,31 @@ void FirstTimeInitialization(
             uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
             PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
 
-            const std::wstring frameworkPackageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
-                                                                       g_test_frameworkPackageNamePrefix,
-                                                                       majorVersion, minorVersion,
-                                                                       packagVersionTagDelimiter, packageVersionTag) };
+            std::wstring frameworkPackageFamilyName;
+            std::wstring mainPackageFamilyName;
+            if (majorMinorVersion >= 0x00020000)
+            {
+                frameworkPackageFamilyName = std::format(L"{}.{}{}{}_8wekyb3d8bbwe",
+                                                         g_test_frameworkPackageNamePrefix,
+                                                         majorVersion,
+                                                         packagVersionTagDelimiter, packageVersionTag);
+                mainPackageFamilyName = std::format(L"{}.{}{}{}_8wekyb3d8bbwe",
+                                                    g_test_mainPackageNamePrefix,
+                                                    majorVersion,
+                                                    packagVersionTagDelimiter, packageVersionTag);
+            }
+            else
+            {
+                frameworkPackageFamilyName = std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
+                                                         g_test_frameworkPackageNamePrefix,
+                                                         majorVersion, minorVersion,
+                                                         packagVersionTagDelimiter, packageVersionTag);
+                mainPackageFamilyName = std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
+                                                    g_test_mainPackageNamePrefix,
+                                                    majorVersion, minorVersion,
+                                                    packagVersionTagDelimiter, packageVersionTag);
+            }
             FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, frameworkPackageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", frameworkPackageFamilyName.c_str());
-
-            const std::wstring mainPackageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
-                                                                  g_test_mainPackageNamePrefix,
-                                                                  majorVersion, minorVersion,
-                                                                  packagVersionTagDelimiter, packageVersionTag) };
             FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, mainPackageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", mainPackageFamilyName.c_str());
 
             ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName.c_str(), mainPackageFamilyName.c_str());
@@ -508,12 +563,24 @@ std::wstring GetFrameworkPackageFamilyName(
     PCWSTR packageVersionTag{ !versionTag ? L"" : versionTag };
     PCWSTR packageVersionTagDelimiter{ (packageVersionTag[0] == L'\0') ? L"" : L"-"};
 
-    const std::wstring packageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
-                                                      namePrefix, majorVersion, minorVersion,
-                                                      packageVersionTagDelimiter, packageVersionTag) };
-    THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
+    if (majorMinorVersion >= 0x00020000)
+    {
+        const std::wstring packageFamilyName{ std::format(L"{}.{}{}{}_8wekyb3d8bbwe",
+                                                          namePrefix, majorVersion,
+                                                          packageVersionTagDelimiter, packageVersionTag) };
+        THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
 
-    return packageFamilyName;
+        return packageFamilyName;
+    }
+    else
+    {
+        const std::wstring packageFamilyName{ std::format(L"{}.{}.{}{}{}_8wekyb3d8bbwe",
+                                                          namePrefix, majorVersion, minorVersion,
+                                                          packageVersionTagDelimiter, packageVersionTag) };
+        THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
+
+        return packageFamilyName;
+    }
 }
 
 /// Determine the path for the Windows App Runtime Framework package
@@ -769,19 +836,36 @@ CLSID FindDDLMViaAppExtension(
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
     const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
-    if (!versionShortTag.empty())
+    if (majorMinorVersion >= 0x00020000)
     {
-        appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}.{}-{}-{}",
-            majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString(), versionShortTag);
-        THROW_HR_IF_MSG(E_INVALIDARG, appExtensionName.length() > PACKAGE_NAME_MAX_LENGTH, "%ls", appExtensionName.c_str());
+        if (!versionShortTag.empty())
+        {
+            appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}-{}-{}",
+                majorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString(), versionShortTag);
+            THROW_HR_IF_MSG(E_INVALIDARG, appExtensionName.length() > PACKAGE_NAME_MAX_LENGTH, "%ls", appExtensionName.c_str());
+        }
+        else
+        {
+            appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}-{}",
+                majorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString());
+            THROW_HR_IF_MSG(E_INVALIDARG, appExtensionName.length() > PACKAGE_NAME_MAX_LENGTH, "%ls", appExtensionName.c_str());
+        }
     }
     else
     {
-        appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}.{}-{}",
-            majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString());
-        THROW_HR_IF_MSG(E_INVALIDARG, appExtensionName.length() > PACKAGE_NAME_MAX_LENGTH, "%ls", appExtensionName.c_str());
+        if (!versionShortTag.empty())
+        {
+            appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}.{}-{}-{}",
+                majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString(), versionShortTag);
+            THROW_HR_IF_MSG(E_INVALIDARG, appExtensionName.length() > PACKAGE_NAME_MAX_LENGTH, "%ls", appExtensionName.c_str());
+        }
+        else
+        {
+            appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}.{}-{}",
+                majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString());
+            THROW_HR_IF_MSG(E_INVALIDARG, appExtensionName.length() > PACKAGE_NAME_MAX_LENGTH, "%ls", appExtensionName.c_str());
+        }
     }
-
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
     auto appExtensions{ catalog.FindAllAsync().get() };
     for (auto appExtension : appExtensions)
@@ -978,9 +1062,9 @@ void FindDDLMViaEnumeration(
             (void)LOG_LAST_ERROR_MSG("Enumeration: FindFirst(%ls) found %ls", fileSpec.c_str(), findFileData.cFileName);
             continue;
         }
-        if ((releaseMajorVersion != majorVersion) || (releaseMinorVersion != minorVersion))
+        if ((releaseMajorVersion != majorVersion) || ((majorVersion < 0x0002) && (releaseMinorVersion != minorVersion)))
         {
-            // The package's major or minor release version doesn't match the expected value. Skip it
+            // The package's major or (if 1.x) minor release version doesn't match the expected value. Skip it
             continue;
         }
 
@@ -1045,10 +1129,20 @@ void FindDDLMViaEnumeration(
         }
     }
 
-    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, bestFitVersion.Version == 0,
-                    "Major.Minor=%hu.%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
-                    majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
-                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    if (majorVersion >= 0x0002)
+    {
+        THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, bestFitVersion.Version == 0,
+                        "Major=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                        majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
+                        minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    }
+    else
+    {
+        THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, bestFitVersion.Version == 0,
+                        "Major.Minor=%hu.%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                        majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
+                        minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    }
 
     // Success!
     TraceLoggingWrite(
@@ -1124,7 +1218,9 @@ HRESULT MddBootstrapInitialize_Log(
     const DWORD c_eventId{ static_cast<DWORD>(hrInitialize) };
     PCWSTR message1{ L"Windows App Runtime" };
     WCHAR message2[1024]{};
-    PCWSTR message2Format{ L"ERROR 0x%08X: Bootstrapper initialization failed while looking for version %hu.%hu%s (MSIX package version >= %hu.%hu.%hu.%hu)" };
+    PCWSTR message2Format{ majorMinorVersion >= 0x00020000 ?
+                                L"ERROR 0x%08X: Bootstrapper initialization failed while looking for version %hu.x%s (MSIX package version >= %hu.%hu.%hu.%hu)" :
+                                L"ERROR 0x%08X: Bootstrapper initialization failed while looking for version %hu.%hu%s (MSIX package version >= %hu.%hu.%hu.%hu)" };
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
     WCHAR formattedVersionTag[64]{};
@@ -1138,9 +1234,18 @@ HRESULT MddBootstrapInitialize_Log(
         }
         FAIL_FAST_IF_FAILED(StringCchPrintfW(formattedVersionTag, ARRAYSIZE(formattedVersionTag), L"-%s", versionTag));
     }
-    FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,
-                                         hrInitialize, majorVersion, minorVersion, formattedVersionTag,
-                                         minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+    if (majorMinorVersion >= 0x00020000)
+    {
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,
+                                             hrInitialize, majorVersion, formattedVersionTag,
+                                             minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+    }
+    else
+    {
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,
+                                             hrInitialize, majorVersion, minorVersion, formattedVersionTag,
+                                             minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+    }
     PCWSTR strings[2]{ message1, message2 };
     LOG_IF_WIN32_BOOL_FALSE(ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, 0, c_eventId, nullptr, ARRAYSIZE(strings), 0, strings, nullptr));
 
@@ -1193,12 +1298,19 @@ HRESULT MddBootstrapInitialize_ShowUI_OnNoMatch(
 
     // Get the message body
     WCHAR text[1024]{};
-    PCWSTR textFormat{ L"Required components of the Windows App Runtime are missing\n"
-                       L"    Version %hu.%hu%s\n"
-                       L"    (MSIX package version >= %hu.%hu.%hu.%hu)\n"
-                       L"\n"
-                       L"Do you want to install a compatible Windows App Runtime now?"
-                     };
+    PCWSTR textFormat_2x{ L"Required components of the Windows App Runtime are missing\n"
+                          L"    Version %hu.x%s\n"
+                          L"    (MSIX package version >= %hu.%hu.%hu.%hu)\n"
+                          L"\n"
+                          L"Do you want to install a compatible Windows App Runtime now?"
+                        };
+    PCWSTR textFormat_1x{ L"Required components of the Windows App Runtime are missing\n"
+                          L"    Version %hu.%hu%s\n"
+                          L"    (MSIX package version >= %hu.%hu.%hu.%hu)\n"
+                          L"\n"
+                          L"Do you want to install a compatible Windows App Runtime now?"
+                        };
+    PCWSTR textFormat{ majorMinorVersion >= 0x00020000 ? textFormat_2x : textFormat_1x };
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
     WCHAR formattedVersionTag[64]{};
@@ -1206,9 +1318,18 @@ HRESULT MddBootstrapInitialize_ShowUI_OnNoMatch(
     {
         FAIL_FAST_IF_FAILED(StringCchPrintfW(formattedVersionTag, ARRAYSIZE(formattedVersionTag), L"-%s", versionTag));
     }
-    FAIL_FAST_IF_FAILED(StringCchPrintfW(text, ARRAYSIZE(text), textFormat,
-                                         majorVersion, minorVersion, formattedVersionTag,
-                                         minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+    if (majorMinorVersion >= 0x00020000)
+    {
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(text, ARRAYSIZE(text), textFormat,
+                                             majorVersion, formattedVersionTag,
+                                             minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+    }
+    else
+    {
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(text, ARRAYSIZE(text), textFormat,
+                                             majorVersion, minorVersion, formattedVersionTag,
+                                             minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+    }
 
     // Show the prompt
     const auto yesno{ MessageBoxW(nullptr, text, caption, MB_YESNO | MB_ICONERROR) };

@@ -1,0 +1,14 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+// Rely on _STRINGIZE(x) in yvals_core.h
+#ifndef _STRINGIZE
+#define _STRINGIZEX(x)  #x
+#define _STRINGIZE(x)   _STRINGIZEX(x)
+#endif
+
+#define PR_DYNDEP_LIBID_1X_UUID                     74D1A31A-C976-4AD4-949D-6E252FFCB8E7
+
+#define PR_DYNDEP_LIFETIMEMANAGER_1X_CLSID_UUID     8A649405-9E77-49D3-99E0-3A049B175137
+#define PR_DYNDEP_LIFETIMEMANAGER_1X_CLSID_STRING   _STRINGIZE(PR_DYNDEP_LIFETIMEMANAGER_1X_CLSID_UUID)
+#define PR_DYNDEP_LIFETIMEMANAGER_1X_CLSID_GUID     0x8a649405, 0x9e77, 0x49d3, { 0x99, 0xe0, 0x3a, 0x04, 0x9b, 0x17, 0x51, 0x37 }

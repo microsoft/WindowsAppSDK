@@ -17,22 +17,29 @@
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_BUILD      1967
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_REVISION   333
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING     L"4.1.1967.333"
-#define WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING     L"4.1"
+#define WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING     L"4"
+
+#define WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION          0x0001000200030004LLu
+#define WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_MAJOR    1
+#define WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_MINOR    2
+#define WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_BUILD    3
+#define WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_REVISION 4
+#define WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_STRING   L"1.2.3.4"
+#define WINDOWSAPPRUNTIME_TEST_METADATA_1X_RELEASE_STRING   L"1.2"
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
 
-#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.4.1"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME      L"WindowsAppRuntime.Test.DDLM"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME      L"WindowsAppRuntime.Test.DynDep.DataStore.4.1"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME L"WindowsAppRuntime.Test.Singleton"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.4"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_1X_PACKAGE_NAME   L"Microsoft.WindowsAppRuntime.1.2"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME           L"WindowsAppRuntime.Test.DDLM"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME           L"WindowsAppRuntime.Test.DynDep.DataStore.4"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_1X_PACKAGE_NAME        L"WindowsAppRuntime.Test.DynDep.DataStore.1.2"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME      L"WindowsAppRuntime.Test.Singleton"
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.1.0-Test"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_MAIN_PACKAGE_NAME      L"MicrosoftCorporationII.WinAppRuntime.Main.1.0-T"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"MicrosoftCorporationII.WinAppRuntime.Singleton-T"
 
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING
 #define MSIX_PACKAGE_ARCHITECTURE_ARM       L"arm"
 #define MSIX_PACKAGE_ARCHITECTURE_ARM64     L"arm64"
 #define MSIX_PACKAGE_ARCHITECTURE_NEUTRAL   L"neutral"
@@ -49,10 +56,22 @@
 #else
 #   error "Unknown processor architecture"
 #endif
+
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX L"." WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID    WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FAMILYNAME     WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FULLNAME       WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
+
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_VERSION_STRING WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_STRING
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_NAMEPREFIX L"." WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_VERSION_STRING L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_PUBLISHERID    WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_FAMILYNAME     WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_FULLNAME       WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_VERSION_STRING L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
 
 namespace Test::Packages
 {
@@ -81,6 +100,31 @@ namespace DynamicDependencyLifetimeManager
     constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
+namespace DynamicDependencyLifetimeManager1X
+{
+    constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManager.1.2";
+    constexpr PCWSTR c_PackageNamePrefix = WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_NAMEPREFIX;
+    constexpr PCWSTR c_PackagePublisherId = WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_FAMILYNAME;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_1X_FULLNAME;
+    constexpr const PACKAGE_VERSION GetPackageVersion()
+    {
+        PACKAGE_VERSION version{};
+        version.Major = WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_MAJOR;
+        version.Minor = WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_MINOR;
+        version.Build = WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_BUILD;
+        version.Revision = WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_REVISION;
+        return version;
+    }
+    constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+
+    constexpr const UINT32 GetPackageVersionMajorMinor()
+    {
+        return static_cast<UINT32>((GetPackageVersion().Major << 16) | GetPackageVersion().Minor);
+    }
+    constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
+}
+
 namespace WindowsAppRuntimeFramework
 {
     constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
@@ -90,14 +134,32 @@ namespace WindowsAppRuntimeFramework
     constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
+namespace WindowsAppRuntimeFramework1X
+{
+    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework.1.2";
+    constexpr PCWSTR c_PackageMsixFilename = L"Microsoft.WindowsAppRuntime.Framework.1.2.msix";
+    constexpr PCWSTR c_PackageNamePrefix = L"Microsoft.WindowsAppRuntime";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_1X_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_1X_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+}
+
 namespace DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
     constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 namespace WindowsAppRuntimeMain = DynamicDependencyDataStore;
+
+namespace DynamicDependencyDataStore1X
+{
+    constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore.1.2";
+    constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_1X_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_1X_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_METADATA_1X_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+}
+namespace WindowsAppRuntimeMain1X = DynamicDependencyDataStore1X;
 
 namespace WindowsAppRuntimeSingleton
 {
@@ -500,6 +562,27 @@ inline bool IsPackageRegistered_DynamicDependencyLifetimeManager()
     return IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
 }
 
+inline void AddPackage_DynamicDependencyLifetimeManager1X()
+{
+    AddPackage(Test::Packages::DynamicDependencyLifetimeManager1X::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManager1X::c_PackageFullName);
+}
+
+inline void RemovePackage_DynamicDependencyLifetimeManager1X()
+{
+    // Best-effort removal. PackageManager.RemovePackage errors if the package
+    // is not registered, but if it's not registered we're good. "'Tis the destination
+    // that matters, not the journey" so regardless how much or little work
+    // we need do, we're happy as long as the package isn't registered when we're done
+    //
+    // Thus, do a *IfNecessary removal
+    RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManager1X::c_PackageFullName);
+}
+
+inline bool IsPackageRegistered_DynamicDependencyLifetimeManager1X()
+{
+    return IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManager1X::c_PackageFullName);
+}
+
 inline void AddPackage_WindowsAppRuntimeFramework()
 {
     AddPackage(Test::Packages::WindowsAppRuntimeFramework::c_PackageDirName, Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
@@ -521,6 +604,27 @@ inline bool IsPackageRegistered_WindowsAppRuntimeFramework()
     return IsPackageRegistered(Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
 }
 
+inline void AddPackage_WindowsAppRuntimeFramework1X()
+{
+    AddPackage(Test::Packages::WindowsAppRuntimeFramework1X::c_PackageDirName, Test::Packages::WindowsAppRuntimeFramework1X::c_PackageFullName);
+}
+
+inline void RemovePackage_WindowsAppRuntimeFramework1X()
+{
+    // Best-effort removal. PackageManager.RemovePackage errors if the package
+    // is not registered, but if it's not registered we're good. "'Tis the destination
+    // that matters, not the journey" so regardless how much or little work
+    // we need do, we're happy as long as the package isn't registered when we're done
+    //
+    // Thus, do a *IfNecessary removal
+    RemovePackageIfNecessary(Test::Packages::WindowsAppRuntimeFramework1X::c_PackageFullName);
+}
+
+inline bool IsPackageRegistered_WindowsAppRuntimeFramework1X()
+{
+    return IsPackageRegistered(Test::Packages::WindowsAppRuntimeFramework1X::c_PackageFullName);
+}
+
 inline void AddPackage_DynamicDependencyDataStore()
 {
     AddPackage(Test::Packages::DynamicDependencyDataStore::c_PackageDirName, Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
@@ -540,6 +644,27 @@ inline void RemovePackage_DynamicDependencyDataStore()
 inline bool IsPackageRegistered_DynamicDependencyDataStore()
 {
     return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
+}
+
+inline void AddPackage_DynamicDependencyDataStore1X()
+{
+    AddPackage(Test::Packages::DynamicDependencyDataStore1X::c_PackageDirName, Test::Packages::DynamicDependencyDataStore1X::c_PackageFullName);
+}
+
+inline void RemovePackage_DynamicDependencyDataStore1X()
+{
+    // Best-effort removal. PackageManager.RemovePackage errors if the package
+    // is not registered, but if it's not registered we're good. "'Tis the destination
+    // that matters, not the journey" so regardless how much or little work
+    // we need do, we're happy as long as the package isn't registered when we're done
+    //
+    // Thus, do a *IfNecessary removal
+    RemovePackageIfNecessary(Test::Packages::DynamicDependencyDataStore1X::c_PackageFullName);
+}
+
+inline bool IsPackageRegistered_DynamicDependencyDataStore1X()
+{
+    return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore1X::c_PackageFullName);
 }
 
 inline void AddPackage_WindowsAppRuntimeSingleton()
