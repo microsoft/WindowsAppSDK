@@ -1133,7 +1133,7 @@ void FindDDLMViaEnumeration(
     {
         THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, bestFitVersion.Version == 0,
                         "Major=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
-                        majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
+                        majorVersion, (!versionTag ? L"" : versionTag),
                         minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
     }
     else
