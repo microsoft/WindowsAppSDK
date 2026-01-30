@@ -210,8 +210,8 @@ The report adds reason labels to highlighted issues:
 ```markdown
 | Feature Area | Area Contact | Open | Triage | Proposals | Closed | Highlights |
 |--------------|--------------|------|--------|-----------|--------|------------|
-| area-Notification | Vivek Khare | 34 | 8 | 11 | 0 | 🔥 [#2894](link) Hot, ⏰ [#3001](link) Aging |
-| area-Widgets | Pranav Gupta | 21 | 10 | 4 | 0 | 📈 [#3958](link) Trending |
+| area-Notification | Notifications Owner | 34 | 8 | 11 | 0 | 🔥 [#2894](link) Hot, ⏰ [#3001](link) Aging |
+| area-Widgets | Widgets Owner | 21 | 10 | 4 | 0 | 📈 [#3958](link) Trending |
 ```
 
 ### Special Status Indicators
