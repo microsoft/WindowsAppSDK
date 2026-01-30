@@ -23,7 +23,7 @@
 
     <Dependencies>
         <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.0.0" MaxVersionTested="12.0.0.0" />
-        <PackageDependency Name="Microsoft.WindowsAppRuntime.4.1" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+        <PackageDependency Name="Microsoft.WindowsAppRuntime.4" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
     </Dependencies>
 
   <Resources>
