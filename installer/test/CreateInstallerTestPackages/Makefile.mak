@@ -43,8 +43,6 @@ Singleton_license=$(InstallerPackagesDir)\singleton_license.xml
 DDLM_x86=$(InstallerPackagesDir)\ddlm_x86.msix
 DDLM_x64=$(InstallerPackagesDir)\ddlm_x64.msix
 DDLM_arm64=$(InstallerPackagesDir)\ddlm_arm64.msix
-MLFramework_x64=$(InstallerPackagesDir)\ml_x64.msix
-MLFramework_arm64=$(InstallerPackagesDir)\ml_arm64.msix
 
 verifypfx:
     @if not exist $(MSTestPfx) echo Missing $(MSTestPfx), please run DevCheck.cmd to set up your developer environment. && exit /b 1
@@ -98,10 +96,6 @@ $(OutMsix_x64): $(ProjectDir)appxmanifest_fw_x64.xml
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x64) /p $(OutMsix_x64)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x64)
     @copy /Y $(OutMsix_x64) $(DDLM_x64) >NUL
-    @copy /Y $(ProjectDir)appxmanifest_mlfw_x64.xml $(WorkDir_x64)\appxmanifest.xml >NUL
-    @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x64) /p $(OutMsix_x64)
-    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x64)
-    @copy /Y $(OutMsix_x64) $(MLFramework_x64) >NUL
 
 $(OutMsix_arm64): $(ProjectDir)appxmanifest_fw_arm64.xml
     @if not exist $(WorkDir_arm64) md $(WorkDir_arm64) >NUL
@@ -126,10 +120,6 @@ $(OutMsix_arm64): $(ProjectDir)appxmanifest_fw_arm64.xml
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_arm64) /p $(OutMsix_arm64)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_arm64)
     @copy /Y $(OutMsix_arm64) $(DDLM_arm64) >NUL
-    @copy /Y $(ProjectDir)appxmanifest_mlfw_arm64.xml $(WorkDir_arm64)\appxmanifest.xml >NUL
-    @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_arm64) /p $(OutMsix_arm64)
-    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_arm64)
-    @copy /Y $(OutMsix_arm64) $(MLFramework_arm64) >NUL
 
 clean:
     @if exist $(TargetDir) rd $(TargetDir) /s /q
