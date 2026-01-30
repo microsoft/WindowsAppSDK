@@ -42,10 +42,10 @@ param(
     [string]$OutputFormat = 'json'
 )
 
-Set-StrictMode -Version 2.0
-$ErrorActionPreference = 'Stop'
-
 begin {
+    Set-StrictMode -Version 2.0
+    $ErrorActionPreference = 'Stop'
+    
     $inputData = @()
 }
 

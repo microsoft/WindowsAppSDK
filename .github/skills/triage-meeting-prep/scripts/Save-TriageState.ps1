@@ -37,10 +37,10 @@ param(
     [string]$TriageDate = (Get-Date -Format "yyyy-MM-dd")
 )
 
-Set-StrictMode -Version 2.0
-$ErrorActionPreference = 'Stop'
-
 begin {
+    Set-StrictMode -Version 2.0
+    $ErrorActionPreference = 'Stop'
+    
     $inputData = @()
 }
 
