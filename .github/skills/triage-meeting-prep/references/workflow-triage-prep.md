@@ -95,21 +95,21 @@ Generated Files/triageMeeting/previous-state.json
 ```json
 {
   "triageDate": "2025-01-24T10:00:00Z",
-  "generatedAt": "2025-01-24T10:00:00Z",
-  "issueCount": 2,
-  "issues": {
+  "noAreaIssues": {
     "12345": {
       "number": 12345,
       "title": "Issue title",
-      "state": "open",
-      "author": "username",
-      "createdAt": "2025-01-17T10:00:00Z",
-      "updatedAt": "2025-01-20T15:30:00Z",
-      "closedAt": null,
-      "commentCount": 3,
-      "reactionCount": 5,
-      "labels": ["Needs-Triage", "bug"],
-      "milestone": null
+      "firstSeen": "2025-01-17T10:00:00Z",
+      "weeksPending": 1,
+      "lastSuggestedAction": "Add area-Packaging label",
+      "reviewPath": "Generated Files/issueReview/12345/overview.md"
+    }
+  },
+  "closedIssues": {
+    "67890": {
+      "number": 67890,
+      "title": "Closed issue",
+      "closedAt": "2025-01-23T15:30:00Z"
     }
   }
 }
@@ -143,7 +143,7 @@ Compare the current issue list against `previous-state.json`:
 |----------|-------|--------|
 | 🔥 **Hot** | Activity increased (comments, reactions, updates) | Highlight for attention |
 | 🆕 **New** | Issue in current, NOT in `previous-state.json` | Run review-issue.prompt.md |
-| ⏳ **Still Pending** | Issue in BOTH current AND `previous-state.json` | Carry forward, note duration |
+| ⏳ **Still Pending** | Issue in BOTH current AND `previous-state.json` | Increment `weeksPending`, carry forward |
 | ✅ **Resolved** | Issue in `previous-state.json`, NOT in current | Note resolution type |
 
 ### Step 3.2: Identify Hot Issues (Trending)
@@ -152,8 +152,8 @@ Compare the current issue list against `previous-state.json`:
 
 ```
 For each issue in currentNeedsTriageIssues:
-  if issue.number in previousState.issues:
-    prev = previousState.issues[issue.number]
+  if issue.number in previousState.allIssues:
+    prev = previousState.allIssues[issue.number]
     
     commentChange = issue.commentCount - prev.commentCount
     reactionChange = issue.reactionCount - prev.reactionCount
@@ -184,17 +184,14 @@ Examples:
 
 **Pseudocode:**
 ```
-currentIssueNumbers = Set(currentIssues.keys)
-previousIssueNumbers = Set(previousState.issues.keys)
-
-newIssues = currentIssueNumbers - previousIssueNumbers
-pendingIssues = currentIssueNumbers ∩ previousIssueNumbers  
-resolvedIssues = previousIssueNumbers - currentIssueNumbers
+newIssues = currentNoAreaIssues - previousNoAreaIssues
+pendingIssues = currentNoAreaIssues ∩ previousNoAreaIssues
+resolvedIssues = previousNoAreaIssues - currentNoAreaIssues
 ```
 
 ### Step 3.4: Determine Resolution Type for Resolved Issues
 
-For each issue in `previousState.issues` but not in current issues, check:
+For each issue in `previousNoAreaIssues` but not in `currentNoAreaIssues`, check:
 
 1. **Got area label**: Issue is still open but now has `area-*` label → `"Got area label"`
 2. **Closed properly**: Issue is closed and no longer has `Needs-Triage` → `"Closed"`
@@ -202,9 +199,10 @@ For each issue in `previousState.issues` but not in current issues, check:
 
 ### Step 3.5: Update Pending Issue Tracking
 
-For each issue still pending (in both current and previous state):
-- Compare `commentCount` and `reactionCount` to detect activity
-- Track issues that remain without area labels across triage runs
+For each issue still pending:
+- Increment `weeksPending` counter
+- Preserve `firstSeen` date
+- Preserve `lastSuggestedAction` from previous review (no need to re-run review-issue)
 
 ---
 
