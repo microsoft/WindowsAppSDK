@@ -82,7 +82,6 @@ end {
         $milestoneTitle = if ($null -ne $issue.milestone) { $issue.milestone.title } else { $null }
         
         $state.issues[$issueNumber] = @{
-            number = $issue.number
             title = $issue.title
             state = $issue.state
             author = $authorLogin

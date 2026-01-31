@@ -165,7 +165,6 @@ end {
         }
         
         $issueEntry = @{
-            number = $issue.number
             title = $issue.title
             state = $issue.state
             author = $authorLogin

@@ -97,7 +97,6 @@ Generated Files/triageMeeting/previous-state.json
   "triageDate": "2025-01-24T10:00:00Z",
   "noAreaIssues": {
     "12345": {
-      "number": 12345,
       "title": "Issue title",
       "firstSeen": "2025-01-17T10:00:00Z",
       "weeksPending": 1,
@@ -107,7 +106,6 @@ Generated Files/triageMeeting/previous-state.json
   },
   "closedIssues": {
     "67890": {
-      "number": 67890,
       "title": "Closed issue",
       "closedAt": "2025-01-23T15:30:00Z"
     }
