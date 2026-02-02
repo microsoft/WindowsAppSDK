@@ -14,7 +14,7 @@
     - Unchanged: No detected changes
 
 .PARAMETER CurrentIssuesJson
-    JSON string containing the current array of issues from GitHub API/MCP.
+    JSON string containing the current array of issues from gh CLI.
 
 .PARAMETER PreviousStatePath
     Path to the previous state file. Defaults to 'Generated Files/triageMeeting/previous-state.json'.
@@ -139,12 +139,24 @@ end {
                     $changes += "Updated: $($prev.updatedAt) → $($issue.updatedAt)"
                 }
                 
-                $currentCommentCount = $issue.comments.Count
+                # Calculate comment count safely
+                $currentCommentCount = 0
+                if ($null -ne $issue.comments) {
+                    $currentCommentCount = @($issue.comments).Count
+                }
                 if ($currentCommentCount -gt $prev.commentCount) {
                     $changes += "Comments: $($prev.commentCount) → $currentCommentCount (+$($currentCommentCount - $prev.commentCount))"
                 }
 
-                $currentReactionCount = (($issue.reactions.PSObject.Properties | Where-Object { $_.Name -ne 'url' } | ForEach-Object { $_.Value } | Measure-Object -Sum).Sum -as [int])
+                # Calculate reaction count from reactionGroups (gh CLI format)
+                $currentReactionCount = 0
+                if ($null -ne $issue.reactionGroups) {
+                    foreach ($group in $issue.reactionGroups) {
+                        if ($null -ne $group.users -and $null -ne $group.users.totalCount) {
+                            $currentReactionCount += $group.users.totalCount
+                        }
+                    }
+                }
                 if ($currentReactionCount -gt $prev.reactionCount) {
                     $changes += "Reactions: $($prev.reactionCount) → $currentReactionCount (+$($currentReactionCount - $prev.reactionCount))"
                 }
@@ -165,6 +177,7 @@ end {
         }
         
         $issueEntry = @{
+            number = $issue.number
             title = $issue.title
             state = $issue.state
             author = $authorLogin

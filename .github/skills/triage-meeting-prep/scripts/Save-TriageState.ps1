@@ -10,7 +10,7 @@
     This script is called by the triage-meeting-prep skill after fetching issue data.
 
 .PARAMETER IssuesJson
-    JSON string containing the array of issues from GitHub API/MCP.
+    JSON string containing the array of issues from gh CLI.
 
 .PARAMETER OutputPath
     Path to save the state file. Defaults to 'Generated Files/triageMeeting/previous-state.json'.
@@ -81,6 +81,22 @@ end {
         $authorLogin = if ($null -ne $issue.author) { $issue.author.login } else { $null }
         $milestoneTitle = if ($null -ne $issue.milestone) { $issue.milestone.title } else { $null }
         
+        # Calculate comment count safely
+        $commentCount = 0
+        if ($null -ne $issue.comments) {
+            $commentCount = @($issue.comments).Count
+        }
+        
+        # Calculate reaction count from reactionGroups (gh CLI format)
+        $reactionCount = 0
+        if ($null -ne $issue.reactionGroups) {
+            foreach ($group in $issue.reactionGroups) {
+                if ($null -ne $group.users -and $null -ne $group.users.totalCount) {
+                    $reactionCount += $group.users.totalCount
+                }
+            }
+        }
+        
         $state.issues[$issueNumber] = @{
             title = $issue.title
             state = $issue.state
@@ -88,8 +104,8 @@ end {
             createdAt = $issue.createdAt
             updatedAt = $issue.updatedAt
             closedAt = $issue.closedAt
-            commentCount = $issue.comments.Count
-            reactionCount = ($issue.reactions.PSObject.Properties | Where-Object { $_.Name -ne 'url' } | ForEach-Object { $_.Value } | Measure-Object -Sum).Sum -as [int]
+            commentCount = $commentCount
+            reactionCount = $reactionCount
             labels = @($issue.labels | ForEach-Object { $_.name })
             milestone = $milestoneTitle
         }

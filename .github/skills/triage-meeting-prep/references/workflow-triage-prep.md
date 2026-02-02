@@ -4,28 +4,35 @@ Complete step-by-step process for generating triage meeting summaries.
 
 ## Phase 1: Environment Verification
 
-### Step 1.1: Verify GitHub MCP Availability
+### Step 1.1: Verify GitHub CLI Availability
 
-Before starting, verify the GitHub MCP tools are available by checking if `activate_repository_information_tools` can be invoked.
+Before starting, verify the GitHub CLI (`gh`) is installed and authenticated:
 
-#### If MCP is unavailable
+```powershell
+# Check gh is available
+gh --version
+
+# Check authentication
+gh auth status
+```
+
+#### If gh CLI is not installed
 
 Display this message to the user and pause:
 
-> **GitHub MCP not detected.** This skill requires the GitHub MCP for full functionality.
+> **GitHub CLI not detected.** This skill requires the GitHub CLI for data fetching.
 >
-> **Install options:**
-> 1. **VS Code extension** (recommended): Install [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) extension, then enable MCP in settings
-> 2. **Manual MCP setup**: Follow [GitHub MCP documentation](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-in-vs-code/using-model-context-protocol-servers-in-vs-code)
+> **Install:**
+> ```powershell
+> winget install GitHub.cli
+> ```
 >
-> After installation, restart VS Code and re-run this skill.
-
-#### Fallback mode (limited functionality)
-
-If the user chooses to proceed without MCP:
-- Use `gh` CLI commands as fallback (requires GitHub CLI installed and authenticated)
-- Issues query: `gh issue list --repo microsoft/WindowsAppSDK --label "Needs-Triage" --state all --json number,title,body,author,createdAt,updatedAt,state,labels,comments,reactions --limit 200`
-- **Note**: Some advanced analysis features may be limited in fallback mode.
+> **Then authenticate:**
+> ```powershell
+> gh auth login
+> ```
+>
+> After installation, re-run this skill.
 
 ### Step 1.2: Determine Output Directory
 
@@ -41,41 +48,56 @@ Create the directory structure if it doesn't exist.
 
 ### Step 2.1: Fetch Needs-Triage Issues
 
-Use `activate_github_search_tools` to search for issues:
+Use the `Get-TriageIssues.ps1` script to fetch issues:
 
-#### Query 1: All open Needs-Triage issues
-```
-repo:microsoft/WindowsAppSDK is:issue is:open label:"Needs-Triage"
+```powershell
+# Get all Needs-Triage issues (open and closed)
+./.github/skills/triage-meeting-prep/scripts/Get-TriageIssues.ps1 -State all
+
+# Get only issues without area labels (primary triage focus)
+./.github/skills/triage-meeting-prep/scripts/Get-TriageIssues.ps1 -State open -NoAreaOnly
+
+# View summary
+./.github/skills/triage-meeting-prep/scripts/Get-TriageIssues.ps1 -NoAreaOnly -OutputFormat summary
 ```
 
-#### Query 2: Closed issues still labeled Needs-Triage
-```
-repo:microsoft/WindowsAppSDK is:issue is:closed label:"Needs-Triage"
+The script internally runs:
+```powershell
+gh issue list --repo microsoft/WindowsAppSDK --label "Needs-Triage" --state all --json number,title,body,author,createdAt,updatedAt,closedAt,state,labels,milestone,comments,reactionGroups,url,assignees --limit 200
 ```
 
 ### Step 2.2: Filter Locally — Identify Issues Without Area Label
 
-After fetching, filter the results locally:
+The `Get-TriageIssues.ps1 -NoAreaOnly` flag handles this automatically:
 
-```
-For each issue in Query 1 results:
+```powershell
+For each issue in results:
   hasAreaLabel = issue.labels.any(label => label.name.startsWith("area-"))
   
   if NOT hasAreaLabel:
-    → Add to "noAreaIssues" list (needs triage)
+    → Include in output (needs triage)
   else:
-    → Skip (already triaged, has area label)
+    → Exclude (already triaged, has area label)
 ```
 
 > **Why filter locally?** GitHub search doesn't support wildcard exclusions like `-label:area-*`. By fetching all and filtering, we automatically handle any new `area-*` labels without updating queries.
 
-**MCP tool sequence:**
-1. `github-pull-request_formSearchQuery` — Convert to GitHub search syntax
-2. `github-pull-request_doSearch` — Execute both queries
-3. For each issue, check if any label starts with `area-`
-4. Use `activate_repository_information_tools` → `Get issue` for full details of no-area issues
+### Step 2.3: Get Detailed Issue Information
 
-**Data to collect per issue:**
+For individual issue details (comments, timeline):
+
+```powershell
+# Get full details for a specific issue
+./.github/skills/triage-meeting-prep/scripts/Get-IssueDetails.ps1 -IssueNumber 6147
+
+# With timeline events
+./.github/skills/triage-meeting-prep/scripts/Get-IssueDetails.ps1 -IssueNumber 6147 -IncludeTimeline
+
+# View summary
+./.github/skills/triage-meeting-prep/scripts/Get-IssueDetails.ps1 -IssueNumber 6147 -OutputFormat summary
+```
+
+**Data collected per issue:**
 - Issue number, title, body
 - Author, created date, updated date
 - State (open/closed), closed date if applicable
@@ -84,7 +106,7 @@ For each issue in Query 1 results:
 - Comment count and last comment date
 - Linked PRs
 
-### Step 2.3: Load Previous Triage State
+### Step 2.4: Load Previous Triage State
 
 Check for previous state file:
 ```
@@ -118,11 +140,11 @@ If no previous state exists:
 - All issues will be categorized as "New"
 - Inform the user that diff comparison will be available after next run
 
-### Step 2.3: Fetch Images and Attachments (if github-artifacts MCP available)
+### Step 2.5: Fetch Images and Attachments (Optional)
 
-For issues that likely contain visual evidence:
-- Use `mcp_github-artifa_github_issue_images` for screenshots
-- Use `mcp_github-artifa_github_issue_attachments` for diagnostic logs
+For issues that likely contain visual evidence, if needed you can use:
+- `gh api` to fetch issue attachments
+- Download screenshots manually from issue body
 
 Extract attachments to:
 ```
@@ -140,7 +162,7 @@ Compare the current issue list against `previous-state.json`:
 | Category | Logic | Action |
 |----------|-------|--------|
 | 🔥 **Hot** | Activity increased (comments, reactions, updates) | Highlight for attention |
-| 🆕 **New** | Issue in current, NOT in `previous-state.json` | Run review-issue.prompt.md |
+| 🆕 **New** | Issue in current, NOT in `previous-state.json` | Run `Get-IssueDetails.ps1` |
 | ⏳ **Still Pending** | Issue in BOTH current AND `previous-state.json` | Increment `weeksPending`, carry forward |
 | ✅ **Resolved** | Issue in `previous-state.json`, NOT in current | Note resolution type |
 
@@ -200,34 +222,34 @@ For each issue in `previousNoAreaIssues` but not in `currentNoAreaIssues`, check
 For each issue still pending:
 - Increment `weeksPending` counter
 - Preserve `firstSeen` date
-- Preserve `lastSuggestedAction` from previous review (no need to re-run review-issue)
+- Preserve `lastSuggestedAction` from previous analysis (no need to re-run)
 
 ---
 
 ## Phase 4: Generate Issue Reviews
 
-### Step 4.1: Run review-issue.prompt.md for All No-Area Issues
+### Step 4.1: Analyze All No-Area Issues
 
-**Run reviews for ALL issues without area labels.** Each issue needs a review file for the summary links to work.
+**Review ALL issues without area labels.** Each issue needs analysis for the summary.
 
 For each **no-area issue** (new or older):
 
 1. **Check if review exists:**
    ```
    if NOT exists("Generated Files/issueReview/<issue-number>/overview.md"):
-     → Run review-issue.prompt.md
+     → Run Get-IssueDetails.ps1 and analyze
    ```
 
-2. **Run the review-issue analysis:**
-   ```
-   review-issue.prompt.md with issue_number = <issue-number>
+2. **Run the issue analysis:**
+   ```powershell
+   ./Get-IssueDetails.ps1 -IssueNumber <number> -OutputFormat summary
    ```
    
-2. **Generates these files:**
+3. **Generate review files:**
    - `Generated Files/issueReview/<issue-number>/overview.md`
    - `Generated Files/issueReview/<issue-number>/implementation-plan.md`
 
-3. **Extract the "Suggested Actions" section from overview.md**, which includes:
+4. **Extract the "Suggested Actions" section from overview.md**, which includes:
    - Label recommendations (Add/Remove)
    - Clarifying questions (if Clarity < 50)
    - Similar issues found
@@ -277,10 +299,10 @@ Aggregate all action items from individual reviews:
 
 #### A) Search for Similar/Related Issues
 
-Use `github-pull-request_doSearch` to find:
-```
-repo:microsoft/WindowsAppSDK <keywords from issue>
-repo:microsoft/WindowsAppSDK label:area-<component>
+Use `gh search issues` to find:
+```powershell
+gh search issues "<keywords from issue>" --repo microsoft/WindowsAppSDK
+gh search issues "label:area-<component>" --repo microsoft/WindowsAppSDK
 ```
 
 Look for:
@@ -361,7 +383,7 @@ For each closed issue, record:
 
 Now draft the reply using research findings:
 
-1. **Fetch recent comments** using `mcp_github_issue_read` with `method: get_comments`
+1. **Fetch recent comments** using `Get-IssueDetails.ps1 -IssueNumber <number>`
 2. **Analyze the situation**:
    - Why was it closed originally?
    - What did the customer say after closure?
@@ -447,30 +469,81 @@ Prompt the user with available next steps:
 
 ---
 
-## Appendix: MCP Tool Reference
+## Appendix: Script Reference
 
-| Tool | Purpose |
-|------|---------|
-| `activate_github_search_tools` | Access search query tools |
-| `github-pull-request_formSearchQuery` | Convert natural language to GitHub search |
-| `github-pull-request_doSearch` | Execute issue/PR search |
-| `activate_repository_information_tools` | Access issue detail tools |
-| `Get issue` | Fetch full issue details |
-| `github-pull-request_renderIssues` | Render issue table for display |
-| `mcp_github-artifa_github_issue_images` | Download issue screenshots |
-| `mcp_github-artifa_github_issue_attachments` | Download diagnostic attachments |
+This skill uses PowerShell scripts in the `scripts/` folder for predictable, scriptable data fetching:
 
-## Appendix: gh CLI Fallback Commands
+| Script | Purpose |
+|--------|---------|
+| `Get-TriageIssues.ps1` | Fetch all Needs-Triage issues with filtering options |
+| `Get-IssueDetails.ps1` | Get detailed info for a single issue (comments, timeline) |
+| `Compare-TriageState.ps1` | Compare current issues against previous state |
+| `Save-TriageState.ps1` | Save current state for next diff comparison |
 
-If MCP is unavailable, use these commands:
+### Get-TriageIssues.ps1
 
-```bash
+```powershell
+# Get all Needs-Triage issues as JSON
+./Get-TriageIssues.ps1
+
+# Get only open issues without area labels
+./Get-TriageIssues.ps1 -State open -NoAreaOnly
+
+# Display summary
+./Get-TriageIssues.ps1 -NoAreaOnly -OutputFormat summary
+
+# Display as table
+./Get-TriageIssues.ps1 -NoAreaOnly -OutputFormat table
+```
+
+### Get-IssueDetails.ps1
+
+```powershell
+# Get issue details as JSON
+./Get-IssueDetails.ps1 -IssueNumber 6147
+
+# Include timeline events
+./Get-IssueDetails.ps1 -IssueNumber 6147 -IncludeTimeline
+
+# Display summary
+./Get-IssueDetails.ps1 -IssueNumber 6147 -OutputFormat summary
+```
+
+### Compare-TriageState.ps1
+
+```powershell
+# Compare current issues against previous state
+./Get-TriageIssues.ps1 | ./Compare-TriageState.ps1
+
+# Display summary instead of JSON
+./Get-TriageIssues.ps1 | ./Compare-TriageState.ps1 -OutputFormat summary
+```
+
+### Save-TriageState.ps1
+
+```powershell
+# Save current state for next triage
+./Get-TriageIssues.ps1 | ./Save-TriageState.ps1
+
+# Save with specific date
+./Get-TriageIssues.ps1 | ./Save-TriageState.ps1 -TriageDate "2026-02-02"
+```
+
+## Appendix: Raw gh CLI Commands
+
+The scripts wrap these `gh` CLI commands:
+
+```powershell
 # List all Needs-Triage issues (open)
-gh issue list --repo microsoft/WindowsAppSDK --label "Needs-Triage" --state open --json number,title,body,author,createdAt,updatedAt,state,labels,comments,reactions --limit 200
+gh issue list --repo microsoft/WindowsAppSDK --label "Needs-Triage" --state open --json number,title,body,author,createdAt,updatedAt,state,labels,comments,reactionGroups,url,assignees --limit 200
 
 # List all Needs-Triage issues (closed)
-gh issue list --repo microsoft/WindowsAppSDK --label "Needs-Triage" --state closed --json number,title,body,author,createdAt,updatedAt,closedAt,state,labels,comments,reactions --limit 200
+gh issue list --repo microsoft/WindowsAppSDK --label "Needs-Triage" --state closed --json number,title,body,author,createdAt,updatedAt,closedAt,state,labels,comments,reactionGroups,url,assignees --limit 200
 
 # Get single issue details
-gh issue view <number> --repo microsoft/WindowsAppSDK --json number,title,body,author,createdAt,updatedAt,state,labels,milestone,reactions,comments,linkedPullRequests
+gh issue view <number> --repo microsoft/WindowsAppSDK --json number,title,body,author,createdAt,updatedAt,closedAt,state,labels,milestone,reactionGroups,comments,url,assignees
+
+# Get issue timeline (API call)
+gh api repos/microsoft/WindowsAppSDK/issues/<number>/timeline --paginate
 ```
+

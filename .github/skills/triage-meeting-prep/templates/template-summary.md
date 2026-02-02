@@ -89,7 +89,7 @@
 
 ## 📋 Detailed Review: NEW Issues Action Items
 
-**Each NEW issue was analyzed using [review-issue.prompt.md](../../prompts/review-issue.prompt.md). Full details in `Generated Files/issueReview/<issue-number>/overview.md`.**
+**Each NEW issue was analyzed. Full details available via `Get-IssueDetails.ps1 -IssueNumber <number>`.**
 
 {{#each new_issues}}
 ### [#{{this.number}}]({{this.url}}) — {{this.title}}

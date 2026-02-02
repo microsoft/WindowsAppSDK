@@ -51,30 +51,45 @@ The skill tracks **four critical categories** for each meeting:
 4. **Tracking pending items** — Identify issues that still haven't been actioned from previous meetings
 
 **Anti-patterns** — Do NOT use this skill when:
-- Reviewing a single specific issue (use [review-issue.prompt.md](../../prompts/review-issue.prompt.md) instead)
+- Reviewing a single specific issue (use `Get-IssueDetails.ps1` for individual issues)
 - General issue searching without triage context
 - Non-WinAppSDK repositories
 
 ## Prerequisites
 
-- GitHub MCP tools available (GitHub Pull Requests extension with MCP enabled)
+- **GitHub CLI (gh)** installed and authenticated (`gh auth login`)
 - Access to microsoft/WindowsAppSDK repository
 - Previous triage state file for diff comparison: `Generated Files/triageMeeting/previous-state.json`
+
+### Installing GitHub CLI
+
+```powershell
+# Windows
+winget install GitHub.cli
+
+# Then authenticate
+gh auth login
+```
 
 ## Step-by-Step Workflow
 
 ### Workflow: Generate Triage Meeting Summary
 
 1. **Load previous triage state** from `Generated Files/triageMeeting/previous-state.json`
-2. **Fetch current Needs-Triage issues** using GitHub MCP tools
-   - Query: All open issues with `Needs-Triage` label
-   - Filter locally: Keep only issues WITHOUT `area-*` labels
+2. **Fetch current Needs-Triage issues** using the scripts:
+   ```powershell
+   # Get all issues needing triage (no area label)
+   ./.github/skills/triage-meeting-prep/scripts/Get-TriageIssues.ps1 -NoAreaOnly -OutputFormat summary
+   
+   # Or get JSON for processing
+   $issues = ./.github/skills/triage-meeting-prep/scripts/Get-TriageIssues.ps1 -NoAreaOnly | ConvertFrom-Json
+   ```
 3. **Categorize issues by creation date**:
    - 🆕 **Created This Week** — `createdAt` ≥ last weekly triage date
    - ⏳ **Older Pending** — `createdAt` < last weekly triage date
-4. **For each no-area issue**, ensure [review-issue.prompt.md](../../prompts/review-issue.prompt.md) has been run:
-   - Check if `Generated Files/issueReview/<number>/overview.md` exists
-   - If not, run the review to generate it
+4. **For each no-area issue**, analyze using `Get-IssueDetails.ps1`:
+   - Run: `./Get-IssueDetails.ps1 -IssueNumber <number> -OutputFormat summary`
+   - Review the issue body, comments, and labels
 5. **Generate summary report** with links to each issue's `overview.md`
 6. **Save current state** for next diff comparison
 
@@ -107,7 +122,7 @@ See [workflow-triage-prep.md](./references/workflow-triage-prep.md) for the comp
 | Category | Definition | Action Needed |
 |----------|------------|---------------|
 | 🔥 **Hot Issues** | ≥5 combined new comments + reactions since last triage | May need priority attention |
-| 🆕 **Created This Week** | `createdAt` is after last weekly triage date | Run `review-issue.prompt.md` + assign area |
+| 🆕 **Created This Week** | `createdAt` is after last weekly triage date | Use `Get-IssueDetails.ps1` + assign area |
 | ⏳ **Older Pending** | Created before this week, still no area label | Follow up — why not actioned? |
 | ✅ **Resolved** | In previous state, NOT in current | Acknowledge (got area label or closed) |
 | 🏷️ **Closed (cleanup)** | Closed + still has `Needs-Triage` label | Remove `Needs-Triage` label |
@@ -135,11 +150,12 @@ See [template-summary.md](./templates/template-summary.md) for the full template
 | Symptom | Solution |
 |---------|----------|
 | No previous state file | First run — all issues shown as "New" |
-| MCP tools unavailable | Install GitHub Pull Requests extension and enable MCP |
-| Rate limited | Wait and retry, or use `gh` CLI fallback |
-| Missing issue details | Run individual review with review-issue.prompt.md |
+| `gh` CLI not installed | Run `winget install GitHub.cli` then `gh auth login` |
+| `gh` not authenticated | Run `gh auth login` and follow the prompts |
+| Rate limited | Wait and retry, or reduce `--limit` parameter |
+| Missing issue details | Use `Get-IssueDetails.ps1 -IssueNumber <number>` |
 
 ## Related Resources
 
-- [review-issue.prompt.md](../../prompts/review-issue.prompt.md) — Detailed single-issue analysis
-- [GitHub MCP documentation](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-in-vs-code/using-model-context-protocol-servers-in-vs-code)
+- [GitHub CLI documentation](https://cli.github.com/manual/) — `gh` CLI reference
+- [Scripts README](./scripts/) — PowerShell scripts for data fetching
