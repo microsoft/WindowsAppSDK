@@ -70,6 +70,7 @@
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Package" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageGraph" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
