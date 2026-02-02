@@ -124,12 +124,12 @@ end {
         else {
             $prev = $previousState.issues.$issueNumber
 
-            # Check for state changes
-            if ($prev.state -eq 'open' -and $issue.state -eq 'closed') {
+            # Check for state changes (use case-insensitive comparison since GitHub API returns uppercase OPEN/CLOSED)
+            if ($prev.state -ieq 'open' -and $issue.state -ieq 'closed') {
                 $category = 'closed'
                 $changes += "State: open → closed"
             }
-            elseif ($prev.state -eq 'closed' -and $issue.state -eq 'open') {
+            elseif ($prev.state -ieq 'closed' -and $issue.state -ieq 'open') {
                 $category = 'reopened'
                 $changes += "State: closed → open"
             }
@@ -203,7 +203,7 @@ end {
         if ($previousState) {
             Write-Host "  Previous triage: $($previousState.triageDate)" -ForegroundColor Gray
         }
-        Write-Host "  Current date:    $(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')" -ForegroundColor Gray
+        Write-Host "  Current date:    $((Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'))" -ForegroundColor Gray
         Write-Host ""
         
         Write-Host "  📊 Summary:" -ForegroundColor White

@@ -68,8 +68,8 @@ end {
 
     # Build state object
     $state = @{
-        triageDate = (Get-Date $TriageDate).ToString("yyyy-MM-ddTHH:mm:ssZ")
-        generatedAt = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssZ")
+        triageDate = (Get-Date $TriageDate).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+        generatedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
         issueCount = $issues.Count
         issues = @{}
     }
