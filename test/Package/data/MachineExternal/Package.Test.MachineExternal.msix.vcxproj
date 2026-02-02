@@ -117,4 +117,7 @@
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
   </Target>
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(MSBuildThisFileDirectory)Shadow.cat" DestinationFolder="$(OutDir)" />
+  </Target>
 </Project>

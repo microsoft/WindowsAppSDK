@@ -7,8 +7,6 @@
 
 #include <IsWindowsVersion.h>
 
-#include "PackageTests.Packages.h"
-
 namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -22,10 +20,10 @@ namespace Test::Package::Tests
     const auto UserExternal_PackageFullName{ ::TP::UserExternal::c_packageFullName };
     const auto MachineExternal_PackageFullName{ ::TP::MachineExternal::c_packageFullName };
 
-    class PackageTests_CPP
+    class PackageTests_Package_CPP
     {
     public:
-        BEGIN_TEST_CLASS(PackageTests_CPP)
+        BEGIN_TEST_CLASS(PackageTests_Package_CPP)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
@@ -90,7 +88,7 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
             VERIFY_IS_NOT_NULL(absoluteFilename);
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Effective) };
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Effective) };
             VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
@@ -104,7 +102,7 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
             VERIFY_IS_NOT_NULL(absoluteFilename);
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Install) };
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
             VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
@@ -118,7 +116,7 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
             VERIFY_IS_NOT_NULL(absoluteFilename);
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Mutable) };
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Mutable) };
             VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
@@ -132,7 +130,7 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
             VERIFY_IS_NOT_NULL(absoluteFilename);
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal) };
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_MachineExternal) };
             VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 
@@ -146,7 +144,7 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
             VERIFY_IS_NOT_NULL(absoluteFilename);
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_UserExternal) };
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_UserExternal) };
             VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
         }
 

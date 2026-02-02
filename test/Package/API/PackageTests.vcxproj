@@ -89,6 +89,7 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>api-ms-win-appmodel-runtime-l1-1-5.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -111,11 +112,16 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="PackageTests_CPP.cpp" />
-    <ClCompile Include="PackageTests_WinRT.cpp" />
+    <ClCompile Include="PackageTests_Package_CPP.cpp" />
+    <ClCompile Include="PackageTests_Package_WinRT.cpp" />
+    <ClCompile Include="PackageTests_PackageGraph_Packaged_CPP.cpp" />
+    <ClCompile Include="PackageTests_PackageGraph_Packaged_WinRT.cpp" />
+    <ClCompile Include="PackageTests_PackageGraph_Unpackaged_CPP.cpp" />
+    <ClCompile Include="PackageTests_PackageGraph_Unpackaged_WinRT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PackageTests_PackageGraph_Base.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

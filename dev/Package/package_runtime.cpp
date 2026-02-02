@@ -8,7 +8,6 @@
 namespace appmodel
 {
 inline GetPackageFilePathOptions package_properties_to_options(
-    PCWSTR packageFullName,
     std::uint32_t packageInfoFlags)
 {
     const auto hostRuntimeMatch{ WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_HOSTRUNTIME) ?
@@ -22,26 +21,26 @@ inline GetPackageFilePathOptions package_properties_to_options(
                                    GetPackageFilePathOptions_None };
     if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_FRAMEWORK))
     {
-        return GetPackageFilePathOptions_SearchFrameworkPackages | hostRuntimeMatch;
+        return GetPackageFilePathOptions_SearchFrameworkPackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
     }
     else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_OPTIONAL))
     {
-        return GetPackageFilePathOptions_SearchOptionalPackages | hostRuntimeMatch;
+        return GetPackageFilePathOptions_SearchOptionalPackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
     }
     else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_RESOURCE))
     {
-        return GetPackageFilePathOptions_SearchResourcePackages | hostRuntimeMatch;
+        return GetPackageFilePathOptions_SearchResourcePackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
     }
     else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_BUNDLE))
     {
-        return GetPackageFilePathOptions_SearchBundlePackages | hostRuntimeMatch;
+        return GetPackageFilePathOptions_SearchBundlePackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
     }
     else
     {
         // PACKAGE_INFO.flags has no PACKAGE_PROPERTY_MAIN so we can only determine PackageType=Main
         // by first verifying it's not any other type of package (Bundle|Framework|Optional|Resource).
         // When all else is ruled out what we're left with must be a Main package
-        return GetPackageFilePathOptions_SearchMainPackages | hostRuntimeMatch;
+        return GetPackageFilePathOptions_SearchMainPackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
     }
 }
 
@@ -74,7 +73,7 @@ inline GetPackageFilePathOptions get_package_properties(
     const auto& packageInfo{ *reinterpret_cast<PACKAGE_INFO*>(buffer.get()) };
 
     // Convert the package properties to options
-    return package_properties_to_options(packageFullName, packageInfo.flags);
+    return package_properties_to_options(packageInfo.flags);
 }
 
 inline bool is_match_for_package_properties(
@@ -333,7 +332,7 @@ STDAPI GetPackageFilePathInPackageGraph(
         }
 
         // This package is included in our search. Check for the file
-        auto path{ appmodel::get_package_file(packageFullName, filename, options) };
+        auto path{ appmodel::get_package_file(packageFullName, filename, effectiveOptions) };
         if (!path.empty())
         {
             auto absoluteFilename{ wil::make_process_heap_string(path.c_str()) };

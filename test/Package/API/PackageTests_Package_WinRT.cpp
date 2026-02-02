@@ -17,11 +17,13 @@ namespace Test::Package::Tests
     const auto Main_PackageFullName{ ::TP::WindowsAppRuntimeMain::c_PackageFullName };
     const auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
     const auto Mutable_PackageFullName{ ::TP::Mutable::c_packageFullName };
+    const auto UserExternal_PackageFullName{ ::TP::UserExternal::c_packageFullName };
+    const auto MachineExternal_PackageFullName{ ::TP::MachineExternal::c_packageFullName };
 
-    class PackageTests_WinRT
+    class PackageTests_Package_WinRT
     {
     public:
-        BEGIN_TEST_CLASS(PackageTests_WinRT)
+        BEGIN_TEST_CLASS(PackageTests_Package_WinRT)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
@@ -30,13 +32,14 @@ namespace Test::Package::Tests
         {
             ::TB::Setup();
 
-            //RemovePackage_MachineExternal();
+            RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
             RemovePackage_Mutable();
 
             AddPackage_Mutable();
             AddPackage_UserExternal();
-            //AddPackage_MachineExternal();
+            StagePackage_MachineExternal();
+            AddPackage_MachineExternal();
 
             return true;
         }

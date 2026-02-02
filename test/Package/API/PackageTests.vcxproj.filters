@@ -21,15 +21,30 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PackageTests_CPP.cpp">
+    <ClCompile Include="PackageTests_Package_CPP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PackageTests_WinRT.cpp">
+    <ClCompile Include="PackageTests_Package_WinRT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageTests_PackageGraph_Packaged_CPP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageTests_PackageGraph_Packaged_WinRT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageTests_PackageGraph_Unpackaged_CPP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageTests_PackageGraph_Unpackaged_WinRT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PackageTests.Packages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PackageTests_PackageGraph_Base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">

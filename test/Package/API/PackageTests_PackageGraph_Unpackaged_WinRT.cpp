@@ -5,6 +5,8 @@
 
 #include <IsWindowsVersion.h>
 
+#include "PackageTests_PackageGraph_Base.h"
+
 namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -14,51 +16,36 @@ static const winrt::hstring null_hstring;
 
 namespace Test::Package::Tests
 {
-    const auto Main_PackageFullName{ ::TP::WindowsAppRuntimeMain::c_PackageFullName };
-    const auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
-    const auto Mutable_PackageFullName{ ::TP::Mutable::c_packageFullName };
-
-    class PackageTests_WinRT
+    class PackageTests_PackageGraph_Unpackaged_WinRT : PackageTests_PackageGraph_Base
     {
     public:
-        BEGIN_TEST_CLASS(PackageTests_WinRT)
+        BEGIN_TEST_CLASS(PackageTests_PackageGraph_Unpackaged_WinRT)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
         {
-            ::TB::Setup();
+            if (!::WindowsVersion::IsWindows11_24H2OrGreater())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageGraph tests require >= 24H2. Skipping tests");
+                return true;
+            }
 
-            //RemovePackage_MachineExternal();
-            RemovePackage_UserExternal();
-            RemovePackage_Mutable();
-
-            AddPackage_Mutable();
-            AddPackage_UserExternal();
-            //AddPackage_MachineExternal();
-
-            return true;
+            return PackageTests_PackageGraph_Base::ClassSetup();
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
-            ::TB::Cleanup();
-
-            RemovePackage_MachineExternal();
-            RemovePackage_UserExternal();
-            RemovePackage_Mutable();
-
-            return true;
+            return PackageTests_PackageGraph_Base::ClassCleanup();
         }
 
         TEST_METHOD(GetFilePath_InvalidParameter)
         {
             try
             {
-                winrt::hstring packageFullName{ Framework_PackageFullName };
                 winrt::hstring noFileName;
-                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(noFileName, packageFullName);
+                std::ignore = winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(noFileName);
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -68,56 +55,25 @@ namespace Test::Package::Tests
 
             try
             {
-                winrt::hstring packageFullName{ Framework_PackageFullName };
                 winrt::hstring noFileName;
                 const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::None };
-                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(noFileName, packageFullName, options);
+                std::ignore = winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(noFileName, options);
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
             {
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
-        }
-
-        TEST_METHOD(GetFilePath_NullPackageFullName_UnpackagedProcess_NoPackage)
-        {
-            try
-            {
-                winrt::hstring noPackageFullName;
-                winrt::hstring fileName{ L"AppxManifest.xml" };
-                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, noPackageFullName);
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
-            }
-
-            try
-            {
-                winrt::hstring noPackageFullName;
-                winrt::hstring fileName{ L"AppxManifest.xml" };
-                const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::None };
-                std::ignore = winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, noPackageFullName, options);
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
-            }
-        }
-
-        TEST_METHOD(GetFilePath_NullPackageFullName_PackagedProcess_InstallPath)
-        {
-            //TODO
         }
 
         TEST_METHOD(GetFilePath)
         {
             winrt::hstring packageFullName{ Framework_PackageFullName };
+            winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"AppxManifest.xml" };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName) };
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
@@ -128,9 +84,12 @@ namespace Test::Package::Tests
         TEST_METHOD(GetFilePath_InstallPath)
         {
             winrt::hstring packageFullName{ Framework_PackageFullName };
+            winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"AppxManifest.xml" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
@@ -141,9 +100,12 @@ namespace Test::Package::Tests
         TEST_METHOD(GetFilePath_MutablePath)
         {
             winrt::hstring packageFullName{ Mutable_PackageFullName };
+            winrt::hstring packageFamilyName{ Mutable_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"AppxManifest.xml" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMutablePath };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
@@ -154,9 +116,12 @@ namespace Test::Package::Tests
         TEST_METHOD(GetFilePath_MachineExternalPath)
         {
             winrt::hstring packageFullName{ MachineExternal_PackageFullName };
+            winrt::hstring packageFamilyName{ MachineExternal_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMachineExternalPath };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
@@ -167,9 +132,12 @@ namespace Test::Package::Tests
         TEST_METHOD(GetFilePath_UserExternalPath)
         {
             winrt::hstring packageFullName{ UserExternal_PackageFullName };
+            winrt::hstring packageFamilyName{ UserExternal_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchUserExternalPath };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
@@ -180,43 +148,54 @@ namespace Test::Package::Tests
         TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)
         {
             winrt::hstring packageFullName{ Main_PackageFullName };
+            winrt::hstring packageFamilyName{ Main_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"AppxManifest.xml" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchFrameworkPackages };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
             VERIFY_IS_TRUE(absoluteFilename.empty());
         }
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_NoMatch)
         {
             winrt::hstring packageFullName{ Framework_PackageFullName };
+            winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"AppxManifest.xml" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMainPackages };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
             VERIFY_IS_TRUE(absoluteFilename.empty());
         }
 
-#if 0
         TEST_METHOD(GetFilePath_Filter_Static_NoMatch)
         {
             winrt::hstring packageFullName{ Framework_PackageFullName };
+            winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"AppxManifest.xml" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchFrameworkPackages |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchStaticDependencies };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
             VERIFY_IS_TRUE(absoluteFilename.empty());
         }
 
         TEST_METHOD(GetFilePath_Filter_Dynamic_NoMatch)
         {
             winrt::hstring packageFullName{ Framework_PackageFullName };
+            winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             winrt::hstring fileName{ L"AppxManifest.xml" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchFrameworkPackages |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchDynamicDependencies };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
             VERIFY_IS_TRUE(absoluteFilename.empty());
         }
 
@@ -229,6 +208,5 @@ namespace Test::Package::Tests
         {
             //TODO
         }
-#endif
     };
 }

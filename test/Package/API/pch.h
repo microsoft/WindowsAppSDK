@@ -9,6 +9,8 @@
 #include <shlobj_core.h>
 #include <shlobj.h>
 
+#include <MsixDynamicDependency.h>
+
 #include <wil/cppwinrt.h>
 #include <wil/filesystem.h>
 
@@ -25,6 +27,7 @@
 #include <WexTestClass.h>
 
 #include <AppModel.Package.h>
+#include <AppModel.PackageGraph.h>
 
 #include <WindowsAppRuntime.Test.Diagnostics.h>
 #include <WindowsAppRuntime.Test.AppModel.h>

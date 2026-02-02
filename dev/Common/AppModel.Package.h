@@ -6,6 +6,9 @@
 
 #include <appmodel.h>
 
+#include <filesystem>
+#include <string>
+
 #include <AppModel.Identity.h>
 
 namespace AppModel::Package
@@ -181,6 +184,17 @@ template <typename Tstring>
 inline Tstring GetEffectivePath(_In_ PCWSTR packageFullName)
 {
     return GetPath<Tstring>(packageFullName, PackagePathType_Effective);
+}
+
+inline std::filesystem::path GetAbsoluteFilename(
+    PCWSTR packageFullName,
+    PCWSTR filename,
+    PackagePathType packageType)
+{
+    const auto path{ ::AppModel::Package::GetPath<std::wstring>(packageFullName, packageType) };
+    std::filesystem::path pathName{ path };
+    pathName /= filename;
+    return std::filesystem::absolute(pathName);
 }
 }
 
