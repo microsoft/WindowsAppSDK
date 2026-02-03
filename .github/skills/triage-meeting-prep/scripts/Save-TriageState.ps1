@@ -115,15 +115,15 @@ end {
     $outputDir = Split-Path -Parent $OutputPath
     if ($outputDir -and -not (Test-Path $outputDir)) {
         New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
-        Write-Host "Created directory: $outputDir" -ForegroundColor Green
+        Write-Verbose "Created directory: $outputDir"
     }
 
     # Save state
     $state | ConvertTo-Json -Depth 10 | Set-Content -Path $OutputPath -Encoding UTF8
 
-    Write-Host "Saved triage state to: $OutputPath" -ForegroundColor Green
-    Write-Host "  - Date: $($state.triageDate)" -ForegroundColor Cyan
-    Write-Host "  - Issues: $($state.issueCount)" -ForegroundColor Cyan
+    Write-Verbose "Saved triage state to: $OutputPath"
+    Write-Verbose "  - Date: $($state.triageDate)"
+    Write-Verbose "  - Issues: $($state.issueCount)"
 
     # Also save dated backup
     $backupPath = Join-Path (Split-Path -Parent $OutputPath) "$TriageDate/state-snapshot.json"
@@ -132,7 +132,7 @@ end {
         New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
     }
     $state | ConvertTo-Json -Depth 10 | Set-Content -Path $backupPath -Encoding UTF8
-    Write-Host "Saved backup to: $backupPath" -ForegroundColor Green
+    Write-Verbose "Saved backup to: $backupPath"
     
     exit 0
 }

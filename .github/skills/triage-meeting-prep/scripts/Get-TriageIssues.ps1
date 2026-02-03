@@ -46,6 +46,7 @@
 [CmdletBinding()]
 param(
     [Parameter()]
+    [ValidatePattern('^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$')]
     [string]$Repository = "microsoft/WindowsAppSDK",
 
     [Parameter()]
@@ -95,7 +96,7 @@ And follow the prompts to authenticate.
     exit 1
 }
 
-Write-Host "Fetching Needs-Triage issues from $Repository..." -ForegroundColor Cyan
+Write-Verbose "Fetching Needs-Triage issues from $Repository..."
 
 # Build the gh command
 $ghArgs = @(
@@ -125,7 +126,7 @@ catch {
     exit 1
 }
 
-Write-Host "  Retrieved $($issues.Count) issues with Needs-Triage label" -ForegroundColor Gray
+Write-Verbose "  Retrieved $($issues.Count) issues with Needs-Triage label"
 
 # Filter to no-area issues if requested
 if ($NoAreaOnly) {
@@ -140,7 +141,7 @@ if ($NoAreaOnly) {
         }
         -not $hasAreaLabel
     })
-    Write-Host "  Filtered to $($issues.Count) issues WITHOUT area-* labels (excluded $($originalCount - $issues.Count))" -ForegroundColor Gray
+    Write-Verbose "  Filtered to $($issues.Count) issues WITHOUT area-* labels (excluded $($originalCount - $issues.Count))"
 }
 
 # Categorize issues

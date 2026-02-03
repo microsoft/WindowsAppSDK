@@ -78,8 +78,8 @@ end {
     if (Test-Path $PreviousStatePath) {
         try {
             $previousState = Get-Content -Path $PreviousStatePath -Raw | ConvertFrom-Json
-            Write-Host "Loaded previous state from: $PreviousStatePath" -ForegroundColor Cyan
-            Write-Host "  - Previous triage date: $($previousState.triageDate)" -ForegroundColor Cyan
+            Write-Verbose "Loaded previous state from: $PreviousStatePath"
+            Write-Verbose "  - Previous triage date: $($previousState.triageDate)"
         }
         catch {
             Write-Warning "Failed to load previous state: $_"
@@ -87,7 +87,7 @@ end {
         }
     }
     else {
-        Write-Host "No previous state found. This is the first triage run." -ForegroundColor Yellow
+        Write-Verbose "No previous state found. This is the first triage run."
         $isFirstRun = $true
     }
 

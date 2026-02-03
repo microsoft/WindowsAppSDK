@@ -43,6 +43,7 @@ param(
     [int]$IssueNumber,
 
     [Parameter()]
+    [ValidatePattern('^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$')]
     [string]$Repository = "microsoft/WindowsAppSDK",
 
     [Parameter()]
@@ -75,7 +76,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-Write-Host "Fetching issue #$IssueNumber from $Repository..." -ForegroundColor Cyan
+Write-Verbose "Fetching issue #$IssueNumber from $Repository..."
 
 # Fetch issue details
 $issueJson = gh issue view $IssueNumber --repo $Repository --json number,title,body,author,createdAt,updatedAt,closedAt,state,labels,milestone,comments,reactionGroups,url,assignees
@@ -90,18 +91,18 @@ $issue = $issueJson | ConvertFrom-Json
 $comments = @()
 if ($IncludeComments -and $issue.comments) {
     $comments = @($issue.comments)
-    Write-Host "  Retrieved $($comments.Count) comments" -ForegroundColor Gray
+    Write-Verbose "  Retrieved $($comments.Count) comments"
 }
 
 # Fetch timeline if requested
 $timeline = @()
 if ($IncludeTimeline) {
-    Write-Host "  Fetching timeline events..." -ForegroundColor Gray
+    Write-Verbose "  Fetching timeline events..."
     # gh doesn't have direct timeline support, use API
     $timelineJson = gh api "repos/$Repository/issues/$IssueNumber/timeline" --paginate 2>$null
     if ($LASTEXITCODE -eq 0 -and $timelineJson) {
         $timeline = $timelineJson | ConvertFrom-Json
-        Write-Host "  Retrieved $($timeline.Count) timeline events" -ForegroundColor Gray
+        Write-Verbose "  Retrieved $($timeline.Count) timeline events"
     }
 }
 
