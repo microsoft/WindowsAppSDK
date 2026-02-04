@@ -1,34 +1,46 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "MainWindow.xaml.h"
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
 
+#include "StoragePickersActivation.h"
+
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
-using namespace Microsoft::Windows::Storage::Pickers;
 
 namespace winrt::StoragePickersTestApp::implementation
 {
-    winrt::Windows::Foundation::IAsyncAction MainWindow::OnPickFileClick(Windows::Foundation::IInspectable const& /*sender*/, RoutedEventArgs const& /*args*/)
+    winrt::Windows::Foundation::IAsyncAction MainWindow::OnPickFileClick(
+        Windows::Foundation::IInspectable const& /*sender*/, 
+        RoutedEventArgs const& /*args*/)
     {
-        // Get the AppWindow ID for the picker
-        auto windowId = this->AppWindow().Id();
 
-        // Create the FileOpenPicker with the window ID
-        FileOpenPicker picker(windowId);
-        picker.FileTypeFilter().Append(L"*");
-
-        // Pick a single file
-        auto file = co_await picker.PickSingleFileAsync();
-
-        if (file)
+        try
         {
-            FilePathTextBox().Text(file.Path());
+            // Create FileOpenPicker using our local WindowsAppRuntime DLL
+            auto picker = ::StoragePickersTestApp::StoragePickersActivation::CreateFileOpenPicker(
+                this->AppWindow().Id());
+            
+            picker.FileTypeFilter().Append(L"*");
+            
+            auto result = co_await picker.PickSingleFileAsync();
+            
+            if (result)
+            {
+                FilePathTextBox().Text(result.Path());
+            }
+            else
+            {
+                FilePathTextBox().Text(L"No file selected (cancelled)");
+            }
         }
-        else
+        catch (winrt::hresult_error const& ex)
         {
-            FilePathTextBox().Text(L"No file selected");
+            FilePathTextBox().Text(L"Error: " + ex.message());
         }
     }
 }
