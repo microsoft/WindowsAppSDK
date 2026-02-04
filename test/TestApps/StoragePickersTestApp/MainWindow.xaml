@@ -9,7 +9,8 @@
     mc:Ignorable="d"
     Title="StoragePickersTestApp">
 
-    <Grid>
-
-    </Grid>
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+        <Button x:Name="PickFileButton" Content="Pick a File" Click="OnPickFileClick" />
+        <TextBox x:Name="FilePathTextBox" Width="400" IsReadOnly="True" PlaceholderText="Selected file path will appear here" />
+    </StackPanel>
 </Window>

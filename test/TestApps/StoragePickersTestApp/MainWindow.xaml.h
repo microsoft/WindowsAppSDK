@@ -12,8 +12,7 @@ namespace winrt::StoragePickersTestApp::implementation
             // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
         }
 
-        int32_t MyProperty();
-        void MyProperty(int32_t value);
+        winrt::Windows::Foundation::IAsyncAction OnPickFileClick(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
     };
 }
 

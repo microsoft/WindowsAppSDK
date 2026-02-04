@@ -6,19 +6,29 @@
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using namespace Microsoft::Windows::Storage::Pickers;
 
 namespace winrt::StoragePickersTestApp::implementation
 {
-    int32_t MainWindow::MyProperty()
+    winrt::Windows::Foundation::IAsyncAction MainWindow::OnPickFileClick(Windows::Foundation::IInspectable const& /*sender*/, RoutedEventArgs const& /*args*/)
     {
-        throw hresult_not_implemented();
-    }
+        // Get the AppWindow ID for the picker
+        auto windowId = this->AppWindow().Id();
 
-    void MainWindow::MyProperty(int32_t /* value */)
-    {
-        throw hresult_not_implemented();
+        // Create the FileOpenPicker with the window ID
+        FileOpenPicker picker(windowId);
+        picker.FileTypeFilter().Append(L"*");
+
+        // Pick a single file
+        auto file = co_await picker.PickSingleFileAsync();
+
+        if (file)
+        {
+            FilePathTextBox().Text(file.Path());
+        }
+        else
+        {
+            FilePathTextBox().Text(L"No file selected");
+        }
     }
 }
