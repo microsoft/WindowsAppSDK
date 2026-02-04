@@ -12,7 +12,7 @@ namespace winrt::StoragePickersTestApp::implementation
             // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
         }
 
-        winrt::Windows::Foundation::IAsyncAction OnPickFileClick(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        winrt::fire_and_forget OnPickFileClick(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
     };
 }
 

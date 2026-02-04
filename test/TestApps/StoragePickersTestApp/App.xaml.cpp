@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
+#include <windows.h>
+#include <sstream>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -37,7 +39,27 @@ namespace winrt::StoragePickersTestApp::implementation
     /// <param name="e">Details about the launch request and process.</param>
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
-        window = make<MainWindow>();
-        window.Activate();
+        try
+        {
+            window = make<MainWindow>();
+            window.Activate();
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"OnLaunched failed!\n\nHRESULT: 0x" << std::hex << static_cast<uint32_t>(ex.code()) 
+               << L"\n\nMessage: " << ex.message().c_str();
+            MessageBoxW(nullptr, ss.str().c_str(), L"StoragePickersTestApp Error", MB_OK | MB_ICONERROR);
+        }
+        catch (std::exception const& ex)
+        {
+            std::wstringstream ss;
+            ss << L"OnLaunched failed!\n\nstd::exception: " << ex.what();
+            MessageBoxW(nullptr, ss.str().c_str(), L"StoragePickersTestApp Error", MB_OK | MB_ICONERROR);
+        }
+        catch (...)
+        {
+            MessageBoxW(nullptr, L"OnLaunched failed with unknown exception!", L"StoragePickersTestApp Error", MB_OK | MB_ICONERROR);
+        }
     }
 }

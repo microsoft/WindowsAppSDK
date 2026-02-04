@@ -109,6 +109,7 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <PreprocessorDefinitions>DISABLE_XAML_GENERATED_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   
@@ -157,6 +158,9 @@
     <ClCompile Include="MainWindow.xaml.cpp">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   
@@ -191,11 +195,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   
-  <!-- Reference Storage Pickers from the prototype repo -->
+  <!-- Reference Storage Pickers WinMD from the repo's build output -->
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\storage.pickers.prototype\Microsoft.Windows.Storage.Pickers\Microsoft.Windows.Storage.Pickers.vcxproj">
-      <Project>{349e64cf-cb0c-4202-b1b5-7f543cc6e886}</Project>
-    </ProjectReference>
+    <Reference Include="Microsoft.Windows.Storage.Pickers">
+      <HintPath>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
   
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
@@ -223,5 +228,23 @@
     <Error Condition="!Exists('$(PackagesDir)Microsoft.Windows.SDK.BuildTools.10.0.26100.1742\build\Microsoft.Windows.SDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.Windows.SDK.BuildTools.10.0.26100.1742'))" />
     <Error Condition="!Exists('$(PackagesDir)Microsoft.Windows.SDK.BuildTools.10.0.26100.1742\build\Microsoft.Windows.SDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.Windows.SDK.BuildTools.10.0.26100.1742'))" />
     <Error Condition="!Exists('$(PackagesDir)Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.Windows.ImplementationLibrary.1.0.240803.1'))" />
+  </Target>
+  
+  <!-- Copy Windows App Runtime DLL and PRI from repo build output for runtime -->
+  <Target Name="CopyWindowsAppRuntimeDll" AfterTargets="Build">
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri')" />
+    <Message Importance="High" Text="Copied Microsoft.WindowsAppRuntime.dll and .pri from repo build output" 
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
+    <Warning Text="Microsoft.WindowsAppRuntime.dll not found in repo build output. Please build WindowsAppRuntime_DLL project first."
+      Condition="!Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
   </Target>
 </Project>
