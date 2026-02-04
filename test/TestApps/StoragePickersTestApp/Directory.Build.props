@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. Licensed under the MIT License. -->
+<!-- 
+  This file stops MSBuild from searching for and importing parent Directory.Build.props files.
+  This is necessary because the WindowsAppSDK repo's build system conflicts with consuming 
+  the shipped WindowsAppSDK NuGet package that this WinUI test app requires.
+-->
+<Project>
+  <!-- Empty file - stops inheritance from parent Directory.Build.props -->
+</Project>
