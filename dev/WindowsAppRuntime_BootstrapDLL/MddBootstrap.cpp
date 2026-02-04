@@ -14,6 +14,9 @@
 
 #include <filesystem>
 
+// Hybrid Loading Support: Preload local DLLs before Framework Package initialization
+static void PreloadLocalDlls() noexcept;
+
 HRESULT _MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -99,6 +102,96 @@ static std::wstring g_test_ddlmPackagePublisherId;
 static std::wstring g_test_frameworkPackageNamePrefix;
 static std::wstring g_test_mainPackageNamePrefix;
 
+// ============================================================================
+// Hybrid Loading Support: Preload local DLLs before Framework Package initialization
+// ============================================================================
+static void PreloadLocalDlls() noexcept
+{
+    OutputDebugStringW(L"[HybridBootstrap] ========================================\n");
+    OutputDebugStringW(L"[HybridBootstrap] Starting local DLL preload (Hybrid mode)\n");
+    OutputDebugStringW(L"[HybridBootstrap] ========================================\n");
+
+    try
+    {
+        // Get application directory
+        WCHAR appPath[MAX_PATH];
+        if (GetModuleFileNameW(nullptr, appPath, ARRAYSIZE(appPath)) == 0)
+        {
+            OutputDebugStringW(L"[HybridBootstrap] ERROR: Failed to get app path\n");
+            return;
+        }
+
+        // Remove filename, keep directory only
+        PWSTR lastSlash = wcsrchr(appPath, L'\\');
+        if (lastSlash)
+        {
+            *lastSlash = L'\0';
+        }
+
+        OutputDebugStringW(L"[HybridBootstrap] App directory: ");
+        OutputDebugStringW(appPath);
+        OutputDebugStringW(L"\n");
+
+        // List of DLLs to preload (customize as needed)
+        const PCWSTR dllsToPreload[] = {
+            L"DWriteCore.dll",
+            L"DirectML.dll",
+            // Add more DLLs to preload...
+        };
+
+        for (const auto& dllName : dllsToPreload)
+        {
+            WCHAR fullPath[MAX_PATH];
+            swprintf_s(fullPath, ARRAYSIZE(fullPath), L"%s\\%s", appPath, dllName);
+
+            // Check if file exists
+            DWORD fileAttr = GetFileAttributesW(fullPath);
+            if (fileAttr == INVALID_FILE_ATTRIBUTES)
+            {
+                OutputDebugStringW(L"[HybridBootstrap] SKIP (not found): ");
+                OutputDebugStringW(dllName);
+                OutputDebugStringW(L"\n");
+                continue;
+            }
+
+            // Preload the DLL
+            HMODULE hModule = LoadLibraryExW(fullPath, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+            if (hModule)
+            {
+                OutputDebugStringW(L"[HybridBootstrap] SUCCESS: Preloaded ");
+                OutputDebugStringW(dllName);
+
+                // Verify loaded path
+                WCHAR loadedPath[MAX_PATH];
+                if (GetModuleFileNameW(hModule, loadedPath, ARRAYSIZE(loadedPath)) > 0)
+                {
+                    OutputDebugStringW(L"\n[HybridBootstrap]   Path: ");
+                    OutputDebugStringW(loadedPath);
+                }
+                OutputDebugStringW(L"\n");
+            }
+            else
+            {
+                DWORD error = GetLastError();
+                WCHAR errorMsg[256];
+                swprintf_s(errorMsg, ARRAYSIZE(errorMsg),
+                    L"[HybridBootstrap] ERROR: Failed to load %s (Error: 0x%08X)\n",
+                    dllName, error);
+                OutputDebugStringW(errorMsg);
+            }
+        }
+
+        OutputDebugStringW(L"[HybridBootstrap] ========================================\n");
+        OutputDebugStringW(L"[HybridBootstrap] Preload completed\n");
+        OutputDebugStringW(L"[HybridBootstrap] ========================================\n");
+    }
+    catch (...)
+    {
+        OutputDebugStringW(L"[HybridBootstrap] ERROR: Exception during preload\n");
+    }
+}
+// ============================================================================
+
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -142,6 +235,9 @@ STDAPI MddBootstrapInitialize2(
     }
     else
     {
+        // Hybrid Loading: Preload local DLLs before Framework Package initialization
+        PreloadLocalDlls();
+
         hr = _MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
     }
     if (FAILED(hr))
