@@ -683,7 +683,7 @@ namespace Test::AppNotification::Builder
         {
             if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
             {
-                Log::Result(TestResults::Skipped, L"CallingPreviewSupport is experimental.");
+                Log::Result(TestResults::Skipped, L"AddCameraPreview API is experimental.");
                 return;
             }
 
@@ -710,7 +710,7 @@ namespace Test::AppNotification::Builder
         {
             if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
             {
-                Log::Result(TestResults::Skipped, L"CallingPreviewSupport is experimental.");
+                Log::Result(TestResults::Skipped, L"AddCameraPreview API is experimental.");
                 return;
             }
 
@@ -738,7 +738,7 @@ namespace Test::AppNotification::Builder
         {
             if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
             {
-                Log::Result(TestResults::Skipped, L"CallingPreviewSupport is experimental.");
+                Log::Result(TestResults::Skipped, L"AddCameraPreview API is experimental.");
                 return;
             }
 
@@ -766,7 +766,7 @@ namespace Test::AppNotification::Builder
         {
             if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
             {
-                Log::Result(TestResults::Skipped, L"CallingPreviewSupport is experimental.");
+                Log::Result(TestResults::Skipped, L"AddCameraPreview API is experimental.");
                 return;
             }
 
