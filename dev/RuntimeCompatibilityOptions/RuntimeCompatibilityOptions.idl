@@ -28,6 +28,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         DwmCoreI_ShutdownManipulationCrash = 60823930,
         ModelInitialization_Insights = 60909827,
         ModelInitialization_KnownExceptions = 60910847,
+
+        // 1.8.6
+        AppLifecycle_SharedMemoryRedirectionQueueFix = 60972838,
     };
 
     /// Represents a version of the Windows App Runtime.
