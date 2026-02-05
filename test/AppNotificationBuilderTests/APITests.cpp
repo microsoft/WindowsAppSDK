@@ -4,6 +4,8 @@
 #include "pch.h"
 #include "MddWin11.h"
 
+using namespace WEX::Logging;
+
 namespace winrt
 {
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
