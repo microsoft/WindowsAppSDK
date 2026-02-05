@@ -61,6 +61,8 @@ namespace winrt::StoragePickersTestApp::implementation
         }
 
         winrt::Windows::Foundation::IAsyncAction OnPickFileClick(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+
+        winrt::Windows::Foundation::IAsyncAction OnUWPPickFileClick(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
     };
 }
 

@@ -11,6 +11,7 @@
 
     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
         <Button x:Name="PickFileButton" Content="Pick a File" Click="OnPickFileClick" />
+        <Button x:Name="UWPPickFileButton" Content="Pick a File (UWP)" Click="OnUWPPickFileClick" />
         <TextBox x:Name="FilePathTextBox" Width="400" IsReadOnly="True" PlaceholderText="Selected file path will appear here" />
     </StackPanel>
 </Window>

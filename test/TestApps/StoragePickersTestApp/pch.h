@@ -25,5 +25,10 @@
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Microsoft.Windows.Storage.Pickers.h>
-#include <winrt/Windows.Storage.h>
 #include <wil/cppwinrt_helpers.h>
+
+// For legacy UWP pickers:
+#include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Pickers.h>
+// For IInitializeWithWindow (required for UWP pickers in desktop apps)
+#include <Shobjidl.h>
