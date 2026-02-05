@@ -95,6 +95,73 @@ gh auth login
 
 > **Important**: Every issue without an area label gets a review. The summary links to each review file.
 
+## Available Scripts
+
+The skill provides several PowerShell scripts for data fetching and analysis:
+
+### Get-TriageIssues.ps1
+
+Fetches all issues with the `Needs-Triage` label from the repository.
+
+```powershell
+# Get all Needs-Triage issues without area labels
+./Get-TriageIssues.ps1 -NoAreaOnly -OutputFormat summary
+
+# Get JSON output for programmatic processing
+$issues = ./Get-TriageIssues.ps1 -NoAreaOnly | ConvertFrom-Json
+```
+
+**Parameters:**
+- `-Repository` — Repository in 'owner/repo' format (default: microsoft/WindowsAppSDK)
+- `-State` — Filter by state: 'open', 'closed', or 'all' (default: all)
+- `-NoAreaOnly` — Only include issues without area-* labels
+- `-Limit` — Maximum issues to fetch (default: 200)
+- `-OutputFormat` — Output format: 'json', 'summary', or 'table' (default: json)
+
+### Get-IssueDetails.ps1
+
+Performs deep analysis of a single issue including scoring and recommendations.
+
+```powershell
+# Analyze a specific issue
+./Get-IssueDetails.ps1 -IssueNumber 1234 -OutputFormat summary
+```
+
+### Get-RepositoryLabels.ps1
+
+Fetches all label definitions from the repository including names, descriptions, and colors.
+
+```powershell
+# Get all labels
+./Get-RepositoryLabels.ps1 -OutputFormat summary
+
+# Get only area labels
+./Get-RepositoryLabels.ps1 -Filter "area-*" -OutputFormat table
+
+# Get labels from a different repository
+./Get-RepositoryLabels.ps1 -Repository "microsoft/terminal" -OutputFormat json
+```
+
+**Parameters:**
+- `-Repository` — Repository in 'owner/repo' format (default: microsoft/WindowsAppSDK)
+- `-Filter` — Filter pattern for label names (supports wildcards like 'area-*')
+- `-Limit` — Maximum labels to fetch (default: 500)
+- `-OutputFormat` — Output format: 'json', 'summary', or 'table' (default: json)
+
+**Use cases:**
+- Understanding available area labels for issue categorization
+- Verifying label descriptions for triage decisions
+- Comparing label definitions across repositories
+- Finding labels that lack descriptions
+
+### Compare-TriageState.ps1
+
+Compares current triage state with previous state to identify changes.
+
+### Save-TriageState.ps1
+
+Saves the current triage state for future comparisons.
+
 ## Output Structure
 
 All outputs are saved to `Generated Files/triageMeeting/<date>/`:
@@ -158,4 +225,4 @@ See [template-summary.md](./templates/template-summary.md) for the full template
 ## Related Resources
 
 - [GitHub CLI documentation](https://cli.github.com/manual/) — `gh` CLI reference
-- [Scripts README](./scripts/) — PowerShell scripts for data fetching
+- [Scripts directory](./scripts/) — PowerShell scripts for data fetching
