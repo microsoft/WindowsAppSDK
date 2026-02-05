@@ -246,7 +246,22 @@
       Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri')" />
     <Message Importance="High" Text="Copied Microsoft.WindowsAppRuntime.dll and .pri from repo build output" 
       Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
-    <Warning Text="Microsoft.WindowsAppRuntime.dll not found in repo build output. Please build WindowsAppRuntime_DLL project first."
-      Condition="!Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
+  </Target>
+  
+  <!-- 
+    Verify WindowsAppRuntime_DLL is built before compiling this test app.
+    We don't auto-build it because WindowsAppRuntime_DLL has many dependencies 
+    and requires building the full solution (very slow).
+  -->
+  <Target Name="VerifyWindowsAppRuntimeDllExists" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <_WindowsAppRuntimeDll>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll</_WindowsAppRuntimeDll>
+      <_WindowsAppRuntimeWinmd>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</_WindowsAppRuntimeWinmd>
+    </PropertyGroup>
+    <Error 
+      Text="WindowsAppRuntime_DLL not found for $(Configuration)|$(Platform). Please build it first:&#xA;&#xA;  Option 1: Build full solution&#xA;    msbuild WindowsAppRuntime.sln /p:Configuration=$(Configuration) /p:Platform=$(Platform)&#xA;&#xA;  Option 2: Use BuildAll.ps1&#xA;    .\BuildAll.ps1 -Platform $(Platform) -Configuration $(Configuration)&#xA;&#xA;Missing file: $(_WindowsAppRuntimeDll)"
+      Condition="!Exists('$(_WindowsAppRuntimeDll)')" />
+    <Message Importance="High" Text="Found WindowsAppRuntime_DLL build output: $(_WindowsAppRuntimeDll)" 
+      Condition="Exists('$(_WindowsAppRuntimeDll)')" />
   </Target>
 </Project>
