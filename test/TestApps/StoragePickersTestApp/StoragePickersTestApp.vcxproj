@@ -244,6 +244,21 @@
       DestinationFolder="$(OutDir)"
       SkipUnchangedFiles="true"
       Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri')" />
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.exp"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.exp')" />
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib')" />
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb')" />
     <Message Importance="High" Text="Copied Microsoft.WindowsAppRuntime.dll and .pri from repo build output" 
       Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
   </Target>
@@ -259,7 +274,7 @@
       <_WindowsAppRuntimeWinmd>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</_WindowsAppRuntimeWinmd>
     </PropertyGroup>
     <Error 
-      Text="WindowsAppRuntime_DLL not found for $(Configuration)|$(Platform). Please build it first:&#xA;&#xA;  Option 1: Build full solution&#xA;    msbuild WindowsAppRuntime.sln /p:Configuration=$(Configuration) /p:Platform=$(Platform)&#xA;&#xA;  Option 2: Use BuildAll.ps1&#xA;    .\BuildAll.ps1 -Platform $(Platform) -Configuration $(Configuration)&#xA;&#xA;Missing file: $(_WindowsAppRuntimeDll)"
+      Text="WindowsAppRuntime_DLL not found for $(Configuration)|$(Platform). Please build it first:&#xA;&#xA;  Option 1: Build full solution&#xA;    msbuild WindowsAppRuntime.sln /p:Configuration=$(Configuration) /p:Platform=$(Platform)&#xA;&#xA;  Option 2: Use BuildAll.cmd&#xA;    BuildAll.cmd -Platform $(Platform) -Configuration $(Configuration)&#xA;&#xA;Missing file: $(_WindowsAppRuntimeDll)"
       Condition="!Exists('$(_WindowsAppRuntimeDll)')" />
     <Message Importance="High" Text="Found WindowsAppRuntime_DLL build output: $(_WindowsAppRuntimeDll)" 
       Condition="Exists('$(_WindowsAppRuntimeDll)')" />
