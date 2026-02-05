@@ -7,8 +7,6 @@
 #include "MainWindow.g.cpp"
 #endif
 
-#include "StoragePickersActivation.h"
-
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
@@ -27,7 +25,7 @@ namespace winrt::StoragePickersTestApp::implementation
             
             picker.FileTypeFilter().Append(L"*");
             
-            auto result = co_await picker.PickSingleFileAsync();
+            PickFileResult result = co_await picker.PickSingleFileAsync();
             
             if (result)
             {
