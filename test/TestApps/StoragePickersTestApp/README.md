@@ -35,20 +35,18 @@ This logic is encapsulated in `StoragePickersActivation.h/.cpp`.
 
 ### Prerequisites
 
-1. Build `WindowsAppRuntime_DLL` first (provides Storage Pickers WinMD):
-   ```powershell
-   msbuild dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj /p:Configuration=Release /p:Platform=x64
-   ```
+1. Build `WindowsAppRuntime_DLL` first (for a new Microsoft.WindowsAppRuntime.dll file).
 
 2. Then build this test app:
    ```powershell
-   msbuild test\TestApps\StoragePickersTestApp\StoragePickersTestApp.vcxproj /p:Configuration=Release /p:Platform=x64
+   msbuild test\TestApps\StoragePickersTestApp\StoragePickersTestApp.vcxproj /p:Configuration=Debug /p:Platform=x64
    ```
 
 ### Output
 
 ```
-BuildOutput\Release\x64\StoragePickersTestApp\StoragePickersTestApp.exe
+BuildOutput\$(Configuration)\$(Platform)\StoragePickersTestApp\StoragePickersTestApp.exe
+
 ```
 
 ## Usage
@@ -59,9 +57,25 @@ BuildOutput\Release\x64\StoragePickersTestApp\StoragePickersTestApp.exe
 4. Selected file path appears in the text box
 5. Compare behavior, performance, and ease of use between the two APIs
 
+## Use This App to Debug the Storage.Pickers APIs
+
+1. Ensure you have successfully built the WindowsAppRuntime_DLL project by verifying these files can be found in `BuildOutput\Debug\x64\WindowsAppRuntime_DLL`:
+```
+Microsoft.Windows.Storage.Pickers.winmd
+Microsoft.WindowsAppRuntime.dll
+Microsoft.WindowsAppRuntime.exp
+Microsoft.WindowsAppRuntime.lib
+Microsoft.WindowsAppRuntime.pdb
+Microsoft.WindowsAppRuntime.pri
+```
+
+2. In Visual Studio, set the StoragePickersTestApp as the startup project.
+
+3. Click Debug
+
 ---
 
-## Appendix: Why Manual DLL Loading?
+## Appendix: Why Hardcoding DLL Load?
 
 Since Storage Pickers is released (WindowsAppSDK 1.8+), normal WinRT activation would load the 
 **released** version. To test our **latest local code**, we must bypass normal activation.
