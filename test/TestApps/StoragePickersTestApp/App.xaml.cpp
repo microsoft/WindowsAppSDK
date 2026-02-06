@@ -27,6 +27,7 @@ namespace winrt::StoragePickersTestApp::implementation
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
         window = make<MainWindow>();
+        window.as<MainWindow>()->InitializeDefaults();
         window.Activate();
     }
 }

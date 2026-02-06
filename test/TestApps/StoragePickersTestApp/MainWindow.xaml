@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. Licensed under the MIT License. -->
 <Window
     x:Class="StoragePickersTestApp.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,11 +8,187 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="StoragePickersTestApp">
+    Title="Storage Pickers Test App">
 
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-        <Button x:Name="PickFileButton" Content="Pick a File" Click="OnPickFileClick" />
-        <Button x:Name="UWPPickFileButton" Content="Pick a File (UWP)" Click="OnUWPPickFileClick" />
-        <TextBox x:Name="FilePathTextBox" Width="400" IsReadOnly="True" PlaceholderText="Selected file path will appear here" />
-    </StackPanel>
+    <Grid Padding="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Column: Controls and Tabs -->
+        <StackPanel Grid.Column="0" Spacing="12">
+            <!-- Header and Shared Controls -->
+            <StackPanel Spacing="8" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" Padding="0,0,0,12">
+                <TextBlock Text="Storage Pickers Test App" FontSize="24" FontWeight="Bold" Margin="0,0,0,8"/>
+                <TextBlock Text="Compare New API vs Legacy UWP API" FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                
+                <TextBlock Text="Shared Attributes (all pickers)" FontWeight="SemiBold" Margin="0,12,0,0"/>
+                
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <!-- SuggestedStartLocation -->
+                    <StackPanel Orientation="Vertical" Spacing="4" Width="200">
+                        <CheckBox x:Name="SuggestedStartLocationCheckBox" Content="SuggestedStartLocation"/>
+                        <ComboBox x:Name="StartLocationComboBox" SelectedIndex="2" HorizontalAlignment="Stretch">
+                            <ComboBoxItem Content="DocumentsLibrary"/>
+                            <ComboBoxItem Content="ComputerFolder"/>
+                            <ComboBoxItem Content="Desktop"/>
+                            <ComboBoxItem Content="Downloads"/>
+                            <ComboBoxItem Content="HomeGroup (UWP only)"/>
+                            <ComboBoxItem Content="MusicLibrary"/>
+                            <ComboBoxItem Content="PicturesLibrary"/>
+                            <ComboBoxItem Content="VideosLibrary"/>
+                            <ComboBoxItem Content="Objects3D"/>
+                            <ComboBoxItem Content="Unspecified"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- ViewMode -->
+                    <StackPanel Orientation="Vertical" Spacing="4" Width="200">
+                        <CheckBox x:Name="ViewModeCheckBox" Content="ViewMode"/>
+                        <ComboBox x:Name="ViewModeComboBox" SelectedIndex="0" HorizontalAlignment="Stretch">
+                            <ComboBoxItem Content="List"/>
+                            <ComboBoxItem Content="Thumbnail"/>
+                        </ComboBox>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <!-- CommitButtonText -->
+                    <StackPanel Orientation="Vertical" Spacing="4" Width="200">
+                        <CheckBox x:Name="CommitButtonCheckBox" Content="CommitButtonText"/>
+                        <TextBox x:Name="CommitButtonTextInput" PlaceholderText="Button text" Text="Select"/>
+                    </StackPanel>
+
+                    <!-- SettingsIdentifier -->
+                    <StackPanel Orientation="Vertical" Spacing="4" Width="200">
+                        <CheckBox x:Name="SettingsIdCheckBox" Content="SettingsIdentifier"/>
+                        <TextBox x:Name="SettingsIdInput" PlaceholderText="Settings ID" Text="TestSettings1"/>
+                    </StackPanel>
+
+                    <!-- Title (new API only) -->
+                    <StackPanel Orientation="Vertical" Spacing="4" Width="200">
+                        <CheckBox x:Name="TitleCheckBox" Content="Title (new API only)"/>
+                        <TextBox x:Name="TitleInput" PlaceholderText="Picker title" Text="Pick a file"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Tab View for Picker Types -->
+            <TabView IsAddTabButtonVisible="False" TabWidthMode="Equal">
+                <TabView.TabItems>
+
+                    <!-- FileOpenPicker Tab -->
+                    <TabViewItem Header="FileOpenPicker" IsClosable="False">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="FileOpenPicker Options" FontSize="16" FontWeight="SemiBold"/>
+
+                                <!-- FileTypeFilter -->
+                                <StackPanel Spacing="4">
+                                    <CheckBox x:Name="FileTypeFilterCheckBox" Content="FileTypeFilter" IsChecked="True"/>
+                                    <TextBox x:Name="FileTypeFilterInput" PlaceholderText="e.g., .jpg,.png,.txt" Text="*"/>
+                                </StackPanel>
+
+                                <!-- FileTypeChoices (new API) -->
+                                <StackPanel Spacing="4">
+                                    <CheckBox x:Name="OpenPickerFileTypeChoicesCheckBox" Content="FileTypeChoices (new API only)"/>
+                                    <TextBox x:Name="OpenPickerFileTypeChoicesInput" 
+                                             PlaceholderText="JSON format"
+                                             TextWrapping="Wrap" Height="50"/>
+                                </StackPanel>
+
+                                <!-- Test Buttons -->
+                                <TextBlock Text="Pick Single File" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="UWP Picker" Click="UwpPickSingleFile_Click" Width="150"/>
+                                    <Button Content="New Picker" Click="NewPickSingleFile_Click" Width="150" Style="{ThemeResource AccentButtonStyle}"/>
+                                </StackPanel>
+
+                                <TextBlock Text="Pick Multiple Files" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="UWP Picker" Click="UwpPickMultipleFiles_Click" Width="150"/>
+                                    <Button Content="New Picker" Click="NewPickMultipleFiles_Click" Width="150" Style="{ThemeResource AccentButtonStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabViewItem>
+
+                    <!-- FileSavePicker Tab -->
+                    <TabViewItem Header="FileSavePicker" IsClosable="False">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="FileSavePicker Options" FontSize="16" FontWeight="SemiBold"/>
+
+                                <StackPanel Orientation="Horizontal" Spacing="16">
+                                    <!-- SuggestedFileName -->
+                                    <StackPanel Spacing="4" Width="200">
+                                        <CheckBox x:Name="SuggestedFileNameCheckBox" Content="SuggestedFileName" IsChecked="True"/>
+                                        <TextBox x:Name="SuggestedFileNameInput" Text="MyDocument"/>
+                                    </StackPanel>
+
+                                    <!-- DefaultFileExtension -->
+                                    <StackPanel Spacing="4" Width="200">
+                                        <CheckBox x:Name="DefaultFileExtensionCheckBox" Content="DefaultFileExtension"/>
+                                        <TextBox x:Name="DefaultFileExtensionInput" Text=".txt"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- FileTypeChoices -->
+                                <StackPanel Spacing="4">
+                                    <CheckBox x:Name="SavePickerFileTypeChoicesCheckBox" Content="FileTypeChoices" IsChecked="True"/>
+                                    <TextBox x:Name="SavePickerFileTypeChoicesInput" 
+                                             PlaceholderText="JSON format"
+                                             TextWrapping="Wrap" Height="50"/>
+                                </StackPanel>
+
+                                <!-- Test Buttons -->
+                                <TextBlock Text="Pick Save File" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="UWP Picker" Click="UwpPickSaveFile_Click" Width="150"/>
+                                    <Button Content="New Picker" Click="NewPickSaveFile_Click" Width="150" Style="{ThemeResource AccentButtonStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabViewItem>
+
+                    <!-- FolderPicker Tab -->
+                    <TabViewItem Header="FolderPicker" IsClosable="False">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="FolderPicker Options" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="Uses shared attributes above" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                <!-- Test Buttons -->
+                                <TextBlock Text="Pick Single Folder" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="UWP Picker" Click="UwpPickFolder_Click" Width="150"/>
+                                    <Button Content="New Picker" Click="NewPickFolder_Click" Width="150" Style="{ThemeResource AccentButtonStyle}"/>
+                                </StackPanel>
+
+                                <TextBlock Text="Pick Multiple Folders (new API only)" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="New Picker" Click="NewPickMultipleFolders_Click" Width="150" Style="{ThemeResource AccentButtonStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabViewItem>
+
+                </TabView.TabItems>
+            </TabView>
+        </StackPanel>
+
+        <!-- Right Column: Results Log -->
+        <StackPanel Grid.Column="1" Padding="12,0,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Results Log" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <Button Content="Clear" Click="ClearLog_Click" VerticalAlignment="Center"/>
+            </StackPanel>
+            <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1" Margin="0,8,0,0" CornerRadius="4">
+                <ScrollViewer Height="550" VerticalScrollBarVisibility="Visible" Padding="8">
+                    <TextBlock x:Name="ResultsTextBlock" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+                </ScrollViewer>
+            </Border>
+        </StackPanel>
+    </Grid>
 </Window>
