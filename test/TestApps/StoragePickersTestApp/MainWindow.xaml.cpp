@@ -297,6 +297,30 @@ namespace winrt::StoragePickersTestApp::implementation
                 }
             }
 
+            if (OpenInitialFileTypeIndexCheckBox().IsChecked().Value())
+            {
+                try
+                {
+                    std::wstring indexText{ OpenInitialFileTypeIndexInput().Text() };
+                    int index = std::stoi(indexText);
+                    picker.InitialFileTypeIndex(index);
+                }
+                catch (...)
+                {
+                    LogResult(L"[NEW] InitialFileTypeIndex (open) parse error; using default");
+                }
+            }
+
+            if (SuggestedFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedFolder(SuggestedFolderInput().Text());
+            }
+
+            if (SuggestedStartFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartFolder(SuggestedStartFolderInput().Text());
+            }
+
             if (SuggestedStartLocationCheckBox().IsChecked().Value())
                 picker.SuggestedStartLocation(GetNewLocationId());
             if (ViewModeCheckBox().IsChecked().Value())
@@ -407,6 +431,30 @@ namespace winrt::StoragePickersTestApp::implementation
                     }
                     picker.FileTypeChoices().Insert(hstring{ choice.first }, extensions);
                 }
+            }
+
+            if (OpenInitialFileTypeIndexCheckBox().IsChecked().Value())
+            {
+                try
+                {
+                    std::wstring indexText{ OpenInitialFileTypeIndexInput().Text() };
+                    int index = std::stoi(indexText);
+                    picker.InitialFileTypeIndex(index);
+                }
+                catch (...)
+                {
+                    LogResult(L"[NEW] InitialFileTypeIndex (open multi) parse error; using default");
+                }
+            }
+
+            if (SuggestedFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedFolder(SuggestedFolderInput().Text());
+            }
+
+            if (SuggestedStartFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartFolder(SuggestedStartFolderInput().Text());
             }
 
             if (SuggestedStartLocationCheckBox().IsChecked().Value())
@@ -534,6 +582,36 @@ namespace winrt::StoragePickersTestApp::implementation
                 }
             }
 
+            if (SaveInitialFileTypeIndexCheckBox().IsChecked().Value())
+            {
+                try
+                {
+                    std::wstring indexText{ SaveInitialFileTypeIndexInput().Text() };
+                    int index = std::stoi(indexText);
+                    picker.InitialFileTypeIndex(index);
+                }
+                catch (...)
+                {
+                    LogResult(L"[NEW] InitialFileTypeIndex parse error; using default");
+                }
+            }
+
+            if (ShowOverwritePromptCheckBox().IsChecked().Value())
+            {
+                bool overwrite = ShowOverwritePromptComboBox().SelectedIndex() == 0;
+                picker.ShowOverwritePrompt(overwrite);
+            }
+
+            if (SuggestedFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedFolder(SuggestedFolderInput().Text());
+            }
+
+            if (SuggestedStartFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartFolder(SuggestedStartFolderInput().Text());
+            }
+
             if (SuggestedStartLocationCheckBox().IsChecked().Value())
                 picker.SuggestedStartLocation(GetNewLocationId());
             if (CommitButtonCheckBox().IsChecked().Value())
@@ -633,6 +711,16 @@ namespace winrt::StoragePickersTestApp::implementation
             if (TitleCheckBox().IsChecked().Value())
                 picker.Title(TitleInput().Text());
 
+            if (SuggestedFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedFolder(SuggestedFolderInput().Text());
+            }
+
+            if (SuggestedStartFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartFolder(SuggestedStartFolderInput().Text());
+            }
+
             auto result = co_await picker.PickSingleFolderAsync();
 
             if (result)
@@ -672,6 +760,16 @@ namespace winrt::StoragePickersTestApp::implementation
                 picker.SettingsIdentifier(SettingsIdInput().Text());
             if (TitleCheckBox().IsChecked().Value())
                 picker.Title(TitleInput().Text());
+
+            if (SuggestedFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedFolder(SuggestedFolderInput().Text());
+            }
+
+            if (SuggestedStartFolderCheckBox().IsChecked().Value())
+            {
+                picker.SuggestedStartFolder(SuggestedStartFolderInput().Text());
+            }
 
             auto results = co_await picker.PickMultipleFoldersAsync();
 

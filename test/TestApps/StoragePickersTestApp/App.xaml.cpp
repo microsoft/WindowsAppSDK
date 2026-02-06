@@ -5,6 +5,9 @@
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
 
+#include <winrt/Microsoft.UI.Windowing.h>
+#include <winrt/Windows.Graphics.h>
+
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
@@ -28,6 +31,12 @@ namespace winrt::StoragePickersTestApp::implementation
     {
         window = make<MainWindow>();
         window.as<MainWindow>()->InitializeDefaults();
+
+        if (auto appWindow = window.AppWindow())
+        {
+            appWindow.Resize(winrt::Windows::Graphics::SizeInt32{ 1800, 1220 });
+        }
+
         window.Activate();
     }
 }
