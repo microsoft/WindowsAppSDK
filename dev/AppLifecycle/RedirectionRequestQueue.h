@@ -6,8 +6,8 @@
 #include <guiddef.h>
 #include <FrameworkUdk/Containment.h>
 
-// Bug 60972838: [1.7.9 servicing] Fix SharedMemory redirection queue and add telemetry events (PR#6127)
-#define WINAPPSDK_CHANGEID_60972838 60972838, WinAppSDK_1_7_9
+// Bug 60973099: [1.7.9 servicing] Fix SharedMemory redirection queue and add telemetry events (PR#6127)
+#define WINAPPSDK_CHANGEID_60973099 60973099, WinAppSDK_1_7_9
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
@@ -43,7 +43,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         {
             m_name = name;
 
-            if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+            if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60973099>())
             {
                 // Legacy layout: head pointer + queue using pointer size for header
                 auto headPointerSizeInBytes = sizeof(QueueItem*);
@@ -160,7 +160,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         QueueItem* AllocateItem()
         {
-            if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+            if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60973099>())
             {
                 // Legacy behavior: pointer arithmetic in bytes
 #pragma warning(suppress: 6305) // C6305: PREFast does not know upperBounds was also computed in byte count so it is compatible with "sizeof(QueueItem)".
