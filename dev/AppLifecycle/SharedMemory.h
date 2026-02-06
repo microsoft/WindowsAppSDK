@@ -2,6 +2,11 @@
 // Licensed under the MIT License.
 #pragma once
 
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60972838: [1.7.9 servicing] Fix SharedMemory redirection queue and add telemetry events (PR#6127)
+#define WINAPPSDK_CHANGEID_60972838 60972838, WinAppSDK_1_7_9
+
 template <typename T>
 struct DynamicSharedMemory
 {
@@ -93,6 +98,19 @@ public:
 protected:
     bool OpenInternal(size_t size)
     {
+        if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+        {
+            // Legacy behavior: allocate only the requested size without DynamicSharedMemory.size overhead
+            m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(size), m_name.c_str()));
+            THROW_LAST_ERROR_IF_NULL(m_file);
+
+            bool createdFile = (GetLastError() != ERROR_ALREADY_EXISTS);
+            m_view.reset(reinterpret_cast<DynamicSharedMemory<T>*>(MapViewOfFile(m_file.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, size)));
+            THROW_LAST_ERROR_IF_NULL(m_view);
+
+            return createdFile;
+        }
+
         // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
         size_t totalSize = size + sizeof(size_t);
         m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(totalSize), m_name.c_str()));

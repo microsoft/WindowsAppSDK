@@ -4,6 +4,10 @@
 #include "SharedMemory.h"
 #include "RedirectionRequest.h"
 #include <guiddef.h>
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60972838: [1.7.9 servicing] Fix SharedMemory redirection queue and add telemetry events (PR#6127)
+#define WINAPPSDK_CHANGEID_60972838 60972838, WinAppSDK_1_7_9
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
@@ -38,6 +42,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         void Init(const std::wstring& name)
         {
             m_name = name;
+
+            if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+            {
+                // Legacy layout: head pointer + queue using pointer size for header
+                auto headPointerSizeInBytes = sizeof(QueueItem*);
+                auto queueSizeInBytes = sizeof(QueueItem) * c_queueSize;
+                m_data.Open(name, headPointerSizeInBytes + queueSizeInBytes);
+#pragma warning(suppress: 6305) // C6305: PREFast does not know m_data.Get() is compatible with "sizeof(size_t)".
+                m_dataStart = reinterpret_cast<QueueItem*>(m_data.Get() + sizeof(size_t));
+                return;
+            }
 
             // We store the head pointer at the beginning of the memory, and then items in the queue after.
             auto headPointerSizeInBytes = sizeof(size_t);
@@ -145,6 +160,25 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         QueueItem* AllocateItem()
         {
+            if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+            {
+                // Legacy behavior: pointer arithmetic in bytes
+#pragma warning(suppress: 6305) // C6305: PREFast does not know upperBounds was also computed in byte count so it is compatible with "sizeof(QueueItem)".
+                QueueItem* upperBounds = reinterpret_cast<QueueItem*>(m_data.Get()) + m_data.Size();
+                auto cur = m_dataStart;
+
+#pragma warning(suppress: 6305) // C6305: PREFast does not know upperBounds was also computed in byte count so it is compatible with "sizeof(QueueItem)".
+                while (cur < (upperBounds - sizeof(QueueItem)) && cur->inUse)
+                {
+#pragma warning(suppress: 6305) // C6305: PREFast does not know cur was also computed in byte count so it is compatible with "sizeof(QueueItem)".
+                    cur += sizeof(QueueItem);
+                }
+
+#pragma warning(suppress: 6305) // C6305: PREFast does not know upperBounds was also computed in byte count so it is compatible with "sizeof(QueueItem)".
+                THROW_HR_IF(E_OUTOFMEMORY, cur >= (upperBounds - sizeof(QueueItem)));
+                return cur;
+            }
+
             // m_dataStart points to the first QueueItem in the shared memory.
             // The total size of the queue is c_queueSize items.
             // m_dataStart + c_queueSize will point to one past the end of the queue.
