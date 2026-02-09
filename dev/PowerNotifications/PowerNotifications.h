@@ -704,7 +704,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void SystemSuspendStatusChanged_Callback(ULONG PowerEvent)
             {
                 using namespace Power;
-                Power::SystemSuspendStatus newStatus;
+                Power::SystemSuspendStatus newStatus = SystemSuspendStatus::Uninitialized;
                 
                 if (PowerEvent == PBT_APMSUSPEND)
                 {
