@@ -124,7 +124,6 @@ inline bool is_match_for_package_properties(
 inline std::filesystem::path get_package_file_for_location(
     PCWSTR packageFullName,
     _In_ PCWSTR filename,
-    _In_ GetPackageFilePathOptions options,
     PackagePathType packagePathType)
 {
     std::filesystem::path absoluteFilename;
@@ -154,30 +153,30 @@ inline std::filesystem::path get_package_file(
         if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMachineExternalPath))
         {
             // EffectiveExternal == UserExternal if package/user has one else MachineExternal
-            path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_EffectiveExternal);
+            path = get_package_file_for_location(packageFullName, filename, PackagePathType_EffectiveExternal);
         }
         else
         {
-            path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_UserExternal);
+            path = get_package_file_for_location(packageFullName, filename, PackagePathType_UserExternal);
         }
     }
     else if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMachineExternalPath))
     {
-        path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_MachineExternal);
+        path = get_package_file_for_location(packageFullName, filename, PackagePathType_MachineExternal);
     }
     if (path.empty())
     {
         // Search Mutable location
         if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMutablePath))
         {
-            path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_Mutable);
+            path = get_package_file_for_location(packageFullName, filename, PackagePathType_Mutable);
         }
         if (path.empty())
         {
             // Search Install location
             if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchInstallPath))
             {
-                path = get_package_file_for_location(packageFullName, filename, options, PackagePathType_Install);
+                path = get_package_file_for_location(packageFullName, filename, PackagePathType_Install);
             }
         }
     }
