@@ -3,22 +3,21 @@
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
-  xmlns:uap15="http://schemas.microsoft.com/appx/manifest/uap/windows10/15"
-  IgnorableNamespaces="uap uap10 uap15">
+  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap desktop6 rescap">
 
   <Identity
-    Name="Test.Package.UserExternal"
+    Name="Test.Package.Framework"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.2.3.4"
     ProcessorArchitecture="neutral" />
 
   <Properties>
-    <DisplayName>Test.Package.UserExternal</DisplayName>
+    <DisplayName>Test.Package.Framework</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>logo.png</Logo>
-    <uap15:DependencyTarget>true</uap15:DependencyTarget>
-    <uap10:AllowExternalContent>true</uap10:AllowExternalContent>
+    <Framework>true</Framework>
   </Properties>
 
   <Dependencies>

@@ -147,8 +147,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)
         {
-            winrt::hstring packageFullName{ Main_PackageFullName };
-            winrt::hstring packageFamilyName{ Main_PackageFamilyName };
+            PCWSTR packageFamilyName{ Main_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
             winrt::hstring fileName{ L"AppxManifest.xml" };
@@ -160,7 +159,6 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_NoMatch)
         {
-            winrt::hstring packageFullName{ Framework_PackageFullName };
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
@@ -173,7 +171,6 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_Filter_Static_NoMatch)
         {
-            winrt::hstring packageFullName{ Framework_PackageFullName };
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
@@ -187,7 +184,6 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_Filter_Dynamic_NoMatch)
         {
-            winrt::hstring packageFullName{ Framework_PackageFullName };
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
@@ -199,14 +195,22 @@ namespace Test::Package::Tests
             VERIFY_IS_TRUE(absoluteFilename.empty());
         }
 
-        TEST_METHOD(GetFilePath_Filter_Static)
-        {
-            //TODO
-        }
-
         TEST_METHOD(GetFilePath_Filter_Dynamic)
         {
-            //TODO
+            winrt::hstring packageFullName{ Framework_PackageFullName };
+            winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            winrt::hstring fileName{ L"Shadow.cat" };
+            const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
+                                winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchFrameworkPackages |
+                                winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchDynamicDependencies };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
+            VERIFY_IS_FALSE(absoluteFilename.empty());
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
         }
     };
 }

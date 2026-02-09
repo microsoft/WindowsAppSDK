@@ -199,39 +199,5 @@ namespace Test::Package::Tests
             const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
             VERIFY_IS_TRUE(absoluteFilename.empty());
         }
-
-#if 0
-        TEST_METHOD(GetFilePath_Filter_Static_NoMatch)
-        {
-            winrt::hstring packageFullName{ Framework_PackageFullName };
-            winrt::hstring fileName{ L"AppxManifest.xml" };
-            const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
-                                winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchFrameworkPackages |
-                                winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchStaticDependencies };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
-            VERIFY_IS_TRUE(absoluteFilename.empty());
-        }
-
-        TEST_METHOD(GetFilePath_Filter_Dynamic_NoMatch)
-        {
-            winrt::hstring packageFullName{ Framework_PackageFullName };
-            winrt::hstring fileName{ L"AppxManifest.xml" };
-            const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
-                                winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchFrameworkPackages |
-                                winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchDynamicDependencies };
-            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
-            VERIFY_IS_TRUE(absoluteFilename.empty());
-        }
-
-        TEST_METHOD(GetFilePath_Filter_Static)
-        {
-            //TODO
-        }
-
-        TEST_METHOD(GetFilePath_Filter_Dynamic)
-        {
-            //TODO
-        }
-#endif
     };
 }

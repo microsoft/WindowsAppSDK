@@ -22,7 +22,6 @@ namespace Test::Package::Tests
         BEGIN_TEST_CLASS(PackageTests_PackageGraph_Unpackaged_CPP)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
@@ -43,8 +42,8 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_InvalidParameter)
         {
-            //***SEEME***PCWSTR packageFamilyName{ Framework_PackageFamilyName };
-            //***SEEME***wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
             PCWSTR noFileName{};
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
@@ -55,8 +54,8 @@ namespace Test::Package::Tests
         TEST_METHOD(GetFilePath)
         {
             PCWSTR packageFullName{ Framework_PackageFullName };
-            //***SEEME***PCWSTR packageFamilyName{ Framework_PackageFamilyName };
-            //***SEEME***wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_None };
@@ -72,8 +71,8 @@ namespace Test::Package::Tests
         TEST_METHOD(GetFilePath_InstallPath)
         {
             PCWSTR packageFullName{ Framework_PackageFullName };
-            //***SEEME***PCWSTR packageFamilyName{ Framework_PackageFamilyName };
-            //***SEEME***wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath };
@@ -139,6 +138,9 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)
         {
+            PCWSTR packageFamilyName{ Main_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath |
                                 GetPackageFilePathOptions_SearchFrameworkPackages };
@@ -149,8 +151,8 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_NoMatch)
         {
-            //***SEEME***PCWSTR packageFamilyName{ Framework_PackageFamilyName };
-            //***SEEME***wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath |
@@ -162,8 +164,8 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_Filter_Static_NoMatch)
         {
-            //***SEEME***PCWSTR packageFamilyName{ Framework_PackageFamilyName };
-            //***SEEME***wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath |
@@ -176,10 +178,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_Filter_Dynamic_NoMatch)
         {
-            //***SEEME***PCWSTR packageFamilyName{ Framework_PackageFamilyName };
-            //***SEEME***wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
-
-            PCWSTR fileName{ L"AppxManifest.xml" };
+            PCWSTR fileName{ L"Shadow.cat" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath |
                                 GetPackageFilePathOptions_SearchFrameworkPackages |
                                 GetPackageFilePathOptions_SearchDynamicDependencies };
@@ -188,14 +187,23 @@ namespace Test::Package::Tests
             VERIFY_IS_NULL(absoluteFilename);
         }
 
-        TEST_METHOD(GetFilePath_Filter_Static)
-        {
-            //TODO
-        }
-
         TEST_METHOD(GetFilePath_Filter_Dynamic)
         {
-            //TODO
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchFrameworkPackages |
+                                GetPackageFilePathOptions_SearchDynamicDependencies };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()}, WEX::Common::String().Format(L"Expected:%ls AbsoluteFilename:%ls", expected.c_str(), absoluteFilename.get()));
         }
     };
 }

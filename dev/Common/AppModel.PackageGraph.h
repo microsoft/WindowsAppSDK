@@ -21,7 +21,7 @@ inline HRESULT GetCurrentPackageGraph(
     LONG rc{ ::GetCurrentPackageInfo(flags, &bufferLength, nullptr, &packageInfoCount) };
     if ((rc == APPMODEL_ERROR_NO_PACKAGE) || (packageInfoCount == 0))
    {
-        // No packages. We�re done
+        // No packages. We're done
         return S_OK;
     }
     RETURN_HR_IF(HRESULT_FROM_WIN32(rc), rc != ERROR_INSUFFICIENT_BUFFER);

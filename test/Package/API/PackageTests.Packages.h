@@ -12,6 +12,18 @@ namespace TP = ::Test::Packages;
 
 namespace Test::Packages
 {
+namespace Framework
+{
+    constexpr PCWSTR c_packageDirName = L"Package.Test.Framework.msix";
+    constexpr PCWSTR c_packageFamilyName = L"Test.Package.Framework_8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFullName = L"Test.Package.Framework_1.2.3.4_neutral__8wekyb3d8bbwe";
+}
+namespace Main
+{
+    constexpr PCWSTR c_packageDirName = L"Package.Test.Main.msix";
+    constexpr PCWSTR c_packageFamilyName = L"Test.Package.Main_8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFullName = L"Test.Package.Main_1.2.3.4_neutral__8wekyb3d8bbwe";
+}
 namespace Mutable
 {
     constexpr PCWSTR c_packageDirName = L"Package.Test.Mutable.msix";
@@ -35,6 +47,124 @@ namespace MachineExternal
 namespace Test::Package::Tests
 {
     namespace TP = ::Test::Packages;
+
+    inline bool IsPackageRegistered_Framework()
+    {
+        return TP::IsPackageRegistered(TP::Framework::c_packageFullName);
+    }
+    inline bool IsPackageStaged_Framework()
+    {
+        return TP::IsPackageStaged(TP::Framework::c_packageFullName);
+    }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Framework()
+    {
+        return TP::GetPackageStatus(TP::Framework::c_packageFullName);
+    }
+    inline void AddPackage_Framework()
+    {
+        TP::AddPackageIfNecessary(TP::Framework::c_packageDirName, TP::Framework::c_packageFullName);
+    }
+    inline void AddPackageDefer_Framework()
+    {
+        TP::AddPackageDeferIfNecessary(TP::Framework::c_packageDirName, TP::Framework::c_packageFullName);
+    }
+    inline void StagePackage_Framework()
+    {
+        TP::StagePackageIfNecessary(TP::Framework::c_packageDirName, TP::Framework::c_packageFullName);
+    }
+    inline void RegisterPackage_Framework()
+    {
+        TP::RegisterPackageIfNecessary(TP::Framework::c_packageFullName);
+    }
+    inline void RemovePackage_Framework()
+    {
+        if (IsPackageRegistered_Framework())
+        {
+            TP::RemovePackage(TP::Framework::c_packageFullName);
+        }
+        else if (IsPackageStaged_Framework())
+        {
+            // We can't directly remove a Stage package not registered for current user
+            // w/o admin privilege but we can add it to make it registered and then remove it.
+            AddPackage_Framework();
+            TP::RemovePackage(TP::Framework::c_packageFullName);
+        }
+    }
+    inline void RemovePackageFamily_Framework()
+    {
+        RemovePackage_Framework();
+    }
+    inline bool IsPackageProvisioned_Framework()
+    {
+        return TP::IsPackageProvisioned(TP::Framework::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Framework()
+    {
+        TP::ProvisionPackage(TP::Framework::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Framework()
+    {
+        TP::DeprovisionPackageIfNecessary(TP::Framework::c_packageFamilyName);
+    }
+
+    inline bool IsPackageRegistered_Main()
+    {
+        return TP::IsPackageRegistered(TP::Main::c_packageFullName);
+    }
+    inline bool IsPackageStaged_Main()
+    {
+        return TP::IsPackageStaged(TP::Main::c_packageFullName);
+    }
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus_Main()
+    {
+        return TP::GetPackageStatus(TP::Main::c_packageFullName);
+    }
+    inline void AddPackage_Main()
+    {
+        TP::AddPackageIfNecessary(TP::Main::c_packageDirName, TP::Main::c_packageFullName);
+    }
+    inline void AddPackageDefer_Main()
+    {
+        TP::AddPackageDeferIfNecessary(TP::Main::c_packageDirName, TP::Main::c_packageFullName);
+    }
+    inline void StagePackage_Main()
+    {
+        TP::StagePackageIfNecessary(TP::Main::c_packageDirName, TP::Main::c_packageFullName);
+    }
+    inline void RegisterPackage_Main()
+    {
+        TP::RegisterPackageIfNecessary(TP::Main::c_packageFullName);
+    }
+    inline void RemovePackage_Main()
+    {
+        if (IsPackageRegistered_Main())
+        {
+            TP::RemovePackage(TP::Main::c_packageFullName);
+        }
+        else if (IsPackageStaged_Main())
+        {
+            // We can't directly remove a Stage package not registered for current user
+            // w/o admin privilege but we can add it to make it registered and then remove it.
+            AddPackage_Main();
+            TP::RemovePackage(TP::Main::c_packageFullName);
+        }
+    }
+    inline void RemovePackageFamily_Main()
+    {
+        RemovePackage_Main();
+    }
+    inline bool IsPackageProvisioned_Main()
+    {
+        return TP::IsPackageProvisioned(TP::Main::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Main()
+    {
+        TP::ProvisionPackage(TP::Main::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Main()
+    {
+        TP::DeprovisionPackageIfNecessary(TP::Main::c_packageFamilyName);
+    }
 
     inline bool IsPackageRegistered_Mutable()
     {

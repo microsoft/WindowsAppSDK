@@ -17,7 +17,7 @@ namespace TD = ::Test::Diagnostics;
 namespace Test::Package::Tests
 {
     const auto Main_PackageFullName{ ::TP::WindowsAppRuntimeMain::c_PackageFullName };
-    const auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
+    const auto Framework_PackageFullName{ ::TP::Framework::c_packageFullName };
     const auto Mutable_PackageFullName{ ::TP::Mutable::c_packageFullName };
     const auto UserExternal_PackageFullName{ ::TP::UserExternal::c_packageFullName };
     const auto MachineExternal_PackageFullName{ ::TP::MachineExternal::c_packageFullName };
@@ -37,7 +37,9 @@ namespace Test::Package::Tests
             RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
             RemovePackage_Mutable();
+            RemovePackage_Framework();
 
+            AddPackage_Framework();
             AddPackage_Mutable();
             AddPackage_UserExternal();
             StagePackage_MachineExternal();
@@ -53,6 +55,7 @@ namespace Test::Package::Tests
             RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
             RemovePackage_Mutable();
+            RemovePackage_Framework();
 
             return true;
         }
@@ -171,41 +174,5 @@ namespace Test::Package::Tests
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
             VERIFY_IS_NULL(absoluteFilename);
         }
-
-#if 0
-        TEST_METHOD(GetPackageFilePath_Filter_Static_NoMatch)
-        {
-            PCWSTR packageFullName{ Framework_PackageFullName };
-            PCWSTR fileName{ L"AppxManifest.xml" };
-            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
-                                GetPackageFilePathOptions_SearchFrameworkPackages |
-                                GetPackageFilePathOptions_SearchStaticDependencies };
-            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
-            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
-            VERIFY_IS_NULL(absoluteFilename);
-        }
-
-        TEST_METHOD(GetPackageFilePath_Filter_Dynamic_NoMatch)
-        {
-            PCWSTR packageFullName{ Framework_PackageFullName };
-            PCWSTR fileName{ L"AppxManifest.xml" };
-            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
-                                GetPackageFilePathOptions_SearchFrameworkPackages |
-                                GetPackageFilePathOptions_SearchDynamicDependencies };
-            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
-            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
-            VERIFY_IS_NULL(absoluteFilename);
-        }
-
-        TEST_METHOD(GetPackageFilePath_Filter_Static)
-        {
-            //TODO
-        }
-
-        TEST_METHOD(GetPackageFilePath_Filter_Dynamic)
-        {
-            //TODO
-        }
-#endif
     };
 }

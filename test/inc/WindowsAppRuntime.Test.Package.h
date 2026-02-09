@@ -284,7 +284,14 @@ inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
         WIN32_FILE_ATTRIBUTE_DATA data{};
         const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
         const auto lastError{ ::GetLastError() };
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
+        if (ok)
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):TRUE", msix.c_str()));
+        }
+        else
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):FALSE LastError:%u", msix.c_str(), lastError));
+        }
 
         std::error_code errorcode{};
         auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
@@ -317,6 +324,7 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
 
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageManager.AddPackageAsync(): uri=%ls", msixUri.ToString().c_str()));
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
     auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };

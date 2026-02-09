@@ -10,10 +10,10 @@ namespace TD = ::Test::Diagnostics;
 
 namespace Test::Package::Tests
 {
-    constexpr auto Main_PackageFamilyName{ ::TP::WindowsAppRuntimeMain::c_PackageFamilyName };
-    constexpr auto Main_PackageFullName{ ::TP::WindowsAppRuntimeMain::c_PackageFullName };
-    constexpr auto Framework_PackageFamilyName{ ::TP::WindowsAppRuntimeFramework::c_PackageFamilyName };
-    constexpr auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
+    constexpr auto Framework_PackageFamilyName{ ::TP::Framework::c_packageFamilyName };
+    constexpr auto Framework_PackageFullName{ ::TP::Framework::c_packageFullName };
+    constexpr auto Main_PackageFamilyName{ ::TP::Main::c_packageFamilyName };
+    constexpr auto Main_PackageFullName{ ::TP::Main::c_packageFullName };
     constexpr auto Mutable_PackageFamilyName{ ::TP::Mutable::c_packageFamilyName };
     constexpr auto Mutable_PackageFullName{ ::TP::Mutable::c_packageFullName };
     constexpr auto UserExternal_PackageFamilyName{ ::TP::UserExternal::c_packageFamilyName };
@@ -55,46 +55,37 @@ namespace Test::Package::Tests
                 return true;
             }
 
-            //***SEEME***if (callerIsPackaged)
-            //***SEEME***{
-                ::TP::RemovePackage_WindowsAppRuntimeFramework();
-                ::TP::AddPackage_WindowsAppRuntimeFramework();
-
-                constexpr std::int32_t frameworkRank{ 1000 };
-                m_windowsAppRuntimeFramework_packageDependencyContext.reset(AddDynamicDependency(Framework_PackageFamilyName, frameworkRank));
-            //***SEEME***}
-            //***SEEME***else
-            //***SEEME***{
-            //***SEEME***    ::TB::Setup();
-            //***SEEME***}
-
             RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
             RemovePackage_Mutable();
+            RemovePackage_Main();
+            RemovePackage_Framework();
+            ::TP::RemovePackage_WindowsAppRuntimeFramework();
 
+            ::TP::AddPackage_WindowsAppRuntimeFramework();
+            AddPackage_Framework();
+            AddPackage_Main();
             AddPackage_Mutable();
             AddPackage_UserExternal();
             StagePackage_MachineExternal();
             RegisterPackage_MachineExternal();
+
+            constexpr std::int32_t frameworkRank{ 1000 };
+            m_windowsAppRuntimeFramework_packageDependencyContext.reset(AddDynamicDependency(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName, frameworkRank));
 
             return true;
         }
 
         bool ClassCleanup(const bool callerIsPackaged = true)
         {
+            m_windowsAppRuntimeFramework_packageDependencyContext.reset();
+
             RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
             RemovePackage_Mutable();
-
-            if (callerIsPackaged)
-            {
-                m_windowsAppRuntimeFramework_packageDependencyContext.reset();
-                ::TP::RemovePackage_WindowsAppRuntimeFramework();
-            }
-            else
-            {
-                ::TB::Cleanup();
-            }
+            RemovePackage_Main();
+            RemovePackage_Framework();
+            ::TP::RemovePackage_WindowsAppRuntimeFramework();
 
             return true;
         }
