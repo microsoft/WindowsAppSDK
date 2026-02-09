@@ -156,7 +156,7 @@ namespace Test::Package::Tests
                                 GetPackageFilePathOptions_SearchFrameworkPackages };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
-            VERIFY_IS_NULL(absoluteFilename);
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
         }
 
         TEST_METHOD(GetPackageFilePath_FilterPackageType_Framework_NoMatch)
@@ -167,7 +167,7 @@ namespace Test::Package::Tests
                                 GetPackageFilePathOptions_SearchMainPackages };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
-            VERIFY_IS_NULL(absoluteFilename);
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
         }
     };
 }

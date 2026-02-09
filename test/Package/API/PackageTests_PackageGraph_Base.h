@@ -23,31 +23,11 @@ namespace Test::Package::Tests
 
     class PackageTests_PackageGraph_Base
     {
-    protected:
-        bool PackagedClassSetup()
-        {
-            return ClassSetup(true);
-        }
-
-        bool PackagedClassCleanup()
-        {
-            return ClassCleanup(false);
-        }
-
-        bool UnpackagedClassSetup()
-        {
-            return ClassSetup(true);
-        }
-
-        bool UnpackagedClassCleanup()
-        {
-            return ClassCleanup(false);
-        }
-
     private:
         wil::unique_package_dependency_context m_windowsAppRuntimeFramework_packageDependencyContext;
 
-        bool ClassSetup(const bool callerIsPackaged)
+    protected:
+        bool ClassSetup()
         {
             if (!::WindowsVersion::IsWindows11_24H2OrGreater())
             {
@@ -76,7 +56,7 @@ namespace Test::Package::Tests
             return true;
         }
 
-        bool ClassCleanup(const bool callerIsPackaged = true)
+        bool ClassCleanup()
         {
             m_windowsAppRuntimeFramework_packageDependencyContext.reset();
 

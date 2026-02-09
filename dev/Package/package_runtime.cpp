@@ -13,34 +13,28 @@ inline GetPackageFilePathOptions package_properties_to_options(
     const auto hostRuntimeMatch{ WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_HOSTRUNTIME) ?
                                    GetPackageFilePathOptions_SearchHostRuntimeDependencies :
                                    GetPackageFilePathOptions_None };
-    const auto isStaticDependency{ WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_STATIC) ?
-                                   GetPackageFilePathOptions_SearchStaticDependencies :
-                                   GetPackageFilePathOptions_None };
-    const auto isDynamicDependency{ WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_DYNAMIC) ?
-                                   GetPackageFilePathOptions_SearchDynamicDependencies :
-                                   GetPackageFilePathOptions_None };
     if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_FRAMEWORK))
     {
-        return GetPackageFilePathOptions_SearchFrameworkPackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
+        return GetPackageFilePathOptions_SearchFrameworkPackages | hostRuntimeMatch;
     }
     else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_OPTIONAL))
     {
-        return GetPackageFilePathOptions_SearchOptionalPackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
+        return GetPackageFilePathOptions_SearchOptionalPackages | hostRuntimeMatch;
     }
     else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_RESOURCE))
     {
-        return GetPackageFilePathOptions_SearchResourcePackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
+        return GetPackageFilePathOptions_SearchResourcePackages | hostRuntimeMatch;
     }
     else if (WI_IsFlagSet(packageInfoFlags, PACKAGE_PROPERTY_BUNDLE))
     {
-        return GetPackageFilePathOptions_SearchBundlePackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
+        return GetPackageFilePathOptions_SearchBundlePackages | hostRuntimeMatch;
     }
     else
     {
         // PACKAGE_INFO.flags has no PACKAGE_PROPERTY_MAIN so we can only determine PackageType=Main
         // by first verifying it's not any other type of package (Bundle|Framework|Optional|Resource).
         // When all else is ruled out what we're left with must be a Main package
-        return GetPackageFilePathOptions_SearchMainPackages | hostRuntimeMatch | isStaticDependency | isDynamicDependency;
+        return GetPackageFilePathOptions_SearchMainPackages | hostRuntimeMatch;
     }
 }
 
@@ -81,10 +75,6 @@ inline bool is_match_for_package_properties(
     _In_ GetPackageFilePathOptions options,
     PACKAGE_INFO_REFERENCE packageInfoReference)
 {
-    // We're processing a package definition i.e. always static information.
-    // Thus ignore GetPackageFilePathOptions_SearchStaticDependencies
-    // and GetPackageFilePathOptions_SearchDynamicDependencies options.
-
     // Detect PackageType|HostRuntimeDependency
     //
     // If options = All or None specified then all packages are a match thus no need to fetch the package's properties
@@ -111,7 +101,7 @@ inline bool is_match_for_package_properties(
     _In_ GetPackageFilePathOptions options,
     std::uint32_t packageInfoFlags)
 {
-    // Detect PackageType|HostRuntimeDependency and Static|DynamicDependency
+    // Detect PackageType|HostRuntimeDependency
     //
     // If options = All or None specified then all packages are a match thus no need to fetch the package's properties
     constexpr auto maskMatchPackageType{ GetPackageFilePathOptions_SearchMainPackages |
@@ -120,9 +110,7 @@ inline bool is_match_for_package_properties(
                                          GetPackageFilePathOptions_SearchResourcePackages |
                                          GetPackageFilePathOptions_SearchBundlePackages |
                                          GetPackageFilePathOptions_SearchHostRuntimeDependencies };
-    constexpr auto maskMatchStaticDynamic{ GetPackageFilePathOptions_SearchStaticDependencies |
-                                           GetPackageFilePathOptions_SearchDynamicDependencies };
-    constexpr auto maskMatchAll{ maskMatchPackageType | maskMatchStaticDynamic };
+    constexpr auto maskMatchAll{ maskMatchPackageType };
     const auto optionsToMatch{ options & maskMatchAll };
     if ((optionsToMatch == GetPackageFilePathOptions_None) || (optionsToMatch == maskMatchAll))
     {
@@ -130,7 +118,7 @@ inline bool is_match_for_package_properties(
     }
 
     // Does this package meet the criteria?
-    return WI_IsAnyFlagSet(packageInfoFlags, maskMatchPackageType) && WI_IsAnyFlagSet(packageInfoFlags, maskMatchStaticDynamic);
+    return WI_IsAnyFlagSet(packageInfoFlags, optionsToMatch);
 }
 
 inline std::filesystem::path get_package_file_for_location(
@@ -227,9 +215,7 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
                GetPackageFilePathOptions_SearchOptionalPackages |
                GetPackageFilePathOptions_SearchResourcePackages |
                GetPackageFilePathOptions_SearchBundlePackages |
-               GetPackageFilePathOptions_SearchHostRuntimeDependencies |
-               GetPackageFilePathOptions_SearchStaticDependencies |
-               GetPackageFilePathOptions_SearchDynamicDependencies;
+               GetPackageFilePathOptions_SearchHostRuntimeDependencies;
     }
 
     // If Search*Dependencies are all clear then search them all
@@ -247,17 +233,8 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
                                      GetPackageFilePathOptions_SearchHostRuntimeDependencies };
     if (WI_AreAllFlagsClear(options, maskPackageTypes))
     {
-        // If SearchStaticDependencies and SearchDynamicDependencies are clear then search both
-        options |= maskPackageTypes;
+        return options | maskPackageTypes;
     }
-
-    // If SearchStaticDependencies and SearchDynamicDependencies are all clear then search both
-    constexpr auto maskStaticDynamicDependencies{ GetPackageFilePathOptions_SearchStaticDependencies | GetPackageFilePathOptions_SearchDynamicDependencies };
-    if (WI_AreAllFlagsClear(options, maskStaticDynamicDependencies))
-    {
-        options |= maskStaticDynamicDependencies;
-    }
-
     return options;
 }
 }
@@ -325,13 +302,14 @@ STDAPI GetPackageFilePathInPackageGraph(
         const auto& packageInfo{ packageInfos[index] };
 
         // Does the package's properties match our search criteria?
-        const auto packageFullName{ packageInfo.packageFullName };
-        if (!appmodel::is_match_for_package_properties(effectiveOptions, packageInfo.flags))
+        const auto packageInfoFlags{ appmodel::package_properties_to_options(packageInfo.flags) };
+        if (!appmodel::is_match_for_package_properties(effectiveOptions, packageInfoFlags))
         {
             continue;
         }
 
         // This package is included in our search. Check for the file
+        const auto packageFullName{ packageInfo.packageFullName };
         auto path{ appmodel::get_package_file(packageFullName, filename, effectiveOptions) };
         if (!path.empty())
         {

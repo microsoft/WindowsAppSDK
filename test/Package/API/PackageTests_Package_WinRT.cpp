@@ -183,21 +183,21 @@ namespace Test::Package::Tests
         TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)
         {
             winrt::hstring packageFullName{ Main_PackageFullName };
-            winrt::hstring fileName{ L"AppxManifest.xml" };
+            winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchFrameworkPackages };
             const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
-            VERIFY_IS_TRUE(absoluteFilename.empty());
+            VERIFY_IS_TRUE(absoluteFilename.empty(), WEX::Common::String().Format(L"AbsoluteFilename:%ls", absoluteFilename.c_str()));
         }
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_NoMatch)
         {
             winrt::hstring packageFullName{ Framework_PackageFullName };
-            winrt::hstring fileName{ L"AppxManifest.xml" };
+            winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMainPackages };
             const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
-            VERIFY_IS_TRUE(absoluteFilename.empty());
+            VERIFY_IS_TRUE(absoluteFilename.empty(), WEX::Common::String().Format(L"AbsoluteFilename:%ls", absoluteFilename.c_str()));
         }
     };
 }

@@ -23,8 +23,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
     static_assert(static_cast<std::int32_t>(GetFilePathOptions::SearchResourcePackages) == static_cast<std::int32_t>(GetPackageFilePathOptions_SearchResourcePackages), "GetFilePathOptions::SearchResourcePackages!= GetPackageFilePathOptions_SearchResourcePackages");
     static_assert(static_cast<std::int32_t>(GetFilePathOptions::SearchBundlePackages) == static_cast<std::int32_t>(GetPackageFilePathOptions_SearchBundlePackages), "GetFilePathOptions::SearchBundlePackages!= GetPackageFilePathOptions_SearchBundlePackages");
     static_assert(static_cast<std::int32_t>(GetFilePathOptions::SearchHostRuntimeDependencies) == static_cast<std::int32_t>(GetPackageFilePathOptions_SearchHostRuntimeDependencies), "GetFilePathOptions::SearchHostRuntimeDependencies!= GetPackageFilePathOptions_SearchHostRuntimeDependencies");
-    static_assert(static_cast<std::int32_t>(GetFilePathOptions::SearchStaticDependencies) == static_cast<std::int32_t>(GetPackageFilePathOptions_SearchStaticDependencies), "GetFilePathOptions::SearchStaticDependencies!= GetPackageFilePathOptions_SearchStaticDependencies");
-    static_assert(static_cast<std::int32_t>(GetFilePathOptions::SearchDynamicDependencies) == static_cast<std::int32_t>(GetPackageFilePathOptions_SearchDynamicDependencies), "GetFilePathOptions::SearchDynamicDependencies!= GetPackageFilePathOptions_SearchDynamicDependencies");
 
     hstring PackageGraph::GetFilePath(hstring const& filename)
     {

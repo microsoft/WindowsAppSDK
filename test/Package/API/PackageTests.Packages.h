@@ -14,33 +14,33 @@ namespace Test::Packages
 {
 namespace Framework
 {
-    constexpr PCWSTR c_packageDirName = L"Package.Test.Framework.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.Package.Framework_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName = L"Test.Package.Framework_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageDirName{ L"Package.Test.Framework.msix" };
+    constexpr PCWSTR c_packageFamilyName{ L"Test.Package.Framework_8wekyb3d8bbwe" };
+    constexpr PCWSTR c_packageFullName{ L"Test.Package.Framework_1.2.3.4_neutral__8wekyb3d8bbwe" };
 }
 namespace Main
 {
-    constexpr PCWSTR c_packageDirName = L"Package.Test.Main.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.Package.Main_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName = L"Test.Package.Main_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageDirName{ L"Package.Test.Main.msix" };
+    constexpr PCWSTR c_packageFamilyName{ L"Test.Package.Main_8wekyb3d8bbwe" };
+    constexpr PCWSTR c_packageFullName{ L"Test.Package.Main_1.2.3.4_neutral__8wekyb3d8bbwe" };
 }
 namespace Mutable
 {
-    constexpr PCWSTR c_packageDirName = L"Package.Test.Mutable.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.Package.Mutable_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName = L"Test.Package.Mutable_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageDirName{ L"Package.Test.Mutable.msix" };
+    constexpr PCWSTR c_packageFamilyName{ L"Test.Package.Mutable_8wekyb3d8bbwe" };
+    constexpr PCWSTR c_packageFullName{ L"Test.Package.Mutable_1.2.3.4_neutral__8wekyb3d8bbwe" };
 }
 namespace UserExternal
 {
-    constexpr PCWSTR c_packageDirName = L"Package.Test.UserExternal.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.Package.UserExternal_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName = L"Test.Package.UserExternal_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageDirName{ L"Package.Test.UserExternal.msix" };
+    constexpr PCWSTR c_packageFamilyName{ L"Test.Package.UserExternal_8wekyb3d8bbwe" };
+    constexpr PCWSTR c_packageFullName{ L"Test.Package.UserExternal_1.2.3.4_neutral__8wekyb3d8bbwe" };
 }
 namespace MachineExternal
 {
-    constexpr PCWSTR c_packageDirName = L"Package.Test.MachineExternal.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.Package.MachineExternal_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName = L"Test.Package.MachineExternal_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageDirName{ L"Package.Test.MachineExternal.msix" };
+    constexpr PCWSTR c_packageFamilyName{ L"Test.Package.MachineExternal_8wekyb3d8bbwe" };
+    constexpr PCWSTR c_packageFullName{ L"Test.Package.MachineExternal_1.2.3.4_neutral__8wekyb3d8bbwe" };
 }
 }
 

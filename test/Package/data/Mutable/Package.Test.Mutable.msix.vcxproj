@@ -94,6 +94,7 @@
   <ItemGroup>
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)Shadow.cat" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
