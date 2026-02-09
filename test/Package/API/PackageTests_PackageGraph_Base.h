@@ -24,7 +24,30 @@ namespace Test::Package::Tests
     class PackageTests_PackageGraph_Base
     {
     protected:
-        bool ClassSetup()
+        bool PackagedClassSetup()
+        {
+            return ClassSetup(true);
+        }
+
+        bool PackagedClassCleanup()
+        {
+            return ClassCleanup(false);
+        }
+
+        bool UnpackagedClassSetup()
+        {
+            return ClassSetup(true);
+        }
+
+        bool UnpackagedClassCleanup()
+        {
+            return ClassCleanup(false);
+        }
+
+    private:
+        wil::unique_package_dependency_context m_windowsAppRuntimeFramework_packageDependencyContext;
+
+        bool ClassSetup(const bool callerIsPackaged)
         {
             if (!::WindowsVersion::IsWindows11_24H2OrGreater())
             {
@@ -32,7 +55,18 @@ namespace Test::Package::Tests
                 return true;
             }
 
-            ::TB::Setup();
+            //***SEEME***if (callerIsPackaged)
+            //***SEEME***{
+                ::TP::RemovePackage_WindowsAppRuntimeFramework();
+                ::TP::AddPackage_WindowsAppRuntimeFramework();
+
+                constexpr std::int32_t frameworkRank{ 1000 };
+                m_windowsAppRuntimeFramework_packageDependencyContext.reset(AddDynamicDependency(Framework_PackageFamilyName, frameworkRank));
+            //***SEEME***}
+            //***SEEME***else
+            //***SEEME***{
+            //***SEEME***    ::TB::Setup();
+            //***SEEME***}
 
             RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
@@ -41,37 +75,46 @@ namespace Test::Package::Tests
             AddPackage_Mutable();
             AddPackage_UserExternal();
             StagePackage_MachineExternal();
-            AddPackage_MachineExternal();
+            RegisterPackage_MachineExternal();
 
             return true;
         }
 
-        bool ClassCleanup()
+        bool ClassCleanup(const bool callerIsPackaged = true)
         {
             RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
             RemovePackage_Mutable();
 
-            ::TB::Cleanup();
+            if (callerIsPackaged)
+            {
+                m_windowsAppRuntimeFramework_packageDependencyContext.reset();
+                ::TP::RemovePackage_WindowsAppRuntimeFramework();
+            }
+            else
+            {
+                ::TB::Cleanup();
+            }
 
             return true;
         }
 
+    public:
         PACKAGEDEPENDENCY_CONTEXT AddDynamicDependency(
-            PCWSTR packageFamilyName)
+            PCWSTR packageFamilyName,
+            const std::int32_t rank = -1000)
         {
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddDynamicDependency(): %ls", packageFamilyName));
 
             const PACKAGE_VERSION minVersion{};
             const auto architectures{ PackageDependencyProcessorArchitectures_None };
-            const auto lifetimeKind{ PackageDependencyLifetimeKind_Process };
+            const auto lifetimeKind{ PackageDependencyLifetimeKind_Process};
             const auto tryCreateOptions{ CreatePackageDependencyOptions_None };
             wil::unique_process_heap_string packageDependencyId;
             VERIFY_SUCCEEDED(::TryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectures, lifetimeKind, nullptr, tryCreateOptions, wil::out_param(packageDependencyId)));
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageDependencyId: %ls", packageDependencyId.get()));
 
             PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
-            const std::int32_t rank{ -1000 };
             const auto addOptions{ AddPackageDependencyOptions_None };
             wil::unique_process_heap_string packageFullName;
             VERIFY_SUCCEEDED(::AddPackageDependency(packageDependencyId.get(), rank, addOptions, &packageDependencyContext, wil::out_param(packageFullName)));

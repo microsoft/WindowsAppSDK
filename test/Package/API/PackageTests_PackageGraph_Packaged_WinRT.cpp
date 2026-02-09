@@ -27,18 +27,20 @@ namespace Test::Package::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            // Windows App SDK's Dynamic Dependency API doesn't support packaged processes
+            // Ue the OS Dynamic Dependency API (if available)
             if (!::WindowsVersion::IsWindows11_24H2OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageGraph tests require >= 24H2. Skipping tests");
                 return true;
             }
 
-            return PackageTests_PackageGraph_Base::ClassSetup();
+            return PackageTests_PackageGraph_Base::PackagedClassSetup();
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
-            return PackageTests_PackageGraph_Base::ClassCleanup();
+            return PackageTests_PackageGraph_Base::PackagedClassCleanup();
         }
 
         TEST_METHOD(GetFilePath_InvalidParameter)

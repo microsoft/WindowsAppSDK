@@ -32,12 +32,12 @@ namespace Test::Package::Tests
                 return true;
             }
 
-            return PackageTests_PackageGraph_Base::ClassSetup();
+            return PackageTests_PackageGraph_Base::UnpackagedClassSetup();
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
-            return PackageTests_PackageGraph_Base::ClassCleanup();
+            return PackageTests_PackageGraph_Base::UnpackagedClassCleanup();
         }
 
         TEST_METHOD(GetFilePath_InvalidParameter)
