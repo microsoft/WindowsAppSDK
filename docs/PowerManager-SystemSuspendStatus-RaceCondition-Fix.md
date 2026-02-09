@@ -192,6 +192,19 @@ SystemSuspendStatusChanged2: AutoResume
 SystemSuspendStatusChanged2: ManualResume
 ```
 
+### Unit Tests
+
+Unit tests have been added in `test/PowerNotifications/APITests.cpp` and `test/PowerNotifications/FunctionalTests.cpp` to verify:
+
+1. Event registration works correctly
+2. Event args can be accessed and contain a valid status value
+3. Both old and new events can be registered simultaneously without conflicts
+
+**Note**: The unit tests only verify registration and type safety. Full integration testing requires:
+- A Windows environment with the Windows App SDK build tools
+- Physical or simulated system suspend/resume events
+- Manual verification that both events fire with correct status values
+
 ## API Version
 
 - `SystemSuspendStatus` enum: PowerNotificationsContract v1
