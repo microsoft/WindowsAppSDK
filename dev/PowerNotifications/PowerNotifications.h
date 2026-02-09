@@ -619,12 +619,35 @@ namespace winrt::Microsoft::Windows::System::Power
 
             event_token SystemSuspendStatusChanged(const PowerEventHandler& handler)
             {
-                return AddCallback(systemSuspendFunc, handler);
+                try
+                {
+                    PowerNotificationsTelemetry::AddCallbackTrace(L"SystemSuspendStatusChanged");
+                    std::scoped_lock<std::mutex> lock(m_mutex);
+                    // Register if neither event has listeners
+                    if (!RegisteredForEvents(m_systemSuspendStatusChangedEvent) && 
+                        !RegisteredForEvents(m_systemSuspendStatusChanged2Event))
+                    {
+                        SystemSuspendStatus_Register();
+                    }
+                    return m_systemSuspendStatusChangedEvent.add(handler);
+                }
+                catch (std::exception& ex)
+                {
+                    PowerNotificationsTelemetry::FailureTrace(L"SystemSuspendStatusChanged", L"AddCallback", ex.what());
+                    throw ex;
+                }
             }
 
             void SystemSuspendStatusChanged(const event_token& token)
             {
-                RemoveCallback(systemSuspendFunc, token);
+                std::scoped_lock<std::mutex> lock(m_mutex);
+                m_systemSuspendStatusChangedEvent.remove(token);
+                // Unregister only if both events have no listeners
+                if (!RegisteredForEvents(m_systemSuspendStatusChangedEvent) && 
+                    !RegisteredForEvents(m_systemSuspendStatusChanged2Event))
+                {
+                    SystemSuspendStatus_Unregister();
+                }
             }
 
             event_token SystemSuspendStatusChanged2(const SystemSuspendStatusChangedEventHandler& handler)
