@@ -168,7 +168,7 @@ namespace Test::Package::Tests
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
-            winrt::hstring fileName{ L"AppxManifest.xml" };
+            winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath |
                                 winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMainPackages };
             const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };

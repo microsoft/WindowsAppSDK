@@ -151,7 +151,7 @@ namespace Test::Package::Tests
         TEST_METHOD(GetPackageFilePath_FilterPackageType_Main_NoMatch)
         {
             PCWSTR packageFullName{ Main_PackageFullName };
-            PCWSTR fileName{ L"AppxManifest.xml" };
+            PCWSTR fileName{ L"Shadow.cat" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath |
                                 GetPackageFilePathOptions_SearchFrameworkPackages };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
@@ -162,7 +162,7 @@ namespace Test::Package::Tests
         TEST_METHOD(GetPackageFilePath_FilterPackageType_Framework_NoMatch)
         {
             PCWSTR packageFullName{ Framework_PackageFullName };
-            PCWSTR fileName{ L"AppxManifest.xml" };
+            PCWSTR fileName{ L"Shadow.cat" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath |
                                 GetPackageFilePathOptions_SearchMainPackages };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
