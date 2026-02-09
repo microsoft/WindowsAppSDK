@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "shellapi.h"
+#include <appmodel.h>
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include <wil/resource.h>
@@ -14,7 +15,7 @@
 #include <utility>
 #include <string_view>
 #include <cwctype>
-
+#include <vector>
 
 namespace {
 
@@ -180,7 +181,7 @@ namespace PickerCommon {
             return;
         }
 
-        for (std::uint32_t i = 0; i < value.size(); i++)
+        for (size_t i = 0; i < value.size(); i++)
         {
             if (value[i] == L'\0')
             {
@@ -203,7 +204,7 @@ namespace PickerCommon {
                 PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
         }
 
-        for (std::uint32_t i = 1; i < filter.size(); i++)
+        for (size_t i = 1; i < filter.size(); i++)
         {
             if (filter[i] == L'.' || filter[i] == L'*' || filter[i] == L'?')
             {
@@ -243,10 +244,19 @@ namespace PickerCommon {
         }
 
         // The method SHSimpleIDListFromPath does syntax check on the path string.
-        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
+        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl{ SHSimpleIDListFromPath(path.c_str()) };
         if (!pidl)
         {
             throw std::invalid_argument(propertyName);
+        }
+    }
+
+    void ValidateInitialFileTypeIndex(int const& value)
+    {
+        if (value < DefaultInitialFileTypeIndex)
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
         }
     }
 
@@ -283,18 +293,31 @@ namespace PickerCommon {
 
     void PickerParameters::CaptureFilterSpecData(
         winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
-        winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView)
+        winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView,
+        int initialFileTypeIndex)
     {
+        InitialFileTypeIndex = initialFileTypeIndex;
+
         // The FileTypeChoices takes precedence over FileTypeFilter if both are provided.
         if (fileTypeChoicesView && fileTypeChoicesView.Size() > 0)
         {
             CaptureFilterSpec(fileTypeChoicesView);
+            if (InitialFileTypeIndex > static_cast<int>(FileTypeFilterParams.size() - 1))
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
+            }
             return;
         }
 
         if (fileTypeFilterView && fileTypeFilterView.Size() > 0)
         {
             CaptureFilterSpec(fileTypeFilterView);
+            if (InitialFileTypeIndex > static_cast<int>(FileTypeFilterParams.size() - 1))
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
+            }
             return;
         }
 
@@ -349,14 +372,18 @@ namespace PickerCommon {
             FileTypeFilterData.push_back(allFilesExtensionList.c_str());
         }
 
-        FileTypeFilterPara.clear();
-        FileTypeFilterPara.reserve(resultSize);
+        FileTypeFilterParams.clear();
+        FileTypeFilterParams.reserve(resultSize);
         for (size_t i = 0; i < resultSize; i++)
         {
-            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
+            FileTypeFilterParams.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
 
-        FocusLastFilter = true;
+        if (InitialFileTypeIndex == DefaultInitialFileTypeIndex)
+        {
+            // If no valid InitialFileTypeIndex specified, focus the last one ("All Files" - the auto-added unioned category)
+            InitialFileTypeIndex = static_cast<int>(resultSize) - 1;
+        }
     }
 
     /// <summary>
@@ -384,12 +411,38 @@ namespace PickerCommon {
             resultSize = 1;
         }
 
-        FileTypeFilterPara.clear();
-        FileTypeFilterPara.reserve(resultSize);
+        FileTypeFilterParams.clear();
+        FileTypeFilterParams.reserve(resultSize);
         for (size_t i = 0; i < resultSize; i++)
         {
-            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
+            FileTypeFilterParams.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
+    }
+
+    winrt::hstring PickerParameters::TryGetAppUserModelId()
+    {
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+        UINT32 appUserModelIdSize{ _countof(appUserModelId) };
+
+        auto hr{GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId) };
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ appUserModelId };
+        }
+
+        return {};
+    }
+
+    winrt::hstring PickerParameters::TryGetProcessFullPath()
+    {
+        wil::unique_cotaskmem_string module;
+        auto hr{ LOG_IF_FAILED(wil::GetModuleFileNameW(nullptr, module)) };
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ module.get() };
+        }
+
+        return {};
     }
 
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
@@ -397,6 +450,11 @@ namespace PickerCommon {
         if (!IsHStringNullOrEmpty(CommitButtonText))
         {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
+        }
+
+        if (!IsHStringNullOrEmpty(Title))
+        {
+            check_hresult(dialog->SetTitle(Title.c_str()));
         }
 
         winrt::com_ptr<IShellItem> defaultFolder{};
@@ -426,15 +484,35 @@ namespace PickerCommon {
             }
         }
 
-        if (FileTypeFilterPara.size() > 0)
+        if (FileTypeFilterParams.size() > 0)
         {
-            check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+            check_hresult(dialog->SetFileTypes(static_cast<UINT>(FileTypeFilterParams.size()), FileTypeFilterParams.data()));
 
-            if (FocusLastFilter)
+            if (InitialFileTypeIndex != DefaultInitialFileTypeIndex && InitialFileTypeIndex < static_cast<int>(FileTypeFilterParams.size()))
             {
-                check_hresult(dialog->SetFileTypeIndex(static_cast<UINT>(FileTypeFilterPara.size())));
+                check_hresult(dialog->SetFileTypeIndex(InitialFileTypeIndex + 1)); // COMDLG file type index is 1-based
             }
         }
+
+        if (!IsHStringNullOrEmpty(SettingsIdentifier))
+        {
+            auto appDistinctString = TryGetAppUserModelId();
+            if (appDistinctString.empty())
+            {
+                appDistinctString = TryGetProcessFullPath();
+            }
+            if (!appDistinctString.empty())
+            {
+                auto clientId = HashHStringToGuid(appDistinctString + L"|" + SettingsIdentifier);
+                check_hresult(dialog->SetClientGuid(clientId));
+            }
+            else
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidAppIdForSettingsIdentifierLocalizationKey));
+            }
+        }
+
     }
 
     /// <summary>
@@ -446,6 +524,14 @@ namespace PickerCommon {
         if (!IsHStringNullOrEmpty(SuggestedFileName))
         {
             check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
+        }
+
+        if (!ShowOverwritePrompt)
+        {
+            FILEOPENDIALOGOPTIONS options{};
+            check_hresult(dialog->GetOptions(&options));
+            options = static_cast<FILEOPENDIALOGOPTIONS>(options & ~FOS_OVERWRITEPROMPT);
+			check_hresult(dialog->SetOptions(options));
         }
 
     }

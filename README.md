@@ -86,3 +86,9 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Licensing
+
+This project is licensed under the terms in [LICENSE](LICENSE).
+
+The [`.github/skills/`](.github/skills/) directory contains GitHub Copilot agent skills that may have their own licensing terms. Check each skill's directory for its license file.
