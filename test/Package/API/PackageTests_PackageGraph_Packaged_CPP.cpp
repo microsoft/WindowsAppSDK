@@ -131,7 +131,6 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)
         {
-            PCWSTR packageFullName{ Main_PackageFullName };
             PCWSTR packageFamilyName{ Main_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
