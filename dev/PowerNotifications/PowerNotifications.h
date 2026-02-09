@@ -240,6 +240,11 @@ namespace winrt::Microsoft::Windows::System::Power
                 return eventObj ? true : false;
             }
 
+            bool RegisteredForEvents(const SystemSuspendStatusChangedEventType& eventObj)
+            {
+                return eventObj ? true : false;
+            }
+
             event_token AddCallback(PowerFunctionDetails fn, const PowerEventHandler& handler)
             {
                 try
