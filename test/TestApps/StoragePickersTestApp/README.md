@@ -84,9 +84,9 @@ Since Storage Pickers is released (WindowsAppSDK 1.8+), normal WinRT activation 
 
 | Approach | Code/Method | Result |
 |----------|-------------|--------|
-| Normal WinRT Activation | `FileOpenPicker picker{ windowId };` | Activates the **released** version, not local build |
+| Direct include in MainWindows.xaml.cpp|`#include <winrt/Microsoft.Windows.Storage.Pickers.h>`| Error: Class not registered |
 | Manifest-Based Activation | `<activatableClass>` in app.manifest | XAML crash (`STATUS_STOWED_EXCEPTION`) - conflicts with NuGet's activation context |
-| Simple LoadLibrary | `LoadLibraryW(L"Microsoft.WindowsAppRuntime.dll")` | Loads **system** DLL from `C:\Program Files\WindowsApps\...` |
+| Simple LoadLibrary in hardcode | `LoadLibraryW(L"Microsoft.WindowsAppRuntime.dll")` | Loads **system** DLL from `C:\Program Files\WindowsApps\...` |
 | LoadLibraryExW (no .pri) | Full path but missing .pri file | "Element not found" - missing localization resources |
 
 ### Working Solution
