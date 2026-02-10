@@ -39,8 +39,12 @@
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <!-- Unpackaged desktop app -->
+    <!-- SelfContained mode: disables bootstrap auto-init (no framework package needed),
+         enables UndockedRegFreeWinRT auto-init, and auto-generates a manifest with all
+         WinRT class registrations. The local DLL from CopyWindowsAppRuntimeDll target
+         overwrites the MSIX-extracted copy at runtime. -->
     <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <AppxPackage>false</AppxPackage>
   </PropertyGroup>
   
@@ -131,11 +135,11 @@
   
   <ItemGroup>
     <Manifest Include="app.manifest" />
+    <Manifest Include="StoragePickersTestApp.exe.manifest" />
   </ItemGroup>
   
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="StoragePickersActivation.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
     </ClInclude>
@@ -153,7 +157,6 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="StoragePickersActivation.cpp" />
     <ClCompile Include="App.xaml.cpp">
       <DependentUpon>App.xaml</DependentUpon>
     </ClCompile>

@@ -11,6 +11,7 @@
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
+using namespace winrt::Microsoft::Windows::Storage::Pickers;
 
 namespace winrt::StoragePickersTestApp::implementation
 {
