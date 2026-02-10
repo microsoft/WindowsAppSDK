@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 // Custom entry point for StoragePickersTestApp.
 // This replaces the auto-generated wWinMain (disabled via DISABLE_XAML_GENERATED_MAIN).
