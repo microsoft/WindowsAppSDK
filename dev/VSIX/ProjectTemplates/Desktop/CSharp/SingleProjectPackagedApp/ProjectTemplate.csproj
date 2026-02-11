@@ -37,6 +37,12 @@
     <ProjectCapability Include="Msix"/>
   </ItemGroup>
 
+  <!-- This is a temporary workaround to test dotnet new template - it will block vstemplate from working -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="*" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="*" />
+  </ItemGroup>
+
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
     Explorer "Package and Publish" context menu entry to be enabled for this project even if
