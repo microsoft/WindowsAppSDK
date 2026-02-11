@@ -115,6 +115,13 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
+    <ProjectReference Include="$(ItemTemplatesDir)Neutral\CSharp\ContentDialog\WinUI.Neutral.Cs.ContentDialog.csproj">
+      <Project>{E5209752-4CE6-413B-B3BE-61E33C106A5E}</Project>
+      <Name>WinUI.Neutral.Cs.ContentDialog</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
     <ProjectReference Include="$(ItemTemplatesDir)Neutral\CSharp\BlankPage\WinUI.Neutral.Cs.BlankPage.csproj">
       <Project>{2d9bd73d-5a5e-4113-aea9-53d059a79a41}</Project>
       <Name>WinUI.Neutral.Cs.BlankPage</Name>

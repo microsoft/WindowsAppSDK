@@ -67,6 +67,20 @@
           PackagePath="content/WinAppSdk.CSharp.SingleProject/ProjectTemplate/Package.appxmanifest" />
   </ItemGroup>
 
+  <!-- Navigation app template -->
+  <ItemGroup>
+    <None Include="templates\navigation-app\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.NavigationApp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\NavigationApp\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\NavigationApp\bin\**;..\ProjectTemplates\Desktop\CSharp\NavigationApp\obj\**;..\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.csproj;..\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.ico;..\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.png;..\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.vstemplate"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.NavigationApp/ProjectTemplate/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.NavigationApp/ProjectTemplate/Package.appxmanifest" />
+  </ItemGroup>
+
   <!-- Class library template -->
   <ItemGroup>
     <None Include="templates\class-library\.template.config\**\*.*"
