@@ -1,0 +1,107 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>false</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsPackable>true</IsPackable>
+    <PackageType>Template</PackageType>
+    <PackageId>Microsoft.WindowsAppSDK.CSharp.Templates</PackageId>
+    <Version>$(MicrosoftWindowsAppSDKVersion)</Version>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <Description>dotnet new templates that mirror the Windows App SDK WinUI 3 Visual Studio templates.</Description>
+    <PackageTags>windows;winappsdk;winui;desktop;csharp</PackageTags>
+    <PackageProjectUrl>https://github.com/microsoft/WindowsAppSDK</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/microsoft/WindowsAppSDK</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\localpackages'))</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" />
+  </ItemGroup>
+
+  <!-- Packaged (multi-project) template -->
+  <ItemGroup>
+    <PackagedTemplateConfig Include="templates\packaged\.template.config\**\*.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="@(PackagedTemplateConfig)"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="templates\packaged\ProjectTemplate.sln"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate.sln" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\bin\**;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\obj\**;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\WinUI.Desktop.Cs.BlankApp.csproj;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\WinUI.Desktop.Cs.BlankApp.ico;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\WinUI.Desktop.Cs.BlankApp.png;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\WinUI.Desktop.Cs.BlankApp.vstemplate"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\Images\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate.Package/Images/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\WapProjTemplate.wapproj"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate.Package/ProjectTemplate.Package.wapproj" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\Package-managed.appxmanifest"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate.Package/Package.appxmanifest" />
+  </ItemGroup>
+
+  <!-- Single-project template -->
+  <ItemGroup>
+    <None Include="templates\single-project\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.SingleProject/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\bin\**;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\obj\**;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.ico;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.png;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.vstemplate"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.SingleProject/ProjectTemplate/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.SingleProject/ProjectTemplate/Package.appxmanifest" />
+  </ItemGroup>
+
+  <!-- Class library template -->
+  <ItemGroup>
+    <None Include="templates\class-library\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.ClassLibrary/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\ClassLibrary\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\ClassLibrary\bin\**;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\obj\**;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.ico;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.png;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.vstemplate"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.ClassLibrary/ProjectTemplate/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Unit test template -->
+  <ItemGroup>
+    <None Include="templates\unit-test\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.UnitTest/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\UnitTestApp\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\UnitTestApp\bin\**;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\obj\**;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.ico;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.png;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.vstemplate"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.UnitTest/ProjectTemplate/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.UnitTest/ProjectTemplate/Package.appxmanifest" />
+  </ItemGroup>
+
+  <!-- Blank window item template -->
+  <ItemGroup>
+    <None Include="templates\item-blank-window\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Item.BlankWindow/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ItemTemplates\Desktop\CSharp\BlankWindow\BlankWindow.xaml"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Item.BlankWindow/BlankWindow.xaml" />
+    <None Include="..\ItemTemplates\Desktop\CSharp\BlankWindow\BlankWindow.xaml.cs"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Item.BlankWindow/BlankWindow.xaml.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": ["Windows", "WinUI", "Item"],
+  "identity": "Microsoft.WindowsAppSDK.CSharp.Item.BlankWindow",
+  "groupIdentity": "Microsoft.WindowsAppSDK.CSharp.Item.BlankWindow",
+  "name": "Windows App SDK Blank Window (Item)",
+  "shortName": "wasdk-item-blankwin",
+  "sourceName": "BlankWindow",
+  "defaultName": "BlankWindow",
+  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "preferNameDirectory": false,
+  "symbols": {
+    "rootNamespace": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$rootnamespace$",
+      "defaultValue": "AppNamespace",
+      "description": "Namespace for the generated item."
+    },
+    "safeItemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "safe_name",
+      "replaces": "$safeitemname$"
+    },
+    "itemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$itemname$"
+    },
+    "fileInputName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$fileinputname$"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "BlankWindow.xaml" },
+    { "path": "BlankWindow.xaml.cs" }
+  ],
+  "forms": {
+    "safe_name": {
+      "identifier": "safe_name"
+    },
+    "identity": {
+      "identifier": "identity"
+    }
+  }
+}
