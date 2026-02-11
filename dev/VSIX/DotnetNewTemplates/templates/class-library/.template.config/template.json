@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": ["Windows", "WinUI", "Library"],
+  "identity": "Microsoft.WindowsAppSDK.CSharp.ClassLibrary",
+  "groupIdentity": "Microsoft.WindowsAppSDK.CSharp.ClassLibrary",
+  "name": "Windows App SDK Class Library",
+  "shortName": "wasdk-classlib",
+  "sourceName": "ProjectTemplate",
+  "defaultName": "WinAppSdkLibrary",
+  "description": "Creates a WinUI 3 class library that targets the Windows App SDK.",
+  "preferNameDirectory": true,
+  "symbols": {
+    "safeProjectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "safe_name",
+      "replaces": "$safeprojectname$"
+    },
+    "projectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$projectname$"
+    },
+    "dotnetVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$DotNetVersion$",
+      "defaultValue": "net8.0"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "ProjectTemplate/ProjectTemplate.csproj" }
+  ],
+  "forms": {
+    "safe_name": {
+      "identifier": "safe_name"
+    },
+    "identity": {
+      "identifier": "identity"
+    }
+  }
+}
