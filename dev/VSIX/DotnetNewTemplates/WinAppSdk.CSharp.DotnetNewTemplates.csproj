@@ -104,4 +104,18 @@
           Pack="true"
           PackagePath="content/WinAppSdk.CSharp.Item.BlankWindow/BlankWindow.xaml.cs" />
   </ItemGroup>
+
+  <!-- Content dialog item template -->
+  <ItemGroup>
+    <None Include="templates\item-content-dialog\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="templates\item-content-dialog\ContentDialogItem.xaml"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/ContentDialogItem.xaml" />
+    <None Include="templates\item-content-dialog\ContentDialogItem.xaml.cs"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/ContentDialogItem.xaml.cs" />
+    <Compile Remove="templates\item-content-dialog\**" />
+  </ItemGroup>
 </Project>
