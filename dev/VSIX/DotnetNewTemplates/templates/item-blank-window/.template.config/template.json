@@ -12,8 +12,8 @@
   "preferNameDirectory": false,
   "symbols": {
     "rootNamespace": {
-      "type": "parameter",
-      "datatype": "text",
+      "type": "bind",
+      "binding": "msbuild:RootNamespace",
       "replaces": "$rootnamespace$",
       "defaultValue": "AppNamespace",
       "description": "Namespace for the generated item."
