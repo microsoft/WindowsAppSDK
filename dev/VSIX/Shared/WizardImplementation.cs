@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Resources;
 using System.Threading.Tasks;
@@ -46,18 +47,58 @@ namespace WindowsAppSDK.TemplateUtilities
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
+            // Initialize file logging first
+            try
+            {
+                var solutionName = replacementsDictionary.TryGetValue("$safeprojectname$", out string name) 
+                    ? name 
+                    : "Unknown";
+                
+                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var logDir = @"D:\vsix-race-condition-logs";
+                var logPath = $@"{logDir}\wizard_{solutionName}_{timestamp}.log";
+                
+                // Ensure directory exists
+                System.IO.Directory.CreateDirectory(logDir);
+                
+                // Create and add the listener
+                var listener = new System.Diagnostics.TextWriterTraceListener(logPath);
+                System.Diagnostics.Trace.Listeners.Add(listener);
+                System.Diagnostics.Trace.AutoFlush = true;
+                
+                // Write initial message
+                System.Diagnostics.Trace.WriteLine($"=== Wizard Started: {solutionName} at {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} ===");
+                System.Diagnostics.Trace.WriteLine($"Log path: {logPath}");
+                System.Diagnostics.Trace.WriteLine($"TRACE symbol defined: {IsTraceEnabled()}");
+                
+                // Also write to a guaranteed location as fallback
+                try
+                {
+                    System.IO.File.AppendAllText(logPath, $"Direct write test at {DateTime.Now:HH:mm:ss.fff}\n");
+                }
+                catch (Exception writeEx)
+                {
+                    MessageBox.Show($"Cannot write to log file: {writeEx.Message}", "Logging Error");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Show the error instead of silently failing
+                MessageBox.Show($"Logging initialization failed: {ex.Message}\n\nStack: {ex.StackTrace}", "Logging Error");
+            }
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             _componentModel = ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel)) as IComponentModel;
             if (_componentModel == null)
             {
-                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IComponentModel service.");
+                LogError("Warning: Could not obtain IComponentModel service.");
             }
 
             _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
             if (_waitDialog == null)
             {
-                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
+                LogError("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
             }
 
             if (_componentModel != null)
@@ -91,36 +132,43 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private async Task InstallNuGetPackagesAsync()
         {
+            var totalStopwatch = Stopwatch.StartNew();
+            
             await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                int canceled = 0; // Initialize as not canceled
+                int canceled = 0;
 
-                // Start the package installation task but do not await it here
+                var installStopwatch = Stopwatch.StartNew();
                 var installationTask = StartInstallationAsync();
 
-                // Start the threaded wait dialog
                 if (_waitDialog != null)
                 {
                     _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
                 }
 
-                // Now await the installation task to complete
                 await installationTask;
+                installStopwatch.Stop();
+                
+                System.Diagnostics.Trace.WriteLine($"[PERF] NuGet installation: {installStopwatch.ElapsedMilliseconds}ms");
 
-                // Once the installation is complete, end the wait dialog
                 if (_waitDialog != null)
                 {
                     _waitDialog.EndWaitDialog(out canceled);
                 }
 
-                // If _waitDialog is null, canceled remains 0 (not canceled)
-                // Check if the process was canceled before proceeding
-                if (canceled == 0) // If not canceled, finalize the process
+                if (canceled == 0)
                 {
+                    var saveStopwatch = Stopwatch.StartNew();
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     SaveAllProjects();
+                    saveStopwatch.Stop();
+                    
+                    System.Diagnostics.Trace.WriteLine($"[PERF] Save projects: {saveStopwatch.ElapsedMilliseconds}ms");
                 }
+                
+                totalStopwatch.Stop();
+                System.Diagnostics.Trace.WriteLine($"[PERF] Total wizard time: {totalStopwatch.ElapsedMilliseconds}ms");
             });
         }
 
@@ -359,6 +407,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 if (log != null)
                 {
                     int hr = log.LogEntry((uint)__ACTIVITYLOG_ENTRYTYPE.ALE_ERROR, ToString(), message);
+                    System.Diagnostics.Trace.WriteLine($"{hr}: {message}");
                 }
             });
         }
@@ -459,6 +508,15 @@ namespace WindowsAppSDK.TemplateUtilities
         public bool ShouldAddProjectItem(string _)
         {
             return true;
+        }
+
+        private bool IsTraceEnabled()
+        {
+            #if TRACE
+            return true;
+            #else
+            return false;
+            #endif
         }
     }
 }
