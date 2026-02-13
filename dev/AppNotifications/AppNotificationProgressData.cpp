@@ -74,4 +74,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         m_progressStatus = progressStatus;
     }
+    bool AppNotificationProgressData::IsIndeterminate()
+    {
+        auto lock{ m_lock.lock_shared() };
+
+        return m_isIndeterminate;
+    }
+    void AppNotificationProgressData::IsIndeterminate(bool isIndeterminate)
+    {
+        auto lock{ m_lock.lock_exclusive() };
+
+        m_isIndeterminate = isIndeterminate;
+    }
 }

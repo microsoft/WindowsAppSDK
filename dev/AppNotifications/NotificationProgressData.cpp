@@ -24,6 +24,7 @@ NotificationProgressData::NotificationProgressData(winrt::AppNotificationProgres
     m_progressData.Title(progressData.Title());
     m_progressData.Value(progressData.Value());
     m_progressData.ValueStringOverride(progressData.ValueStringOverride());
+    m_progressData.IsIndeterminate(progressData.IsIndeterminate());
 }
 
 STDMETHODIMP NotificationProgressData::get_SequenceNumber(_Out_ unsigned int* value) noexcept
@@ -41,7 +42,14 @@ CATCH_RETURN()
 
 STDMETHODIMP NotificationProgressData::get_Value(_Out_ double* value) noexcept
 {
-    *value = m_progressData.Value();
+    if (m_progressData.IsIndeterminate())
+    {
+        *value = -1.0;
+    }
+    else
+    {
+        *value = m_progressData.Value();
+    }
     return S_OK;
 }
 

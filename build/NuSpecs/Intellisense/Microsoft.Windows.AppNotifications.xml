@@ -230,6 +230,10 @@
       <summary>Gets or sets optional string to be displayed instead of the default percentage string.</summary>
       <returns>The optional value string override.</returns>
     </member>
+    <member name="P:Microsoft.Windows.AppNotifications.AppNotificationProgressData.IsIndeterminate">
+      <summary>Gets or sets a value indicating whether the progress bar should show an indeterminate loading animation. If true, the Value property is ignored.</summary>
+      <returns>True if the progress bar is indeterminate; otherwise, false.</returns>
+    </member>
     <member name="T:Microsoft.Windows.AppNotifications.AppNotificationProgressResult">
       <summary>Specifies the result of an app notification progress update operation invoked with a call to UpdateAsync.</summary>
     </member>
