@@ -39,6 +39,12 @@
     <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/WinAppSdk.CSharp.SingleProject/ProjectTemplate/Package.appxmanifest" />
+    <None Include="templates\single-project\Agents.md"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.SingleProject/Agents.md" />
+    <None Include="templates\single-project\instructions\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.SingleProject/instructions/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- Class library template -->
