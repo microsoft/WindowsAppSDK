@@ -54,6 +54,11 @@
         "format": "D"
       },
       "replaces": "$guid9$"
+    },
+    "UseLatestWindowsAppSDK": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true"
     }
   },
   "sources": [
