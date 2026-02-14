@@ -44,6 +44,7 @@ STDMETHODIMP NotificationProgressData::get_Value(_Out_ double* value) noexcept
 {
     if (m_progressData.IsIndeterminate())
     {
+        // Return -1.0 as a sentinel value to indicate indeterminate state to the ToastABI layer.
         *value = -1.0;
     }
     else
