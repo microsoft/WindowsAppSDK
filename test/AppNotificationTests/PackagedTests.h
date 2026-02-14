@@ -58,6 +58,9 @@ class PackagedTests : BaseTestSuite
     TEST_METHOD(VerifyToastSuppressDisplay);
     TEST_METHOD(VerifyToastExpiresOnReboot);
     TEST_METHOD(VerifyToastProgressDataSequence0Fail);
+    TEST_METHOD(VerifyProgressDataIsIndeterminateDefault);
+    TEST_METHOD(VerifyProgressDataIsIndeterminateSetTrue);
+    TEST_METHOD(VerifyProgressDataIsIndeterminateFromToast);
     TEST_METHOD(VerifyShowToast);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup);
