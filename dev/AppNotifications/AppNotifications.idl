@@ -49,6 +49,7 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets/Sets whether the progress bar should show an indeterminate loading animation.
         // If true, Value is ignored and the progress bar displays an indeterminate state.
+        [contract(AppNotificationsContract, 4)]
         Boolean IsIndeterminate;
     }
 

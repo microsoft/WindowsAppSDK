@@ -393,7 +393,14 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
 
         double progressValue{};
         THROW_IF_FAILED(toastProgressData->get_Value(&progressValue));
-        progressData.Value(progressValue);
+        if (progressValue == -1.0)
+        {
+            progressData.IsIndeterminate(true);
+        }
+        else
+        {
+            progressData.Value(progressValue);
+        }
 
         wil::unique_hstring progressValueString{};
         THROW_IF_FAILED(toastProgressData->get_ValueStringOverride(&progressValueString));
