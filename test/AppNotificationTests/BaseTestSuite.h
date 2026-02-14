@@ -52,6 +52,9 @@ class BaseTestSuite
         void VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow();
         void VerifyRemoveAllAsync();
         void VerifyToastProgressDataSequence0Fail();
+        void VerifyProgressDataIsIndeterminateDefault();
+        void VerifyProgressDataIsIndeterminateSetTrue();
+        void VerifyProgressDataIsIndeterminateFromToast();
         void VerifyIconPathExists();
         void VerifyExplicitAppId();
         void VerifyToastConferencingConfigAllDevicesSet();
