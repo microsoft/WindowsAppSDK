@@ -46,6 +46,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
     void AppNotificationProgressData::Value(double progressValue)
     {
+        THROW_HR_IF(E_INVALIDARG, progressValue < 0.0 || progressValue > 1.0);
+
         auto lock{ m_lock.lock_exclusive() };
 
         m_progressValue = progressValue;
