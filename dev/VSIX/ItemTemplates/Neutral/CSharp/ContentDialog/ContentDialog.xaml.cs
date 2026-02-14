@@ -16,17 +16,20 @@ using Microsoft.UI.Xaml.Navigation;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace $safeprojectname$;
+namespace $rootnamespace$;
 
-public sealed partial class MainWindow : Window
+public sealed partial class $safeitemname$ : ContentDialog
 {
-    public MainWindow()
+    public $safeitemname$()
     {
         InitializeComponent();
+    }
 
-        ExtendsContentIntoTitleBar = true;
-        SetTitleBar(AppTitleBar);
+    private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    {
+    }
 
-        AppWindow.SetIcon("Assets/AppIcon.ico");
+    private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    {
     }
 }

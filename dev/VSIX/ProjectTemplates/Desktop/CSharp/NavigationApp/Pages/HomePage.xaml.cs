@@ -16,17 +16,12 @@ using Microsoft.UI.Xaml.Navigation;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace $safeprojectname$;
+namespace $safeprojectname$.Pages;
 
-public sealed partial class MainWindow : Window
+public sealed partial class HomePage : Page
 {
-    public MainWindow()
+    public HomePage()
     {
         InitializeComponent();
-
-        ExtendsContentIntoTitleBar = true;
-        SetTitleBar(AppTitleBar);
-
-        AppWindow.SetIcon("Assets/AppIcon.ico");
     }
 }
