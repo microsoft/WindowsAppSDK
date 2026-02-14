@@ -1,0 +1,100 @@
+parameters:
+- name: pool
+  type: object
+  default:
+    vmImage: 'windows-latest'
+- name: sourceSubdirectory
+  type: string
+  default: 'WindowsAppSDK'
+- name: publishToInternalFeed
+  type: boolean
+  default: true
+
+stages:
+- stage: DotnetNewTemplates_BuildAndPack
+  displayName: 'Build and pack dotnet new templates'
+  dependsOn: []
+  jobs:
+  - job: PackDotnetNewTemplates
+    displayName: 'Pack dotnet new template NuGet'
+    dependsOn: []
+    pool: ${{ parameters.pool }}
+    variables:
+      ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
+      templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\VSIX\DotnetNewTemplates'
+    steps:
+    - checkout: self
+
+    - task: PowerShell@2
+      displayName: 'Ensure test certificate for signing'
+      inputs:
+        targetType: inline
+        workingDirectory: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}'
+        script: |
+          $repoRoot = "$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}"
+          $userDir = Join-Path $repoRoot '.user'
+          $pfxPath = Join-Path $userDir 'winappsdk.certificate.test.pfx'
+          $pwdPath = Join-Path $userDir 'winappsdk.certificate.test.pwd'
+
+          if (-not (Test-Path $userDir)) {
+            New-Item -ItemType Directory -Path $userDir | Out-Null
+          }
+
+          if ((Test-Path $pfxPath) -and (Test-Path $pwdPath)) {
+            Write-Host "Test certificate already exists at $pfxPath"
+          }
+          else {
+            $password = [Guid]::NewGuid().ToString()
+            $securePwd = ConvertTo-SecureString -String $password -Force -AsPlainText
+            $subject = 'CN=WindowsAppSDK Test Certificate'
+            $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject $subject -KeyExportPolicy Exportable -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation 'Cert:\CurrentUser\My'
+            Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $securePwd | Out-Null
+            Set-Content -Path $pwdPath -Value $password -NoNewline
+            Write-Host "Created test certificate at $pfxPath"
+          }
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET SDK'
+      inputs:
+        packageType: sdk
+        version: '8.0.x'
+
+    - task: PowerShell@2
+      displayName: 'Verify template csproj exists before restore'
+      inputs:
+        targetType: inline
+        workingDirectory: '$(templateProjectDir)'
+        script: |
+          Write-Host "Current directory: $(Get-Location)"
+          $projectPath = Join-Path (Get-Location) 'WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+          if (-not (Test-Path $projectPath)) {
+            throw "Template project missing at $projectPath"
+          }
+          Write-Host "Confirmed template project at $projectPath"
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore template project'
+      inputs:
+        command: 'restore'
+        projects: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+        workingDirectory: '$(templateProjectDir)'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Pack dotnet new templates'
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+        arguments: '--configuration Release --no-restore --no-build /p:WindowsAppSDKBuildPipeline=1'
+        outputDir: '$(ob_outputDirectory)'
+        workingDirectory: '$(templateProjectDir)'
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'Publish dotnet template pack to internal feed'
+      condition: and(succeeded(), eq('${{ parameters.publishToInternalFeed }}', 'true'))
+      inputs:
+        command: 'push'
+        packagesToPush: '$(ob_outputDirectory)\*.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+
