@@ -10,7 +10,6 @@ code-behind, and project files.
 
 | Short name            | Identity                                        | Description                                |
 |-----------------------|-------------------------------------------------|--------------------------------------------|
-| `wasdk-packaged`      | `Microsoft.WindowsAppSDK.CSharp.Packaged`       | WinUI 3 packaged app + MSIX packaging proj |
 | `wasdk-single`        | `Microsoft.WindowsAppSDK.CSharp.SingleProject`  | Single-project MSIX WinUI 3 app            |
 | `wasdk-classlib`      | `Microsoft.WindowsAppSDK.CSharp.ClassLibrary`   | WinUI 3 class library                      |
 | `wasdk-unittest`      | `Microsoft.WindowsAppSDK.CSharp.UnitTest`       | WinUI 3 packaged test app                  |
