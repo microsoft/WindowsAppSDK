@@ -28,18 +28,42 @@ namespace Test::Package::Tests
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
+    private:
+        bool IsMutableLocationSupported() const
+        {
+            return !!::IsPackageFeatureSupported(PackageFeature_PackagePath_Mutable);
+        }
+
+        bool IsExternalLocationSupported() const
+        {
+            return !!::IsPackageFeatureSupported(PackageFeature_PackagePath_ExternalLocation);
+        }
+
+    public:
         TEST_CLASS_SETUP(ClassSetup)
         {
             ::TB::Setup();
 
-            RemovePackage_MachineExternal();
-            RemovePackage_UserExternal();
-            RemovePackage_Mutable();
+            if (IsExternalLocationSupported())
+            {
+                RemovePackage_MachineExternal();
+                RemovePackage_UserExternal();
+            }
+            if (IsMutableLocationSupported())
+            {
+                RemovePackage_Mutable();
+            }
 
-            AddPackage_Mutable();
-            AddPackage_UserExternal();
-            StagePackage_MachineExternal();
-            AddPackage_MachineExternal();
+            if (IsMutableLocationSupported())
+            {
+                AddPackage_Mutable();
+            }
+            if (IsExternalLocationSupported())
+            {
+                AddPackage_UserExternal();
+                StagePackage_MachineExternal();
+                AddPackage_MachineExternal();
+            }
 
             return true;
         }
@@ -48,9 +72,15 @@ namespace Test::Package::Tests
         {
             ::TB::Cleanup();
 
-            RemovePackage_MachineExternal();
-            RemovePackage_UserExternal();
-            RemovePackage_Mutable();
+            if (IsExternalLocationSupported())
+            {
+                RemovePackage_MachineExternal();
+                RemovePackage_UserExternal();
+            }
+            if (IsMutableLocationSupported())
+            {
+                RemovePackage_Mutable();
+            }
 
             return true;
         }
@@ -108,6 +138,12 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetPackageFilePath_MutablePath)
         {
+            if (!IsMutableLocationSupported())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Mutable location is not supported on this system. Skipping test");
+                return;
+            }
+
             PCWSTR packageFullName{ Mutable_PackageFullName };
             PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchMutablePath };
@@ -122,6 +158,12 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetPackageFilePath_MachineExternalPath)
         {
+            if (!IsExternalLocationSupported())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ExternalLocation is not supported on this system. Skipping test");
+                return;
+            }
+
             PCWSTR packageFullName{ MachineExternal_PackageFullName };
             PCWSTR fileName{ L"Shadow.cat" };
             const auto options{ GetPackageFilePathOptions_SearchMachineExternalPath };
@@ -136,6 +178,12 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetPackageFilePath_UserExternalPath)
         {
+            if (!IsExternalLocationSupported())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ExternalLocation is not supported on this system. Skipping test");
+                return;
+            }
+
             PCWSTR packageFullName{ UserExternal_PackageFullName };
             PCWSTR fileName{ L"Shadow.cat" };
             const auto options{ GetPackageFilePathOptions_SearchUserExternalPath };

@@ -8,6 +8,21 @@ namespace Microsoft.Windows.ApplicationModel
     [contractversion(1)]
     apicontract PackageRuntimeContract{};
 
+    /// Features can be queried if currently available/enabled.
+    /// @see Package.IsPackageFeatureSupported()
+    [contract(PackageRuntimeContract, 1)]
+    enum PackageFeature
+    {
+        /// Package Mutable path.
+        /// @see PackagePathType_Mutable
+        PackagePath_Mutable          = 1,
+
+        /// Package ExternalLocation path.
+        /// @see PackagePathType_MachineExternal
+        /// @see PackagePathType_UserExternal
+        PackagePath_ExternalLocation = 2,
+    };
+
     /// Options for GetFilePath*()
     /// @see Package.GetFilePath
     /// @see PackageGraph.GetFilePath
@@ -84,6 +99,9 @@ namespace Microsoft.Windows.ApplicationModel
     [contract(PackageRuntimeContract, 1)]
     runtimeclass Package
     {
+        /// Return true if feature is supported on the current system.
+        static Boolean IsFeatureSupported(PackageFeature feature);
+
         /// Return the absolute path to the file in the current process' package. This uses the
         /// current process' package identity, or fails with HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE)
         /// if the process lacks package identity.

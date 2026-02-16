@@ -28,18 +28,43 @@ namespace Test::Package::Tests
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
+    private:
+        bool IsMutableLocationSupported() const
+        {
+            return winrt::Microsoft::Windows::ApplicationModel::Package::IsFeatureSupported(winrt::Microsoft::Windows::ApplicationModel::PackageFeature::PackagePath_Mutable);
+        }
+
+        bool IsExternalLocationSupported() const
+        {
+            return winrt::Microsoft::Windows::ApplicationModel::Package::IsFeatureSupported(winrt::Microsoft::Windows::ApplicationModel::PackageFeature::PackagePath_ExternalLocation);
+        }
+
+
+    public:
         TEST_CLASS_SETUP(ClassSetup)
         {
             ::TB::Setup();
 
-            RemovePackage_MachineExternal();
-            RemovePackage_UserExternal();
-            RemovePackage_Mutable();
+            if (IsExternalLocationSupported())
+            {
+                RemovePackage_MachineExternal();
+                RemovePackage_UserExternal();
+            }
+            if (IsMutableLocationSupported())
+            {
+                RemovePackage_Mutable();
+            }
 
-            AddPackage_Mutable();
-            AddPackage_UserExternal();
-            StagePackage_MachineExternal();
-            AddPackage_MachineExternal();
+            if (IsMutableLocationSupported())
+            {
+                AddPackage_Mutable();
+            }
+            if (IsExternalLocationSupported())
+            {
+                AddPackage_UserExternal();
+                StagePackage_MachineExternal();
+                AddPackage_MachineExternal();
+            }
 
             return true;
         }
@@ -48,9 +73,15 @@ namespace Test::Package::Tests
         {
             ::TB::Cleanup();
 
-            RemovePackage_MachineExternal();
-            RemovePackage_UserExternal();
-            RemovePackage_Mutable();
+            if (IsExternalLocationSupported())
+            {
+                RemovePackage_MachineExternal();
+                RemovePackage_UserExternal();
+            }
+            if (IsMutableLocationSupported())
+            {
+                RemovePackage_Mutable();
+            }
 
             return true;
         }
@@ -143,6 +174,12 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_MutablePath)
         {
+            if (!IsMutableLocationSupported())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Mutable location is not supported on this system. Skipping test");
+                return;
+            }
+
             winrt::hstring packageFullName{ Mutable_PackageFullName };
             winrt::hstring fileName{ L"AppxManifest.xml" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMutablePath };
@@ -156,6 +193,12 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_MachineExternalPath)
         {
+            if (!IsExternalLocationSupported())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ExternalLocation is not supported on this system. Skipping test");
+                return;
+            }
+
             winrt::hstring packageFullName{ MachineExternal_PackageFullName };
             winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMachineExternalPath };
@@ -169,6 +212,12 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_UserExternalPath)
         {
+            if (!IsExternalLocationSupported())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ExternalLocation is not supported on this system. Skipping test");
+                return;
+            }
+
             winrt::hstring packageFullName{ UserExternal_PackageFullName };
             winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchUserExternalPath };

@@ -11,6 +11,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
     {
         Package() = default;
 
+        static bool IsFeatureSupported(winrt::Microsoft::Windows::ApplicationModel::PackageFeature const& feature);
         static hstring GetFilePath(hstring const& filename);
         static hstring GetFilePath(hstring const& filename, hstring const& packageFullName);
         static hstring GetFilePath(hstring const& filename, hstring const& packageFullName, winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions const& options);

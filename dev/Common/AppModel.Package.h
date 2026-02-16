@@ -10,6 +10,7 @@
 #include <string>
 
 #include <AppModel.Identity.h>
+#include <ExportLoader.h>
 
 namespace AppModel::Package
 {
@@ -100,6 +101,53 @@ namespace details
             return wil::make_unique_string<TString>(s);
         }
     }
+
+    // GetPackagePathByFullName2 requires >=19H1
+    typedef LONG (WINAPI* GetPackagePathByFullName2Function)(
+        PCWSTR packageFullName,
+        PackagePathType packagePathType,
+        UINT32* pathLength,
+        PWSTR path);
+
+    inline wil::unique_hmodule g_dll_apiset_appmodel_runtime_1_3;
+    inline GetPackagePathByFullName2Function g_getPackagePathByFullName2{};
+    inline std::once_flag g_onceFlag{};
+
+    inline void initialize()
+    {
+        wil::unique_hmodule dll;
+        if (::ExportLoader::Load(L"api-ms-win-appmodel-runtime-l1-1-3.dll", wil::out_param(dll)))
+        {
+            return;
+        }
+        if (dll)
+        {
+            GetPackagePathByFullName2Function getPackagePathByFullName2{};
+            if (FAILED(::ExportLoader::GetFunctionIfExists<GetPackagePathByFullName2Function>(dll.get(), "GetPackagePathByFullName2", &getPackagePathByFullName2)))
+            {
+                return;
+            }
+            if (getPackagePathByFullName2)
+            {
+                g_dll_apiset_appmodel_runtime_1_3 = std::move(dll);
+                g_getPackagePathByFullName2 = std::move(getPackagePathByFullName2);
+            }
+        }
+    }
+
+    /// Get the path for a package, if GetPackagePathByFullName2() is available.
+    /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
+    inline HRESULT GetPackagePathByFullName2IfSupported(
+        _In_ PCWSTR packageFullName,
+        PackagePathType packagePathType,
+        std::uint32_t* pathLength,
+        _Out_writes_opt_(*pathLength) PWSTR path)
+    {
+        std::call_once(g_onceFlag, initialize);
+        RETURN_HR_IF_NULL(E_NOTIMPL, g_getPackagePathByFullName2);
+
+        return g_getPackagePathByFullName2(packageFullName, packagePathType, pathLength, path);
+    }
 }
 
 /// Get the path for a package.
@@ -111,23 +159,25 @@ inline Tstring GetPath(_In_ PCWSTR packageFullName, PackagePathType packagePathT
     // as an optimization and fallback to dynamic allocation if need be
     WCHAR path[MAX_PATH]{};
     uint32_t pathLength{ ARRAYSIZE(path) };
-    const auto rc{ ::GetPackagePathByFullName2(packageFullName, packagePathType, &pathLength, path) };
-    if (rc == ERROR_SUCCESS)
+    const auto hr{ details::GetPackagePathByFullName2IfSupported(packageFullName, packagePathType, &pathLength, path) };
+    if (SUCCEEDED(hr))
     {
         return details::MakeFromPCWSTR<Tstring>(path);
     }
-    else if ((rc == ERROR_NOT_FOUND) || (rc == APPMODEL_ERROR_NO_MUTABLE_DIRECTORY))
+    else if ((hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND)) ||
+             (hr == HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_MUTABLE_DIRECTORY)) ||
+             (hr == E_NOTIMPL))
     {
         return Tstring{};
     }
-    else if (rc != ERROR_INSUFFICIENT_BUFFER)
+    else if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
     {
-        THROW_WIN32(rc);
+        THROW_HR_MSG(hr, "PackageFullName=%ls PackagePathType=%d", packageFullName ? packageFullName : L"<null>", static_cast<int>(packagePathType));
     }
 
     // It's bigger than a breadbox. Allocate memory
     std::unique_ptr<WCHAR[]> pathBuffer{ std::make_unique<WCHAR[]>(pathLength) };
-    THROW_IF_WIN32_ERROR_MSG(::GetPackagePathByFullName2(packageFullName, packagePathType, &pathLength, pathBuffer.get()),
+    THROW_IF_WIN32_ERROR_MSG(details::GetPackagePathByFullName2IfSupported(packageFullName, packagePathType, &pathLength, pathBuffer.get()),
                              "PackageFullName=%ls PackagePathType=%d", packageFullName ? packageFullName : L"<null>", static_cast<int>(packagePathType));
     return details::MakeFromPCWSTR<Tstring>(pathBuffer.get());
 }

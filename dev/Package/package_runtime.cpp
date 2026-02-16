@@ -7,6 +7,20 @@
 
 namespace appmodel
 {
+static bool IsPathSupported_Mutable()
+{
+    // Cache the answer on first query
+    static bool s_isSupported{ !!::IsPackageFeatureSupported(PackageFeature_PackagePath_Mutable) };
+    return s_isSupported;
+}
+
+static bool IsPathSupported_ExternalLocation()
+{
+    // Cache the answer on first query
+    static bool s_isSupported{ !!::IsPackageFeatureSupported(PackageFeature_PackagePath_ExternalLocation) };
+    return s_isSupported;
+}
+
 inline GetPackageFilePathOptions package_properties_to_options(
     std::uint32_t packageInfoFlags)
 {
@@ -148,26 +162,29 @@ inline std::filesystem::path get_package_file(
 {
     // Search External location
     std::filesystem::path path;
-    if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchUserExternalPath))
+    if (IsPathSupported_ExternalLocation())
     {
-        if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMachineExternalPath))
+        if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchUserExternalPath))
         {
-            // EffectiveExternal == UserExternal if package/user has one else MachineExternal
-            path = get_package_file_for_location(packageFullName, filename, PackagePathType_EffectiveExternal);
+            if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMachineExternalPath))
+            {
+                // EffectiveExternal == UserExternal if package/user has one else MachineExternal
+                path = get_package_file_for_location(packageFullName, filename, PackagePathType_EffectiveExternal);
+            }
+            else
+            {
+                path = get_package_file_for_location(packageFullName, filename, PackagePathType_UserExternal);
+            }
         }
-        else
+        else if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMachineExternalPath))
         {
-            path = get_package_file_for_location(packageFullName, filename, PackagePathType_UserExternal);
+            path = get_package_file_for_location(packageFullName, filename, PackagePathType_MachineExternal);
         }
-    }
-    else if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMachineExternalPath))
-    {
-        path = get_package_file_for_location(packageFullName, filename, PackagePathType_MachineExternal);
     }
     if (path.empty())
     {
         // Search Mutable location
-        if (WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMutablePath))
+        if (IsPathSupported_Mutable() && WI_IsFlagSet(options, GetPackageFilePathOptions_SearchMutablePath))
         {
             path = get_package_file_for_location(packageFullName, filename, PackagePathType_Mutable);
         }
@@ -205,16 +222,38 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
     // If options == None then use default behavior (search everything)
     if (options == GetPackageFilePathOptions_None)
     {
-        return GetPackageFilePathOptions_SearchInstallPath |
-               GetPackageFilePathOptions_SearchMutablePath |
-               GetPackageFilePathOptions_SearchMachineExternalPath |
-               GetPackageFilePathOptions_SearchUserExternalPath |
-               GetPackageFilePathOptions_SearchMainPackages |
-               GetPackageFilePathOptions_SearchFrameworkPackages |
-               GetPackageFilePathOptions_SearchOptionalPackages |
-               GetPackageFilePathOptions_SearchResourcePackages |
-               GetPackageFilePathOptions_SearchBundlePackages |
-               GetPackageFilePathOptions_SearchHostRuntimeDependencies;
+        // 'All' locations supported by the current system is one of...
+        //   * Install
+        //   * Install | Mutable
+        //   * Install | Mutable | ExternalLocation
+        constexpr auto nonLocationOptions{
+           GetPackageFilePathOptions_SearchMainPackages |
+           GetPackageFilePathOptions_SearchFrameworkPackages |
+           GetPackageFilePathOptions_SearchOptionalPackages |
+           GetPackageFilePathOptions_SearchResourcePackages |
+           GetPackageFilePathOptions_SearchBundlePackages |
+           GetPackageFilePathOptions_SearchHostRuntimeDependencies
+        };
+        if (IsPathSupported_ExternalLocation())
+        {
+            return GetPackageFilePathOptions_SearchInstallPath |
+                   GetPackageFilePathOptions_SearchMutablePath |
+                   GetPackageFilePathOptions_SearchMachineExternalPath |
+                   GetPackageFilePathOptions_SearchUserExternalPath |
+                   nonLocationOptions;
+        }
+        else if (IsPathSupported_Mutable())
+        {
+            return GetPackageFilePathOptions_SearchInstallPath |
+                   GetPackageFilePathOptions_SearchMutablePath |
+                   nonLocationOptions;
+        }
+        else
+        {
+            return GetPackageFilePathOptions_SearchInstallPath |
+                   nonLocationOptions;
+                   GetPackageFilePathOptions_SearchHostRuntimeDependencies;
+        }
     }
 
     // If Search*Dependencies are all clear then search them all
@@ -236,6 +275,27 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
     }
     return options;
 }
+}
+
+STDAPI_(BOOL) IsPackageFeatureSupported(
+    PackageFeature feature) noexcept
+{
+    switch (feature)
+    {
+        case PackageFeature_PackagePath_Mutable:
+        {
+            // Supported on Windows >= 19H1
+            return ::WindowsVersion::IsWindows10_19H1OrGreater() ? TRUE : FALSE;
+        }
+        case PackageFeature_PackagePath_ExternalLocation:
+        {
+            // Supported on Windows >= VB (20H1)
+            return ::WindowsVersion::IsWindows10_20H1OrGreater() ? TRUE : FALSE;
+        }
+    }
+
+    std::ignore = LOG_HR_MSG(E_INVALIDARG, "PackageFeature:%d", static_cast<int>(feature));
+    return FALSE;
 }
 
 STDAPI GetPackageFilePath(

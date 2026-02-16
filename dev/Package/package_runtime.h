@@ -4,6 +4,24 @@
 #if !defined(PACKAGE_RUNTIME_H)
 #define PACKAGE_RUNTIME_H
 
+/// Features can be queried if currently available/enabled.
+/// @see IsPackageFeatureSupported()
+typedef enum PackageFeature
+{
+    /// Package Mutable path.
+    /// @see PackagePathType_Mutable
+    PackageFeature_PackagePath_Mutable           = 1,
+
+    /// Package External Location path (MachineExternal + UserExternal)
+    /// @see PackagePathType_MachineExternal
+    /// @see PackagePathType_UserExternal
+    PackageFeature_PackagePath_ExternalLocation  = 2,
+} PackageFeature;
+
+/// Return TRUE if feature is supported on the current system.
+STDAPI_(BOOL) IsPackageFeatureSupported(
+    PackageFeature feature) noexcept;
+
 /// Options for GetPackageFilePath*() functions
 typedef enum GetPackageFilePathOptions
 {

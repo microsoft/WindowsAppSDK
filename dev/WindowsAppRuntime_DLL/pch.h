@@ -56,6 +56,8 @@
 #include <appmodel.identity.h>
 #include <appmodel.package.h>
 #include <appmodel.packagegraph.h>
+#include <exportloader.h>
+#include <iswindowsversion.h>
 #include <microsoft.configuration.h>
 #include <microsoft.foundation.string.h>
 #include <microsoft.utf8.h>

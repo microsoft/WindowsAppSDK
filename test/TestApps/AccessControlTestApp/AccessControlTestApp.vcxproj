@@ -42,9 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Security.AccessControl">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.Security.AccessControl.winmd</HintPath>
+      <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Windows.Security.AccessControl.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
-      <Implementation>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <Implementation>$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -126,11 +126,11 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\test\inc;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)..\WindowsAppRuntime_DLL;$(OutDir)..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\test\inc;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -166,6 +166,6 @@
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
   </Target>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>
