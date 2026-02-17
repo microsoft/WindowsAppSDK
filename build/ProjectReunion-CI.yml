@@ -183,7 +183,8 @@ jobs:
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
     artifactAttempt: ''
-    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+    artifactStatus: 'Succeeded'
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(artifactStatus)$(artifactAttempt)'
     ob_artifactBaseName: '$(System.StageName)_$(imageName)'
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-RunTests-Steps.yml

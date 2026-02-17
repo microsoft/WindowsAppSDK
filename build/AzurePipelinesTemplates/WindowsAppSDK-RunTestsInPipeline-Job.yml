@@ -32,7 +32,8 @@ jobs:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
     AZURE_PIPELINES_DEDUP_PARALLELISM: 16
     artifactAttempt: ''
-    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+    artifactStatus: 'Succeeded'
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.artifactStatus)$(artifactAttempt)'
     ob_artifactBaseName: '$(System.StageName)_$(imageName)'
     # As the name of this job suggests, we currently don't build any code here, but only run tests; therefore, not bothering to enable BinSkim scans
     # here. OTOH, if we leave BinSkim enabled, then the "Guardian: BinSkim" task in the Post* jobs injected into our pipeline by OneBranch 
