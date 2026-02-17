@@ -58,14 +58,14 @@ stages:
         echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
         echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
         echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
-        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)         
-        echo ob_sdl_checkCompliantCompilerWarnings=$(ob_sdl_checkCompliantCompilerWarnings)       
-        echo ob_sdl_prefast_runDuring=$(ob_sdl_prefast_runDuring)       
-        echo ob_sdl_msbuildOverride=$(ob_sdl_msbuildOverride)       
+        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
+        echo ob_sdl_checkCompliantCompilerWarnings=$(ob_sdl_checkCompliantCompilerWarnings)
+        echo ob_sdl_prefast_runDuring=$(ob_sdl_prefast_runDuring)
+        echo ob_sdl_msbuildOverride=$(ob_sdl_msbuildOverride)
 
-    # The MMS2022 image used to come with Windows SDK 10.0.22000, but not any more.
+    # The MMS2022 image used to come with Windows SDK 10.0.26100, but not any more.
     - task: PowerShell@2
-      displayName: 'Add Windows SDK 10.0.22000'
+      displayName: 'Add Windows SDK 10.0.26100'
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
@@ -73,6 +73,6 @@ stages:
         filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
         # TODO: the SdkVersion parameter does not yet support arbitrary versions.
         arguments: >
-          -SdkVersion "10.0.22000"
+          -SdkVersion "10.0.26100"
 
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self

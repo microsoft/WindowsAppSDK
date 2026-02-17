@@ -18,6 +18,10 @@
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include "PickFileResult.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60257559: [1.8 servicing] Bugfix: FileSavePicker.PickSaveFileAsync() should not truncate file when the picked file exists.
+#define WINAPPSDK_CHANGEID_60257559 60257559, WinAppSDK_1_8_4
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -155,10 +159,17 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(shellItem->GetDisplayName(SIGDN_NORMALDISPLAY, fileName.put()));
         std::wstring fileNameStr(fileName.get());
 
-        // Create a file. If the file already exists,
-        // since common item dialog prompts to let user select cancel or override, thus we can safely truncate here.
-        // Due to our design spec to align with UWP pickers, we need ensure existance of picked file.
-        auto [handle, _] = wil::try_open_or_truncate_existing_file(pathStr.c_str(), GENERIC_WRITE);
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60257559>())
+        {
+            // Create an empty file if the file doesn't exist,
+            // If the file already exists, do nothing.
+            auto [handle, _] = wil::try_open_or_create_file(pathStr.c_str(), GENERIC_WRITE);
+        }
+        else
+        {
+            // Make an empty file, regardless the file exists or not.
+            auto [handle, _] = wil::try_open_or_truncate_existing_file(pathStr.c_str(), GENERIC_WRITE);
+        }
 
         if (cancellationToken())
         {

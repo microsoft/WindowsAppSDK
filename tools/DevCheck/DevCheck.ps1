@@ -676,6 +676,7 @@ function Install-WindowsSDK
         Write-Verbose "Executing: curl.exe --output $path -L -# $url"
         $null = Start-Process curl.exe -ArgumentList "--output $path -L -# $url" -Wait -NoNewWindow -PassThru
     }
+    Write-Host "Installing Windows SDK $version. This may take a few minutes. Please wait..."
     $p = Start-Process $path -ArgumentList "/features + /q /log $log" -Wait -NoNewWindow -PassThru
     if ($p.ExitCode -ne 0)
     {
@@ -707,7 +708,7 @@ function Test-WindowsSDKInstall
     }
     else
     {
-        Write-Host "...ERROR: Windows SDK $($version) not found or valid. See [Getting Started doc's Tooling Prerequisites](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines/GettingStarted.md#tooling-prerequisites)" -ForegroundColor Red -BackgroundColor Black
+        Write-Host "...ERROR: Windows SDK $($version) not found or valid. Run with -InstallWindowsSDK to download and install missing SDK(s). For more information see https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines/GettingStarted.md#tooling-prerequisites" -ForegroundColor Red -BackgroundColor Black
         $global:issues++
     }
     return $found
@@ -1627,8 +1628,8 @@ if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
     {
         $null = Test-VisualStudioComponents
     }
-    $null = Test-WindowsSDKInstall '10.0.17763.0' [uri]'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
-    #TODO Uncomment to require new SDK: $null = Test-WindowsSDKInstall '10.0.26100.0' [uri]'https://go.microsoft.com/fwlink/?linkid=2272610'
+    $null = Test-WindowsSDKInstall '10.0.17763.0' 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
+    $null = Test-WindowsSDKInstall '10.0.26100.4654' 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))

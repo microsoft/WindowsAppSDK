@@ -2,7 +2,7 @@ variables:
   _useBuildOutputFromPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
   _useBuildOutputFromBuildId: $[coalesce(variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
 
-  channel: 'preview'
+  channel: 'stable'
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
   versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
@@ -31,7 +31,7 @@ variables:
   ob_sdl_msbuildOverride: true
 
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
-  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
 
   Codeql.Enabled: true #  CodeQL runs every 3 days on the default branch for all languages its applicable to in that pipeline.
 

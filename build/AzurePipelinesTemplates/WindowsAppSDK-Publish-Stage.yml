@@ -5,12 +5,16 @@ parameters:
 - name: "IgnoreFailures"
   type: boolean
   default: true
+- name: "TestOnArm64"
+  type: boolean
+  default: true
 stages:
 - stage: Publish
   dependsOn:
   - Test_x86
   - Test_x64
-  - Test_arm64
+  - ${{ if eq(parameters.TestOnArm64, true)}}:
+    - Test_arm64
   - StaticValidationTest
   condition: not(failed())
   jobs:

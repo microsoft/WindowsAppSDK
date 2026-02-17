@@ -10,6 +10,10 @@
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
 #include "WindowsAppRuntime-License.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60760194: [1.8 servicing] DeploymentManager failing with error package downgrade
+#define WINAPPSDK_CHANGEID_60760194 60760194, WinAppSDK_1_8_5
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -48,7 +52,8 @@ inline void Initialize_StopSuccessActivity(
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    static bool isAutoInitialized{ false };
+    static bool s_isInitialized{ false };
+    static wil::srwlock m_isInitializedLock;
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus()
     {
@@ -106,7 +111,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         // Loop through all of the target packages (i.e. main, signleton packages) and capture whether they are all installed or not
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
-        HRESULT verifyResult{};
+        HRESULT statusHResult{};
 
         for (const auto package : c_targetPackages)
         {
@@ -133,15 +138,19 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
 
-            verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
+            auto verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
             if (FAILED(verifyResult))
             {
-                break;
+                statusHResult = verifyResult;
+                if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60760194>())
+                {
+                    break;
+                }
             }
         }
 
         DeploymentStatus status{};
-        if (SUCCEEDED(verifyResult))
+        if (SUCCEEDED(statusHResult))
         {
             status = DeploymentStatus::Ok;
         }
@@ -150,7 +159,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             status = DeploymentStatus::PackageInstallRequired;
         }
 
-        return winrt::make<implementation::DeploymentResult>(status, verifyResult);
+        return winrt::make<implementation::DeploymentResult>(status, statusHResult);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(
@@ -165,12 +174,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
         bool isRepair)
     {
-        if (isAutoInitialized)
+        auto lock{ m_isInitializedLock.lock_exclusive() };
+
+        if (s_isInitialized)
         {
-            HRESULT hr = HRESULT_FROM_WIN32(E_UNEXPECTED);
-            winrt::hstring message = L"DeploymentManager can only be initialized once and has already been initialized by default. "
-                L"Please either remove your explicit initialization call, or disable auto-initialization by adding <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize> to your .csproj file.";
-            throw winrt::hresult_error(hr, message);
+            throw winrt::hresult_error(HRESULT_FROM_WIN32(ERROR_INVALID_STATE),
+                                       L"DeploymentManager is already initialized (can only be initialized once). See https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applicationmodel.windowsappruntime.deploymentmanager.initialize?view=windows-app-sdk-1.7#microsoft-windows-applicationmodel-windowsappruntime-deploymentmanager-initialize");
         }
 
         auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
@@ -181,22 +190,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
-        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
-                                                      Security::IntegrityLevel::IsElevated(),
-                                                      isPackagedProcess,
-                                                      initializeActivityContext.GetIsFullTrustPackage(),
-                                                      Security::IntegrityLevel::GetIntegrityLevel(),
-                                                      isRepair);
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
+        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
+                                                      isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
 
         // DeploymentManager API requires a packaged process?
-        HRESULT hr{};
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult deploymentResult{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown, S_OK };
         if (!isPackagedProcess)
         {
             // The process lacks package identity but that's OK. Do nothing
-            const auto c_status{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok };
-            return winrt::make<implementation::DeploymentResult>(c_status, S_OK);
+            return winrt::make<implementation::DeploymentResult>(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok, S_OK);
         }
 
         try
@@ -205,10 +208,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         catch (winrt::hresult_error const& e)
         {
-            hr = e.code();
-        }
-        if (FAILED(hr))
-        {
+            const HRESULT hr{ e.code() };
+
             auto packageIdentity{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
             PCWSTR c_packageNamePrefix{ L"microsoft.windowsappruntime." };
             const size_t c_packageNamePrefixLength{ ARRAYSIZE(L"microsoft.windowsappruntime.") - 1 };
@@ -219,9 +220,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             }
             else
             {
-                release = std::wstring{ L"??? (" } + std::wstring(packageFullName.c_str()) + L")";
+                release = std::format(L"??? ({})", packageFullName);
             }
-            LOG_IF_FAILED(Initialize_Log(hr, packageIdentity, release));
+            std::ignore = LOG_IF_FAILED(Initialize_Log(hr, packageIdentity, release));
 
             // NOTE: IsDebuggerPresent()=TRUE if running under a debugger context.
             //       IsDebuggerPresent()=FALSE if not running under a debugger context, even if AEDebug is set.
@@ -233,14 +234,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             if (deploymentInitializeOptions.OnErrorShowUI() ||
                 ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_ONERRORSHOWUI"))
             {
-                LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
+                std::ignore = LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
             }
 
-            THROW_HR(hr);
+            THROW_HR_MSG(hr, "PackageFullName=%ls Options: ForceDeployment=%c OnErrorShowUI=%c isRepair:%c",
+                         packageFullName.c_str(), deploymentInitializeOptions.ForceDeployment() ? 'Y' : 'N',
+                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N' );
         }
 
         // Success!
-        isAutoInitialized = true;
+        s_isInitialized = true;
         return deploymentResult;
     }
 
@@ -270,7 +273,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         else
         {
-            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) && 
+            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) &&
                 (isRepair))
             {
                 status = DeploymentStatus::PackageRepairFailed;

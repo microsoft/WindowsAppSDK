@@ -33,6 +33,10 @@ parameters:
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
   default: true
+- name: "TestOnArm64"
+  displayName: "Enable running of tests on arm64 platform (Default: true)"
+  type: boolean
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
@@ -60,6 +64,7 @@ extends:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
+        Version: 2022
         Network: R1
 
     platform:
@@ -138,8 +143,11 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+      parameters:
+        TestOnArm64: ${{ parameters.TestOnArm64 }}    
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
+        TestOnArm64: ${{ parameters.TestOnArm64 }}    

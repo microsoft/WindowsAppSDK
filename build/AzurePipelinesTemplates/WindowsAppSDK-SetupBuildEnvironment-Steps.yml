@@ -64,8 +64,8 @@ steps:
     inputs:
       targetType: filePath
       filePath: build\scripts\Install-WindowsSdkISO.ps1
-      arguments: 18362
-    displayName: 'Install Insider SDK (18362)'
+      arguments: 26100
+    displayName: 'Install Windows SDK (26100)'
 
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'

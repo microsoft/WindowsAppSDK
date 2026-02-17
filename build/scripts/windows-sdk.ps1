@@ -26,7 +26,7 @@ function Install-EXE
         Write-Host "Downloading $Name..."
         $FilePath = "${env:Temp}\$Name"
 
-        Invoke-WebRequest -Uri $Url -OutFile $FilePath
+        Invoke-WebRequest -Uri $Url -OutFile $FilePath -UseBasicParsing
 
         Write-Host "Starting Install $Name..."
         $process = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -Wait -PassThru
@@ -105,14 +105,14 @@ if ($SdkVersion -eq "10.1.17763")
         exit $wdkExitCode
     }
 }
-elseif ($SdkVersion -eq "10.0.22000")
+elseif ($SdkVersion -eq "10.0.26100")
 {
-    # Install Windows SDK for Windows 11 (10.0.22000.194).
-    # Link came from https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/index-legacy.
-    $winSdk22000Url = "https://go.microsoft.com/fwlink/?linkid=2173743"
+    # Install Windows SDK for Windows 11 (10.0.26100.4654).
+    # Link came from https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/
+    $winSdkUrl = "https://go.microsoft.com/fwlink/?linkid=2327008"
 
     # `winsdksetup.exe /features + /quiet` installs all features without showing the GUI
-    $sdkExitCode = Install-EXE -Url $winSdk22000Url -Name "winsdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
+    $sdkExitCode = Install-EXE -Url $winSdkUrl -Name "winsdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
 
     if ($sdkExitCode -ne 0)
     {

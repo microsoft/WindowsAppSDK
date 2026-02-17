@@ -12,6 +12,10 @@
 #include <filesystem>
 #include <format>
 #include <utility>
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60245660: [1.8 servicing] FileTypeFilter become blank when the system doesn't show extensions.
+#define WINAPPSDK_CHANGEID_60245660 60245660, WinAppSDK_1_8_4
 
 
 namespace {
@@ -293,7 +297,18 @@ namespace PickerCommon {
         for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
-            FileTypeFilterData.push_back(L"");
+            
+            if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60245660>())
+            {
+                // Set the filter name.
+                FileTypeFilterData.push_back(ext);
+            }
+            else
+            {
+                FileTypeFilterData.push_back(L"");
+            }
+
+            // Set the filter spec.
             FileTypeFilterData.push_back(ext);
 
             allFilesExtensionList += ext;
@@ -320,7 +335,7 @@ namespace PickerCommon {
         }
         else
         {
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(AllFilesText);
             FileTypeFilterData.push_back(allFilesExtensionList.c_str());
         }
 
