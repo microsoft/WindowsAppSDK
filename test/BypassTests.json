@@ -1087,6 +1087,8 @@
   "release_x86_Windows.11.Professional.25H2.zh-CN.ManagedTest.ResourceContextTest.NoResourceFileWithContextTest",
   "release_x86_Windows.11.Professional.25H2.zh-CN.MrtCoreUnpackagedTests.TestClass.DefaultResourceManager",
   "release_x86_Windows.11.Professional.25H2.zh-CN.MrtCoreUnpackagedTests.TestClass.ResourceLoader_GetDefaultResourceFilePathTest",
+  "release_x86_Windows.11.Professional.25H2.zh-CN.PackagedTests#metadataSet0::VerifyBadgeNotificationManagerCurrent",
+  "release_x86_Windows.11.Professional.25H2.zh-CN.PackagedTests#metadataSet1::VerifyBadgeNotificationManagerCurrent",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_assign_move",
   "release_x86_Windows.Server.2019.DataCenter.zh-CN.Test::Decimal::Tests::DecimalTests::ctor_to_assign_decimal",
