@@ -35,6 +35,14 @@ namespace winrt::Microsoft::Windows::Globalization::implementation
 
     hstring ApplicationLanguages::PrimaryLanguageOverride()
     {
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            // For packaged apps, Windows.Globalization persists the value across process launches.
+            // Always delegate to it as the source of truth rather than the in-memory cache.
+            return winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride();
+        }
+
+        // For unpackaged apps, persistence is not supported; return in-memory value only.
         auto criticalSection{ m_lock.lock_shared() };
         return m_language;
     }
@@ -45,12 +53,15 @@ namespace winrt::Microsoft::Windows::Globalization::implementation
 
         THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
 
-        auto criticalSection {m_lock.lock_exclusive()};
-        m_language = language;
-
         if (AppModel::Identity::IsPackagedProcess())
         {
+            // Persist via Windows.Globalization which stores to the package's app data.
             winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride(language);
+            return;
         }
+
+        // For unpackaged apps, persistence is not supported; store in-memory only.
+        auto criticalSection {m_lock.lock_exclusive()};
+        m_language = language;
     }
 } // namespace winrt::Microsoft::Windows::Globalization::implementation

@@ -5,6 +5,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
 #else
 using System;
 using System.ComponentModel;
@@ -18,6 +19,7 @@ using WEX.Logging.Interop;
 using WEX.TestExecution;
 using WEX.TestExecution.Markup;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
 #endif
 
 namespace CommonTestCode
@@ -583,6 +585,49 @@ namespace CommonTestCode
 
             resourceCandidate = resourceMap.TryGetValue("xyz", resourceContext);
             Verify.IsNull(resourceCandidate);
+        }
+    }
+
+    // Tests for Microsoft.Windows.Globalization.ApplicationLanguages (packaged apps only)
+    public class ApplicationLanguagesTest
+    {
+        // Verifies that PrimaryLanguageOverride set in one call is immediately readable back
+        // via the getter (within the same process).
+        public static void PrimaryLanguageOverride_RoundTrip()
+        {
+            string originalValue = ApplicationLanguages.PrimaryLanguageOverride;
+            try
+            {
+                ApplicationLanguages.PrimaryLanguageOverride = "en-US";
+                Verify.AreEqual("en-US", ApplicationLanguages.PrimaryLanguageOverride);
+
+                ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+                Verify.AreEqual("fr-FR", ApplicationLanguages.PrimaryLanguageOverride);
+            }
+            finally
+            {
+                // Restore original value so tests don't affect each other.
+                ApplicationLanguages.PrimaryLanguageOverride = originalValue;
+            }
+        }
+
+        // Verifies that setting PrimaryLanguageOverride to an empty string is accepted
+        // and clears any previous override.
+        public static void PrimaryLanguageOverride_ClearWithEmptyString()
+        {
+            string originalValue = ApplicationLanguages.PrimaryLanguageOverride;
+            try
+            {
+                ApplicationLanguages.PrimaryLanguageOverride = "en-US";
+                Verify.AreEqual("en-US", ApplicationLanguages.PrimaryLanguageOverride);
+
+                ApplicationLanguages.PrimaryLanguageOverride = string.Empty;
+                Verify.AreEqual(string.Empty, ApplicationLanguages.PrimaryLanguageOverride);
+            }
+            finally
+            {
+                ApplicationLanguages.PrimaryLanguageOverride = originalValue;
+            }
         }
     }
 }
