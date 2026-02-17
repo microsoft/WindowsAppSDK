@@ -88,6 +88,16 @@ void PackagedTests::VerifyProgressDataIsIndeterminateFromToast()
     BaseTestSuite::VerifyProgressDataIsIndeterminateFromToast();
 }
 
+void PackagedTests::VerifyProgressDataValueValidation()
+{
+    BaseTestSuite::VerifyProgressDataValueValidation();
+}
+
+void PackagedTests::VerifyUpdateToastProgressDataWithIndeterminate()
+{
+    BaseTestSuite::VerifyUpdateToastProgressDataWithIndeterminate();
+}
+
 void PackagedTests::VerifyShowToast()
 {
     BaseTestSuite::VerifyShowToast();

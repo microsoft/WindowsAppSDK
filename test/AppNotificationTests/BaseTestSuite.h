@@ -55,6 +55,8 @@ class BaseTestSuite
         void VerifyProgressDataIsIndeterminateDefault();
         void VerifyProgressDataIsIndeterminateSetTrue();
         void VerifyProgressDataIsIndeterminateFromToast();
+        void VerifyProgressDataValueValidation();
+        void VerifyUpdateToastProgressDataWithIndeterminate();
         void VerifyIconPathExists();
         void VerifyExplicitAppId();
         void VerifyToastConferencingConfigAllDevicesSet();

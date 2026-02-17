@@ -243,6 +243,36 @@ void BaseTestSuite::VerifyProgressDataIsIndeterminateFromToast()
     VERIFY_IS_TRUE(progressDataFromToast.IsIndeterminate());
 }
 
+void BaseTestSuite::VerifyProgressDataValueValidation()
+{
+    AppNotificationProgressData progressData{ 1 };
+
+    // Valid edge cases: 0.0 and 1.0 should succeed
+    progressData.Value(0.0);
+    VERIFY_ARE_EQUAL(progressData.Value(), 0.0);
+
+    progressData.Value(1.0);
+    VERIFY_ARE_EQUAL(progressData.Value(), 1.0);
+
+    // Invalid values: out of [0.0, 1.0] range should throw E_INVALIDARG
+    VERIFY_THROWS_HR(progressData.Value(-0.1), E_INVALIDARG);
+    VERIFY_THROWS_HR(progressData.Value(1.1), E_INVALIDARG);
+}
+
+void BaseTestSuite::VerifyUpdateToastProgressDataWithIndeterminate()
+{
+    RegisterWithAppNotificationManager();
+    PostToastHelper(L"IndeterminateTag", L"IndeterminateGroup");
+
+    AppNotificationProgressData progressData{ 1 };
+    progressData.Status(L"Loading");
+    progressData.Title(L"Title");
+    progressData.IsIndeterminate(true);
+
+    auto progressResultOperation{ AppNotificationManager::Default().UpdateAsync(progressData, L"IndeterminateTag", L"IndeterminateGroup") };
+    ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded);
+}
+
 void BaseTestSuite::VerifyShowToast()
 {
     RegisterWithAppNotificationManager();

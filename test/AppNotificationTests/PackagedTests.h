@@ -61,6 +61,8 @@ class PackagedTests : BaseTestSuite
     TEST_METHOD(VerifyProgressDataIsIndeterminateDefault);
     TEST_METHOD(VerifyProgressDataIsIndeterminateSetTrue);
     TEST_METHOD(VerifyProgressDataIsIndeterminateFromToast);
+    TEST_METHOD(VerifyProgressDataValueValidation);
+    TEST_METHOD(VerifyUpdateToastProgressDataWithIndeterminate);
     TEST_METHOD(VerifyShowToast);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup);
