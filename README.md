@@ -21,6 +21,8 @@
     <img src="https://img.shields.io/nuget/v/Microsoft.WindowsAppSDK" alt="WindowsAppSDK NuGet" /></a>
 </p>
 
+Hello, world!
+
 [Windows App SDK](https://aka.ms/winappsdk) (formerly Project Reunion) is a set of libraries, frameworks, components, and tools that you can use in your apps to access powerful Windows platform functionality from all kinds of apps on many versions of Windows. The Windows App SDK combines the powers of Win32 native applications alongside modern API usage techniques, so your apps light up everywhere your users are.
 
 - **WinUI 3 support:** [WinUI](https://learn.microsoft.com/windows/apps/winui/winui3/) embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
