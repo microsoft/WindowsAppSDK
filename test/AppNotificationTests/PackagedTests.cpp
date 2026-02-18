@@ -73,6 +73,31 @@ void PackagedTests::VerifyToastProgressDataSequence0Fail()
     BaseTestSuite::VerifyToastProgressDataSequence0Fail();
 }
 
+void PackagedTests::VerifyProgressDataIsIndeterminateDefault()
+{
+    BaseTestSuite::VerifyProgressDataIsIndeterminateDefault();
+}
+
+void PackagedTests::VerifyProgressDataIsIndeterminateSetTrue()
+{
+    BaseTestSuite::VerifyProgressDataIsIndeterminateSetTrue();
+}
+
+void PackagedTests::VerifyProgressDataIsIndeterminateFromToast()
+{
+    BaseTestSuite::VerifyProgressDataIsIndeterminateFromToast();
+}
+
+void PackagedTests::VerifyProgressDataValueValidation()
+{
+    BaseTestSuite::VerifyProgressDataValueValidation();
+}
+
+void PackagedTests::VerifyUpdateToastProgressDataWithIndeterminate()
+{
+    BaseTestSuite::VerifyUpdateToastProgressDataWithIndeterminate();
+}
+
 void PackagedTests::VerifyShowToast()
 {
     BaseTestSuite::VerifyShowToast();
