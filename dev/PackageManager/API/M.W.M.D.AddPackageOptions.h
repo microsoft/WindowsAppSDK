@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -46,6 +46,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsLimitToExistingPackagesSupported();
         bool LimitToExistingPackages();
         void LimitToExistingPackages(bool value);
+        bool IsPackageValidationSupported();
+        winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource GetValidationEventSourceForUri(winrt::Windows::Foundation::Uri const& uri);
+        winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource> PackageValidators();
 
     private:
         winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_targetVolume{ nullptr };
@@ -67,6 +70,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool m_deferRegistrationWhenPackagesAreInUse{};
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> m_expectedDigests;
         bool m_limitToExistingPackages{};
+        winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource> m_packageValidators;
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

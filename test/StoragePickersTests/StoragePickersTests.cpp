@@ -151,6 +151,12 @@ namespace Test::StoragePickersTests
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
 
+            picker.Title(L"Custom Title");
+            VERIFY_ARE_EQUAL(picker.Title(), L"Custom Title");
+
+            picker.SettingsIdentifier(L"MovieClips");
+            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"MovieClips");
+
             picker.FileTypeFilter().Append(L"*");
             VERIFY_ARE_EQUAL(picker.FileTypeFilter().GetAt(0), L"*");
 
@@ -158,6 +164,9 @@ namespace Test::StoragePickersTests
             openPickerChoices.Append(L".txt");
             picker.FileTypeChoices().Insert(L"Documents", openPickerChoices);
             VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"Documents").GetAt(0), L".txt");
+
+            picker.InitialFileTypeIndex(0);
+            VERIFY_ARE_EQUAL(picker.InitialFileTypeIndex(), 0);
 
             picker.SuggestedFolder(L"C:\\temp_fileopenpicker_ut_temp");
             VERIFY_ARE_EQUAL(picker.SuggestedFolder(), L"C:\\temp_fileopenpicker_ut_temp");
@@ -181,10 +190,26 @@ namespace Test::StoragePickersTests
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
 
+            picker.Title(L"Save My File");
+            VERIFY_ARE_EQUAL(picker.Title(), L"Save My File");
+
+            picker.SettingsIdentifier(L"SoundTracks");
+            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"SoundTracks");
+
             auto filters = winrt::single_threaded_vector<winrt::hstring>();
+            filters.Append(L".mp3");
+            filters.Append(L".wav");
             filters.Append(L"*");
-            picker.FileTypeChoices().Insert(L"All Files", filters);
-            VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"All Files").GetAt(0), L"*");
+            picker.FileTypeChoices().Insert(L"Sound Track Files", filters);
+            VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"Sound Track Files").GetAt(0), L".mp3");
+            VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"Sound Track Files").GetAt(1), L".wav");
+            VERIFY_ARE_EQUAL(picker.FileTypeChoices().Lookup(L"Sound Track Files").GetAt(2), L"*");
+
+            picker.InitialFileTypeIndex(0);
+            VERIFY_ARE_EQUAL(picker.InitialFileTypeIndex(), 0);
+
+            picker.ShowOverwritePrompt(false);
+            VERIFY_IS_FALSE(picker.ShowOverwritePrompt());
 
             picker.SuggestedStartFolder(L"C:\\temp_filesavepicker_start");
             VERIFY_ARE_EQUAL(picker.SuggestedStartFolder(), L"C:\\temp_filesavepicker_start");
@@ -206,6 +231,12 @@ namespace Test::StoragePickersTests
 
             picker.CommitButtonText(L"commit");
             VERIFY_ARE_EQUAL(picker.CommitButtonText(), L"commit");
+
+            picker.Title(L"Folder Title");
+            VERIFY_ARE_EQUAL(picker.Title(), L"Folder Title");
+
+            picker.SettingsIdentifier(L"DownloadedFiles");
+            VERIFY_ARE_EQUAL(picker.SettingsIdentifier(), L"DownloadedFiles");
 
             picker.SuggestedFolder(L"C:\\temp_folderpicker_ut_temp");
             VERIFY_ARE_EQUAL(picker.SuggestedFolder(), L"C:\\temp_folderpicker_ut_temp");
