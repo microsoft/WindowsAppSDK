@@ -1,0 +1,61 @@
+name: Auto Request Reviewers (Windows App SDK Foundation)
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  assign-reviewers:
+    name: Assign Reviewers
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    
+    steps:
+      - name: Set reviewers based on target branch
+        id: set-reviewers
+        run: |
+          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          echo "🎯 Target branch: $TARGET_BRANCH"
+          
+          # Windows App SDK branch strategy
+          case "$TARGET_BRANCH" in
+            release/*)
+              # Release branches: Shiproom team
+              REVIEWERS="Scottj1s,agniuks,kythant,LegendaryBlair"
+              TEAM_REVIEWERS=""
+              ;;
+            *)
+              # Other branches: no automatic assignment
+              REVIEWERS=""
+              TEAM_REVIEWERS=""
+              ;;
+          esac
+          
+          echo "reviewers=${REVIEWERS}" >> $GITHUB_OUTPUT
+          echo "team_reviewers=${TEAM_REVIEWERS}" >> $GITHUB_OUTPUT
+          
+          if [ -n "$REVIEWERS" ]; then
+            echo "✅ Will assign: $REVIEWERS"
+          else
+            echo "ℹ️ No automatic reviewers for this branch"
+          fi
+      
+      - name: Request reviewers
+        if: steps.set-reviewers.outputs.reviewers != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REVIEWERS="${{ steps.set-reviewers.outputs.reviewers }}"
+          REVIEWERS_ARRAY=$(echo "$REVIEWERS" | jq -R 'split(",") | map(select(length > 0))')
+          
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers" \
+            --field reviewers="$REVIEWERS_ARRAY"
+          
+          echo "✅ Reviewers assigned!"
