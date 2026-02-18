@@ -49,6 +49,10 @@ parameters:
   displayName: "Whether Maestro publishing should depend on successful Sample tests"
   type: boolean
   default: false
+- name: "CheckApiChanges"
+  displayName: "Whether to run Api Diff against latest stable package"
+  type: boolean
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
@@ -158,6 +162,11 @@ extends:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
+
+    - ${{ if eq( parameters.CheckApiChanges, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self
+        parameters:
+          CompareAgainstExperimental: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:

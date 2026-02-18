@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Area contacts configuration. Create your own copy at .user/issue-triage-report/area-contacts.json with actual team contacts.",
+  "areaContacts": {
+    "area-ExampleFeature": { "primary": "Primary Contact Name", "secondary": null },
+    "area-AnotherFeature": { "primary": "Primary Contact", "secondary": "Secondary Contact" },
+    "area-FeatureWithNotes": { "primary": "Contact Name", "secondary": null, "notes": "Special handling notes" }
+  },
+  "specialAreas": {
+    "triageOnly": ["area-TriageOnlyExample"],
+    "crossFunctional": {
+      "area-CrossTeam": "org/related-repo"
+    }
+  },
+  "lastUpdated": "YYYY-MM"
+}
