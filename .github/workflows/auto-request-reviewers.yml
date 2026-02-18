@@ -3,6 +3,12 @@ name: Auto Request Reviewers (Windows App SDK Foundation)
 on:
   pull_request:
     types: [opened, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to test with'
+        required: true
+        type: number
 
 permissions:
   pull-requests: write
@@ -12,13 +18,32 @@ jobs:
   assign-reviewers:
     name: Assign Reviewers
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ github.event_name == 'workflow_dispatch' || !github.event.pull_request.draft }}
     
     steps:
+      - name: Get PR details
+        id: get-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PR_NUMBER="${{ inputs.pr_number }}"
+            echo "Manual test mode for PR #$PR_NUMBER"
+            PR_DATA=$(gh api "/repos/${{ github.repository }}/pulls/$PR_NUMBER")
+            TARGET_BRANCH=$(echo "$PR_DATA" | jq -r '.base.ref')
+          else
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          fi
+          
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "target_branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
+          echo "🔍 PR #$PR_NUMBER targets: $TARGET_BRANCH"
+      
       - name: Set reviewers based on target branch
         id: set-reviewers
         run: |
-          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          TARGET_BRANCH="${{ steps.get-pr.outputs.target_branch }}"
           echo "🎯 Target branch: $TARGET_BRANCH"
           
           # Windows App SDK branch strategy
@@ -55,7 +80,7 @@ jobs:
           gh api \
             --method POST \
             -H "Accept: application/vnd.github+json" \
-            "/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers" \
+            "/repos/${{ github.repository }}/pulls/${{ steps.get-pr.outputs.pr_number }}/requested_reviewers" \
             --field reviewers="$REVIEWERS_ARRAY"
           
           echo "✅ Reviewers assigned!"
