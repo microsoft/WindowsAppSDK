@@ -1,0 +1,68 @@
+# Advanced Pattern 1: Using a configuration file instead of hardcoded logic
+# This makes it easier to maintain without editing the workflow
+
+name: Auto Request Reviewers (Config-Based)
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  assign-reviewers:
+    name: Assign Reviewers
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # Create a REVIEWERS.json in your repo like this:
+      # {
+      #   "main": ["user1", "user2"],
+      #   "release/*": ["releaseuser1"],
+      #   "develop": ["devuser1", "devuser2"]
+      # }
+      
+      - name: Load reviewer configuration
+        id: config
+        run: |
+          TARGET="${{ github.event.pull_request.base.ref }}"
+          
+          # Read config file
+          if [ -f .github/REVIEWERS.json ]; then
+            CONFIG=$(cat .github/REVIEWERS.json)
+            
+            # Try exact match first
+            REVIEWERS=$(echo "$CONFIG" | jq -r --arg branch "$TARGET" '.[$branch] // empty | join(",")')
+            
+            # If no exact match, try pattern matching
+            if [ -z "$REVIEWERS" ]; then
+              # Try patterns like "release/*"
+              for pattern in $(echo "$CONFIG" | jq -r 'keys[]'); do
+                if [[ "$TARGET" == $pattern ]]; then
+                  REVIEWERS=$(echo "$CONFIG" | jq -r --arg pattern "$pattern" '.[$pattern] | join(",")')
+                  break
+                fi
+              done
+            fi
+            
+            echo "reviewers=${REVIEWERS}" >> $GITHUB_OUTPUT
+            echo "Found reviewers: ${REVIEWERS:-none}"
+          else
+            echo "⚠️ No REVIEWERS.json found"
+            echo "reviewers=" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Request reviewers
+        if: steps.config.outputs.reviewers != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REVIEWERS="${{ steps.config.outputs.reviewers }}"
+          gh pr edit ${{ github.event.pull_request.number }} \
+            --add-reviewer "$REVIEWERS"

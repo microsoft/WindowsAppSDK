@@ -1,0 +1,105 @@
+name: Auto Request Reviewers
+
+# TRIGGER: When should this action run?
+# We want it to run when a PR is opened or when the base branch changes
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+    # Note: 'ready_for_review' handles when a draft PR becomes ready
+
+# PERMISSIONS: What can this action do?
+# We need to write to pull requests to add reviewers
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  assign-reviewers:
+    name: Assign Reviewers Based on Target Branch
+    runs-on: ubuntu-latest
+    
+    # Skip if the PR is still a draft
+    if: ${{ !github.event.pull_request.draft }}
+    
+    steps:
+      # STEP 1: Determine which reviewers to assign based on target branch
+      - name: Set reviewers based on target branch
+        id: set-reviewers
+        run: |
+          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          echo "Target branch is: $TARGET_BRANCH"
+          
+          # Define your branch-to-reviewers mapping here
+          # Format: comma-separated GitHub usernames (no spaces after commas)
+          case "$TARGET_BRANCH" in
+            main)
+              REVIEWERS="user1,user2,user3"
+              TEAM_REVIEWERS="org/team-core"
+              ;;
+            release/*)
+              REVIEWERS="user4,user5"
+              TEAM_REVIEWERS="org/team-release"
+              ;;
+            develop)
+              REVIEWERS="user6,user7"
+              TEAM_REVIEWERS=""
+              ;;
+            feature/*)
+              REVIEWERS="user8"
+              TEAM_REVIEWERS=""
+              ;;
+            *)
+              # Default: no automatic reviewers
+              REVIEWERS=""
+              TEAM_REVIEWERS=""
+              ;;
+          esac
+          
+          # Export for next step (removing any whitespace)
+          echo "reviewers=${REVIEWERS// /}" >> $GITHUB_OUTPUT
+          echo "team_reviewers=${TEAM_REVIEWERS// /}" >> $GITHUB_OUTPUT
+          echo "Will request reviews from: $REVIEWERS"
+          echo "Will request team reviews from: $TEAM_REVIEWERS"
+      
+      # STEP 2: Actually request the reviewers using GitHub API
+      - name: Request reviewers
+        if: steps.set-reviewers.outputs.reviewers != '' || steps.set-reviewers.outputs.team_reviewers != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          REVIEWERS: ${{ steps.set-reviewers.outputs.reviewers }}
+          TEAM_REVIEWERS: ${{ steps.set-reviewers.outputs.team_reviewers }}
+        run: |
+          # Build the JSON payload
+          JSON_PAYLOAD="{"
+          
+          if [ -n "$REVIEWERS" ]; then
+            # Convert comma-separated list to JSON array
+            REVIEWERS_ARRAY=$(echo "$REVIEWERS" | jq -R 'split(",") | map(select(length > 0))')
+            JSON_PAYLOAD="${JSON_PAYLOAD}\"reviewers\":${REVIEWERS_ARRAY}"
+          fi
+          
+          if [ -n "$TEAM_REVIEWERS" ]; then
+            # Add comma if we already have reviewers
+            if [ -n "$REVIEWERS" ]; then
+              JSON_PAYLOAD="${JSON_PAYLOAD},"
+            fi
+            # Extract team name (remove org/ prefix)
+            TEAM_NAME=$(echo "$TEAM_REVIEWERS" | cut -d'/' -f2)
+            JSON_PAYLOAD="${JSON_PAYLOAD}\"team_reviewers\":[\"${TEAM_NAME}\"]"
+          fi
+          
+          JSON_PAYLOAD="${JSON_PAYLOAD}}"
+          
+          echo "Sending payload: $JSON_PAYLOAD"
+          
+          # Make the API call
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${REPO}/pulls/${PR_NUMBER}/requested_reviewers" \
+            --input - <<< "$JSON_PAYLOAD"
+          
+          echo "✅ Reviewers requested successfully!"

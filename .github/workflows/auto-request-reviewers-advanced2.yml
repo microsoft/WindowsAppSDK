@@ -1,0 +1,94 @@
+# Advanced Pattern 2: Using JavaScript for complex logic
+# This gives you more programming flexibility
+
+name: Auto Request Reviewers (JavaScript)
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  assign-reviewers:
+    name: Assign Reviewers
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    
+    steps:
+      - name: Assign reviewers based on branch logic
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const targetBranch = context.payload.pull_request.base.ref;
+            const prNumber = context.payload.pull_request.number;
+            const prAuthor = context.payload.pull_request.user.login;
+            
+            console.log(`Target branch: ${targetBranch}`);
+            console.log(`PR #${prNumber} by ${prAuthor}`);
+            
+            // Define your branch-to-reviewers mapping
+            const branchConfig = {
+              'main': {
+                reviewers: ['user1', 'user2', 'user3'],
+                teams: [] // Or ['team-core'] for org teams
+              },
+              'release/': { // Prefix match
+                reviewers: ['releaseuser1', 'releaseuser2'],
+                teams: []
+              },
+              'develop': {
+                reviewers: ['devuser1', 'devuser2'],
+                teams: []
+              }
+            };
+            
+            // Find matching configuration
+            let config = null;
+            
+            // Try exact match
+            if (branchConfig[targetBranch]) {
+              config = branchConfig[targetBranch];
+            } else {
+              // Try prefix match
+              for (const [branch, cfg] of Object.entries(branchConfig)) {
+                if (branch.endsWith('/') && targetBranch.startsWith(branch)) {
+                  config = cfg;
+                  break;
+                }
+              }
+            }
+            
+            if (!config || (config.reviewers.length === 0 && config.teams.length === 0)) {
+              console.log('No reviewers configured for this branch');
+              return;
+            }
+            
+            // Filter out the PR author from reviewers
+            const reviewers = config.reviewers.filter(r => r !== prAuthor);
+            
+            if (reviewers.length === 0 && config.teams.length === 0) {
+              console.log('No reviewers to assign (author filtered out or no teams)');
+              return;
+            }
+            
+            // Request reviewers
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                reviewers: reviewers,
+                team_reviewers: config.teams
+              });
+              
+              console.log(`✅ Successfully requested reviews from: ${reviewers.join(', ')}`);
+              if (config.teams.length > 0) {
+                console.log(`✅ Successfully requested team reviews from: ${config.teams.join(', ')}`);
+              }
+            } catch (error) {
+              console.error('Failed to request reviewers:', error.message);
+              // Don't fail the workflow, just log the error
+            }
