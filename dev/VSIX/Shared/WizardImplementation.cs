@@ -318,7 +318,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
                     var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
 
-                    _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
+                    await joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
                 }
             });
         }
