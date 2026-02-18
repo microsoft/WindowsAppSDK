@@ -19,6 +19,9 @@ namespace PickerCommon {
     const winrt::hstring ImproperFileExtensionLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_IMPROPERFILEEXTENSION"};
     const winrt::hstring StringNoEmbeddedNullsLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_STRINGSNOEMBEDDEDNULLS"};
     const winrt::hstring MaxSaveFileLengthExceededLocalizationKey{L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED"};
+    const winrt::hstring InvalidInitialFileTypeIndexLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDINITIALFILETYPEINDEX"};
+    const winrt::hstring InvalidAppIdForSettingsIdentifierLocalizationKey{ L"Microsoft.WindowsAppRuntime/StoragePickers/IDS_APIERROR_INVALIDAPPIDFORSETTINGSIDENTIFIER"};
+    constexpr int DefaultInitialFileTypeIndex{ -1 };
 
     bool IsHStringNullOrEmpty(winrt::hstring value);
     void ValidateStringNoEmbeddedNulls(winrt::hstring const& value);
@@ -27,14 +30,17 @@ namespace PickerCommon {
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
     void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName);
+    void ValidateInitialFileTypeIndex(int const& value);
 
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;
+        winrt::hstring Title;
+        winrt::hstring SettingsIdentifier;
         winrt::Microsoft::Windows::Storage::Pickers::PickerLocationId SuggestedStartLocation;
         std::vector<winrt::hstring> FileTypeFilterData{};
-        std::vector<COMDLG_FILTERSPEC> FileTypeFilterPara{};
-        bool FocusLastFilter{ false };
+        std::vector<COMDLG_FILTERSPEC> FileTypeFilterParams{};
+        int InitialFileTypeIndex{ DefaultInitialFileTypeIndex };
         winrt::hstring AllFilesText{ L"All Files" }; // initialize to All Files as a default value, will be updated by localization
 
         winrt::hstring SuggestedFileName;
@@ -46,10 +52,16 @@ namespace PickerCommon {
 
         void CaptureFilterSpecData(
             winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
-            winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView);
+            winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView,
+            int initialFileTypeIndex);
 
         void ConfigureDialog(winrt::com_ptr<IFileDialog> dialog);
         void ConfigureFileSaveDialog(winrt::com_ptr<IFileSaveDialog> dialog);
+
+        winrt::hstring TryGetAppUserModelId();
+        winrt::hstring TryGetProcessFullPath();
+
+		bool ShowOverwritePrompt{ true };
 
     private:
         void CaptureFilterSpec(winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> filters);

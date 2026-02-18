@@ -1,6 +1,5 @@
 ---
 agent: 'agent'
-model: 'GPT-5.1-Codex-Max'
 description: 'Review a GitHub issue, score it (0-100), and generate an implementation plan'
 ---
 
@@ -38,6 +37,13 @@ If the user chooses to proceed without MCP:
 ## Inputs
 Figure out required inputs {{issue_number}} from the invocation context; if anything is missing, ask for the value or note it as a gap.
 
+## When to call MCP tools (github-artifacts)
+If the MCP "github-artifacts" tools are available in the environment, use them:
+- `github_issue_images`: use when the issue likely contains screenshots or other visual evidence (UI bugs, layout glitches, design problems).
+- `github_issue_attachments`: use when the issue mentions attached ZIPs or diagnostic bundles (for example, `*.zip`, `logs.zip`, `debug.zip`). Always provide `extractFolder` as `Generated Files/issueReview/{{issue_number}}/logs`.
+
+If these tools are not available, ensure the `github-artifacts` MCP server is started and available, then retry.
+
 ## Fetch Issue Data with GitHub MCP
 
 ### Core issue information
@@ -60,8 +66,7 @@ Use `github-pull-request_renderIssues`:
 - Pass array of issues to render as markdown table for display
 
 # CONTEXT (brief)
-Use the MCP tools above to gather issue data, and download images to better understand the issue context.
-Locate source code in the current workspace; feel free to use `rg`/`git grep`. Link related issues and PRs.
+Use the MCP tools above to gather issue data. Download images via MCP `github_issue_images` to better understand the issue context. Finally, use MCP `github_issue_attachments` to download logs with parameter `extractFolder` as `Generated Files/issueReview/{{issue_number}}/logs`, and analyze the downloaded logs if available to identify relevant issues. Locate source code in the current workspace; feel free to use `rg`/`git grep`. Link related issues and PRs.
 
 # OVERVIEW.MD
 ## Summary
@@ -145,6 +150,56 @@ Provide actionable recommendations for issue triage and assignment:
 - Use semantic_search tool to find similar issues, code patterns, or past discussions
 - Search queries should include: issue keywords, module names, error messages, feature descriptions
 - Cross-reference semantic results with GitHub issue search for comprehensive coverage
+
+### F) Check Documentation for Known Limitations or Unsupported Scenarios
+
+**When to check documentation:**
+- Issue reports unexpected behavior or errors
+- Issue asks "why doesn't X work?" or "how do I do Y?"
+- Issue mentions specific APIs, configurations, or scenarios
+- Error messages suggest missing requirements
+
+**Research process:**
+
+1. **Extract key terms from the issue:**
+   - API names, class names, method names
+   - Error codes and messages
+   - Configuration or deployment type mentioned
+   - Windows version or SDK version
+
+2. **Search official documentation using `fetch_webpage` tool:**
+   - Windows App SDK docs: `https://docs.microsoft.com/windows/apps/windows-app-sdk/`
+   - API reference: `https://docs.microsoft.com/windows/windows-app-sdk/api/`
+   - Known issues: `https://docs.microsoft.com/windows/apps/windows-app-sdk/stable-channel#known-issues`
+   - Release notes for version-specific information
+   
+3. **Search the codebase for context:**
+   - Use `grep_search` with API/class names from the issue
+   - Use `semantic_search` with the issue description
+   - Look for comments, TODOs, or documentation in code
+
+4. **Analyze findings to determine if:**
+   - The scenario is documented as unsupported or limited
+   - There's a known workaround in docs or codebase
+   - The behavior is by design with documented reasons
+   - The issue is a valid bug (expected behavior differs from actual)
+
+5. **If documentation confirms a limitation:**
+   - Note the documentation URL as reference
+   - Draft a response explaining the limitation
+   - Include any workarounds found
+   - Recommend appropriate labels based on findings
+
+**Output format for Documentation Check section in overview.md:**
+```markdown
+### Documentation Check
+- **Scenario type**: [Unsupported / Known limitation / By design / Requires specific configuration]
+- **Documentation found**: [Yes/No]
+- **Reference URL**: [link]
+- **Summary**: [Brief explanation of what docs say]
+- **Recommended response**: [Draft reply to post on issue]
+- **Recommended labels**: `by-design`, `documentation`, `area-External`, etc.
+```
 
 **Output format for Suggested Actions section in overview.md:**
 ```markdown
