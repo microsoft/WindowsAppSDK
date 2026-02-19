@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+  <assemblyIdentity version="1.0.0.0" name="StoragePickersTestApp.app"/>
+
+  <!-- Registration-free WinRT: Storage Pickers classes in WindowsAppRuntime DLL -->
+  <file name="Microsoft.WindowsAppRuntime.dll">
+    <activatableClass
+      name="Microsoft.Windows.Storage.Pickers.FileOpenPicker"
+      threadingModel="both"
+      xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass
+      name="Microsoft.Windows.Storage.Pickers.FileSavePicker"
+      threadingModel="both"
+      xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass
+      name="Microsoft.Windows.Storage.Pickers.FolderPicker"
+      threadingModel="both"
+      xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass
+      name="Microsoft.Windows.Storage.Pickers.PickFileResult"
+      threadingModel="both"
+      xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass
+      name="Microsoft.Windows.Storage.Pickers.PickFolderResult"
+      threadingModel="both"
+      xmlns="urn:schemas-microsoft-com:winrt.v1" />
+  </file>
+
+</assembly>
