@@ -988,6 +988,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         BaseDirForModulePri,
         exeDirForResourcesPri,
         exeDirForModulePri,
+        DefaultFallback,
         Final,
     };
     SearchPass searchStart = SearchPass::exeDirForFileName;
@@ -1052,6 +1053,18 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
                 searchFilename = modulePriFileName;
                 pass = SearchPass::Final;
                 break;
+            case SearchPass::DefaultFallback:
+                searchDir = exeDir.get();
+                searchDirCount = exeDirCount;
+                if (filename == nullptr || *filename == L'\0')
+                {
+                    searchFilename = ResourcesPriFileName;
+                }
+                else
+                {
+                    searchFilename = filename;
+                }
+                break;
         }
 
         size_t searchFilenameCount;
@@ -1074,13 +1087,14 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
             PATHCCH_ALLOW_LONG_PATHS));
 
         DWORD attributes = GetFileAttributes(outputPath.get());
-        if ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+        if ((pass == SearchPass::DefaultFallback) ||
+            ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY)))
         {
             // The file exists. Done.
             *filePath = outputPath.release();
-            return S_OK;
+            break;
         }
     }
 
-    return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+    return S_OK;
 }
