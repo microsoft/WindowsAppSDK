@@ -13,7 +13,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 struct ResourceLoader : ResourceLoaderT<ResourceLoader>
 {
     ResourceLoader();
-    ResourceLoader(hstring const& fileName);
+    ResourceLoader(hstring const& resourceMap);
     ResourceLoader(hstring const& fileName, hstring const& resourceMap);
 
     static hstring GetDefaultResourceFilePath();
