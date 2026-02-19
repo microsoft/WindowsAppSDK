@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <Windows.h>
+#include <windows.h>
 #include <wil/resource.h>
 #include <wil/result.h>
 #include <processthreadsapi.h>
