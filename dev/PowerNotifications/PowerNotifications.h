@@ -136,6 +136,9 @@ namespace winrt::Microsoft::Windows::System::Power
             EventType m_systemAwayModeStatusChangedEvent;
             EventType m_systemSuspendStatusChangedEvent;
 
+            // Serializes concurrent OS suspend/resume callbacks that fire on separate threads
+            std::mutex m_suspendCallbackMutex;
+
             EnergySaverStatusRegistration m_energySaverStatusHandle{};
             CompositeBatteryStatusRegistration m_batteryStatusHandle{};
             PowerConditionRegistration m_powerSourceKindHandle{};
@@ -299,7 +302,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void EnergySaverStatusChanged_Callback(::EnergySaverStatus energySaverStatus)
             {
                 m_cachedEnergySaverStatus = energySaverStatus;
-                RaiseEvent(energySaverStatusFunc);
+                m_energySaverStatusChangedEvent(nullptr, nullptr);
             }
 
             // BatteryStatus Functions
@@ -374,19 +377,19 @@ namespace winrt::Microsoft::Windows::System::Power
                 if (m_oldBatteryChargePercent != m_batteryChargePercent)
                 {
                     m_oldBatteryChargePercent = m_batteryChargePercent;
-                    RaiseEvent(remainingChargePercentFunc);
+                    m_remainingChargePercentChangedEvent(nullptr, nullptr);
                 }
 
                 if (m_oldBatteryStatus != m_batteryStatus)
                 {
                     m_oldBatteryStatus = m_batteryStatus;
-                    RaiseEvent(compositeBatteryStatusFunc);
+                    m_batteryStatusChangedEvent(nullptr, nullptr);
                 }
 
                 if (m_oldPowerSupplyStatus != m_powerSupplyStatus)
                 {
                     m_oldPowerSupplyStatus = m_powerSupplyStatus;
-                    RaiseEvent(powerSupplyStatusFunc);
+                    m_powerSupplyStatusChangedEvent(nullptr, nullptr);
                 }
             }
 
@@ -469,7 +472,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void RemainingDischargeTimeChanged_Callback(ULONGLONG remainingDischargeTime)
             {
                 m_cachedDischargeTime = remainingDischargeTime;
-                RaiseEvent(remainingDischargeTimeFunc);
+                m_remainingDischargeTimeChangedEvent(nullptr, nullptr);
             }
 
 
@@ -493,7 +496,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void PowerSourceKindChanged_Callback(DWORD powerCondition)
             {
                 m_cachedPowerSourceKind = powerCondition;
-                RaiseEvent(powerSourceKindFunc);
+                m_powerSourceKindChangedEvent(nullptr, nullptr);
             }
 
 
@@ -517,7 +520,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void DisplayStatusChanged_Callback(DWORD displayStatus)
             {
                 m_cachedDisplayStatus = displayStatus;
-                RaiseEvent(displayStatusFunc);
+                m_displayStatusChangedEvent(nullptr, nullptr);
             }
 
 
@@ -535,7 +538,7 @@ namespace winrt::Microsoft::Windows::System::Power
 
             void SystemIdleStatusChanged_Callback()
             {
-                RaiseEvent(systemIdleStatusFunc);
+                m_systemIdleStatusChangedEvent(nullptr, nullptr);
             }
 
 
@@ -567,7 +570,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void EffectivePowerModeChanged_Callback(EFFECTIVE_POWER_MODE mode)
             {
                 m_cachedPowerMode = mode;
-                RaiseEvent(effectivePowerModeFunc);
+                m_powerModeChangedEvent(nullptr, nullptr);
             }
 
 
@@ -591,7 +594,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void UserPresenceStatusChanged_Callback(DWORD userPresenceStatus)
             {
                 m_cachedUserPresenceStatus = userPresenceStatus;
-                RaiseEvent(userPresenceStatusFunc);
+                m_userPresenceStatusChangedEvent(nullptr, nullptr);
             }
 
 
@@ -618,21 +621,31 @@ namespace winrt::Microsoft::Windows::System::Power
             void SystemSuspendStatusChanged_Callback(ULONG PowerEvent)
             {
                 using namespace Power;
+                Power::SystemSuspendStatus newStatus;
                 if (PowerEvent == PBT_APMSUSPEND)
                 {
-                    m_systemSuspendStatus = SystemSuspendStatus::Entering;
-                    RaiseEvent(systemSuspendFunc);
+                    newStatus = SystemSuspendStatus::Entering;
                 }
                 else if (PowerEvent == PBT_APMRESUMEAUTOMATIC)
                 {
-                    m_systemSuspendStatus = SystemSuspendStatus::AutoResume;
-                    RaiseEvent(systemSuspendFunc);
+                    newStatus = SystemSuspendStatus::AutoResume;
                 }
                 else if (PowerEvent == PBT_APMRESUMESUSPEND)
                 {
-                    m_systemSuspendStatus = SystemSuspendStatus::ManualResume;
-                    RaiseEvent(systemSuspendFunc);
+                    newStatus = SystemSuspendStatus::ManualResume;
                 }
+                else
+                {
+                    return;
+                }
+
+                // Serialize concurrent OS callbacks (PBT_APMRESUMEAUTOMATIC and
+                // PBT_APMRESUMESUSPEND fire on separate threads during wake).
+                // Setting the value and raising the event under the lock ensures
+                // handlers always read the correct status for this specific event.
+                std::scoped_lock lock(m_suspendCallbackMutex);
+                m_systemSuspendStatus = newStatus;
+                m_systemSuspendStatusChangedEvent(nullptr, nullptr);
             }
 
         };
