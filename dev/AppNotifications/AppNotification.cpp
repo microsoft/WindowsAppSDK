@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "AppNotification.h"
 #include "Microsoft.Windows.AppNotifications.AppNotification.g.cpp"
+#include "AppNotificationConferencingConfig.h"
 
 using namespace winrt::Windows::Data::Xml::Dom;
 
