@@ -15,6 +15,9 @@
 // Bug 60760239: [1.7 servicing] DeploymentManager failing with error package downgrade
 #define WINAPPSDK_CHANGEID_60760239 60760239, WinAppSDK_1_7_8
 
+// Bug 61124052: [1.7 servicing] Fixing reset activity data on deployment initialization
+#define WINAPPSDK_CHANGEID_61124052 61124052, WinAppSDK_1_7_9
+
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 
@@ -497,7 +500,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61124052>())
+        {
+            ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
+        }
         ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
 
         // Build path for licenses
@@ -525,6 +531,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto licenseFilename{ licensePath };
             licenseFilename /= findFileData.cFileName;
 
+            if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61124052>())
+            {
+                ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
+            }
             ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetCurrentResourceId(licenseFilename);
 
             RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFilename.c_str()),
@@ -544,16 +554,26 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment)
     {
         auto initializeActivity{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
-        initializeActivity.Reset();
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61124052>())
+        {
+            initializeActivity.Reset();
+        }
 
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
         const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
 
+        if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61124052>())
+        {
+            initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
+        }
         for (auto package : c_targetPackages)
         {
             auto isSingleton{ CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL };
             initializeActivity.Reset();
-            initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
+            if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61124052>())
+            {
+                initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
+            }
             initializeActivity.SetCurrentResourceId(package.identifier);
 
             std::filesystem::path packagePath{};
