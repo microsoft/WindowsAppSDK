@@ -9,6 +9,7 @@
          <license type="file">license.txt</license>
          <requireLicenseAcceptance>true</requireLicenseAcceptance>
          <projectUrl>https://aka.ms/windowsappsdk</projectUrl>
+         <icon>images\WindowsAppSDK64.png</icon>
          <copyright>© Microsoft Corporation. All rights reserved.</copyright>
          <tags>Microsoft Resources Native Windows WindowsAppSDK</tags>
         <dependencies>
@@ -16,4 +17,7 @@
           <dependency id="Microsoft.WindowsAppSDK.InteractiveExperiences" version="0.0.0" />
         </dependencies>
      </metadata>
+     <files>
+         <file src="..\..\assets\WindowsAppSDK64.png" target="images\" />
+     </files>
 </package>
