@@ -67,6 +67,10 @@ body:
         - "Windows 10 version 1909 (18363, November 2019 Update)"
         - "Windows 10 version 1903 (18362, May 2019 Update)"
         - "Windows 10 version 1809 (17763, October 2018 Update)"
+        - "Windows Server 2025 (26100)"
+        - "Windows Server version 23H2 (25398)"
+        - "Windows Server 2022 version 21H2 (20348)"
+        - "Windows Server 2019 version 1809 (17763)"
   - type: dropdown
     attributes:
       label: IDE
