@@ -159,7 +159,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         {
             if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60973099>())
             {
-#pragma warning(suppress: 6305) // PREFast does not know upperBounds computed in byte count so compatible with sizeof(QueueItem)
                 QueueItem* upperBounds = reinterpret_cast<QueueItem*>(m_data.Get()) + m_data.Size();
                 auto cur = m_dataStart;
 
