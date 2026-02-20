@@ -13,8 +13,7 @@
 
 #include <wil/resource.h>
 #include <string>
-#include <AppModel.Identity.h>
-#include <WindowsAppRuntime.SelfContained.h>
+#include <appmodel.h>
     namespace Microsoft::WindowsAppRuntime::Insights
     {
     class RuntimeInformation
@@ -38,7 +37,12 @@
         {
             try
             {
-                return ::AppModel::Identity::IsPackagedProcess();
+                static bool isPackaged{ []() {
+                    UINT32 n{};
+                    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
+                    return rc == ERROR_INSUFFICIENT_BUFFER;
+                }() };
+                return isPackaged;
             }
             catch (...)
             {
@@ -50,7 +54,27 @@
         {
             try
             {
-                return ::WindowsAppRuntime::SelfContained::IsSelfContained();
+                static bool isSelfContained{ []() -> bool {
+                    auto module = ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll");
+                    if (!module)
+                    {
+                        return false;
+                    }
+                    using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
+                    auto fn = reinterpret_cast<IsSelfContainedFn>(
+                        ::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained"));
+                    if (!fn)
+                    {
+                        return false;
+                    }
+                    BOOL result{};
+                    if (FAILED(fn(&result)))
+                    {
+                        return false;
+                    }
+                    return !!result;
+                }() };
+                return isSelfContained;
             }
             catch (...)
             {
