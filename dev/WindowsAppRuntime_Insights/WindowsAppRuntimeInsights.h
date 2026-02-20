@@ -13,6 +13,8 @@
 
 #include <wil/resource.h>
 #include <string>
+#include <AppModel.Identity.h>
+#include <WindowsAppRuntime.SelfContained.h>
     namespace Microsoft::WindowsAppRuntime::Insights
     {
     class RuntimeInformation
@@ -30,6 +32,30 @@
             const uint32_t c_channelResourceId{ 10001 };
             static std::string channel{ LoadStringFromResource(c_channelResourceId) };
             return channel;
+        }
+
+        static bool IsPackagedProcess() noexcept
+        {
+            try
+            {
+                return ::AppModel::Identity::IsPackagedProcess();
+            }
+            catch (...)
+            {
+                return false;
+            }
+        }
+
+        static bool IsSelfContained() noexcept
+        {
+            try
+            {
+                return ::WindowsAppRuntime::SelfContained::IsSelfContained();
+            }
+            catch (...)
+            {
+                return false;
+            }
         }
 
     private:
@@ -57,10 +83,12 @@
     }
 
     #define _GENERIC_PARTB_FIELDS_ENABLED \
-            TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
+            TraceLoggingStruct(6, "COMMON_WINDOWSAPPSDK_PARAMS"), \
             TraceLoggingString(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeVersion().c_str(), "Version"), \
             TraceLoggingString(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeChannel().c_str(), "WindowsAppSDKChannel"), \
             TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
+            TraceLoggingBool(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::IsPackagedProcess(), "IsPackagedProcess"), \
+            TraceLoggingBool(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::IsSelfContained(), "IsSelfContained"), \
             TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 
     #include <wil/tracelogging.h>
