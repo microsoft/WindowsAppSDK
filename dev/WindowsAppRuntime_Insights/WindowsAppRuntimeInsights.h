@@ -13,6 +13,7 @@
 
 #include <wil/resource.h>
 #include <string>
+#include <appmodel.h>
     namespace Microsoft::WindowsAppRuntime::Insights
     {
     class RuntimeInformation
@@ -30,6 +31,55 @@
             const uint32_t c_channelResourceId{ 10001 };
             static std::string channel{ LoadStringFromResource(c_channelResourceId) };
             return channel;
+        }
+
+        static bool IsPackagedProcess() noexcept
+        {
+            try
+            {
+                static bool isPackaged{ []() {
+                    UINT32 n{};
+                    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
+                    return rc == ERROR_INSUFFICIENT_BUFFER;
+                }() };
+                return isPackaged;
+            }
+            catch (...)
+            {
+                return false;
+            }
+        }
+
+        static bool IsSelfContained() noexcept
+        {
+            try
+            {
+                static bool isSelfContained{ []() -> bool {
+                    auto module = ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll");
+                    if (!module)
+                    {
+                        return false;
+                    }
+                    using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
+                    auto fn = reinterpret_cast<IsSelfContainedFn>(
+                        ::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained"));
+                    if (!fn)
+                    {
+                        return false;
+                    }
+                    BOOL result{};
+                    if (FAILED(fn(&result)))
+                    {
+                        return false;
+                    }
+                    return !!result;
+                }() };
+                return isSelfContained;
+            }
+            catch (...)
+            {
+                return false;
+            }
         }
 
     private:
@@ -57,10 +107,12 @@
     }
 
     #define _GENERIC_PARTB_FIELDS_ENABLED \
-            TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
+            TraceLoggingStruct(6, "COMMON_WINDOWSAPPSDK_PARAMS"), \
             TraceLoggingString(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeVersion().c_str(), "Version"), \
             TraceLoggingString(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeChannel().c_str(), "WindowsAppSDKChannel"), \
             TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
+            TraceLoggingBool(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::IsPackagedProcess(), "IsPackagedProcess"), \
+            TraceLoggingBool(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::IsSelfContained(), "IsSelfContained"), \
             TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 
     #include <wil/tracelogging.h>
