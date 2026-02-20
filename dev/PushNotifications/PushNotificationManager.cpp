@@ -219,7 +219,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             co_return winrt::make<PushNotificationCreateChannelResult>(
                 nullptr,
-                E_FAIL,
+                HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),
                 PushNotificationChannelStatus::CompletedFailure);
         }
 
@@ -370,10 +370,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::Register()
     {
-        if (!IsSupported())
-        {
-            return;
-        }
+        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported(),
+            "Push notifications are not supported for self-contained unpackaged apps.");
 
         auto logTelemetry{ PushNotificationTelemetry::Register::Start(g_telemetryHelper) };
 
@@ -602,10 +600,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::Unregister()
     {
-        if (!IsSupported())
-        {
-            return;
-        }
+        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported(),
+            "Push notifications are not supported for self-contained unpackaged apps.");
 
         auto logTelemetry{ PushNotificationTelemetry::Unregister::Start(g_telemetryHelper) };
 
@@ -670,10 +666,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::UnregisterAll()
     {
-        if (!IsSupported())
-        {
-            return;
-        }
+        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported(),
+            "Push notifications are not supported for self-contained unpackaged apps.");
 
         auto logTelemetry{ PushNotificationTelemetry::UnregisterAll::Start(g_telemetryHelper) };
 
