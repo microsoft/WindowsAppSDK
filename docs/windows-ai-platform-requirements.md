@@ -1,8 +1,8 @@
-# Windows Copilot Runtime (WCR) Platform Requirements
+# Windows AI Platform Requirements
 
 ## Supported Architectures
 
-Windows Copilot Runtime APIs are supported on the following architectures:
+Windows AI APIs are supported on the following architectures:
 
 | Architecture | Supported |
 |-------------|-----------|
@@ -23,19 +23,13 @@ If your application targets x86, you should either:
 
 WCR features require **Copilot+ PC** hardware with a Neural Processing Unit
 (NPU). On devices without the required hardware, `GetReadyState()` will return
-`NotReady` or `Unavailable`.
-
-## Affected APIs
-
-The following WCR APIs are subject to these platform requirements:
-
-- `Microsoft.Windows.AI.Generative.LanguageModel` (Phi Silica)
-- `Microsoft.Windows.AI.Generative.ImageDescriptionGenerator`
-- `Microsoft.Windows.AI.Imaging.ImageSuperResolution`
-- `Microsoft.Windows.AI.ContentModeration.TextRecognizer`
+`NotSupportedOnCurrentSystem` (see return type [AIReadyState documentation]([url](https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.windows.ai.aifeaturereadystate?view=windows-app-sdk-1.8)) for more info.
 
 ## OS Requirements
 
 - Windows 11 with Copilot+ capable hardware
 - Appropriate Windows Update servicing updates installed
-- AI model packages available via Windows Update
+- [AI model packages available via Windows Update](https://learn.microsoft.com/en-us/windows/release-health/ai-components-release-information)
+
+## Ready to Get Started?
+Check out [Get started building an app with Windows AI APIs](https://learn.microsoft.com/en-us/windows/ai/apis/get-started?tabs=winget%2Cwinui%2Cwinui2) on Microsoft Learn.
