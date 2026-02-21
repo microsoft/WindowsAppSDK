@@ -1,9 +1,14 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include <pch.h>
 #include <AppInstance.h>
 #include <Microsoft.Windows.AppLifecycle.AppInstance.g.cpp>
+
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60972838: [1.8.6 servicing] Fix SharedMemory redirection queue and add telemetry events (PR#6127)
+#define WINAPPSDK_CHANGEID_60972838 60972838, WinAppSDK_1_8_6
 
 #include "AppLifecycleTelemetry.h"
 #include "ActivationRegistrationManager.h"
@@ -171,6 +176,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     GUID AppInstance::DequeueRedirectionRequestId()
     {
         auto releaseOnExit = m_dataMutex.acquire();
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+        {
+            AppLifecycleTelemetry::DequeueRedirectionRequestId();
+        }
         auto id = m_redirectionArgs.Dequeue();
         return id;
     }
@@ -178,16 +187,29 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     void AppInstance::EnqueueRedirectionRequestId(GUID id)
     {
         auto releaseOnExit = m_dataMutex.acquire();
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+        {
+            AppLifecycleTelemetry::EnqueueRedirectionRequestId(id);
+        }
         m_redirectionArgs.Enqueue(id);
     }
 
     void AppInstance::ProcessRedirectionRequests()
     {
+        AppLifecycleTelemetry::ProcessRedirectionRequests activity;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+        {
+            activity = AppLifecycleTelemetry::ProcessRedirectionRequests::Start(m_processId, m_isCurrent);
+        }
         m_innerActivated.ResetEvent();
 
         GUID id;
         while ((id = DequeueRedirectionRequestId()) != GUID_NULL)
         {
+            if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>() && activity)
+            {
+                activity.DequeueRedirectionRequest(id);
+            }
             wil::unique_cotaskmem_string idString;
             THROW_IF_FAILED(StringFromCLSID(id, &idString));
 
@@ -200,6 +222,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // Notify the app that the redirection request is here.
             m_activatedEvent(*this, args);
 
+            if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>() && activity)
+            {
+                activity.RedirectionActivatedEvent(id);
+            }
+
             std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
             if (cleanupEvent.try_open(eventName.c_str()))
@@ -207,6 +234,15 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 // If the event is missing, it means the waiter gave up.  Ignore the error.
                 cleanupEvent.SetEvent();
             }
+            if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>() && activity)
+            {
+                activity.RequestCleanupEvent(id);
+            }
+        }
+
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>() && activity)
+        {
+            activity.Stop();
         }
     }
 
@@ -229,6 +265,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         GUID id;
         THROW_IF_FAILED(CoCreateGuid(&id));
+        AppLifecycleTelemetry::QueueRequest activity;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+        {
+            activity = AppLifecycleTelemetry::QueueRequest::Start(m_processId, m_isCurrent, id);
+        }
 
         wil::unique_cotaskmem_string idString;
         THROW_IF_FAILED(StringFromCLSID(id, &idString));
@@ -248,9 +289,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         // Signal the activation.
         m_innerActivated.SetEvent();
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>() && activity)
+        {
+            activity.InnerActivatedEvent(id);
+        }
 
         // Wait for the other instance to open the memory mapped file before exiting and cleaning our interest in it.
         cleanupEvent.wait();
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>() && activity)
+        {
+            activity.Stop();
+        }
         co_return;
     }
 
@@ -559,11 +608,19 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     event_token AppInstance::Activated(EventHandler<Microsoft::Windows::AppLifecycle::AppActivationArguments> const& handler)
     {
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+        {
+            AppLifecycleTelemetry::ActivatedEventAdd(m_processId);
+        }
         return m_activatedEvent.add(handler);
     }
 
     void AppInstance::Activated(event_token const& token) noexcept
     {
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60972838>())
+        {
+            AppLifecycleTelemetry::ActivatedEventRemove(m_processId);
+        }
         m_activatedEvent.remove(token);
     }
 
