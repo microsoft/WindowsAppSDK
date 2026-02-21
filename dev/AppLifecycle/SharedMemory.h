@@ -1,6 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #pragma once
+
+#include <FrameworkUdk/Containment.h>
+
+// Bug 60973099: [1.7.9 servicing] Fix SharedMemory redirection queue and add telemetry events (PR#6127)
+#define WINAPPSDK_CHANGEID_60973099 60973099, WinAppSDK_1_7_9
 
 template <typename T>
 struct DynamicSharedMemory
@@ -23,6 +28,8 @@ public:
         if (createdFile)
         {
             Clear();
+
+            // We only store size of the request.
             m_view.get()->size = size;
         }
         else
@@ -31,6 +38,7 @@ public:
             auto newSize = m_view.get()->size;
             m_view.reset();
             m_file.reset();
+
             OpenInternal(newSize);
         }
 
@@ -45,6 +53,7 @@ public:
     void Clear()
     {
         // Clear only the data portion, not the size.
+        // and Size() accounts for only requested size. See comment in Open().
         memset(Get(), 0, Size());
     }
 
@@ -54,6 +63,7 @@ public:
         Reset();
 
         m_name = name;
+
         OpenInternal(size);
         m_view.get()->size = size;
     }
@@ -88,11 +98,25 @@ public:
 protected:
     bool OpenInternal(size_t size)
     {
-        m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(size), m_name.c_str()));
+        if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_60973099>())
+        {
+            m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(size), m_name.c_str()));
+            THROW_LAST_ERROR_IF_NULL(m_file);
+
+            bool createdFile = (GetLastError() != ERROR_ALREADY_EXISTS);
+            m_view.reset(reinterpret_cast<DynamicSharedMemory<T>*>(MapViewOfFile(m_file.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, size)));
+            THROW_LAST_ERROR_IF_NULL(m_view);
+
+            return createdFile;
+        }
+
+        // OpenInternal needs to account for "size" member of DynamicSharedMemory struct.
+        size_t totalSize = size + sizeof(size_t);
+        m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(totalSize), m_name.c_str()));
         THROW_LAST_ERROR_IF_NULL(m_file);
 
         bool createdFile = (GetLastError() != ERROR_ALREADY_EXISTS);
-        m_view.reset(reinterpret_cast<DynamicSharedMemory<T>*>(MapViewOfFile(m_file.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, size)));
+        m_view.reset(reinterpret_cast<DynamicSharedMemory<T>*>(MapViewOfFile(m_file.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, totalSize)));
         THROW_LAST_ERROR_IF_NULL(m_view);
 
         return createdFile;
