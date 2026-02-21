@@ -9,12 +9,9 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="file">LICENSE</license>
     <projectUrl>https://github.com/microsoft/windowsappsdk</projectUrl>
-    <icon>images\WindowsAppSDK64.png</icon>
+    <iconUrl>https://raw.githubusercontent.com/microsoft/WindowsAppSDK/main/assets/WindowsAppSDK64.png</iconUrl>
     <description>DevCheck for WindowsAppSDK </description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <tags>Windows "Windows App SDK" DevCheck</tags>
   </metadata>
-  <files>
-    <file src="..\..\..\assets\WindowsAppSDK64.png" target="images\" />
-  </files>
 </package>
