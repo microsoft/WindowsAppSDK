@@ -197,6 +197,18 @@ steps:
       buildPlatform: ${{ parameters.buildPlatform }}
       buildConfiguration: ${{ parameters.buildConfiguration }}
 
+  - task: PowerShell@2
+    displayName: Edit the artifactStatus variable
+    condition: succeededOrFailed()
+    inputs:
+      targetType: 'inline'
+      script: |
+        $status = '$(Agent.JobStatus)'
+        if ($status -eq 'SucceededWithIssues') {
+          $status = 'Succeeded'
+        }
+        Write-Host "##vso[task.setvariable variable=artifactStatus]$status"
+
   # Edit the artifactAttempt variable when the job has failed, so that the artifact name can be unique.
   - task: PowerShell@2
     displayName: Edit the artifactAttempt variable when the job has failed
@@ -210,5 +222,5 @@ steps:
     condition: succeededOrFailed()
     inputs:
       targetPath: '$(Build.SourcesDirectory)\TestOutput'
-      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+      artifact: '$(System.StageName)_${{ parameters.ImageName }}_$(buildConfiguration)$(buildPlatform)_$(artifactStatus)$(artifactAttempt)'
       Parallel: true
