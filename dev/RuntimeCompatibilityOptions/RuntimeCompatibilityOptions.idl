@@ -54,7 +54,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         DeploymentManager_PackageDowngradeFix = 60760239,
 
         // 1.7.9
-         AppLifecycle_SharedMemoryRedirectionQueueFix = 60973099,
+        AppLifecycle_SharedMemoryRedirectionQueueFix = 60973099,
+        DeploymentManager_ActivityCollectionFix = 61124052,
     };
 
     /// Represents a version of the Windows App Runtime.
