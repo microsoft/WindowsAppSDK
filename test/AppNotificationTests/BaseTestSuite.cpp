@@ -208,6 +208,71 @@ void BaseTestSuite::VerifyToastProgressDataSequence0Fail()
     VERIFY_THROWS_HR(GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", 0), E_INVALIDARG);
 }
 
+void BaseTestSuite::VerifyProgressDataIsIndeterminateDefault()
+{
+    AppNotificationProgressData progressData{ 1 };
+    VERIFY_IS_FALSE(progressData.IsIndeterminate());
+}
+
+void BaseTestSuite::VerifyProgressDataIsIndeterminateSetTrue()
+{
+    AppNotificationProgressData progressData{ 1 };
+    VERIFY_IS_FALSE(progressData.IsIndeterminate());
+
+    progressData.IsIndeterminate(true);
+    VERIFY_IS_TRUE(progressData.IsIndeterminate());
+}
+
+void BaseTestSuite::VerifyProgressDataIsIndeterminateFromToast()
+{
+    AppNotification toast{ CreateToastNotification() };
+
+    AppNotificationProgressData progressData{ 1 };
+    progressData.Status(L"Status");
+    progressData.Title(L"Title");
+    progressData.Value(0.14);
+    progressData.ValueStringOverride(L"14%");
+    progressData.IsIndeterminate(true);
+    toast.Progress(progressData);
+
+    auto progressDataFromToast{ toast.Progress() };
+    VERIFY_ARE_EQUAL(progressDataFromToast.Status(), L"Status");
+    VERIFY_ARE_EQUAL(progressDataFromToast.Title(), L"Title");
+    VERIFY_ARE_EQUAL(progressDataFromToast.ValueStringOverride(), L"14%");
+    VERIFY_ARE_EQUAL(progressDataFromToast.SequenceNumber(), 1u);
+    VERIFY_IS_TRUE(progressDataFromToast.IsIndeterminate());
+}
+
+void BaseTestSuite::VerifyProgressDataValueValidation()
+{
+    AppNotificationProgressData progressData{ 1 };
+
+    // Valid edge cases: 0.0 and 1.0 should succeed
+    progressData.Value(0.0);
+    VERIFY_ARE_EQUAL(progressData.Value(), 0.0);
+
+    progressData.Value(1.0);
+    VERIFY_ARE_EQUAL(progressData.Value(), 1.0);
+
+    // Invalid values: out of [0.0, 1.0] range should throw E_INVALIDARG
+    VERIFY_THROWS_HR(progressData.Value(-0.1), E_INVALIDARG);
+    VERIFY_THROWS_HR(progressData.Value(1.1), E_INVALIDARG);
+}
+
+void BaseTestSuite::VerifyUpdateToastProgressDataWithIndeterminate()
+{
+    RegisterWithAppNotificationManager();
+    PostToastHelper(L"IndeterminateTag", L"IndeterminateGroup");
+
+    AppNotificationProgressData progressData{ 1 };
+    progressData.Status(L"Loading");
+    progressData.Title(L"Title");
+    progressData.IsIndeterminate(true);
+
+    auto progressResultOperation{ AppNotificationManager::Default().UpdateAsync(progressData, L"IndeterminateTag", L"IndeterminateGroup") };
+    ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded);
+}
+
 void BaseTestSuite::VerifyShowToast()
 {
     RegisterWithAppNotificationManager();
