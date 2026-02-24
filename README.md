@@ -32,7 +32,7 @@
 
 ## 📋 Getting started with Windows App SDK
 
-* [Build your first app with WinUI](https://aka.ms/winui-gettingstarted)
+* [Build your first app with WinUI](https://aka.ms/winui-getstarted)
 * [Developer documentation](https://aka.ms/windowsappsdkdocs)
 * [Samples & resources](https://learn.microsoft.com/windows/apps/get-started/samples)
   * [Windows App SDK samples](https://github.com/microsoft/WindowsAppSDK-Samples)
