@@ -47,6 +47,8 @@ public sealed partial class MainWindow : Window
                 case "about":
                     NavFrame.Navigate(typeof(AboutPage));
                     break;
+                default:
+                    throw new InvalidOperationException($"Unknown navigation item tag: {item.Tag}");
             }
         }
     }
