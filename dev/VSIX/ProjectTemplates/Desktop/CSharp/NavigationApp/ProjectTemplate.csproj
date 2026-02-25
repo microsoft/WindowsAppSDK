@@ -38,12 +38,11 @@
     <ProjectCapability Include="Msix"/>
   </ItemGroup>
 
-  <!--#if (UseLatestWindowsAppSDK)
+  <!-- This is a temporary workaround to test dotnet new template - it will block vstemplate from working -->
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="*" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="*" />
   </ItemGroup>
-  #endif -->
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
