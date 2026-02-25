@@ -35,10 +35,12 @@
             Grid.Row="1"
             IsBackButtonVisible="Collapsed"
             IsPaneToggleButtonVisible="False"
-            Loaded="NavView_Loaded"
             SelectionChanged="NavView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Home" Tag="home">
+                <NavigationViewItem
+                    Content="Home"
+                    IsSelected="True"
+                    Tag="home">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEA3A;" />
                     </NavigationViewItem.Icon>

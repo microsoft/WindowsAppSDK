@@ -29,7 +29,6 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
-
         AppWindow.SetIcon("Assets/AppIcon.ico");
     }
 
@@ -41,11 +40,6 @@ public sealed partial class MainWindow : Window
     private void TitleBar_BackRequested(TitleBar sender, object args)
     {
         NavFrame.GoBack();
-    }
-
-    private void NavView_Loaded(object sender, RoutedEventArgs e)
-    {
-        NavView.SelectedItem = NavView.MenuItems[0];
     }
 
     private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
