@@ -3,7 +3,8 @@
   "symbolInfo": {
     "rootNamespace": {
       "longName": "root-namespace",
-      "shortName": "ns"
+      "shortName": "ns",
+      "description": "Namespace for the generated item."
     }
   }
 }

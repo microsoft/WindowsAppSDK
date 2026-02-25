@@ -3,7 +3,8 @@
   "symbolInfo": {
     "dotnetVersion": {
       "longName": "dotnet-version",
-      "shortName": "tfm"
+      "shortName": "tfm",
+      "description": "Base TFM for the WinUI project (for example net8.0)."
     }
   }
 }

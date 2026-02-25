@@ -3,19 +3,23 @@
   "symbolInfo": {
     "dotnetVersion": {
       "longName": "dotnet-version",
-      "shortName": "tfm"
+      "shortName": "tfm",
+      "description": "Base TFM for the WinUI project (for example net8.0)."
     },
     "targetPlatformMinVersion": {
       "longName": "target-platform-min-version",
-      "shortName": "tpmv"
+      "shortName": "tpmv",
+      "description": "Minimum supported Windows version."
     },
     "publisherDn": {
       "longName": "publisher-dn",
-      "shortName": "publisher"
+      "shortName": "publisher",
+      "description": "Publisher distinguished name stored in Package.appxmanifest."
     },
     "publisherDisplay": {
       "longName": "publisher-display",
-      "shortName": "publisherName"
+      "shortName": "publisherName",
+      "description": "Publisher display name stored in Package.appxmanifest."
     }
   }
 }
