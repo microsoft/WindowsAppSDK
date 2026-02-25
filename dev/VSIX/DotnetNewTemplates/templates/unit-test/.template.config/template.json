@@ -9,6 +9,10 @@
   "sourceName": "ProjectTemplate",
   "defaultName": "WinAppSdkTests",
   "description": "Creates a WinUI 3 packaged test app that is pre-wired for MSTest.",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
   "preferNameDirectory": true,
   "symbols": {
     "safeProjectName": {

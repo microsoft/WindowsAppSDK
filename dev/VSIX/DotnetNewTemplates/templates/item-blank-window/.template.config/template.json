@@ -9,6 +9,10 @@
   "sourceName": "BlankWindow",
   "defaultName": "BlankWindow",
   "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
   "preferNameDirectory": false,
   "symbols": {
     "rootNamespace": {

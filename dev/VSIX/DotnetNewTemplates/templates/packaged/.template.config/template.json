@@ -9,6 +9,10 @@
   "sourceName": "ProjectTemplate",
   "defaultName": "WinAppSdkApp",
   "description": "Creates a WinUI 3 desktop app plus the packaging project needed for MSIX deployment.",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
   "preferNameDirectory": true,
   "precedence": 100,
   "symbols": {

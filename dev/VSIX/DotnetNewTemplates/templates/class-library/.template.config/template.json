@@ -9,6 +9,10 @@
   "sourceName": "ProjectTemplate",
   "defaultName": "WinAppSdkLibrary",
   "description": "Creates a WinUI 3 class library that targets the Windows App SDK.",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
   "preferNameDirectory": true,
   "symbols": {
     "safeProjectName": {

@@ -9,6 +9,10 @@
   "sourceName": "ProjectTemplate",
   "defaultName": "WinAppSdkSingle",
   "description": "Creates a WinUI 3 desktop app that uses single-project MSIX tooling.",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
   "preferNameDirectory": true,
   "symbols": {
     "safeProjectName": {

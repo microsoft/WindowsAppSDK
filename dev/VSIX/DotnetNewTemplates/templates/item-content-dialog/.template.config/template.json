@@ -9,6 +9,10 @@
   "sourceName": "ContentDialogItem",
   "defaultName": "ContentDialog1",
   "description": "Adds a WinUI 3 ContentDialog with XAML markup and code-behind.",
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
   "preferNameDirectory": false,
   "symbols": {
     "rootNamespace": {
