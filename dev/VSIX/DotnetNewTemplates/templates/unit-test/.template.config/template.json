@@ -37,25 +37,29 @@
       "type": "parameter",
       "datatype": "text",
       "replaces": "$DotNetVersion$",
-      "defaultValue": "net8.0"
+      "defaultValue": "net8.0",
+      "description": "Base target framework moniker (TFM) for the WinUI project."
     },
     "targetPlatformMinVersion": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$targetplatformminversion$",
-      "defaultValue": "10.0.17763.0"
+      "defaultValue": "10.0.17763.0",
+      "description": "Minimum supported Windows version."
     },
     "publisherDn": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$XmlEscapedPublisherDistinguishedName$",
-      "defaultValue": "CN=AppPublisher"
+      "defaultValue": "CN=AppPublisher",
+      "description": "Publisher distinguished name used inside Package.appxmanifest."
     },
     "publisherDisplay": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$XmlEscapedPublisher$",
-      "defaultValue": "AppPublisher"
+      "defaultValue": "AppPublisher",
+      "description": "Publisher display name shown in the manifest and Settings page."
     },
     "guid9": {
       "type": "generated",
