@@ -35,19 +35,12 @@
 
         static bool IsPackagedProcess() noexcept
         {
-            try
-            {
-                static bool isPackaged{ []() {
-                    UINT32 n{};
-                    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
-                    return rc == ERROR_INSUFFICIENT_BUFFER;
-                }() };
-                return isPackaged;
-            }
-            catch (...)
-            {
-                return false;
-            }
+            static bool isPackaged{ []() {
+                UINT32 n{};
+                const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
+                return rc == ERROR_INSUFFICIENT_BUFFER;
+            }() };
+            return isPackaged;
         }
 
         static bool IsSelfContained() noexcept
