@@ -14,6 +14,12 @@
     "type": "project"
   },
   "preferNameDirectory": true,
+  "constraints": {
+    "windows-only": {
+      "type": "os",
+      "args": "Windows"
+    }
+  },
   "symbols": {
     "safeProjectName": {
       "type": "derived",
