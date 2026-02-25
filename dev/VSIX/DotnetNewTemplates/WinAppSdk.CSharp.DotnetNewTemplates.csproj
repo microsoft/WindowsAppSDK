@@ -98,4 +98,25 @@
           PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/ContentDialogItem.xaml.cs" />
     <Compile Remove="templates\item-content-dialog\**" />
   </ItemGroup>
+
+  <!-- Packaged (app + WAP) template -->
+  <ItemGroup>
+    <None Include="templates\packaged\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="templates\packaged\ProjectTemplate.sln"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate.sln" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\bin\**;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\obj\**;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\WinUI.Desktop.Cs.BlankApp.csproj;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\WinUI.Desktop.Cs.BlankApp.ico;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\WinUI.Desktop.Cs.BlankApp.png;..\ProjectTemplates\Desktop\CSharp\PackagedApp\BlankApp\WinUI.Desktop.Cs.BlankApp.vstemplate"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\bin\**;..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\obj\**;..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\WinUI.Desktop.Cs.PackagingProject.ico;..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\WinUI.Desktop.Cs.PackagingProject.png;..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\WinUI.Desktop.Cs.PackagingProject.vstemplate"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate.Package/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\PackagedApp\WapProj\Package-managed.appxmanifest"
+          Pack="true"
+          PackagePath="content/WinAppSdk.CSharp.Packaged/ProjectTemplate.Package/Package.appxmanifest" />
+  </ItemGroup>
 </Project>
