@@ -33,6 +33,8 @@
             return channel;
         }
 
+        // Reimplemented here (not using AppModel::Identity / WindowsAppRuntime::SelfContained)
+        // to avoid header dependencies — PartB fires during bootstrap before DLL load.
         static bool IsPackagedProcess() noexcept
         {
             static bool isPackaged{ []() {
