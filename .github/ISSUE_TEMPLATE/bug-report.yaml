@@ -54,6 +54,7 @@ body:
       multiple: true
       options:
         - "Insider Build (xxxxx)"
+        - "Windows 11 version 26H1 (28000)"
         - "Windows 11 version 25H2 (26200)"
         - "Windows 11 version 24H2 LTSC (26100, June Update)"
         - "Windows 11 version 24H2 (26100, June 2025 Update)"
