@@ -8,15 +8,24 @@ code-behind, and project files.
 
 ## Templates
 
-| Short name            | Identity                                        | Description                                |
-|-----------------------|-------------------------------------------------|--------------------------------------------|
-| `wasdk-single`        | `Microsoft.WindowsAppSDK.CSharp.SingleProject`  | Single-project MSIX WinUI 3 app            |
-| `wasdk-classlib`      | `Microsoft.WindowsAppSDK.CSharp.ClassLibrary`   | WinUI 3 class library                      |
-| `wasdk-unittest`      | `Microsoft.WindowsAppSDK.CSharp.UnitTest`       | WinUI 3 packaged test app                  |
-| `wasdk-item-blankwin` | `Microsoft.WindowsAppSDK.CSharp.Item.BlankWindow` | WinUI 3 Blank Window item template      |
+| Short name            | Identity                                      | Type     | Description                                               |
+|-----------------------|-----------------------------------------------|----------|-----------------------------------------------------------|
+| `winui`               | `Microsoft.WinUI.BlankApp`                    | Project  | WinUI 3 blank app that uses single-project MSIX tooling   |
+| `winui-navview`       | `Microsoft.WinUI.NavigationApp`               | Project  | WinUI 3 NavigationView starter app                        |
+| `winui-lib`           | `Microsoft.WinUI.ClassLibrary`                | Project  | WinUI 3 class library for sharing UI components           |
+| `winui-unittest`      | `Microsoft.WinUI.UnitTest`                    | Project  | WinUI 3 packaged test app configured for MSTest           |
+| `winui-page`          | `Microsoft.WinUI.Item.Page`                   | Item     | Adds a blank WinUI 3 Page                                 |
+| `winui-window`        | `Microsoft.WinUI.Item.Window`                 | Item     | Adds a blank WinUI 3 Window                               |
+| `winui-usercontrol`   | `Microsoft.WinUI.Item.UserControl`            | Item     | Adds a WinUI 3 UserControl                                |
+| `winui-templatedcontrol` | `Microsoft.WinUI.Item.TemplatedControl`    | Item     | Adds a templated WinUI 3 control skeleton                 |
+| `winui-resourcedictionary` | `Microsoft.WinUI.Item.ResourceDictionary`| Item     | Adds a WinUI 3 ResourceDictionary                         |
+| `winui-resw`          | `Microsoft.WinUI.Item.Resw`                   | Item     | Adds a RESW resource file                                 |
+| `winui-dialog`        | `Microsoft.WinUI.Item.ContentDialog`          | Item     | Adds a WinUI 3 ContentDialog                              |
 
 Run `dotnet new <short name> -n MyProject` to create a project from the pack once it
-is installed.
+is installed. Item templates only surface when `dotnet new` is executed inside a
+WinUI project folder (or when `--project` points to one) so that commands stay
+context-aware.
 
 ## Local testing workflow
 

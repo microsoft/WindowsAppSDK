@@ -1,19 +1,18 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Item"],
+  "classifications": ["Windows", "WinUI", "Item", "Control"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.Window",
-  "groupIdentity": "Microsoft.WinUI.Item.Window",
-  "name": "WinUI Blank Window (Item)",
-  "shortName": "winui-window",
-  "shortNameList": ["wasdk-item-blankwin"],
-  "sourceName": "BlankWindow",
-  "defaultName": "BlankWindow",
-  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "identity": "Microsoft.WinUI.Item.UserControl",
+  "groupIdentity": "Microsoft.WinUI.Item.UserControl",
+  "name": "WinUI User Control (Item)",
+  "shortName": "winui-usercontrol",
+  "sourceName": "UserControl",
+  "defaultName": "UserControl",
+  "description": "Adds a WinUI 3 UserControl with markup and code-behind.",
   "preferNameDirectory": false,
   "symbols": {
     "rootNamespace": {
@@ -49,8 +48,8 @@
     }
   },
   "primaryOutputs": [
-    { "path": "BlankWindow.xaml" },
-    { "path": "BlankWindow.xaml.cs" }
+    { "path": "UserControl.xaml" },
+    { "path": "UserControl.xaml.cs" }
   ],
   "forms": {
     "safe_name": {

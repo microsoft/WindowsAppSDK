@@ -1,19 +1,18 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Desktop", "Packaged"],
+  "classifications": ["Windows", "WinUI", "Desktop", "Navigation"],
   "tags": {
     "language": "C#",
     "type": "project"
   },
-  "identity": "Microsoft.WinUI.BlankApp",
-  "groupIdentity": "Microsoft.WinUI.BlankApp",
-  "name": "WinUI Blank App",
-  "shortName": "winui",
-  "shortNameList": ["wasdk-single"],
+  "identity": "Microsoft.WinUI.NavigationApp",
+  "groupIdentity": "Microsoft.WinUI.NavigationApp",
+  "name": "WinUI NavigationView App",
+  "shortName": "winui-navview",
   "sourceName": "ProjectTemplate",
-  "defaultName": "WinUIApp",
-  "description": "Creates a WinUI 3 desktop app with single-project MSIX packaging.",
+  "defaultName": "WinUINavApp",
+  "description": "Creates a WinUI 3 NavigationView starter app with single-project MSIX packaging.",
   "preferNameDirectory": true,
   "symbols": {
     "safeProjectName": {

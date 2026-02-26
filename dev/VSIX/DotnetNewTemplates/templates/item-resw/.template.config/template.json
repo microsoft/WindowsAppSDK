@@ -1,28 +1,20 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Item"],
+  "classifications": ["Windows", "WinUI", "Item", "Resource"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.Window",
-  "groupIdentity": "Microsoft.WinUI.Item.Window",
-  "name": "WinUI Blank Window (Item)",
-  "shortName": "winui-window",
-  "shortNameList": ["wasdk-item-blankwin"],
-  "sourceName": "BlankWindow",
-  "defaultName": "BlankWindow",
-  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "identity": "Microsoft.WinUI.Item.Resw",
+  "groupIdentity": "Microsoft.WinUI.Item.Resw",
+  "name": "WinUI Resources File (Item)",
+  "shortName": "winui-resw",
+  "sourceName": "Resources",
+  "defaultName": "Resources",
+  "description": "Adds a RESW resources file for localized strings.",
   "preferNameDirectory": false,
   "symbols": {
-    "rootNamespace": {
-      "type": "bind",
-      "binding": "msbuild:RootNamespace",
-      "replaces": "$rootnamespace$",
-      "defaultValue": "AppNamespace",
-      "description": "Namespace for the generated item."
-    },
     "safeItemName": {
       "type": "derived",
       "valueSource": "name",
@@ -49,8 +41,7 @@
     }
   },
   "primaryOutputs": [
-    { "path": "BlankWindow.xaml" },
-    { "path": "BlankWindow.xaml.cs" }
+    { "path": "Resources.resw" }
   ],
   "forms": {
     "safe_name": {

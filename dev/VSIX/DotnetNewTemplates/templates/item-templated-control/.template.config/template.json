@@ -1,19 +1,18 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Item"],
+  "classifications": ["Windows", "WinUI", "Item", "Control"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.Window",
-  "groupIdentity": "Microsoft.WinUI.Item.Window",
-  "name": "WinUI Blank Window (Item)",
-  "shortName": "winui-window",
-  "shortNameList": ["wasdk-item-blankwin"],
-  "sourceName": "BlankWindow",
-  "defaultName": "BlankWindow",
-  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "identity": "Microsoft.WinUI.Item.TemplatedControl",
+  "groupIdentity": "Microsoft.WinUI.Item.TemplatedControl",
+  "name": "WinUI Templated Control (Item)",
+  "shortName": "winui-templatedcontrol",
+  "sourceName": "CustomControl",
+  "defaultName": "CustomControl",
+  "description": "Adds a WinUI 3 templated control with a code-behind skeleton.",
   "preferNameDirectory": false,
   "symbols": {
     "rootNamespace": {
@@ -49,8 +48,7 @@
     }
   },
   "primaryOutputs": [
-    { "path": "BlankWindow.xaml" },
-    { "path": "BlankWindow.xaml.cs" }
+    { "path": "CustomControl.cs" }
   ],
   "forms": {
     "safe_name": {

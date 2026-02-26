@@ -2,13 +2,18 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Library"],
-  "identity": "Microsoft.WindowsAppSDK.CSharp.ClassLibrary",
-  "groupIdentity": "Microsoft.WindowsAppSDK.CSharp.ClassLibrary",
-  "name": "Windows App SDK Class Library",
-  "shortName": "wasdk-classlib",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "identity": "Microsoft.WinUI.ClassLibrary",
+  "groupIdentity": "Microsoft.WinUI.ClassLibrary",
+  "name": "WinUI Class Library",
+  "shortName": "winui-lib",
+  "shortNameList": ["wasdk-classlib"],
   "sourceName": "ProjectTemplate",
-  "defaultName": "WinAppSdkLibrary",
-  "description": "Creates a WinUI 3 class library that targets the Windows App SDK.",
+  "defaultName": "WinUILibrary",
+  "description": "Creates a WinUI 3 class library for sharing UI components.",
   "preferNameDirectory": true,
   "symbols": {
     "safeProjectName": {
@@ -31,7 +36,7 @@
     }
   },
   "primaryOutputs": [
-    { "path": "ProjectTemplate/ProjectTemplate.csproj" }
+    { "path": "ProjectTemplate.csproj" }
   ],
   "forms": {
     "safe_name": {

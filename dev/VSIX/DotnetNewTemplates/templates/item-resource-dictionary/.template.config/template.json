@@ -1,19 +1,18 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Item"],
+  "classifications": ["Windows", "WinUI", "Item", "Resource"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.Window",
-  "groupIdentity": "Microsoft.WinUI.Item.Window",
-  "name": "WinUI Blank Window (Item)",
-  "shortName": "winui-window",
-  "shortNameList": ["wasdk-item-blankwin"],
-  "sourceName": "BlankWindow",
-  "defaultName": "BlankWindow",
-  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "identity": "Microsoft.WinUI.Item.ResourceDictionary",
+  "groupIdentity": "Microsoft.WinUI.Item.ResourceDictionary",
+  "name": "WinUI Resource Dictionary (Item)",
+  "shortName": "winui-resourcedictionary",
+  "sourceName": "ResourceDictionary",
+  "defaultName": "ResourceDictionary",
+  "description": "Adds a WinUI 3 ResourceDictionary for sharing styles and resources.",
   "preferNameDirectory": false,
   "symbols": {
     "rootNamespace": {
@@ -49,8 +48,7 @@
     }
   },
   "primaryOutputs": [
-    { "path": "BlankWindow.xaml" },
-    { "path": "BlankWindow.xaml.cs" }
+    { "path": "ResourceDictionary.xaml" }
   ],
   "forms": {
     "safe_name": {
