@@ -396,9 +396,22 @@ Build & register the MSIX package — see **Build, Run & Deploy** in `Agents.md`
 | 12 | [Fluent Design System](https://learn.microsoft.com/en-us/windows/apps/design/) | Spacing, typography, colour, motion, layout decisions |
 | 13 | [XAML Controls Gallery](https://apps.microsoft.com/store/detail/winui-3-gallery/9P3JFPWWDZRC) | Interactive demo of all controls and their properties |
 
-### Samples
+### Windows APIs & AI
 
 | # | Reference | When to consult |
 |---|---|---|
-| 14 | [Windows App SDK Samples](https://github.com/microsoft/WindowsAppSDK-Samples) | Real-world usage of SDK features (notifications, app lifecycle, etc.) |
-| 15 | [WinUI 3 Demos](https://github.com/microsoft/WinUI-Gallery) | Reference implementations and patterns |
+| 14 | [Windows APIs instruction file](windows-apis.instructions.md) | **First stop** — check if a built-in API already exists for the capability you need (AI, windowing, notifications, widgets, lifecycle, etc.) |
+| 15 | [Windows AI APIs](https://learn.microsoft.com/en-us/windows/ai/apis/) | On-device AI: Phi Silica (text gen), OCR, imaging (super-res, description, object extract, erase) |
+| 16 | [Windows ML](https://learn.microsoft.com/en-us/windows/ai/new-windows-ml/overview) | Custom ONNX model inference on CPU/GPU/NPU |
+| 17 | [Foundry Local](https://learn.microsoft.com/en-us/windows/ai/foundry-local/get-started) | Run OSS LLMs (Llama, Mistral, Phi) locally via REST API |
+| 18 | [Windows AI on Windows](https://learn.microsoft.com/en-us/windows/ai/) | AI landing page — all AI options for Windows apps |
+
+### Samples
+
+> **Agent Rule — MANDATORY:** Before implementing any WinAppSDK or Platform SDK API you have not used before, **search the samples repo first** and study the working example. Do not guess API usage from docs alone — see the [Sample-First Rule](windows-apis.instructions.md#sample-first-rule) for details and known pitfalls.
+
+| # | Reference | When to consult |
+|---|---|---|
+| 19 | [Windows App SDK Samples](https://github.com/microsoft/WindowsAppSDK-Samples) | **Always search here first** before implementing any SDK API for the first time |
+| 20 | [WinUI 3 Demos](https://github.com/microsoft/WinUI-Gallery) | Reference implementations and patterns |
+| 21 | [Windows AI API Samples](https://github.com/microsoft/WindowsAppSDK-Samples/tree/main/Samples/WindowsAIFoundry/cs-winui) | AI API usage with WinUI (ImageDescription, TextRecognizer, LanguageModel, etc.) |

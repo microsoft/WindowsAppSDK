@@ -172,21 +172,22 @@ After a change, run only the tests related to the affected area instead of the f
 ```powershell
 # Run from the test project folder
 cd <ProjectName>.Tests
+$Platform = $env:PROCESSOR_ARCHITECTURE
 
 # Run tests for a specific class
-dotnet test -c Debug -p:Platform=x64 --filter "FullyQualifiedName~MainViewModelTests"
+dotnet test -c Debug -p:Platform=$Platform --filter "FullyQualifiedName~MainViewModelTests"
 
 # Run a single test
-dotnet test -c Debug -p:Platform=x64 --filter "FullyQualifiedName~MainViewModelTests.LoadItemsAsync_OnSuccess_PopulatesItems"
+dotnet test -c Debug -p:Platform=$Platform --filter "FullyQualifiedName~MainViewModelTests.LoadItemsAsync_OnSuccess_PopulatesItems"
 
 # Run all tests in a namespace (e.g., all ViewModel tests)
-dotnet test -c Debug -p:Platform=x64 --filter "FullyQualifiedName~Tests.ViewModels"
+dotnet test -c Debug -p:Platform=$Platform --filter "FullyQualifiedName~Tests.ViewModels"
 
 # Run tests in a subfolder namespace (e.g., only Settings ViewModels)
-dotnet test -c Debug -p:Platform=x64 --filter "FullyQualifiedName~Tests.ViewModels.Settings"
+dotnet test -c Debug -p:Platform=$Platform --filter "FullyQualifiedName~Tests.ViewModels.Settings"
 
 # Run the full suite (for cross-cutting changes)
-dotnet test -c Debug -p:Platform=x64
+dotnet test -c Debug -p:Platform=$Platform
 ```
 ```
 
@@ -203,13 +204,15 @@ Below are additional test commands:
 
 ```powershell
 cd <ProjectName>.Tests
-dotnet build -c Debug -p:Platform=x64
+$Platform = $env:PROCESSOR_ARCHITECTURE
+dotnet build -c Debug -p:Platform=$Platform
 ```
 
 ### Run Tests with Verbose Output
 
 ```powershell
-dotnet test -c Debug -p:Platform=x64 --verbosity normal
+$Platform = $env:PROCESSOR_ARCHITECTURE
+dotnet test -c Debug -p:Platform=$Platform --verbosity normal
 ```
 
 ---
@@ -221,7 +224,7 @@ When you write or modify code, follow this sequence:
 1. **Implement the feature or fix** in the main project.
 2. **Write unit tests** for every new/changed public method.
 3. **Build** — see **Build, Run & Deploy** in `Agents.md`. Fix all errors and warnings.
-4. **Run tests** — `dotnet test -c Debug -p:Platform=x64` (from the test project folder) and ensure all pass.
+4. **Run tests** — `$Platform = $env:PROCESSOR_ARCHITECTURE; dotnet test -c Debug -p:Platform=$Platform` (from the test project folder) and ensure all pass.
 5. **Review** — Confirm tests cover the happy path, edge cases, and error cases.
 
 ### When Modifying Existing Code
