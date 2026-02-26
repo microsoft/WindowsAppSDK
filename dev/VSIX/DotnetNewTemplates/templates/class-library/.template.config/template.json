@@ -4,10 +4,10 @@
   "classifications": ["Windows", "WinUI", "Library"],
   "identity": "Microsoft.WindowsAppSDK.CSharp.ClassLibrary",
   "groupIdentity": "Microsoft.WindowsAppSDK.CSharp.ClassLibrary",
-  "name": "Windows App SDK Class Library",
-  "shortName": "wasdk-classlib",
+  "name": "WinUI 3 Class Library",
+  "shortName": "winui3-lib",
   "sourceName": "ProjectTemplate",
-  "defaultName": "WinAppSdkLibrary",
+  "defaultName": "WinUI3Library",
   "description": "Creates a WinUI 3 class library that targets the Windows App SDK.",
   "tags": {
     "language": "C#",

@@ -4,10 +4,10 @@
   "classifications": ["Windows", "WinUI", "Desktop", "Packaged"],
   "identity": "Microsoft.WindowsAppSDK.CSharp.SingleProject",
   "groupIdentity": "Microsoft.WindowsAppSDK.CSharp.SingleProject",
-  "name": "Windows App SDK Single-project App",
-  "shortName": "wasdk-single",
+  "name": "WinUI 3 Blank App",
+  "shortName": "winui3",
   "sourceName": "ProjectTemplate",
-  "defaultName": "WinAppSdkSingle",
+  "defaultName": "WinUI3App",
   "description": "Creates a WinUI 3 desktop app that uses single-project MSIX tooling.",
   "tags": {
     "language": "C#",

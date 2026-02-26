@@ -4,10 +4,10 @@
   "classifications": ["Windows", "WinUI", "Test"],
   "identity": "Microsoft.WindowsAppSDK.CSharp.UnitTest",
   "groupIdentity": "Microsoft.WindowsAppSDK.CSharp.UnitTest",
-  "name": "Windows App SDK Unit Test App",
-  "shortName": "wasdk-unittest",
+  "name": "WinUI 3 Unit Test App",
+  "shortName": "winui3-unittest",
   "sourceName": "ProjectTemplate",
-  "defaultName": "WinAppSdkTests",
+  "defaultName": "WinUI3Tests",
   "description": "Creates a WinUI 3 packaged test app that is pre-wired for MSTest.",
   "tags": {
     "language": "C#",

@@ -8,13 +8,13 @@ code-behind, and project files.
 
 ## Templates
 
-| Short name            | Identity                                           | Description                                |
-|-----------------------|----------------------------------------------------|--------------------------------------------|
-| `wasdk-single`        | `Microsoft.WindowsAppSDK.CSharp.SingleProject`     | Single-project MSIX WinUI 3 app            |
-| `wasdk-classlib`      | `Microsoft.WindowsAppSDK.CSharp.ClassLibrary`      | WinUI 3 class library                      |
-| `wasdk-unittest`      | `Microsoft.WindowsAppSDK.CSharp.UnitTest`          | WinUI 3 packaged test app                  |
-| `wasdk-item-blankwin` | `Microsoft.WindowsAppSDK.CSharp.Item.BlankWindow`  | WinUI 3 Blank Window item template         |
-| `wasdk-item-dialog`   | `Microsoft.WindowsAppSDK.CSharp.Item.ContentDialog`| WinUI 3 Content Dialog item template       |
+| Short name          | Identity                                           | Description                                |
+|---------------------|----------------------------------------------------|--------------------------------------------|
+| `winui3`            | `Microsoft.WindowsAppSDK.CSharp.SingleProject`     | New blank WinUI 3 app                      |
+| `winui3-lib`        | `Microsoft.WindowsAppSDK.CSharp.ClassLibrary`      | New WinUI 3 class library                  |
+| `winui3-unittest`   | `Microsoft.WindowsAppSDK.CSharp.UnitTest`          | New WinUI 3 unit test app                  |
+| `winui3-window`     | `Microsoft.WindowsAppSDK.CSharp.Item.BlankWindow`  | New window in an existing app              |
+| `winui3-dialog`     | `Microsoft.WindowsAppSDK.CSharp.Item.ContentDialog`| New content dialog in an existing app      |
 
 Run `dotnet new <short name> -n MyProject` to create a project from the pack once it
 is installed.
