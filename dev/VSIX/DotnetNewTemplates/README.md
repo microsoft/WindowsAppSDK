@@ -8,21 +8,30 @@ code-behind, and project files.
 
 ## Templates
 
-| Short name            | Identity                                        | Description                                |
-|-----------------------|-------------------------------------------------|--------------------------------------------|
-| `wasdk-single`        | `Microsoft.WindowsAppSDK.CSharp.SingleProject`  | Single-project MSIX WinUI 3 app            |
-| `wasdk-classlib`      | `Microsoft.WindowsAppSDK.CSharp.ClassLibrary`   | WinUI 3 class library                      |
-| `wasdk-unittest`      | `Microsoft.WindowsAppSDK.CSharp.UnitTest`       | WinUI 3 packaged test app                  |
-| `wasdk-item-blankwin` | `Microsoft.WindowsAppSDK.CSharp.Item.BlankWindow` | WinUI 3 Blank Window item template      |
+| Short name            | Identity                                      | Type     | Description                                               |
+|-----------------------|-----------------------------------------------|----------|-----------------------------------------------------------|
+| `winui`               | `Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp`                    | Project  | WinUI 3 blank app that uses single-project MSIX tooling   |
+| `winui-navview`       | `Microsoft.WindowsAppSDK.WinUI.CSharp.NavigationApp`               | Project  | WinUI 3 NavigationView starter app                        |
+| `winui-lib`           | `Microsoft.WindowsAppSDK.WinUI.CSharp.ClassLibrary`                | Project  | WinUI 3 class library for sharing UI components           |
+| `winui-unittest`      | `Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest`                    | Project  | WinUI 3 packaged test app configured for MSTest           |
+| `winui-page`          | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Page`                   | Item     | Adds a blank WinUI 3 Page                                 |
+| `winui-window`        | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window`                 | Item     | Adds a blank WinUI 3 Window                               |
+| `winui-usercontrol`   | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy`     | Item     | Adds a WinUI 3 UserControl                                |
+| `winui-templatedcontrol` | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl`    | Item     | Adds a templated WinUI 3 control skeleton                 |
+| `winui-resourcedictionary` | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary`| Item     | Adds a WinUI 3 ResourceDictionary                         |
+| `winui-resw`          | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw`                   | Item     | Adds a RESW resource file                                 |
+| `winui-dialog`        | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog`          | Item     | Adds a WinUI 3 ContentDialog                              |
 
 Run `dotnet new <short name> -n MyProject` to create a project from the pack once it
-is installed.
+is installed. Item templates only surface when `dotnet new` is executed inside a
+WinUI project folder (or when `--project` points to one) so that commands stay
+context-aware.
 
 ## Local testing workflow
 
 1. Pack the templates: `dotnet pack dev/VSIX/DotnetNewTemplates/WinAppSdk.CSharp.DotnetNewTemplates.csproj -c Release -o localpackages`.
-2. If you already have an older version installed, remove it with `dotnet new uninstall Microsoft.WindowsAppSDK.CSharp.Templates`.
-3. Install the freshly packed nupkg: `dotnet new install .\localpackages\Microsoft.WindowsAppSDK.CSharp.Templates.<version>.nupkg`. The `<version>` suffix (for example `0.0.1-experimental`) is controlled by the `<Version>` value in [WinAppSdk.CSharp.DotnetNewTemplates.csproj](WinAppSdk.CSharp.DotnetNewTemplates.csproj#L3-L38), so bump it there when needed.
+2. If you already have an older version installed, remove it with `dotnet new uninstall Microsoft.WindowsAppSDK.WinUI.CSharp.Templates`.
+3. Install the freshly packed nupkg: `dotnet new install .\localpackages\Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.<version>.nupkg`. The `<version>` suffix (for example `0.0.1-experimental`) is controlled by the `<Version>` value in [WinAppSdk.CSharp.DotnetNewTemplates.csproj](WinAppSdk.CSharp.DotnetNewTemplates.csproj#L3-L38), so bump it there when needed.
 
 ## Building the NuGet package
 
@@ -42,4 +51,4 @@ the template pack alongside the other Windows App SDK artifacts.
 
 - Windows builds run through [ProjectReunion Template Pack](https://dev.azure.com/microsoft/ProjectReunion/_build?definitionId=186691). To trigger it, first mirror your changes into the internal Foundation repo, then queue the pipeline manually.
 - Before running the pipeline, bump the `<Version>` in [WinAppSdk.CSharp.DotnetNewTemplates.csproj](WinAppSdk.CSharp.DotnetNewTemplates.csproj#L3-L38) to avoid conflicts when the “publish to internal feed” option is enabled.
-- Successful runs publish the resulting `.nupkg` both as a pipeline artifact and (if that option is selected) to the internal feed [Project.Reunion.nuget.internal](https://dev.azure.com/microsoft/ProjectReunion/_artifacts/feed/Project.Reunion.nuget.internal/NuGet/Microsoft.WindowsAppSDK.CSharp.Templates).
+- Successful runs publish the resulting `.nupkg` both as a pipeline artifact and (if that option is selected) to the internal feed [Project.Reunion.nuget.internal](https://dev.azure.com/microsoft/ProjectReunion/_artifacts/feed/Project.Reunion.nuget.internal/NuGet/Microsoft.WindowsAppSDK.WinUI.CSharp.Templates).
