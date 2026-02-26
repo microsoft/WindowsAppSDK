@@ -1,38 +1,19 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Item"],
+  "classifications": ["Windows", "WinUI", "Item", "Control"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window",
-  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window",
-  "name": "WinUI Blank Window (Item)",
-  "shortName": "winui-window",
-  "shortNameList": ["wasdk-item-blankwin"],
-  "sourceName": "BlankWindow",
-  "defaultName": "BlankWindow",
-  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
-  "tags": {
-    "language": "C#",
-    "type": "item"
-  },
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy",
+  "name": "WinUI User Control (Item)",
+  "shortName": "winui-usercontrol",
+  "sourceName": "UserControl",
+  "defaultName": "UserControl",
+  "description": "Adds a WinUI 3 UserControl with markup and code-behind.",
   "preferNameDirectory": false,
-  "constraints": {
-    "windows-only": {
-      "type": "os",
-      "args": "Windows"
-    },
-    "csharp-only": {
-      "type": "project-capability",
-      "args": "CSharp"
-    },
-    "sdk-version": {
-      "type": "sdk-version",
-      "args": [ "[8.0,)" ]
-    }
-  },
   "symbols": {
     "rootNamespace": {
       "type": "bind",
@@ -67,8 +48,8 @@
     }
   },
   "primaryOutputs": [
-    { "path": "BlankWindow.xaml" },
-    { "path": "BlankWindow.xaml.cs" }
+    { "path": "UserControl.xaml" },
+    { "path": "UserControl.xaml.cs" }
   ],
   "forms": {
     "safe_name": {

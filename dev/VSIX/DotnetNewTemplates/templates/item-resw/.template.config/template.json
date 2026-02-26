@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": ["Windows", "WinUI", "Item", "Resource"],
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw",
+  "name": "WinUI Resources File (Item)",
+  "shortName": "winui-resw",
+  "sourceName": "Resources",
+  "defaultName": "Resources",
+  "description": "Adds a RESW resources file for localized strings.",
+  "preferNameDirectory": false,
+  "symbols": {
+    "safeItemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "safe_name",
+      "replaces": "$safeitemname$"
+    },
+    "itemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$itemname$"
+    },
+    "fileInputName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$fileinputname$"
+    }
+  },
+  "constraints": {
+    "winuiProject": {
+      "type": "project-capability",
+      "args": "CSharp & Msix"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "Resources.resw" }
+  ],
+  "forms": {
+    "safe_name": {
+      "identifier": "safe_name"
+    },
+    "identity": {
+      "identifier": "identity"
+    }
+  }
+}

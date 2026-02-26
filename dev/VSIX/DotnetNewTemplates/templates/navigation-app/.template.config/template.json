@@ -1,30 +1,19 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Desktop", "Packaged"],
+  "classifications": ["Windows", "WinUI", "Desktop", "Navigation"],
   "tags": {
     "language": "C#",
     "type": "project"
   },
-  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp",
-  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp",
-  "name": "WinUI Blank App",
-  "shortName": "winui",
-  "shortNameList": ["wasdk-single"],
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.NavigationApp",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.NavigationApp",
+  "name": "WinUI NavigationView App",
+  "shortName": "winui-navview",
   "sourceName": "ProjectTemplate",
-  "defaultName": "WinUIApp",
-  "description": "Creates a WinUI 3 desktop app with single-project MSIX packaging.",
+  "defaultName": "WinUINavApp",
+  "description": "Creates a WinUI 3 NavigationView starter app with single-project MSIX packaging.",
   "preferNameDirectory": true,
-  "constraints": {
-    "windows-only": {
-      "type": "os",
-      "args": "Windows"
-    },
-    "sdk-version": {
-      "type": "sdk-version",
-      "args": [ "[8.0,)" ]
-    }
-  },
   "symbols": {
     "safeProjectName": {
       "type": "derived",
@@ -40,36 +29,27 @@
     },
     "dotnetVersion": {
       "type": "parameter",
-      "datatype": "choice",
+      "datatype": "text",
       "replaces": "$DotNetVersion$",
-      "defaultValue": "net8.0",
-      "description": "Base target framework moniker (TFM) for the WinUI project.",
-      "choices": [
-        { "choice": "net8.0", "description": "Target .NET 8 (LTS)" },
-        { "choice": "net9.0", "description": "Target .NET 9" },
-        { "choice": "net10.0", "description": "Target .NET 10" }
-      ]
+      "defaultValue": "net8.0"
     },
     "targetPlatformMinVersion": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$targetplatformminversion$",
-      "defaultValue": "10.0.17763.0",
-      "description": "Minimum supported Windows version."
+      "defaultValue": "10.0.17763.0"
     },
     "publisherDn": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$XmlEscapedPublisherDistinguishedName$",
-      "defaultValue": "CN=AppPublisher",
-      "description": "Publisher distinguished name used inside Package.appxmanifest."
+      "defaultValue": "CN=AppPublisher"
     },
     "publisherDisplay": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$XmlEscapedPublisher$",
-      "defaultValue": "AppPublisher",
-      "description": "Publisher display name shown in the manifest and Settings page."
+      "defaultValue": "AppPublisher"
     },
     "guid9": {
       "type": "generated",
@@ -113,13 +93,5 @@
     "identity": {
       "identifier": "identity"
     }
-  },
-  "postActions": [
-    {
-      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
-      "continueOnError": true,
-      "description": "Restore NuGet packages required by this project.",
-      "manualInstructions": [{ "text": "Run 'dotnet restore'" }]
-    }
-  ]
+  }
 }
