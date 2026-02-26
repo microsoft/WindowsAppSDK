@@ -33,6 +33,7 @@
       "args": [ "[8.0,)" ]
     }
   },
+  "symbols": {
     "rootNamespace": {
       "type": "bind",
       "binding": "msbuild:RootNamespace",

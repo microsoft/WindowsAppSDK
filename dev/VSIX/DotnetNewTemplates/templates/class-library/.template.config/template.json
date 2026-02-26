@@ -40,10 +40,15 @@
     },
     "dotnetVersion": {
       "type": "parameter",
-      "datatype": "text",
+      "datatype": "choice",
       "replaces": "$DotNetVersion$",
-      "defaultValue": "net10.0",
-      "description": "Base target framework moniker (TFM) for the WinUI project."
+      "defaultValue": "net8.0",
+      "description": "Base target framework moniker (TFM) for the WinUI project.",
+      "choices": [
+        { "choice": "net8.0", "description": "Target .NET 8 (LTS)" },
+        { "choice": "net9.0", "description": "Target .NET 9" },
+        { "choice": "net10.0", "description": "Target .NET 10" }
+      ]
     }
   },
   "primaryOutputs": [
