@@ -18,9 +18,12 @@
     "windows-only": {
       "type": "os",
       "args": "Windows"
+    },
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": [ "[8.0,)" ]
     }
   },
-  "symbols": {
     "safeProjectName": {
       "type": "derived",
       "valueSource": "name",
