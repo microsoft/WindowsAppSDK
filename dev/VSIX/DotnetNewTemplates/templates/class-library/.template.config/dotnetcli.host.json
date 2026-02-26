@@ -4,7 +4,7 @@
     "dotnetVersion": {
       "longName": "dotnet-version",
       "shortName": "tfm",
-      "description": "Base TFM for the WinUI project (for example net8.0)."
+      "description": "Base TFM for the WinUI project (for example net9.0)."
     }
   }
 }

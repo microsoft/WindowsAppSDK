@@ -37,7 +37,7 @@
       "type": "parameter",
       "datatype": "text",
       "replaces": "$DotNetVersion$",
-      "defaultValue": "net8.0",
+      "defaultValue": "net9.0",
       "description": "Base target framework moniker (TFM) for the WinUI project."
     }
   },
