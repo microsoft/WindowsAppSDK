@@ -35,6 +35,12 @@
     <None Include="templates\single-project\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.blankapp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="templates\single-project\Agents.md"
+          Pack="true"
+          PackagePath="content/winui.blankapp/Agents.md" />
+    <None Include="templates\single-project\instructions\**\*.*"
+          Pack="true"
+          PackagePath="content/winui.blankapp/instructions/%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\**\*.*"
           Exclude="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\bin\**;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\obj\**;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.ico;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.png;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.vstemplate"
           Pack="true"
