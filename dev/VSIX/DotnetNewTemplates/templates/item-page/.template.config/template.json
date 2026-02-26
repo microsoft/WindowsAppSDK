@@ -18,9 +18,16 @@
     "windows-only": {
       "type": "os",
       "args": "Windows"
+    },
+    "csharp-only": {
+      "type": "project-capability",
+      "args": "CSharp"
+    },
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": [ "[8.0,)" ]
     }
   },
-  "symbols": {
     "rootNamespace": {
       "type": "bind",
       "binding": "msbuild:RootNamespace",
