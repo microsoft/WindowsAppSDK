@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Item"],
   "identity": "Microsoft.WindowsAppSDK.CSharp.Item.ContentDialog",
