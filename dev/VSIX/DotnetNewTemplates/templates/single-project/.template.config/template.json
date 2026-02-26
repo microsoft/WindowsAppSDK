@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Desktop", "Packaged"],
   "tags": {
@@ -15,6 +15,16 @@
   "defaultName": "WinUIApp",
   "description": "Creates a WinUI 3 desktop app with single-project MSIX packaging.",
   "preferNameDirectory": true,
+  "constraints": {
+    "windows-only": {
+      "type": "os",
+      "args": "Windows"
+    },
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": [ "[8.0,)" ]
+    }
+  },
   "symbols": {
     "safeProjectName": {
       "type": "derived",
@@ -32,25 +42,29 @@
       "type": "parameter",
       "datatype": "text",
       "replaces": "$DotNetVersion$",
-      "defaultValue": "net8.0"
+      "defaultValue": "net10.0",
+      "description": "Base target framework moniker (TFM) for the WinUI project."
     },
     "targetPlatformMinVersion": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$targetplatformminversion$",
-      "defaultValue": "10.0.17763.0"
+      "defaultValue": "10.0.17763.0",
+      "description": "Minimum supported Windows version."
     },
     "publisherDn": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$XmlEscapedPublisherDistinguishedName$",
-      "defaultValue": "CN=AppPublisher"
+      "defaultValue": "CN=AppPublisher",
+      "description": "Publisher distinguished name used inside Package.appxmanifest."
     },
     "publisherDisplay": {
       "type": "parameter",
       "datatype": "text",
       "replaces": "$XmlEscapedPublisher$",
-      "defaultValue": "AppPublisher"
+      "defaultValue": "AppPublisher",
+      "description": "Publisher display name shown in the manifest and Settings page."
     },
     "guid9": {
       "type": "generated",
@@ -94,5 +108,13 @@
     "identity": {
       "identifier": "identity"
     }
-  }
+  },
+  "postActions": [
+    {
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [{ "text": "Run 'dotnet restore'" }]
+    }
+  ]
 }

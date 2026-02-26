@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Library"],
   "tags": {
@@ -15,6 +15,16 @@
   "defaultName": "WinUILibrary",
   "description": "Creates a WinUI 3 class library for sharing UI components.",
   "preferNameDirectory": true,
+  "constraints": {
+    "windows-only": {
+      "type": "os",
+      "args": "Windows"
+    },
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": [ "[8.0,)" ]
+    }
+  },
   "symbols": {
     "safeProjectName": {
       "type": "derived",
@@ -32,7 +42,8 @@
       "type": "parameter",
       "datatype": "text",
       "replaces": "$DotNetVersion$",
-      "defaultValue": "net8.0"
+      "defaultValue": "net10.0",
+      "description": "Base target framework moniker (TFM) for the WinUI project."
     }
   },
   "primaryOutputs": [
@@ -45,5 +56,13 @@
     "identity": {
       "identifier": "identity"
     }
-  }
+  },
+  "postActions": [
+    {
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [{ "text": "Run 'dotnet restore'" }]
+    }
+  ]
 }

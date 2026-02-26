@@ -7,7 +7,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IsPackable>true</IsPackable>
     <PackageType>Template</PackageType>
-    <PackageId>Microsoft.WindowsAppSDK.CSharp.Templates</PackageId>
+    <PackageId>Microsoft.WindowsAppSDK.WinUI.CSharp.Templates</PackageId>
     <Version>0.0.1-experimental</Version>
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
@@ -18,8 +18,11 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>See https://github.com/microsoft/WindowsAppSDK/releases for release notes.</PackageReleaseNotes>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
     <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\localpackages'))</PackageOutputPath>
   </PropertyGroup>
 

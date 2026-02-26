@@ -2,18 +2,13 @@
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Item"],
-  "tags": {
-    "language": "C#",
-    "type": "item"
-  },
-  "identity": "Microsoft.WinUI.Item.Window",
-  "groupIdentity": "Microsoft.WinUI.Item.Window",
-  "name": "WinUI Blank Window (Item)",
-  "shortName": "winui-window",
-  "shortNameList": ["wasdk-item-blankwin"],
-  "sourceName": "BlankWindow",
-  "defaultName": "BlankWindow",
-  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.BlankPage",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.BlankPage",
+  "name": "WinUI 3 Page",
+  "shortName": "winui3-page",
+  "sourceName": "BlankPage",
+  "defaultName": "Page1",
+  "description": "Adds a WinUI 3 Page with XAML markup and code-behind.",
   "tags": {
     "language": "C#",
     "type": "item"
@@ -59,15 +54,9 @@
       "replaces": "$fileinputname$"
     }
   },
-  "constraints": {
-    "winuiProject": {
-      "type": "project-capability",
-      "args": "CSharp & Msix"
-    }
-  },
   "primaryOutputs": [
-    { "path": "BlankWindow.xaml" },
-    { "path": "BlankWindow.xaml.cs" }
+    { "path": "BlankPage.xaml" },
+    { "path": "BlankPage.xaml.cs" }
   ],
   "forms": {
     "safe_name": {
