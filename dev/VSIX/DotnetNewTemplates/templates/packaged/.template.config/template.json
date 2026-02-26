@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json.schemastore.org/template",
+  "$schema": "http://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Desktop", "Packaged"],
   "identity": "Microsoft.WindowsAppSDK.CSharp.Packaged",
@@ -9,17 +9,7 @@
   "sourceName": "ProjectTemplate",
   "defaultName": "WinAppSdkApp",
   "description": "Creates a WinUI 3 desktop app plus the packaging project needed for MSIX deployment.",
-  "tags": {
-    "language": "C#",
-    "type": "solution"
-  },
   "preferNameDirectory": true,
-  "constraints": {
-    "windows-only": {
-      "type": "os",
-      "args": "Windows"
-    }
-  },
   "precedence": 100,
   "symbols": {
     "safeProjectName": {
@@ -38,7 +28,7 @@
       "type": "parameter",
       "datatype": "text",
       "replaces": "$DotNetVersion$",
-      "defaultValue": "net9.0",
+      "defaultValue": "net8.0",
       "description": "Base target framework moniker (TFM) for the WinUI project."
     },
     "extDotnetVersion": {
@@ -159,13 +149,5 @@
     "identity": {
       "identifier": "identity"
     }
-  },
-  "postActions": [
-    {
-      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
-      "continueOnError": true,
-      "description": "Restore NuGet packages required by this project.",
-      "manualInstructions": [{ "text": "Run 'dotnet restore'" }]
-    }
-  ]
+  }
 }
