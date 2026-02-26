@@ -24,6 +24,7 @@
       "args": [ "[8.0,)" ]
     }
   },
+  "symbols": {
     "safeProjectName": {
       "type": "derived",
       "valueSource": "name",
