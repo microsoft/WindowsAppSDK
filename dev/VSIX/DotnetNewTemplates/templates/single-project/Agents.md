@@ -1,4 +1,4 @@
-# Copilot Agent Instructions — WinUI 3 / WinAppSDK
+# Copilot Agent Instructions ΓÇö WinUI 3 / WinAppSDK
 
 ## Project Overview
 
@@ -6,11 +6,11 @@ This is a **WinUI 3** desktop application built on the **Windows App SDK**. It u
 
 > **Source of truth for versions & names:** Always read the project `.csproj` to determine the current `TargetFramework`, `RuntimeIdentifiers`, `Platforms`, `RootNamespace`, and `Microsoft.WindowsAppSDK` package version. Never hard-code project names or version numbers in instruction files.
 >
-> Throughout this document and the instruction files, `<ProjectName>` is a placeholder — replace it with the actual project folder/assembly name (derived from the `.csproj` filename).
+> Throughout this document and the instruction files, `<ProjectName>` is a placeholder ΓÇö replace it with the actual project folder/assembly name (derived from the `.csproj` filename).
 
 | Property | How to determine |
 |---|---|
-| UI Framework | WinUI 3 (`Microsoft.UI.Xaml`) — always used |
+| UI Framework | WinUI 3 (`Microsoft.UI.Xaml`) ΓÇö always used |
 | App SDK | Read `Microsoft.WindowsAppSDK` version from `.csproj` `<PackageReference>` |
 | Runtime / TFM | Read `<TargetFramework>` from `.csproj` (e.g., `net8.0-windows10.0.19041.0`) |
 | Target OS | Derived from `<TargetFramework>` and `<TargetPlatformMinVersion>` in `.csproj` |
@@ -32,6 +32,7 @@ All detailed agent instructions are organized under `instructions/`:
 | [performance.instructions.md](instructions/performance.instructions.md) | Performance |
 | [code-quality.instructions.md](instructions/code-quality.instructions.md) | Static Analysis, StyleCop, Code Cleanup |
 | [winui-best-practices.instructions.md](instructions/winui-best-practices.instructions.md) | WinUI 3 / WinAppSDK patterns & references |
+| [windows-apis.instructions.md](instructions/windows-apis.instructions.md) | WinAppSDK & Platform SDK API namespace catalog & lookup guidance |
 | [testing.instructions.md](instructions/testing.instructions.md) | Unit Testing, Build & Run |
 
 ## Core Agent Workflow
@@ -39,24 +40,47 @@ All detailed agent instructions are organized under `instructions/`:
 Every time you work on this codebase, follow this checklist:
 
 ### Before Writing Code
-1. **Review the original goal** — Re-read the user's request and confirm you understand the intent.
-2. **Check existing code** — Search for related implementations to avoid duplication (DRY).
-3. **Find the right API** — If the task involves a platform capability (UI controls, file access, camera, notifications, sensors, etc.), look up the correct API in the [WinUI 3 API Reference](https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/) before writing code.
-4. **Plan the approach** — Consider SOLID principles and identify which classes/interfaces are involved.
+1. **Review the original goal** ΓÇö Re-read the user's request and confirm you understand the intent.
+2. **Check existing code** ΓÇö Search for related implementations to avoid duplication (DRY).
+3. **Find the right API** ΓÇö If the task involves a platform capability (AI, UI controls, file access, notifications, windowing, widgets, sensors, etc.), first check the [Windows APIs catalog](instructions/windows-apis.instructions.md) and then look up the correct API in the [WinUI 3 API Reference](https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/) before writing code.
+4. **Plan the approach** ΓÇö Consider SOLID principles and identify which classes/interfaces are involved.
 
 ### While Writing Code
-5. **Apply Design Principles** — DRY, KISS, SOLID, YAGNI (see [design-principles](instructions/design-principles.instructions.md)).
-6. **Follow Fundamentals** — Globalization ([globalization](instructions/globalization.instructions.md)), Accessibility ([accessibility](instructions/accessibility.instructions.md)), Security ([security](instructions/security.instructions.md)), Performance ([performance](instructions/performance.instructions.md)).
-7. **Respect Code Quality Rules** — Static analysis & StyleCop (see [code-quality](instructions/code-quality.instructions.md)).
-8. **Follow WinUI Patterns** — MVVM, x:Bind, community toolkit, and API verification (see [winui-best-practices](instructions/winui-best-practices.instructions.md)).
+
+> **Agent Rule ΓÇö MANDATORY:** Steps 5ΓÇô8 are **not** passive references. You **must** actually open and read the linked instruction file before writing code that falls within its scope. Do not skip this ΓÇö these files contain rules, anti-patterns, and checklists that must be applied.
+
+5. **Apply Design Principles** ΓÇö **Read** [design-principles](instructions/design-principles.instructions.md) before adding/refactoring classes or logic. Apply DRY, KISS, SOLID, YAGNI.
+6. **Follow Fundamentals** ΓÇö **Read the applicable instruction files** based on what you're changing:
+   - Adding or changing **UI controls / XAML**? ΓåÆ Read [accessibility](instructions/accessibility.instructions.md) (AutomationProperties, keyboard nav, contrast) AND [performance](instructions/performance.instructions.md) (x:Bind, x:Load, virtualization).
+   - Adding or changing **user-facing strings** (labels, messages, tooltips)? ΓåÆ Read [globalization](instructions/globalization.instructions.md) (`.resw` files, `x:Uid`, `ResourceLoader`).
+   - Handling **secrets, user input, HTTP, or permissions**? ΓåÆ Read [security](instructions/security.instructions.md) (no hard-coded secrets, input validation, least privilege).
+   - Working on **data binding, collections, async/IO, or layout**? ΓåÆ Read [performance](instructions/performance.instructions.md) (x:Bind, virtualization, async patterns).
+7. **Respect Code Quality Rules** ΓÇö **Read** [code-quality](instructions/code-quality.instructions.md) before writing code. Follow all CA*/SA*/IDE* analyzer rules and naming conventions.
+8. **Follow WinUI Patterns** ΓÇö **Read** [winui-best-practices](instructions/winui-best-practices.instructions.md) for MVVM, x:Bind, community toolkit, and API verification.
 
 ### After Writing Code
-9. **Remove unused code** — Delete unused `using` statements, dead code, commented-out blocks.
-10. **Write unit tests** — Every new public method/class needs tests (see [testing](instructions/testing.instructions.md)).
-11. **Build the project** — Run `dotnet build -c Debug -p:Platform=x64` from the project folder and fix all warnings/errors.
-12. **Run tests** — Run tests related to the change using `--filter` (see [testing](instructions/testing.instructions.md)). Run the full suite only when the change is cross-cutting.
-13. **Register the MSIX package** — See [Build, Run & Deploy](#build-run--deploy) below.
-14. **Re-review against original goal** — Confirm the implementation matches the user's request.
+9. **Remove unused code** ΓÇö Delete unused `using` statements, dead code, commented-out blocks.
+10. **Write unit tests** ΓÇö Every new public method/class needs tests. **Read** [testing](instructions/testing.instructions.md) for framework setup, naming conventions (`MethodName_Scenario_ExpectedResult`), AAA pattern, and `dotnet test` commands.
+11. **Build the project** ΓÇö Detect the platform first (`$Platform = $env:PROCESSOR_ARCHITECTURE`), then run `dotnet build -c Debug -p:Platform=$Platform` from the project folder and fix all warnings/errors. **If build errors occur, follow the Troubleshooting Build Errors workflow below.**
+12. **Run tests** ΓÇö Run tests related to the change using `--filter` (see [testing](instructions/testing.instructions.md)). Run the full suite only when the change is cross-cutting.
+13. **Register the MSIX package** ΓÇö See [Build, Run & Deploy](#build-run--deploy) below.
+14. **Re-review against original goal** ΓÇö Confirm the implementation matches the user's request.
+
+### Troubleshooting Build Errors
+
+> **Agent Rule ΓÇö MANDATORY:** When a build fails due to an unknown type, missing namespace, unresolved API, or similar definition error, follow this escalation order. **Do NOT jump straight to reading `.winmd` files or using `ildasm`/decompilers** ΓÇö always try web search first.
+
+**Step 1 ΓÇö Web Search (ALWAYS try first):**
+1. Open and read [windows-apis.instructions.md](instructions/windows-apis.instructions.md) ΓÇö it contains the API namespace catalog and lookup guidance.
+2. Translate the unknown type/namespace into search keywords (e.g., `ImageDescription` ΓåÆ "WinAppSDK ImageDescription API").
+3. Use `web_search` or `web_fetch` to search the [WinAppSDK API Reference](https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/) and the [Platform SDK API Reference](https://learn.microsoft.com/en-us/uwp/api/) for the correct namespace, class name, and method signatures.
+4. Check the [release notes](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/stable-channel) to verify the API is available in the project's SDK version (read from `.csproj`).
+
+**Step 2 ΓÇö Sample Repos:**
+If web search finds the API but usage is unclear, search the sample repositories listed in [windows-apis.instructions.md](instructions/windows-apis.instructions.md) for working examples.
+
+**Step 3 ΓÇö WinMD / Decompiler (last resort only):**
+Only if Steps 1ΓÇô2 fail to resolve the issue, then inspect `.winmd` metadata files or use decompilation tools to discover the exact type definitions. This is a fallback, not the default approach.
 
 ## Build, Run & Deploy
 
@@ -68,8 +92,19 @@ This is an MSIX-packaged WinUI 3 app. You **must** pass both `-c` (Configuration
   ```powershell
   # Check developer mode
   Get-WindowsDeveloperLicense
-  # If not enabled: Settings → System → For developers → Developer Mode → On
+  # If not enabled: Settings ΓåÆ System ΓåÆ For developers ΓåÆ Developer Mode ΓåÆ On
   ```
+
+### Detect Platform
+
+**Always detect the machine's architecture first** ΓÇö never hardcode a platform value. Run this once at the start of every build/test session:
+
+```powershell
+# Detect the current machine's CPU architecture (returns x64, ARM64, or x86)
+$Platform = $env:PROCESSOR_ARCHITECTURE
+```
+
+Use `$Platform` in all subsequent `dotnet` commands.
 
 ### Build
 
@@ -77,15 +112,14 @@ This is an MSIX-packaged WinUI 3 app. You **must** pass both `-c` (Configuration
 # Run from the project folder containing the .csproj
 cd <ProjectName>
 
-# Debug x64 (default development target)
-dotnet build -c Debug -p:Platform=x64
+# Detect platform
+$Platform = $env:PROCESSOR_ARCHITECTURE
 
-# Release x64
-dotnet build -c Release -p:Platform=x64
+# Debug build (matches current machine)
+dotnet build -c Debug -p:Platform=$Platform
 
-# Other platforms
-dotnet build -c Debug -p:Platform=x86
-dotnet build -c Debug -p:Platform=ARM64
+# Release build
+dotnet build -c Release -p:Platform=$Platform
 ```
 
 ### Register & Run the MSIX Package (Sideload)
@@ -93,24 +127,27 @@ dotnet build -c Debug -p:Platform=ARM64
 After building, register the app package so Windows can launch it:
 
 ```powershell
+$Platform = $env:PROCESSOR_ARCHITECTURE
+$Rid = $Platform.ToLower()   # e.g. arm64, x64, x86
+
 # Register the built MSIX package from the build output
-# Path pattern: .\<ProjectName>\bin\<Platform>\<Configuration>\<TargetFramework>\win-<rid>\AppxManifest.xml
 # Read <TargetFramework> from the project .csproj to build the correct path.
-Add-AppxPackage -Register .\<ProjectName>\bin\x64\Debug\<TargetFramework>\win-x64\AppxManifest.xml
+Add-AppxPackage -Register ".\<ProjectName>\bin\$Platform\Debug\<TargetFramework>\win-$Rid\AppxManifest.xml"
 ```
 
-> **Note:** Replace `$(TargetFramework)` with the actual value from `.csproj` (e.g., `net8.0-windows10.0.19041.0`).
-> Adjust `<Platform>` and `<Configuration>` to match your build target.
+> **Note:** Replace `<TargetFramework>` with the actual value from `.csproj` (e.g., `net8.0-windows10.0.19041.0`).
 
 ### Run Tests
 
 ```powershell
 # Run from the test project folder
 cd <ProjectName>.Tests
-dotnet test -c Debug -p:Platform=x64
+$Platform = $env:PROCESSOR_ARCHITECTURE
+dotnet test -c Debug -p:Platform=$Platform
 ```
 
 ## Key Rules (Always Enforced)
 
-- **Every change must build and pass tests** — Run `dotnet build` and `dotnet test` (see [Build, Run & Deploy](#build-run--deploy)) before considering any task complete.
-- **Follow all instruction files** — The detailed rules in `instructions/` are authoritative. Do not skip them.
+- **Every change must build and pass tests** ΓÇö Run `dotnet build` and `dotnet test` (see [Build, Run & Deploy](#build-run--deploy)) before considering any task complete.
+- **Follow all instruction files** ΓÇö The detailed rules in `instructions/` are authoritative. **You must actually open and read them** (not just acknowledge they exist) when working within their scope. See the trigger conditions in steps 5ΓÇô8 above.
+- **Web search before decompilation** ΓÇö When facing unknown types or build errors, always search the web / API docs first. Only use WinMD/ILDASM as a last resort (see [Troubleshooting Build Errors](#troubleshooting-build-errors)).
