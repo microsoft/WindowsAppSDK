@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Item", "Control"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.TemplatedControl",
-  "groupIdentity": "Microsoft.WinUI.Item.TemplatedControl",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl",
   "name": "WinUI Templated Control (Item)",
   "shortName": "winui-templatedcontrol",
   "sourceName": "CustomControl",

@@ -6,8 +6,8 @@
     "language": "C#",
     "type": "project"
   },
-  "identity": "Microsoft.WinUI.ClassLibrary",
-  "groupIdentity": "Microsoft.WinUI.ClassLibrary",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.ClassLibrary",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.ClassLibrary",
   "name": "WinUI Class Library",
   "shortName": "winui-lib",
   "shortNameList": ["wasdk-classlib"],

@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Item", "Page"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.Page",
-  "groupIdentity": "Microsoft.WinUI.Item.Page",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Page",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Page",
   "name": "WinUI Blank Page (Item)",
   "shortName": "winui-page",
   "sourceName": "BlankPage",

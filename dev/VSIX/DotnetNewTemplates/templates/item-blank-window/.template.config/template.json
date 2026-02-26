@@ -6,8 +6,8 @@
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.Window",
-  "groupIdentity": "Microsoft.WinUI.Item.Window",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window",
   "name": "WinUI Blank Window (Item)",
   "shortName": "winui-window",
   "shortNameList": ["wasdk-item-blankwin"],

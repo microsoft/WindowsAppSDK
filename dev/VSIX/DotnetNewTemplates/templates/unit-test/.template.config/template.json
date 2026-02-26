@@ -6,8 +6,8 @@
     "language": "C#",
     "type": "project"
   },
-  "identity": "Microsoft.WinUI.UnitTest",
-  "groupIdentity": "Microsoft.WinUI.UnitTest",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest",
   "name": "WinUI Unit Test App",
   "shortName": "winui-unittest",
   "shortNameList": ["wasdk-unittest"],

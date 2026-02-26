@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Item", "Control"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.UserControl",
-  "groupIdentity": "Microsoft.WinUI.Item.UserControl",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy",
   "name": "WinUI User Control (Item)",
   "shortName": "winui-usercontrol",
   "sourceName": "UserControl",

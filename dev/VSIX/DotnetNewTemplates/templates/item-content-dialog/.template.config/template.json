@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Item", "Dialog"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.ContentDialog",
-  "groupIdentity": "Microsoft.WinUI.Item.ContentDialog",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog",
   "name": "WinUI Content Dialog (Item)",
   "shortName": "winui-dialog",
   "sourceName": "ContentDialog",

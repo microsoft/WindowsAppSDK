@@ -10,17 +10,17 @@ code-behind, and project files.
 
 | Short name            | Identity                                      | Type     | Description                                               |
 |-----------------------|-----------------------------------------------|----------|-----------------------------------------------------------|
-| `winui`               | `Microsoft.WinUI.BlankApp`                    | Project  | WinUI 3 blank app that uses single-project MSIX tooling   |
-| `winui-navview`       | `Microsoft.WinUI.NavigationApp`               | Project  | WinUI 3 NavigationView starter app                        |
-| `winui-lib`           | `Microsoft.WinUI.ClassLibrary`                | Project  | WinUI 3 class library for sharing UI components           |
-| `winui-unittest`      | `Microsoft.WinUI.UnitTest`                    | Project  | WinUI 3 packaged test app configured for MSTest           |
-| `winui-page`          | `Microsoft.WinUI.Item.Page`                   | Item     | Adds a blank WinUI 3 Page                                 |
-| `winui-window`        | `Microsoft.WinUI.Item.Window`                 | Item     | Adds a blank WinUI 3 Window                               |
-| `winui-usercontrol`   | `Microsoft.WinUI.Item.UserControl`            | Item     | Adds a WinUI 3 UserControl                                |
-| `winui-templatedcontrol` | `Microsoft.WinUI.Item.TemplatedControl`    | Item     | Adds a templated WinUI 3 control skeleton                 |
-| `winui-resourcedictionary` | `Microsoft.WinUI.Item.ResourceDictionary`| Item     | Adds a WinUI 3 ResourceDictionary                         |
-| `winui-resw`          | `Microsoft.WinUI.Item.Resw`                   | Item     | Adds a RESW resource file                                 |
-| `winui-dialog`        | `Microsoft.WinUI.Item.ContentDialog`          | Item     | Adds a WinUI 3 ContentDialog                              |
+| `winui`               | `Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp`                    | Project  | WinUI 3 blank app that uses single-project MSIX tooling   |
+| `winui-navview`       | `Microsoft.WindowsAppSDK.WinUI.CSharp.NavigationApp`               | Project  | WinUI 3 NavigationView starter app                        |
+| `winui-lib`           | `Microsoft.WindowsAppSDK.WinUI.CSharp.ClassLibrary`                | Project  | WinUI 3 class library for sharing UI components           |
+| `winui-unittest`      | `Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest`                    | Project  | WinUI 3 packaged test app configured for MSTest           |
+| `winui-page`          | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Page`                   | Item     | Adds a blank WinUI 3 Page                                 |
+| `winui-window`        | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window`                 | Item     | Adds a blank WinUI 3 Window                               |
+| `winui-usercontrol`   | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy`     | Item     | Adds a WinUI 3 UserControl                                |
+| `winui-templatedcontrol` | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl`    | Item     | Adds a templated WinUI 3 control skeleton                 |
+| `winui-resourcedictionary` | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary`| Item     | Adds a WinUI 3 ResourceDictionary                         |
+| `winui-resw`          | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw`                   | Item     | Adds a RESW resource file                                 |
+| `winui-dialog`        | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog`          | Item     | Adds a WinUI 3 ContentDialog                              |
 
 Run `dotnet new <short name> -n MyProject` to create a project from the pack once it
 is installed. Item templates only surface when `dotnet new` is executed inside a
