@@ -6,7 +6,7 @@
   "groupIdentity": "Microsoft.WindowsAppSDK.CSharp.Item.ContentDialog",
   "name": "Windows App SDK Content Dialog (Item)",
   "shortName": "wasdk-item-dialog",
-  "sourceName": "ContentDialogItem",
+  "sourceName": "ContentDialog",
   "defaultName": "ContentDialog1",
   "description": "Adds a WinUI 3 ContentDialog with XAML markup and code-behind.",
   "tags": {
@@ -48,8 +48,8 @@
     }
   },
   "primaryOutputs": [
-    { "path": "ContentDialogItem.xaml" },
-    { "path": "ContentDialogItem.xaml.cs" }
+    { "path": "ContentDialog.xaml" },
+    { "path": "ContentDialog.xaml.cs" }
   ],
   "forms": {
     "safe_name": {

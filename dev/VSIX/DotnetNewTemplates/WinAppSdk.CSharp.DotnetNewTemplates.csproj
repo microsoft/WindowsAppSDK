@@ -93,12 +93,11 @@
     <None Include="templates\item-content-dialog\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="templates\item-content-dialog\ContentDialogItem.xaml"
+    <None Include="..\ItemTemplates\Neutral\CSharp\ContentDialog\ContentDialog.xaml"
           Pack="true"
-          PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/ContentDialogItem.xaml" />
-    <None Include="templates\item-content-dialog\ContentDialogItem.xaml.cs"
+          PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/ContentDialog.xaml" />
+    <None Include="..\ItemTemplates\Neutral\CSharp\ContentDialog\ContentDialog.xaml.cs"
           Pack="true"
-          PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/ContentDialogItem.xaml.cs" />
-    <Compile Remove="templates\item-content-dialog\**" />
+          PackagePath="content/WinAppSdk.CSharp.Item.ContentDialog/ContentDialog.xaml.cs" />
   </ItemGroup>
 </Project>
