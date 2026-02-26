@@ -6,8 +6,8 @@
     "language": "C#",
     "type": "project"
   },
-  "identity": "Microsoft.WinUI.BlankApp",
-  "groupIdentity": "Microsoft.WinUI.BlankApp",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp",
   "name": "WinUI Blank App",
   "shortName": "winui",
   "shortNameList": ["wasdk-single"],

@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Item", "Resource"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.ResourceDictionary",
-  "groupIdentity": "Microsoft.WinUI.Item.ResourceDictionary",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary",
   "name": "WinUI Resource Dictionary (Item)",
   "shortName": "winui-resourcedictionary",
   "sourceName": "ResourceDictionary",

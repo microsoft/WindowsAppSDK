@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Item", "Resource"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WinUI.Item.Resw",
-  "groupIdentity": "Microsoft.WinUI.Item.Resw",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw",
   "name": "WinUI Resources File (Item)",
   "shortName": "winui-resw",
   "sourceName": "Resources",

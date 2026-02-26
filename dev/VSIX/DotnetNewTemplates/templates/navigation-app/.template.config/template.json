@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Desktop", "Navigation"],
   "tags": {
     "language": "C#",
     "type": "project"
   },
-  "identity": "Microsoft.WinUI.NavigationApp",
-  "groupIdentity": "Microsoft.WinUI.NavigationApp",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.NavigationApp",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.NavigationApp",
   "name": "WinUI NavigationView App",
   "shortName": "winui-navview",
   "sourceName": "ProjectTemplate",
