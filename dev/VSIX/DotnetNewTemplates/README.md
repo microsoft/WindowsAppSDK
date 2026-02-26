@@ -14,6 +14,8 @@ code-behind, and project files.
 | `winui3-lib`        | `Microsoft.WindowsAppSDK.CSharp.ClassLibrary`      | New WinUI 3 class library                  |
 | `winui3-unittest`   | `Microsoft.WindowsAppSDK.CSharp.UnitTest`          | New WinUI 3 unit test app                  |
 | `winui3-window`     | `Microsoft.WindowsAppSDK.CSharp.Item.BlankWindow`  | New window in an existing app              |
+| `winui3-page`       | `Microsoft.WindowsAppSDK.CSharp.Item.BlankPage`    | New page in an existing app                |
+| `winui3-usercontrol`| `Microsoft.WindowsAppSDK.CSharp.Item.UserControl`  | New user control in an existing app        |
 | `winui3-dialog`     | `Microsoft.WindowsAppSDK.CSharp.Item.ContentDialog`| New content dialog in an existing app      |
 
 Run `dotnet new <short name> -n MyProject` to create a project from the pack once it
