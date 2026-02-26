@@ -577,7 +577,11 @@ Try {
                 exit 1
             }
 
-            $dependency.version = $buildDependency.Version
+            $_dependencyMinVersion = $buildDependency.Version
+            $_numericVersion = $_dependencyMinVersion -replace '[-+].*$', ''  # Remove suffix
+            $_parsedVersion = [System.Version]$_numericVersion
+            $_dependencyMaxVersion = "$($_parsedVersion.Major + 1).0.0"
+            $dependency.version = "[${_dependencyMinVersion}, ${_dependencyMaxVersion})"
         }
 
         Set-Content -Value $publicNuspec.OuterXml $nuspecPath
