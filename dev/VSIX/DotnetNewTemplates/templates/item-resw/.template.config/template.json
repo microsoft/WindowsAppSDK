@@ -1,27 +1,20 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Item", "Dialog"],
+  "classifications": ["Windows", "WinUI", "Item", "Resource"],
   "tags": {
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog",
-  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog",
-  "name": "WinUI Content Dialog (Item)",
-  "shortName": "winui-dialog",
-  "sourceName": "ContentDialog",
-  "defaultName": "ContentDialog",
-  "description": "Adds a WinUI 3 ContentDialog with markup and code-behind.",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw",
+  "name": "WinUI Resources File (Item)",
+  "shortName": "winui-resw",
+  "sourceName": "Resources",
+  "defaultName": "Resources",
+  "description": "Adds a RESW resources file for localized strings.",
   "preferNameDirectory": false,
   "symbols": {
-    "rootNamespace": {
-      "type": "bind",
-      "binding": "msbuild:RootNamespace",
-      "replaces": "$rootnamespace$",
-      "defaultValue": "AppNamespace",
-      "description": "Namespace for the generated item."
-    },
     "safeItemName": {
       "type": "derived",
       "valueSource": "name",
@@ -48,8 +41,7 @@
     }
   },
   "primaryOutputs": [
-    { "path": "ContentDialog.xaml" },
-    { "path": "ContentDialog.xaml.cs" }
+    { "path": "Resources.resw" }
   ],
   "forms": {
     "safe_name": {

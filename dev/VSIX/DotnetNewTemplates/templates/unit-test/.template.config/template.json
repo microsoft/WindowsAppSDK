@@ -2,17 +2,18 @@
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
   "classifications": ["Windows", "WinUI", "Test"],
-  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest",
-  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest",
-  "name": "WinUI 3 Unit Test App",
-  "shortName": "winui3-unittest",
-  "sourceName": "ProjectTemplate",
-  "defaultName": "WinUI3Tests",
-  "description": "Creates a WinUI 3 packaged test app that is pre-wired for MSTest.",
   "tags": {
     "language": "C#",
     "type": "project"
   },
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest",
+  "name": "WinUI Unit Test App",
+  "shortName": "winui-unittest",
+  "shortNameList": ["wasdk-unittest"],
+  "sourceName": "ProjectTemplate",
+  "defaultName": "WinUITests",
+  "description": "Creates a WinUI 3 packaged test app that is pre-wired for MSTest.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {
@@ -98,7 +99,7 @@
     }
   ],
   "primaryOutputs": [
-    { "path": "ProjectTemplate/ProjectTemplate.csproj" }
+    { "path": "ProjectTemplate.csproj" }
   ],
   "forms": {
     "safe_name": {

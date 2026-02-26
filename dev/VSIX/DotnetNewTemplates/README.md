@@ -8,18 +8,24 @@ code-behind, and project files.
 
 ## Templates
 
-| Short name          | Identity                                               | Description                                |
-|---------------------|--------------------------------------------------------|--------------------------------------------|
-| `winui3`            | `Microsoft.WindowsAppSDK.WinUI.CSharp.SingleProject`     | New blank WinUI 3 app                      |
-| `winui3-lib`        | `Microsoft.WindowsAppSDK.WinUI.CSharp.ClassLibrary`      | New WinUI 3 class library                  |
-| `winui3-unittest`   | `Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest`          | New WinUI 3 unit test app                  |
-| `winui3-window`     | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.BlankWindow`  | New window in an existing app              |
-| `winui3-page`       | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.BlankPage`    | New page in an existing app                |
-| `winui3-usercontrol`| `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl`  | New user control in an existing app        |
-| `winui3-dialog`     | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog`| New content dialog in an existing app      |
+| Short name            | Identity                                      | Type     | Description                                               |
+|-----------------------|-----------------------------------------------|----------|-----------------------------------------------------------|
+| `winui`               | `Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp`                    | Project  | WinUI 3 blank app that uses single-project MSIX tooling   |
+| `winui-navview`       | `Microsoft.WindowsAppSDK.WinUI.CSharp.NavigationApp`               | Project  | WinUI 3 NavigationView starter app                        |
+| `winui-lib`           | `Microsoft.WindowsAppSDK.WinUI.CSharp.ClassLibrary`                | Project  | WinUI 3 class library for sharing UI components           |
+| `winui-unittest`      | `Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest`                    | Project  | WinUI 3 packaged test app configured for MSTest           |
+| `winui-page`          | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Page`                   | Item     | Adds a blank WinUI 3 Page                                 |
+| `winui-window`        | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window`                 | Item     | Adds a blank WinUI 3 Window                               |
+| `winui-usercontrol`   | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy`     | Item     | Adds a WinUI 3 UserControl                                |
+| `winui-templatedcontrol` | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl`    | Item     | Adds a templated WinUI 3 control skeleton                 |
+| `winui-resourcedictionary` | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary`| Item     | Adds a WinUI 3 ResourceDictionary                         |
+| `winui-resw`          | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw`                   | Item     | Adds a RESW resource file                                 |
+| `winui-dialog`        | `Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog`          | Item     | Adds a WinUI 3 ContentDialog                              |
 
 Run `dotnet new <short name> -n MyProject` to create a project from the pack once it
-is installed.
+is installed. Item templates only surface when `dotnet new` is executed inside a
+WinUI project folder (or when `--project` points to one) so that commands stay
+context-aware.
 
 ## Local testing workflow
 
