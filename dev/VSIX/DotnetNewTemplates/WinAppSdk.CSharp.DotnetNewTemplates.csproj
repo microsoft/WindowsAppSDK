@@ -9,18 +9,18 @@
     <PackageType>Template</PackageType>
     <PackageId>Microsoft.WindowsAppSDK.WinUI.CSharp.Templates</PackageId>
     <Version>0.0.1-experimental</Version>
-      <Authors>Microsoft</Authors>
-      <Company>Microsoft</Company>
-      <Description>Official WinUI 3 project and item templates for the Windows App SDK. Install this pack to use dotnet new for blank apps, navigation views, libraries, unit tests, and common WinUI UI items that match the Visual Studio experience.</Description>
-      <PackageTags>windows;winappsdk;winui;winui3;desktop;dotnet-new;templates;csharp</PackageTags>
-      <PackageProjectUrl>https://learn.microsoft.com/windows/apps/windows-app-sdk/</PackageProjectUrl>
-      <RepositoryUrl>https://github.com/microsoft/WindowsAppSDK</RepositoryUrl>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <Description>Official WinUI 3 project and item templates for the Windows App SDK. Install this pack to use dotnet new for blank apps, navigation views, libraries, unit tests, and common WinUI UI items that match the Visual Studio experience.</Description>
+    <PackageTags>windows;winappsdk;winui;winui3;desktop;dotnet-new;templates;csharp</PackageTags>
+    <PackageProjectUrl>https://learn.microsoft.com/windows/apps/windows-app-sdk/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/microsoft/WindowsAppSDK</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-      <PackageLicenseExpression>MIT</PackageLicenseExpression>
-      <PackageReadmeFile>README.md</PackageReadmeFile>
-      <Copyright>(c) Microsoft Corporation. All rights reserved.</Copyright>
-      <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-      <PackageReleaseNotes>See https://github.com/microsoft/WindowsAppSDK/releases for release notes.</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>(c) Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>See https://github.com/microsoft/WindowsAppSDK/releases for release notes.</PackageReleaseNotes>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
     <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\localpackages'))</PackageOutputPath>
