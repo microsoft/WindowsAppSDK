@@ -13,8 +13,8 @@
 
 #include <wil/resource.h>
 #include <string>
-#include "../Common/AppModel.Identity.IsPackagedProcess.h"
-#include "../Common/WindowsAppRuntime.SelfContained.h"
+#include "AppModel.Identity.IsPackagedProcess.h"
+#include "WindowsAppRuntime.SelfContained.h"
     namespace Microsoft::WindowsAppRuntime::Insights
     {
     enum class TraceLoggingInformationFlags : std::uint32_t
