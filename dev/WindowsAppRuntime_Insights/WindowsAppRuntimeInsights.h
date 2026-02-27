@@ -54,7 +54,7 @@
                 }
 
                 bool isPackagedProcess{};
-                if (SUCCEEDED_LOG(::AppModel::Identity::IsPackagedProcess(isPackagedProcess)) && isPackagedProcess)
+                if (SUCCEEDED_LOG(::AppModel::Identity::IsPackagedProcess_nothrow(isPackagedProcess)) && isPackagedProcess)
                 {
                     f |= Insights::TraceLoggingInformationFlags::IsPackagedProcess;
                 }

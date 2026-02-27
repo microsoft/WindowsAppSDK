@@ -9,15 +9,10 @@
 #include <memory>
 #include <stdint.h>
 
+#include "AppModel.Identity.IsPackagedProcess.h"
+
 namespace AppModel::Identity
 {
-inline bool IsPackagedProcess()
-{
-    UINT32 n{};
-    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageFullName rc=%d", rc);
-    return rc == ERROR_INSUFFICIENT_BUFFER;
-}
 
 template <typename Tstring>
 inline Tstring GetCurrentPackageFullName()

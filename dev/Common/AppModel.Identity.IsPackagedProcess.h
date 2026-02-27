@@ -8,17 +8,22 @@
 
 namespace AppModel::Identity
 {
-inline HRESULT IsPackagedProcess(bool& isPackagedProcess) noexcept
+inline HRESULT IsPackagedProcess_nothrow(bool& isPackagedProcess) noexcept
+{
+    isPackagedProcess = false;
+    UINT32 n{};
+    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
+    RETURN_HR_IF(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER));
+    isPackagedProcess = (rc == ERROR_INSUFFICIENT_BUFFER);
+    return S_OK;
+}
+
+inline bool IsPackagedProcess()
 {
     UINT32 n{};
     const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
-    if ((rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER))
-    {
-        isPackagedProcess = false;
-        return HRESULT_FROM_WIN32(rc);
-    }
-    isPackagedProcess = (rc == ERROR_INSUFFICIENT_BUFFER);
-    return S_OK;
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageFullName rc=%d", rc);
+    return rc == ERROR_INSUFFICIENT_BUFFER;
 }
 }
 
