@@ -6,6 +6,8 @@
 
 #include <appmodel.h>
 
+#include <IsWindowsVersion.h>
+
 #include <WindowsAppRuntime.Test.FileSystem.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.ApplicationModel.h>
@@ -282,7 +284,14 @@ inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
         WIN32_FILE_ATTRIBUTE_DATA data{};
         const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
         const auto lastError{ ::GetLastError() };
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
+        if (ok)
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):TRUE", msix.c_str()));
+        }
+        else
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):FALSE LastError:%u", msix.c_str(), lastError));
+        }
 
         std::error_code errorcode{};
         auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
@@ -315,24 +324,59 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
 
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageManager.AddPackageAsync(): uri=%ls", msixUri.ToString().c_str()));
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
     auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
 }
 
-inline void AddPackageDefer(PCWSTR packageDirName, PCWSTR packageFullName)
+inline void AddPackageByUri(
+    winrt::Windows::Foundation::Uri packageUri,
+    PCWSTR packageFullName,
+    bool DeferRegistrationWhenPackagesAreInUse = false,
+    PCWSTR externalLocation = nullptr)
 {
-    auto msixUri{ GetMsixPackageUri(packageDirName) };
+    // AddPackageByUri added in 20H1
+    VERIFY_IS_TRUE(::WindowsVersion::IsWindows10_20H1OrGreater());
 
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     winrt::Windows::Management::Deployment::AddPackageOptions options;
-    options.DeferRegistrationWhenPackagesAreInUse(true);
-    auto deploymentResult{ packageManager.AddPackageByUriAsync(msixUri, options).get() };
-    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageByUriAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    options.DeferRegistrationWhenPackagesAreInUse(DeferRegistrationWhenPackagesAreInUse);
+    if (externalLocation)
+    {
+        auto externalLocationUri{ winrt::Windows::Foundation::Uri{ externalLocation } };
+        options.ExternalLocationUri(externalLocationUri);
+    }
+    auto deploymentResult{ packageManager.AddPackageByUriAsync(packageUri, options).get() };
+    if (externalLocation)
+    {
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(),
+                         WEX::Common::String().Format(L"AddPackageByUriAsync('%s', ExtLoc='%s') = 0x%0X %s",
+                                                      packageFullName, externalLocation ? externalLocation : L"<null>", deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
+    else
+    {
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageByUriAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
 }
 
-inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+inline void AddPackageByUri(
+    PCWSTR packageDirName,
+    PCWSTR packageFullName,
+    bool DeferRegistrationWhenPackagesAreInUse = false,
+    PCWSTR externalLocation = nullptr)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
+    AddPackageByUri(msixUri, packageFullName, DeferRegistrationWhenPackagesAreInUse, externalLocation);
+}
+
+inline void AddPackageDefer(PCWSTR packageDirName, PCWSTR packageFullName, PCWSTR externalLocation = nullptr)
+{
+    AddPackageByUri(packageDirName, packageFullName, true, externalLocation);
+}
+
+inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName, PCWSTR externalLocation = nullptr)
 {
     if (IsPackageRegistered(packageFullName))
     {
@@ -341,11 +385,18 @@ inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
     else
     {
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageIfNecessary: %s not registered, adding...", packageFullName));
-        AddPackage(packageDirName, packageFullName);
+        if (externalLocation)
+        {
+            AddPackageByUri(packageDirName, packageFullName, false, externalLocation);
+        }
+        else
+        {
+            AddPackage(packageDirName, packageFullName);
+        }
     }
 }
 
-inline void AddPackageDeferIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+inline void AddPackageDeferIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName, PCWSTR externalLocation = nullptr)
 {
     if (IsPackageRegistered(packageFullName))
     {
@@ -354,7 +405,7 @@ inline void AddPackageDeferIfNecessary(PCWSTR packageDirName, PCWSTR packageFull
     else
     {
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageDeferIfNecessary: %s not registered, adding...", packageFullName));
-        AddPackageDefer(packageDirName, packageFullName);
+        AddPackageDefer(packageDirName, packageFullName, externalLocation);
     }
 }
 
@@ -368,7 +419,44 @@ inline void StagePackage(PCWSTR packageDirName, PCWSTR packageFullName)
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"StagePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
 }
 
-inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+inline void StagePackageByUri(
+    winrt::Windows::Foundation::Uri packageUri,
+    PCWSTR packageFullName,
+    PCWSTR externalLocation = nullptr)
+{
+    // StagePackageByUri added in 20H1
+    VERIFY_IS_TRUE(::WindowsVersion::IsWindows10_20H1OrGreater());
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    winrt::Windows::Management::Deployment::StagePackageOptions options;
+    if (externalLocation)
+    {
+        auto externalLocationUri{ winrt::Windows::Foundation::Uri{ externalLocation } };
+        options.ExternalLocationUri(externalLocationUri);
+    }
+    auto deploymentResult{ packageManager.StagePackageByUriAsync(packageUri, options).get() };
+    if (externalLocation)
+    {
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(),
+                         WEX::Common::String().Format(L"StagePackageAsync('%s', ExtLoc='%s') = 0x%0X %s",
+                                                      packageFullName, externalLocation, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
+    else
+    {
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"StagePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
+}
+
+inline void StagePackageByUri(
+    PCWSTR packageDirName,
+    PCWSTR packageFullName,
+    PCWSTR externalLocation = nullptr)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
+    StagePackageByUri(msixUri, packageFullName, externalLocation);
+}
+
+inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName, PCWSTR externalLocation=nullptr)
 {
     if (IsPackageAvailable(packageFullName))
     {
@@ -377,7 +465,14 @@ inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullNam
     else
     {
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"StagePackageIfNecessary: %s not staged, staging...", packageFullName));
-        StagePackage(packageDirName, packageFullName);
+        if (externalLocation)
+        {
+            StagePackageByUri(packageDirName, packageFullName, externalLocation);
+        }
+        else
+        {
+            StagePackage(packageDirName, packageFullName);
+        }
     }
 }
 

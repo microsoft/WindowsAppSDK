@@ -1,0 +1,11 @@
+﻿{
+    "Tests": [
+        {
+            "Description": "PackageTests tests for feature Package",
+            "Filename": "PackageTests.dll",
+            "Parameters": "",
+            "Architectures": ["x86", "x64", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
