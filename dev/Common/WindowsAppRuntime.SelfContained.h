@@ -33,16 +33,10 @@ inline HRESULT IsSelfContained_nothrow(bool& isSelfContained) noexcept
     using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
     auto fn = reinterpret_cast<IsSelfContainedFn>(
         ::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained"));
-    if (!fn)
-    {
-        return S_OK;
-    }
+    RETURN_LAST_ERROR_IF_NULL(fn);
     BOOL result{};
     const auto hr{ fn(&result) };
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    RETURN_IF_FAILED(hr);
     isSelfContained = !!result;
     return S_OK;
 }
