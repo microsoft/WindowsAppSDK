@@ -16,11 +16,11 @@ namespace Test::Bootstrap
 {
     enum class Packages
     {
-        None = 0,
-        Framework = 0x0001,
-        Main = 0x0002,
-        DDLM = 0x0004,
-        Singleton = 0x0008,
+        None         = 0,
+        Framework    = 0x0001,
+        Main         = 0x0002,
+        DDLM         = 0x0004,
+        Singleton    = 0x0008,
 
         Default = Framework | Main | DDLM | Singleton,
     };

@@ -129,8 +129,8 @@ namespace WindowsAppRuntimeFramework
 {
     constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
     constexpr PCWSTR c_PackageNamePrefix = L"Microsoft.WindowsAppRuntime";
-    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.4.1_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.4_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.4_4.1.1967.333_neutral__8wekyb3d8bbwe";
     constexpr const PACKAGE_VERSION GetPackageVersion()
     {
         PACKAGE_VERSION version{};
@@ -153,8 +153,8 @@ namespace DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore.4.1_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore.4_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore.4_4.1.1967.333_neutral__8wekyb3d8bbwe";
 }
 namespace WindowsAppRuntimeMain = DynamicDependencyDataStore;
 
