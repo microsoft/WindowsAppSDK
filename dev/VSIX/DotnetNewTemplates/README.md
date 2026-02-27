@@ -27,6 +27,32 @@ is installed. Item templates only surface when `dotnet new` is executed inside a
 WinUI project folder (or when `--project` points to one) so that commands stay
 context-aware.
 
+### Choosing a Target Framework
+
+All templates currently default to `net8.0` for compatibility with the widest
+set of Windows App SDK tooling. To target a newer .NET version you can either:
+
+1. Pass `--dotnet-version <tfm>` (for example `--dotnet-version net10.0`) when
+	running `dotnet new ...`.
+2. Edit the generated `.csproj` afterward and change `<TargetFramework>` (and
+	any related `<RuntimeIdentifiers>` entries) to your preferred TFM.
+
+`dotnet new winui --dotnet-version net10.0 -n MyApp` is the quickest way to spin
+up a project that targets .NET 10 while still using the same template payload.
+
+### CLI Quick Reference
+
+- Create a blank WinUI app: `dotnet new winui -n MyApp`
+- Add a page to an existing project: `dotnet new winui-page -n SettingsPage --project .\MyApp.csproj`
+- Add a user control: `dotnet new winui-usercontrol -n ProfileCard --project .\MyApp.csproj`
+- Launch the packaged app directly: `dotnet run -c Debug -p:Platform=$env:PROCESSOR_ARCHITECTURE`
+- Launch with WinApp Runtime tooling (after building/registering): `winapp run .\MyApp\bin\x64\Debug\<TargetFramework>\MyApp.exe`
+
+Whenever possible prefer the CLI scaffolding over hand authoring new files so
+token replacements, namespaces, and resource wiring stay consistent.
+Replace `<TargetFramework>` with the exact folder emitted by your build (for
+example `net8.0-windows10.0.19041.0`).
+
 ## Local testing workflow
 
 1. Pack the templates: `dotnet pack dev/VSIX/DotnetNewTemplates/WinAppSdk.CSharp.DotnetNewTemplates.csproj -c Release -o localpackages`.
@@ -47,8 +73,9 @@ dotnet pack dev/VSIX/DotnetNewTemplates/WinAppSdk.CSharp.DotnetNewTemplates.cspr
 `BuildAll.ps1` also runs the same packing step so official builds automatically emit
 the template pack alongside the other Windows App SDK artifacts.
 
-## Azure Pipelines validation
+## Validation checklist
 
-- Windows builds run through [ProjectReunion Template Pack](https://dev.azure.com/microsoft/ProjectReunion/_build?definitionId=186691). To trigger it, first mirror your changes into the internal Foundation repo, then queue the pipeline manually.
-- Before running the pipeline, bump the `<Version>` in [WinAppSdk.CSharp.DotnetNewTemplates.csproj](WinAppSdk.CSharp.DotnetNewTemplates.csproj#L3-L38) to avoid conflicts when the “publish to internal feed” option is enabled.
-- Successful runs publish the resulting `.nupkg` both as a pipeline artifact and (if that option is selected) to the internal feed [Project.Reunion.nuget.internal](https://dev.azure.com/microsoft/ProjectReunion/_artifacts/feed/Project.Reunion.nuget.internal/NuGet/Microsoft.WindowsAppSDK.WinUI.CSharp.Templates).
+- Run `dotnet pack` locally (as shown above) and use `dotnet new install` to verify each template still scaffolds and runs.
+- Execute `dotnet new --list | findstr winui` (PowerShell: `dotnet new --list | Select-String winui`) to confirm the pack metadata surfaces correctly.
+- Open the generated projects in Visual Studio or VS Code, build them for x86/x64/ARM64, and ensure packaged deployments succeed on Windows 10 version 1809 or later.
+- When contributing changes, note the updated template version in your PR description so downstream publishing systems pick up the new package.

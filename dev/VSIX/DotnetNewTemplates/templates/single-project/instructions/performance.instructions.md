@@ -30,7 +30,7 @@ These rules apply to **every feature and change**. They are not optional add-ons
 
 ## Validation
 
-- Build & register the MSIX package — see **Build, Run & Deploy** in `Agents.md`.
+- Build & register the MSIX package — see **Build, Run & Deploy** in `.github/agents/Agents.md`.
 
 ### Verification Checklist
 
@@ -49,3 +49,5 @@ These rules apply to **every feature and change**. They are not optional add-ons
 | 3 | [x:Load attribute](https://learn.microsoft.com/en-us/windows/uwp/xaml-platform/x-load-attribute) | Deferring UI element loading |
 | 4 | [Optimize XAML layout](https://learn.microsoft.com/en-us/windows/apps/performance/optimize-xaml-layout) | Restructuring XAML panels, reducing visual tree depth |
 | 5 | [ListView optimization](https://learn.microsoft.com/en-us/windows/apps/performance/optimize-listview) | Working with lists, collections, or `ItemsRepeater` |
+
+

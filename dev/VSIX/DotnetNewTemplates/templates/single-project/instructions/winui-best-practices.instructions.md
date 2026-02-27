@@ -3,13 +3,13 @@ description: 'WinUI 3 / WinAppSDK architecture, MVVM, XAML patterns, DI, theming
 applyTo: '**/*.cs, **/*.xaml, **/*.csproj'
 ---
 
-# WinUI 3 / WinAppSDK ΓÇö Best Practices & Patterns
+# WinUI 3 / WinAppSDK -- Best Practices & Patterns
 
 This file covers WinUI 3-specific patterns, conventions, and architecture guidance for this project.
 
 ---
 
-## 1. Architecture ΓÇö MVVM Pattern
+## 1. Architecture -- MVVM Pattern
 
 ### Overview
 
@@ -18,7 +18,7 @@ Use **Model-View-ViewModel (MVVM)** for all UI features:
 | Layer | Responsibility | Example |
 |---|---|---|
 | **Model** | Data structures & business entities | `Item.cs`, `UserProfile.cs` |
-| **View** | XAML UI ΓÇö layout, styles, animations | `MainPage.xaml` |
+| **View** | XAML UI -- layout, styles, animations | `MainPage.xaml` |
 | **ViewModel** | UI state, commands, data transformation | `MainViewModel.cs` |
 | **Service** | Business logic, data access, navigation | `IDataService.cs`, `NavigationService.cs` |
 
@@ -26,17 +26,17 @@ Use **Model-View-ViewModel (MVVM)** for all UI features:
 
 ```
 <ProjectName>/
-  Models/           ΓåÉ Data classes
-  ViewModels/       ΓåÉ ViewModels (one per page/dialog)
-  Views/            ΓåÉ XAML pages and windows
-  Services/         ΓåÉ Business logic & platform services
-  Converters/       ΓåÉ IValueConverter implementations
-  Helpers/          ΓåÉ Static utility methods
-  Controls/         ΓåÉ Custom/reusable controls
+  Models/           -> Data classes
+  ViewModels/       -> ViewModels (one per page/dialog)
+  Views/            -> XAML pages and windows
+  Services/         -> Business logic & platform services
+  Converters/       -> IValueConverter implementations
+  Helpers/          -> Static utility methods
+  Controls/         -> Custom/reusable controls
   Strings/
     en-us/
       Resources.resw
-  Assets/           ΓåÉ Images, icons, splash screens
+  Assets/           -> Images, icons, splash screens
 ```
 
 ### ViewModel Base
@@ -128,10 +128,10 @@ public partial class MainViewModel : ObservableObject
 Prefer the WinUI 3 controls from `Microsoft.UI.Xaml.Controls`, **not** the older UWP `Windows.UI.Xaml.Controls`:
 
 ```csharp
-// GOOD ΓÇö WinUI 3
+// GOOD -- WinUI 3
 using Microsoft.UI.Xaml.Controls;
 
-// AVOID ΓÇö UWP (won't work in WinUI 3 desktop)
+// AVOID -- UWP (won't work in WinUI 3 desktop)
 // using Windows.UI.Xaml.Controls;
 ```
 
@@ -147,7 +147,7 @@ using Microsoft.UI.Xaml.Controls;
 ```
 
 - One attribute per line for controls with 3+ attributes.
-- Order: `x:Name` ΓåÆ `x:Uid` ΓåÆ `AutomationProperties` ΓåÆ layout ΓåÆ data ΓåÆ style.
+- Order: `x:Name` -> `x:Uid` -> `AutomationProperties` -> layout -> data -> style.
 
 ---
 
@@ -340,7 +340,7 @@ Alternatives:
 | Pitfall | Solution |
 |---|---|
 | Using `Windows.UI.Xaml` namespace | Use `Microsoft.UI.Xaml` for WinUI 3 |
-| Calling `Window.Current` | Not available in WinUI 3 ΓÇö pass window reference explicitly |
+| Calling `Window.Current` | Not available in WinUI 3 -- pass window reference explicitly |
 | Using `CoreDispatcher` | Use `DispatcherQueue` instead |
 | `REGDB_E_CLASSNOTREG` error | Ensure Developer Mode is enabled; re-register the MSIX package with `Add-AppxPackage -Register` |
 | XAML Designer crashes | Clean & rebuild; ensure platform matches (x64 vs AnyCPU) |
@@ -350,23 +350,23 @@ Alternatives:
 
 ## 10. Validation
 
-Build & register the MSIX package ΓÇö see **Build, Run & Deploy** in `Agents.md`.
+Build & register the MSIX package -- see **Build, Run & Deploy** in `.github/agents/Agents.md`.
 
 ### Verify
 
 - Run the app and verify the changed UI renders correctly on x64.
-- Search XAML for `{Binding` ΓÇö replace with `x:Bind`.
-- Search XAML for `Foreground="#` or `Background="#` ΓÇö replace with `{ThemeResource}`.
-- Search C# for `Windows.UI.Xaml` ΓÇö replace with `Microsoft.UI.Xaml`.
-- Search C# for `Window.Current` ΓÇö replace with explicit window reference.
-- Search C# for `CoreDispatcher` ΓÇö replace with `DispatcherQueue`.
+- Search XAML for `{Binding` -- replace with `x:Bind`.
+- Search XAML for `Foreground="#` or `Background="#` -- replace with `{ThemeResource}`.
+- Search C# for `Windows.UI.Xaml` -- replace with `Microsoft.UI.Xaml`.
+- Search C# for `Window.Current` -- replace with explicit window reference.
+- Search C# for `CoreDispatcher` -- replace with `DispatcherQueue`.
 - Test Light, Dark, and High Contrast themes.
 
 ---
 
 ## 11. Must Read & Research
 
-> **Agent Rule:** Before making any WinUI/WinAppSDK-related change, you **must** fetch and review the relevant references below using `fetch_webpage`. Consult the appropriate section based on the type of change. Apply what you learn ΓÇö do not skip this step.
+> **Agent Rule:** Before making any WinUI/WinAppSDK-related change, you **must** fetch and review the relevant references below using `fetch_webpage`. Consult the appropriate section based on the type of change. Apply what you learn -- do not skip this step.
 
 ### Official Documentation
 
@@ -392,7 +392,7 @@ Build & register the MSIX package ΓÇö see **Build, Run & Deploy** in `Agents.
 | # | Reference | When to consult |
 |---|---|---|
 | 10 | [WinUI 3 Gallery (GitHub)](https://github.com/microsoft/WinUI-Gallery) | Example implementations of any WinUI control |
-| 11 | [Windows Community Toolkit (GitHub)](https://github.com/CommunityToolkit/Windows) | Before building custom controls ΓÇö check if the toolkit already has one |
+| 11 | [Windows Community Toolkit (GitHub)](https://github.com/CommunityToolkit/Windows) | Before building custom controls -- check if the toolkit already has one |
 | 12 | [Fluent Design System](https://learn.microsoft.com/en-us/windows/apps/design/) | Spacing, typography, colour, motion, layout decisions |
 | 13 | [XAML Controls Gallery](https://apps.microsoft.com/store/detail/winui-3-gallery/9P3JFPWWDZRC) | Interactive demo of all controls and their properties |
 
@@ -400,18 +400,20 @@ Build & register the MSIX package ΓÇö see **Build, Run & Deploy** in `Agents.
 
 | # | Reference | When to consult |
 |---|---|---|
-| 14 | [Windows APIs instruction file](windows-apis.instructions.md) | **First stop** ΓÇö check if a built-in API already exists for the capability you need (AI, windowing, notifications, widgets, lifecycle, etc.) |
+| 14 | [Windows APIs instruction file](windows-apis.instructions.md) | **First stop** -- check if a built-in API already exists for the capability you need (AI, windowing, notifications, widgets, lifecycle, etc.) |
 | 15 | [Windows AI APIs](https://learn.microsoft.com/en-us/windows/ai/apis/) | On-device AI: Phi Silica (text gen), OCR, imaging (super-res, description, object extract, erase) |
 | 16 | [Windows ML](https://learn.microsoft.com/en-us/windows/ai/new-windows-ml/overview) | Custom ONNX model inference on CPU/GPU/NPU |
 | 17 | [Foundry Local](https://learn.microsoft.com/en-us/windows/ai/foundry-local/get-started) | Run OSS LLMs (Llama, Mistral, Phi) locally via REST API |
-| 18 | [Windows AI on Windows](https://learn.microsoft.com/en-us/windows/ai/) | AI landing page ΓÇö all AI options for Windows apps |
+| 18 | [Windows AI on Windows](https://learn.microsoft.com/en-us/windows/ai/) | AI landing page -- all AI options for Windows apps |
 
 ### Samples
 
-> **Agent Rule ΓÇö MANDATORY:** Before implementing any WinAppSDK or Platform SDK API you have not used before, **search the samples repo first** and study the working example. Do not guess API usage from docs alone ΓÇö see the [Sample-First Rule](windows-apis.instructions.md#sample-first-rule) for details and known pitfalls.
+> **Agent Rule -- MANDATORY:** Before implementing any WinAppSDK or Platform SDK API you have not used before, **search the samples repo first** and study the working example. Do not guess API usage from docs alone -- see the [Sample-First Rule](windows-apis.instructions.md#sample-first-rule) for details and known pitfalls.
 
 | # | Reference | When to consult |
 |---|---|---|
 | 19 | [Windows App SDK Samples](https://github.com/microsoft/WindowsAppSDK-Samples) | **Always search here first** before implementing any SDK API for the first time |
 | 20 | [WinUI 3 Demos](https://github.com/microsoft/WinUI-Gallery) | Reference implementations and patterns |
 | 21 | [Windows AI API Samples](https://github.com/microsoft/WindowsAppSDK-Samples/tree/main/Samples/WindowsAIFoundry/cs-winui) | AI API usage with WinUI (ImageDescription, TextRecognizer, LanguageModel, etc.) |
+
+

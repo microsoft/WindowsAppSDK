@@ -145,7 +145,7 @@ Each `.cs` file should follow this order:
 
 ## Validation
 
-- Build & register the MSIX package — see **Build, Run & Deploy** in `Agents.md`.
+- Build & register the MSIX package — see **Build, Run & Deploy** in `.github/agents/Agents.md`.
 - Fix **all** warnings — do not suppress without justification in a code comment.
 - Verify no unused `using` statements remain after every edit.
 - Verify no commented-out code remains.
@@ -166,3 +166,5 @@ Each `.cs` file should follow this order:
 | 5 | [StyleCop Rules Reference](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/DOCUMENTATION.md) | Understanding specific SA* rule violations |
 | 6 | [EditorConfig Reference](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/code-style-rule-options) | Modifying `.editorconfig` style or severity settings |
 | 7 | [.NET Naming Conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/identifier-names) | Verifying naming patterns for types, members, parameters |
+
+

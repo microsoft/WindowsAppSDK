@@ -31,7 +31,7 @@ These rules apply to **every UI change**. They are not optional add-ons.
 
 ## Validation
 
-- Build & register the MSIX package — see **Build, Run & Deploy** in `Agents.md`.
+- Build & register the MSIX package — see **Build, Run & Deploy** in `.github/agents/Agents.md`.
 - Test keyboard navigation: tab through every new/changed UI area.
 - Test High Contrast: switch to Windows High Contrast theme and verify readability.
 - Run Accessibility Insights for Windows on the app.
@@ -58,3 +58,5 @@ These rules apply to **every UI change**. They are not optional add-ons.
 | 3 | [Accessibility Insights](https://accessibilityinsights.io/docs/windows/overview/) | Testing tool — run before finalizing UI changes |
 | 4 | [Keyboard Accessibility](https://learn.microsoft.com/en-us/windows/apps/design/accessibility/keyboard-accessibility) | Adding navigation, focus management, or shortcut keys |
 | 5 | [High Contrast Themes](https://learn.microsoft.com/en-us/windows/apps/design/accessibility/high-contrast-themes) | Adding custom styles, colours, or theme resources |
+
+

@@ -29,7 +29,7 @@ These rules apply to **every feature and change**. They are not optional add-ons
 
 ## Validation
 
-- Build & register the MSIX package — see **Build, Run & Deploy** in `Agents.md`.
+- Build & register the MSIX package — see **Build, Run & Deploy** in `.github/agents/Agents.md`.
 - Check for hard-coded secrets: search for `password`, `apikey`, `secret`, `connectionstring` in `.cs` files.
 
 ### Verification Checklist
@@ -46,3 +46,5 @@ These rules apply to **every feature and change**. They are not optional add-ons
 | 2 | [Secure coding guidelines for .NET](https://learn.microsoft.com/en-us/dotnet/standard/security/secure-coding-guidelines) | Input validation, exception handling, type safety |
 | 3 | [MSIX Security](https://learn.microsoft.com/en-us/windows/msix/msix-container) | Packaging, signing, or distribution changes |
 | 4 | [Package.appxmanifest capabilities](https://learn.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations) | Adding or modifying app capabilities/permissions |
+
+

@@ -11,14 +11,14 @@
     <Version>0.0.1-experimental</Version>
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
-    <Description>dotnet new templates that mirror the Windows App SDK WinUI 3 Visual Studio templates.</Description>
-    <PackageTags>windows;winappsdk;winui;desktop;csharp</PackageTags>
-    <PackageProjectUrl>https://github.com/microsoft/WindowsAppSDK</PackageProjectUrl>
+    <Description>Official WinUI 3 project and item templates for the Windows App SDK. Install this pack to use dotnet new for blank apps, navigation views, libraries, unit tests, and common WinUI UI items that match the Visual Studio experience.</Description>
+    <PackageTags>windows;winappsdk;winui;winui3;desktop;dotnet-new;templates;csharp</PackageTags>
+    <PackageProjectUrl>https://learn.microsoft.com/windows/apps/windows-app-sdk/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/microsoft/WindowsAppSDK</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <Copyright>(c) Microsoft Corporation. All rights reserved.</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>See https://github.com/microsoft/WindowsAppSDK/releases for release notes.</PackageReleaseNotes>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
@@ -37,10 +37,10 @@
           PackagePath="content/winui.blankapp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="templates\single-project\Agents.md"
           Pack="true"
-          PackagePath="content/winui.blankapp/Agents.md" />
+          PackagePath="content/winui.blankapp/.github/agents/Agents.md" />
     <None Include="templates\single-project\instructions\**\*.*"
           Pack="true"
-          PackagePath="content/winui.blankapp/instructions/%(RecursiveDir)%(Filename)%(Extension)" />
+          PackagePath="content/winui.blankapp/.github/instructions/%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\**\*.*"
           Exclude="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\bin\**;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\obj\**;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.ico;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.png;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.vstemplate"
           Pack="true"
