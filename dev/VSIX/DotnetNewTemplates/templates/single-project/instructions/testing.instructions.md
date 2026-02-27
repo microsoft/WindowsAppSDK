@@ -194,7 +194,7 @@ dotnet test -c Debug -p:Platform=x64
 
 ## 4. Test-Specific Commands
 
-For general build and register commands, see **Build, Run & Deploy** in `Agents.md`.
+For general build and register commands, see **Build, Run & Deploy** in `.github/agents/Agents.md`.
 For on-demand test filtering, see **Running Tests On-Demand** above.
 
 Below are additional test commands:
@@ -220,7 +220,7 @@ When you write or modify code, follow this sequence:
 
 1. **Implement the feature or fix** in the main project.
 2. **Write unit tests** for every new/changed public method.
-3. **Build** — see **Build, Run & Deploy** in `Agents.md`. Fix all errors and warnings.
+3. **Build** — see **Build, Run & Deploy** in `.github/agents/Agents.md`. Fix all errors and warnings.
 4. **Run tests** — `dotnet test -c Debug -p:Platform=x64` (from the test project folder) and ensure all pass.
 5. **Review** — Confirm tests cover the happy path, edge cases, and error cases.
 
@@ -254,7 +254,7 @@ When you write or modify code, follow this sequence:
 
 ## Validation
 
-- Build & run tests — see **Build, Run & Deploy** in `Agents.md`.
+- Build & run tests — see **Build, Run & Deploy** in `.github/agents/Agents.md`.
 - Verify all tests pass — zero failures, zero skipped without justification.
 - Verify naming follows `MethodName_Scenario_ExpectedResult` pattern.
 - Verify AAA structure (Arrange/Act/Assert) in every test method.
@@ -274,3 +274,5 @@ When you write or modify code, follow this sequence:
 | 4 | [FluentAssertions Documentation](https://fluentassertions.com/introduction) | Writing expressive assertions (`Should().Be()`, collections, exceptions) |
 | 5 | [dotnet test CLI](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test) | Running tests from terminal, filtering, verbosity options |
 | 6 | [Test Explorer in Visual Studio](https://learn.microsoft.com/en-us/visualstudio/test/run-unit-tests-with-test-explorer) | Debugging tests, viewing coverage, understanding test output |
+
+
