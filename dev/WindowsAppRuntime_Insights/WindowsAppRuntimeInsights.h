@@ -54,13 +54,13 @@
                 }
 
                 bool isPackagedProcess{};
-                if (SUCCEEDED(::AppModel::Identity::IsPackagedProcess(isPackagedProcess)) && isPackagedProcess)
+                if (SUCCEEDED_LOG(::AppModel::Identity::IsPackagedProcess(isPackagedProcess)) && isPackagedProcess)
                 {
                     f |= Insights::TraceLoggingInformationFlags::IsPackagedProcess;
                 }
 
                 bool isSelfContained{};
-                if (SUCCEEDED(::WindowsAppRuntime::SelfContained::IsSelfContained_nothrow(isSelfContained)) && isSelfContained)
+                if (SUCCEEDED_LOG(::WindowsAppRuntime::SelfContained::IsSelfContained_nothrow(isSelfContained)) && isSelfContained)
                 {
                     f |= Insights::TraceLoggingInformationFlags::IsSelfContained;
                 }
