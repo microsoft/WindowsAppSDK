@@ -1,0 +1,26 @@
+{
+  "repository": "microsoft/WindowsAppSDK",
+  "ado": {
+    "organization": "https://dev.azure.com/microsoft",
+    "project": "OS",
+    "areaPath": "OS\\WinAppSDK",
+    "workItemType": "Bug",
+    "tags": "AskMode;Servicing"
+  },
+  "branches": {
+    "minVersion": "1.7",
+    "pattern": "release/{major}.{minor}-stable"
+  },
+  "naming": {
+    "branchPattern": "user/{author}/cherry-pick-{slug}-{version}",
+    "prTitlePattern": "Cherry-pick: {originalTitle}"
+  },
+  "idl": {
+    "relativePath": "dev/RuntimeCompatibilityOptions/RuntimeCompatibilityOptions.idl"
+  },
+  "containment": {
+    "headerInclude": "#include <FrameworkUdk/Containment.h>",
+    "macroPattern": "#define WINAPPSDK_CHANGEID_{bugId} {bugId}, WinAppSDK_{major}_{minor}_{patch}",
+    "patchVersionPattern": "WinAppSDK_{major}_{minor}_{patch}"
+  }
+}
