@@ -100,6 +100,7 @@ namespace WindowsAppRuntimeInstallerTests
                 VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_x64SingletonName));
                 VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_x86DDLMName));
                 VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_x64DDLMName));
+                VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_x64MLFrameworkName));
             }
 
             if (systemArch == ProcessorArchitecture::Arm64)
@@ -113,6 +114,8 @@ namespace WindowsAppRuntimeInstallerTests
                 VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_x86DDLMName));
                 VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_x64DDLMName));
                 VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_arm64DDLMName));
+                VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_x64MLFrameworkName));
+                VERIFY_ARE_EQUAL(true, IsPackageRegistered(c_arm64MLFrameworkName));
             }
         }
 	};
