@@ -10,12 +10,9 @@
     <AssemblyTitle>Microsoft.FrameworkUdk.PackageReference</AssemblyTitle>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- Getting obj reference error. Disable for now (incompatible with PackageDownload??) -->
-    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
-  </PropertyGroup>
-
   <ItemGroup>
-    <PackageDownload Include="Microsoft.FrameworkUdk" version="[$(MicrosoftFrameworkUdkPackageVersion)]" />
+    <PackageReference Include="Microsoft.FrameworkUdk">
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
