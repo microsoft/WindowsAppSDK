@@ -278,64 +278,15 @@ namespace WindowsAppSDK.TemplateUtilities
         private string CreateErrorMessage(ErrorMessageFormat format)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-
-            try
-            {
-                var packageNames = string.Join(", ", _failedPackageExceptions.Keys);
-                var separator = format == ErrorMessageFormat.MessageBox ? "\n\n" : " ";
-                var projectName = _project?.Name ?? "Unknown Project";
-                var errorMessage = format == ErrorMessageFormat.InfoBar ?
-                string.Format(Resources._1047, projectName, packageNames)
-                : string.Format(Resources._1048, projectName, packageNames);
-                return errorMessage;
-            }
-            catch (MissingManifestResourceException ex)
-            {
-                ShowLocalizationErrorDialog(ex);
-                // Return a fallback message
-                var packageNames = string.Join(", ", _failedPackageExceptions.Keys);
-                return $"Unable to add package references to project: {packageNames}";
-            }
+            var projectName = _project?.Name ?? "Unknown Project";
+            return WizardErrorHelper.CreateErrorMessage(format, projectName, _failedPackageExceptions);
         }
 
         private string CreateDetailedErrorMessage()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-
-            try
-            {
-                var errorLines = new System.Text.StringBuilder();
-                var projectName = _project?.Name ?? "Unknown Project";
-                errorLines.AppendLine(string.Format(Resources._1051, projectName));
-
-                foreach (var package in _failedPackageExceptions)
-                {
-                    errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
-                }
-
-                errorLines.AppendLine();
-                errorLines.Append(Resources._1052);
-
-                return errorLines.ToString();
-            }
-            catch (MissingManifestResourceException ex)
-            {
-                ShowLocalizationErrorDialog(ex);
-                // Return a fallback message
-                var errorLines = new System.Text.StringBuilder();
-                var projectName = _project?.Name ?? "Unknown Project";
-                errorLines.AppendLine($"Missing package references for project: {projectName}");
-
-                foreach (var package in _failedPackageExceptions)
-                {
-                    errorLines.AppendLine($"{package.Key} - {package.Value.GetType().FullName}: {package.Value.Message}");
-                }
-
-                errorLines.AppendLine();
-                errorLines.Append("Please add the package references manually using NuGet Package Manager.");
-
-                return errorLines.ToString();
-            }
+            var projectName = _project?.Name ?? "Unknown Project";
+            return WizardErrorHelper.CreateDetailedErrorMessage(projectName, _failedPackageExceptions);
         }
 
         private Guid GetProjectGuid(Project project)
@@ -352,35 +303,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private void LogError(string message)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            ThreadHelper.JoinableTaskFactory.Run(async delegate
-            {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                IVsActivityLog log = ServiceProvider.GlobalProvider.GetService(typeof(SVsActivityLog)) as IVsActivityLog;
-                if (log != null)
-                {
-                    int hr = log.LogEntry((uint)__ACTIVITYLOG_ENTRYTYPE.ALE_ERROR, ToString(), message);
-                }
-            });
-        }
-
-        private void ShowLocalizationErrorDialog(MissingManifestResourceException ex)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            var errorMessage = $"A localization error occurred while loading the template wizard:\n\n{ex.Message}\n\n" +
-            "The template may not have been installed correctly. Please reinstall the Windows App SDK extension.";
-
-            MessageBox.Show(
-                errorMessage,
-                "Localization Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-
-            // Also log to activity log
-            LogError($"Localization error: {ex.Message}");
-
-            // Show in output window
-            ShowOutputWindow($"Localization Error:\n{ex.Message}\n{ex.StackTrace}");
+            WizardErrorHelper.LogError(message);
         }
 
         private async Task DisplayInfoBarAsync(string errorMessage)
