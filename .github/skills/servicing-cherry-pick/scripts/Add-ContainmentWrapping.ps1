@@ -11,8 +11,10 @@
     diff, current file contents, bug ID, and patch version symbol, along with
     containment pattern examples.
 
-    The AI returns modified file contents. The script validates the output
-    and optionally shows the diff for human review before applying.
+    For multi-file PRs, processes each file individually so:
+    - Prompts stay small and focused (better AI quality)
+    - Approval is per-file (reject one without losing the rest)
+    - A failure on one file doesn't block the others
 
 .PARAMETER WorktreePath
     Path to the worktree with cherry-picked changes.
@@ -44,6 +46,7 @@
 .NOTES
     This is the most complex script in the skill. It delegates to AI for
     semantic understanding of which code to wrap but validates the output.
+    Multi-file PRs are processed one file at a time for reliability.
 #>
 
 [CmdletBinding()]
@@ -89,14 +92,6 @@ if (-not (Test-Path $promptTemplate)) {
 }
 $promptText = Get-Content -LiteralPath $promptTemplate -Raw
 
-# Get the current diff in the worktree (what the cherry-pick changed)
-$cherryPickDiff = git -C $WorktreePath diff HEAD 2>&1
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to get worktree diff: $cherryPickDiff"
-    exit 1
-}
-$cherryPickDiff = $cherryPickDiff -join "`n"
-
 # Identify changed source files (C/C++ only - these need containment)
 $changedFiles = git -C $WorktreePath diff --name-only HEAD 2>$null
 $sourceFiles = @()
@@ -118,130 +113,177 @@ if ($sourceFiles.Count -eq 0) {
     }
 }
 
-# Collect current file contents for the AI
-$fileContents = @{}
-foreach ($sf in $sourceFiles) {
-    $fullPath = Join-Path $WorktreePath $sf
-    if (Test-Path $fullPath) {
-        $fileContents[$sf] = Get-Content -LiteralPath $fullPath -Raw
-    }
-}
+Info "Found $($sourceFiles.Count) C/C++ file(s) to wrap with containment."
 
-# Build the AI prompt by substituting template variables
-$prompt = $promptText
-$prompt = $prompt -replace '\{\{BUG_ID\}\}', $BugId
-$prompt = $prompt -replace '\{\{PATCH_VERSION_SYMBOL\}\}', $PatchVersionSymbol
-$prompt = $prompt -replace '\{\{VERSION_STRING\}\}', $VersionString
-$prompt = $prompt -replace '\{\{PR_TITLE\}\}', $PrTitle
-$prompt = $prompt -replace '\{\{CONTAINMENT_GUIDE\}\}', $containmentGuide
-$prompt = $prompt -replace '\{\{ORIGINAL_DIFF\}\}', $OriginalDiff
-$prompt = $prompt -replace '\{\{CHERRY_PICK_DIFF\}\}', $cherryPickDiff
+# ── Shared AI config ─────────────────────────────────────────────────────────
 
-# Append file contents
-$filesSection = ""
-foreach ($key in $fileContents.Keys) {
-    $filesSection += "`n### File: $key`n``````cpp`n$($fileContents[$key])`n```````n"
-}
-$prompt = $prompt -replace '\{\{FILE_CONTENTS\}\}', $filesSection
-
-# Call AI
-Write-Verbose "Sending containment wrapping prompt to AI..."
 $systemPrompt = @"
 You are a Windows App SDK servicing engineer. You wrap cherry-picked code changes with containment checks.
-You MUST return complete file contents for each modified file in the exact format specified.
-Do NOT add any commentary outside the file blocks. Only modify files that need containment wrapping.
+You MUST return the complete file contents in the exact format specified.
+Do NOT add any commentary outside the file block. Only modify code that was changed by the cherry-pick.
 "@
 
-$aiArgs = @{
-    Prompt          = $prompt
-    SystemPrompt    = $systemPrompt
-    MaxTokens       = 8192
-    FallbackToManual = $true
+# ── Per-file processing function ─────────────────────────────────────────────
+
+function Invoke-ContainmentForFile {
+    param(
+        [string]$FilePath,
+        [string]$FileContent,
+        [string]$FileDiff,
+        [string]$OrigDiff,
+        [int]$FileIndex,
+        [int]$FileTotal
+    )
+
+    Write-Host ""
+    Write-Host "  [$FileIndex/$FileTotal] Processing: $FilePath" -ForegroundColor White
+
+    # Build per-file prompt
+    $prompt = $promptText
+    $prompt = $prompt -replace '\{\{BUG_ID\}\}', $BugId
+    $prompt = $prompt -replace '\{\{PATCH_VERSION_SYMBOL\}\}', $PatchVersionSymbol
+    $prompt = $prompt -replace '\{\{VERSION_STRING\}\}', $VersionString
+    $prompt = $prompt -replace '\{\{PR_TITLE\}\}', $PrTitle
+    $prompt = $prompt -replace '\{\{CONTAINMENT_GUIDE\}\}', $containmentGuide
+    $prompt = $prompt -replace '\{\{ORIGINAL_DIFF\}\}', $OrigDiff
+    $prompt = $prompt -replace '\{\{CHERRY_PICK_DIFF\}\}', $FileDiff
+    $prompt = $prompt -replace '\{\{FILE_CONTENTS\}\}', "`n### File: $FilePath`n``````cpp`n$FileContent`n```````n"
+
+    $aiArgs = @{
+        Prompt           = $prompt
+        SystemPrompt     = $systemPrompt
+        MaxTokens        = 8192
+        FallbackToManual = $true
+        SkipApproval     = $true  # We handle approval ourselves per-file
+    }
+
+    $aiResponse = & "$PSScriptRoot/Get-AiCompletion.ps1" @aiArgs
+
+    if (-not $aiResponse) {
+        Warn "  AI returned empty response for $FilePath"
+        return $null
+    }
+
+    # Parse the response - expect a single file block
+    $filePattern = '(?s)=== FILE: (.+?) ===\r?\n(.*?)=== END FILE ==='
+    $parsed = [regex]::Matches($aiResponse, $filePattern)
+
+    if ($parsed.Count -eq 0) {
+        # Try alternative format
+        $altPattern = '(?s)```(?:cpp|c|h)?:?(?:.+?)?\r?\n(.*?)```'
+        $altParsed = [regex]::Matches($aiResponse, $altPattern)
+        if ($altParsed.Count -gt 0) {
+            return $altParsed[0].Groups[1].Value
+        }
+        Warn "  Could not parse AI response for $FilePath"
+        return $null
+    }
+
+    return $parsed[0].Groups[2].Value
 }
-if ($SkipApproval) {
-    $aiArgs['SkipApproval'] = $true
-}
 
-$aiResponse = & "$PSScriptRoot/Get-AiCompletion.ps1" @aiArgs
-
-if (-not $aiResponse) {
-    Write-Error "AI returned empty response for containment wrapping."
-    exit 1
-}
-
-# Parse AI response - expect blocks like:
-# === FILE: path/to/file.cpp ===
-# <contents>
-# === END FILE ===
-$filePattern = '(?s)=== FILE: (.+?) ===\r?\n(.*?)=== END FILE ==='
-$matches = [regex]::Matches($aiResponse, $filePattern)
-
-if ($matches.Count -eq 0) {
-    Warn "AI response did not contain expected file blocks. Attempting line-based parse..."
-
-    # Try alternative format: ```cpp:path/to/file.cpp
-    $altPattern = '(?s)```(?:cpp|c|h)?:(.+?)\r?\n(.*?)```'
-    $matches = [regex]::Matches($aiResponse, $altPattern)
-}
+# ── Process each file ────────────────────────────────────────────────────────
 
 $modifiedFiles = @()
+$skippedFiles = @()
+$fileIndex = 0
 
-if ($matches.Count -eq 0) {
-    Err "Could not parse AI response into file blocks."
-    Err "AI response (first 500 chars): $($aiResponse.Substring(0, [Math]::Min(500, $aiResponse.Length)))"
-    Write-Error "Failed to parse containment wrapping output from AI."
-    exit 1
-}
+foreach ($sf in $sourceFiles) {
+    $fileIndex++
 
-foreach ($match in $matches) {
-    $filePath = $match.Groups[1].Value.Trim()
-    $content = $match.Groups[2].Value
-
-    # Validate: check for bracket balance (basic sanity)
-    $openBraces = ($content.ToCharArray() | Where-Object { $_ -eq '{' }).Count
-    $closeBraces = ($content.ToCharArray() | Where-Object { $_ -eq '}' }).Count
-    if ($openBraces -ne $closeBraces) {
-        Warn "Warning: Bracket imbalance in $filePath (open: $openBraces, close: $closeBraces)"
-    }
-
-    # Validate: check that the containment macro is present
-    if ($content -notmatch "WINAPPSDK_CHANGEID_$BugId") {
-        Warn "Warning: Expected WINAPPSDK_CHANGEID_$BugId not found in $filePath"
-    }
-
-    $fullPath = Join-Path $WorktreePath $filePath
+    $fullPath = Join-Path $WorktreePath $sf
     if (-not (Test-Path $fullPath)) {
-        Warn "File not found in worktree: $filePath (skipping)"
+        Warn "  File not found in worktree: $sf (skipping)"
+        $skippedFiles += $sf
         continue
     }
 
-    # Write the modified content
-    Set-Content -LiteralPath $fullPath -Value $content -Encoding UTF8 -NoNewline
-    $modifiedFiles += $filePath
-    Ok "  Updated: $filePath"
-}
+    # Get per-file content and diff
+    $fileContent = Get-Content -LiteralPath $fullPath -Raw
+    $fileDiff = (git -C $WorktreePath diff HEAD -- $sf 2>$null) -join "`n"
 
-# Show the final diff for approval unless SkipApproval
-if (-not $SkipApproval -and $modifiedFiles.Count -gt 0) {
-    Write-Host ""
-    Write-Host "Containment diff:" -ForegroundColor Yellow
-    $containmentDiff = git -C $WorktreePath diff 2>$null
-    Write-Host ($containmentDiff -join "`n") -ForegroundColor White
-
-    Write-Host ""
-    Write-Host "[A]pprove containment / [R]eject? " -ForegroundColor Yellow -NoNewline
-    $choice = Read-Host
-    if ($choice.ToUpper() -ne 'A') {
-        # Revert changes
-        git -C $WorktreePath checkout -- . 2>$null | Out-Null
-        Write-Error "Containment wrapping rejected by user."
-        exit 1
+    if (-not $fileDiff) {
+        Warn "  No diff for $sf (skipping)"
+        $skippedFiles += $sf
+        continue
     }
+
+    # For context, include the original diff but only the portion relevant to this file.
+    # Extract the file's hunk from the original PR diff if possible.
+    $origFileDiff = ''
+    $escapedPath = [regex]::Escape($sf)
+    $origFileMatch = [regex]::Match($OriginalDiff, "(?s)(diff --git a/$escapedPath.+?)(?=diff --git a/|$)")
+    if ($origFileMatch.Success) {
+        $origFileDiff = $origFileMatch.Value
+    }
+    else {
+        # Fall back to abbreviated summary if we can't extract the specific file
+        $origFileDiff = "(Full original diff not shown - see cherry-pick diff below for this file's changes)"
+    }
+
+    # Call AI for this file
+    $newContent = Invoke-ContainmentForFile `
+        -FilePath $sf `
+        -FileContent $fileContent `
+        -FileDiff $fileDiff `
+        -OrigDiff $origFileDiff `
+        -FileIndex $fileIndex `
+        -FileTotal $sourceFiles.Count
+
+    if ($null -eq $newContent) {
+        Warn "  Failed to generate containment for $sf"
+        $skippedFiles += $sf
+        continue
+    }
+
+    # Validate: bracket balance
+    $openBraces = ($newContent.ToCharArray() | Where-Object { $_ -eq '{' }).Count
+    $closeBraces = ($newContent.ToCharArray() | Where-Object { $_ -eq '}' }).Count
+    if ($openBraces -ne $closeBraces) {
+        Warn "  Bracket imbalance in $sf (open: $openBraces, close: $closeBraces)"
+    }
+
+    # Validate: containment macro present
+    if ($newContent -notmatch "WINAPPSDK_CHANGEID_$BugId") {
+        Warn "  Expected WINAPPSDK_CHANGEID_$BugId not found in $sf"
+    }
+
+    # Write the modified content
+    Set-Content -LiteralPath $fullPath -Value $newContent -Encoding UTF8 -NoNewline
+
+    # Per-file approval
+    if (-not $SkipApproval) {
+        Write-Host ""
+        Write-Host "  Containment diff for $sf`:" -ForegroundColor Yellow
+        $fileDiffAfter = git -C $WorktreePath diff -- $sf 2>$null
+        Write-Host ($fileDiffAfter -join "`n") -ForegroundColor White
+        Write-Host ""
+        Write-Host "  [A]pprove / [R]eject $sf`? " -ForegroundColor Yellow -NoNewline
+        $choice = Read-Host
+        if ($choice.ToUpper() -ne 'A') {
+            # Revert just this file
+            git -C $WorktreePath checkout HEAD -- $sf 2>$null | Out-Null
+            Warn "  Reverted $sf"
+            $skippedFiles += $sf
+            continue
+        }
+    }
+
+    $modifiedFiles += $sf
+    Ok "  Accepted: $sf"
 }
 
-Ok "Containment wrapping applied to $($modifiedFiles.Count) file(s)."
+# ── Summary ──────────────────────────────────────────────────────────────────
+
+if ($modifiedFiles.Count -gt 0) {
+    Ok "Containment wrapping applied to $($modifiedFiles.Count) file(s)."
+}
+if ($skippedFiles.Count -gt 0) {
+    Warn "Skipped $($skippedFiles.Count) file(s): $($skippedFiles -join ', ')"
+}
 
 return [PSCustomObject]@{
-    Applied       = $true
+    Applied       = ($modifiedFiles.Count -gt 0)
     FilesModified = $modifiedFiles
+    FilesSkipped  = $skippedFiles
 }
