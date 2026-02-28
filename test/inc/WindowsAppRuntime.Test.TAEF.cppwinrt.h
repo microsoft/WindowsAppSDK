@@ -1,8 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_TAEF_CPPWINRT_H
 #define __WINDOWSAPPRUNTIME_TEST_TAEF_CPPWINRT_H
+
+#include <windows.h>
+#include <winrt/base.h>
+#include <WexString.h>
+#include <Verify.h>
 
 namespace WEX::TestExecution
 {

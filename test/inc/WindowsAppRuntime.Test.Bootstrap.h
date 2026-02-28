@@ -4,6 +4,7 @@
 #ifndef __WINDOWSAPPRUNTIME_TEST_BOOTSTRAP_H
 #define __WINDOWSAPPRUNTIME_TEST_BOOTSTRAP_H
 
+#include <windows.h>
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
