@@ -1,0 +1,20 @@
+{
+  "solution": {
+    "path": "WindowsAppRuntime.sln",
+    "projects": [
+      "dev\\DeploymentAgent\\DeploymentAgent.vcxproj",
+      "dev\\Detours\\Detours.vcxproj",
+      "dev\\DynamicDependency\\DynamicDependencyLifetimeManagerShadow\\DynamicDependencyLifetimeManagerShadow.vcxproj",
+      "dev\\DynamicDependencyDataStore\\DynamicDependency.DataStore.ProxyStub\\DynamicDependency.DataStore.ProxyStub.vcxproj",
+      "dev\\DynamicDependencyDataStore\\DynamicDependency.DataStore\\DynamicDependency.DataStore.vcxproj",
+      "dev\\DynamicDependencyLifetimeManager\\DynamicDependencyLifetimeManager.ProxyStub\\DynamicDependencyLifetimeManager.ProxyStub.vcxproj",
+      "dev\\DynamicDependencyLifetimeManager\\DynamicDependencyLifetimeManager\\DynamicDependencyLifetimeManager.vcxproj",
+      "dev\\DynamicDependencyLifetimeManager\\IDynamicDependencyLifetimeManager\\IDynamicDependencyLifetimeManager.vcxproj",
+      "dev\\MRTCore\\mrt\\Core\\src\\MRM.vcxproj",
+      "dev\\MRTCore\\mrt\\mrm\\mrmmin\\mrmmin.vcxproj",
+      "dev\\PushNotifications\\PushNotificationsLongRunningTask.ProxyStub\\PushNotificationsLongRunningTask.ProxyStub.vcxproj",
+      "dev\\PushNotifications\\PushNotificationsLongRunningTask.StartupTask\\PushNotificationsLongRunningTask.StartupTask.vcxproj",
+      "dev\\WindowsAppRuntime_UniversalBGTaskDLL\\WindowsAppRuntime_UniversalBGTaskDLL.vcxproj"
+    ]
+  }
+}

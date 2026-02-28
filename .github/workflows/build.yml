@@ -5,7 +5,7 @@ name: Build CI Main
 on:
   pull_request:
     branches: [ main ]
-    paths-ignore: 
+    paths-ignore:
       - '.github/ISSUE_TEMPLATE/**'
       - 'docs/**'
       - 'specs/**'
@@ -16,22 +16,26 @@ jobs:
 
     steps:
     - name: checkout project
-      uses: actions/checkout@v2
-      
+      uses: actions/checkout@v4
+
     - name: setup msbuild
-      uses: microsoft/setup-msbuild@v1
-      
+      uses: microsoft/setup-msbuild@v2
+
     - name: setup nuget
-      uses: NuGet/setup-nuget@v1.0.2
+      uses: NuGet/setup-nuget@v2
 
-    - name: restore project packages
-      run: nuget restore WindowsAppRuntime.sln
+    - name: run DevCheck (generate test cert and nuget.exe)
+      run: .\DevCheck.cmd -CheckTestPfx -CheckNugetExe -FixAll -NoInteractive
+      shell: cmd
 
-    - name: build x86
-      run: msbuild /m /p:Configuration=Release,Platform=x86 WindowsAppRuntime.sln
+    - name: generate build overrides
+      run: |
+        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "build\override"
+        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "build\override"
+      shell: pwsh
+
+    - name: restore project packages (OSS)
+      run: nuget restore WindowsAppRuntime.OSS.slnf -configfile NuGet.OSS.config -NonInteractive
 
     - name: build x64
-      run: msbuild /m /p:Configuration=Release,Platform=x64 WindowsAppRuntime.sln
-
-    - name: build ARM64
-      run: msbuild /m /p:Configuration=Release,Platform=ARM64 WindowsAppRuntime.sln
+      run: msbuild /m /p:Configuration=Release /p:Platform=x64 /p:BuildForOSS=true WindowsAppRuntime.OSS.slnf

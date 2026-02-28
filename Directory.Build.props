@@ -9,6 +9,12 @@
   <!-- Due to import ordering inconsistencies between different project types, we import this file from multiple places. -->
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
 
+  <!-- Set to 'true' when building the OSS subset (without internal Microsoft packages).
+       Usage: msbuild /p:BuildForOSS=true WindowsAppRuntime.OSS.slnf -->
+  <PropertyGroup Condition="'$(BuildForOSS)' == ''">
+    <BuildForOSS>false</BuildForOSS>
+  </PropertyGroup>
+
   <PropertyGroup>
     <IsTDPConfiguration>false</IsTDPConfiguration>
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
@@ -41,8 +47,8 @@
   <Target Name="DirectoryBuildPropsInfo">
     <Message Condition="'$(WindowsAppSDKBuildPipeline)' == '1'" Importance="High" Text="Directory.Build.props detects WindowsAppSDKBuildPipeline=$(WindowsAppSDKBuildPipeline)"/>
 
-    <Error Condition="!Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
-    <Error Condition="!Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="'$(BuildForOSS)' != 'true' and !Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="'$(BuildForOSS)' != 'true' and !Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->

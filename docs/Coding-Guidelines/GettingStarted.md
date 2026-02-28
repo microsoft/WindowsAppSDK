@@ -1,5 +1,67 @@
 # Getting Started
 
+# External Contributors (Open Source)
+
+If you **don't have access** to the internal Microsoft NuGet feed, follow these steps to build
+the open-source subset of the project. This includes Detours, Dynamic Dependency components,
+Deployment Agent, MRT Core, Push Notifications ProxyStub/StartupTask, and the Universal BGTask
+DLL — 13 projects that build cleanly without internal packages. Components that depend on the
+core runtime DLL (`WindowsAppRuntime_DLL`) or internal transport packages (FrameworkUdk, IXP)
+are excluded.
+
+## Quick Start
+
+1. Install Visual Studio 2022 with the required workloads (see [Tooling Prerequisites](#tooling-prerequisites) below).
+2. Run `DevCheck.cmd -CheckAll -FixAll` from an **admin** command prompt.
+3. Open `WindowsAppRuntime.OSS.slnf` in Visual Studio, **or** run:
+   ```powershell
+   .\BuildOSS.ps1                           # Debug/x64 (default)
+   .\BuildOSS.ps1 -Configuration Release    # Release/x64
+   .\BuildOSS.ps1 -Platform ARM64           # Debug/ARM64
+   ```
+
+## What's Included vs. Excluded
+
+| Included (builds without internal packages) | Excluded (requires internal packages or runtime DLL) |
+|---|---|
+| Detours | WindowsAppRuntime_DLL (FrameworkUdk + IXP) |
+| Dynamic Dependency (DataStore, LifetimeManager, Shadow) | Bootstrap DLL (depends on runtime DLL headers) |
+| Deployment Agent | Restart Agent (depends on Bootstrap DLL) |
+| MRT Core (`MRM.dll`, `mrmmin.lib`) | MRT Resources (FrameworkUdk) |
+| Push Notifications ProxyStub + StartupTask | PushNotificationsLongRunningTask (FrameworkUdk) |
+| Universal BGTask DLL | All C# projections (depend on WinMD from runtime DLL) |
+| DynamicDependency ProxyStubs | All test projects (initially) |
+
+## Manual Build Steps
+
+If you prefer not to use `BuildOSS.ps1`, you can run the steps manually:
+
+```powershell
+# 1. Generate build overrides (one-time)
+.\tools\GenerateDynamicDependencyOverrides.ps1 -Path "build\override"
+.\tools\GeneratePushNotificationsOverrides.ps1 -Path "build\override"
+
+# 2. Restore NuGet packages using the OSS config
+nuget restore WindowsAppRuntime.OSS.slnf -configfile NuGet.OSS.config
+
+# 3. Build
+msbuild WindowsAppRuntime.OSS.slnf /m /p:Configuration=Debug /p:Platform=x64 /p:BuildForOSS=true
+```
+
+## Troubleshooting
+
+- **"nuget.exe not found"**: Run `DevCheck.cmd -CheckNugetExe -FixAll` to download it.
+- **"test certificate not found"**: Run `DevCheck.cmd -CheckTestPfx -FixAll` from an admin prompt,
+  or pass `/p:BuildForOSS=true` to skip the certificate check.
+- **NuGet authentication errors**: Make sure you're using `NuGet.OSS.config` (not `NuGet.config`).
+  The default `NuGet.config` points to an internal Microsoft feed.
+
+---
+
+# Microsoft Employees / Internal Contributors
+
+The instructions below are for contributors with access to the internal Microsoft NuGet feed.
+
 # Tooling Prerequisites
 
 Development requires the following installation:
