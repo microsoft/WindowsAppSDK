@@ -102,7 +102,7 @@ jobs:
     name: BuildBinaries
     inputs:
       filePath: 'BuildAll.ps1'
-      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries" -CleanIntermediateFiles
 
   - task: CopyFiles@2
     displayName: MoveToOutputDirectory
@@ -128,7 +128,7 @@ jobs:
     name: BuildBinaries
     inputs:
       filePath: 'BuildAll.ps1'
-      arguments: -AzureBuildStep "BuildAnyCPU"
+      arguments: -AzureBuildStep "BuildAnyCPU" -CleanIntermediateFiles
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
@@ -190,7 +190,7 @@ jobs:
   - checkout: self
     path: s
   - checkout: WindowsAppSDKConfig
-  
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-RunTests-Steps.yml
     parameters:
       buildPlatform: $(buildPlatform)

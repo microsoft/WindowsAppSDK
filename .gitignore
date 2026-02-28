@@ -398,3 +398,6 @@ build/override/
 # WindowsAppSDK specific files
 Microsoft.WinUI.AppX.targets
 !dev/vsix/**/*.pubxml
+
+# Compile commands database for clang-based tools
+compile_commands.json
