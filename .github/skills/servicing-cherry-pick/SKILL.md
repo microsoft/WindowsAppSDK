@@ -46,10 +46,15 @@ If a provider fails, the script automatically falls through to the next one. You
 ./scripts/Invoke-ServicingProcess.ps1 -PullRequestNumber 5865 -DryRun
 ```
 
-### Single branch with approval gates
+### Single branch
 ```powershell
 ./scripts/Invoke-ServicingProcess.ps1 -PullRequestNumber 5865 `
-    -TargetBranches "release/1.8-stable" -RequireApproval
+    -TargetBranches "release/1.8-stable"
+```
+
+### Fully automated (no approval prompts)
+```powershell
+./scripts/Invoke-ServicingProcess.ps1 -PullRequestNumber 5865 -SkipApproval
 ```
 
 ### Skip ADO bugs (for testing)
@@ -75,7 +80,7 @@ If a provider fails, the script automatically falls through to the next one. You
 | `-ConfigPath` | No | `config/servicing-config.json` | Custom configuration path |
 | `-SkipAdoBugs` | No | `$false` | Skip ADO bug creation |
 | `-DryRun` | No | `$false` | Preview without executing |
-| `-RequireApproval` | No | `$false` | Human review at each AI output |
+| `-SkipApproval` | No | `$false` | Skip human review of AI output (approval is on by default) |
 
 ### Individual Scripts
 
@@ -190,8 +195,8 @@ See `references/containment-pattern-guide.md` for detailed documentation.
 |---------|----------|
 | `gh` not authenticated | Run `gh auth login` |
 | `az` not authenticated | Run `az login` |
-| Cherry-pick conflicts | AI will attempt resolution; use `-RequireApproval` to review |
-| AI output invalid | Re-run with `-RequireApproval` to manually edit AI output |
+| Cherry-pick conflicts | AI will attempt resolution; review the diff at the approval prompt |
+| AI output invalid | Edit or reject at the approval prompt, then re-run |
 | Run failed partway | Re-run the same command; completed branches are skipped |
 | Wrong target branches | Use `-TargetBranches` to override auto-detection |
 | No AI CLI available | Auto-falls through: copilot → claude → manual input |

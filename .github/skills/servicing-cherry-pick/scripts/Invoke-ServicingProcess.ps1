@@ -30,8 +30,9 @@
 .PARAMETER DryRun
     Preview all actions without executing them.
 
-.PARAMETER RequireApproval
-    Pause for human review at each AI-generated output.
+.PARAMETER SkipApproval
+    Skip human review of AI-generated output. By default, every AI output
+    requires approval before the workflow proceeds.
 
 .EXAMPLE
     # Full run for a specific PR
@@ -44,7 +45,7 @@
 .EXAMPLE
     # Target specific branch with approval gates
     ./Invoke-ServicingProcess.ps1 -PullRequestNumber 5865 `
-        -TargetBranches "release/1.8-stable" -RequireApproval
+        -TargetBranches "release/1.8-stable"
 
 .NOTES
     State is saved to 'Generated Files/servicing/<PR>/state.json' after each branch.
@@ -69,7 +70,7 @@ param(
 
     [switch]$DryRun,
 
-    [switch]$RequireApproval
+    [switch]$SkipApproval
 )
 
 Set-StrictMode -Version 2.0
@@ -231,7 +232,7 @@ foreach ($branchInfo in $branches) {
             SystemPrompt     = 'Return ONLY a PascalCase_With_Underscores enum name. Nothing else.'
             FallbackToManual = $true
         }
-        if ($RequireApproval) { $enumNameArgs['RequireApproval'] = $true }
+        if ($SkipApproval) { $enumNameArgs['SkipApproval'] = $true }
 
         $enumName = Invoke-WithDryRun -Description "Generate enum name via AI" -DryRun:$DryRun -ScriptBlock {
             $result = & "$PSScriptRoot/Get-AiCompletion.ps1" @enumNameArgs
@@ -259,7 +260,7 @@ foreach ($branchInfo in $branches) {
             SystemPrompt     = 'Return ONLY a valid JSON object with the specified fields. No markdown, no explanation.'
             FallbackToManual = $true
         }
-        if ($RequireApproval) { $adoDescArgs['RequireApproval'] = $true }
+        if ($SkipApproval) { $adoDescArgs['SkipApproval'] = $true }
 
         $adoFields = Invoke-WithDryRun -Description "Generate ADO bug fields via AI" -DryRun:$DryRun -ScriptBlock {
             $raw = & "$PSScriptRoot/Get-AiCompletion.ps1" @adoDescArgs
@@ -361,7 +362,7 @@ foreach ($branchInfo in $branches) {
                 -PatchVersionSymbol $patchVersion.Symbol `
                 -VersionString $patchVersion.VersionString `
                 -PrTitle $prDetails.Title `
-                -RequireApproval:$RequireApproval
+                -SkipApproval:$SkipApproval
         }
 
         # ── 4h: Update IDL ──────────────────────────────────────────────

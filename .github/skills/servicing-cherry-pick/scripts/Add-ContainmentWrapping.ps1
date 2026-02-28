@@ -32,8 +32,9 @@
 .PARAMETER PrTitle
     The original PR title (for the comment).
 
-.PARAMETER RequireApproval
-    If set, shows the containment diff for human review before applying.
+.PARAMETER SkipApproval
+    If set, skips the human review of the containment diff.
+    By default, the diff is shown for approval before applying.
 
 .EXAMPLE
     ./Add-ContainmentWrapping.ps1 -WorktreePath "./worktree" `
@@ -65,7 +66,7 @@ param(
     [Parameter(Mandatory)]
     [string]$PrTitle,
 
-    [switch]$RequireApproval
+    [switch]$SkipApproval
 )
 
 Set-StrictMode -Version 2.0
@@ -157,8 +158,8 @@ $aiArgs = @{
     MaxTokens       = 8192
     FallbackToManual = $true
 }
-if ($RequireApproval) {
-    $aiArgs['RequireApproval'] = $true
+if ($SkipApproval) {
+    $aiArgs['SkipApproval'] = $true
 }
 
 $aiResponse = & "$PSScriptRoot/Get-AiCompletion.ps1" @aiArgs
@@ -220,8 +221,8 @@ foreach ($match in $matches) {
     Ok "  Updated: $filePath"
 }
 
-# Show the final diff if RequireApproval
-if ($RequireApproval -and $modifiedFiles.Count -gt 0) {
+# Show the final diff for approval unless SkipApproval
+if (-not $SkipApproval -and $modifiedFiles.Count -gt 0) {
     Write-Host ""
     Write-Host "Containment diff:" -ForegroundColor Yellow
     $containmentDiff = git -C $WorktreePath diff 2>$null

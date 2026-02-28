@@ -13,7 +13,8 @@
       2. Claude CLI (claude) — fallback
       3. Manual input — human provides the response interactively
 
-    Supports -RequireApproval to let humans review/edit AI output before use.
+    By default, AI output is shown to the user for approval before returning.
+    Use -SkipApproval to bypass this gate for fully automated runs.
 
 .PARAMETER Prompt
     The prompt text to send to the AI.
@@ -24,8 +25,9 @@
 .PARAMETER MaxTokens
     Maximum tokens in the response. Defaults to 4096.
 
-.PARAMETER RequireApproval
-    If set, displays the AI output and prompts the user to approve, edit, or reject.
+.PARAMETER SkipApproval
+    If set, skips the human approval gate and returns AI output directly.
+    By default, all AI output requires human review before use.
 
 .PARAMETER FallbackToManual
     If set, when no AI CLI is available, prompt the user for manual input
@@ -36,7 +38,7 @@
     'copilot', 'claude', 'manual'.
 
 .EXAMPLE
-    $response = ./Get-AiCompletion.ps1 -Prompt "Name this enum entry..." -RequireApproval
+    $response = ./Get-AiCompletion.ps1 -Prompt "Name this enum entry..."
 
 .EXAMPLE
     $response = ./Get-AiCompletion.ps1 -Prompt "..." -Provider claude
@@ -57,7 +59,7 @@ param(
     [Parameter()]
     [int]$MaxTokens = 4096,
 
-    [switch]$RequireApproval,
+    [switch]$SkipApproval,
 
     [switch]$FallbackToManual,
 
@@ -220,7 +222,7 @@ if ($selectedProvider -eq 'manual' -and -not $providerSucceeded) {
 
 # ── Approval Gate ────────────────────────────────────────────────────────────
 
-if ($RequireApproval -and $response) {
+if (-not $SkipApproval -and $response) {
     Write-Host ""
     Write-Host ("=" * 70) -ForegroundColor Yellow
     Write-Host "  AI OUTPUT - REVIEW REQUIRED" -ForegroundColor Yellow
