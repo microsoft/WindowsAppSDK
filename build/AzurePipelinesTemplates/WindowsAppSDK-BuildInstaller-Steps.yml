@@ -16,12 +16,36 @@ parameters:
   default: false 
 
 steps:
+- task: PowerShell@2
+  name: InitializeSkipInstallerBuild
+  displayName: 'Decide if we can skip this installer build job'
+  inputs:
+    targetType: 'inline'
+    # If this pipeline run is validating an arm test OS image but this job is set to build the installer for
+    # non-arm, we can skip building the installer because it won't be used for running tests. Same
+    # argument when validating a non-arm test OS image but this job is set to build the installer for arm.
+    # Setting SkipInstallerBuild to true causes all subsequent steps in this job to be skipped. When it is
+    # set to false or left uninitialized (normal / majority case), we run the remaining steps as usual.
+    script: |
+        $ValidatingArmImage = '$(TestImageToValidate)' -match '(?i)arm'
+        Write-Host "ValidatingArmImage: " $ValidatingArmImage
+        $BuildArmPlatform = '$(buildPlatform)' -match '(?i)arm'
+        Write-Host "BuildArmPlatform:" $BuildArmPlatform
+        $DisableBuildLocal = ($BuildArmPlatform -xor $ValidatingArmImage)
+        Write-Host "DisableBuildLocal: " $DisableBuildLocal
+        Write-Host "##vso[task.setvariable variable=SkipInstallerBuild;isOutput=true]$DisableBuildLocal"
+        Write-Host "##vso[task.setvariable variable=SkipInstallerBuild;]$DisableBuildLocal"  
+        Write-Host 'parameters.SignOutput: ' ${{parameters.SignOutput}}
+  # Don't bother doing this step if we are not validating a test OS image. All steps below work as usual.
+  condition: and(succeeded(), eq(variables.EnableTestImageValidation , true))
+
 - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
   - task: DownloadPipelineArtifact@2
     displayName: 'Download WindowsAppSDK From Current Build'
     inputs:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
+    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 - ${{ else }}:
   ###
   # This step downloads the WindowsAppSDK NuGet package from a pipeline
@@ -36,7 +60,8 @@ steps:
       project: $(System.TeamProjectId)
       pipeline: $(OfficialPipelineID) 
       pipelineId: $(LatestOfficialBuildID) 
-
+    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+    
 ###
 # Install the internal licensing support for release-signed packages. This can always be present in
 # pipeline builds. The installer code will automatically degrade / skip licenses in non-release builds
@@ -49,6 +74,7 @@ steps:
   inputs:
     filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
     arguments: -versionDetailsPath '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\$(foundationRepoPath)build\packages.config'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: RestoreNuGetPackages
@@ -57,6 +83,7 @@ steps:
     feedsToUse: config
     nugetConfigPath: $(foundationRepoPath)nuget.config
     restoreDirectory: packages
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: powershell@2
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
@@ -65,6 +92,7 @@ steps:
     filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean
     workingDirectory: '$(Build.SourcesDirectory)'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: powershell@2
   displayName: 'Install test certificate for MSIX test packages (DevCheck)'
@@ -73,6 +101,7 @@ steps:
     filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CheckTestCert
     workingDirectory: '$(Build.SourcesDirectory)'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 # Copy license files into the InstallerInput directory. License files should be named consistently with the
 # package naming used in the installer. See build\Scripts\ExtractMSIXFromNuget.ps1 for specifics.
@@ -86,6 +115,7 @@ steps:
       *.xml
     TargetFolder: '$(Build.SourcesDirectory)\InstallerInput'
     flattenFolders: false
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 # Copy license installation header into the correct installer source location.
 - task: CopyFiles@2
@@ -97,6 +127,7 @@ steps:
     TargetFolder: '$(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev'
     flattenFolders: false
     overWrite: true
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 ###
 # Copy MSIX packages from build artifacts into the installer content location and create
@@ -109,6 +140,7 @@ steps:
     arguments: >
       -Source '$(System.ArtifactsDirectory)'
       -Dest '$(Build.SourcesDirectory)\InstallerInput'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: PowerShell@2
   displayName: CreateInstallerOverrideHeader
@@ -117,6 +149,7 @@ steps:
     arguments: >
       -SourceFolder '$(Build.SourcesDirectory)\InstallerInput'
       -DestinationFolder '$(Build.SourcesDirectory)\InstallerInput'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
@@ -126,6 +159,7 @@ steps:
     restoreSolution: $(foundationRepoPath)installer\WindowsAppRuntimeInstall.sln
     feedsToUse: config
     nugetConfigPath: $(Build.SourcesDirectory)\$(foundationRepoPath)nuget.config
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: CopyFiles@2
   displayName: 'Copy installer override header'
@@ -135,11 +169,13 @@ steps:
       windowsappruntime_definitions_override.h
     TargetFolder: $(foundationRepoPath)installer\dev
     flattenFolders: false
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: NuGetAuthenticate@1
   displayName: "NuGet authenticate to restore Microsoft.Telemetry.Inbox.Native"
   inputs:
     nuGetServiceConnections: "TelemetryInternal"
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
@@ -148,6 +184,7 @@ steps:
     command: "custom"
     arguments:
         'restore $(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev\telemetry\packages.config -ConfigFile $(Build.SourcesDirectory)\$(foundationRepoPath)nuget.config -PackagesDirectory $(Build.SourcesDirectory)\$(foundationRepoPath)packages'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 # Overwrite wil\Traceloggingconfig.h content in public nuget with that of MicrosoftTelemetry.h from internal nuget
 # This step enables telemetry in the Installer
@@ -178,6 +215,7 @@ steps:
           Write-Host Did not find the source MicrosoftTelemetry.h under $(Build.SourcesDirectory)\$(foundationRepoPath)packages\
           Get-Childitem -Path '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\' -Recurse
         }
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 # Extract Microsoft.WindowsAppSDK Nuget package artifact published by BuildWindowsAppSDKPackages job of Aggregate stage,
 # that runs before the current CreateInstaller stage in the same build pipeline, to the installer's packages folder.
@@ -202,6 +240,7 @@ steps:
       Rename-Item -Path $destWinAppSDKNupkgPath.FullName -NewName $winAppSDKZip
       Expand-Archive $winAppSDKZip -DestinationPath ($destWinAppSDKNupkgPath.Directory.FullName + '\' + $destWinAppSDKNupkgPath.BaseName)
       Copy-Item -Force ($destWinAppSDKNupkgPath.Directory.FullName + '\' + $destWinAppSDKNupkgPath.BaseName + "\include\WindowsAppSDK-VersionInfo.h") '$(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev\'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: WinUndockNativeCompiler@1
   displayName: 'Setup native compiler version override'
@@ -213,6 +252,7 @@ steps:
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)
     platform: $(buildPlatform)
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
@@ -221,6 +261,7 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArgs: /binaryLogger:$(ob_outputDirectory)\binlogs\WindowsAppRuntimeInstall.$(buildPlatform).$(buildConfiguration).binlog
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 # The VSBuild@1 task above seems to be able to do inline PREfast scanning with the EO-compliant ruleset now. So, we don't seem to
 # need the following any more. Commenting it out for now and observe a bit more. Remove it when we feel comfortable.
@@ -241,18 +282,21 @@ steps:
 #    continueOnError: true
 #    env:
 #      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+#    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Governance Detection'
   inputs:
     scanType: 'Register'
     failOnAlert: false
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - ${{ if eq(parameters.IsOneBranch, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
     parameters:
       SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
+      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
@@ -267,6 +311,7 @@ steps:
   inputs:
     SourceFolder: '$(foundationRepoPath)BuildOutput'
     TargetFolder: '$(ob_outputDirectory)\Installer'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: powershell@2
   displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
@@ -275,10 +320,11 @@ steps:
     filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
     workingDirectory: '$(Build.SourcesDirectory)'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - ${{ if ne(parameters.IsOneBranch, 'true') }}:
   - task: PublishBuildArtifacts@1
-    condition: always()
+    condition: ne(variables.SkipInstallerBuild, true)
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'
       artifactName: '$(ob_artifactBaseName)'
