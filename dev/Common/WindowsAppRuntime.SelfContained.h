@@ -26,10 +26,7 @@ inline HRESULT IsSelfContained_nothrow(bool& isSelfContained) noexcept
 {
     isSelfContained = false;
     auto module = ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll");
-    if (!module)
-    {
-        return S_OK;
-    }
+    RETURN_LAST_ERROR_IF_NULL(module);
     using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
     auto fn = reinterpret_cast<IsSelfContainedFn>(
         ::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained"));
