@@ -185,8 +185,7 @@ stages:
           }
 
           $buildType = '$(channel)'
-          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).$(versionMinDate)'
-          $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
+          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).$(PatchVersion)'
           
           if ($env:ComponentType)
           {
@@ -219,7 +218,11 @@ stages:
             $formattedTag = ''
             if(-not [String]::IsNullOrEmpty($versionTag))
             {
-              $formattedTag = '-' + $versionTag
+              $formattedTag = '-' + $versionTag + "+" + $(versionMinDate) + $paddedRevision
+            }
+            else
+            {
+              $formattedTag = "+" + $(versionMinDate) + $paddedRevision
             }
             Write-Host "Using Release Versioning"
             $version = $majorMinorPatchRev + $formattedTag
