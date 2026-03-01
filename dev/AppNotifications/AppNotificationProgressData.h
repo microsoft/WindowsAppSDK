@@ -20,6 +20,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         void ValueStringOverride(hstring const& progressValueString);
         hstring Status();
         void Status(hstring const& progressStatus);
+        bool IsIndeterminate();
+        void IsIndeterminate(bool isIndeterminate);
 
     private:
         uint32_t m_sequenceNumber = 1;
@@ -27,6 +29,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         double m_progressValue{};
         hstring m_progressValueString;
         hstring m_progressStatus;
+        bool m_isIndeterminate{ false };
         wil::srwlock m_lock;
     };
 }

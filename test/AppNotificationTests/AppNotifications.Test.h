@@ -98,6 +98,7 @@ namespace AppNotifications::Test
         VERIFY_ARE_EQUAL(expected.Value(), actual.Value());
         VERIFY_ARE_EQUAL(expected.ValueStringOverride(), actual.ValueStringOverride());
         VERIFY_ARE_EQUAL(expected.Status(), actual.Status());
+        VERIFY_ARE_EQUAL(expected.IsIndeterminate(), actual.IsIndeterminate());
     }
 
     enum class ExpectedTransientProperties {
