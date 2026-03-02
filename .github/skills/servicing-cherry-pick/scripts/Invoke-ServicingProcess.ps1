@@ -55,6 +55,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]
+    [ValidateRange(1, [int]::MaxValue)]
     [int]$PullRequestNumber,
 
     [Parameter()]
@@ -195,6 +196,7 @@ foreach ($branchInfo in $branches) {
             Status   = 'skipped (already completed)'
             PrUrl    = $branchState.prUrl
             BugId    = $branchState.bugId
+            BugTitle = if ($branchState.PSObject.Properties['bugTitle']) { $branchState.bugTitle } else { '' }
         }
         continue
     }
@@ -222,10 +224,13 @@ foreach ($branchInfo in $branches) {
 
         $enumPromptTemplate = Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\templates\enum-naming-prompt.md') -Raw
         $enumPrompt = $enumPromptTemplate
-        $enumPrompt = $enumPrompt -replace '\{\{PR_TITLE\}\}', $prDetails.Title
-        $enumPrompt = $enumPrompt -replace '\{\{PR_BODY\}\}', ($prDetails.Body | Select-Object -First 1)
+        $safePrTitle = ConvertTo-SafePromptText -Text $prDetails.Title
+        $safePrBody = ConvertTo-SafePromptText -Text ($prDetails.Body | Select-Object -First 1)
         $changedFilesList = ($prDetails.Files | ForEach-Object { $_.Path }) -join ', '
-        $enumPrompt = $enumPrompt -replace '\{\{CHANGED_FILES\}\}', $changedFilesList
+        $safeChangedFiles = ConvertTo-SafePromptText -Text $changedFilesList
+        $enumPrompt = $enumPrompt -replace '\{\{PR_TITLE\}\}', $safePrTitle
+        $enumPrompt = $enumPrompt -replace '\{\{PR_BODY\}\}', $safePrBody
+        $enumPrompt = $enumPrompt -replace '\{\{CHANGED_FILES\}\}', $safeChangedFiles
 
         $enumNameArgs = @{
             Prompt           = $enumPrompt
@@ -249,8 +254,8 @@ foreach ($branchInfo in $branches) {
         $adoPromptTemplate = Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\templates\ado-bug-prompt.md') -Raw
         $adoPrompt = $adoPromptTemplate
         $adoPrompt = $adoPrompt -replace '\{\{PR_NUMBER\}\}', $prDetails.Number
-        $adoPrompt = $adoPrompt -replace '\{\{PR_TITLE\}\}', $prDetails.Title
-        $adoPrompt = $adoPrompt -replace '\{\{PR_BODY\}\}', $prDetails.Body
+        $adoPrompt = $adoPrompt -replace '\{\{PR_TITLE\}\}', (ConvertTo-SafePromptText -Text $prDetails.Title)
+        $adoPrompt = $adoPrompt -replace '\{\{PR_BODY\}\}', (ConvertTo-SafePromptText -Text $prDetails.Body)
         $adoPrompt = $adoPrompt -replace '\{\{TARGET_BRANCH\}\}', $branch
         $adoPrompt = $adoPrompt -replace '\{\{VERSION_STRING\}\}', $patchVersion.VersionString
         $adoPrompt = $adoPrompt -replace '\{\{ENUM_NAME\}\}', $enumName
@@ -441,6 +446,7 @@ foreach ($branchInfo in $branches) {
             Status   = 'completed'
             PrUrl    = $prResult.PrUrl
             BugId    = $bugId
+            BugTitle = $adoFields.title
         }
 
         Ok "Branch $branch completed successfully!"
@@ -465,6 +471,7 @@ foreach ($branchInfo in $branches) {
             Status   = "failed: $($_.Exception.Message)"
             PrUrl    = ''
             BugId    = 0
+            BugTitle = ''
         }
 
         Warn "Saved state. Re-run the command to retry this branch."
@@ -473,8 +480,75 @@ foreach ($branchInfo in $branches) {
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
-# ║ Step 5: Summary Report                                                 ║
+# ║ Step 5: Draft Teams Review Message                                     ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
+
+Write-StepHeader '5' 'Drafting Teams review message'
+
+$teamsMessageFile = $null
+$completedResults = $results | Where-Object { $_.Status -eq 'completed' -or $_.Status -like 'skipped*' }
+
+if ($completedResults.Count -gt 0) {
+    # ── 5a: Assemble the "ADO bugs:" section (deterministic) ─────────────
+    $adoBugsLines = @()
+    foreach ($r in $completedResults) {
+        if ($r.BugId -and $r.BugId -ne 0 -and $r.BugTitle) {
+            $adoBugsLines += "Bug $($r.BugId) $($r.BugTitle)"
+        }
+        elseif ($r.PrUrl) {
+            $adoBugsLines += "PR: $($r.PrUrl)"
+        }
+    }
+    $adoBugsSection = ($adoBugsLines | Select-Object -Unique) -join "`n"
+
+    # ── 5b: Generate the "Description:" section via AI ───────────────────
+    $teamsPromptTemplate = Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\templates\teams-review-prompt.md') -Raw
+    $teamsPrompt = $teamsPromptTemplate
+    $teamsPrompt = $teamsPrompt -replace '\{\{PR_NUMBER\}\}', $prDetails.Number
+    $teamsPrompt = $teamsPrompt -replace '\{\{PR_TITLE\}\}', (ConvertTo-SafePromptText -Text $prDetails.Title)
+    $teamsPrompt = $teamsPrompt -replace '\{\{PR_BODY\}\}', (ConvertTo-SafePromptText -Text $prDetails.Body)
+    $teamsPrompt = $teamsPrompt -replace '\{\{ADO_BUGS_SECTION\}\}', (ConvertTo-SafePromptText -Text $adoBugsSection)
+
+    $teamsDescArgs = @{
+        Prompt           = $teamsPrompt
+        SystemPrompt     = 'Return ONLY the description text. No headers, labels, or formatting. Just plain text paragraphs.'
+        FallbackToManual = $true
+    }
+    if ($SkipApproval) { $teamsDescArgs['SkipApproval'] = $true }
+
+    $teamsDescription = Invoke-WithDryRun -Description "Generate Teams message description via AI" -DryRun:$DryRun -ScriptBlock {
+        & "$PSScriptRoot/Get-AiCompletion.ps1" @teamsDescArgs
+    }
+
+    if ($DryRun) { $teamsDescription = 'Dry run - no description generated.' }
+
+    # ── 5c: Assemble the full Teams message ──────────────────────────────
+    $teamsMessage = "ADO bugs:`n$adoBugsSection`n`nDescription:`n$teamsDescription"
+
+    # ── 5d: Write to file and display ────────────────────────────────────
+    $stateDir = Get-ServicingStateDir -PullRequestNumber $PullRequestNumber -RepoRoot $repoRoot
+    $teamsMessageFile = Join-Path $stateDir 'teams-message.txt'
+    $teamsMessage | Set-Content -LiteralPath $teamsMessageFile -Encoding UTF8
+
+    Write-Host ""
+    Write-Host ("-" * 70) -ForegroundColor Cyan
+    Write-Host "  Teams Review Message (copy-paste into Teams channel):" -ForegroundColor Cyan
+    Write-Host ("-" * 70) -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host $teamsMessage
+    Write-Host ""
+    Write-Host ("-" * 70) -ForegroundColor Cyan
+    Ok "Teams message saved to: $teamsMessageFile"
+}
+else {
+    Warn "No completed branches - skipping Teams message generation."
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║ Step 6: Summary Report                                                 ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+Write-StepHeader '6' 'Summary report'
 
 Write-Host ""
 Write-Host ("=" * 70) -ForegroundColor Green
@@ -494,6 +568,9 @@ foreach ($r in $results) {
 }
 
 Write-Host ""
+if ($teamsMessageFile) {
+    Info "Teams message: $teamsMessageFile"
+}
 Write-Host ("=" * 70) -ForegroundColor Green
 
 if ($DryRun) {
