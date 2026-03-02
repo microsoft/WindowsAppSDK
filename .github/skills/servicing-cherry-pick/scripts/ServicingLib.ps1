@@ -238,6 +238,37 @@ function Get-CurrentBranch {
     return $branch
 }
 
+# ── Input Sanitization ───────────────────────────────────────────────────
+
+function ConvertTo-SafePromptText {
+    <#
+    .SYNOPSIS
+        Neutralizes prompt injection attempts in user-controlled strings before
+        they are substituted into AI prompt templates.
+
+    .DESCRIPTION
+        Escapes markdown fences that could break out of code blocks, and strips
+        common prompt injection markers. Use this on any string that originates
+        from an external PR (title, body, file list) before interpolating it
+        into a prompt.
+
+    .PARAMETER Text
+        The untrusted text to sanitize.
+
+    .OUTPUTS
+        System.String. The sanitized text.
+    #>
+    param([string]$Text)
+
+    # Escape markdown fences that could break out of code blocks
+    $Text = $Text -replace '```', '` ` `'
+
+    # Strip common prompt injection markers (case-insensitive)
+    $Text = $Text -replace '(?i)(ignore previous|ignore above|disregard|forget all|new instructions)', '[filtered]'
+
+    return $Text
+}
+
 # ── String Helpers ───────────────────────────────────────────────────────────
 
 function ConvertTo-BranchSlug {

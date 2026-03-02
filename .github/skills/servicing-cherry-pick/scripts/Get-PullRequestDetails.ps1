@@ -25,6 +25,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]
+    [ValidateRange(1, [int]::MaxValue)]
     [int]$PullRequestNumber,
 
     [Parameter()]
