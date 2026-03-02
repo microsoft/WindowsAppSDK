@@ -37,7 +37,7 @@
           PackagePath="content/winui.blankapp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="templates\single-project\Agents.md"
           Pack="true"
-          PackagePath="content/winui.blankapp/.github/agents/Agents.md" />
+          PackagePath="content/winui.blankapp/AGENTS.md" />
     <None Include="templates\single-project\instructions\**\*.*"
           Pack="true"
           PackagePath="content/winui.blankapp/.github/instructions/%(RecursiveDir)%(Filename)%(Extension)" />
