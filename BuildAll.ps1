@@ -516,6 +516,9 @@ Try {
                 break
             }
         }
+        # Update WindowsAppSDKFoundationPackageVersion
+        $wasFoundationProps.Project.PropertyGroup.WindowsAppSDKFoundationPackageVersion = $PackageVersion
+
         # Note: For some reason, the Save method does not work by default
         # with the path relative to the current working directory.
         # So we prepend the current working directory to the path.
@@ -540,6 +543,7 @@ Try {
                     $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
                 }
             }
+            $wasFoundationProps.Project.PropertyGroup.WindowsAppSDKFoundationPackageVersion = $ComponentPackageVersion
             $wasFoundationProps.Save($propsFileSavePath)
         }
 

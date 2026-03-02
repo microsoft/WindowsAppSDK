@@ -6,6 +6,7 @@
         If true, this is the WindowsAppSdk deployment of Foundation, versus the internal deployment for test only.
         This property is defined by deployment-specific props imports, and should not be overridden by clients.-->
     <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
+    <WindowsAppSDKFoundationPackageVersion>1.0</WindowsAppSDKFoundationPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
