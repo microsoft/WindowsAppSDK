@@ -486,7 +486,7 @@ foreach ($branchInfo in $branches) {
 Write-StepHeader '5' 'Drafting Teams review message'
 
 $teamsMessageFile = $null
-$completedResults = $results | Where-Object { $_.Status -eq 'completed' -or $_.Status -like 'skipped*' }
+$completedResults = @($results | Where-Object { $_.Status -eq 'completed' -or $_.Status -like 'skipped*' })
 
 if ($completedResults.Count -gt 0) {
     # ── 5a: Assemble the "ADO bugs:" section (deterministic) ─────────────
