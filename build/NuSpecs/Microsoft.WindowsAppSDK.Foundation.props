@@ -7,6 +7,7 @@
         This property is defined by deployment-specific props imports, and should not be overridden by clients.-->
     <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
     <WindowsAppSDKFoundationPackageVersion>1.0</WindowsAppSDKFoundationPackageVersion>
+    <PackageVersion>1.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
