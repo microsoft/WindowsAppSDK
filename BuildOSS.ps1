@@ -45,7 +45,7 @@ else
 # --- Step 2: NuGet restore using OSS config ---
 Write-Host ""
 Write-Host "Restoring NuGet packages (OSS config)..."
-$nugetExe = Join-Path $RepoRoot '.nuget\nuget.exe'
+$nugetExe = Join-Path $RepoRoot '.user\nuget.exe'
 if (-not (Test-Path $nugetExe))
 {
     # Fall back to nuget on PATH
