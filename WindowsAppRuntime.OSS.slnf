@@ -14,6 +14,7 @@
       "dev\\MRTCore\\mrt\\mrm\\mrmmin\\mrmmin.vcxproj",
       "dev\\PushNotifications\\PushNotificationsLongRunningTask.ProxyStub\\PushNotificationsLongRunningTask.ProxyStub.vcxproj",
       "dev\\PushNotifications\\PushNotificationsLongRunningTask.StartupTask\\PushNotificationsLongRunningTask.StartupTask.vcxproj",
+      "dev\\WindowsAppRuntime_BootstrapDLL\\WindowsAppRuntime_BootstrapDLL.vcxproj",
       "dev\\WindowsAppRuntime_UniversalBGTaskDLL\\WindowsAppRuntime_UniversalBGTaskDLL.vcxproj"
     ]
   }

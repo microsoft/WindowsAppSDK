@@ -15,6 +15,7 @@
     <BuildForOSS>false</BuildForOSS>
   </PropertyGroup>
 
+
   <PropertyGroup>
     <IsTDPConfiguration>false</IsTDPConfiguration>
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
@@ -132,4 +133,7 @@
       </SourceRoot>
     </ItemGroup>
   </Target>
+
+  <!-- OSS builds: generate stub import library for WindowsAppRuntime.dll -->
+  <Import Project="$(MSBuildThisFileDirectory)build\OSSStubs.targets" Condition="'$(BuildForOSS)' == 'true'" />
 </Project>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation and Contributors. Licensed under the MIT License. -->
+<!-- Provides stub artifacts for OSS builds where WindowsAppRuntime_DLL output is not available.
+     Imported conditionally from Directory.Build.props when BuildForOSS=true.
+
+     The WindowsAppRuntime_DLL build normally copies shared headers and generates an import library
+     in its output directory. Other projects (BootstrapDLL, tests) reference that directory for
+     includes and linking. In OSS builds we skip WindowsAppRuntime_DLL, so this file recreates
+     the expected artifacts from source. -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Copy shared headers from source to the WindowsAppRuntime_DLL output directory
+       (where BootstrapDLL and test projects expect them via AdditionalIncludeDirectories). -->
+  <Target Name="_CopyOSSStubHeaders"
+          BeforeTargets="ClCompile"
+          Condition="'$(BuildForOSS)' == 'true'">
+    <PropertyGroup>
+      <_OSSStubDir>$(OutDir)\..\WindowsAppRuntime_DLL\</_OSSStubDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\DynamicDependency\API\appmodel_msixdynamicdependency.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\DynamicDependency\API\MddLifetimeManagement.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\DynamicDependency\API\MddLifetimeManagementTest.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\DynamicDependency\API\MddWin11.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\DynamicDependency\API\MsixDynamicDependency.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\DynamicDependency\API\wil_msixdynamicdependency.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\Decimal\decimal.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\Decimal\decimalcppwinrt.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\Licensing\MsixLicensing.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\PackageManager\API\MsixPackageManager.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\AccessControl\Security.AccessControl.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\Common\TerminalVelocityFeatures-DeploymentAPI.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\Common\TerminalVelocityFeatures-DynamicDependency.h" DestinationFolder="$(_OSSStubDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(RepoRoot)\dev\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h" DestinationFolder="$(_OSSStubDir)" />
+  </Target>
+
+  <!-- Generate a stub import library for Microsoft.WindowsAppRuntime.dll from the existing .def file.
+       This is only needed for linking (the DLL is delay-loaded, never actually called at build time). -->
+  <Target Name="_GenerateOSSStubImportLib"
+          BeforeTargets="Link"
+          Condition="'$(BuildForOSS)' == 'true' AND '$(ConfigurationType)' != 'StaticLibrary'">
+    <PropertyGroup>
+      <_OSSStubDir>$(OutDir)\..\WindowsAppRuntime_DLL\</_OSSStubDir>
+      <_OSSLibMachine Condition="'$(Platform)' == 'Win32'">X86</_OSSLibMachine>
+      <_OSSLibMachine Condition="'$(Platform)' == 'x64'">X64</_OSSLibMachine>
+      <_OSSLibMachine Condition="'$(Platform)' == 'ARM64'">ARM64</_OSSLibMachine>
+    </PropertyGroup>
+    <MakeDir Directories="$(_OSSStubDir)" Condition="!Exists('$(_OSSStubDir)Microsoft.WindowsAppRuntime.lib')" />
+    <Exec Command="lib /nologo /def:&quot;$(RepoRoot)\dev\WindowsAppRuntime_DLL\WindowsAppRuntime.def&quot; /machine:$(_OSSLibMachine) /out:&quot;$(_OSSStubDir)Microsoft.WindowsAppRuntime.lib&quot;"
+          Condition="!Exists('$(_OSSStubDir)Microsoft.WindowsAppRuntime.lib')" />
+  </Target>
+
+</Project>

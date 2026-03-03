@@ -3,11 +3,11 @@
 # External Contributors (Open Source)
 
 If you **don't have access** to the internal Microsoft NuGet feed, follow these steps to build
-the open-source subset of the project. This includes Detours, Dynamic Dependency components,
-Deployment Agent, MRT Core, Push Notifications ProxyStub/StartupTask, and the Universal BGTask
-DLL — 13 projects that build cleanly without internal packages. Components that depend on the
-core runtime DLL (`WindowsAppRuntime_DLL`) or internal transport packages (FrameworkUdk, IXP)
-are excluded.
+the open-source subset of the project. This includes the Bootstrap DLL, Detours, Dynamic
+Dependency components, Deployment Agent, MRT Core, Push Notifications ProxyStub/StartupTask,
+and the Universal BGTask DLL — 14 projects that build cleanly without internal packages.
+Components that depend on the core runtime DLL (`WindowsAppRuntime_DLL`) or internal transport
+packages (FrameworkUdk, IXP) are excluded.
 
 ## Quick Start
 
@@ -25,12 +25,13 @@ are excluded.
 | Included (builds without internal packages) | Excluded (requires internal packages or runtime DLL) |
 |---|---|
 | Detours | WindowsAppRuntime_DLL (FrameworkUdk + IXP) |
-| Dynamic Dependency (DataStore, LifetimeManager, Shadow) | Bootstrap DLL (depends on runtime DLL headers) |
-| Deployment Agent | Restart Agent (depends on Bootstrap DLL) |
-| MRT Core (`MRM.dll`, `mrmmin.lib`) | MRT Resources (FrameworkUdk) |
-| Push Notifications ProxyStub + StartupTask | PushNotificationsLongRunningTask (FrameworkUdk) |
-| Universal BGTask DLL | All C# projections (depend on WinMD from runtime DLL) |
-| DynamicDependency ProxyStubs | All test projects (initially) |
+| Bootstrap DLL | Restart Agent (depends on runtime DLL WinMDs) |
+| Dynamic Dependency (DataStore, LifetimeManager, Shadow) | MRT Resources (FrameworkUdk) |
+| Deployment Agent | PushNotificationsLongRunningTask (FrameworkUdk) |
+| MRT Core (`MRM.dll`, `mrmmin.lib`) | All C# projections (depend on WinMD from runtime DLL) |
+| Push Notifications ProxyStub + StartupTask | All test projects (depend on WinMD from runtime DLL) |
+| Universal BGTask DLL | |
+| DynamicDependency ProxyStubs | |
 
 ## Manual Build Steps
 
