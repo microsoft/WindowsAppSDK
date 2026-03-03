@@ -2,7 +2,15 @@
 
 # Tooling Prerequisites
 
-Development requires the following installation:
+## Quick Start (recommended)
+
+Run `DevCheck.cmd -CheckAll -FixAll` from an **admin** command prompt. This installs Visual Studio
+Build Tools (with the required C++ workloads and components), Windows SDKs, and configures your
+environment automatically.
+
+## Manual Setup
+
+If you prefer to install Visual Studio yourself:
 
 1. Install Visual Studio 2022
 
@@ -11,7 +19,7 @@ Development requires the following installation:
      * Desktop development with C++
      * Universal Windows Platform development
 
-   Additional components are quired. To add them via the Visual Studio Installer...
+   Additional components are required. To add them via the Visual Studio Installer...
      * select `More` / `Import configuration`
      * select the file `docs\Coding-Guidelines\VisualStudio2022.vsconfig` in the repository
      * select `Review details`
