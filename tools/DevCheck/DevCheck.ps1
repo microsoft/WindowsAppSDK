@@ -58,6 +58,9 @@
 .PARAMETER InstallVCLibs
     Install VCLibs MSIX packages.
 
+.PARAMETER InstallBuildTools
+    Download and install Visual Studio Build Tools with the required components (if necessary).
+
 .PARAMETER InstallWindowsSDK
     Download and install Windows Platform SDKs (if necessary).
 
@@ -159,6 +162,8 @@ Param(
     [Switch]$FixAll=$false,
 
     [Switch]$FixLongPath=$false,
+
+    [Switch]$InstallBuildTools=$false,
 
     [Switch]$InstallVCLibs=$false,
 
@@ -719,6 +724,19 @@ function Test-VisualStudioComponents
     if ($errors -gt 0)
     {
         Write-Host ""
+        if ($InstallBuildTools -eq $true)
+        {
+            Write-Warning "Missing Visual Studio components detected. Installing via Build Tools..."
+            $installed = Install-VisualStudioBuildTools
+            if ($installed -eq $true)
+            {
+                return $true
+            }
+        }
+        else
+        {
+            Write-Host "...ERROR: Missing Visual Studio components. Run with -InstallBuildTools (or -FixAll) to install missing components." -ForegroundColor Red -BackgroundColor Black
+        }
         return $false
     }
     Write-Host "OK"
@@ -731,10 +749,26 @@ function Test-VisualStudio2022Install
     $path = Get-VisualStudio2022InstallPath
     if ([string]::IsNullOrEmpty($path))
     {
-        $global:issues++
-        $ok = $false
+        if ($InstallBuildTools -eq $true)
+        {
+            $installed = Install-VisualStudioBuildTools
+            if ($installed -eq $true)
+            {
+                # Re-detect after install
+                $path = Get-VisualStudio2022InstallPath
+            }
+        }
+        if ([string]::IsNullOrEmpty($path))
+        {
+            Write-Host "...ERROR: Visual Studio 2022 not found. Run with -InstallBuildTools (or -FixAll) to download and install Build Tools." -ForegroundColor Red -BackgroundColor Black
+            $global:issues++
+            $ok = $false
+        }
     }
-    Write-Host "VisualStudio 2022...$path"
+    if (-not([string]::IsNullOrEmpty($path)))
+    {
+        Write-Host "VisualStudio 2022...$path"
+    }
     return $ok
 }
 
@@ -781,6 +815,50 @@ function Install-WindowsSDK
         return $false
     }
     Write-Host "Install Windows SDK $($version)...OK"
+    return $true
+}
+
+function Install-VisualStudioBuildTools
+{
+    if ($Offline -eq $true)
+    {
+        Write-Host "ERROR: Build Tools cannot be downloaded with -Offline" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    $bootstrapper = Join-Path $env:TEMP 'vs_BuildTools.exe'
+    if ($Clean -eq $true -And (Test-Path -Path $bootstrapper -PathType Leaf))
+    {
+        Write-Verbose "Found $bootstrapper. Deleting per -Clean..."
+        Remove-Item -Path $bootstrapper -Force
+    }
+
+    if (-not(Test-Path -Path $bootstrapper -PathType Leaf))
+    {
+        $url = 'https://aka.ms/vs/17/release/vs_BuildTools.exe'
+        Write-Host "Downloading Visual Studio Build Tools from $url..."
+        Write-Verbose "Executing: curl.exe --output $bootstrapper -L -# $url"
+        $null = Start-Process curl.exe -ArgumentList "--output $bootstrapper -L -# $url" -Wait -NoNewWindow -PassThru
+    }
+
+    if (-not(Test-Path -Path $bootstrapper -PathType Leaf))
+    {
+        Write-Host "ERROR: Failed to download Visual Studio Build Tools" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    $vsconfig = Join-Path (Get-ProjectRoot) 'docs\Coding-Guidelines\VisualStudio2022.vsconfig'
+    Write-Host "Installing Visual Studio Build Tools. This will take several minutes..."
+    $p = Start-Process $bootstrapper -ArgumentList "--config `"$vsconfig`" --quiet --wait --norestart" -Wait -NoNewWindow -PassThru
+    if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010)  # 3010 = reboot required but success
+    {
+        Write-Host "...ERROR: Build Tools install failed (exit code $($p.ExitCode))" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+    Write-Host "Visual Studio Build Tools...OK"
     return $true
 }
 
@@ -2044,6 +2122,7 @@ if ($SyncDependencies -eq $true)
 if ($FixAll -eq $true)
 {
     $FixLongPath = $true
+    $InstallBuildTools = $true
     $InstallVCLibs = $true
     $InstallWindowsSDK = $true
 }
