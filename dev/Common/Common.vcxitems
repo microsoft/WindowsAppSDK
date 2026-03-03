@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.IsPackagedProcess.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Package.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.PackageGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Foundation.String.h" />
@@ -35,5 +36,7 @@
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cs" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cpp" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)AppModel.Identity.IsPackagedProcess.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h" />
   </ItemGroup>
 </Project>
