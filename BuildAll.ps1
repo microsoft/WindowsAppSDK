@@ -26,7 +26,8 @@ Param(
     [string]$OutputDirectory = (Split-Path $MyInvocation.MyCommand.Path) + "\BuildOutput",
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
-    [switch]$Clean = $false
+    [switch]$Clean = $false,
+    [switch]$CleanIntermediateFiles = $false
 )
 
 Set-StrictMode -Version 3.0
@@ -146,7 +147,7 @@ Try {
         {
             $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
-            if (($destinationPaths -ne $null)) 
+            if (($destinationPaths -ne $null))
             {
                 foreach ($destPath in $destinationPaths) {
                 Write-Host 'SourcePath:' $srcPath.FullName
@@ -165,6 +166,11 @@ Try {
     # PreFastSetup intentionally skips the call to MSBuild.exe below.
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildFoundation"))
     {
+        $cleanIntermediateFilesArg = ""
+        if ($CleanIntermediateFiles -eq $true)
+        {
+            $cleanIntermediateFilesArg = "/p:WindowsAppSDKCleanIntermediateFiles=true"
+        }
         foreach($configurationToRun in $configuration.Split(","))
         {
             foreach($platformToRun in $platform.Split(","))
@@ -178,7 +184,7 @@ Try {
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
-                                /p:WindowsAppSDKCleanIntermediateFiles=true `
+                                $cleanIntermediateFilesArg `
                                 /p:AppxSymbolPackageEnabled=false `
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
@@ -279,7 +285,7 @@ Try {
         {
             foreach($platformToRun in $platform.Split(","))
             {
-                # TODO: $windowsAppSdkBinariesPath may not be defined. Remove the temp downgrade to 1.0 once this issue has been fixed (b#52130179). 
+                # TODO: $windowsAppSdkBinariesPath may not be defined. Remove the temp downgrade to 1.0 once this issue has been fixed (b#52130179).
                 Set-StrictMode -Version 1.0
                 .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
                 Set-StrictMode -Version 3.0
