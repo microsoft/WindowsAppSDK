@@ -58,8 +58,14 @@
 .PARAMETER InstallVCLibs
     Install VCLibs MSIX packages.
 
+.PARAMETER InstallBuildTools
+    Download and install Visual Studio Build Tools with the required components (if necessary).
+
 .PARAMETER InstallWindowsSDK
     Download and install Windows Platform SDKs (if necessary).
+
+.PARAMETER IsOSS
+    Use the OSS NuGet configuration (NuGet.OSS.config) instead of the internal feed. Use this for external/open-source contributor workflows.
 
 .PARAMETER NoInteractive
     Run in non-interactive mode (fail if any need for user input)
@@ -160,9 +166,13 @@ Param(
 
     [Switch]$FixLongPath=$false,
 
+    [Switch]$InstallBuildTools=$false,
+
     [Switch]$InstallVCLibs=$false,
 
     [Switch]$InstallWindowsSDK=$false,
+
+    [Switch]$IsOSS=$false,
 
     [Switch]$NoInteractive=$false,
 
@@ -719,6 +729,19 @@ function Test-VisualStudioComponents
     if ($errors -gt 0)
     {
         Write-Host ""
+        if ($InstallBuildTools -eq $true)
+        {
+            Write-Warning "Missing Visual Studio components detected. Installing via Build Tools..."
+            $installed = Install-VisualStudioBuildTools
+            if ($installed -eq $true)
+            {
+                return $true
+            }
+        }
+        else
+        {
+            Write-Host "...ERROR: Missing Visual Studio components. Run with -InstallBuildTools (or -FixAll) to install missing components." -ForegroundColor Red -BackgroundColor Black
+        }
         return $false
     }
     Write-Host "OK"
@@ -731,10 +754,26 @@ function Test-VisualStudio2022Install
     $path = Get-VisualStudio2022InstallPath
     if ([string]::IsNullOrEmpty($path))
     {
-        $global:issues++
-        $ok = $false
+        if ($InstallBuildTools -eq $true)
+        {
+            $installed = Install-VisualStudioBuildTools
+            if ($installed -eq $true)
+            {
+                # Re-detect after install
+                $path = Get-VisualStudio2022InstallPath
+            }
+        }
+        if ([string]::IsNullOrEmpty($path))
+        {
+            Write-Host "...ERROR: Visual Studio 2022 not found. Run with -InstallBuildTools (or -FixAll) to download and install Build Tools." -ForegroundColor Red -BackgroundColor Black
+            $global:issues++
+            $ok = $false
+        }
     }
-    Write-Host "VisualStudio 2022...$path"
+    if (-not([string]::IsNullOrEmpty($path)))
+    {
+        Write-Host "VisualStudio 2022...$path"
+    }
     return $ok
 }
 
@@ -781,6 +820,56 @@ function Install-WindowsSDK
         return $false
     }
     Write-Host "Install Windows SDK $($version)...OK"
+    return $true
+}
+
+function Install-VisualStudioBuildTools
+{
+    if ($Offline -eq $true)
+    {
+        Write-Host "ERROR: Build Tools cannot be downloaded with -Offline" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    $bootstrapper = Join-Path $env:TEMP 'vs_BuildTools.exe'
+    if ($Clean -eq $true -And (Test-Path -Path $bootstrapper -PathType Leaf))
+    {
+        Write-Verbose "Found $bootstrapper. Deleting per -Clean..."
+        Remove-Item -Path $bootstrapper -Force
+    }
+
+    if (-not(Test-Path -Path $bootstrapper -PathType Leaf))
+    {
+        $url = 'https://aka.ms/vs/17/release/vs_BuildTools.exe'
+        Write-Host "Downloading Visual Studio Build Tools from $url..."
+        Write-Verbose "Executing: curl.exe --output $bootstrapper -L -# $url"
+        $null = Start-Process curl.exe -ArgumentList "--output $bootstrapper -L -# $url" -Wait -NoNewWindow -PassThru
+    }
+
+    if (-not(Test-Path -Path $bootstrapper -PathType Leaf))
+    {
+        Write-Host "ERROR: Failed to download Visual Studio Build Tools" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+
+    $vsconfig = Join-Path (Get-ProjectRoot) 'docs\Coding-Guidelines\VisualStudio2022.vsconfig'
+    Write-Host "Installing Visual Studio Build Tools. This will take several minutes" -NoNewline
+    $p = Start-Process $bootstrapper -ArgumentList "--config `"$vsconfig`" --quiet --wait --norestart" -PassThru
+    while (-not $p.HasExited)
+    {
+        Write-Host "." -NoNewline
+        Start-Sleep -Seconds 10
+    }
+    Write-Host ""
+    if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010)  # 3010 = reboot required but success
+    {
+        Write-Host "...ERROR: Build Tools install failed (exit code $($p.ExitCode))" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        return $false
+    }
+    Write-Host "Visual Studio Build Tools...OK"
     return $true
 }
 
@@ -2008,17 +2097,32 @@ function Restore-Nuget
         return $false
     }
 
+    $configfileArgs = @()
+    if ($IsOSS -eq $true)
+    {
+        $root = Get-ProjectRoot
+        $ossConfig = Join-Path $root 'NuGet.OSS.config'
+        if (Test-Path -Path $ossConfig -PathType Leaf)
+        {
+            Write-Host "Using OSS NuGet configuration: $ossConfig"
+            $configfileArgs = @("-configfile", "$ossConfig")
+        }
+        else
+        {
+            Write-Host "WARNING: NuGet.OSS.config not found at $ossConfig. Falling back to default NuGet.config." -ForegroundColor Yellow
+        }
+    }
+
     ForEach ($file in $global:nuget_restore_filenames)
     {
         $root = Get-ProjectRoot
         $restore_target = Join-Path $root $file
-        $args = "restore ""$($restore_target)"""
         Write-Host "Nuget restoring packages: $($restore_target)..."
         if ($Verbose -eq $true)
         {
-            Write-Verbose "Executing $nuget_exec restore $restore_target"
+            Write-Verbose "Executing $nugetexe restore $restore_target $configfileArgs"
         }
-        & $nugetexe "restore" "$restore_target" | Write-Host
+        & $nugetexe "restore" "$restore_target" @configfileArgs | Write-Host
     }
 }
 
@@ -2044,6 +2148,7 @@ if ($SyncDependencies -eq $true)
 if ($FixAll -eq $true)
 {
     $FixLongPath = $true
+    $InstallBuildTools = $true
     $InstallVCLibs = $true
     $InstallWindowsSDK = $true
 }
