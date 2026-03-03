@@ -850,8 +850,14 @@ function Install-VisualStudioBuildTools
     }
 
     $vsconfig = Join-Path (Get-ProjectRoot) 'docs\Coding-Guidelines\VisualStudio2022.vsconfig'
-    Write-Host "Installing Visual Studio Build Tools. This will take several minutes..."
-    $p = Start-Process $bootstrapper -ArgumentList "--config `"$vsconfig`" --passive --wait --norestart" -Wait -NoNewWindow -PassThru
+    Write-Host "Installing Visual Studio Build Tools. This will take several minutes" -NoNewline
+    $p = Start-Process $bootstrapper -ArgumentList "--config `"$vsconfig`" --quiet --wait --norestart" -PassThru
+    while (-not $p.HasExited)
+    {
+        Write-Host "." -NoNewline
+        Start-Sleep -Seconds 10
+    }
+    Write-Host ""
     if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010)  # 3010 = reboot required but success
     {
         Write-Host "...ERROR: Build Tools install failed (exit code $($p.ExitCode))" -ForegroundColor Red -BackgroundColor Black
