@@ -64,6 +64,9 @@
 .PARAMETER InstallWindowsSDK
     Download and install Windows Platform SDKs (if necessary).
 
+.PARAMETER IsOSS
+    Use the OSS NuGet configuration (NuGet.OSS.config) instead of the internal feed. Use this for external/open-source contributor workflows.
+
 .PARAMETER NoInteractive
     Run in non-interactive mode (fail if any need for user input)
 
@@ -168,6 +171,8 @@ Param(
     [Switch]$InstallVCLibs=$false,
 
     [Switch]$InstallWindowsSDK=$false,
+
+    [Switch]$IsOSS=$false,
 
     [Switch]$NoInteractive=$false,
 
@@ -2092,17 +2097,32 @@ function Restore-Nuget
         return $false
     }
 
+    $configfileArgs = @()
+    if ($IsOSS -eq $true)
+    {
+        $root = Get-ProjectRoot
+        $ossConfig = Join-Path $root 'NuGet.OSS.config'
+        if (Test-Path -Path $ossConfig -PathType Leaf)
+        {
+            Write-Host "Using OSS NuGet configuration: $ossConfig"
+            $configfileArgs = @("-configfile", "$ossConfig")
+        }
+        else
+        {
+            Write-Host "WARNING: NuGet.OSS.config not found at $ossConfig. Falling back to default NuGet.config." -ForegroundColor Yellow
+        }
+    }
+
     ForEach ($file in $global:nuget_restore_filenames)
     {
         $root = Get-ProjectRoot
         $restore_target = Join-Path $root $file
-        $args = "restore ""$($restore_target)"""
         Write-Host "Nuget restoring packages: $($restore_target)..."
         if ($Verbose -eq $true)
         {
-            Write-Verbose "Executing $nuget_exec restore $restore_target"
+            Write-Verbose "Executing $nugetexe restore $restore_target $configfileArgs"
         }
-        & $nugetexe "restore" "$restore_target" | Write-Host
+        & $nugetexe "restore" "$restore_target" @configfileArgs | Write-Host
     }
 }
 
