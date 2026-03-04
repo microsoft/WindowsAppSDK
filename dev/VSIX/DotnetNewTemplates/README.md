@@ -31,7 +31,7 @@ dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
 | `winui-page`               | Blank WinUI 3 Page                 |
 | `winui-window`             | Blank WinUI 3 Window               |
 | `winui-usercontrol`        | WinUI 3 UserControl                |
-| `winui-templatedcontrol`   | Templated WinUI 3 control skeleton |
+| `winui-templatedcontrol`   | WinUI 3 templated control |
 | `winui-resourcedictionary` | WinUI 3 ResourceDictionary         |
 | `winui-resw`               | RESW resource file                 |
 | `winui-dialog`             | WinUI 3 ContentDialog              |
