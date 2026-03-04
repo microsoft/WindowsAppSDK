@@ -12,7 +12,7 @@
     <Title>WinUI 3 C# Templates</Title>
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
-    <Description>Official WinUI 3 project and item templates for the Windows App SDK. Install this pack to use dotnet new for blank apps, navigation views, libraries, unit tests, and common WinUI UI items that match the Visual Studio experience.</Description>
+    <Description>Official WinUI 3 project and item templates. Install this pack to use dotnet new for different types of apps, class libraries, unit tests and common WinUI controls.</Description>
     <PackageTags>windows;winappsdk;winui;winui3;desktop;dotnet-new;templates;csharp</PackageTags>
     <PackageProjectUrl>https://learn.microsoft.com/windows/apps/windows-app-sdk/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/microsoft/WindowsAppSDK</RepositoryUrl>
