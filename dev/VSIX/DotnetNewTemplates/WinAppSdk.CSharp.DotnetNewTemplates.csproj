@@ -9,7 +9,7 @@
     <PackageType>Template</PackageType>
     <PackageId>Microsoft.WindowsAppSDK.WinUI.CSharp.Templates</PackageId>
     <Version>0.0.1-experimental</Version>
-    <Title>Windows App SDK WinUI 3 C# Templates</Title>
+    <Title>WinUI 3 C# Templates</Title>
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
     <Description>Official WinUI 3 project and item templates for the Windows App SDK. Install this pack to use dotnet new for blank apps, navigation views, libraries, unit tests, and common WinUI UI items that match the Visual Studio experience.</Description>
