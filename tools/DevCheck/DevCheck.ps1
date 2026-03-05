@@ -31,6 +31,9 @@
 .PARAMETER CheckDeveloperMode
     Check developer mode
 
+.PARAMETER CheckMSBuild
+    Check that MSBuild is available (on PATH or via Visual Studio / Build Tools)
+
 .PARAMETER CheckNugetExe
     Verify nuget.exe is present
 
@@ -145,6 +148,8 @@ Param(
     [Switch]$CheckDependencies=$false,
 
     [Switch]$CheckDeveloperMode=$false,
+
+    [Switch]$CheckMSBuild=$false,
 
     [Switch]$CheckNugetExe=$false,
 
@@ -676,6 +681,24 @@ function Get-VisualStudio2022InstallPath
     return $path
 }
 
+function Get-MSBuildPath
+{
+    $vswhere_exe = Get-VSWhere
+    if ([string]::IsNullOrEmpty($vswhere_exe))
+    {
+        return $null
+    }
+    $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe"
+    Write-Verbose "Executing $vswhere_exe $args"
+    $path = Run-Process $vswhere_exe $args
+    $path = $path -replace [environment]::NewLine, ''
+    if ([string]::IsNullOrEmpty($path))
+    {
+        return $null
+    }
+    return $path
+}
+
 function Test-VisualStudioComponent
 {
     param(
@@ -775,6 +798,47 @@ function Test-VisualStudio2022Install
         Write-Host "VisualStudio 2022...$path"
     }
     return $ok
+}
+
+function Test-MSBuild
+{
+    Write-Verbose "Detecting MSBuild..."
+
+    # Try PATH first
+    $msbuild = Get-Command msbuild.exe -ErrorAction SilentlyContinue
+    if ($msbuild)
+    {
+        Write-Host "MSBuild...$($msbuild.Source)"
+        return $true
+    }
+
+    # Try vswhere to locate MSBuild from VS/Build Tools
+    $path = Get-MSBuildPath
+    if (-not([string]::IsNullOrEmpty($path)))
+    {
+        Write-Host "MSBuild...$path"
+        return $true
+    }
+
+    # Not found
+    if ($InstallBuildTools -eq $true)
+    {
+        Write-Warning "MSBuild not found. Installing Visual Studio Build Tools..."
+        $installed = Install-VisualStudioBuildTools
+        if ($installed -eq $true)
+        {
+            $path = Get-MSBuildPath
+            if (-not([string]::IsNullOrEmpty($path)))
+            {
+                Write-Host "MSBuild...$path"
+                return $true
+            }
+        }
+    }
+
+    Write-Host "...ERROR: MSBuild not found. Install Visual Studio 2022 or run with -FixAll to install Build Tools." -ForegroundColor Red -BackgroundColor Black
+    $global:issues++
+    return $false
 }
 
 function Install-WindowsSDK
@@ -2136,7 +2200,7 @@ if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAE
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
     ($CheckVCLibs -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckWindowsSDK -eq $false) -And
     ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
-    ($CheckNugetExe -eq $false) -And ($NugetExeUpdate -eq $false) -And
+    ($CheckMSBuild -eq $false) -And ($CheckNugetExe -eq $false) -And ($NugetExeUpdate -eq $false) -And
     ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
 {
     $CheckAll = $true
@@ -2192,6 +2256,11 @@ if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
     {
         $null = Test-VisualStudioComponents
     }
+}
+
+if (($CheckAll -ne $false) -Or ($CheckMSBuild -ne $false))
+{
+    $null = Test-MSBuild
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))

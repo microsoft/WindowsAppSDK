@@ -62,16 +62,39 @@ if ($LASTEXITCODE -ne 0)
     exit 1
 }
 
-# --- Step 3: Build ---
+# --- Step 3: Locate MSBuild ---
 Write-Host ""
+Write-Host "Locating MSBuild..."
+
+# Check PATH first
+$msbuildExe = Get-Command msbuild.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+if (-not $msbuildExe)
+{
+    # Use vswhere to find MSBuild from VS / Build Tools
+    $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    if (Test-Path $vswhere)
+    {
+        $msbuildExe = & $vswhere -latest -products * -version "[17.0,18.0)" `
+            -requires Microsoft.Component.MSBuild `
+            -find "MSBuild\**\Bin\MSBuild.exe" | Select-Object -First 1
+    }
+}
+if (-not $msbuildExe)
+{
+    Write-Host "ERROR: MSBuild not found. Install Visual Studio 2022 or run 'DevCheck.cmd -CheckAll -FixAll' from an admin prompt."
+    exit 1
+}
+Write-Host "Using MSBuild: $msbuildExe"
+
+# --- Step 4: Build ---
 if ($Clean)
 {
     Write-Host "Cleaning $Configuration|$Platform..."
-    msbuild $slnf /t:Clean /m /p:Configuration=$Configuration /p:Platform=$Platform /p:BuildForOSS=true
+    & $msbuildExe $slnf /t:Clean /m /p:Configuration=$Configuration /p:Platform=$Platform /p:BuildForOSS=true
 }
 
 Write-Host "Building $Configuration|$Platform..."
-msbuild $slnf /m /p:Configuration=$Configuration /p:Platform=$Platform /p:BuildForOSS=true
+& $msbuildExe $slnf /m /p:Configuration=$Configuration /p:Platform=$Platform /p:BuildForOSS=true
 if ($LASTEXITCODE -ne 0)
 {
     Write-Host ""
