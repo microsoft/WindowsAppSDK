@@ -1,0 +1,11 @@
+<doc>
+  <assembly>
+    <name>Microsoft.Windows.Globalization</name>
+  </assembly>
+  <members>
+    <member name="T:Microsoft.Windows.Globalization.ApplicationLanguages" />
+    <member name="P:Microsoft.Windows.Globalization.ApplicationLanguages.Languages" />
+    <member name="P:Microsoft.Windows.Globalization.ApplicationLanguages.ManifestLanguages" />
+    <member name="P:Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride" />
+  </members>
+</doc>

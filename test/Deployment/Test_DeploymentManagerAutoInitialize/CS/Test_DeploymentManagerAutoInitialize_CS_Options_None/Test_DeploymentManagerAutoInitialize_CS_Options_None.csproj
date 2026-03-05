@@ -32,4 +32,9 @@
     <DefineConstants>$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
+  </PropertyGroup>
+  <Import Project="$(RepoRoot)\test\test.autoinitializer.CS.targets" />
+
 </Project>

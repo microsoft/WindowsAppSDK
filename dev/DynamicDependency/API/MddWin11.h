@@ -7,6 +7,7 @@
 #include <MsixDynamicDependency.h>
 
 #include <IsWindowsVersion.h>
+#include <AppModel.Identity.h>
 
 namespace MddCore::Win11
 {
@@ -103,6 +104,40 @@ namespace MddCore::Win11
         return IsSupported() && MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7;
     }
 
+    constexpr PackageDependencyProcessorArchitectures GetPackageDependencyProcessorArchitecturesCompatibleWithCallerArchitecture()
+    {
+#if defined(_M_ARM)
+        return PackageDependencyProcessorArchitectures_Arm | PackageDependencyProcessorArchitectures_Neutral;
+#elif defined(_M_ARM64)
+        return PackageDependencyProcessorArchitectures_Arm64 | PackageDependencyProcessorArchitectures_Neutral;
+#elif defined(_M_IX86)
+        return PackageDependencyProcessorArchitectures_X86 | PackageDependencyProcessorArchitectures_Neutral;
+#elif defined(_M_X64)
+        return PackageDependencyProcessorArchitectures_X64 | PackageDependencyProcessorArchitectures_Neutral;
+#else
+#   error "Unknown processor architecture"
+#endif
+    }
+
+    constexpr PackageDependencyProcessorArchitectures ToPackageDependencyProcessorArchitectures(
+        const MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures)
+    {
+        if (packageDependencyProcessorArchitectures == MddPackageDependencyProcessorArchitectures::None)
+        {
+            // Workaround Windows bug (https://task.ms/54835001) that doesn't treat PackageDependencyProcessorArchitectures::None equivalent to caller-architecture + Neutral
+            return GetPackageDependencyProcessorArchitecturesCompatibleWithCallerArchitecture();
+        }
+
+        auto win11PackageDependencyProcessorArchitectures{ PackageDependencyProcessorArchitectures_None };
+        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Neutral, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Neutral));
+        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X86, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X86));
+        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X64));
+        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Arm, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Arm));
+        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Arm64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Arm64));
+        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X86A64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X86OnArm64));
+        return win11PackageDependencyProcessorArchitectures;
+    }
+
     inline HRESULT TryCreatePackageDependency(
         PSID user,
         _In_ PCWSTR packageFamilyName,
@@ -115,13 +150,7 @@ namespace MddCore::Win11
     {
         const ::AppModel::Identity::PackageVersion win11MinVersion{ minVersion };
 
-        auto win11PackageDependencyProcessorArchitectures{ PackageDependencyProcessorArchitectures_None };
-        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Neutral, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Neutral));
-        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X86, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X86));
-        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X64));
-        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Arm, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Arm));
-        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Arm64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Arm64));
-        WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X86A64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X86OnArm64));
+        auto win11PackageDependencyProcessorArchitectures{ ToPackageDependencyProcessorArchitectures(packageDependencyProcessorArchitectures) };
 
         const auto win11LifetimeKind{ MddCore::Win11::details::ToLifetimeKind(lifetimeKind) };
 

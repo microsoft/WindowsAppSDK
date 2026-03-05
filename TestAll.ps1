@@ -66,7 +66,16 @@ param(
         [Switch]$Test,
 
         [Parameter(Mandatory=$false)]
-        [Switch]$List
+        [Switch]$List,
+
+        [Parameter(Mandatory=$false)]
+        [Switch]$ShowSystemInfo=$true,
+
+        [Parameter(Mandatory=$true)]
+        [string]$wprProfilePath,
+
+        [Parameter(Mandatory=$false)]
+        [string]$callingStage = ''
 )
 
 $StartTime = Get-Date
@@ -89,7 +98,7 @@ function Get-Tests
         foreach ($testConfig in $testJson.Tests)
         {
             $testConfig | Write-Host
-            if ($testConfig -contains 'Type')
+            if ($testConfig.PSObject.Properties.Name -contains 'Type')
             {
                 $testType = $testConfig.Type
             }
@@ -114,6 +123,15 @@ function Get-Tests
         }
     }
 
+    if ($callingStage -eq 'TestSampleApps')
+    {
+        $tests = $tests | Where-Object { $_.Filename -like "WindowsAppSDK.Test.SampleTests.dll" }
+    }
+    else 
+    {
+        $tests = $tests | Where-Object { $_.Filename -notlike "WindowsAppSDK.Test.SampleTests.dll" }
+    }
+
     $tests
 }
 
@@ -130,7 +148,11 @@ function Run-TaefTest
     $testFolder = Split-Path -parent $test.TestDef
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
-    & $tePath $dllFile $test.Parameters
+
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
+    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
+
+    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile /testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
 }
 
 function Run-PowershellTest
@@ -175,6 +197,47 @@ function Run-Tests
     }
 }
 
+function Get-SystemInfo
+{
+    $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
+    $productname = $(Get-Item -Path $regkey).GetValue('ProductName')
+    $displayversion = $(Get-Item -Path $regkey).GetValue('DisplayVersion')
+    $currentmajor = $(Get-Item -Path $regkey).GetValue('CurrentMajorVersionNumber')
+    $currentminor = $(Get-Item -Path $regkey).GetValue('CurrentMinorVersionNumber')
+    $currentbuild = $(Get-Item -Path $regkey).GetValue('CurrentBuild')
+    Write-Host "Product         : $($productname) $($displayversion) $($currentmajor).$($currentminor).$($currentbuild)"
+
+    $installationtype = $(Get-Item -Path $regkey).GetValue('InstallationType')
+    Write-Host "InstallationType: $($installationtype)"
+
+    $editionid = $(Get-Item -Path $regkey).GetValue('EditionId')
+    $compositioneditionid = $(Get-Item -Path $regkey).GetValue('CompositionEditionID')
+    if ($editionid -eq $compositioneditionid)
+    {
+        Write-Host "Edition         : $($editionid)"
+    }
+    else
+    {
+        Write-Host "Edition         : $($editionid) [$($compositioneditionid)]"
+    }
+
+    $buildlabex = $(Get-Item -Path $regkey).GetValue('BuildLabEx')
+    Write-Host "Build           : $($buildlabex)"
+
+    $lcuver = $(Get-Item -Path $regkey).GetValue('LCUVer')
+    Write-Host "LCU Version     : $($lcuver)"
+
+    Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
+}
+
+$env:Build_Platform = $Platform.ToLower()
+$env:Build_Configuration = $Configuration.ToLower()
+
+if ($ShowSystemInfo -eq $true)
+{
+    Get-SystemInfo
+}
+
 if ($List -eq $true)
 {
     List-Tests | Out-String
@@ -182,7 +245,49 @@ if ($List -eq $true)
 
 if ($Test -eq $true)
 {
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
+    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
+    remove-item -Path $teLogFile -ErrorAction Ignore
+    remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
+
     Run-Tests
+
+    # copy test log to TestOutput folder
+    if (Test-Path -Path $teLogFile) {
+        Write-Host "Starting copy test log from '$teLogFile'"
+
+        New-Item -ItemType Directory -Path $teLogPathTo -Force
+        copy-item -Path $teLogFile -Destination $teLogPathTo -Force
+
+        Write-Host "Test log copied to '$teLogPathTo'"
+    }
+
+    # copy screenshots to TestOutput folder
+    $screenshotsFolder = Join-Path $env:Build_SourcesDirectory "WexLogFileOutput"
+    if (Test-Path -Path $screenshotsFolder) {
+        Write-Host "Starting copy screenshots from '$screenshotsFolder'"
+
+        # Copy at most 50 screenshots to the upload path.
+        # In the cases where a large number of tests failed, there is little value in uploading dozens of screenshots
+        $files = Get-ChildItem -Path $screenshotsFolder -Filter *.jpg |Select-Object -First 50
+        foreach($file in $files)
+        {
+            Copy-Item $file.FullName $teLogPathTo -Force
+        }
+
+        # Copy at most 20 tracelogging files to the upload path.
+        $files = Get-ChildItem -Path $screenshotsFolder -Filter *.etl |Select-Object -First 20
+        foreach($file in $files)
+        {
+            Copy-Item $file.FullName $teLogPathTo -Force
+        }
+
+        Write-Host "Test results copied to '$teLogPathTo'"
+    }
+    else
+    {
+        Write-Host "WexLogFileOutput not found"
+    }
 }
 
 $TotalTime = (Get-Date)-$StartTime

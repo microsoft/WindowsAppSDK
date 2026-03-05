@@ -3,6 +3,7 @@ This script is to build the Foundation transport package that will be used to ge
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
 
 PackageVersion: NuGet Package Version that will be used in the packing of Foundation Transport Package
+ComponentPackageVersion: NuGet Package Version that will be used in the packing of Foundation Component Package
 Platform: Comma delimited string of platforms to run.
 Configuration: Comma delimited string of configurations to run.
 AzureBuildStep: Only used by the pipeline to perform tasks such as signing in between the steps
@@ -17,7 +18,8 @@ Main branch points to the external feed.
 #>
 
 Param(
-    [string]$PackageVersion = "1.1.1.1",
+    [string]$PackageVersion = "",
+    [string]$ComponentPackageVersion = "",
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
@@ -33,6 +35,7 @@ $ErrorActionPreference = 'Stop'
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
+$ComponentBasePath = "BuildOutput/ComponentNuget"
 
 # FUTURE(YML2PS): Update build to no longer place generated files in sources directory
 if ($Clean)
@@ -56,16 +59,21 @@ if ($Clean)
     Exit
 }
 
-# Make sure nuget directory exists.
-if(-not (test-path ".nuget"))
+# Find the Version Value provided by WindowsAppSDKConfig in Version.Details.xml
+# The version field of Microsoft.WindowsAppSDK.Version is the value provided byWindowsAppSDKConfig
+[xml]$versionDetailsPath = Get-Content -Path "$env:Build_SourcesDirectory\eng\Version.Details.xml"
+$versionFromConfig = $versionDetailsPath.Dependencies.ToolsetDependencies.Dependency | Where-Object { $_.Name -eq "Microsoft.WindowsAppSDK.Version" }
+if ([string]::IsNullOrEmpty($PackageVersion))
 {
-    new-item -path ".nuget" -itemtype directory
+    $PackageVersion = $versionFromConfig.Version;
+    Write-Host "Updating PackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $PackageVersion"
 }
 
-# Make sure nuget is on the system
-if(-not (test-path ".nuget\nuget.exe"))
+if ([string]::IsNullOrEmpty($ComponentPackageVersion))
 {
-    Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
+    Write-Host $versionFromConfig.Version
+    $ComponentPackageVersion = $versionFromConfig.Version;
+    Write-Host "Updating ComponentPackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $ComponentPackageVersion"
 }
 
 $configurationForMrtAndAnyCPU = "Release"
@@ -77,12 +85,25 @@ write-host "VCToolsInstallDir: $VCToolsInstallDir"
 $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 write-host "msBuildPath: $msBuildPath"
 
-
 # Generate overrides
 # Make sure override directory exists.
 if(-not (test-path "$buildOverridePath"))
 {
     new-item -path "$buildOverridePath" -itemtype "directory"
+}
+
+function NugetRestore([string] $Label, [string] $Target)
+{
+    if ($AzureBuildStep -ne "all")
+    {
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/binaryLogger:BuildOutput\binlogs\$Label.restore.$Platform.$Configuration.binlog /p:Platform=$Platform /p:Configuration=$Configuration"
+    }
+    nuget restore $Target -configfile NuGet.config
+    if ($lastexitcode -ne 0)
+    {
+        write-host "ERROR: nuget.exe restore $Label FAILED."
+        exit 1
+    }
 }
 
 Try {
@@ -110,34 +131,23 @@ Try {
         # If $AzureBuildStep is not "all", that means we are in the pipeline
         $WindowsAppSDKBuildPipeline = 1
     }
-    # PreFastSetup is specifically for use when preparing for PREFast scans. It triggers the same actions below as BuildBinaries or BuildMRT, except
+    # PreFastSetup is specifically for use when preparing for PREFast scans. It triggers the same actions below as BuildFoundation or BuildMRT, except
     # PreFastSetup stops short of calling msBuild.exe to build the target, which the Guardian:PREFast task does _not_ support, so the caller of this
     # script needs to resort to calling the MSBuild/VSBuild task later to build the target, which the Guardian:PREFast task does support. Structuring
     # the code this way allows minimally diveraging the flow while supporting building the target both via this script and the VSBuild/MSBuild task.
-    if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
+    if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildFoundation") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
     {
-        & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore WindowsAppRuntime.sln FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
-            exit 1
-        }
+        NugetRestore "WindowsAppRuntime" "WindowsAppRuntime.sln"
+        NugetRestore "Microsoft.WindowsAppRuntime.Bootstrap.Net" "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
 
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
-        if (($srcPath -ne $null)){
+        if (($srcPath -ne $null))
+        {
             $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
-            if (($destinationPaths -ne $null)) {
+            if (($destinationPaths -ne $null)) 
+            {
                 foreach ($destPath in $destinationPaths) {
                 Write-Host 'SourcePath:' $srcPath.FullName
                 Write-Host 'DestinationPath:' $destPath.FullName
@@ -153,7 +163,7 @@ Try {
         }
     }
     # PreFastSetup intentionally skips the call to MSBuild.exe below.
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries"))
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildFoundation"))
     {
         foreach($configurationToRun in $configuration.Split(","))
         {
@@ -162,8 +172,10 @@ Try {
                 write-host "Building WindowsAppRuntime.sln for configuration $configurationToRun and platform:$platformToRun"
                 & $msBuildPath /restore `
                                 WindowsAppRuntime.sln `
-                                /p:Configuration=$configurationToRun,Platform=$platformToRun `
-                                /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
+                                /p:Configuration=$configurationToRun `
+                                /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
+                                /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
                                 /p:WindowsAppSDKCleanIntermediateFiles=true `
@@ -171,7 +183,7 @@ Try {
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
                 {
-                    write-host "ERROR: msbuild.exe /restore WindowsAppRuntime.sln FAILED."
+                    write-host "ERROR: msbuild.exe WindowsAppRuntime.sln FAILED."
                     exit 1
                 }
             }
@@ -184,45 +196,11 @@ Try {
         #------------------
 
         #Restore packages from mrt.
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore MrtCore.sln FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore Microsoft.Windows.ApplicationModel.Resources\src\packages.config FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore mrm\mrmex\packages.config FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore mrmmin\packages.config FAILED."
-            exit 1
-        }
-
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile NuGet.config
-
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore unittests\packages.config FAILED."
-            exit 1
-        }
+        NugetRestore "MrtCore" "$MRTSourcesDirectory\mrt\MrtCore.sln"
+        NugetRestore "Microsoft.Windows.ApplicationModel.Resources" "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config"
+        NugetRestore "mrmex" "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config"
+        NugetRestore "mrmmin" "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config"
+        NugetRestore "unittests" "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config"
 
         # Init mrtcore
         foreach($platformToRun in $platform.Split(","))
@@ -239,21 +217,20 @@ Try {
         if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT"))
         {
             # Build mrt core.
-            foreach($configurationToRun in $configuration.Split(","))
+            foreach($platformToRun in $platform.Split(","))
             {
-                foreach($platformToRun in $platform.Split(","))
-                {
-                    write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
-                    & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
-                                    /p:Configuration=$configurationToRun,Platform=$platformToRun `
-                                    /p:PGOBuildMode=$PGOBuildMode `
-                                    /binaryLogger:"BuildOutput/mrtcore.$platformToRun.$configurationToRun.binlog"
+                write-host "Building MrtCore.sln for configuration $configurationForMrtAndAnyCPU and platform:$platformToRun"
+                & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
+                                /p:Configuration=$configurationForMrtAndAnyCPU `
+                                /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
+                                /p:PGOBuildMode=$PGOBuildMode `
+                                /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationForMrtAndAnyCPU.binlog"
 
-                    if ($lastexitcode -ne 0)
-                    {
-                        write-host "ERROR: Building '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
-                        exit 1
-                    }
+                if ($lastexitcode -ne 0)
+                {
+                    write-host "ERROR: msbuild.exe '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+                    exit 1
                 }
             }
         }
@@ -263,11 +240,11 @@ Try {
         #------------------
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
-        # build AnyCPU
-        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
+        # build and restore AnyCPU
+        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: msbuild restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
+            write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
             exit 1
         }
     }
@@ -282,9 +259,19 @@ Try {
             new-item -path "$BasePath" -itemtype "directory"
         }
 
+        if(-not (test-path "$ComponentBasePath"))
+        {
+            new-item -path "$ComponentBasePath" -itemtype "directory"
+        }
+
         if(-not (test-path "$BasePath\build\native"))
         {
             new-item -path "$BasePath\build\native" -itemtype "directory"
+        }
+
+        if(-not (test-path "$ComponentBasePath\build\native"))
+        {
+            new-item -path "$ComponentBasePath\build\native" -itemtype "directory"
         }
 
         # Copy WindowsAppRuntime.sln files
@@ -309,14 +296,19 @@ Try {
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.props" -Destination "$BasePath\build\native\Microsoft.WindowsAppSDK.Foundation.props"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.C.props" -Destination "$BasePath\build\native"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.WinRt.props" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.AutoInitializer.targets" -Destination "$BasePath\build\native"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.CompatibilitySetter.targets" -Destination "$BasePath\build\native"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.DeploymentManager.targets" -Destination "$BasePath\build\native"
         Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$BasePath\build\native"
 
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.AutoInitializer.CS.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$BasePath\build"
@@ -343,18 +335,9 @@ Try {
             }
         }
 
-        # copy MRT IDL over.
-        Copy-Item -path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -destination "$BasePath\include" -force
-
         # Copy MRT metadata files.
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.props" -Destination "$BasePath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.PriGen.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.References.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.C.props" -Destination "$BasePath\build\native"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.props" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.targets" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\ProjectItemsSchema.xaml" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\README.md" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\MRM.h" -Destination "$BasePath\include"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -Destination "$BasePath\include"
@@ -382,6 +365,27 @@ Try {
             exit 1
         }
 
+        if ([string]::IsNullOrEmpty($env:Channel))
+        {
+            $componentLicenseFilePath = "LICENSE"
+        }
+        else
+        {
+            $componentLicenseFilePath = "WindowsAppSDKConfig\NuGetLicense\preview\license.txt"
+            if ($env:Channel -eq 'stable')
+            {
+                $componentLicenseFilePath = "WindowsAppSDKConfig\NuGetLicense\release\license.txt"
+            }
+        }
+
+        Copy-Item -Path $componentLicenseFilePath -Destination "$ComponentBasePath\license.txt" -force
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: Copy-Item -Path $componentLicenseFilePath FAILED."
+            exit 1
+        }
+
         # for some reason xslt.load changes the working directory to C:\windows\system32.
         # store the current working directory here.
         $workingDirectory = get-location
@@ -398,11 +402,149 @@ Try {
             write-host "ERROR: xslt.Transform FAILED."
             exit 1
         }
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'build') `
+            -dest (Join-Path $ComponentBasePath 'build')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'include') `
+            -dest (Join-Path $ComponentBasePath 'include')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'build') `
+            -dest (Join-Path $ComponentBasePath 'buildTransitive')
+
+        # Copy transport package specific props / targets after we are done copying
+        # for the other package.
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.props" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.TransportPackage.props" -Destination "$BasePath\build\native"
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePath 'lib\uap10.0') `
+            -dest (Join-Path $ComponentBasePath 'metadata')
+
+        build\scripts\CopyContents.ps1 `
+            -SourceDir "$PSScriptRoot\$BasePath" `
+            -ContentsList @('lib') `
+            -Exclude @('*.winmd', '*.pdb', '*.lib') `
+            -TargetDir $ComponentBasePath
+
+        build\scripts\CopyContents.ps1 `
+            -SourceDir "$PSScriptRoot\$BasePath" `
+            -ContentsList @('runtimes\win-*') `
+            -Exclude @('*.pdb') `
+            -TargetDir $ComponentBasePath
+
+        foreach($platformToRun in $platform.Split(","))
+        {
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$PSScriptRoot\$BasePath\lib\win10-$platformToRun" `
+                -dest "$ComponentBasePath\lib\native\$platformToRun"
+
+            build\scripts\CopyContents.ps1 `
+                -SourceDir "$PSScriptRoot\$BasePath\runtimes\win10-$platformToRun" `
+                -ContentsList @(
+                    'native\DeploymentAgent.exe',
+                    'native\Microsoft.Windows.ApplicationModel.Resources.dll',
+                    'native\Microsoft.WindowsAppRuntime.dll',
+                    'native\Microsoft.WindowsAppRuntime.Insights.Resource.dll',
+                    'native\Microsoft.WindowsAppRuntime.pri',
+                    'native\MRM.dll',
+                    'native\PushNotificationsLongRunningTask.ProxyStub.dll',
+                    'native\RestartAgent.exe') `
+                -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
+        }
+
+        # Populate ARM64EC folders with x64 content
+        if ($platform.Split(",") -contains "x64")
+        {
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$ComponentBasePath\lib\native\x64" `
+                -dest "$ComponentBasePath\lib\native\arm64ec"
+
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$ComponentBasePath\runtimes\win-x64" `
+                -dest "$ComponentBasePath\runtimes\win-arm64ec"
+
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$ComponentBasePath\runtimes-framework\win-x64" `
+                -dest "$ComponentBasePath\runtimes-framework\win-arm64ec"
+        }
+
+        Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
+
+        # Populate Intellisense files
+        $IntellisensePath = "$PSScriptRoot\build\NuSpecs\Intellisense"
+
+        $LibPaths = @(
+            (Join-Path $ComponentBasePath "metadata"),
+            (Join-Path $ComponentBasePath "lib\net6.0-windows10.0.17763.0")
+        )
+
+        foreach ($File in Get-ChildItem -Path $LibPaths)
+        {
+            if ($File.Extension -ne ".dll" -and $File.Extension -ne ".winmd")
+            {
+                continue
+            }
+
+            $IntellisenseFile = (Join-Path $IntellisensePath "$($File.BaseName).xml")
+            $DestinationDir = ($File.DirectoryName)
+
+            if (-not (Test-Path $IntellisenseFile))
+            {
+                Write-Host "Intellisense file not found: $IntellisenseFile"
+                continue
+            }
+
+            Copy-Item -Path $IntellisenseFile -Destination $DestinationDir
+        }
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
-        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec"
-        Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -Destination $nuspecPath
+        # Remove ProjectCapability for the one in the transport package
+        $propsFilePath = (Join-Path $BasePath 'build\Microsoft.WindowsAppSDK.Foundation.props')
+        [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+        foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
+        {
+            if ($projectCapability.Id -eq "VersionSpecific")
+            {
+                $wasFoundationProps.Project.RemoveChild($projectCapability.ParentNode)
+                break
+            }
+        }
+        # Note: For some reason, the Save method does not work by default
+        # with the path relative to the current working directory.
+        # So we prepend the current working directory to the path.
+        $propsFileSavePath = Join-Path $PWD $propsFilePath
+        $wasFoundationProps.Save($propsFileSavePath)
+
+        # Fix up ProjectCapability versions
+        $FoundationBuildPaths = @(
+            'build',
+            'buildTransitive'
+        )
+
+        foreach ($BuildPath in $FoundationBuildPaths)
+        {
+            # Keep ProjectCapability and update the version for the one in the component package
+            $propsFilePath = (Join-Path $ComponentBasePath "$BuildPath\Microsoft.WindowsAppSDK.Foundation.props")
+            [xml]$wasFoundationProps = Get-Content -Encoding UTF8 -Path $propsFilePath
+            foreach ($projectCapability in $wasFoundationProps.Project.ItemGroup.ProjectCapability)
+            {
+                if ($projectCapability.Id -eq "VersionSpecific")
+                {
+                    $projectCapability.Include = "Microsoft.WindowsAppSDK.Foundation.$ComponentPackageVersion"
+                }
+            }
+            $wasFoundationProps.Save($propsFileSavePath)
+        }
+
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec"
+        Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec" -Destination $nuspecPath
 
         # Add the version to the nuspec.
         [xml]$publicNuspec = Get-Content -Path $nuspecPath
@@ -410,7 +552,42 @@ Try {
         Set-Content -Value $publicNuspec.OuterXml $nuspecPath
 
         # Make the foundation transport package.
-        & .\.nuget\nuget.exe pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+        nuget pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
+            exit 1
+        }
+
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec"
+        Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -Destination $nuspecPath
+
+        # Add the version to the nuspec.
+        [xml]$publicNuspec = Get-Content -Path $nuspecPath
+        $publicNuspec.package.metadata.version = $ComponentPackageVersion
+
+        # Update dependency versions in the nuspec
+        foreach ($dependency in $publicNuspec.package.metadata.dependencies.dependency)
+        {
+            $buildDependency = $versionDetailsPath.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
+            if (-not($buildDependency))
+            {
+                write-host "ERROR: NuGet package dependency $($dependency.Id) not found."
+                exit 1
+            }
+
+            $_dependencyMinVersion = $buildDependency.Version
+            $_numericVersion = $_dependencyMinVersion -replace '[-+].*$', ''  # Remove suffix
+            $_parsedVersion = [System.Version]$_numericVersion
+            $_dependencyMaxVersion = "$($_parsedVersion.Major + 1).0.0"
+            $dependency.version = "[${_dependencyMinVersion}, ${_dependencyMaxVersion})"
+        }
+
+        Set-Content -Value $publicNuspec.OuterXml $nuspecPath
+
+        # Make the foundation transport package.
+        nuget pack $nuspecPath -BasePath $ComponentBasePath -OutputDirectory $OutputDirectory
 
         if ($lastexitcode -ne 0)
         {
@@ -418,12 +595,6 @@ Try {
             exit 1
         }
     }
-    # if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMock"))
-    # {
-    #     $transportPackagepath = (Join-Path $OutputDirectory "Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion.nupkg")
-    #     . eng\common\Scripts\buildMockWinAppSdkPackage.ps1 -TransportPackageName "Foundation" -TransportPackagePath $transportPackagepath -RepoRoot $env:Build_SourcesDirectory -Output $OutputDirectory -Platform $Platform -Configuration $Configuration -TransportPackageVersion $PackageVersion -CleanOutput
-    # }
-
     $files = Get-ChildItem $OutputDirectory -File -Filter "*.nupkg"
     foreach ($file in $files)
     {

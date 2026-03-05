@@ -400,11 +400,10 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
             options.FailIfNotFound(true);
             auto deploymentResult{ packageDeploymentManager.RemovePackageByUriAsync(packageUri, options).get() };
-//TODO WTH
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: %d", deploymentResult.Status()));
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Error: 0x%08X", deploymentResult.Error()));
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ExtendedError: 0x%08X", deploymentResult.ExtendedError()));
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploymentResult.ErrorText().c_str()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: %d", deploymentResult.Status()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Error: 0x%08X", deploymentResult.Error()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ExtendedError: 0x%08X", deploymentResult.ExtendedError()));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ErrorText: %s", deploymentResult.ErrorText().c_str()));
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.Error()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));

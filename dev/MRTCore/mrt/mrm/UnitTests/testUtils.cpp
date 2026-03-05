@@ -32,14 +32,14 @@ bool TestUtils::TryVerifyRemap(_In_ PCWSTR pVarName, _Inout_ const RemapUInt16* 
             return false;
         }
 
-        for (UINT16 i = 0; i < expectedStrings.GetNumStrings(); i++)
+        for (int i = 0; i < expectedStrings.GetNumStrings(); i++)
         {
             if (!expectedStrings.TryGetStringAsInt(i, &expectedValue))
             {
                 Log::Warning(tmp.Format(L"[ \"%s\" malformed - value %d ignored ]", pVarName, i));
                 continue;
             }
-            pRemap->TryGetMapping(i, &gotValue);
+            pRemap->TryGetMapping(static_cast<UINT16>(i), &gotValue);
             VERIFY(expectedValue == gotValue);
         }
         return true;

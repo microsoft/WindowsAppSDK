@@ -127,6 +127,7 @@
     <ClCompile Include="PackageDeploymentManagerTests_Reset.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Stage.cpp" />
     <ClCompile Include="PackageRuntimeManagerTests.cpp" />
+    <ClCompile Include="PackageVolumeTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -155,7 +156,7 @@
     </Reference>
   </ItemGroup>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="Test.testdef" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="Test.testdef" DestinationFolder="$(OutDir)" />
   </Target>
   <ItemGroup>
     <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">

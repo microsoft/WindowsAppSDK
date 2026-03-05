@@ -10,8 +10,6 @@
 
 #include "Test_Win32.h"
 
-#include <MddWin11.h>
-
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
@@ -529,6 +527,16 @@ wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCrea
     return Mdd_TryCreate(expectedHR, TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
 }
 
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkMathAdd(
+    const HRESULT expectedHR,
+    const MddPackageDependencyProcessorArchitectures architectures,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options)
+{
+    return Mdd_TryCreate(expectedHR, TP::FrameworkMathAdd::c_PackageFamilyName, architectures, lifetimeKind, lifetimeArtifact, options);
+}
+
 wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
     MddCreatePackageDependencyOptions options)
 {
@@ -571,9 +579,8 @@ MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
     const HRESULT expectedHR,
     PCWSTR packageDependencyId)
 {
-    const MddAddPackageDependencyOptions options{};
     wil::unique_process_heap_string packageFullName;
-    return Mdd_Add(expectedHR, packageDependencyId, MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, options, packageFullName);
+    return Mdd_Add(expectedHR, packageDependencyId, packageFullName);
 }
 
 MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
@@ -584,12 +591,30 @@ MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
 }
 
 MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
+    const HRESULT expectedHR,
+    PCWSTR packageDependencyId,
+    wil::unique_process_heap_string& packageFullName)
+{
+    return Mdd_Add(expectedHR, packageDependencyId, MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, packageFullName);
+}
+
+MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
     PCWSTR packageDependencyId,
     const INT32 rank,
     wil::unique_process_heap_string& packageFullName)
 {
     const MddAddPackageDependencyOptions options{};
     return Mdd_Add(packageDependencyId, rank, options, packageFullName);
+}
+
+MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
+    const HRESULT expectedHR,
+    PCWSTR packageDependencyId,
+    const INT32 rank,
+    wil::unique_process_heap_string& packageFullName)
+{
+    const MddAddPackageDependencyOptions options{};
+    return Mdd_Add(expectedHR, packageDependencyId, rank, options, packageFullName);
 }
 
 MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(

@@ -10,7 +10,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
 {
     struct BackgroundTaskBuilder : BackgroundTaskBuilderT<BackgroundTaskBuilder>
     {
-        BackgroundTaskBuilder()
+        BackgroundTaskBuilder(): m_taskEntryPointClsid{}
         {
             THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::Background::Feature_BackgroundTask::IsEnabled());
         }
@@ -28,6 +28,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
 
         void Name(winrt::hstring Name);
         winrt::hstring Name() { return m_name; }
+
+        void TaskGroup(winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistrationGroup TaskGroup);
+        winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistrationGroup TaskGroup();
 
         winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Register();
         winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Register(winrt::hstring taskName);

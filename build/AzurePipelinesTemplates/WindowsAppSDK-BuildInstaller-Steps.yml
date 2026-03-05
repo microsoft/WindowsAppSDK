@@ -187,7 +187,15 @@ steps:
   inputs:
     targetType: "inline"
     script: |
-      $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*'
+      $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Runtime*'
+      if ($srcWinAppSDKNupkgPath -eq $null)
+      {
+        $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Packages*'
+      }
+      if ($srcWinAppSDKNupkgPath -eq $null)
+      {
+        $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*'
+      }
       Copy-Item -Force $srcWinAppSDKNupkgPath.FullName '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\'
       $destWinAppSDKNupkgPath = Get-Childitem -Path '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\' -File '*Microsoft.WindowsAppSDK*'
       $winAppSDKZip = $destWinAppSDKNupkgPath.FullName -replace '.nupkg','.zip'
@@ -199,9 +207,12 @@ steps:
   displayName: 'Setup native compiler version override'
   inputs:
     microsoftDropReadPat: $(System.AccessToken)
-    compilerPackageName: $(compilerOverridePackageName)
-    compilerPackageVersion: $(compilerOverridePackageVersion)
+    compilerPackageName: $(localCompilerOverridePackageName)
+    compilerPackageVersion: $(localCompilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev
+    includeUCRT: true
+    ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
 
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
@@ -210,28 +221,32 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArgs: /binaryLogger:$(ob_outputDirectory)\binlogs\WindowsAppRuntimeInstall.$(buildPlatform).$(buildConfiguration).binlog
-    ${{ if eq( parameters.runStaticAnalysis, 'true') }}:
-      createLogFile: true
 
-- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
-  - task: SDLNativeRules@3
-    condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
-    displayName: Run the PREfast SDL Native Rules
-    inputs:
-      userProvideBuildInfo: auto
-      toolVersion: Latest
-      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
-      excludedPaths: |
-        $(Build.SourcesDirectory)\packages
-    continueOnError: true
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+# The VSBuild@1 task above seems to be able to do inline PREfast scanning with the EO-compliant ruleset now. So, we don't seem to
+# need the following any more. Commenting it out for now and observe a bit more. Remove it when we feel comfortable.
+#- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+#  - task: SDLNativeRules@3
+#    condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
+#    displayName: Run the PREfast SDL Native Rules
+#    inputs:
+#      userProvideBuildInfo: auto
+#      toolVersion: Latest
+#      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+#      excludedPaths: |
+#        $(Build.SourcesDirectory)\packages
+#      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+#      rulesetName: Custom
+#      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+#      policyName: 'WindowsUndocked'
+#    continueOnError: true
+#    env:
+#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Governance Detection'
   inputs:
     scanType: 'Register'
-    failOnAlert: true
+    failOnAlert: false
 
 - ${{ if eq(parameters.IsOneBranch, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
@@ -263,6 +278,7 @@ steps:
 
 - ${{ if ne(parameters.IsOneBranch, 'true') }}:
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'
       artifactName: '$(ob_artifactBaseName)'

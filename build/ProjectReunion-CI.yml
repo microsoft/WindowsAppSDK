@@ -1,10 +1,22 @@
 # see https://docs.microsoft.com/azure/devops/pipelines/process/phases for info on yaml ADO jobs
-name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+name: $(version)
+
 variables:
-- template: WindowsAppSDK-Versions.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildOutputDir
   value: $(Build.SourcesDirectory)\BuildOutput
+
+resources:
+  repositories:
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKVersionConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
 
 jobs:
 - job: PreChecks
@@ -82,8 +94,6 @@ jobs:
   - checkout: self
     persistCredentials: true
 
-  - task: NuGetToolInstaller@1
-
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
     parameters:
       IsOneBranch: false
@@ -110,8 +120,6 @@ jobs:
   pool:
     vmImage: 'windows-2022'
   steps:
-  - task: NuGetToolInstaller@1
-
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
     parameters:
       IsOneBranch: false
@@ -146,8 +154,6 @@ jobs:
   variables:
     ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)" # For BuildMRT to publish t
   steps:
-  - task: NuGetToolInstaller@1
-
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
     parameters:
       IsOneBranch: false
@@ -176,9 +182,18 @@ jobs:
   - BuildMRT
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+    artifactAttempt: ''
+    artifactStatus: 'Succeeded'
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(artifactStatus)$(artifactAttempt)'
+    ob_artifactBaseName: '$(System.StageName)_$(imageName)'
   steps:
+  - checkout: self
+    path: s
+  - checkout: WindowsAppSDKConfig
+  
   - template: AzurePipelinesTemplates\WindowsAppSDK-RunTests-Steps.yml
     parameters:
       buildPlatform: $(buildPlatform)
       buildConfiguration: $(buildConfiguration)
       testLocale: $(testLocale)
+      ImageName: $(imageName)

@@ -1,0 +1,31 @@
+{
+  "weights": {
+    "reactions": 30,
+    "age": 25,
+    "comments": 20,
+    "severity": 15,
+    "blockers": 10
+  },
+  "thresholds": {
+    "hot_reactions": 10,
+    "aging_days": 90,
+    "trending_comments": 10,
+    "trending_days": 14,
+    "popular_reactions": 5
+  },
+  "labelPriority": [
+    "regression",
+    "blocker",
+    "hot",
+    "aging",
+    "trending",
+    "popular"
+  ],
+  "maxLabelsPerIssue": 2,
+  "severityLabels": {
+    "critical": ["regression", "crash", "hang", "data-loss"],
+    "high": ["bug", "security"],
+    "medium": ["performance"],
+    "low": ["documentation", "enhancement"]
+  }
+}

@@ -7,6 +7,9 @@ param
     [String]$Dest
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 function Remove-ItemIfExists ($Item)
 {
     if (Test-Path $Item)

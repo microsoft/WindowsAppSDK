@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Prázdné okno (WinUI 3 na ploše)</value>
+    <value>Prázdné okno</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Experimentální] Prázdné okno (WinUI 3 na ploše)</value>
+    <value>[Experimentální] Prázdné okno</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Prázdné okno pro desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Prázdné okno (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>Prázdná stránka (WinUI 3)</value>
+    <value>Prázdná stránka</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Experimentální] Prázdná stránka (WinUI 3)</value>
+    <value>[Experimentální] Prázdná stránka</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Prázdná stránka pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Prázdná stránka (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Slovník prostředků (WinUI 3)</value>
+    <value>Slovník prostředků</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Experimentální] Slovník prostředků (WinUI 3)</value>
+    <value>[Experimentální] Slovník prostředků</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Prázdná kolekce prostředků XAML s klíči pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3).</value>
+    <value>Prázdná kolekce prostředků XAML (WinUI) s klíči</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Soubor prostředků (.resw)</value>
@@ -151,60 +151,109 @@
     <value>[Experimental] Soubor prostředků (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Soubor pro ukládání řetězců a podmíněných prostředků pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Soubor pro ukládání řetězce a podmíněných prostředků (WinUI)</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>Vlastní ovládací prvek (WinUI 3)</value>
+    <value>Ovládací prvek v šabloně</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Experimentální] Vlastní ovládací prvek (WinUI 3)</value>
+    <value>[Experimentální] Ovládací prvek v šabloně</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Vlastní ovládací prvek pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3).</value>
+    <value>Prázdný vlastní ovládací prvek s odpovídajícím výchozím stylem (WinUI)</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Uživatelský ovládací prvek (WinUI 3)</value>
+    <value>Uživatelský ovládací prvek</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Experimentální] Uživatelský ovládací prvek (WinUI 3)</value>
+    <value>[Experimentální] Uživatelský ovládací prvek</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Uživatelský ovládací prvek pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Prázdný uživatelský ovládací prvek (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Prázdná aplikace zabalená s Projekt vytváření balíčku aplikace Windows (WinUI 3 v desktopové verzi)</value>
+    <value>Prázdná aplikace WinUI (zabalená s projektem vytváření balíčku aplikace Windows)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimentální] Prázdná aplikace zabalená s Projekt vytváření balíčku aplikace Windows (WinUI 3 v desktopu)</value>
+    <value>[Experimentální] Prázdná aplikace WinUI (zabalená s projektem vytváření balíčku aplikace Windows)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Šablona projektu pro vytvoření desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3). K vytvoření balíčku MSIX pro instalaci bokem nebo distribuci prostřednictvím Microsoft Store je zahrnutý projekt WAP (vytváření balíčku aplikace Windows).</value>
+    <value>Šablona projektu pro vytvoření aplikace WinUI. Součástí je projekt vytváření balíčku aplikace Windows (WAP), který vytvoří balíček MSIX pro zkušební načtení před prodejem nebo distribuci prostřednictvím obchodu Microsoft Store.</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Prázdná aplikace, zabalená (WinUI 3 v desktopové verzi)</value>
+    <value>Prázdná aplikace WinUI (zabalená)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Experimentální] Prázdná aplikace, zabalená (WinUI 3 v desktopové verzi)</value>
+    <value>[Experimentální] Prázdná aplikace WinUI (zabalená)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Šablona projektu pro vytvoření desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3) spolu s balíčkem MSIX pro zkušební načtení nebo distribuci prostřednictvím Microsoft Store.</value>
+    <value>Šablona projektu pro vytvoření aplikace WinUI spolu s balíčkem MSIX pro zkušební načtení před prodejem nebo distribuci prostřednictvím obchodu Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Součást prostředí Windows Runtime (WinUI 3)</value>
+    <value>Součást prostředí Windows Runtime WinUI</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimentální] Součást prostředí Windows Runtime (WinUI 3)</value>
+    <value>[Experimentální] Součást prostředí Windows Runtime WinUI (C++/WinRT)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Projekt pro vytvoření součásti prostředí Windows Runtime C++/WinRT (.winmd) pro desktopovou i Univerzální platformu Windows (UPW) založené na Knihovně uživatelského rozhraní Windows (WinUI 3).</value>
+    <value>Projekt pro vytvoření součásti prostředí Windows Runtime C++/WinRT (.winmd) pro aplikace pro desktopovou i Univerzální platformu Windows (UPW) založené na WinUI.</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Aplikace pro testování jednotek (WinUI 3)</value>
+    <value>Testovací aplikace jednotek WinUI</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Experimentální] Testovací Aplikace Jednotky (WinUI 3)</value>
+    <value>[Experimentální] Testovací aplikace jednotek WinUI</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Projekt pro vytvoření aplikace pro testování jednotek C++/WinRT pro WinUI 3 pomocí MSTestu</value>
+    <value>Projekt pro vytvoření aplikace pro testování jednotek C++/WinRT pro WinUI pomocí MSTestu</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>Prázdná aplikace WinUI</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Projekt pro vytvoření prázdné aplikace WinUI.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>Projekt vytváření balíčku aplikace Windows pro WinUI</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Šablona projektu, která vytváří balíčky MSIX obsahující aplikace WinUI pro instalaci bokem nebo distribuci prostřednictvím Microsoft Store</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>Instalují se balíčky NuGet do projektu...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Probíhá operace...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>Chybějící odkaz(y) na balíček</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Nelze přidat odkazy na následující balíčky pro {0}: {1}. Před sestavením prosím přidejte odkazy na balíček.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] Nelze přidat odkazy na následující balíčky: {1}.
+
+Toto je chyba prostředí. Před sestavením projektu prosím přidejte odkazy na balíček.
+
+Další podrobnosti o chybě najdete na kartě Obecné v okně Výstup.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>Správa balíčků NuGet</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>Zobrazit podrobnosti chyby</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>Chybějící odkazy na balíčky pro {0}:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Před sestavením ručně přidejte odkazy na balíček.</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>Obecné</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>Nejsou k dispozici žádné výstupní informace.</value>
   </data>
 </root>

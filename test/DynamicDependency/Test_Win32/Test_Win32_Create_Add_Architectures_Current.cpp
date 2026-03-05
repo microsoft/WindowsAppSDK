@@ -28,10 +28,9 @@ void Test::DynamicDependency::Test_Win32::Create_Add_Architectures_Current()
 
     // -- TryCreate
 
-    // We're using the Neutral arhitecture as that's our test package's defined architecture.
-    // That's OK, what matters is we're not using MddPackageDependencyProcessorArchitectures::None
-    // so we exercise the not-default-whatever-deemed-appropriate architecture codepath.
-    auto architectures{ MddPackageDependencyProcessorArchitectures::Neutral };
+    // We're using MddPackageDependencyProcessorArchitectures::None
+    // so we exercise the default-whatever-deemed-appropriate architecture codepath.
+    auto architectures{ MddPackageDependencyProcessorArchitectures::None };
     wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(architectures) };
 
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);

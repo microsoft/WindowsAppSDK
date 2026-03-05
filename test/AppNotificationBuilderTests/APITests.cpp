@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+#include "MddWin11.h"
+
+using namespace WEX::Logging;
 
 namespace winrt
 {
@@ -37,8 +40,18 @@ namespace Test::AppNotification::Builder
         {
 
             ::Test::Bootstrap::SetupBootstrap();
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
-                ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+            
+            PCWSTR testFrameworkPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName };
+            PCWSTR testMainPackageFamilyName{ ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName };
+
+            // For Windows 11 newer versions, the TestInitialize will fail fast if we pass a non null package family name.
+            // https://github.com/microsoft/WindowsAppSDK/blob/main/dev/Common/WindowsAppRuntime.VersionInfo.cpp#L123-L133
+            if (MddCore::Win11::IsSupported())
+            {
+                testMainPackageFamilyName = nullptr;
+            }
+
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(testFrameworkPackageFamilyName, testMainPackageFamilyName);
             return true;
         }
 
@@ -670,6 +683,12 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderWithCameraPreview)
         {
+            if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"AddCameraPreview API is experimental.");
+                return;
+            }
+
             if (!winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported())
             {
                 return;
@@ -691,6 +710,12 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderWithCameraPreviewAndVideoCallSettingsButton)
         {
+            if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"AddCameraPreview API is experimental.");
+                return;
+            }
+
             if (!winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported())
             {
                 return;
@@ -713,6 +738,12 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderWithCameraPreviewAndAudioCallSettingsButton)
         {
+            if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"AddCameraPreview API is experimental.");
+                return;
+            }
+
             if (!winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported())
             {
                 return;
@@ -735,6 +766,12 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderWithIsCallingPreviewSupportedIsFalse)
         {
+            if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"AddCameraPreview API is experimental.");
+                return;
+            }
+
             if (!winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported())
             {
                 VERIFY_THROWS_HR(winrt::AppNotificationBuilder().AddCameraPreview(), E_NOTIMPL);

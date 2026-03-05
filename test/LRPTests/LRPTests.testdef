@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Push Notifications Long Running Process (LRP) tests",
+            "Filename": "LRPTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86"],
+            "Status": "Enabled"
+        }
+    ]
+}

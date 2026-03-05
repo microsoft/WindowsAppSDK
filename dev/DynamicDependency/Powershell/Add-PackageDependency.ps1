@@ -25,6 +25,11 @@
     the resolved package is added before others of the same rank. For more
     information, see https://learn.microsoft.com/windows/win32/api/appmodel/ne-appmodel-addpackagedependencyoptions
 
+.PARAMETER SpecifiedPackageFamilyOnly
+    Only add the target package family to the package graph.
+    By default the target package family and its resolved dependencies
+    are added to the package graph.
+
 .LINK
     https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-addpackagedependency
 #>
@@ -35,7 +40,9 @@ param(
 
     [int]$Rank=0,
 
-    [switch]$PrependIfRankCollision
+    [switch]$PrependIfRankCollision,
+
+    [switch]$SpecifiedPackageFamilyOnly
 )
 
 Set-StrictMode -Version 3.0
@@ -55,10 +62,27 @@ if ($PrependIfRankCollision -eq $true)
     $options = $options -bor [Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions]::PrependIfRankCollision
 }
 
+if ($SpecifiedPackageFamilyOnly -eq $true)
+{
+    $options2 = [Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions2]::SpecifiedPackageFamilyOnly
+    if ($PrependIfRankCollision -eq $true)
+    {
+        $options2 = $options2 -bor [Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions2]::PrependIfRankCollision
+    }
+}
+
 $packageDependencyContext = [IntPtr]0
 $packageFullName = ""
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Add(
-        $PackageDependencyId, $Rank, $options, [ref] $packageDependencyContext, [ref] $packageFullName)
+if ($SpecifiedPackageFamilyOnly -eq $true)
+{
+    $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Add2(
+            $PackageDependencyId, $Rank, $options2, [ref] $packageDependencyContext, [ref] $packageFullName)
+}
+else
+{
+    $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Add(
+            $PackageDependencyId, $Rank, $options, [ref] $packageDependencyContext, [ref] $packageFullName)
+}
 if ($hr -lt 0)
 {
     $win32ex = [System.ComponentModel.Win32Exception]::new($hr)

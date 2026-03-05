@@ -12,7 +12,11 @@ variables:
 
 jobs:
 - job: Localization
-  pool: 'ProjectReunionESPool'
+  pool:
+    type: windows
+    isCustom: true
+    name: 'ProjectReunionESPool-2022'
+    demands: ImageOverride -equals MMS2022
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-CallTouchDownBuild-Steps.yml
     parameters:
@@ -20,4 +24,5 @@ jobs:
       ResourceFilePath: |
         dev\VSIX\Extension\Cpp\Common\VSPackage.resx
         dev\VSIX\Extension\Cs\Common\VSPackage.resx
+        dev\Interop\StoragePickers\Strings\StoragePickers.resw
       teamId: $(TdBuildTeamIDVSIX)

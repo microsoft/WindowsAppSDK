@@ -57,7 +57,7 @@ steps:
       foreach ($file in $files) # Iterate through each package we restored in the directory
       {
         Write-Host "file:" $file.FullName
-        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*WindowsAppSDK*.nupkg"
+        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*WindowsAppSDK*.nupkg" | Where-Object { $_.Name -match "WindowsAppSDK\.[0-9].*\.nupkg" }
 
         # Extract nupkg to access the nuspec
         # The files in this directory does not contain the nuspec by default
@@ -88,8 +88,6 @@ steps:
       }
       Exit 1
 
-- task: NuGetToolInstaller@1
-
 - task: NuGetAuthenticate@1
 
 - task: VSBuild@1
@@ -98,7 +96,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.restore.binlog'
 
 - task: VSBuild@1
   displayName: 'Build Standalone WindowsAppSDK.Extension.sln'
@@ -106,9 +104,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.binlog'
-    ${{ if eq( parameters.runStaticAnalysis, 'true') }}:
-      createLogFile: true
+    msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.build.binlog'
 
 - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
@@ -120,6 +116,10 @@ steps:
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
         $(Build.SourcesDirectory)\packages
+      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+      rulesetName: Custom
+      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+      policyName: 'WindowsUndocked'
     continueOnError: true
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -130,7 +130,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"' 
+    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.restore.binlog' 
 
 - task: VSBuild@1
   displayName: 'Build Component WindowsAppSDK.Extension.sln'
@@ -138,9 +138,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.binlog'
-    ${{ if eq( parameters.runStaticAnalysis, 'true') }}:
-      createLogFile: true
+    msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.build.binlog'
 
 - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
@@ -152,6 +150,10 @@ steps:
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
         $(Build.SourcesDirectory)\packages
+      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+      rulesetName: Custom
+      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+      policyName: 'WindowsUndocked'
     continueOnError: true
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -160,7 +162,7 @@ steps:
   displayName: 'Component Governance Detection'
   inputs:
     scanType: 'Register'
-    failOnAlert: true
+    failOnAlert: false
 
 - ${{ if eq(parameters.SignOutput, false) }}:
   - task: CopyFiles@2

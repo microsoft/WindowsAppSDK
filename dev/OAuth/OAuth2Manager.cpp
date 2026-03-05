@@ -23,81 +23,11 @@ using namespace winrt::Windows::Web::Http;
 
 namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementation
 {
-    IAsyncOperation<AuthRequestResult> OAuth2Manager::RequestAuthAsync(winrt::Microsoft::UI::WindowId const& parentWindowId,
-        const Uri& completeAuthEndpoint,
-        const Uri& redirectUri)
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
-
-        bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
-        PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
-        OAuth2ManagerTelemetry::RequestAuthAsyncTriggered(isAppPackaged, appName, true);
-
-        winrt::hstring state;
-        auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(state);
-
-        {
-            std::lock_guard guard{ m_mutex };
-            m_pendingAuthRequests.push_back(AuthRequestState{ state, asyncOp });
-        }
-
-        try
-        {
-            // Pipe server has been successfully set up. Initiate the launch
-            auto url = create_implicit_url(completeAuthEndpoint, state, redirectUri);
-
-            // Launch browser
-            execute_shell(parentWindowId, url);
-        }
-        catch (...)
-        {
-            try_remove(asyncOp.get());
-            throw;
-        }
-
-        return *asyncOp;
-    }
-
-    IAsyncOperation<AuthRequestResult> OAuth2Manager::RequestAuthAsync(winrt::Microsoft::UI::WindowId const& parentWindowId,
-        const Uri& completeAuthEndpoint)
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
-
-
-        bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
-        PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
-        OAuth2ManagerTelemetry::RequestAuthAsyncTriggered(isAppPackaged, appName, false);
-
-        winrt::hstring state;
-        auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(state);
-
-        {
-            std::lock_guard guard{ m_mutex };
-            m_pendingAuthRequests.push_back(AuthRequestState{ state, asyncOp });
-        }
-
-        try
-        {
-            // Pipe server has been successfully set up. Initiate the launch
-            auto url = create_implicit_url(completeAuthEndpoint, state, nullptr);
-
-            // Launch browser
-            execute_shell(parentWindowId, url);
-        }
-        catch (...)
-        {
-            try_remove(asyncOp.get());
-            throw;
-        }
-        return *asyncOp;
-    }
 
     IAsyncOperation<AuthRequestResult> OAuth2Manager::RequestAuthWithParamsAsync(winrt::Microsoft::UI::WindowId const& parentWindowId,
         const Uri& authEndpoint,
         const oauth::AuthRequestParams& params)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
-
 
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
@@ -131,7 +61,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
 
     bool OAuth2Manager::CompleteAuthRequest(const Uri& responseUri)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
 
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
@@ -240,7 +169,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
     IAsyncOperation<oauth::TokenRequestResult> OAuth2Manager::RequestTokenAsync(Uri tokenEndpoint,
         oauth::TokenRequestParams params, oauth::ClientAuthentication clientAuth)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
 
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
@@ -405,30 +333,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
             m_pendingAuthRequests.pop_back();
         }
 
-        return result;
-    }
-
-    std::wstring OAuth2Manager::create_implicit_url(const foundation::Uri& completeAuthEndpoint, const winrt::hstring& state, const foundation::Uri& redirectUri)
-    {
-        std::lock_guard guard{ m_mutex };
-        // Per RFC 6749 section 3.1, the auth endpoint URI *MAY* contain a query string, which must be retained
-        std::wstring result{ completeAuthEndpoint.RawUri() };
-        if (completeAuthEndpoint.Query().empty())
-        {
-            result += L"?state=";
-        }
-        else
-        {
-            result += L"&state=";
-        }
-        result += Uri::EscapeComponent(state);
-        result += L"&response_type=token";
-
-        if (redirectUri)
-        {
-            result += L"&redirect_uri=";
-            result += Uri::EscapeComponent(redirectUri.RawUri());
-        }
         return result;
     }
 

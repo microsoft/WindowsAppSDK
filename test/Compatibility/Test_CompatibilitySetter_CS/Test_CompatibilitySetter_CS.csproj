@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <Platforms>x86;x64;arm64;AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(RepoRoot)\dev\Projections\CS\Microsoft.Windows.ApplicationModel.WindowsAppRuntime\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.csproj" />
+  </ItemGroup>
+
+  <!-- MAIN TEST CONTENT -->
+  <PropertyGroup>
+    <WindowsAppSDKRuntimePatchLevel1>1.7.3</WindowsAppSDKRuntimePatchLevel1>
+    <WindowsAppSDKRuntimePatchLevel2>1.8.2</WindowsAppSDKRuntimePatchLevel2>
+    <!-- Specify multiple DisabledChanges, comma-separated. "None" is the only enum value
+         which always exists, so use that one a couple times plus a cast of a random int. -->
+    <WindowsAppSDKDisabledChanges>None, None, (RuntimeCompatibilityChange)23456, None</WindowsAppSDKDisabledChanges>
+  </PropertyGroup>
+
+  <Import Project="$(RepoRoot)\build\NuSpecs\Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" />
+  <Target Name="VerifyCompatibilitySetterFile" AfterTargets="CoreCompile">
+    <!-- Make sure the setter file was generated. -->
+    <Error Condition="!Exists('$(WindowsAppSDKGeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cs')" Text="Missing file: $(WindowsAppSDKGeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cs" />
+    <Error Condition="'$(WindowsAppSdkCompatibilityInitialize)' != 'true'" Text="WindowsAppSdkCompatibilityInitialize is incorrectly not set to true" />
+  </Target>
+  <Import Project="$(RepoRoot)\test\test.autoinitializer.CS.targets" />
+  <!-- END: MAIN TEST CONTENT -->
+
+</Project>

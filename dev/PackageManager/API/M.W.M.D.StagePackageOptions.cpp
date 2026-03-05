@@ -7,6 +7,7 @@
 
 #include "M.W.M.D.StagePackageOptions.h"
 #include "Microsoft.Windows.Management.Deployment.StagePackageOptions.g.cpp"
+#include "AppxPackagingObject.h"
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
@@ -121,6 +122,39 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> StagePackageOptions::ExpectedDigests()
     {
+        if (!m_expectedDigests)
+        {
+            m_expectedDigests = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, hstring>();
+        }
         return m_expectedDigests;
+    }
+
+    bool StagePackageOptions::IsPackageValidationSupported()
+    {
+        return WindowsVersion::SupportsIAppxFactory4();
+    }
+
+    winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource StagePackageOptions::GetValidationEventSourceForUri(winrt::Windows::Foundation::Uri const& uri)
+    {
+        if (!m_packageValidators)
+        {
+            m_packageValidators = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource>();
+        }
+        if (!m_packageValidators.HasKey(uri))
+        {
+            m_packageValidators.Insert(uri, winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageValidationEventSource>());
+        }
+
+        return m_packageValidators.Lookup(uri);
+    }
+
+    winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource> StagePackageOptions::PackageValidators()
+    {
+        if (!m_packageValidators)
+        {
+            m_packageValidators = winrt::single_threaded_map<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource>();
+        }
+
+        return m_packageValidators.GetView();
     }
 }

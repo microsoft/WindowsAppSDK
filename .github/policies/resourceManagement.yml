@@ -14,7 +14,6 @@ configuration:
           hour: 6
       filters:
       - isIssue
-      - isOpen
       - hasLabel:
           label: needs-author-feedback
       - hasLabel:
@@ -30,7 +29,6 @@ configuration:
           hour: 6
       filters:
       - isIssue
-      - isOpen
       - hasLabel:
           label: needs-author-feedback
       - noActivitySince:
@@ -93,8 +91,8 @@ configuration:
           label: needs-triage
 
 
-      description: Add needs-triage to closed item if commented on by external user
-    - if: 
+    - description: Add needs-triage to closed item if commented on by external user
+      if: 
       - payloadType: Issue_Comment
       - not: isOpen
       - not:
@@ -194,7 +192,120 @@ configuration:
       - removeLabel:
           label: no-recent-activity
 
+    # /feedbackHub
+    - description: >-
+          Triggers:
+          * /feedbackhub
+          * /feedbackHub
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/feedback[H|h]ub'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              Hi @${issueAuthor}. Please file this issue on Feedback Hub [Windows]+[f] and paste 
+              the link here so we can more easily find your information on the back end. The link 
+              can be found at the bottom of the feedback report. Please use "Developer Platform" and "Windows App SDK" 
+              for the Category. 
+      - removeLabel:
+          label: needs-triage
+      - removeLabel:
+          label: needs-assignee-attention
+      - addLabel:
+          label: needs-author-feedback
+      - closeIssue
 
+    # /feedbackHub_WAIF
+    - description: >-
+          Triggers:
+          * /feedbackhubWAIF
+          * /feedbackHubWAIF
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/feedback[H|h]ubWAIF'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              Hi @${issueAuthor}. Could you please submit this issue through Feedback Hub (press [Windows key]+[F])? Once you've done that, share the link here so we can track your issue more effectively on our end.
+
+              When submitting, please select "Developer Platform" as the category and "Windows AI Foundry" as the sub-category.
+
+              Follow these steps:
+              1. Open Feedback Hub using [Windows key]+[F]
+              2. Make sure you're signed in
+              3. When entering your bug details, please start your title with "[Windows AI APIs]"
+              4. Choose "Developer Platform" as the category and "Windows AI Foundry" as the sub-category
+              5. Under "Add more details", select "Recreate my problem"
+              6. Start the recording, show us the issue with your app or sample, then stop recording
+              7. Include as many details as you can about how to reproduce the issue
+              8. Submit your feedback
+
+              Thanks for helping us improve!
+
+      - removeLabel:
+          label: needs-triage
+      - removeLabel:
+          label: needs-assignee-attention
+      - addLabel:
+          label: needs-author-feedback
+
+    # /external
+    - description: >-
+          Triggers:
+          * /external
+          * /External
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/[E|e]xternal'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              [external-classification] Hi @${issueAuthor}, thank you for your contribution! This issue appears to be external to the WindowsAppSDK.
+              To help route it appropriately, please submit your feedback via the Feedback Hub by pressing [Windows] + [F],
+              and include detailed information and diagnostics. We appreciate your help in improving the platform!
+      - removeLabel:
+          label: needs-triage
+      - removeLabel:
+          label: needs-assignee-attention
+      - addLabel:
+          label: area-External
+
+    - description: Close /external issues (step 2)
+      if:
+      - hasLabel:
+          label: area-External
+      - isOpen
+      - commentContains:
+          pattern: '^\[external-classification\]'
+          isRegex: True
+      - or:
+        - activitySenderHasPermission:
+            permission: Write
+        - activitySenderHasPermission:
+            permission: Admin
+      then:
+      - closeIssue
 
 onFailure: 
 onSuccess: 

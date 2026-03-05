@@ -1,0 +1,219 @@
+parameters:
+- name: "SignOutput"
+  type: boolean
+  default: false
+- name: "IsOneBranch"
+  type: boolean
+  default: true
+- name: runApiScan
+  type: boolean
+  default: true
+- name: runPREfast
+  type: boolean
+  default: false
+- name: buildPlatform
+  type: string
+  default: x64
+- name: testMatrix
+  type: string
+  default: ''
+
+stages:
+- stage: ${{ format(iif(parameters.runPREfast, 'PREfast_{0}', 'Build_{0}'), parameters.buildPlatform) }}
+  # Skip the build job if we are reusing the output of a previous build.
+  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
+  dependsOn: []
+  jobs:
+  - job: BuildFoundation
+    pool:
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    # In the less likely case of running APIScan and/or PREfast, give it more time.
+    ${{ if or(parameters.runApiScan, parameters.runPREfast) }}:
+      timeoutInMinutes: 180
+    ${{ else }}:
+      timeoutInMinutes: 120
+    strategy:
+      maxParallel: 10
+      matrix:
+        ${{ format('Release_{0}', parameters.buildPlatform) }}:
+          ${{ if ne(parameters.buildPlatform, 'arm64') }}:
+            buildPlatform: ${{ parameters.buildPlatform }}
+            buildConfiguration: 'Release'
+            normalizedConfiguration: 'fre'
+            PGOBuildMode: 'Optimize'
+          ${{ else }}:
+            buildPlatform: ${{ parameters.buildPlatform }}
+            buildConfiguration: 'Release'
+            normalizedConfiguration: 'fre'
+    variables:
+      - name: ob_outputDirectory
+        value: '$(REPOROOT)\out'
+      - name: ob_sdl_codeSignValidation_excludes
+        value: '-|**\Release\**;-|**\packages\**'
+      - name: ob_artifactBaseName
+        ${{ if parameters.runPREfast }}:
+          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+        ${{ else }}:
+          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+      - name: ob_sdl_apiscan_enabled
+        ${{ if parameters.runApiScan }}:
+          value: true
+        ${{ else }}:
+          value: false
+      - name: ob_sdl_apiscan_softwareFolder
+        value: '$(build.SourcesDirectory)\APIScanTarget'
+      - name: ob_sdl_apiscan_symbolsFolder
+        value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - name: localCompilerOverridePackageName
+        value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
+      - name: localCompilerOverridePackageVersion
+        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
+      - name: localCompilerOverrideNupkgVersion
+        value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
+      - name: ob_sdl_checkCompliantCompilerWarnings
+        value: true # This setting has no effect unless ob_sdl_msbuildOverride below is also set to true.
+      - name: ob_sdl_prefast_runDuring
+        value: 'Guardian' # The default 'Build' setting does not match the fact that we are calling msbuild.exe directly.
+      - name: ob_sdl_msbuildOverride
+        value: true # Because we are calling MSBuild directly instead of through the MSBuild@1 or VSBuild@1 tasks. 
+    steps:
+    - script: |
+        echo Build.SourceBranch=$(Build.SourceBranch)
+        echo Build.Reason=$(Build.Reason)
+        echo compilerOverridePackageName=$(compilerOverridePackageName)
+        echo compilerOverridePackageVersion=$(compilerOverridePackageVersion)
+        echo global_CompilerOverridePackageName=$(global_CompilerOverridePackageName)
+        echo global_CompilerOverridePackageVersion=$(global_CompilerOverridePackageVersion)
+        echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
+        echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
+        echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
+        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
+        echo mySourceBranch=$(mySourceBranch)        
+        echo ob_sdl_msbuildOverride=$(ob_sdl_msbuildOverride)
+        echo ob_sdl_prefast_runDuring=$(ob_sdl_prefast_runDuring)
+        echo ob_sdl_checkCompliantCompilerWarnings=$(ob_sdl_checkCompliantCompilerWarnings)
+
+    - template: WindowsAppSDK-BuildFoundation-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+        runApiScan: ${{ parameters.runApiScan }}
+        runPREfast: ${{ parameters.runPREfast }}
+
+  - job: BuildMRT
+    pool:
+      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    # In the less likely case of running APIScan and/or PREfast, give it more time.
+    ${{ if or(parameters.runApiScan, parameters.runPREfast) }}:
+      timeoutInMinutes: 150
+    ${{ else }}:
+      timeoutInMinutes: 120
+    strategy:
+      maxParallel: 10
+      matrix:
+        ${{ format('Release_{0}', parameters.buildPlatform) }}:
+          ${{ if ne(parameters.buildPlatform, 'arm64') }}:
+            buildPlatform: ${{ parameters.buildPlatform }}
+            buildConfiguration: 'Release'
+            normalizedConfiguration: 'fre'
+            PGOBuildMode: 'Optimize'
+          ${{ else }}:
+            buildPlatform: ${{ parameters.buildPlatform }}
+            buildConfiguration: 'Release'
+            normalizedConfiguration: 'fre'
+    variables:
+      - name: ob_outputDirectory
+        value: '$(REPOROOT)\out'
+      - name: ob_sdl_codeSignValidation_excludes
+        value: '-|**\Release\**'
+      - name: ob_sdl_suppression_suppressionSet
+        value: default
+      - name: ob_artifactBaseName
+        ${{ if parameters.runPREfast }}:
+          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+        ${{ else }}:
+          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+      - name: ob_sdl_apiscan_enabled
+        ${{ if parameters.runApiScan }}:
+          value: true
+        ${{ else }}:
+          value: false
+      - name: ob_sdl_apiscan_softwareFolder
+        value: '$(build.SourcesDirectory)\APIScanTarget'
+      - name: ob_sdl_apiscan_symbolsFolder
+        value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - name: localCompilerOverridePackageName
+        value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
+      - name: localCompilerOverridePackageVersion
+        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
+      - name: localCompilerOverrideNupkgVersion
+        value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]    
+      - name: ob_sdl_checkCompliantCompilerWarnings
+        value: true # This setting has no effect unless ob_sdl_msbuildOverride below is also set to true.
+      - name: ob_sdl_prefast_runDuring
+        value: 'Guardian' # The default 'Build' setting does not match the fact that we are calling msbuild.exe directly.
+      - name: ob_sdl_msbuildOverride
+        value: true # Because we are calling MSBuild directly instead of through the MSBuild@1 or VSBuild@1 tasks. 
+    steps:
+    - script: |
+        echo Build.SourceBranch=$(Build.SourceBranch)
+        echo Build.Reason=$(Build.Reason)
+        echo compilerOverridePackageName=$(compilerOverridePackageName)
+        echo compilerOverridePackageVersion=$(compilerOverridePackageVersion)
+        echo global_CompilerOverridePackageName=$(global_CompilerOverridePackageName)
+        echo global_CompilerOverridePackageVersion=$(global_CompilerOverridePackageVersion)
+        echo localCompilerOverridePackageName=$(localCompilerOverridePackageName)
+        echo localCompilerOverridePackageVersion=$(localCompilerOverridePackageVersion)
+        echo localCompilerOverrideNupkgVersion=$(localCompilerOverrideNupkgVersion)
+        echo System.PullRequest.targetBranchName=$(System.PullRequest.targetBranchName)
+        echo mySourceBranch=$(mySourceBranch)        
+        echo ob_sdl_msbuildOverride=$(ob_sdl_msbuildOverride)
+        echo ob_sdl_prefast_runDuring=$(ob_sdl_prefast_runDuring)
+        echo ob_sdl_checkCompliantCompilerWarnings=$(ob_sdl_checkCompliantCompilerWarnings)
+
+    - template: WindowsAppSDK-BuildMRT-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+        runPREfast : ${{ parameters.runPREfast }}
+        runApiScan : ${{ parameters.runApiScan }}
+
+  # Only run the test matrix extraction job in Build_{buildPlatform} job. The PREfast_{buildPlatform} job don't have the following test stages, don't need this job.
+  - ${{ if not(parameters.runPREfast) }}:
+    - job: ExtractMatrix
+      pool:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+      steps:
+      - powershell: |
+          $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
+          $targetPlatform = "${{ parameters.buildPlatform }}"
+          $filteredMatrix = @{}
+          foreach ($entry in $testMatrix.PSObject.Properties) {
+            if ($entry.Value.buildPlatform -eq $targetPlatform) {
+                $filteredMatrix[$entry.Name] = $entry.Value
+            }
+          }
+          $matrixJson = $filteredMatrix | ConvertTo-Json -Compress
+          Write-Host "##vso[task.setvariable variable=filteredTestMatrix;isOutput=true]$matrixJson"
+        name: filterByPlatformStep
+        displayName: "Extract matrix as json value filtering by build platform"
+      - script: echo $(filterByPlatformStep.filteredTestMatrix)
+        name: echoMatrix
+        displayName: "Echo filtered matrix"
