@@ -130,7 +130,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }) };
 
         winrt::guid registeredClsid{};
-        if (AppModel::Identity::IsPackagedProcess())
+        bool isUnpackaged{ !AppModel::Identity::IsPackagedProcess() };
+
+        if (!isUnpackaged)
         {
             registeredClsid = RegisterPackagedApp();
         }
@@ -140,11 +142,22 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             registeredClsid = RegisterUnpackagedApp(assets);
         }
 
+        // Cleanup registration on failure of subsequent steps
+        auto registrationCleanup{ wil::scope_exit([&]()
+        {
+            if (isUnpackaged)
+            {
+                LOG_IF_FAILED(PushNotifications_UnregisterFullTrustApplication(m_appId.c_str()));
+            }
+        }) };
+
         // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
         m_waitHandleForArgs.create();
 
         // Register the AppNotificationManager as a COM server for Shell to Activate and Invoke
         RegisterComServer(registeredClsid);
+
+        registrationCleanup.release();
 
         logTelemetry.Stop();
     }
@@ -178,11 +191,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         winrt::guid registeredClsid{ RegisterUnpackagedApp(assets) };
 
+        // Cleanup unpackaged registration on failure of subsequent steps
+        auto registrationCleanup{ wil::scope_exit([&]()
+        {
+            LOG_IF_FAILED(PushNotifications_UnregisterFullTrustApplication(m_appId.c_str()));
+        }) };
+
         // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
         m_waitHandleForArgs.create();
 
         // Register the AppNotificationManager as a COM server for Shell to Activate and Invoke
         RegisterComServer(registeredClsid);
+
+        registrationCleanup.release();
 
         logTelemetry.Stop();
     }
