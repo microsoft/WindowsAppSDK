@@ -160,6 +160,12 @@ jobs:
     inputs:
       packageType: 'sdk'
       version: '9.0.200'
+
+  - task: UseDotNet@2
+    displayName: Use .NET SDK 10
+    inputs:
+      packageType: 'sdk'
+      version: '10.0.x'
   #====================================================================================================================
 
   - task: PowerShell@2

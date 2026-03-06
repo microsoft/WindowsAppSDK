@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\CsWinRTProjection.props" />
+
+  <PropertyGroup>
+    <CSWinRTIncludes>Microsoft.Windows.Foundation</CSWinRTIncludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.Foundation">
+      <HintPath>$(OutDir)..\..\..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Foundation.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Include DecimalExtensions.cs for .NET 6 only (CsWinRT 3.0 disallows hand-written code in projections) -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows10.0.17763.0'">
+    <Compile Include="..\DecimalExtensions.cs" Link="DecimalExtensions.cs" />
+  </ItemGroup>
+
+</Project>
