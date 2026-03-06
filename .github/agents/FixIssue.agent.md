@@ -3,6 +3,10 @@ description: 'Implements fixes for GitHub issues based on implementation plans'
 name: 'FixIssue'
 tools: ['read', 'edit', 'search', 'execute', 'agent', 'usages', 'problems', 'changes', 'testFailure', 'github/*', 'github.vscode-pull-request-github/*']
 argument-hint: 'GitHub issue number (e.g., #12345)'
+handoffs:
+  - label: Verify Fix with Demo App
+    agent: VerifyFix
+    prompt: 'Create a WinUI 3 verification app for issue #{{issue_number}} using the local SDK build'
 infer: true
 ---
 

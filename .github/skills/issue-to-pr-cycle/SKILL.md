@@ -26,6 +26,7 @@ license: Complete terms in LICENSE.txt
 | `issue-review` | Analyze issues, generate implementation plans |
 | `issue-review-review` | Validate review quality, loop until score ≥ 90 |
 | `issue-fix` | Create worktrees, apply fixes, create PRs |
+| `verify-fix` | Create WinUI 3 verification app using local SDK build |
 | `pr-review` | Comprehensive PR review (13 steps) |
 | `pr-fix` | Fix review comments, resolve threads |
 
@@ -94,6 +95,7 @@ Each skill produces a `.signal` file when complete:
 | `issue-review` | `Generated Files/issueReview/<issue>/.signal` | `success`, `failure` |
 | `issue-review-review` | `Generated Files/issueReviewReview/<issue>/.signal` | `success`, `failure` |
 | `issue-fix` | `Generated Files/issueFix/<issue>/.signal` | `success`, `failure` |
+| `verify-fix` | `Generated Files/verifyFix/<issue>/.signal` | `success`, `skipped`, `failure` |
 | `pr-review` | `Generated Files/prReview/<pr>/.signal` | `success`, `failure` |
 | `pr-fix` | `Generated Files/prFix/<pr>/.signal` | `success`, `partial`, `failure` |
 
@@ -111,20 +113,25 @@ Signal format:
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  ORCHESTRATOR (this skill, VS Code agent)                                   │
+│  Prints ===== PHASE BANNERS ===== for developer visibility                  │
 │                                                                             │
-│  ┌─────────────┐  ┌──────────────────┐  ┌─────────────┐                    │
-│  │ issue-review│◄─┤issue-review-     │  │ issue-fix   │                    │
-│  │ (CLI)       │  │review (CLI)      │  │ (CLI)       │                    │
-│  └──────┬──────┘  │ loop until ≥90   │  └──────┬──────┘                    │
-│         │         └────────┬─────────┘         │                            │
-│         └────────►─────────┘                   │                            │
-│                                                │                            │
-│  ┌─────────────┐  ┌─────────────┐              │                            │
-│  │ pr-review   │  │ pr-fix      │              │                            │
-│  │ (CLI)       │  │ (CLI)       │              │                            │
-│  └──────┬──────┘  └──────┬──────┘              │                            │
-│         │                │                     │                            │
-│         ▼                ▼                     ▼                            │
+│  ┌─────────────┐  ┌──────────────────┐  ┌─────────────┐  ┌─────────────┐  │
+│  │ issue-review│◄─┤issue-review-     │  │ issue-fix   │  │ verify-fix  │  │
+│  │ (CLI)       │  │review (CLI)      │  │ (CLI)       │  │ (local app) │  │
+│  └──────┬──────┘  │ loop until ≥90   │  └──────┬──────┘  └──────┬──────┘  │
+│         │         └────────┬─────────┘         │                │          │
+│         └────────►─────────┘                   │                │          │
+│                                                ▼                ▼          │
+│                                         ┌──────────────────────────┐       │
+│                                         │  BuildOutput/*.nupkg     │       │
+│                                         │  (local SDK build)       │       │
+│                                         └──────────────────────────┘       │
+│  ┌─────────────┐  ┌─────────────┐                                          │
+│  │ pr-review   │  │ pr-fix      │                                          │
+│  │ (CLI)       │  │ (CLI)       │                                          │
+│  └──────┬──────┘  └──────┬──────┘                                          │
+│         │                │                                                  │
+│         ▼                ▼                                                  │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
 │  │  Signal Files (Generated Files/*/.signal)                           │   │
 │  └─────────────────────────────────────────────────────────────────────┘   │
@@ -137,6 +144,8 @@ Signal format:
 ```
 
 ## Workflow
+
+**IMPORTANT**: Print `===== PHASE NAME =====` banners before each phase transition.
 
 ### Phase A: Issue Review
 
@@ -238,6 +247,21 @@ gh api graphql -f query='mutation { resolveReviewThread(input:{threadId:"{{ID}}"
 **D7: Loop**
 - If unresolved issues remain → go to D2
 - If all clear → done
+
+### Phase E: Verify Fix (Final — Verification App)
+
+Runs **once** after the review/fix loop is complete and the PR is finalized. This is a convenience step — not part of the iterative loop.
+
+```powershell
+# Scaffold the verification app
+.github/skills/verify-fix/scripts/New-VerificationApp.ps1 -IssueNumber 45363 -Force
+```
+
+Then invoke the `VerifyFix` agent to add issue-specific verification code and build the app.
+
+**Skip criteria**: Internal-only fixes (CI, build scripts, infrastructure, non-observable internals). The agent writes a skip signal automatically.
+
+**Non-blocking, non-iterative**: A failed or skipped verification does NOT invalidate the PR. It is a nice-to-have for the developer to manually confirm before merging.
 
 ## Timeout Handling
 
