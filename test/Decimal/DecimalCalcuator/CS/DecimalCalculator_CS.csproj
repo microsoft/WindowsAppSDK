@@ -7,13 +7,6 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
   </PropertyGroup>
-
-  <!-- Fix output paths for multi-targeting -->
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" />
     <PackageReference Include="Microsoft.SourceLink.Common">
@@ -33,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(RepoRoot)\dev\Projections\CS\Microsoft.Windows.Foundation\Microsoft.Windows.Foundation.Projection.csproj" />
+    <ProjectReference Include="$(RepoRoot)\dev\Projections\CS\Microsoft.Windows.Foundation\Microsoft.Windows.Foundation.csproj" />
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="AfterBuild">

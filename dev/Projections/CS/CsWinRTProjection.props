@@ -35,10 +35,8 @@
     <CsWinRTGenerateReferenceProjection>true</CsWinRTGenerateReferenceProjection>
   </PropertyGroup>
 
-  <!-- Fix output paths for multi-targeting: EnsureOutputLayout.props does not include $(TargetFramework) -->
+  <!-- GeneratedFilesDir needs TFM to avoid conflicts between target frameworks -->
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)$(TargetFramework)\Generated Files\</GeneratedFilesDir>
   </PropertyGroup>
 

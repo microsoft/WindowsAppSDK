@@ -26,12 +26,6 @@
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
-  <!-- Fix output paths for multi-targeting: EnsureOutputLayout.props does not include $(TargetFramework) -->
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="$(RepoRoot)\build\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
