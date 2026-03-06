@@ -69,7 +69,7 @@
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Windows.CsWinRT.v3" Version="3.0.0-prerelease-ci.260226.2">
+    <Dependency Name="Microsoft.Windows.CsWinRT.v3" Version="3.0.0-prerelease.260305.1">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
