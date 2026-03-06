@@ -9,11 +9,4 @@
     <GenerateProjectSpecificOutputFolder>False</GenerateProjectSpecificOutputFolder>
     <Platforms>x86;x64;arm64</Platforms>
   </PropertyGroup>
-
-  <!-- Fix output paths for multi-targeting -->
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
-  </PropertyGroup>
-
 </Project>
