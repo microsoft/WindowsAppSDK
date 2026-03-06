@@ -16,7 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)AppActivationArguments.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppInstance.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Association.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)EncodedLaunchExecuteCommand.cpp" />
