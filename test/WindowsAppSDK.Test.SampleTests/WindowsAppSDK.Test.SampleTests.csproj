@@ -9,13 +9,6 @@
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
     <WindowsAppSdkSelfContained>true</WindowsAppSdkSelfContained>
   </PropertyGroup>
-
-  <!-- Fix output paths for multi-targeting -->
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" Condition="!$(TargetFramework.StartsWith('net10.0'))" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTv3PackageVersion)" Condition="$(TargetFramework.StartsWith('net10.0'))" />

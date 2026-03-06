@@ -13,13 +13,7 @@
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
-  <!-- Fix output paths for multi-targeting: EnsureOutputLayout.props does not include $(TargetFramework) -->
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
-  </PropertyGroup>
-
-  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+  <!-- Configurethe release build binary to be as required by internal API scanning tools. -->
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
