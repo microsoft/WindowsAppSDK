@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTv3PackageVersion)" />
     <PackageReference Include="Microsoft.WindowsAppSDK.Foundation.TransportPackage" Version="$(FoundationVersion)" GeneratePathProperty="true" />
     <PackageReference Include="CommandLineParser" Version="2.2.1" />
   </ItemGroup>
