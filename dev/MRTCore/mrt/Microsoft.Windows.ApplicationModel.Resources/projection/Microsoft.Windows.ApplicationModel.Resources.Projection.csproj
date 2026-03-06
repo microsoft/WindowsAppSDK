@@ -16,6 +16,7 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
+    <GeneratedFilesDir>$(BaseIntermediateOutputPath)$(TargetFramework)\Generated Files\</GeneratedFilesDir>
   </PropertyGroup>
 
   <!-- CsWinRT package: version resolved by Directory.Packages.props based on TFM -->
