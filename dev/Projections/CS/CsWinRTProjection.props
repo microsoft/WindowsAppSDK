@@ -39,6 +39,7 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
+    <GeneratedFilesDir>$(BaseIntermediateOutputPath)$(TargetFramework)\Generated Files\</GeneratedFilesDir>
   </PropertyGroup>
 
   <!-- SourceLink -->
