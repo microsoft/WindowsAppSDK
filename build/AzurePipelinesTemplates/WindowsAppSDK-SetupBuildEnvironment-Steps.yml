@@ -5,9 +5,15 @@ parameters:
 
 steps:
 - task: UseDotNet@2
-  displayName: Use .NET Core SDK 6
+  displayName: Use .NET 6 Runtime
   inputs:
-    version: 6.0.414
+    packageType: runtime
+    version: 6.0.x
+
+- task: UseDotNet@2
+  displayName: Use .NET SDK 10
+  inputs:
+    version: 10.0.x
 
   # Extract the build revision number from Build.BuildNumber. This is needed to pass to build-nupkg.
   # This relies on the format of the pipeline name being of the format: $(date:yyMM).$(date:dd)$(rev:rrr)
