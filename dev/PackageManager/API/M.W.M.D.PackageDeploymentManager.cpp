@@ -1585,13 +1585,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::ProvisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
+    PackageDeploymentManager::ProvisionPackageByUriAsync(winrt::Windows::Foundation::Uri /*packageUri*/, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions /*options*/)
     {
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::ProvisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
+    PackageDeploymentManager::ProvisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet /*packageSet*/, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions /*options*/)
     {
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
@@ -1613,13 +1613,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::DeprovisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri)
+    PackageDeploymentManager::DeprovisionPackageByUriAsync(winrt::Windows::Foundation::Uri /*packageUri*/)
     {
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::DeprovisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
+    PackageDeploymentManager::DeprovisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet /*packageSet*/ )
     {
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
@@ -1642,7 +1642,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::AddPackageByAppInstallerFileAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
+    PackageDeploymentManager::AddPackageByAppInstallerFileAsync(winrt::Windows::Foundation::Uri /*packageUri*/, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions /*options*/)
     {
         //TODO add via AddPackageByAppInstallerFileAsync()
         throw hresult_not_implemented();
