@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+    <TargetFrameworks>net6.0-windows10.0.17763.0;net10.0-windows10.0.17763.1</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <Platforms>x64;x86</Platforms>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -12,6 +12,13 @@
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
+  <!-- Fix output paths for multi-targeting: EnsureOutputLayout.props does not include $(TargetFramework) -->
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <!-- CsWinRT package: version resolved by Directory.Packages.props based on TFM -->
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
@@ -24,6 +31,11 @@
     <CSWinRTIncludes>Microsoft.Windows.Globalization;Microsoft.Windows.ApplicationModel.Resources</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
     <NoWarn>MSB3271</NoWarn>
+  </PropertyGroup>
+
+  <!-- CsWinRT 3.0 settings (net10 only) -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.17763.1'">
+    <CsWinRTGenerateReferenceProjection>true</CsWinRTGenerateReferenceProjection>
   </PropertyGroup>
 
   <!-- Configure the release build binary to be as required by internal API scanning tools. -->

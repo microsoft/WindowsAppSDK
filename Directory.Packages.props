@@ -9,7 +9,8 @@
     <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)" />
     <PackageVersion Include="Microsoft.FrameworkUDK" Version="$(MicrosoftFrameworkUDKVersion)" />
     <PackageVersion Include="Microsoft.ServiceHub.Framework" Version="4.8.55" />
-    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" Condition="!$(TargetFramework.StartsWith('net10.0'))" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTv3PackageVersion)" Condition="$(TargetFramework.StartsWith('net10.0'))" />
     <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
     <PackageVersion Include="Microsoft.VisualStudio.SDK" Version="17.3.32804.24" />
