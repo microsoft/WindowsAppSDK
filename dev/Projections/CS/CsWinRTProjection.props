@@ -76,4 +76,21 @@
     <Compile Include="$(RepoRoot)\build\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
+  <!--
+    Fix CsWinRT 3.0 reference assembly path for P2P resolution.
+
+    CsWinRT sets _CsWinRTRefAssemblyPath to $(IntermediateOutputPath)$(AssemblyName).dll,
+    but CleanIntermediateFiles deletes the obj directory after Build to save CI disk space.
+    The reference assembly is already copied to $(OutDir)ref\ during _CopyOutOfDateSourceItemsToOutputDirectory,
+    so redirect _CsWinRTRefAssemblyPath there. This mirrors how .NET SDK's ProduceReferenceAssembly
+    uses $(OutDir)ref\ via $(TargetRefPath) for P2P resolution.
+  -->
+  <Target Name="_FixCsWinRTRefAssemblyPath"
+          BeforeTargets="CsWinRTGetForwarderTargetPathWithTargetPlatformMoniker"
+          Condition="'$(CsWinRTGenerateReferenceProjection)' == 'true'">
+    <PropertyGroup>
+      <_CsWinRTRefAssemblyPath>$([MSBuild]::NormalizePath('$(OutputPath)', 'ref', '$(AssemblyName).dll'))</_CsWinRTRefAssemblyPath>
+    </PropertyGroup>
+  </Target>
+
 </Project>
