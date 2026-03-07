@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -29,6 +30,6 @@
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(BaseOutputPath)WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
 </Project>

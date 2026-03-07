@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<!--
+  Shared properties for multi-target C# projects.
+
+  Fixes output path configuration so that:
+  1. The .NET SDK does not double the TargetFramework in OutputPath/IntermediateOutputPath
+     (EnsureOutputLayout.props already sets these paths, and the SDK would append TFM again).
+  2. OutDir is synced with OutputPath so each TargetFramework gets a separate output directory,
+     preventing race conditions where one TFM's DLL overwrites another's.
+
+  Import this file from any C# project that uses <TargetFrameworks> (plural).
+-->
+<Project>
+  <!-- Prevent the SDK from appending TargetFramework since we handle it explicitly below. -->
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendTargetFrameworkToIntermediateOutputPath>false</AppendTargetFrameworkToIntermediateOutputPath>
+  </PropertyGroup>
+
+  <!-- Set output paths with TFM for inner builds (TargetFramework is set as a global property). -->
+  <PropertyGroup Condition="'$(TargetFramework)' != ''">
+    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <!--
+    Sync OutDir with OutputPath at target execution time.
+
+    This must be a Target (not a PropertyGroup) because the SDK's GenerateProjectSpecificOutputFolder
+    logic unconditionally appends $(ProjectName) to OutDir during property evaluation. Setting OutDir
+    in a Target that runs before key build targets ensures we override that behavior and OutDir
+    correctly includes the TargetFramework subdirectory.
+  -->
+  <Target Name="SyncOutDirForMultiTarget"
+          BeforeTargets="PrepareForBuild;ResolveAssemblyReferences;GetTargetPath;CopyFilesToOutputDirectory;GetCopyToOutputDirectoryItems"
+          Condition="'$(TargetFramework)' != ''">
+    <PropertyGroup>
+      <OutDir>$(OutputPath)</OutDir>
+    </PropertyGroup>
+  </Target>
+</Project>
