@@ -14,7 +14,7 @@
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
-  <!-- Configurethe release build binary to be as required by internal API scanning tools. -->
+  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>

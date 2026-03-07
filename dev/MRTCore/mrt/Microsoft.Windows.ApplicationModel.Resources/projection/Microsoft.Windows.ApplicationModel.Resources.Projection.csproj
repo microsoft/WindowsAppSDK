@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <!-- GeneratedFilesDir needs TFM to avoid conflicts between target frameworks -->
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != ''">
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)$(TargetFramework)\Generated Files\</GeneratedFilesDir>
   </PropertyGroup>
 
