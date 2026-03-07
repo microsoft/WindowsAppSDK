@@ -24,8 +24,7 @@
     <Compile Include="$(RepoRoot)\build\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
-  <!-- Include DecimalExtensions.cs for .NET 10 only (CsWinRT 3.0 disallows hand-written code in projection assemblies).
-       Exclude from default globbing first, then conditionally re-include for net10.0. -->
+  <!-- Include DecimalExtensions.cs for .NET 10 only (CsWinRT 3.0 requires it to be a projection only assembly). -->
   <ItemGroup>
     <Compile Remove="DecimalExtensions.cs" />
   </ItemGroup>
