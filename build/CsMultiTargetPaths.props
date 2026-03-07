@@ -31,6 +31,15 @@
     <AppendTargetFrameworkToIntermediateOutputPath>false</AppendTargetFrameworkToIntermediateOutputPath>
   </PropertyGroup>
 
+  <!--
+    .NET 10 SDK defaults TargetRefPath to $(IntermediateOutputPath)ref\ instead of $(OutDir)ref\.
+    CleanIntermediateFiles deletes the obj directory after Build, so reference assemblies must
+    be in the output directory to survive for P2P resolution.
+  -->
+  <PropertyGroup>
+    <ProduceReferenceAssemblyInOutDir>true</ProduceReferenceAssemblyInOutDir>
+  </PropertyGroup>
+
   <!-- Set output paths with TFM for inner builds (TargetFramework is set as a global property). -->
   <PropertyGroup Condition="'$(TargetFramework)' != ''">
     <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
