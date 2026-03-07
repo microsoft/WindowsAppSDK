@@ -10,6 +10,19 @@
      preventing race conditions where one TFM's DLL overwrites another's.
 
   Import this file from any C# project that uses <TargetFrameworks> (plural).
+
+  How it works:
+  EnsureOutputLayout.props sets OutDir=$(BaseOutputPath), which causes the SDK's
+  Microsoft.Common.CurrentVersion.targets to set OutDirWasSpecified=true and later
+  append $(ProjectName) via GenerateProjectSpecificOutputFolder. This results in
+  OutDir = BaseOutputPath\ProjectName\ (without TFM), causing collisions between
+  target frameworks and incorrect TargetPath for ProjectReference resolution.
+
+  We fix this by:
+  - Clearing OutDir and OutDirWasSpecified so the SDK sets OutDir=$(OutputPath)
+  - Setting GenerateProjectSpecificOutputFolder=false since OutputPath already
+    includes the project name
+  - Disabling SDK auto-append of TFM since OutputPath already includes it
 -->
 <Project>
   <!-- Prevent the SDK from appending TargetFramework since we handle it explicitly below. -->
@@ -22,21 +35,17 @@
   <PropertyGroup Condition="'$(TargetFramework)' != ''">
     <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
+
+    <!--
+      Clear OutDir and OutDirWasSpecified so the SDK's Microsoft.Common.CurrentVersion.targets
+      sets OutDir=$(OutputPath) during property evaluation. This ensures $(TargetPath) —
+      which GetTargetPath returns for ProjectReference resolution — includes the TFM.
+
+      Also disable GenerateProjectSpecificOutputFolder since OutputPath already contains
+      the project name, preventing the SDK from appending it a second time.
+    -->
+    <OutDir></OutDir>
+    <OutDirWasSpecified></OutDirWasSpecified>
+    <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
   </PropertyGroup>
-
-  <!--
-    Sync OutDir with OutputPath at target execution time.
-
-    This must be a Target (not a PropertyGroup) because the SDK's GenerateProjectSpecificOutputFolder
-    logic unconditionally appends $(ProjectName) to OutDir during property evaluation. Setting OutDir
-    in a Target that runs before key build targets ensures we override that behavior and OutDir
-    correctly includes the TargetFramework subdirectory.
-  -->
-  <Target Name="SyncOutDirForMultiTarget"
-          BeforeTargets="PrepareForBuild;ResolveAssemblyReferences;GetTargetPath;CopyFilesToOutputDirectory;GetCopyToOutputDirectoryItems"
-          Condition="'$(TargetFramework)' != ''">
-    <PropertyGroup>
-      <OutDir>$(OutputPath)</OutDir>
-    </PropertyGroup>
-  </Target>
 </Project>
