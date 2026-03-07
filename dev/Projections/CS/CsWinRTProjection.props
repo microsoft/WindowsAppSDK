@@ -20,6 +20,8 @@
   <PropertyGroup>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <CsWinRTGenerateReferenceProjection>true</CsWinRTGenerateReferenceProjection>
   </PropertyGroup>
 
   <!-- Suppress CS8305: Feature is for evaluation purposes only and is subject to change or removal in future updates. -->
@@ -31,11 +33,6 @@
   <PropertyGroup>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-  </PropertyGroup>
-
-  <!-- CsWinRT 3.0 settings (net10 only) -->
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.17763.1'">
-    <CsWinRTGenerateReferenceProjection>true</CsWinRTGenerateReferenceProjection>
   </PropertyGroup>
 
   <!-- GeneratedFilesDir needs TFM to avoid conflicts between target frameworks -->
@@ -55,7 +52,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <!-- CsWinRT package: version resolved by Directory.Packages.props based on TFM -->
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
