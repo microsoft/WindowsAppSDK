@@ -3,34 +3,22 @@
 <!--
   Shared properties for multi-target C# projects.
 
-  Fixes output path configuration so that:
-  1. The .NET SDK does not double the TargetFramework in OutputPath/IntermediateOutputPath
-     (EnsureOutputLayout.props already sets these paths, and the SDK would append TFM again).
-  2. OutDir is synced with OutputPath so each TargetFramework gets a separate output directory,
-     preventing race conditions where one TFM's DLL overwrites another's.
-
   Import this file from any C# project that uses <TargetFrameworks> (plural).
 
-  How it works:
+  Problem:
   EnsureOutputLayout.props sets OutDir=$(BaseOutputPath), which causes the SDK's
-  Microsoft.Common.CurrentVersion.targets to set OutDirWasSpecified=true and later
-  append $(ProjectName) via GenerateProjectSpecificOutputFolder. This results in
-  OutDir = BaseOutputPath\ProjectName\ (without TFM), causing collisions between
-  target frameworks and incorrect TargetPath for ProjectReference resolution.
+  Microsoft.Common.CurrentVersion.targets to set OutDirWasSpecified=true. This prevents
+  the SDK from syncing OutDir=$(OutputPath), so OutDir lacks the TFM that the SDK
+  naturally appends to OutputPath for multi-target builds. The result is TargetPath
+  without TFM, causing P2P resolution collisions between target frameworks.
 
-  We fix this by:
-  - Clearing OutDir and OutDirWasSpecified so the SDK sets OutDir=$(OutputPath)
-  - Setting GenerateProjectSpecificOutputFolder=false since OutputPath already
-    includes the project name
-  - Disabling SDK auto-append of TFM since OutputPath already includes it
+  Fix:
+  Clear OutDir and OutDirWasSpecified so the SDK sets OutDir=$(OutputPath) naturally.
+  The SDK's TargetFrameworkInference appends TFM to OutputPath/IntermediateOutputPath
+  (default behavior), and then Microsoft.Common.CurrentVersion.targets sets OutDir
+  from OutputPath — giving us correct, TFM-specific output directories.
 -->
 <Project>
-  <!-- Prevent the SDK from appending TargetFramework since we handle it explicitly below. -->
-  <PropertyGroup>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendTargetFrameworkToIntermediateOutputPath>false</AppendTargetFrameworkToIntermediateOutputPath>
-  </PropertyGroup>
-
   <!--
     .NET 10 SDK defaults TargetRefPath to $(IntermediateOutputPath)ref\ instead of $(OutDir)ref\.
     CleanIntermediateFiles deletes the obj directory after Build, so reference assemblies must
@@ -40,17 +28,12 @@
     <ProduceReferenceAssemblyInOutDir>true</ProduceReferenceAssemblyInOutDir>
   </PropertyGroup>
 
-  <!-- Set output paths with TFM for inner builds (TargetFramework is set as a global property). -->
   <PropertyGroup Condition="'$(TargetFramework)' != ''">
-    <OutputPath>$(BaseOutputPath)$(MSBuildProjectName)\$(TargetFramework)\</OutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(TargetFramework)\</IntermediateOutputPath>
-
     <!--
-      Clear OutDir and OutDirWasSpecified so the SDK's Microsoft.Common.CurrentVersion.targets
-      sets OutDir=$(OutputPath) during property evaluation. This ensures $(TargetPath) —
-      which GetTargetPath returns for ProjectReference resolution — includes the TFM.
+      Clear OutDir and OutDirWasSpecified so the SDK sets OutDir=$(OutputPath) during
+      property evaluation. This ensures $(TargetPath) includes the TFM.
 
-      Also disable GenerateProjectSpecificOutputFolder since OutputPath already contains
+      Disable GenerateProjectSpecificOutputFolder since OutputPath already contains
       the project name, preventing the SDK from appending it a second time.
     -->
     <OutDir></OutDir>
