@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
   <PropertyGroup>
     <TargetFrameworks>net6.0-windows10.0.19041.0;net10.0-windows10.0.19041.1</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>

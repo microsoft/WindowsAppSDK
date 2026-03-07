@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>

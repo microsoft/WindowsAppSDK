@@ -5,6 +5,9 @@
 -->
 <Project>
 
+  <!-- Multi-target output path fix: prevents TFM doubling and syncs OutDir. -->
+  <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
+
   <!-- Multi-target: .NET 6 (CsWinRT 2.x) + .NET 10 (CsWinRT 3.0) -->
   <PropertyGroup>
     <TargetFrameworks>net6.0-windows10.0.17763.0;net10.0-windows10.0.17763.1</TargetFrameworks>
