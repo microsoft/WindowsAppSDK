@@ -24,7 +24,11 @@
     <Compile Include="$(RepoRoot)\build\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
-  <!-- Include DecimalExtensions.cs for .NET 10 (CsWinRT 3.0 disallows hand-written code in projection assemblies) -->
+  <!-- Include DecimalExtensions.cs for .NET 10 only (CsWinRT 3.0 disallows hand-written code in projection assemblies).
+       Exclude from default globbing first, then conditionally re-include for net10.0. -->
+  <ItemGroup>
+    <Compile Remove="DecimalExtensions.cs" />
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.17763.1'">
     <Compile Include="DecimalExtensions.cs" Link="DecimalExtensions.cs" />
   </ItemGroup>
