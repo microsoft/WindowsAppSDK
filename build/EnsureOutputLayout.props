@@ -19,7 +19,7 @@
     <PlatformTarget Condition="$(Platform) == 'Win32'">x86</PlatformTarget>
 
     <!-- Use PlatformTarget instead of Platform to keep things more consistent (avoid 'Win32' as a build output) -->
-    <BaseOutputPath>$(RepoRoot)\BuildOutput\$(Configuration)\$(PlatformTarget)\</BaseOutputPath>
+    <BaseOutputPath>$(RepoRoot)\BuildOutput\$(Configuration)\$(PlatformTarget)\$(TargetFramework)\</BaseOutputPath>
 
     <!-- Intermediate files under obj folder. Some intermediate file paths are really long, thus no unnecessary folder added -->
     <BaseIntermediateOutputPath>$(RepoRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
