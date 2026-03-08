@@ -46,7 +46,7 @@
 
   <ItemGroup>
     <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
-    <CsWinRTInputs Include="$(BaseOutputPath)/Microsoft.Windows.ApplicationModel.Resources/Microsoft.Windows.Globalization.winmd" />
+    <CsWinRTInputs Include="$(BaseOutputPath)../Microsoft.Windows.ApplicationModel.Resources/Microsoft.Windows.Globalization.winmd" />
   </ItemGroup>
 
   <ItemGroup>
