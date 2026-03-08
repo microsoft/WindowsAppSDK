@@ -489,7 +489,7 @@ Try {
         $LibPaths = @(
             (Join-Path $ComponentBasePath "metadata"),
             (Join-Path $ComponentBasePath "lib\net6.0-windows10.0.17763.0"),
-            (Join-Path $ComponentBasePath "lib\net10.0-windows10.0.17763.1")
+            (Join-Path $ComponentBasePath "ref\net10.0-windows10.0.17763.1")
         )
 
         foreach ($File in Get-ChildItem -Path $LibPaths)
