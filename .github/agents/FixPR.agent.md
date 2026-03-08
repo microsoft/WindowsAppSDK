@@ -88,7 +88,7 @@ When fixes are incomplete or incorrect:
 - Never create new review comments — you fix, you don't review
 - No drive-by refactors outside review scope
 - If a review comment is ambiguous or requests an architectural change you're unsure about, **leave it unresolved** and report it
-- Hand off to `ReviewPR` for re-review after fixes are complete
+- **After completing all fixes, ALWAYS hand off to `ReviewPR` for re-review** — a fix pass without re-review is incomplete. The ReviewPR re-review will catch regressions and verify correctness.
 
 ## Parameter
 
