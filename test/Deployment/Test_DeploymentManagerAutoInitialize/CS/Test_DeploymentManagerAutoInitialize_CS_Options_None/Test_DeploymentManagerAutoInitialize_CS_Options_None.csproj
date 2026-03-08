@@ -24,7 +24,7 @@
 
   <Target Name="GenerateDeploymentManagerAutoInitializeCS" BeforeTargets="BeforeCompile">
     <ItemGroup>
-      <Compile Include="$(BaseOutputPath)..\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cs" />
+      <Compile Include="$(BaseOutputPath)WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cs" />
     </ItemGroup>
   </Target>
 
