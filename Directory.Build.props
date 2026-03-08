@@ -12,7 +12,7 @@
   <PropertyGroup>
     <IsTDPConfiguration>false</IsTDPConfiguration>
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
-    <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
+    <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
     <ForceImportAfterCppTargets>$(BuildRoot)AfterCpp.targets</ForceImportAfterCppTargets>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 

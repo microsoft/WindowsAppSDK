@@ -25,9 +25,12 @@
     <BaseIntermediateOutputPath>$(RepoRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
 
+    <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
     <!-- This is later fixed up to contain the project name, but if we specify it here then it ends up being included twice. -->
-    <OutDir>$(BaseOutputPath)</OutDir>
-    <OutputPath>$(OutDir)\$(MSBuildProjectName)\</OutputPath>
+    <OutDir>$(BaseOutputPath)\$(MSBuildProjectName)\$(TargetFramework)\</OutDir>
+    <OutputPath>$(OutDir)\</OutputPath>
     <TargetDir>$(OutDir)</TargetDir>
 
     <!-- Due to import order complexities and differences between the targets for individual build types,
