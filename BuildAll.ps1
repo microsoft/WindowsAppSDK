@@ -441,6 +441,11 @@ Try {
 
         build\scripts\CopyContents.ps1 `
             -SourceDir "$PSScriptRoot\$BasePath" `
+            -ContentsList @('ref') `
+            -TargetDir $ComponentBasePath
+
+        build\scripts\CopyContents.ps1 `
+            -SourceDir "$PSScriptRoot\$BasePath" `
             -ContentsList @('runtimes\win-*') `
             -Exclude @('*.pdb') `
             -TargetDir $ComponentBasePath
