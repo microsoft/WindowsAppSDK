@@ -1,22 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <!--
-  Shared properties for multi-target C# projects.
-
-  Import this file from any C# project that uses <TargetFrameworks> (plural).
-
-  Problem:
-  EnsureOutputLayout.props sets OutDir=$(BaseOutputPath), which causes the SDK's
-  Microsoft.Common.CurrentVersion.targets to set OutDirWasSpecified=true. This prevents
-  the SDK from syncing OutDir=$(OutputPath), so OutDir lacks the TFM that the SDK
-  naturally appends to OutputPath for multi-target builds. The result is TargetPath
-  without TFM, causing P2P resolution collisions between target frameworks.
-
-  Fix:
-  Clear OutDir and OutDirWasSpecified so the SDK sets OutDir=$(OutputPath) naturally.
-  The SDK's TargetFrameworkInference appends TFM to OutputPath/IntermediateOutputPath
-  (default behavior), and then Microsoft.Common.CurrentVersion.targets sets OutDir
-  from OutputPath — giving us correct, TFM-specific output directories.
+  Shared properties that should be imported from C# projects that are multi-targeting.
 -->
 <Project>
   <!--
@@ -30,11 +15,16 @@
 
   <PropertyGroup Condition="'$(TargetFramework)' != ''">
     <!--
-      Clear OutDir and OutDirWasSpecified so the SDK sets OutDir=$(OutputPath) during
+      EnsureOutputLayout.props sets OutDir=$(BaseOutputPath), which causes the SDK's
+      targets to set OutDirWasSpecified=true. This prevents the SDK from syncing
+      OutDir=$(OutputPath), so OutDir lacks the TFM that the SDK appends to OutputPath
+      for multi-target builds causing issues with project references.
+
+      Clear OutDir and OutDirWasSpecified so the .NET SDK sets OutDir=$(OutputPath) during
       property evaluation. This ensures $(TargetPath) includes the TFM.
 
       Disable GenerateProjectSpecificOutputFolder since OutputPath already contains
-      the project name, preventing the SDK from appending it a second time.
+      the project name, preventing the .NET SDK from appending it a second time.
     -->
     <OutDir></OutDir>
     <OutDirWasSpecified></OutDirWasSpecified>

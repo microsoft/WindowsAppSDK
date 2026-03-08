@@ -89,7 +89,7 @@
   <!-- 'Clean As We Go' if necessary (specified). Prevents build agents from running out of disk space.
        For multi-target projects (TargetFrameworks is set), skip the outer build where TargetFramework is empty
        because IntermediateOutputPath equals BaseIntermediateOutputPath and deleting it removes project.assets.json
-       needed by later P2P re-invocations with different global properties (e.g. ARM64 platform casing). -->
+       needed by later project references with different global properties such as being triggered by ARM64 in CI. -->
   <Target Name="CleanIntermediateFiles" AfterTargets="Build" Condition="'$(WindowsAppSDKCleanIntermediateFiles)' == 'true'">
     <RemoveDir Directories="$(IntermediateOutputPath)" Condition="'$(TargetFrameworks)' == '' OR '$(TargetFramework)' != ''" />
   </Target>
