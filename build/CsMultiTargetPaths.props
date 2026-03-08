@@ -28,11 +28,4 @@
     <ProduceReferenceAssemblyInOutDir>true</ProduceReferenceAssemblyInOutDir>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' != ''">
-    <!--
-      Disable GenerateProjectSpecificOutputFolder since OutputPath already contains
-      the project name, preventing the SDK from appending it a second time.
-    -->
-    <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
-  </PropertyGroup>
 </Project>
