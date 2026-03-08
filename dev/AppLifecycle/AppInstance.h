@@ -54,6 +54,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         void EnqueueRedirectionRequestId(GUID id);
         GUID DequeueRedirectionRequestId();
 
+        // Computes a fingerprint string for file activations to enable deduplication.
+        // Returns an empty string for non-file activations or on failure.
+        static std::wstring ComputeFileActivationFingerprint(Microsoft::Windows::AppLifecycle::AppActivationArguments const& args);
+
         // Named object prefixes used to scope.
         std::wstring m_moduleName;
         std::wstring m_processName;
@@ -83,6 +87,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         SharedProcessList m_instances;
         RedirectionRequestQueue m_redirectionArgs;
+
+        // Deduplication of file activations when multiple files are opened simultaneously.
+        // Tracks the fingerprint and timestamp of the initial activation to suppress
+        // redundant redirected activations that carry identical file sets.
+        std::wstring m_initialActivationFingerprint;
+        ULONGLONG m_initialActivationTickCount{ 0 };
     };
 }
 

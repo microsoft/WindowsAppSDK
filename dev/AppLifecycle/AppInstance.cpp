@@ -15,6 +15,9 @@
 #include "PushNotificationManager.h"
 #include "AppNotificationManager.h"
 
+#include <vector>
+#include <algorithm>
+
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
@@ -28,6 +31,11 @@ using namespace std::filesystem;
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     static PCWSTR c_pushPayloadAttribute{ L"-Payload:" };
+
+    // Deduplication window in milliseconds. Redirected file activations that arrive
+    // within this window after the initial activation and carry the same file set
+    // are treated as duplicates and suppressed.
+    static constexpr ULONGLONG c_fileActivationDeduplicationWindowMs{ 5000 };
 
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
@@ -94,6 +102,80 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         return { kind, data };
+    }
+
+    // Computes a stable fingerprint string for file activations, enabling deduplication of
+    // redundant activations that occur when the Shell opens multiple files simultaneously.
+    // The fingerprint is composed of the activation kind, verb, and sorted file paths.
+    // Returns an empty string for non-file activations or if fingerprinting fails.
+    std::wstring AppInstance::ComputeFileActivationFingerprint(AppLifecycle::AppActivationArguments const& args)
+    {
+        try
+        {
+            if (args.Kind() != ExtendedActivationKind::File)
+            {
+                return L"";
+            }
+
+            auto data = args.Data();
+            if (!data)
+            {
+                return L"";
+            }
+
+            auto fileArgs = data.try_as<IFileActivatedEventArgs>();
+            if (!fileArgs)
+            {
+                return L"";
+            }
+
+            auto files = fileArgs.Files();
+            if (!files || files.Size() == 0)
+            {
+                return L"";
+            }
+
+            std::wstring fingerprint = L"File|";
+            fingerprint += std::wstring(fileArgs.Verb());
+
+            // Collect file paths and sort for order-independent comparison.
+            std::vector<std::wstring> paths;
+            paths.reserve(files.Size());
+
+            for (uint32_t i = 0; i < files.Size(); i++)
+            {
+                auto item = files.GetAt(i);
+                if (item)
+                {
+                    auto path = item.Path();
+                    if (!path.empty())
+                    {
+                        paths.push_back(std::wstring(path));
+                    }
+                    else
+                    {
+                        // Fallback to Name when Path is unavailable (e.g. brokered items).
+                        paths.push_back(std::wstring(item.Name()));
+                    }
+                }
+            }
+
+            std::sort(paths.begin(), paths.end());
+
+            for (auto const& path : paths)
+            {
+                fingerprint += L"|";
+                fingerprint += path;
+            }
+
+            return fingerprint;
+        }
+        catch (...)
+        {
+            // If fingerprinting fails for any reason, return empty to skip deduplication
+            // rather than blocking activation delivery.
+            return L"";
+        }
     }
 
     AppInstance::AppInstance(uint32_t processId)
@@ -188,111 +270,71 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         auto activity{ AppLifecycleTelemetry::ProcessRedirectionRequests::Start(m_processId, m_isCurrent) };
         m_innerActivated.ResetEvent();
 
-        // Structures for coalescing rapid-fire file activation redirections into a single
-        // event.  When users open multiple files at once, each file triggers a separate
-        // process that redirects to this instance.  Without coalescing the app would
-        // receive N separate activation events instead of one event containing all N files.
-        struct CoalescedRequestInfo
-        {
-            GUID id;
-            std::wstring name;
-        };
+        // Build a set of seen file activation fingerprints for deduplication.
+        // When the Shell opens multiple files simultaneously, it may launch one
+        // process per file. Each process redirects to the key holder, resulting
+        // in N identical activation events. We suppress duplicates here so the
+        // app receives only one Activated event per unique file set.
+        std::vector<std::wstring> seenFingerprints;
 
-        std::vector<CoalescedRequestInfo> fileRequestInfos;
-        auto coalescedFiles = winrt::single_threaded_vector<winrt::Windows::Storage::IStorageItem>();
-        winrt::hstring coalescedVerb;
-
-        // Lambda to dequeue all pending requests and categorize them.
-        // File activations are collected for coalescing; other types fire immediately.
-        auto dequeueAndProcess = [&]()
+        // If the initial activation was recent, seed the seen set with its
+        // fingerprint so that redirected activations carrying the same file
+        // set are recognized as duplicates.
+        if (!m_initialActivationFingerprint.empty())
         {
-            GUID id;
-            while ((id = DequeueRedirectionRequestId()) != GUID_NULL)
+            auto elapsed = GetTickCount64() - m_initialActivationTickCount;
+            if (elapsed < c_fileActivationDeduplicationWindowMs)
             {
-                activity.DequeueRedirectionRequest(id);
-                wil::unique_cotaskmem_string idString;
-                THROW_IF_FAILED(StringFromCLSID(id, &idString));
+                seenFingerprints.push_back(m_initialActivationFingerprint);
+            }
+        }
 
-                auto name = wil::str_printf<std::wstring>(c_requestPacketNameFormat, m_processName.c_str(), idString.get());
+        GUID id;
+        while ((id = DequeueRedirectionRequestId()) != GUID_NULL)
+        {
+            activity.DequeueRedirectionRequest(id);
+            wil::unique_cotaskmem_string idString;
+            THROW_IF_FAILED(StringFromCLSID(id, &idString));
 
-                RedirectionRequest request;
-                request.Open(name);
-                auto args = request.UnmarshalArguments();
+            auto name = wil::str_printf<std::wstring>(c_requestPacketNameFormat, m_processName.c_str(), idString.get());
 
-                // Coalesce file activations into a single event (fixes multi-file open).
-                if (args.Kind() == ExtendedActivationKind::File)
+            RedirectionRequest request;
+            request.Open(name);
+            auto args = request.UnmarshalArguments();
+
+            // Check whether this activation is a duplicate of one already seen.
+            bool isDuplicate = false;
+            auto fingerprint = ComputeFileActivationFingerprint(args);
+            if (!fingerprint.empty())
+            {
+                auto it = std::find(seenFingerprints.begin(), seenFingerprints.end(), fingerprint);
+                if (it != seenFingerprints.end())
                 {
-                    auto fileArgs = args.Data().try_as<IFileActivatedEventArgs>();
-                    if (fileArgs)
-                    {
-                        if (coalescedVerb.empty())
-                        {
-                            coalescedVerb = fileArgs.Verb();
-                        }
-
-                        for (auto const& file : fileArgs.Files())
-                        {
-                            coalescedFiles.Append(file);
-                        }
-
-                        fileRequestInfos.push_back({ id, std::move(name) });
-                        continue;
-                    }
+                    isDuplicate = true;
                 }
+                else
+                {
+                    seenFingerprints.push_back(fingerprint);
+                }
+            }
 
-                // Non-file activations: notify the app immediately.
+            if (!isDuplicate)
+            {
+                // Notify the app that the redirection request is here.
                 m_activatedEvent(*this, args);
                 activity.RedrectionActivatedEvent(id);
-
-                std::wstring eventName = name + c_activatedEventNameSuffix;
-                wil::unique_event cleanupEvent;
-                if (cleanupEvent.try_open(eventName.c_str()))
-                {
-                    // If the event is missing, it means the waiter gave up.  Ignore the error.
-                    cleanupEvent.SetEvent();
-                }
-                activity.RequestCleanupEvent(id);
             }
-        };
 
-        // Process all currently pending requests.
-        dequeueAndProcess();
-
-        // If file activations were found, wait briefly for more to arrive.
-        // When multiple files are opened simultaneously, redirecting processes may not all
-        // enqueue their requests before we start processing.  A short coalescing window
-        // ensures we capture all files from a single user action.
-        if (!fileRequestInfos.empty())
-        {
-            constexpr DWORD c_fileCoalescingWindowMs = 150;
-            if (WaitForSingleObject(m_innerActivated.get(), c_fileCoalescingWindowMs) == WAIT_OBJECT_0)
-            {
-                m_innerActivated.ResetEvent();
-                dequeueAndProcess();
-            }
-        }
-
-        // Fire coalesced file activation as a single event containing all files.
-        if (coalescedFiles.Size() > 0)
-        {
-            auto mergedFileArgs = winrt::make<FileActivatedEventArgs>(coalescedVerb, coalescedFiles);
-            auto mergedAppArgs = winrt::make<AppActivationArguments>(ExtendedActivationKind::File, mergedFileArgs.as<IInspectable>());
-            m_activatedEvent(*this, mergedAppArgs);
-        }
-
-        // Signal cleanup events for all coalesced file activation requests so that the
-        // redirecting processes can exit.
-        for (const auto& req : fileRequestInfos)
-        {
-            activity.RedrectionActivatedEvent(req.id);
-
-            std::wstring eventName = req.name + c_activatedEventNameSuffix;
+            // Always signal the cleanup event so the redirecting process can exit,
+            // regardless of whether the activation was deduplicated.
+            std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
             if (cleanupEvent.try_open(eventName.c_str()))
             {
+                // If the event is missing, it means the waiter gave up.  Ignore the error.
                 cleanupEvent.SetEvent();
             }
-            activity.RequestCleanupEvent(req.id);
+            activity.RequestCleanupEvent(id);
         }
 
         activity.Stop();
@@ -632,7 +674,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             data = make<LaunchActivatedEventArgs>(commandLine.c_str());
         }
 
-        return make<AppActivationArguments>(kind, data);
+        auto result = make<AppActivationArguments>(kind, data);
+
+        // Store the fingerprint of the initial activation for deduplication.
+        // When multiple files are opened simultaneously, the Shell may launch
+        // multiple instances that redirect to the key holder. Each redirected
+        // activation carries the same file set as the initial activation and
+        // should be suppressed to avoid duplicate processing.
+        m_initialActivationFingerprint = ComputeFileActivationFingerprint(result);
+        m_initialActivationTickCount = GetTickCount64();
+
+        return result;
     }
 
     hstring AppInstance::Key()
