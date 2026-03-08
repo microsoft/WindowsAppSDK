@@ -11,11 +11,11 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.Windows.AppNotifications">
-      <HintPath>$(BaseOutputPath)WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd</HintPath>
+      <HintPath>$(BaseOutputPath)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.AppNotifications.Builder">
-      <HintPath>$(BaseOutputPath)WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.Builder.winmd</HintPath>
+      <HintPath>$(BaseOutputPath)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.Builder.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

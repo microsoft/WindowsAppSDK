@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.Windows.BadgeNotifications">
-      <HintPath>$(BaseOutputPath)WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.BadgeNotifications.winmd</HintPath>
+      <HintPath>$(BaseOutputPath)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.BadgeNotifications.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
