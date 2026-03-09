@@ -31,7 +31,7 @@ namespace Microsoft::Windows::Storage
         winrt::Windows::Storage::StorageFolder GetPublisherCacheFolder(winrt::hstring const& folderName);
 
     private:
-        winrt::Windows::Foundation::IAsyncAction ClearMachineFolderAsync();
+        void _VerifyNotClosed();
         static std::filesystem::path _MachinePath(winrt::hstring const& publisher, winrt::hstring const& product);
         static bool _PathExists(std::filesystem::path const& path);
 

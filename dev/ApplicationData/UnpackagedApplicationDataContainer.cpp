@@ -9,17 +9,91 @@ namespace Microsoft::Windows::Storage
 {
     namespace
     {
-        // REG_BINARY values are stored as [1-byte PropertyType tag][raw data bytes].
-        // This allows roundtripping types that share the same raw size (e.g. Int32 vs Boolean).
-        // REG_SZ, REG_DWORD, and REG_QWORD are stored natively for easy manual inspection.
+        // Custom registry types for WinRT PropertyType values that don't have native
+        // registry equivalents. Modeled after Windows' STATE_REG_TYPE used in
+        // onecore\base\appmodel\statemanager. Standard registry types (REG_SZ,
+        // REG_DWORD, REG_QWORD) are used for String, UInt32, and UInt64. Custom
+        // types start at PropertyType value + 0x20000 to avoid collisions with standard registry types.
+        enum ApplicationDataRegistryType : DWORD
+        {
+            // Scalar types: PropertyType enum value + 0x20000
+            ApplicationDataRegistryType_UInt8       = 0x20001, // PropertyType::UInt8 (1)
+            ApplicationDataRegistryType_Int16       = 0x20002, // PropertyType::Int16 (2)
+            ApplicationDataRegistryType_UInt16      = 0x20003, // PropertyType::UInt16 (3)
+            ApplicationDataRegistryType_Int32       = 0x20004, // PropertyType::Int32 (4)
+            // UInt32 (5) -> REG_DWORD
+            ApplicationDataRegistryType_Int64       = 0x20006, // PropertyType::Int64 (6)
+            // UInt64 (7) -> REG_QWORD
+            ApplicationDataRegistryType_Single      = 0x20008, // PropertyType::Single (8)
+            ApplicationDataRegistryType_Double      = 0x20009, // PropertyType::Double (9)
+            ApplicationDataRegistryType_Char16      = 0x2000A, // PropertyType::Char16 (10)
+            ApplicationDataRegistryType_Boolean     = 0x2000B, // PropertyType::Boolean (11)
+            // String (12) -> REG_SZ
+            ApplicationDataRegistryType_DateTime    = 0x2000E, // PropertyType::DateTime (14)
+            ApplicationDataRegistryType_TimeSpan    = 0x2000F, // PropertyType::TimeSpan (15)
+            ApplicationDataRegistryType_Guid        = 0x20010, // PropertyType::Guid (16)
+            ApplicationDataRegistryType_Point       = 0x20011, // PropertyType::Point (17)
+            ApplicationDataRegistryType_Size        = 0x20012, // PropertyType::Size (18)
+            ApplicationDataRegistryType_Rect        = 0x20013, // PropertyType::Rect (19)
+            // Array types: PropertyType enum value + 0x20000
+            ApplicationDataRegistryType_UInt8Array   = 0x20401, // PropertyType::UInt8Array (1025)
+            ApplicationDataRegistryType_Int16Array   = 0x20402, // PropertyType::Int16Array (1026)
+            ApplicationDataRegistryType_UInt16Array  = 0x20403, // PropertyType::UInt16Array (1027)
+            ApplicationDataRegistryType_Int32Array   = 0x20404, // PropertyType::Int32Array (1028)
+            ApplicationDataRegistryType_UInt32Array  = 0x20405, // PropertyType::UInt32Array (1029)
+            ApplicationDataRegistryType_Int64Array   = 0x20406, // PropertyType::Int64Array (1030)
+            ApplicationDataRegistryType_UInt64Array  = 0x20407, // PropertyType::UInt64Array (1031)
+            ApplicationDataRegistryType_SingleArray  = 0x20408, // PropertyType::SingleArray (1032)
+            ApplicationDataRegistryType_DoubleArray  = 0x20409, // PropertyType::DoubleArray (1033)
+            ApplicationDataRegistryType_Char16Array  = 0x2040A, // PropertyType::Char16Array (1034)
+            ApplicationDataRegistryType_BooleanArray = 0x2040B, // PropertyType::BooleanArray (1035)
+            // StringArray (1036) -> REG_MULTI_SZ
+            ApplicationDataRegistryType_DateTimeArray = 0x2040E, // PropertyType::DateTimeArray (1038)
+            ApplicationDataRegistryType_TimeSpanArray = 0x2040F, // PropertyType::TimeSpanArray (1039)
+            ApplicationDataRegistryType_GuidArray    = 0x20410, // PropertyType::GuidArray (1040)
+            ApplicationDataRegistryType_PointArray   = 0x20411, // PropertyType::PointArray (1041)
+            ApplicationDataRegistryType_SizeArray    = 0x20412, // PropertyType::SizeArray (1042)
+            ApplicationDataRegistryType_RectArray    = 0x20413, // PropertyType::RectArray (1043)
+        };
 
         template <typename T>
-        std::vector<uint8_t> TaggedBytes(winrt::Windows::Foundation::PropertyType tag, const T& val)
+        void SetCustomTypeValue(HKEY key, PCWSTR valueName, DWORD regType, const T& val)
         {
-            std::vector<uint8_t> data(1 + sizeof(T));
-            data[0] = static_cast<uint8_t>(tag);
-            std::memcpy(data.data() + 1, &val, sizeof(T));
-            return data;
+            THROW_IF_WIN32_ERROR(::RegSetValueExW(
+                key, valueName, 0, regType,
+                reinterpret_cast<const BYTE*>(&val), sizeof(T)));
+        }
+
+        template <typename T>
+        T ReadCustomTypeValue(HKEY key, PCWSTR valueName, DWORD dataSize)
+        {
+            THROW_HR_IF(E_UNEXPECTED, dataSize != sizeof(T));
+            T val{};
+            THROW_IF_WIN32_ERROR(::RegQueryValueExW(
+                key, valueName, nullptr, nullptr,
+                reinterpret_cast<BYTE*>(&val), &dataSize));
+            return val;
+        }
+
+        template <typename T>
+        void SetCustomTypeArrayValue(HKEY key, PCWSTR valueName, DWORD regType, const T* data, uint32_t count)
+        {
+            THROW_IF_WIN32_ERROR(::RegSetValueExW(
+                key, valueName, 0, regType,
+                reinterpret_cast<const BYTE*>(data),
+                static_cast<DWORD>(count * sizeof(T))));
+        }
+
+        template <typename T>
+        winrt::com_array<T> ReadCustomTypeArrayValue(HKEY key, PCWSTR valueName, DWORD dataSize)
+        {
+            THROW_HR_IF(E_UNEXPECTED, dataSize % sizeof(T) != 0);
+            const uint32_t count{ dataSize / static_cast<DWORD>(sizeof(T)) };
+            winrt::com_array<T> arr(count);
+            THROW_IF_WIN32_ERROR(::RegQueryValueExW(
+                key, valueName, nullptr, nullptr,
+                reinterpret_cast<BYTE*>(arr.data()), &dataSize));
+            return arr;
         }
 
         winrt::Windows::Foundation::IInspectable ReadRegistryValue(HKEY key, PCWSTR valueName)
@@ -31,6 +105,8 @@ namespace Microsoft::Windows::Storage
 
             switch (type)
             {
+            case REG_NONE:
+                return nullptr;
             case REG_SZ:
             {
                 auto value{ wil::reg::get_value_string(key, valueName) };
@@ -46,122 +122,157 @@ namespace Microsoft::Windows::Storage
                 auto value{ wil::reg::get_value_qword(key, valueName) };
                 return winrt::box_value(value);
             }
-            case REG_BINARY:
+            case REG_MULTI_SZ:
             {
-                auto bytes{ wil::reg::get_value_binary(key, valueName, REG_BINARY) };
-                THROW_HR_IF(E_UNEXPECTED, bytes.empty());
-                const auto tag{ static_cast<winrt::Windows::Foundation::PropertyType>(bytes[0]) };
-                const uint8_t* payload{ bytes.data() + 1 };
-                const size_t payloadSize{ bytes.size() - 1 };
-
-                switch (tag)
+                std::vector<BYTE> buffer(dataSize);
+                THROW_IF_WIN32_ERROR(::RegQueryValueExW(key, valueName, nullptr, nullptr, buffer.data(), &dataSize));
+                auto* p{ reinterpret_cast<const wchar_t*>(buffer.data()) };
+                auto* end{ reinterpret_cast<const wchar_t*>(buffer.data() + dataSize) };
+                std::vector<winrt::hstring> strings;
+                while (p < end && *p != L'\0')
                 {
-                case winrt::Windows::Foundation::PropertyType::UInt8:
+                    winrt::hstring str{ p };
+                    strings.push_back(str);
+                    p += str.size() + 1;
+                }
+                winrt::com_array<winrt::hstring> arr(strings.begin(), strings.end());
+                return winrt::Windows::Foundation::PropertyValue::CreateStringArray(arr);
+            }
+            case ApplicationDataRegistryType_UInt8:
+                return winrt::box_value(ReadCustomTypeValue<uint8_t>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Int16:
+                return winrt::box_value(ReadCustomTypeValue<int16_t>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_UInt16:
+                return winrt::box_value(ReadCustomTypeValue<uint16_t>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Int32:
+                return winrt::box_value(ReadCustomTypeValue<int32_t>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Int64:
+                return winrt::box_value(ReadCustomTypeValue<int64_t>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Single:
+                return winrt::box_value(ReadCustomTypeValue<float>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Double:
+                return winrt::box_value(ReadCustomTypeValue<double>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Char16:
+                return winrt::box_value(ReadCustomTypeValue<char16_t>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Boolean:
+                return winrt::box_value(static_cast<bool>(ReadCustomTypeValue<uint8_t>(key, valueName, dataSize)));
+            case ApplicationDataRegistryType_DateTime:
+            {
+                auto ticks{ ReadCustomTypeValue<int64_t>(key, valueName, dataSize) };
+                return winrt::box_value(winrt::Windows::Foundation::DateTime{ winrt::Windows::Foundation::TimeSpan{ ticks } });
+            }
+            case ApplicationDataRegistryType_TimeSpan:
+            {
+                auto duration{ ReadCustomTypeValue<int64_t>(key, valueName, dataSize) };
+                return winrt::box_value(winrt::Windows::Foundation::TimeSpan{ duration });
+            }
+            case ApplicationDataRegistryType_Guid:
+                return winrt::box_value(ReadCustomTypeValue<winrt::guid>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Point:
+                return winrt::box_value(ReadCustomTypeValue<winrt::Windows::Foundation::Point>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Size:
+                return winrt::box_value(ReadCustomTypeValue<winrt::Windows::Foundation::Size>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_Rect:
+                return winrt::box_value(ReadCustomTypeValue<winrt::Windows::Foundation::Rect>(key, valueName, dataSize));
+            case ApplicationDataRegistryType_UInt8Array:
+            {
+                auto arr{ ReadCustomTypeArrayValue<uint8_t>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateUInt8Array(arr);
+            }
+            case ApplicationDataRegistryType_Int16Array:
+            {
+                auto arr{ ReadCustomTypeArrayValue<int16_t>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateInt16Array(arr);
+            }
+            case ApplicationDataRegistryType_UInt16Array:
+            {
+                auto arr{ ReadCustomTypeArrayValue<uint16_t>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateUInt16Array(arr);
+            }
+            case ApplicationDataRegistryType_Int32Array:
+            {
+                auto arr{ ReadCustomTypeArrayValue<int32_t>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateInt32Array(arr);
+            }
+            case ApplicationDataRegistryType_UInt32Array:
+            {
+                auto arr{ ReadCustomTypeArrayValue<uint32_t>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateUInt32Array(arr);
+            }
+            case ApplicationDataRegistryType_Int64Array:
+            {
+                auto arr{ ReadCustomTypeArrayValue<int64_t>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateInt64Array(arr);
+            }
+            case ApplicationDataRegistryType_UInt64Array:
+            {
+                auto arr{ ReadCustomTypeArrayValue<uint64_t>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateUInt64Array(arr);
+            }
+            case ApplicationDataRegistryType_SingleArray:
+            {
+                auto arr{ ReadCustomTypeArrayValue<float>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateSingleArray(arr);
+            }
+            case ApplicationDataRegistryType_DoubleArray:
+            {
+                auto arr{ ReadCustomTypeArrayValue<double>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateDoubleArray(arr);
+            }
+            case ApplicationDataRegistryType_Char16Array:
+            {
+                auto arr{ ReadCustomTypeArrayValue<char16_t>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateChar16Array(arr);
+            }
+            case ApplicationDataRegistryType_BooleanArray:
+            {
+                auto bytes{ ReadCustomTypeArrayValue<uint8_t>(key, valueName, dataSize) };
+                winrt::com_array<bool> arr(bytes.size());
+                for (uint32_t i = 0; i < bytes.size(); ++i)
                 {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(uint8_t));
-                    uint8_t val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
+                    arr[i] = static_cast<bool>(bytes[i]);
                 }
-                case winrt::Windows::Foundation::PropertyType::Int16:
+                return winrt::Windows::Foundation::PropertyValue::CreateBooleanArray(arr);
+            }
+            case ApplicationDataRegistryType_DateTimeArray:
+            {
+                auto ticks{ ReadCustomTypeArrayValue<int64_t>(key, valueName, dataSize) };
+                winrt::com_array<winrt::Windows::Foundation::DateTime> arr(ticks.size());
+                for (uint32_t i = 0; i < ticks.size(); ++i)
                 {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(int16_t));
-                    int16_t val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
+                    arr[i] = winrt::Windows::Foundation::DateTime{ winrt::Windows::Foundation::TimeSpan{ ticks[i] } };
                 }
-                case winrt::Windows::Foundation::PropertyType::UInt16:
+                return winrt::Windows::Foundation::PropertyValue::CreateDateTimeArray(arr);
+            }
+            case ApplicationDataRegistryType_TimeSpanArray:
+            {
+                auto durations{ ReadCustomTypeArrayValue<int64_t>(key, valueName, dataSize) };
+                winrt::com_array<winrt::Windows::Foundation::TimeSpan> arr(durations.size());
+                for (uint32_t i = 0; i < durations.size(); ++i)
                 {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(uint16_t));
-                    uint16_t val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
+                    arr[i] = winrt::Windows::Foundation::TimeSpan{ durations[i] };
                 }
-                case winrt::Windows::Foundation::PropertyType::Int32:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(int32_t));
-                    int32_t val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                case winrt::Windows::Foundation::PropertyType::Int64:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(int64_t));
-                    int64_t val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                case winrt::Windows::Foundation::PropertyType::Single:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(float));
-                    float val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                case winrt::Windows::Foundation::PropertyType::Double:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(double));
-                    double val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                case winrt::Windows::Foundation::PropertyType::Char16:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(char16_t));
-                    char16_t val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                case winrt::Windows::Foundation::PropertyType::Boolean:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(uint8_t));
-                    return winrt::box_value(static_cast<bool>(payload[0]));
-                }
-                case winrt::Windows::Foundation::PropertyType::DateTime:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(int64_t));
-                    int64_t ticks{};
-                    std::memcpy(&ticks, payload, sizeof(ticks));
-                    return winrt::box_value(winrt::Windows::Foundation::DateTime{ winrt::Windows::Foundation::TimeSpan{ ticks } });
-                }
-                case winrt::Windows::Foundation::PropertyType::TimeSpan:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(int64_t));
-                    int64_t duration{};
-                    std::memcpy(&duration, payload, sizeof(duration));
-                    return winrt::box_value(winrt::Windows::Foundation::TimeSpan{ duration });
-                }
-                case winrt::Windows::Foundation::PropertyType::Guid:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(winrt::guid));
-                    winrt::guid val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                case winrt::Windows::Foundation::PropertyType::Point:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(winrt::Windows::Foundation::Point));
-                    winrt::Windows::Foundation::Point val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                case winrt::Windows::Foundation::PropertyType::Size:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(winrt::Windows::Foundation::Size));
-                    winrt::Windows::Foundation::Size val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                case winrt::Windows::Foundation::PropertyType::Rect:
-                {
-                    THROW_HR_IF(E_UNEXPECTED, payloadSize != sizeof(winrt::Windows::Foundation::Rect));
-                    winrt::Windows::Foundation::Rect val{};
-                    std::memcpy(&val, payload, sizeof(val));
-                    return winrt::box_value(val);
-                }
-                default:
-                    THROW_HR(E_UNEXPECTED);
-                }
+                return winrt::Windows::Foundation::PropertyValue::CreateTimeSpanArray(arr);
+            }
+            case ApplicationDataRegistryType_GuidArray:
+            {
+                auto arr{ ReadCustomTypeArrayValue<winrt::guid>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateGuidArray(arr);
+            }
+            case ApplicationDataRegistryType_PointArray:
+            {
+                auto arr{ ReadCustomTypeArrayValue<winrt::Windows::Foundation::Point>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreatePointArray(arr);
+            }
+            case ApplicationDataRegistryType_SizeArray:
+            {
+                auto arr{ ReadCustomTypeArrayValue<winrt::Windows::Foundation::Size>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateSizeArray(arr);
+            }
+            case ApplicationDataRegistryType_RectArray:
+            {
+                auto arr{ ReadCustomTypeArrayValue<winrt::Windows::Foundation::Rect>(key, valueName, dataSize) };
+                return winrt::Windows::Foundation::PropertyValue::CreateRectArray(arr);
             }
             default:
                 THROW_HR(E_UNEXPECTED);
@@ -170,9 +281,21 @@ namespace Microsoft::Windows::Storage
 
         void WriteRegistryValue(HKEY key, PCWSTR valueName, winrt::Windows::Foundation::IInspectable const& value)
         {
+            if (!value)
+            {
+                THROW_IF_WIN32_ERROR(::RegSetValueExW(
+                    key, valueName, 0, REG_NONE, nullptr, 0));
+                return;
+            }
             auto propertyValue{ value.as<winrt::Windows::Foundation::IPropertyValue>() };
             switch (propertyValue.Type())
             {
+            case winrt::Windows::Foundation::PropertyType::Empty:
+            {
+                THROW_IF_WIN32_ERROR(::RegSetValueExW(
+                    key, valueName, 0, REG_NONE, nullptr, 0));
+                break;
+            }
             case winrt::Windows::Foundation::PropertyType::String:
             {
                 auto str{ winrt::unbox_value<winrt::hstring>(value) };
@@ -194,94 +317,247 @@ namespace Microsoft::Windows::Storage
             case winrt::Windows::Foundation::PropertyType::UInt8:
             {
                 auto val{ winrt::unbox_value<uint8_t>(value) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::UInt8, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_UInt8, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Int16:
             {
                 auto val{ winrt::unbox_value<int16_t>(value) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Int16, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Int16, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::UInt16:
             {
                 auto val{ winrt::unbox_value<uint16_t>(value) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::UInt16, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_UInt16, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Int32:
             {
                 auto val{ winrt::unbox_value<int32_t>(value) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Int32, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Int32, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Int64:
             {
                 auto val{ winrt::unbox_value<int64_t>(value) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Int64, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Int64, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Single:
             {
                 auto val{ winrt::unbox_value<float>(value) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Single, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Single, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Double:
             {
                 auto val{ winrt::unbox_value<double>(value) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Double, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Double, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Char16:
             {
                 auto val{ winrt::unbox_value<char16_t>(value) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Char16, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Char16, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Boolean:
             {
                 auto val{ winrt::unbox_value<bool>(value) };
                 uint8_t byte{ val ? static_cast<uint8_t>(1) : static_cast<uint8_t>(0) };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Boolean, byte));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Boolean, byte);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::DateTime:
             {
                 auto val{ propertyValue.GetDateTime() };
                 auto ticks{ val.time_since_epoch().count() };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::DateTime, ticks));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_DateTime, ticks);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::TimeSpan:
             {
                 auto val{ propertyValue.GetTimeSpan() };
                 auto duration{ val.count() };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::TimeSpan, duration));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_TimeSpan, duration);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Guid:
             {
                 auto val{ propertyValue.GetGuid() };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Guid, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Guid, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Point:
             {
                 auto val{ propertyValue.GetPoint() };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Point, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Point, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Size:
             {
                 auto val{ propertyValue.GetSize() };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Size, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Size, val);
                 break;
             }
             case winrt::Windows::Foundation::PropertyType::Rect:
             {
                 auto val{ propertyValue.GetRect() };
-                wil::reg::set_value_binary(key, valueName, REG_BINARY, TaggedBytes(winrt::Windows::Foundation::PropertyType::Rect, val));
+                SetCustomTypeValue(key, valueName, ApplicationDataRegistryType_Rect, val);
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::UInt8Array:
+            {
+                winrt::com_array<uint8_t> arr;
+                propertyValue.GetUInt8Array(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_UInt8Array, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::Int16Array:
+            {
+                winrt::com_array<int16_t> arr;
+                propertyValue.GetInt16Array(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_Int16Array, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::UInt16Array:
+            {
+                winrt::com_array<uint16_t> arr;
+                propertyValue.GetUInt16Array(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_UInt16Array, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::Int32Array:
+            {
+                winrt::com_array<int32_t> arr;
+                propertyValue.GetInt32Array(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_Int32Array, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::UInt32Array:
+            {
+                winrt::com_array<uint32_t> arr;
+                propertyValue.GetUInt32Array(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_UInt32Array, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::Int64Array:
+            {
+                winrt::com_array<int64_t> arr;
+                propertyValue.GetInt64Array(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_Int64Array, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::UInt64Array:
+            {
+                winrt::com_array<uint64_t> arr;
+                propertyValue.GetUInt64Array(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_UInt64Array, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::SingleArray:
+            {
+                winrt::com_array<float> arr;
+                propertyValue.GetSingleArray(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_SingleArray, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::DoubleArray:
+            {
+                winrt::com_array<double> arr;
+                propertyValue.GetDoubleArray(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_DoubleArray, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::Char16Array:
+            {
+                winrt::com_array<char16_t> arr;
+                propertyValue.GetChar16Array(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_Char16Array, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::BooleanArray:
+            {
+                winrt::com_array<bool> arr;
+                propertyValue.GetBooleanArray(arr);
+                std::vector<uint8_t> bytes(arr.size());
+                for (uint32_t i = 0; i < arr.size(); ++i)
+                {
+                    bytes[i] = arr[i] ? static_cast<uint8_t>(1) : static_cast<uint8_t>(0);
+                }
+                THROW_IF_WIN32_ERROR(::RegSetValueExW(
+                    key, valueName, 0, ApplicationDataRegistryType_BooleanArray,
+                    bytes.data(), static_cast<DWORD>(bytes.size())));
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::StringArray:
+            {
+                winrt::com_array<winrt::hstring> arr;
+                propertyValue.GetStringArray(arr);
+                std::wstring multiSz;
+                for (const auto& s : arr)
+                {
+                    multiSz.append(s.c_str(), s.size());
+                    multiSz.push_back(L'\0');
+                }
+                multiSz.push_back(L'\0');
+                THROW_IF_WIN32_ERROR(::RegSetValueExW(
+                    key, valueName, 0, REG_MULTI_SZ,
+                    reinterpret_cast<const BYTE*>(multiSz.c_str()),
+                    static_cast<DWORD>(multiSz.size() * sizeof(wchar_t))));
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::DateTimeArray:
+            {
+                winrt::com_array<winrt::Windows::Foundation::DateTime> arr;
+                propertyValue.GetDateTimeArray(arr);
+                std::vector<int64_t> ticks(arr.size());
+                for (uint32_t i = 0; i < arr.size(); ++i)
+                {
+                    ticks[i] = arr[i].time_since_epoch().count();
+                }
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_DateTimeArray, ticks.data(), static_cast<uint32_t>(ticks.size()));
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::TimeSpanArray:
+            {
+                winrt::com_array<winrt::Windows::Foundation::TimeSpan> arr;
+                propertyValue.GetTimeSpanArray(arr);
+                std::vector<int64_t> durations(arr.size());
+                for (uint32_t i = 0; i < arr.size(); ++i)
+                {
+                    durations[i] = arr[i].count();
+                }
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_TimeSpanArray, durations.data(), static_cast<uint32_t>(durations.size()));
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::GuidArray:
+            {
+                winrt::com_array<winrt::guid> arr;
+                propertyValue.GetGuidArray(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_GuidArray, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::PointArray:
+            {
+                winrt::com_array<winrt::Windows::Foundation::Point> arr;
+                propertyValue.GetPointArray(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_PointArray, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::SizeArray:
+            {
+                winrt::com_array<winrt::Windows::Foundation::Size> arr;
+                propertyValue.GetSizeArray(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_SizeArray, arr.data(), arr.size());
+                break;
+            }
+            case winrt::Windows::Foundation::PropertyType::RectArray:
+            {
+                winrt::com_array<winrt::Windows::Foundation::Rect> arr;
+                propertyValue.GetRectArray(arr);
+                SetCustomTypeArrayValue(key, valueName, ApplicationDataRegistryType_RectArray, arr.data(), arr.size());
                 break;
             }
             default:
