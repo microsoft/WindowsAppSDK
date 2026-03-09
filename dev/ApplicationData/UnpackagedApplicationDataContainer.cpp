@@ -686,6 +686,9 @@ namespace Microsoft::Windows::Storage
 
             void Clear()
             {
+                // Best-effort but on failure report the first
+                HRESULT hrFirst{};
+
                 // Collect all value names first, then delete
                 std::vector<std::wstring> names;
                 for (const auto& valueData : wil::make_range(wil::reg::value_iterator{ m_key.get() }, wil::reg::value_iterator{}))
@@ -694,10 +697,22 @@ namespace Microsoft::Windows::Storage
                 }
                 for (const auto& name : names)
                 {
-                    ::RegDeleteValueW(m_key.get(), name.c_str());
+                    const HRESULT hrDeleteValue{ HRESULT_FROM_WIN32(::RegDeleteValueW(m_key.get(), name.c_str())) };
+                    if (FAILED(hrDeleteValue) && !wil::reg::is_registry_not_found(hrDeleteValue))
+                    {
+                        std::ignore = LOG_HR_MSG(hrDeleteValue, "%ls", name.c_str());
+                        if (SUCCEEDED(hrFirst))
+                        {
+                            hrFirst = hrDeleteValue;
+                        }
+                    }
                 }
                 m_mapChanged(*this, winrt::make<MapChangedEventArgs>(
-                    winrt::Windows::Foundation::Collections::CollectionChange::Reset, winrt::hstring{}));
+                    FAILED(hrFirst) ?
+                        winrt::Windows::Foundation::Collections::CollectionChange::ItemRemoved :
+                        winrt::Windows::Foundation::Collections::CollectionChange::Reset,
+                    winrt::hstring{}));
+                THROW_IF_FAILED(hrFirst);
             }
 
             // IIterable
@@ -797,6 +812,8 @@ namespace Microsoft::Windows::Storage
 
     winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::Microsoft::Windows::Storage::ApplicationDataContainer> UnpackagedApplicationDataContainer::Containers()
     {
+        _VerifyNotClosed();
+
         auto map{ winrt::single_threaded_map<winrt::hstring, winrt::Microsoft::Windows::Storage::ApplicationDataContainer>() };
         for (const auto& keyData : wil::make_range(wil::reg::key_iterator{ m_key.get() }, wil::reg::key_iterator{}))
         {
@@ -810,16 +827,22 @@ namespace Microsoft::Windows::Storage
 
     winrt::hstring UnpackagedApplicationDataContainer::Name()
     {
+        _VerifyNotClosed();
+
         return m_name;
     }
 
     winrt::Microsoft::Windows::Storage::ApplicationDataLocality UnpackagedApplicationDataContainer::Locality()
     {
+        _VerifyNotClosed();
+
         return m_locality;
     }
 
     winrt::Windows::Foundation::Collections::IPropertySet UnpackagedApplicationDataContainer::Values()
     {
+        _VerifyNotClosed();
+
         return winrt::make<RegistryPropertySet>(m_key);
     }
 
@@ -832,6 +855,8 @@ namespace Microsoft::Windows::Storage
         winrt::hstring const& name,
         winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition const& disposition)
     {
+        _VerifyNotClosed();
+
         if (disposition == winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Existing)
         {
             auto subKey{ wil::reg::open_shared_key(m_key.get(), name.c_str(), wil::reg::key_access::readwrite) };
@@ -848,10 +873,17 @@ namespace Microsoft::Windows::Storage
 
     void UnpackagedApplicationDataContainer::DeleteContainer(winrt::hstring const& name)
     {
+        _VerifyNotClosed();
+
         const auto hr{ HRESULT_FROM_WIN32(::RegDeleteTreeW(m_key.get(), name.c_str())) };
         if ((hr != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) && (hr != HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)))
         {
             THROW_IF_WIN32_ERROR_MSG(::RegDeleteTreeW(m_key.get(), name.c_str()), "%ls", name.c_str());
         }
+    }
+
+    void UnpackagedApplicationDataContainer::_VerifyNotClosed()
+    {
+        THROW_HR_IF_NULL(RO_E_CLOSED, m_key);
     }
 }

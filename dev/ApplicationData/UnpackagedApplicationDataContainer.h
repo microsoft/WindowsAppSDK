@@ -21,6 +21,9 @@ namespace Microsoft::Windows::Storage
         void DeleteContainer(winrt::hstring const& name);
 
     private:
+        void _VerifyNotClosed();
+
+    private:
         wil::shared_hkey m_key;
         winrt::hstring m_name;
         winrt::Microsoft::Windows::Storage::ApplicationDataLocality m_locality{};

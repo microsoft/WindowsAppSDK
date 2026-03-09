@@ -14,6 +14,8 @@ static const winrt::hstring null_hstring;
 
 namespace Test::ApplicationData::Tests
 {
+    const auto Main_PackageFamilyName{ ::TP::DynamicDependencyDataStore::c_PackageFamilyName };
+
     const winrt::hstring Publisher{ L"ApplicationDataTests" };
     const winrt::hstring Product{ L"UnpackagedApplicationDataTests" };
 
@@ -101,6 +103,17 @@ namespace Test::ApplicationData::Tests
             {
                 VERIFY_SUCCEEDED(hr, WEX::Common::String().Format(L"RegDeleteTreeW HKEY_CURRENT_USER\\%s", c_product));
             }
+        }
+
+        std::filesystem::path ToLongPath(const winrt::hstring& path)
+        {
+            DWORD size{ GetLongPathNameW(path.c_str(), nullptr, 0) };
+            VERIFY_ARE_NOT_EQUAL(0u, size);
+            std::wstring longPath(size, L'\0');
+            size = GetLongPathNameW(path.c_str(), longPath.data(), size);
+            VERIFY_ARE_NOT_EQUAL(0u, size);
+            longPath.resize(size);  // Trim the trailing NUL that Windows kindly included
+            return std::filesystem::path{ longPath.c_str() };
         }
 
         TEST_METHOD(GetForUnpackaged_InvalidParameter)
@@ -233,8 +246,9 @@ namespace Test::ApplicationData::Tests
             VERIFY_IS_NOT_NULL(applicationData);
 
             const auto localFolder{ applicationData.LocalFolder() };
-            const auto localPath{ applicationData.LocalPath() };
-            VERIFY_ARE_EQUAL(localFolder.Path(), localPath);
+            const auto localFolderPath{ ToLongPath(localFolder.Path()) };
+            const auto localPath{ ToLongPath(applicationData.LocalPath()) };
+            VERIFY_ARE_EQUAL(localFolderPath, localPath);
             const auto expectedLocalFolder{ UserLocalFolder(Publisher, Product) };
             const auto expectedLocalPath{ UserLocalPath(Publisher, Product) };
             VERIFY_ARE_EQUAL(localPath, expectedLocalPath);
@@ -272,8 +286,9 @@ namespace Test::ApplicationData::Tests
             VERIFY_IS_NOT_NULL(applicationData);
 
             const auto temporaryFolder{ applicationData.TemporaryFolder() };
-            const auto temporaryPath{ applicationData.TemporaryPath() };
-            VERIFY_ARE_EQUAL(temporaryFolder.Path(), temporaryPath);
+            const auto temporaryFolderPath{ ToLongPath(temporaryFolder.Path()) };
+            const auto temporaryPath{ ToLongPath(applicationData.TemporaryPath()) };
+            VERIFY_ARE_EQUAL(temporaryFolderPath, temporaryPath);
             const auto expectedTemporaryFolder{ UserTemporaryFolder(Publisher, Product) };
             const auto expectedTemporaryPath{ UserTemporaryPath(Publisher, Product) };
             VERIFY_ARE_EQUAL(temporaryPath, expectedTemporaryPath);
@@ -321,7 +336,6 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(LocalSettings)
         {
-#ifdef TODO_LocalSettings
             winrt::hstring packageFamilyName{ Main_PackageFamilyName };
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             VERIFY_IS_NOT_NULL(applicationData);
@@ -459,7 +473,6 @@ namespace Test::ApplicationData::Tests
             {
                 VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
-#endif
         }
 
         TEST_METHOD(ClearAsync)
@@ -683,8 +696,8 @@ namespace Test::ApplicationData::Tests
             {
                 // An initializer list like: { 1, 2, 3, 255 } is always an initializer_list<int> unless told otherwise.
                 // winrt::com_array<T> has a templated constructor that accepts iterators / initializer lists, so the compiler happily
-                // tries to copy int values into T, and then quite correctly warns you that: ìI am truncating integers into smaller
-                // integer types. I hope you meant that.î Better to make the initializer list elements match the array element type.
+                // tries to copy int values into T, and then quite correctly warns you that: ‚ÄúI am truncating integers into smaller
+                // integer types. I hope you meant that.‚Äù Better to make the initializer list elements match the array element type.
                 std::array<uint8_t, 4> arrValues{ 1, 2, 3, 255 };
                 winrt::com_array<uint8_t> arr(arrValues.begin(), arrValues.end());
                 values.Insert(L"UInt8Array", PV::CreateUInt8Array(arr));
@@ -700,8 +713,8 @@ namespace Test::ApplicationData::Tests
             {
                 // An initializer list like: { 1, 2, 3, 255 } is always an initializer_list<int> unless told otherwise.
                 // winrt::com_array<T> has a templated constructor that accepts iterators / initializer lists, so the compiler happily
-                // tries to copy int values into T, and then quite correctly warns you that: ìI am truncating integers into smaller
-                // integer types. I hope you meant that.î Better to make the initializer list elements match the array element type.
+                // tries to copy int values into T, and then quite correctly warns you that: ‚ÄúI am truncating integers into smaller
+                // integer types. I hope you meant that.‚Äù Better to make the initializer list elements match the array element type.
                 std::array<int16_t, 4> arrValues{ -32768, 0, 32767 };
                 winrt::com_array<int16_t> arr(arrValues.begin(), arrValues.end());
                 values.Insert(L"Int16Array", PV::CreateInt16Array(arr));
@@ -717,8 +730,8 @@ namespace Test::ApplicationData::Tests
             {
                 // An initializer list like: { 1, 2, 3, 255 } is always an initializer_list<int> unless told otherwise.
                 // winrt::com_array<T> has a templated constructor that accepts iterators / initializer lists, so the compiler happily
-                // tries to copy int values into T, and then quite correctly warns you that: ìI am truncating integers into smaller
-                // integer types. I hope you meant that.î Better to make the initializer list elements match the array element type.
+                // tries to copy int values into T, and then quite correctly warns you that: ‚ÄúI am truncating integers into smaller
+                // integer types. I hope you meant that.‚Äù Better to make the initializer list elements match the array element type.
                 std::array<uint16_t, 4> arrValues{ 0, 1000, 65535 };
                 winrt::com_array<uint16_t> arr(arrValues.begin(), arrValues.end());
                 values.Insert(L"UInt16Array", PV::CreateUInt16Array(arr));
