@@ -608,8 +608,8 @@ namespace Test::ApplicationData::Tests
             VERIFY_ARE_EQUAL(2.718281828, winrt::unbox_value<double>(values.Lookup(L"Double")));
 
             // Char16
-            values.Insert(L"Char16", winrt::box_value(L'Z'));
-            VERIFY_ARE_EQUAL(L'Z', winrt::unbox_value<char16_t>(values.Lookup(L"Char16")));
+            values.Insert(L"Char16", winrt::box_value(u'Z'));
+            VERIFY_ARE_EQUAL(u'Z', winrt::unbox_value<char16_t>(values.Lookup(L"Char16")));
 
             // Boolean true
             values.Insert(L"BoolTrue", winrt::box_value(true));
@@ -681,7 +681,12 @@ namespace Test::ApplicationData::Tests
 
             // UInt8Array
             {
-                winrt::com_array<uint8_t> arr{ 1, 2, 3, 255 };
+                // An initializer list like: { 1, 2, 3, 255 } is always an initializer_list<int> unless told otherwise.
+                // winrt::com_array<T> has a templated constructor that accepts iterators / initializer lists, so the compiler happily
+                // tries to copy int values into T, and then quite correctly warns you that: “I am truncating integers into smaller
+                // integer types. I hope you meant that.” Better to make the initializer list elements match the array element type.
+                std::array<uint8_t, 4> arrValues{ 1, 2, 3, 255 };
+                winrt::com_array<uint8_t> arr(arrValues.begin(), arrValues.end());
                 values.Insert(L"UInt8Array", PV::CreateUInt8Array(arr));
                 auto pv{ values.Lookup(L"UInt8Array").as<WF::IPropertyValue>() };
                 winrt::com_array<uint8_t> result;
@@ -693,7 +698,12 @@ namespace Test::ApplicationData::Tests
 
             // Int16Array
             {
-                winrt::com_array<int16_t> arr{ -32768, 0, 32767 };
+                // An initializer list like: { 1, 2, 3, 255 } is always an initializer_list<int> unless told otherwise.
+                // winrt::com_array<T> has a templated constructor that accepts iterators / initializer lists, so the compiler happily
+                // tries to copy int values into T, and then quite correctly warns you that: “I am truncating integers into smaller
+                // integer types. I hope you meant that.” Better to make the initializer list elements match the array element type.
+                std::array<int16_t, 4> arrValues{ -32768, 0, 32767 };
+                winrt::com_array<int16_t> arr(arrValues.begin(), arrValues.end());
                 values.Insert(L"Int16Array", PV::CreateInt16Array(arr));
                 auto pv{ values.Lookup(L"Int16Array").as<WF::IPropertyValue>() };
                 winrt::com_array<int16_t> result;
@@ -705,7 +715,12 @@ namespace Test::ApplicationData::Tests
 
             // UInt16Array
             {
-                winrt::com_array<uint16_t> arr{ 0, 1000, 65535 };
+                // An initializer list like: { 1, 2, 3, 255 } is always an initializer_list<int> unless told otherwise.
+                // winrt::com_array<T> has a templated constructor that accepts iterators / initializer lists, so the compiler happily
+                // tries to copy int values into T, and then quite correctly warns you that: “I am truncating integers into smaller
+                // integer types. I hope you meant that.” Better to make the initializer list elements match the array element type.
+                std::array<uint16_t, 4> arrValues{ 0, 1000, 65535 };
+                winrt::com_array<uint16_t> arr(arrValues.begin(), arrValues.end());
                 values.Insert(L"UInt16Array", PV::CreateUInt16Array(arr));
                 auto pv{ values.Lookup(L"UInt16Array").as<WF::IPropertyValue>() };
                 winrt::com_array<uint16_t> result;
