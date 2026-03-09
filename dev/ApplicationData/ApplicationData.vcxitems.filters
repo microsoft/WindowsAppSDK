@@ -20,6 +20,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)UnpackagedApplicationData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)UnpackagedApplicationDataContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.h">
@@ -35,6 +38,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)UnpackagedApplicationData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)UnpackagedApplicationDataContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

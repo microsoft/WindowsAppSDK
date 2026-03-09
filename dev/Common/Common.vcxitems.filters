@@ -50,9 +50,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Security.User.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTelemetryHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>

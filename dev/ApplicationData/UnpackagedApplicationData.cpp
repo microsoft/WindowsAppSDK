@@ -161,71 +161,58 @@ namespace Microsoft::Windows::Storage
     {
         _VerifyNotClosed();
 
-        auto logTelemetry{ ApplicationDataTelemetry::UnpackagedClearAsync::Start(locality, m_publisher, m_product) };
+        const winrt::hstring publisher{ m_publisher };
+        const winrt::hstring product{ m_product };
+        winrt::hstring localityPath;
+        switch (locality)
+        {
+        case winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local:
+        {
+            localityPath = LocalPath();
+            break;
+        }
+        case winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Temporary:
+        {
+            localityPath = TemporaryPath();
+            break;
+        }
+        case winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Machine:
+        {
+            localityPath = MachinePath();
+            break;
+        }
+        default:
+            THROW_HR_MSG(E_INVALIDARG, "%d", static_cast<int>(locality));
+        }
 
-        auto strong{ get_strong() };
+        auto logTelemetry{ ApplicationDataTelemetry::UnpackagedClearAsync::Start(locality, publisher, product) };
 
         logTelemetry.IgnoreCurrentThread();
         co_await winrt::resume_background();
         auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
 
-        switch (locality)
+        // Clear the path
+        if (!localityPath.empty())
         {
-        case winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local:
-        {
-            // Clear local path
-            const auto localPath{ LocalPath() };
-            if (!localPath.empty())
+            std::filesystem::path path{ localityPath.c_str() };
+            if (_PathExists(path))
             {
-                std::filesystem::path path{ localPath.c_str() };
-                if (_PathExists(path))
-                {
-                    const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
-                    THROW_IF_FAILED(wil::RemoveDirectoryRecursiveNoThrow(path.c_str(), options));
-                }
+                const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
+                THROW_IF_FAILED(wil::RemoveDirectoryRecursiveNoThrow(path.c_str(), options));
             }
+        }
 
-            // Clear local settings
+        // Clear the settings (if necessary)
+        if (locality == winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local)
+        {
             wil::unique_hkey currentUserKey;
             THROW_IF_WIN32_ERROR(::RegOpenCurrentUser(KEY_READ | KEY_WRITE, currentUserKey.put()));
-            auto subKey{ std::format(L"SOFTWARE\\{}\\{}", m_publisher, m_product) };
+            auto subKey{ std::format(L"SOFTWARE\\{}\\{}", publisher, product) };
             const auto hr{ HRESULT_FROM_WIN32(::RegDeleteTreeW(currentUserKey.get(), subKey.c_str())) };
             if (hr != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) && hr != HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
             {
                 THROW_IF_FAILED(hr);
             }
-            break;
-        }
-        case winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Temporary:
-        {
-            const auto temporaryPath{ TemporaryPath() };
-            if (!temporaryPath.empty())
-            {
-                std::filesystem::path path{ temporaryPath.c_str() };
-                if (_PathExists(path))
-                {
-                    const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
-                    THROW_IF_FAILED(wil::RemoveDirectoryRecursiveNoThrow(path.c_str(), options));
-                }
-            }
-            break;
-        }
-        case winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Machine:
-        {
-            const auto machinePath{ MachinePath() };
-            if (!machinePath.empty())
-            {
-                std::filesystem::path path{ machinePath.c_str() };
-                if (_PathExists(path))
-                {
-                    const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
-                    THROW_IF_FAILED(wil::RemoveDirectoryRecursiveNoThrow(path.c_str(), options));
-                }
-            }
-            break;
-        }
-        default:
-            THROW_HR_MSG(E_INVALIDARG, "%d", static_cast<int>(locality));
         }
 
         logTelemetry.Stop();

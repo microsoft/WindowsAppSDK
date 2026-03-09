@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT license.
 
 #pragma once
@@ -32,7 +32,7 @@ public:
             TraceLoggingClassWriteStart(
                 UnpackagedClearAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingInt32(static_cast<std::int32_t>(locality), "Locality",
+                TraceLoggingInt32(static_cast<std::int32_t>(locality), "Locality"),
                 TraceLoggingWideString(publisher.c_str(), "Publisher"),
                 TraceLoggingWideString(product.c_str(), "Product"));
         }
