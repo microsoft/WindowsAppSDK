@@ -117,6 +117,7 @@ extends:
         SignOutput: false
         runApiScan: ${{ parameters.runStaticAnalysis }}
         runPREFast: false
+        testMatrix: ${{ variables.PipelineTests }}
     
     - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
@@ -124,6 +125,7 @@ extends:
           SignOutput: false
           runApiScan: false
           runPREFast: true
+          testMatrix: ${{ variables.PipelineTests }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
@@ -135,8 +137,6 @@ extends:
         SignOutput: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
-      parameters:
-        testMatrix: ${{ variables.PipelineTests }}
 
     - ${{ if eq( parameters.BuildSampleApps, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
