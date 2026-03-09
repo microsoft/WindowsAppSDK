@@ -13,8 +13,7 @@
 
 #include <wil/resource.h>
 #include <string>
-#include "AppModel.Identity.IsPackagedProcess.h"
-#include "WindowsAppRuntime.SelfContained.h"
+#include <appmodel.h>
     namespace Microsoft::WindowsAppRuntime::Insights
     {
     enum class TraceLoggingInformationFlags : std::uint32_t
@@ -53,16 +52,34 @@
                     f |= Insights::TraceLoggingInformationFlags::IsDebuggerPresent;
                 }
 
-                bool isPackagedProcess{};
-                if (SUCCEEDED_LOG(::AppModel::Identity::IsPackagedProcess_nothrow(isPackagedProcess)) && isPackagedProcess)
                 {
-                    f |= Insights::TraceLoggingInformationFlags::IsPackagedProcess;
+                    UINT32 n{};
+                    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
+                    if ((rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER))
+                    {
+                        LOG_HR(HRESULT_FROM_WIN32(rc));
+                    }
+                    else if (rc == ERROR_INSUFFICIENT_BUFFER)
+                    {
+                        f |= Insights::TraceLoggingInformationFlags::IsPackagedProcess;
+                    }
                 }
 
-                bool isSelfContained{};
-                if (SUCCEEDED_LOG(::WindowsAppRuntime::SelfContained::IsSelfContained_nothrow(isSelfContained)) && isSelfContained)
                 {
-                    f |= Insights::TraceLoggingInformationFlags::IsSelfContained;
+                    auto module{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
+                    if (module)
+                    {
+                        using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
+                        auto fn{ reinterpret_cast<IsSelfContainedFn>(::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained")) };
+                        if (fn)
+                        {
+                            BOOL result{};
+                            if (SUCCEEDED_LOG(fn(&result)) && result)
+                            {
+                                f |= Insights::TraceLoggingInformationFlags::IsSelfContained;
+                            }
+                        }
+                    }
                 }
 
                 return static_cast<std::uint32_t>(f);
