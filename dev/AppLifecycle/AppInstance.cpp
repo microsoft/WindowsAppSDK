@@ -207,6 +207,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // Build a combined string from verb + file paths for hashing.
             // The Shell consistently orders files across all N launched processes
             // for the same selection, so sorting is not required.
+            // Paths are lowercased for case-insensitive matching on NTFS.
             std::wstring combined{ fileArgs.Verb() };
             for (uint32_t i = 0; i < files.Size(); i++)
             {
@@ -218,6 +219,15 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 }
             }
 
+            // Normalize to lowercase for case-insensitive file path comparison.
+            for (auto& ch : combined)
+            {
+                ch = towlower(ch);
+            }
+
+            // std::hash<std::wstring> yields size_t (32-bit on x86, 64-bit on
+            // x64/ARM64). Collisions are tolerable here because a false positive
+            // only suppresses one redundant activation within the dedup window.
             return std::hash<std::wstring>{}(combined);
         }
         catch (...)
@@ -241,6 +251,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         bool isDuplicate = false;
 
         AcquireSRWLockExclusive(&m_fileActivationDedupLock);
+        auto releaseLock = wil::scope_exit([this]() { ReleaseSRWLockExclusive(&m_fileActivationDedupLock); });
 
         if (m_lastFileActivationFingerprint == fingerprint &&
             (now - m_lastFileActivationTickCount) < c_fileActivationDedupWindowMs)
@@ -253,7 +264,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             m_lastFileActivationTickCount = now;
         }
 
-        ReleaseSRWLockExclusive(&m_fileActivationDedupLock);
         return isDuplicate;
     }
 
@@ -648,9 +658,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             if (fingerprint != 0)
             {
                 AcquireSRWLockExclusive(&m_fileActivationDedupLock);
+                auto releaseLock = wil::scope_exit([this]() { ReleaseSRWLockExclusive(&m_fileActivationDedupLock); });
                 m_lastFileActivationFingerprint = fingerprint;
                 m_lastFileActivationTickCount = GetTickCount64();
-                ReleaseSRWLockExclusive(&m_fileActivationDedupLock);
             }
         }
 
