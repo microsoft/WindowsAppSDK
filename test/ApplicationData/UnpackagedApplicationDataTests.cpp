@@ -676,7 +676,7 @@ namespace Test::ApplicationData::Tests
             auto values{ localSettings.Values() };
             values.Clear();
 
-            namespace PV = winrt::Windows::Foundation::PropertyValue;
+            using PV = winrt::Windows::Foundation::PropertyValue;
             namespace WF = winrt::Windows::Foundation;
 
             // UInt8Array

@@ -11,6 +11,7 @@
 
 #include <wil/cppwinrt.h>
 #include <wil/filesystem.h>
+#include <wil/registry.h>
 #include <wil/token_helpers.h>
 
 #include <winrt/Windows.Foundation.h>
