@@ -15,9 +15,6 @@
 #include "PushNotificationManager.h"
 #include "AppNotificationManager.h"
 
-#include <vector>
-#include <algorithm>
-
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
@@ -31,11 +28,6 @@ using namespace std::filesystem;
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     static PCWSTR c_pushPayloadAttribute{ L"-Payload:" };
-
-    // Deduplication window in milliseconds. Redirected file activations that arrive
-    // within this window after the initial activation and carry the same file set
-    // are treated as duplicates and suppressed.
-    static constexpr ULONGLONG c_fileActivationDeduplicationWindowMs{ 5000 };
 
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
@@ -102,80 +94,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         return { kind, data };
-    }
-
-    // Computes a stable fingerprint string for file activations, enabling deduplication of
-    // redundant activations that occur when the Shell opens multiple files simultaneously.
-    // The fingerprint is composed of the activation kind, verb, and sorted file paths.
-    // Returns an empty string for non-file activations or if fingerprinting fails.
-    std::wstring AppInstance::ComputeFileActivationFingerprint(AppLifecycle::AppActivationArguments const& args)
-    {
-        try
-        {
-            if (args.Kind() != ExtendedActivationKind::File)
-            {
-                return L"";
-            }
-
-            auto data = args.Data();
-            if (!data)
-            {
-                return L"";
-            }
-
-            auto fileArgs = data.try_as<IFileActivatedEventArgs>();
-            if (!fileArgs)
-            {
-                return L"";
-            }
-
-            auto files = fileArgs.Files();
-            if (!files || files.Size() == 0)
-            {
-                return L"";
-            }
-
-            std::wstring fingerprint = L"File|";
-            fingerprint += std::wstring(fileArgs.Verb());
-
-            // Collect file paths and sort for order-independent comparison.
-            std::vector<std::wstring> paths;
-            paths.reserve(files.Size());
-
-            for (uint32_t i = 0; i < files.Size(); i++)
-            {
-                auto item = files.GetAt(i);
-                if (item)
-                {
-                    auto path = item.Path();
-                    if (!path.empty())
-                    {
-                        paths.push_back(std::wstring(path));
-                    }
-                    else
-                    {
-                        // Fallback to Name when Path is unavailable (e.g. brokered items).
-                        paths.push_back(std::wstring(item.Name()));
-                    }
-                }
-            }
-
-            std::sort(paths.begin(), paths.end());
-
-            for (auto const& path : paths)
-            {
-                fingerprint += L"|";
-                fingerprint += path;
-            }
-
-            return fingerprint;
-        }
-        catch (...)
-        {
-            // If fingerprinting fails for any reason, return empty to skip deduplication
-            // rather than blocking activation delivery.
-            return L"";
-        }
     }
 
     AppInstance::AppInstance(uint32_t processId)
@@ -265,29 +183,84 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         m_redirectionArgs.Enqueue(id);
     }
 
+    size_t AppInstance::ComputeFileActivationFingerprint(AppLifecycle::AppActivationArguments const& args)
+    {
+        try
+        {
+            if (args.Kind() != ExtendedActivationKind::File)
+            {
+                return 0;
+            }
+
+            auto fileArgs = args.Data().try_as<IFileActivatedEventArgs>();
+            if (!fileArgs)
+            {
+                return 0;
+            }
+
+            auto files = fileArgs.Files();
+            if (files.Size() == 0)
+            {
+                return 0;
+            }
+
+            // Build a combined string from verb + file paths for hashing.
+            // The Shell consistently orders files across all N launched processes
+            // for the same selection, so sorting is not required.
+            std::wstring combined{ fileArgs.Verb() };
+            for (uint32_t i = 0; i < files.Size(); i++)
+            {
+                auto path = files.GetAt(i).Path();
+                if (!path.empty())
+                {
+                    combined += L'|';
+                    combined += path;
+                }
+            }
+
+            return std::hash<std::wstring>{}(combined);
+        }
+        catch (...)
+        {
+            // Best-effort deduplication: if fingerprinting fails, skip dedup
+            // and deliver the activation (no regression from current behavior).
+            LOG_CAUGHT_EXCEPTION();
+            return 0;
+        }
+    }
+
+    bool AppInstance::IsDuplicateFileActivation(AppLifecycle::AppActivationArguments const& args)
+    {
+        auto fingerprint = ComputeFileActivationFingerprint(args);
+        if (fingerprint == 0)
+        {
+            return false;
+        }
+
+        auto now = GetTickCount64();
+        bool isDuplicate = false;
+
+        AcquireSRWLockExclusive(&m_fileActivationDedupLock);
+
+        if (m_lastFileActivationFingerprint == fingerprint &&
+            (now - m_lastFileActivationTickCount) < c_fileActivationDedupWindowMs)
+        {
+            isDuplicate = true;
+        }
+        else
+        {
+            m_lastFileActivationFingerprint = fingerprint;
+            m_lastFileActivationTickCount = now;
+        }
+
+        ReleaseSRWLockExclusive(&m_fileActivationDedupLock);
+        return isDuplicate;
+    }
+
     void AppInstance::ProcessRedirectionRequests()
     {
         auto activity{ AppLifecycleTelemetry::ProcessRedirectionRequests::Start(m_processId, m_isCurrent) };
         m_innerActivated.ResetEvent();
-
-        // Build a set of seen file activation fingerprints for deduplication.
-        // When the Shell opens multiple files simultaneously, it may launch one
-        // process per file. Each process redirects to the key holder, resulting
-        // in N identical activation events. We suppress duplicates here so the
-        // app receives only one Activated event per unique file set.
-        std::vector<std::wstring> seenFingerprints;
-
-        // If the initial activation was recent, seed the seen set with its
-        // fingerprint so that redirected activations carrying the same file
-        // set are recognized as duplicates.
-        if (!m_initialActivationFingerprint.empty())
-        {
-            auto elapsed = GetTickCount64() - m_initialActivationTickCount;
-            if (elapsed < c_fileActivationDeduplicationWindowMs)
-            {
-                seenFingerprints.push_back(m_initialActivationFingerprint);
-            }
-        }
 
         GUID id;
         while ((id = DequeueRedirectionRequestId()) != GUID_NULL)
@@ -302,23 +275,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             request.Open(name);
             auto args = request.UnmarshalArguments();
 
-            // Check whether this activation is a duplicate of one already seen.
-            bool isDuplicate = false;
-            auto fingerprint = ComputeFileActivationFingerprint(args);
-            if (!fingerprint.empty())
-            {
-                auto it = std::find(seenFingerprints.begin(), seenFingerprints.end(), fingerprint);
-                if (it != seenFingerprints.end())
-                {
-                    isDuplicate = true;
-                }
-                else
-                {
-                    seenFingerprints.push_back(fingerprint);
-                }
-            }
-
-            if (!isDuplicate)
+            // Deduplicate file activations from multi-process Shell launches (issue #5066).
+            // When Shell opens N selected files with a packaged Win32 app, it launches
+            // N separate processes. Each process receives all N files and redirects to the
+            // key owner. Without deduplication, the key owner fires N identical Activated
+            // events. This check ensures only the first unique file activation is delivered.
+            if (!IsDuplicateFileActivation(args))
             {
                 // Notify the app that the redirection request is here.
                 m_activatedEvent(*this, args);
@@ -326,7 +288,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
 
             // Always signal the cleanup event so the redirecting process can exit,
-            // regardless of whether the activation was deduplicated.
+            // even when the activation was deduplicated.
             std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
             if (cleanupEvent.try_open(eventName.c_str()))
@@ -676,13 +638,21 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         auto result = make<AppActivationArguments>(kind, data);
 
-        // Store the fingerprint of the initial activation for deduplication.
-        // When multiple files are opened simultaneously, the Shell may launch
-        // multiple instances that redirect to the key holder. Each redirected
-        // activation carries the same file set as the initial activation and
-        // should be suppressed to avoid duplicate processing.
-        m_initialActivationFingerprint = ComputeFileActivationFingerprint(result);
-        m_initialActivationTickCount = GetTickCount64();
+        // Record file activation fingerprint for deduplication (issue #5066).
+        // This ensures that when secondary processes redirect identical file
+        // activations to the key owner, they are recognized as duplicates of
+        // the initial activation that the app already processes directly.
+        if (m_isCurrent)
+        {
+            auto fingerprint = ComputeFileActivationFingerprint(result);
+            if (fingerprint != 0)
+            {
+                AcquireSRWLockExclusive(&m_fileActivationDedupLock);
+                m_lastFileActivationFingerprint = fingerprint;
+                m_lastFileActivationTickCount = GetTickCount64();
+                ReleaseSRWLockExclusive(&m_fileActivationDedupLock);
+            }
+        }
 
         return result;
     }
