@@ -42,6 +42,10 @@
             return channel;
         }
 
+        // Inlined from the canonical implementations (see for reference):
+        //   IsPackagedProcess: dev/Common/AppModel.Identity.IsPackagedProcess.h
+        //   IsSelfContained:   dev/Common/WindowsAppRuntime.SelfContained.h / .cpp
+        // Duplicated here to avoid exposing those headers as public API.
         static std::uint32_t TraceLoggingInformationFlags()
         {
             static std::uint32_t flags{ []() -> std::uint32_t {
