@@ -42,7 +42,7 @@
             return channel;
         }
 
-        // Inline best-effort versions of checks from Foundation's authoritative implementations:
+        // Inlined from the canonical implementations (see for reference):
         //   IsPackagedProcess: dev/Common/AppModel.Identity.IsPackagedProcess.h
         //   IsSelfContained:   dev/Common/WindowsAppRuntime.SelfContained.h / .cpp
         // Duplicated here to avoid exposing those headers as public API.
