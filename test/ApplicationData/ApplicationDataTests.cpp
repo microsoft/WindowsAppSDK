@@ -22,7 +22,6 @@ namespace Test::ApplicationData::Tests
     public:
         BEGIN_TEST_CLASS(ApplicationDataTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
