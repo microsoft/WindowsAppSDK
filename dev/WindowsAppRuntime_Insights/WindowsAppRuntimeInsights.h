@@ -45,8 +45,7 @@
         // Inline best-effort versions of checks from Foundation's authoritative implementations:
         //   IsPackagedProcess: dev/Common/AppModel.Identity.IsPackagedProcess.h
         //   IsSelfContained:   dev/Common/WindowsAppRuntime.SelfContained.h / .cpp
-        // These are duplicated here because this header is included before WIL tracelogging
-        // and cannot take dependencies on the Foundation libs directly.
+        // Duplicated here to avoid exposing those headers as public API.
         static std::uint32_t TraceLoggingInformationFlags()
         {
             static std::uint32_t flags{ []() -> std::uint32_t {
