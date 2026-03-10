@@ -685,7 +685,7 @@ namespace Microsoft::Windows::Storage
                 m_mapChanged(*this, winrt::make<MapChangedEventArgs>(
                     existed ? winrt::Windows::Foundation::Collections::CollectionChange::ItemChanged : winrt::Windows::Foundation::Collections::CollectionChange::ItemInserted,
                     key));
-                return !existed;
+                return existed;
             }
 
             void Remove(winrt::hstring const& key)
