@@ -887,9 +887,13 @@ namespace Microsoft::Windows::Storage
         _VerifyNotClosed();
 
         const auto hr{ HRESULT_FROM_WIN32(::RegDeleteTreeW(m_key.get(), name.c_str())) };
-        if ((hr != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) && (hr != HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)))
+        if (SUCCEEDED(hr))
         {
-            THROW_IF_WIN32_ERROR_MSG(::RegDeleteTreeW(m_key.get(), name.c_str()), "%ls", name.c_str());
+            return;
+        }
+        else if (!wil::reg::is_registry_not_found(hr))
+        {
+            THROW_HR_MSG(hr, "%ls", name.c_str());
         }
     }
 

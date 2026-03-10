@@ -250,7 +250,7 @@ namespace Test::ApplicationData::Tests
             const auto localPath{ ToLongPath(applicationData.LocalPath()) };
             VERIFY_ARE_EQUAL(localFolderPath, localPath);
             const auto expectedLocalFolder{ UserLocalFolder(Publisher, Product) };
-            const auto expectedLocalPath{ UserLocalPath(Publisher, Product) };
+            const auto expectedLocalPath{ ToLongPath(UserLocalPath(Publisher, Product).c_str()) };
             VERIFY_ARE_EQUAL(localPath, expectedLocalPath);
         }
 
@@ -290,7 +290,7 @@ namespace Test::ApplicationData::Tests
             const auto temporaryPath{ ToLongPath(applicationData.TemporaryPath()) };
             VERIFY_ARE_EQUAL(temporaryFolderPath, temporaryPath, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", temporaryFolderPath.c_str(), temporaryPath.c_str()));
             const auto expectedTemporaryFolder{ UserTemporaryFolder(Publisher, Product) };
-            const auto expectedTemporaryPath{ UserTemporaryPath(Publisher, Product) };
+            const auto expectedTemporaryPath{ ToLongPath(UserTemporaryPath(Publisher, Product)) };
             VERIFY_ARE_EQUAL(temporaryPath, expectedTemporaryPath, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expectedTemporaryPath.c_str(), temporaryPath.c_str()));
         }
 
