@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. Licensed under the MIT License. -->
+<!--
+  StoragePickersTestApp - A WinUI 3 test application for Storage Pickers API
+  
+  NOTE: This project is intentionally isolated from the repo's build system via local
+  Directory.Build.props/targets files. It uses the shipped WindowsAppSDK NuGet for WinUI
+  and references the local Storage Pickers implementation via ProjectReference.
+-->
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Define paths for this project -->
+  <PropertyGroup>
+    <RepoRoot>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'WindowsAppRuntime.sln'))\</RepoRoot>
+    <PackagesDir>$(RepoRoot)packages\</PackagesDir>
+    <BaseOutputPath>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\StoragePickersTestApp\</BaseOutputPath>
+    <IntDir>$(RepoRoot)obj\$(Configuration)\$(Platform)\StoragePickersTestApp\</IntDir>
+    <OutDir>$(BaseOutputPath)</OutDir>
+  </PropertyGroup>
+  
+  <!-- Import NuGet props BEFORE other imports -->
+  <Import Project="$(PackagesDir)Microsoft.Windows.SDK.BuildTools.10.0.26100.1742\build\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('$(PackagesDir)Microsoft.Windows.SDK.BuildTools.10.0.26100.1742\build\Microsoft.Windows.SDK.BuildTools.props')" />
+  <Import Project="$(PackagesDir)Microsoft.Windows.CppWinRT.2.0.230706.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('$(PackagesDir)Microsoft.Windows.CppWinRT.2.0.230706.1\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <Import Project="$(PackagesDir)Microsoft.WindowsAppSDK.1.6.241114003\build\native\Microsoft.WindowsAppSDK.props" Condition="Exists('$(PackagesDir)Microsoft.WindowsAppSDK.1.6.241114003\build\native\Microsoft.WindowsAppSDK.props')" />
+  
+  <PropertyGroup Label="Globals">
+    <CppWinRTOptimized>true</CppWinRTOptimized>
+    <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
+    <MinimalCoreWin>true</MinimalCoreWin>
+    <ProjectGuid>{d1310de7-70ec-4b6a-8a78-2a31bcfa037f}</ProjectGuid>
+    <ProjectName>StoragePickersTestApp</ProjectName>
+    <RootNamespace>StoragePickersTestApp</RootNamespace>
+    <TargetName>$(RootNamespace)</TargetName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>false</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <!-- SelfContained mode: disables bootstrap auto-init (no framework package needed),
+         enables UndockedRegFreeWinRT auto-init, and auto-generates a manifest with all
+         WinRT class registrations. The local DLL from CopyWindowsAppRuntimeDll target
+         overwrites the MSIX-extracted copy at runtime. -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <AppxPackage>false</AppxPackage>
+  </PropertyGroup>
+  
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  
+  <PropertyGroup Label="UserMacros" />
+  
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <PreprocessorDefinitions>DISABLE_XAML_GENERATED_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemGroup>
+    <Manifest Include="app.manifest" />
+    <Manifest Include="StoragePickersTestApp.exe.manifest" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="App.xaml.h">
+      <DependentUpon>App.xaml</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="MainWindow.xaml.h">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </ClInclude>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+    <Page Include="MainWindow.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="App.xaml.cpp">
+      <DependentUpon>App.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="MainWindow.xaml.cpp">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Midl Include="MainWindow.idl">
+      <SubType>Code</SubType>
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Midl>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Text Include="readme.txt">
+      <DeploymentContent>false</DeploymentContent>
+    </Text>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Image Include="Assets\LockScreenLogo.scale-200.png" />
+    <Image Include="Assets\SplashScreen.scale-200.png" />
+    <Image Include="Assets\Square150x150Logo.scale-200.png" />
+    <Image Include="Assets\Square44x44Logo.scale-200.png" />
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Image Include="Assets\StoreLogo.png" />
+    <Image Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  
+  <!-- Reference Storage Pickers WinMD from the repo's build output -->
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.Storage.Pickers">
+      <HintPath>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+  
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+  
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(PackagesDir)Microsoft.Web.WebView2.1.0.2651.64\build\native\Microsoft.Web.WebView2.targets" Condition="Exists('$(PackagesDir)Microsoft.Web.WebView2.1.0.2651.64\build\native\Microsoft.Web.WebView2.targets')" />
+    <Import Project="$(PackagesDir)Microsoft.WindowsAppSDK.1.6.241114003\build\native\Microsoft.WindowsAppSDK.targets" Condition="Exists('$(PackagesDir)Microsoft.WindowsAppSDK.1.6.241114003\build\native\Microsoft.WindowsAppSDK.targets')" />
+    <Import Project="$(PackagesDir)Microsoft.Windows.CppWinRT.2.0.230706.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(PackagesDir)Microsoft.Windows.CppWinRT.2.0.230706.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="$(PackagesDir)Microsoft.Windows.SDK.BuildTools.10.0.26100.1742\build\Microsoft.Windows.SDK.BuildTools.targets" Condition="Exists('$(PackagesDir)Microsoft.Windows.SDK.BuildTools.10.0.26100.1742\build\Microsoft.Windows.SDK.BuildTools.targets')" />
+    <Import Project="$(PackagesDir)Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(PackagesDir)Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+  </ImportGroup>
+  
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(PackagesDir)Microsoft.WindowsAppSDK.1.6.241114003\build\native\Microsoft.WindowsAppSDK.props')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.WindowsAppSDK.1.6.241114003'))" />
+    <Error Condition="!Exists('$(PackagesDir)Microsoft.WindowsAppSDK.1.6.241114003\build\native\Microsoft.WindowsAppSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.WindowsAppSDK.1.6.241114003'))" />
+    <Error Condition="!Exists('$(PackagesDir)Microsoft.Windows.CppWinRT.2.0.230706.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.Windows.CppWinRT.2.0.230706.1'))" />
+    <Error Condition="!Exists('$(PackagesDir)Microsoft.Windows.CppWinRT.2.0.230706.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.Windows.CppWinRT.2.0.230706.1'))" />
+    <Error Condition="!Exists('$(PackagesDir)Microsoft.Windows.SDK.BuildTools.10.0.26100.1742\build\Microsoft.Windows.SDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.Windows.SDK.BuildTools.10.0.26100.1742'))" />
+    <Error Condition="!Exists('$(PackagesDir)Microsoft.Windows.SDK.BuildTools.10.0.26100.1742\build\Microsoft.Windows.SDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.Windows.SDK.BuildTools.10.0.26100.1742'))" />
+    <Error Condition="!Exists('$(PackagesDir)Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', 'Microsoft.Windows.ImplementationLibrary.1.0.240803.1'))" />
+  </Target>
+  
+  <!-- Copy Windows App Runtime DLL and PRI from repo build output for runtime -->
+  <Target Name="CopyWindowsAppRuntimeDll" AfterTargets="Build">
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri')" />
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.exp"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.exp')" />
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib')" />
+    <Copy 
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb')" />
+    <Message Importance="High" Text="Copied Microsoft.WindowsAppRuntime.dll and .pri from repo build output" 
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
+  </Target>
+  
+  <!-- 
+    Verify WindowsAppRuntime_DLL is built before compiling this test app.
+    We don't auto-build it because WindowsAppRuntime_DLL has many dependencies 
+    and requires building the full solution (very slow).
+  -->
+  <Target Name="VerifyWindowsAppRuntimeDllExists" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <_WindowsAppRuntimeDll>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll</_WindowsAppRuntimeDll>
+      <_WindowsAppRuntimeWinmd>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</_WindowsAppRuntimeWinmd>
+    </PropertyGroup>
+    <Error 
+      Text="WindowsAppRuntime_DLL not found for $(Configuration)|$(Platform). Please build it first:&#xA;&#xA;  Option 1: Build full solution&#xA;    msbuild WindowsAppRuntime.sln /p:Configuration=$(Configuration) /p:Platform=$(Platform)&#xA;&#xA;  Option 2: Use BuildAll.cmd&#xA;    BuildAll.cmd -Platform $(Platform) -Configuration $(Configuration)&#xA;&#xA;Missing file: $(_WindowsAppRuntimeDll)"
+      Condition="!Exists('$(_WindowsAppRuntimeDll)')" />
+    <Message Importance="High" Text="Found WindowsAppRuntime_DLL build output: $(_WindowsAppRuntimeDll)" 
+      Condition="Exists('$(_WindowsAppRuntimeDll)')" />
+  </Target>
+</Project>
