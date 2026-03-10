@@ -645,8 +645,19 @@ namespace Microsoft::Windows::Storage
             bool HasKey(winrt::hstring const& key) const
             {
                 DWORD type{};
-                const auto status{ ::RegQueryValueExW(m_key.get(), key.c_str(), nullptr, &type, nullptr, nullptr) };
-                return status == ERROR_SUCCESS;
+                const auto hr{ HRESULT_FROM_WIN32(::RegQueryValueExW(m_key.get(), key.c_str(), nullptr, &type, nullptr, nullptr)) };
+                if (SUCCEEDED(hr))
+                {
+                    return true;
+                }
+                else if (wil::reg::is_registry_not_found(hr))
+                {
+                    return false;
+                }
+                else
+                {
+                    THROW_HR_MSG(hr, "%ls", key.c_str());
+                }
             }
 
             winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::IInspectable> GetView() const

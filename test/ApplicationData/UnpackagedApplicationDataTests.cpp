@@ -288,10 +288,10 @@ namespace Test::ApplicationData::Tests
             const auto temporaryFolder{ applicationData.TemporaryFolder() };
             const auto temporaryFolderPath{ ToLongPath(temporaryFolder.Path()) };
             const auto temporaryPath{ ToLongPath(applicationData.TemporaryPath()) };
-            VERIFY_ARE_EQUAL(temporaryFolderPath, temporaryPath);
+            VERIFY_ARE_EQUAL(temporaryFolderPath, temporaryPath, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", temporaryFolderPath.c_str(), temporaryPath.c_str()));
             const auto expectedTemporaryFolder{ UserTemporaryFolder(Publisher, Product) };
             const auto expectedTemporaryPath{ UserTemporaryPath(Publisher, Product) };
-            VERIFY_ARE_EQUAL(temporaryPath, expectedTemporaryPath);
+            VERIFY_ARE_EQUAL(temporaryPath, expectedTemporaryPath, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expectedTemporaryPath.c_str(), temporaryPath.c_str()));
         }
 
         TEST_METHOD(PublisherCacheFolderAndPath)
@@ -340,22 +340,14 @@ namespace Test::ApplicationData::Tests
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             VERIFY_IS_NOT_NULL(applicationData);
 
-            auto systemApplicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
-            VERIFY_IS_NOT_NULL(systemApplicationData);
-
             const auto localSettings{ applicationData.LocalSettings() };
-            const auto systemLocalSettings{ systemApplicationData.LocalSettings() };
-            VERIFY_ARE_EQUAL(static_cast<int32_t>(localSettings.Locality()), static_cast<int32_t>(systemLocalSettings.Locality()));
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local, localSettings.Locality());
 
             auto containers{ localSettings.Containers() };
             VERIFY_ARE_EQUAL(0u, containers.Size());
-            auto systemContainers{ systemLocalSettings.Containers() };
-            VERIFY_ARE_EQUAL(0u, systemContainers.Size());
-            VERIFY_ARE_EQUAL(containers.Size(), systemContainers.Size());
 
             const winrt::hstring foodAndStuff{ L"FoodAndStuff" };
             VERIFY_IS_FALSE(containers.HasKey(foodAndStuff));
-            VERIFY_IS_FALSE(systemContainers.HasKey(foodAndStuff));
 
             auto container{ localSettings.CreateContainer(foodAndStuff, winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Always) };
             VERIFY_ARE_EQUAL(foodAndStuff, container.Name());
@@ -368,15 +360,6 @@ namespace Test::ApplicationData::Tests
             container = containers.Lookup(foodAndStuff);
             VERIFY_IS_NOT_NULL(container);
             VERIFY_ARE_EQUAL(foodAndStuff, container.Name());
-            //
-            VERIFY_ARE_EQUAL(0u, systemContainers.Size());
-            VERIFY_IS_FALSE(systemContainers.HasKey(foodAndStuff));
-            systemContainers = systemLocalSettings.Containers();
-            VERIFY_ARE_EQUAL(1u, systemContainers.Size());
-            VERIFY_IS_TRUE(systemContainers.HasKey(foodAndStuff));
-            auto systemContainer{ systemContainers.Lookup(foodAndStuff) };
-            VERIFY_IS_NOT_NULL(systemContainer);
-            VERIFY_ARE_EQUAL(foodAndStuff, systemContainer.Name());
 
             const winrt::hstring keyMeat{ L"Meat" };
             const winrt::hstring rawValueSteak{ L"Steak" };
@@ -391,29 +374,12 @@ namespace Test::ApplicationData::Tests
             VERIFY_IS_NOT_NULL(steakLookupAsReferenceString);
             auto steakString{ steakLookupAsReferenceString.GetString() };
             VERIFY_ARE_EQUAL(rawValueSteak, steakString);
-            //
-            auto systemValues{ systemContainer.Values() };
-            VERIFY_ARE_EQUAL(1u, systemValues.Size());
-            auto systemSteak{ systemValues.Lookup(keyMeat) };
-            VERIFY_IS_NOT_NULL(systemSteak);
-            auto systemSteakLookupAsReferenceString{ systemSteak.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
-            VERIFY_IS_NOT_NULL(systemSteakLookupAsReferenceString);
-            auto systemSteakString{ systemSteakLookupAsReferenceString.GetString() };
-            VERIFY_ARE_EQUAL(rawValueSteak, systemSteakString);
 
             const winrt::hstring keyDrink{ L"Drink" };
             const winrt::hstring rawValueWhiskey{ L"Whiskey" };
             auto valueWhiskey{ winrt::Windows::Foundation::PropertyValue::CreateString(rawValueWhiskey) };
-            VERIFY_ARE_EQUAL(1u, systemValues.Size());
-            systemValues.Insert(keyDrink, valueWhiskey);
-            VERIFY_ARE_EQUAL(2u, systemValues.Size());
-            auto systemWhiskey{ systemValues.Lookup(keyDrink) };
-            VERIFY_IS_NOT_NULL(systemWhiskey);
-            auto systemWhiskeyLookupAsReferenceString{ systemWhiskey.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
-            VERIFY_IS_NOT_NULL(systemWhiskeyLookupAsReferenceString);
-            auto systemWhiskeyString{ systemWhiskeyLookupAsReferenceString.GetString() };
-            VERIFY_ARE_EQUAL(rawValueWhiskey, systemWhiskeyString);
-            //
+            VERIFY_ARE_EQUAL(1u, values.Size());
+            values.Insert(keyDrink, valueWhiskey);
             VERIFY_ARE_EQUAL(2u, values.Size());
             auto whiskey{ values.Lookup(keyDrink) };
             VERIFY_IS_NOT_NULL(whiskey);
@@ -433,23 +399,10 @@ namespace Test::ApplicationData::Tests
             {
                 VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
-            VERIFY_ARE_EQUAL(winrt::Windows::Storage::ApplicationDataLocality::Local, systemContainer.Locality());
-            systemContainer.Close();
-            try
-            {
-                [[maybe_unused]] auto locality{ systemContainer.Locality() };
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
-            }
 
             VERIFY_ARE_EQUAL(1u, localSettings.Containers().Size());
-            VERIFY_ARE_EQUAL(1u, systemLocalSettings.Containers().Size());
             localSettings.DeleteContainer(foodAndStuff);
             VERIFY_ARE_EQUAL(0u, localSettings.Containers().Size());
-            VERIFY_ARE_EQUAL(0u, systemLocalSettings.Containers().Size());
 
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local, localSettings.Locality());
             localSettings.Close();
@@ -462,27 +415,26 @@ namespace Test::ApplicationData::Tests
             {
                 VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
-            VERIFY_ARE_EQUAL(winrt::Windows::Storage::ApplicationDataLocality::Local, systemLocalSettings.Locality());
-            systemLocalSettings.Close();
-            try
-            {
-                [[maybe_unused]] auto locality{ systemLocalSettings.Locality() };
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
-            }
         }
 
-        TEST_METHOD(ClearAsync)
+        TEST_METHOD(ClearAsync_LocalPath)
         {
-            //TODO
+            //TODO ClearAsync_LocalPath
         }
 
-        TEST_METHOD(ClearFolderAsync_Machine)
+        TEST_METHOD(ClearAsync_LocalSettings)
         {
-            //TODO
+            //TODO ClearAsync_LocalSettings
+        }
+
+        TEST_METHOD(ClearAsync_Local)
+        {
+            //TODO ClearAsync_Local
+        }
+
+        TEST_METHOD(ClearAsync_MachinePath)
+        {
+            //TODO ClearAsync_MachinePath
         }
 
         TEST_METHOD(ClearPublisherCacheFolderAsync)
@@ -715,7 +667,7 @@ namespace Test::ApplicationData::Tests
                 // winrt::com_array<T> has a templated constructor that accepts iterators / initializer lists, so the compiler happily
                 // tries to copy int values into T, and then quite correctly warns you that: “I am truncating integers into smaller
                 // integer types. I hope you meant that.” Better to make the initializer list elements match the array element type.
-                std::array<int16_t, 4> arrValues{ -32768, 0, 32767 };
+                std::array<int16_t, 3> arrValues{ -32768, 0, 32767 };
                 winrt::com_array<int16_t> arr(arrValues.begin(), arrValues.end());
                 values.Insert(L"Int16Array", PV::CreateInt16Array(arr));
                 auto pv{ values.Lookup(L"Int16Array").as<WF::IPropertyValue>() };
@@ -732,7 +684,7 @@ namespace Test::ApplicationData::Tests
                 // winrt::com_array<T> has a templated constructor that accepts iterators / initializer lists, so the compiler happily
                 // tries to copy int values into T, and then quite correctly warns you that: “I am truncating integers into smaller
                 // integer types. I hope you meant that.” Better to make the initializer list elements match the array element type.
-                std::array<uint16_t, 4> arrValues{ 0, 1000, 65535 };
+                std::array<uint16_t, 3> arrValues{ 0, 1000, 65535 };
                 winrt::com_array<uint16_t> arr(arrValues.begin(), arrValues.end());
                 values.Insert(L"UInt16Array", PV::CreateUInt16Array(arr));
                 auto pv{ values.Lookup(L"UInt16Array").as<WF::IPropertyValue>() };

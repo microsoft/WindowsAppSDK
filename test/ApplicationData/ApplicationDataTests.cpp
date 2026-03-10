@@ -49,12 +49,12 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(GetDefault_Main)
         {
-            //TODO
+            //TODO GetDefault_Main
         }
 
         TEST_METHOD(GetDefault_Framework)
         {
-            //TODO
+            //TODO GetDefault_Framework
         }
 
         TEST_METHOD(GetForPackageFamily_Main)
@@ -86,12 +86,12 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(GetForUser_Main)
         {
-            //TODO
+            //TODO GetForUser_Main
         }
 
         TEST_METHOD(GetForUser_Framework)
         {
-            //TODO
+            //TODO GetForUser_Framework
         }
 
         TEST_METHOD(FolderAndPath_Main)
@@ -426,32 +426,32 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(ClearAsync_Main)
         {
-            //TODO
+            //TODO ClearAsync_Main
         }
 
         TEST_METHOD(ClearAsync_Framework)
         {
-            //TODO
+            //TODO ClearAsync_Framework
         }
 
         TEST_METHOD(ClearFolderAsync_Machine_Main)
         {
-            //TODO
+            //TODO ClearFolderAsync_Machine_Main
         }
 
         TEST_METHOD(ClearFolderAsync_Machine_Framework)
         {
-            //TODO
+            //TODO ClearFolderAsync_Machine_Framework
         }
 
         TEST_METHOD(ClearPublisherCacheFolderAsync_Main)
         {
-            //TODO
+            //TODO ClearPublisherCacheFolderAsync_Main
         }
 
         TEST_METHOD(ClearPublisherCacheFolderAsync_Framework)
         {
-            //TODO
+            //TODO ClearPublisherCacheFolderAsync_Framework
         }
     };
 }
