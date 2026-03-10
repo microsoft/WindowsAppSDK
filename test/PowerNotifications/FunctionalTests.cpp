@@ -63,7 +63,7 @@ namespace Test::PowerNotifications
             auto batteryStat = BatteryStatus::Discharging;
             auto powerStat = PowerSupplyStatus::Inadequate;
             int32_t remainingCharge = 15;
-            auto token = PowerManager::BatteryStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+            auto token = PowerManager::BatteryStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/)
                 {
                     batteryStat = PowerManager::BatteryStatus();
                     powerStat = PowerManager::PowerSupplyStatus();
@@ -90,7 +90,7 @@ namespace Test::PowerNotifications
             THROW_LAST_ERROR_IF_NULL(event.get());
 
             auto value = winrt::Windows::Foundation::TimeSpan(1s);
-            auto token = PowerManager::RemainingDischargeTimeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+            auto token = PowerManager::RemainingDischargeTimeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/)
                 {
                     value = PowerManager::RemainingDischargeTime();
                     SetEvent(event.get());
@@ -111,7 +111,7 @@ namespace Test::PowerNotifications
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
             auto value = EnergySaverStatus::Disabled;
-            auto token = PowerManager::EnergySaverStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+            auto token = PowerManager::EnergySaverStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/)
                 {
                     value = PowerManager::EnergySaverStatus();
                     SetEvent(event.get());
@@ -133,7 +133,7 @@ namespace Test::PowerNotifications
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
             auto value = PowerSourceKind::DC;
-            auto token = PowerManager::PowerSourceKindChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+            auto token = PowerManager::PowerSourceKindChanged([&](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/)
                 {
                     value = PowerManager::PowerSourceKind();
                     SetEvent(event.get());
@@ -155,7 +155,7 @@ namespace Test::PowerNotifications
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
             auto value = DisplayStatus::Off;
-            auto token = PowerManager::DisplayStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+            auto token = PowerManager::DisplayStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/)
                 {
                     value = PowerManager::DisplayStatus();
                     SetEvent(event.get());
@@ -175,7 +175,7 @@ namespace Test::PowerNotifications
             END_TEST_METHOD_PROPERTIES()
 
             auto callback_success = false;
-            auto token = PowerManager::SystemIdleStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+            auto token = PowerManager::SystemIdleStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/)
                 {
                     callback_success = true;
                 });
@@ -195,7 +195,7 @@ namespace Test::PowerNotifications
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
             auto value = UserPresenceStatus::Absent;
-            auto token = PowerManager::UserPresenceStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+            auto token = PowerManager::UserPresenceStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/)
                 {
                     value = PowerManager::UserPresenceStatus();
                     SetEvent(event.get());

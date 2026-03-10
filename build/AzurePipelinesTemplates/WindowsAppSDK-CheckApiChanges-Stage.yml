@@ -1,0 +1,42 @@
+parameters:
+- name: CompareAllDependencies
+  type: boolean
+  default: false
+- name: CompareAgainstStable
+  type: boolean
+  default: true
+- name: CompareAgainstExperimental
+  type: boolean
+  default: false
+
+stages:
+- stage: CheckApiChanges
+  dependsOn:
+    - Pack
+  condition: not(failed())
+  jobs:
+  - job: CheckApiChanges
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022'
+    timeoutInMinutes: 120
+    steps:
+    - checkout: self
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Steps.yml@WindowsAppSDKConfig
+      parameters:
+        # Pattern of the component package
+        ComponentPackagePatterns: ['Microsoft.WindowsAppSDK.Foundation*.nupkg']
+        # Whether to compare against latest stable build from nuget
+        CompareAgainstStable: ${{ parameters.CompareAgainstStable }}
+        # Whether to compare against latest experimental build from nuget
+        CompareAgainstExperimental: ${{ parameters.CompareAgainstExperimental }}
+        # Parameters for DownloadPipelineArtifact step to retrieve the component packages in artifacts
+        DownloadPipelineArtifactInputs:
+          source: specific
+          runVersion: specific
+          project: $(System.TeamProjectId)
+          pipeline: $(_useBuildOutputFromPipeline)
+          pipelineId: $(_useBuildOutputFromBuildId)
+          artifactName: 'TransportPackage'

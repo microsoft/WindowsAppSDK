@@ -154,7 +154,7 @@ Write-Host "Installing .NET SDK..."
 
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
 
-Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile $dotnetInstallScript
+Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile $dotnetInstallScript -UseBasicParsing
 
 if (-not $latestAlreadyInstalled)
 {

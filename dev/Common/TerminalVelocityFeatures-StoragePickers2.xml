@@ -10,11 +10,7 @@
   <!-- Enabled variants -->
   <feature>
     <name>Feature_StoragePickers2</name>
-    <description>New functionalities in StoragePickers for the WindowsAppRuntime: SuggestedDefaultFolder, FileTypeChoices</description>
+    <description>New functionalities in Microsoft.Windows.Storage.Pickers in WindowsAppSDK 2.0</description>
     <state>AlwaysEnabled</state>
-    <alwaysDisabledChannelTokens>
-      <channelToken>Preview</channelToken>
-      <channelToken>Stable</channelToken>
-    </alwaysDisabledChannelTokens>
   </feature>
 </features>

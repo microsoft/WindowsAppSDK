@@ -246,4 +246,10 @@
   <data name="1052" xml:space="preserve">
     <value>Please manually add package references before building.</value>
   </data>
+  <data name="1053" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>No output information available.</value>
+  </data>
 </root>
