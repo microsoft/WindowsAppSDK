@@ -4,7 +4,7 @@ parameters:
   default: false
 - name: IsOneBranch
   type: boolean
-  default: false
+  default: true
 - name: IsOfficial
   type: boolean
   default: false 
