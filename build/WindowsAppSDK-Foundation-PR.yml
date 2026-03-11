@@ -146,3 +146,7 @@ extends:
           runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
           maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
           maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml@self
