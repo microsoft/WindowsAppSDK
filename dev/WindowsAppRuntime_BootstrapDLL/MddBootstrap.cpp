@@ -835,9 +835,9 @@ CLSID FindDDLMViaAppExtension(
     std::wstring appExtensionName;
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
-    const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
     if (majorMinorVersion >= 0x00020000)
     {
+        const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTagV2(versionTag) };
         if (!versionShortTag.empty())
         {
             appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}-{}-{}",
@@ -853,6 +853,7 @@ CLSID FindDDLMViaAppExtension(
     }
     else
     {
+        const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
         if (!versionShortTag.empty())
         {
             appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}.{}-{}-{}",
@@ -964,7 +965,9 @@ void FindDDLMViaEnumeration(
 
     WCHAR packageNameSuffix[10]{};
     size_t packageNameSuffixLength{};
-    const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
+    const auto versionShortTag{ (majorMinorVersion >= 0x00020000)
+        ? AppModel::Identity::GetVersionShortTagFromVersionTagV2(versionTag)
+        : AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
     if (!versionShortTag.empty())
     {
         packageNameSuffix[0] = L'-';
