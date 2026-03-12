@@ -46,6 +46,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
     void AppNotificationProgressData::Value(double progressValue)
     {
+        THROW_HR_IF(E_INVALIDARG, progressValue < 0.0 || progressValue > 1.0);
+
         auto lock{ m_lock.lock_exclusive() };
 
         m_progressValue = progressValue;
@@ -73,5 +75,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         auto lock{ m_lock.lock_exclusive() };
 
         m_progressStatus = progressStatus;
+    }
+    bool AppNotificationProgressData::IsIndeterminate()
+    {
+        auto lock{ m_lock.lock_shared() };
+
+        return m_isIndeterminate;
+    }
+    void AppNotificationProgressData::IsIndeterminate(bool isIndeterminate)
+    {
+        auto lock{ m_lock.lock_exclusive() };
+
+        m_isIndeterminate = isIndeterminate;
     }
 }

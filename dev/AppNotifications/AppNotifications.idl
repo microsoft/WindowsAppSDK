@@ -46,6 +46,11 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets/Sets the Value for the Status. Binds to {progressStatus} in progress xml tag
         String Status;
+
+        // Gets/Sets whether the progress bar should show an indeterminate loading animation.
+        // If true, Value is ignored and the progress bar displays an indeterminate state.
+        [contract(AppNotificationsContract, 4)]
+        Boolean IsIndeterminate;
     }
 
     // The Notification User Setting or Notification Group Policy Setting
