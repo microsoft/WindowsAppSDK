@@ -500,7 +500,7 @@ Try {
         #    WindowsAppRuntime_DLL (for .lib) and WindowsAppRuntime_BootstrapDLL (for Bootstrap.dll)
         #------------------
         NugetRestore "WindowsAppRuntime" "WindowsAppRuntime.sln"
-        NugetRestore "Microsoft.WindowsAppRuntime.Bootstrap.Net" "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
+        # Bootstrap.Net is SDK-style; /restore in the msbuild invocation handles it
 
         foreach($configurationToRun in $configuration.Split(","))
         {
