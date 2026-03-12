@@ -32,8 +32,8 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   default: true
 
 variables:
-- template: build\WindowsAppSDK-CommonVariables.yml
-- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: ../../build/WindowsAppSDK-CommonVariables.yml
+- template: AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 
 resources:
@@ -41,10 +41,6 @@ resources:
     - repository: templates
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
-      ref: refs/heads/main
-    - repository: WindowsAppSDKAggregator
-      type: git
-      name: ProjectReunion/WindowsAppSDKAggregator
       ref: refs/heads/main
     - repository: WindowsAppSDKConfig
       type: git
@@ -92,11 +88,7 @@ extends:
         break: false
 
     stages:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-PayloadTrackingTool-Stage.yml@WindowsAppSDKAggregator
-      parameters:
-        ServicingTag: 'PlaceHolder'
-
-    - template: base\build\AzurePipelinesTemplates\WindowsAppSDK-BuildWindowsAppSDKBase-Stages.yml
+    - template: AzurePipelinesTemplates/WindowsAppSDK-BuildWindowsAppSDKBase-Stages.yml@self
       parameters:
         IsOfficial: false
         PushPackageToInternalFeed: false

@@ -132,7 +132,7 @@ stages:
         echo TestImageToValidate                  : $(TestImageToValidate)
       displayName: 'Variables'
 
-    - template: build/AzurePipelinesTemplates/WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+    - template: ../../../build/AzurePipelinesTemplates/WindowsAppSDK-SetupBuildEnvironment-Steps.yml
       parameters:
         BuildType: ${{ parameters.BuildType }}
 
