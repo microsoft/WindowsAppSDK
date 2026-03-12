@@ -493,6 +493,65 @@ Try {
             Copy-Item -Path $IntellisenseFile -Destination $DestinationDir
         }
     }
+    if ($AzureBuildStep -eq "BuildBaseFoundation")
+    {
+        #------------------
+        #    Build the minimal Foundation projects needed for the Base package:
+        #    WindowsAppRuntime_DLL (for .lib) and WindowsAppRuntime_BootstrapDLL (for Bootstrap.dll)
+        #------------------
+        NugetRestore "WindowsAppRuntime" "WindowsAppRuntime.sln"
+        NugetRestore "Microsoft.WindowsAppRuntime.Bootstrap.Net" "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
+
+        foreach($configurationToRun in $configuration.Split(","))
+        {
+            foreach($platformToRun in $platform.Split(","))
+            {
+                write-host "Building WindowsAppRuntime_DLL for Base: $configurationToRun|$platformToRun"
+                & $msBuildPath /restore `
+                                WindowsAppRuntime.sln `
+                                /t:WindowsAppRuntime_DLL `
+                                /p:Configuration=$configurationToRun `
+                                /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
+                                /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime_DLL.$platformToRun.$configurationToRun.binlog" `
+                                $WindowsAppSDKVersionProperty `
+                                /p:WindowsAppSDKCleanIntermediateFiles=true `
+                                /p:AppxSymbolPackageEnabled=false `
+                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
+                if ($lastexitcode -ne 0)
+                {
+                    write-host "ERROR: msbuild.exe WindowsAppRuntime_DLL FAILED."
+                    exit 1
+                }
+
+                write-host "Building WindowsAppRuntime_BootstrapDLL for Base: $configurationToRun|$platformToRun"
+                & $msBuildPath /restore `
+                                WindowsAppRuntime.sln `
+                                /t:WindowsAppRuntime_BootstrapDLL `
+                                /p:Configuration=$configurationToRun `
+                                /p:Platform=$platformToRun `
+                                /p:RestoreConfigFile=NuGet.config `
+                                /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime_BootstrapDLL.$platformToRun.$configurationToRun.binlog" `
+                                $WindowsAppSDKVersionProperty `
+                                /p:WindowsAppSDKCleanIntermediateFiles=true `
+                                /p:AppxSymbolPackageEnabled=false `
+                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
+                if ($lastexitcode -ne 0)
+                {
+                    write-host "ERROR: msbuild.exe WindowsAppRuntime_BootstrapDLL FAILED."
+                    exit 1
+                }
+            }
+        }
+
+        # Build Bootstrap.Net (AnyCPU)
+        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
+            exit 1
+        }
+    }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "StageBaseFiles"))
     {
         #------------------
@@ -552,16 +611,24 @@ Try {
         # Stage native props (delegates to parent props)
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.Native.props" -Destination "$BasePackagePath\build\native\Microsoft.WindowsAppSDK.Base.props"
 
-        # Stage Bootstrap binaries and auto-initializer source files per-platform
+        # Stage auto-initializer source files from their source locations (no build needed)
+        Copy-Item -path "dev\Common\WindowsAppRuntimeAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "dev\Common\WindowsAppRuntimeAutoInitializer.cs" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "dev\Deployment\DeploymentManagerAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "dev\Deployment\DeploymentManagerAutoInitializer.cs" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT-AutoInitializer.cpp" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT-AutoInitializer.cs" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "dev\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs" -destination "$BasePackagePath\include" -force
+
+        # Stage Bootstrap binaries per-platform (from build output)
         foreach($configurationToRun in $configuration.Split(","))
         {
             foreach($platformToRun in $platform.Split(","))
             {
-                $buildOutputDir = "BuildOutput\$configurationToRun\$platformToRun"
-                $bootstrapOutput = "$buildOutputDir\WindowsAppRuntime_BootstrapDLL"
-                $autoInitOutput = "$buildOutputDir\WindowsAppRuntime_DLL"
+                $bootstrapOutput = "BuildOutput\$configurationToRun\$platformToRun\WindowsAppRuntime_BootstrapDLL"
 
-                # Bootstrap binaries
                 if(-not (test-path "$BasePackagePath\runtimes\win-$platformToRun\native"))
                 {
                     new-item -path "$BasePackagePath\runtimes\win-$platformToRun\native" -itemtype "directory" -force
@@ -573,21 +640,6 @@ Try {
                 Copy-Item -path "$bootstrapOutput\Microsoft.WindowsAppRuntime.Bootstrap.dll" -destination "$BasePackagePath\runtimes\win-$platformToRun\native" -force -ErrorAction SilentlyContinue
                 Copy-Item -path "$bootstrapOutput\Microsoft.WindowsAppRuntime.Bootstrap.pdb" -destination "$BasePackagePath\runtimes\win-$platformToRun\native" -force -ErrorAction SilentlyContinue
                 Copy-Item -path "$bootstrapOutput\Microsoft.WindowsAppRuntime.Bootstrap.lib" -destination "$BasePackagePath\lib\win10-$platformToRun" -force -ErrorAction SilentlyContinue
-
-                # MddBootstrap.h header
-                Copy-Item -path "$bootstrapOutput\MddBootstrap.h" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
-
-                # Auto-initializer source files
-                Copy-Item -path "$autoInitOutput\WindowsAppRuntimeAutoInitializer.cpp" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
-                Copy-Item -path "$autoInitOutput\WindowsAppRuntimeAutoInitializer.cs" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
-                Copy-Item -path "$autoInitOutput\DeploymentManagerAutoInitializer.cpp" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
-                Copy-Item -path "$autoInitOutput\DeploymentManagerAutoInitializer.cs" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
-                Copy-Item -path "$autoInitOutput\UndockedRegFreeWinRT-AutoInitializer.cpp" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
-                Copy-Item -path "$autoInitOutput\UndockedRegFreeWinRT-AutoInitializer.cs" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
-
-                # Bootstrap auto-initializer source files
-                Copy-Item -path "$bootstrapOutput\MddBootstrapAutoInitializer.cpp" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
-                Copy-Item -path "$bootstrapOutput\MddBootstrapAutoInitializer.cs" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
             }
         }
 
