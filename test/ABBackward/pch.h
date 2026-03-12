@@ -70,4 +70,4 @@
 #include <winrt/Microsoft.Windows.Widgets.Feeds.Providers.h>
 #include <winrt/Microsoft.Windows.Widgets.Notifications.h>
 
-#include <WindowsAppRuntime.Test.Bootstrap.h>
+#include <MddBootstrap.h>

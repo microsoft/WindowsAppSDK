@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+// ABBackward Test: Build with 1.8 SDK headers/WinMDs, run on CURRENT (2.0) framework.
+// All 1.8 APIs should work on the 2.0 framework. Any failure is a backward
+// compatibility regression that must be fixed by the component owner.
+
 #include "pch.h"
 #include <testdef.h>
 
@@ -18,36 +22,13 @@ using namespace winrt::Windows::System;
 
 using namespace Windows::Management::Deployment;
 
-namespace TP = ::Test::Packages;
-
-#define WASDK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime"
-#define WASDK_PUBLISHER L"8wekyb3d8bbwe"
-
-namespace Test::ABForward
+namespace Test::ABBackward
 {
+    static wil::unique_hmodule s_bootstrapDll;
+    static std::wstring s_packageFamilyName;
+
     class FunctionalTests
     {
-    private:
-        winrt::hstring packageFamilyName{};
-
-        void AddPackages()
-        {
-            auto packageManager{ Windows::Management::Deployment::PackageManager() };
-
-            auto frameworkPackages{ packageManager.FindPackages(packageFamilyName) };
-
-            if (!frameworkPackages.First().HasCurrent())
-            {
-                auto frameworkUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime").c_str()) };
-                auto frameworkOp{ packageManager.AddPackageAsync(frameworkUri, nullptr, DeploymentOptions::None) };
-                auto frameworkResult{ frameworkOp.get() };
-            }
-
-            auto ddlmUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime.DDLM").c_str()) };
-            auto ddlmOp{ packageManager.AddPackageAsync(ddlmUri, nullptr, DeploymentOptions::None) };
-            auto ddlmResult{ ddlmOp.get() };
-        }
-
     public:
         FunctionalTests() = default;
 
@@ -58,31 +39,108 @@ namespace Test::ABForward
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            packageFamilyName = winrt::hstring(WASDK_PACKAGE_NAME) +
-                winrt::hstring(L".") +
-                winrt::hstring(std::to_wstring(ABFORWARD_RUNTIME_VERSION_MAJOR)) +
-                winrt::hstring(L".") +
-                winrt::hstring(std::to_wstring(ABFORWARD_RUNTIME_VERSION_MINOR)) +
-                winrt::hstring(L"_") +
-                winrt::hstring(WASDK_PUBLISHER);
+            // Discover the highest installed WindowsAppRuntime framework package.
+            // ABBackward builds with 1.8 headers but runs on whatever framework is installed.
+            // If 2.0 is installed, we validate backward compat (1.8 APIs on 2.0 runtime).
+            // If only 1.8 is installed, we still validate the bootstrap path works.
+            auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
 
-            AddPackages();
+            UINT16 bestMajor = 0;
+            UINT16 bestMinor = 0;
+            std::wstring bestPackageName;
 
-            const UINT32 c_Version_MajorMinor{ ABFORWARD_RUNTIME_VERSION_MAJOR << 16 | ABFORWARD_RUNTIME_VERSION_MINOR };
-            const PACKAGE_VERSION minVersion{};
-            ::Test::Bootstrap::SetupBootstrapWithVersion(c_Version_MajorMinor, minVersion, false);
+            try
+            {
+                auto packages = packageManager.FindPackagesForUser(L"");
+                for (auto const& pkg : packages)
+                {
+                    try
+                    {
+                        if (!pkg.IsFramework()) continue;
+                        auto name = std::wstring(pkg.Id().Name());
+
+                        const std::wstring prefix = L"Microsoft.WindowsAppRuntime.";
+                        if (name.find(prefix) != 0) continue;
+
+                        auto versionStr = name.substr(prefix.size());
+                        auto dotPos = versionStr.find(L'.');
+                        if (dotPos == std::wstring::npos) continue;
+
+                        auto majorStr = versionStr.substr(0, dotPos);
+                        auto minorStr = versionStr.substr(dotPos + 1);
+                        if (majorStr.empty() || minorStr.empty()) continue;
+
+                        UINT16 major = static_cast<UINT16>(std::stoi(majorStr));
+                        UINT16 minor = static_cast<UINT16>(std::stoi(minorStr));
+
+                        if (major > bestMajor || (major == bestMajor && minor > bestMinor))
+                        {
+                            bestMajor = major;
+                            bestMinor = minor;
+                            bestPackageName = name;
+                        }
+                    }
+                    catch (...) { continue; }
+                }
+            }
+            catch (const winrt::hresult_error& e)
+            {
+                Log::Error(String().Format(L"Failed to enumerate packages: 0x%08X", e.code().value));
+                return false;
+            }
+
+            if (bestMajor == 0 && bestMinor == 0)
+            {
+                Log::Error(L"No WindowsAppRuntime framework package found on this machine.");
+                Log::Error(L"Run WindowsAppRuntimeInstall-x64.exe from the build output to install the runtime.");
+                return false;
+            }
+
+            Log::Comment(String().Format(L"Discovered framework: %s (version %d.%d)",
+                bestPackageName.c_str(), bestMajor, bestMinor));
+
+            // Load the 1.8 Bootstrap DLL (copied to the test output directory during build)
+            s_bootstrapDll.reset(LoadLibraryW(L"Microsoft.WindowsAppRuntime.Bootstrap.dll"));
+            if (!s_bootstrapDll)
+            {
+                auto err = GetLastError();
+                Log::Error(String().Format(L"Failed to load Microsoft.WindowsAppRuntime.Bootstrap.dll: error %d (0x%08X)", err, err));
+                return false;
+            }
+
+            // Bootstrap to the discovered framework version
+            UINT32 majorMinorVersion = (static_cast<UINT32>(bestMajor) << 16) | bestMinor;
+            PACKAGE_VERSION minVersion{};
+            auto hr = MddBootstrapInitialize(majorMinorVersion, nullptr, minVersion);
+            if (FAILED(hr))
+            {
+                Log::Error(String().Format(L"MddBootstrapInitialize failed: 0x%08X for version %d.%d", hr, bestMajor, bestMinor));
+                Log::Error(L"Ensure the WindowsAppRuntime framework is properly installed.");
+                Log::Error(L"Try running WindowsAppRuntimeInstall-x64.exe from the build output.");
+                s_bootstrapDll.reset();
+                return false;
+            }
+
+            Log::Comment(String().Format(L"Successfully bootstrapped to WindowsAppRuntime %d.%d", bestMajor, bestMinor));
+
+            s_packageFamilyName = L"Microsoft.WindowsAppRuntime." +
+                std::to_wstring(bestMajor) + L"." + std::to_wstring(bestMinor) +
+                L"_8wekyb3d8bbwe";
+            Log::Comment(String().Format(L"Package family: %s", s_packageFamilyName.c_str()));
 
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::Cleanup();
+            MddBootstrapShutdown();
+            s_bootstrapDll.reset();
             return true;
         }
 
         // =====================================================================
         // Microsoft.Security.Authentication.OAuth
+        // All OAuth classes existed in 1.8 and must work on 2.0 framework.
         // =====================================================================
 
         TEST_METHOD(OAuth_AuthRequestParams)
@@ -106,7 +164,6 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_AuthFailure)
         {
-            // AuthFailure is non-activatable (returned by OAuth2Manager operations)
             auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::AuthFailure>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -114,7 +171,6 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_AuthRequestResult)
         {
-            // AuthRequestResult is non-activatable (returned by OAuth2Manager operations)
             auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::AuthRequestResult>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -122,7 +178,6 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_AuthResponse)
         {
-            // AuthResponse is non-activatable (returned by OAuth2Manager operations)
             auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::AuthResponse>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -130,13 +185,11 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_OAuth2Manager)
         {
-            // OAuth2Manager is static - verify the type is accessible
+            // OAuth2Manager is static - verify accessible via dependent class
             try
             {
-                // RequestAuthWithParamsAsync requires valid OAuth setup, just verify the class exists
                 auto params{ winrt::Microsoft::Security::Authentication::OAuth::AuthRequestParams::CreateForAuthorizationCodeRequest(L"test-client-id", winrt::Windows::Foundation::Uri(L"https://localhost/callback")) };
                 VERIFY_IS_NOT_NULL(params);
-                // Don't actually call the manager - it requires real OAuth endpoints
             }
             catch (winrt::hresult_error const& ex)
             {
@@ -146,7 +199,6 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_TokenFailure)
         {
-            // TokenFailure is non-activatable (returned by OAuth2Manager operations)
             auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::TokenFailure>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -154,7 +206,6 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_TokenRequestResult)
         {
-            // TokenRequestResult is non-activatable (returned by OAuth2Manager operations)
             auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::TokenRequestResult>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -162,7 +213,6 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_TokenResponse)
         {
-            // TokenResponse is non-activatable (returned by OAuth2Manager operations)
             auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::TokenResponse>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -174,7 +224,6 @@ namespace Test::ABForward
 
         TEST_METHOD(BackgroundTaskBuilder)
         {
-            // BackgroundTaskBuilder was added in 1.7, should work on 1.8 runtime
             auto builder{ winrt::Microsoft::Windows::ApplicationModel::Background::BackgroundTaskBuilder() };
             VERIFY_IS_NOT_NULL(builder);
         }
@@ -227,21 +276,20 @@ namespace Test::ABForward
 
         TEST_METHOD(DeploymentManager)
         {
-            // DeploymentManager::Initialize fails without package identity, but should activate
             VERIFY_THROWS(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentManager::Initialize(), winrt::hresult_error);
         }
 
         TEST_METHOD(DeploymentManager_GetStatus)
         {
-            // KNOWN ABI BREAK: DeploymentManager::GetStatus() crashes the process (0xC0000409)
-            // when built with 2.0 headers but running on 1.8 runtime.
-            // Skipping to avoid crashing the test host.
-            Log::Result(WEX::Logging::TestResults::Skipped, L"SKIPPED: DeploymentManager::GetStatus() crashes on 1.8 runtime (ABI break - tracked in ABCompatibility_BrokenAPIs.md)");
+            // KNOWN ABI BREAK: DeploymentManager::GetStatus() crashes the process with
+            // STATUS_STACK_BUFFER_OVERRUN (0xC0000409) in both forward and backward directions.
+            // This kills the test host, so we must skip to avoid losing all subsequent tests.
+            // Tracked in ABCompatibility_BrokenAPIs.md.
+            Log::Result(TestResults::Skipped, L"DeploymentManager::GetStatus() causes fatal ABI crash — skipping");
         }
 
         TEST_METHOD(DeploymentResult)
         {
-            // DeploymentResult is non-activatable (returned by DeploymentManager operations)
             auto name = winrt::name_of<winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -255,7 +303,6 @@ namespace Test::ABForward
 
         TEST_METHOD(RuntimeCompatibilityOptions)
         {
-            // RuntimeCompatibilityOptions was added in 1.7, should work on 1.8 runtime
             auto options{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions() };
             VERIFY_IS_NOT_NULL(options);
         }
@@ -290,7 +337,6 @@ namespace Test::ABForward
             {
                 auto current{ winrt::Microsoft::Windows::AppLifecycle::AppInstance::GetCurrent() };
                 auto args{ current.GetActivatedEventArgs() };
-                // args may be null if no activation args, that's fine
             }
             catch (winrt::hresult_error const& ex)
             {
@@ -301,19 +347,15 @@ namespace Test::ABForward
 
         TEST_METHOD(AppLifecycle_ActivationRegistrationManager)
         {
-            // Just verify the static class is accessible - don't actually register
-            // since that requires specific context
             try
             {
                 winrt::Microsoft::Windows::AppLifecycle::ActivationRegistrationManager::RegisterForFileTypeActivation(
-                    { L".abforwardtest" }, L"", L"ABForwardTest", {}, L"");
-                // If we get here, it worked
+                    { L".abbackwardtest" }, L"", L"ABBackwardTest", {}, L"");
                 winrt::Microsoft::Windows::AppLifecycle::ActivationRegistrationManager::UnregisterForFileTypeActivation(
-                    { L".abforwardtest" }, L"");
+                    { L".abbackwardtest" }, L"");
             }
             catch (winrt::hresult_error const& ex)
             {
-                // Some failures are expected without proper context, but class_not_registered means compat break
                 VERIFY_ARE_NOT_EQUAL(ex.code(), REGDB_E_CLASSNOTREG);
                 Log::Comment(String().Format(L"AppLifecycle_ActivationRegistrationManager acceptable error: 0x%08X %s",
                     static_cast<uint32_t>(ex.code()), ex.message().c_str()));
@@ -351,7 +393,6 @@ namespace Test::ABForward
 
         TEST_METHOD(AppNotificationActivatedEventArgs)
         {
-            // Non-activatable (event args, only received from event handlers)
             auto name = winrt::name_of<winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -411,7 +452,6 @@ namespace Test::ABForward
 
         TEST_METHOD(BadgeNotifications)
         {
-            // BadgeNotificationManager was added post-1.6, should work on 1.8 runtime
             auto manager{ winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationManager::Current() };
             VERIFY_IS_NOT_NULL(manager);
         }
@@ -428,7 +468,6 @@ namespace Test::ABForward
 
         TEST_METHOD(PackageDeploymentResult)
         {
-            // Non-activatable (returned by PackageDeploymentManager operations)
             auto name = winrt::name_of<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -515,7 +554,6 @@ namespace Test::ABForward
 
         TEST_METHOD(PackageVolume)
         {
-            // Non-activatable (obtained from PackageDeploymentManager methods)
             auto name = winrt::name_of<winrt::Microsoft::Windows::Management::Deployment::PackageVolume>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -547,7 +585,6 @@ namespace Test::ABForward
 
         TEST_METHOD(CameraCaptureUIPhotoCaptureSettings)
         {
-            // Non-activatable (obtained from CameraCaptureUI.PhotoSettings())
             auto name = winrt::name_of<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoCaptureSettings>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -555,7 +592,6 @@ namespace Test::ABForward
 
         TEST_METHOD(CameraCaptureUIVideoCaptureSettings)
         {
-            // Non-activatable (obtained from CameraCaptureUI.VideoSettings())
             auto name = winrt::name_of<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoCaptureSettings>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -582,7 +618,6 @@ namespace Test::ABForward
 
         TEST_METHOD(PushNotificationChannel)
         {
-            // Non-activatable (obtained from PushNotificationManager operations)
             auto name = winrt::name_of<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -590,7 +625,6 @@ namespace Test::ABForward
 
         TEST_METHOD(PushNotificationCreateChannelResult)
         {
-            // Non-activatable (returned by channel creation operations)
             auto name = winrt::name_of<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -598,7 +632,6 @@ namespace Test::ABForward
 
         TEST_METHOD(PushNotificationReceivedEventArgs)
         {
-            // Non-activatable (event args from PushNotificationManager events)
             auto name = winrt::name_of<winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -611,7 +644,7 @@ namespace Test::ABForward
         TEST_METHOD(SecurityAccessControl)
         {
             auto arr{ winrt::com_array<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess>(1)};
-            arr.at(0).appContainerName = packageFamilyName;
+            arr.at(0).appContainerName = winrt::hstring(s_packageFamilyName);
             auto sddl{ winrt::Microsoft::Windows::Security::AccessControl::SecurityDescriptorHelpers::GetSddlForAppContainerNames(arr, winrt::hstring(), 0)};
             VERIFY_IS_FALSE(sddl.empty());
         }
@@ -622,7 +655,7 @@ namespace Test::ABForward
 
         TEST_METHOD(ApplicationData)
         {
-            auto appData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
+            auto appData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(winrt::hstring(s_packageFamilyName)) };
             VERIFY_IS_NOT_NULL(appData);
         }
 
@@ -630,7 +663,7 @@ namespace Test::ABForward
         {
             try
             {
-                auto appData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
+                auto appData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(winrt::hstring(s_packageFamilyName)) };
                 auto localSettings{ appData.LocalSettings() };
                 // LocalSettings may be null if the package family isn't fully registered — that's OK
                 Log::Comment(String().Format(L"ApplicationDataContainer: LocalSettings %s",
@@ -697,7 +730,6 @@ namespace Test::ABForward
 
         TEST_METHOD(PickFileResult)
         {
-            // Non-activatable (returned by picker operations)
             auto name = winrt::name_of<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -705,7 +737,6 @@ namespace Test::ABForward
 
         TEST_METHOD(PickFolderResult)
         {
-            // Non-activatable (returned by picker operations)
             auto name = winrt::name_of<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult>();
             VERIFY_IS_NOT_NULL(name.data());
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
@@ -737,6 +768,7 @@ namespace Test::ABForward
             [[maybe_unused]] auto powerSource{ winrt::Microsoft::Windows::System::Power::PowerManager::PowerSourceKind() };
             [[maybe_unused]] auto remaining{ winrt::Microsoft::Windows::System::Power::PowerManager::RemainingChargePercent() };
         }
+
 
         // =====================================================================
         // Microsoft.Windows.ApplicationModel.Resources
@@ -1515,26 +1547,12 @@ namespace Test::ABForward
             Log::Comment(String().Format(L"Type verified: %s", name.data()));
         }
 
-        // =====================================================================
-        // 2.0-only APIs (expected to fail on 1.8 runtime)
-        // =====================================================================
 
-        TEST_METHOD(AppNotificationConferencingConfig_New20Only)
-        {
-            // AppNotificationConferencingConfig is new in 2.0, not available in 1.8 runtime
-            // Expect CLASS_E_CLASSNOTAVAILABLE (0x80040111) or REGDB_E_CLASSNOTREG (0x80040154)
-            try
-            {
-                auto config{ winrt::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig() };
-                Log::Result(WEX::Logging::TestResults::Failed, L"Expected exception for 2.0-only API on 1.8 runtime");
-            }
-            catch (winrt::hresult_error const& ex)
-            {
-                auto hr = static_cast<uint32_t>(ex.code());
-                VERIFY_IS_TRUE(hr == 0x80040111 /* CLASS_E_CLASSNOTAVAILABLE */ || hr == 0x80040154 /* REGDB_E_CLASSNOTREG */,
-                    String().Format(L"Expected class-not-available/registered for 2.0-only API, got: 0x%08X", hr));
-                Log::Comment(String().Format(L"AppNotificationConferencingConfig correctly unavailable on 1.8: 0x%08X", hr));
-            }
-        }
+
+        // =====================================================================
+        // NOTE: No AppNotificationConferencingConfig test here.
+        // That class is new in 2.0 and does not exist in the 1.8 WinMDs,
+        // so it cannot be referenced when building against 1.8 headers.
+        // =====================================================================
     };
 }

@@ -29,47 +29,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="UserMacros">
-    <RuntimeWASDKMajor>1</RuntimeWASDKMajor>
-    <RuntimeWASDKMinor>8</RuntimeWASDKMinor>
-    <RuntimeWASDKPatch>260209005</RuntimeWASDKPatch>
-    <RuntimeWASDKVersion>$(RuntimeWASDKMajor).$(RuntimeWASDKMinor)</RuntimeWASDKVersion>
-    <RuntimeNugetPackageName>Microsoft.WindowsAppSDK.Runtime</RuntimeNugetPackageName>
-    <!-- 2.0 NuGet component package paths for WinMDs not in build output -->
-    <CurrentWASDKFoundationPackage>Microsoft.WindowsAppSDK.Foundation.2.0.15-preview</CurrentWASDKFoundationPackage>
-    <CurrentWASDKFoundationMetadata>$(NugetPackageDirectory)\$(CurrentWASDKFoundationPackage)\metadata</CurrentWASDKFoundationMetadata>
-    <CurrentWASDKAIPackage>Microsoft.WindowsAppSDK.AI.2.0.4-preview</CurrentWASDKAIPackage>
-    <CurrentWASDKAIMetadata>$(NugetPackageDirectory)\$(CurrentWASDKAIPackage)\metadata</CurrentWASDKAIMetadata>
-    <CurrentWASDKMLPackage>Microsoft.WindowsAppSDK.ML.2.0.175-preview</CurrentWASDKMLPackage>
-    <CurrentWASDKMLMetadata>$(NugetPackageDirectory)\$(CurrentWASDKMLPackage)\metadata</CurrentWASDKMLMetadata>
-    <CurrentWASDKWidgetsPackage>Microsoft.WindowsAppSDK.Widgets.2.0.3-preview</CurrentWASDKWidgetsPackage>
-    <CurrentWASDKWidgetsMetadata>$(NugetPackageDirectory)\$(CurrentWASDKWidgetsPackage)\metadata</CurrentWASDKWidgetsMetadata>
-    <CurrentWASDKSearchPackage>Microsoft.WindowsAppSDK.Search.2.0.4-preview</CurrentWASDKSearchPackage>
-    <CurrentWASDKSearchMetadata>$(NugetPackageDirectory)\$(CurrentWASDKSearchPackage)\metadata</CurrentWASDKSearchMetadata>
+    <DownlevelWASDKFoundationPackage>Microsoft.WindowsAppSDK.Foundation.1.8.260203002</DownlevelWASDKFoundationPackage>
+    <DownlevelWASDKMetadataPath>$(NugetPackageDirectory)\$(DownlevelWASDKFoundationPackage)\metadata</DownlevelWASDKMetadataPath>
+    <DownlevelWASDKInteractiveExperiencesPackage>Microsoft.WindowsAppSDK.InteractiveExperiences.1.8.260125001</DownlevelWASDKInteractiveExperiencesPackage>
+    <DownlevelWASDKIxpMetadataPath>$(NugetPackageDirectory)\$(DownlevelWASDKInteractiveExperiencesPackage)\metadata\10.0.18362.0</DownlevelWASDKIxpMetadataPath>
+    <DownlevelWASDKFoundationInclude>$(NugetPackageDirectory)\$(DownlevelWASDKFoundationPackage)\include</DownlevelWASDKFoundationInclude>
+    <DownlevelWASDKFoundationLibPath>$(NugetPackageDirectory)\$(DownlevelWASDKFoundationPackage)\lib\native\x64</DownlevelWASDKFoundationLibPath>
+    <DownlevelWASDKFoundationRuntimePath>$(NugetPackageDirectory)\$(DownlevelWASDKFoundationPackage)\runtimes\win-x64\native</DownlevelWASDKFoundationRuntimePath>
+    <!-- Additional component package paths -->
+    <DownlevelWASDKAIPackage>Microsoft.WindowsAppSDK.AI.1.8.47</DownlevelWASDKAIPackage>
+    <DownlevelWASDKAIMetadata>$(NugetPackageDirectory)\$(DownlevelWASDKAIPackage)\metadata</DownlevelWASDKAIMetadata>
+    <DownlevelWASDKMLPackage>Microsoft.WindowsAppSDK.ML.1.8.2124</DownlevelWASDKMLPackage>
+    <DownlevelWASDKMLMetadata>$(NugetPackageDirectory)\$(DownlevelWASDKMLPackage)\metadata</DownlevelWASDKMLMetadata>
+    <DownlevelWASDKWidgetsPackage>Microsoft.WindowsAppSDK.Widgets.1.8.251231004</DownlevelWASDKWidgetsPackage>
+    <DownlevelWASDKWidgetsMetadata>$(NugetPackageDirectory)\$(DownlevelWASDKWidgetsPackage)\metadata</DownlevelWASDKWidgetsMetadata>
   </PropertyGroup>
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <PreprocessorDefinitions>
-        $(PreprocessorDefinitions);
-        ABFORWARD_RUNTIME_VERSION_MAJOR=$(RuntimeWASDKMajor);
-        ABFORWARD_RUNTIME_VERSION_MINOR=$(RuntimeWASDKMinor);
-      </PreprocessorDefinitions>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>
-        $(PreprocessorDefinitions);
-        ABFORWARD_RUNTIME_VERSION_MAJOR=$(RuntimeWASDKMajor);
-        ABFORWARD_RUNTIME_VERSION_MINOR=$(RuntimeVersionMinor);
-      </PreprocessorDefinitions>
-    </ResourceCompile>
-  </ItemDefinitionGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{C40AE1D8-FD5F-472E-86B5-DDA5ABA6FF99}</ProjectGuid>
+    <ProjectGuid>{B7E3A1C4-6D2F-4E8A-9C5B-1A3D7F9E2B46}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Test.ABForward</RootNamespace>
+    <RootNamespace>Test.ABBackward</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-    <ProjectName>ABForwardTests</ProjectName>
+    <ProjectName>ABBackwardTests</ProjectName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -141,91 +123,91 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\inc;$(DownlevelWASDKFoundationInclude)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions);;INLINE_TEST_METHOD_MARKUP</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(DownlevelWASDKFoundationLibPath)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.Bootstrap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\inc;$(DownlevelWASDKFoundationInclude)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions);;INLINE_TEST_METHOD_MARKUP</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(DownlevelWASDKFoundationLibPath)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.Bootstrap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\inc;$(DownlevelWASDKFoundationInclude)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);;INLINE_TEST_METHOD_MARKUP</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(DownlevelWASDKFoundationLibPath)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.Bootstrap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\inc;$(DownlevelWASDKFoundationInclude)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);;INLINE_TEST_METHOD_MARKUP</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(DownlevelWASDKFoundationLibPath)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.Bootstrap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_DLL\Generated Files;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\inc;$(DownlevelWASDKFoundationInclude)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);;INLINE_TEST_METHOD_MARKUP</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(DownlevelWASDKFoundationLibPath)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.Bootstrap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_DLL\Generated Files;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\inc;$(DownlevelWASDKFoundationInclude)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);;INLINE_TEST_METHOD_MARKUP</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(DownlevelWASDKFoundationLibPath)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.Bootstrap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -238,188 +220,185 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <Content Condition="'$(Platform)'=='x64'" Include="$(NugetPackageDirectory)\$(RuntimeNugetPackageName).$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x64\Microsoft.WindowsAppRuntime.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.msix"/>
-    <Content Condition="'$(Platform)'=='x64'" Include="$(NugetPackageDirectory)\$(RuntimeNugetPackageName).$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x64\Microsoft.WindowsAppRuntime.DDLM.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM\Microsoft.WindowsAppRuntime.DDLM.msix"/>
-    <Content Condition="'$(Platform)'=='x86'" Include="$(NugetPackageDirectory)\$(RuntimeNugetPackageName).$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x86\Microsoft.WindowsAppRuntime.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.msix"/>
-    <Content Condition="'$(Platform)'=='x86'" Include="$(NugetPackageDirectory)\$(RuntimeNugetPackageName).$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-x86\Microsoft.WindowsAppRuntime.DDLM.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM\Microsoft.WindowsAppRuntime.DDLM.msix"/>
-    <Content Condition="'$(Platform)'=='ARM64'" Include="$(NugetPackageDirectory)\$(RuntimeNugetPackageName).$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-arm64\Microsoft.WindowsAppRuntime.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.msix"/>
-    <Content Condition="'$(Platform)'=='ARM64'" Include="$(NugetPackageDirectory)\$(RuntimeNugetPackageName).$(RuntimeWASDKVersion).$(RuntimeWASDKPatch)\tools\MSIX\win10-arm64\Microsoft.WindowsAppRuntime.DDLM.$(RuntimeWASDKVersion).msix" CopyToOutputDirectory="PreserveNewest" TargetPath="..\Microsoft.WindowsAppRuntime.DDLM\Microsoft.WindowsAppRuntime.DDLM.msix"/>
-    <Content Include="ABForward.testdef" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="ABBackward.testdef" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
+  <!-- WinMD references point to 1.8 NuGet metadata (not build output) -->
   <ItemGroup>
     <Reference Include="Microsoft.Security.Authentication.OAuth">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Security.Authentication.OAuth.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Security.Authentication.OAuth.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.ApplicationModel.Background">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.Background.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.ApplicationModel.Background.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.ApplicationModel.DynamicDependency">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.AppNotifications">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.AppNotifications.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.AppNotifications.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.AppNotifications.Builder">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.AppNotifications.Builder.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.AppNotifications.Builder.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Management.Deployment">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.Management.Deployment.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Windows.Media.Capture">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.Media.Capture.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Windows.PushNotifications">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.PushNotifications.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.Management.Deployment.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Security.AccessControl">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.Security.AccessControl.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.Security.AccessControl.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.AppLifecycle">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.AppLifecycle.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.BadgeNotifications">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.BadgeNotifications.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.BadgeNotifications.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Storage">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.Storage.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.System">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.System.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.System.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.Media.Capture">
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.Media.Capture.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.PushNotifications">
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.PushNotifications.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Storage.Pickers">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.System.Power">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.System.Power.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.System.Power.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
-  <!-- Foundation WinMDs not in build output (Resources, Globalization, Foundation, UniversalBGTask) -->
+  <!-- InteractiveExperiences WinMDs needed for type resolution (e.g. Microsoft.UI.WindowId) -->
+  <ItemGroup>
+    <Reference Include="Microsoft.Foundation">
+      <HintPath>$(DownlevelWASDKIxpMetadataPath)\Microsoft.Foundation.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Graphics">
+      <HintPath>$(DownlevelWASDKIxpMetadataPath)\Microsoft.Graphics.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.UI">
+      <HintPath>$(DownlevelWASDKIxpMetadataPath)\Microsoft.UI.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+  <!-- Foundation WinMDs not already referenced (Resources, Globalization, Foundation, UniversalBGTask) -->
   <ItemGroup>
     <Reference Include="Microsoft.Windows.ApplicationModel.Resources">
-      <HintPath>$(CurrentWASDKFoundationMetadata)\Microsoft.Windows.ApplicationModel.Resources.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.ApplicationModel.Resources.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.ApplicationModel.Background.UniversalBGTask">
-      <HintPath>$(CurrentWASDKFoundationMetadata)\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.Foundation">
-      <HintPath>$(CurrentWASDKFoundationMetadata)\Microsoft.Windows.Foundation.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.Foundation.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.Globalization">
-      <HintPath>$(CurrentWASDKFoundationMetadata)\Microsoft.Windows.Globalization.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMetadataPath)\Microsoft.Windows.Globalization.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
-  <!-- AI WinMDs from 2.0 NuGet -->
+  <!-- AI WinMDs from 1.8 NuGet -->
   <ItemGroup>
     <Reference Include="Microsoft.Windows.AI">
-      <HintPath>$(CurrentWASDKAIMetadata)\Microsoft.Windows.AI.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKAIMetadata)\Microsoft.Windows.AI.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.AI.ContentSafety">
-      <HintPath>$(CurrentWASDKAIMetadata)\Microsoft.Windows.AI.ContentSafety.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKAIMetadata)\Microsoft.Windows.AI.ContentSafety.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.AI.Foundation">
-      <HintPath>$(CurrentWASDKAIMetadata)\Microsoft.Windows.AI.Foundation.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKAIMetadata)\Microsoft.Windows.AI.Foundation.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.AI.Imaging">
-      <HintPath>$(CurrentWASDKAIMetadata)\Microsoft.Windows.AI.Imaging.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKAIMetadata)\Microsoft.Windows.AI.Imaging.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.AI.Text">
-      <HintPath>$(CurrentWASDKAIMetadata)\Microsoft.Windows.AI.Text.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKAIMetadata)\Microsoft.Windows.AI.Text.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Graphics.Imaging">
-      <HintPath>$(CurrentWASDKAIMetadata)\Microsoft.Graphics.Imaging.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKAIMetadata)\Microsoft.Graphics.Imaging.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
-  <!-- ML WinMD from 2.0 NuGet -->
+  <!-- ML WinMD from 1.8 NuGet -->
   <ItemGroup>
     <Reference Include="Microsoft.Windows.AI.MachineLearning">
-      <HintPath>$(CurrentWASDKMLMetadata)\Microsoft.Windows.AI.MachineLearning.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKMLMetadata)\Microsoft.Windows.AI.MachineLearning.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
-  <!-- Widgets WinMD from 2.0 NuGet -->
+  <!-- Widgets WinMD from 1.8 NuGet -->
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Widgets">
-      <HintPath>$(CurrentWASDKWidgetsMetadata)\Microsoft.Windows.Widgets.winmd</HintPath>
+      <HintPath>$(DownlevelWASDKWidgetsMetadata)\Microsoft.Windows.Widgets.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
-  </ItemGroup>
-  <!-- Search WinMD from 2.0 NuGet (new in 2.0) -->
-  <ItemGroup>
-    <Reference Include="Microsoft.Windows.Search">
-      <HintPath>$(CurrentWASDKSearchMetadata)\Microsoft.Windows.Search.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
-      <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
-    <Import Project="$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -429,10 +408,9 @@
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets'))" />
   </Target>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SkipUnchangedFiles="true" SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(DownlevelWASDKFoundationRuntimePath)\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
   </Target>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
