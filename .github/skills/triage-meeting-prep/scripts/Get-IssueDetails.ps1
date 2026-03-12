@@ -145,6 +145,103 @@ $result.hasAreaLabel = $areaLabels.Count -gt 0
 $result.areaLabels = @($areaLabels | ForEach-Object { $_.name })
 $result.needsTriage = $triageLabels.Count -gt 0
 
+# Calculate area suggestion confidence if no area label
+if (-not $result.hasAreaLabel) {
+    # Fetch available area labels from the repository using Get-RepositoryLabels.ps1
+    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $getLabelsScript = Join-Path $scriptDir "Get-RepositoryLabels.ps1"
+    
+    $availableAreaLabels = @()
+    if (Test-Path $getLabelsScript) {
+        try {
+            $rawLabels = & $getLabelsScript -Repository $Repository -Filter "area-*" -OutputFormat json 2>$null
+            if ($LASTEXITCODE -eq 0 -and $rawLabels) {
+                $labelData = $rawLabels | ConvertFrom-Json
+                $availableAreaLabels = @($labelData | ForEach-Object { $_.name })
+                Write-Verbose "Fetched $($availableAreaLabels.Count) area labels from repository"
+            }
+        }
+        catch {
+            Write-Verbose "Could not fetch area labels: $_"
+        }
+    }
+    
+    # Build keyword map - use fetched labels or fall back to common ones
+    # Keywords are derived from label names (strip 'area-' prefix and expand)
+    $areaKeywords = @{}
+    
+    # Default keywords for common areas (fallback and enhancement)
+    # area-Notifications covers all notification types (toast, badge, push, app notifications)
+    $defaultKeywords = @{
+        'area-Notifications' = @('notification', 'toast', 'badge', 'push', 'appnotification', 'pushnotification', 'wns')
+        'area-Packaging' = @('msix', 'package', 'deploy', 'install', 'appx', 'deployment')
+        'area-Windowing' = @('window', 'appwindow', 'titlebar', 'backdrop', 'presenter')
+        'area-Widgets' = @('widget', 'dashboard')
+        'area-AppLifecycle' = @('lifecycle', 'activation', 'restart', 'single instance', 'appinstance')
+        'area-PowerManagement' = @('power', 'battery', 'suspend', 'resume', 'powermanager')
+        'area-MRTCore' = @('resource', 'mrt', 'localization', 'pri', 'resourcemanager')
+        'area-DWriteCore' = @('font', 'dwrite', 'text', 'typography')
+        'area-AccessControl' = @('access', 'security', 'token', 'permission')
+        'area-Environment' = @('environment', 'variable', 'env')
+    }
+    
+    # Use fetched labels if available, otherwise use default set
+    $labelsToUse = if ($availableAreaLabels.Count -gt 0) { $availableAreaLabels } else { $defaultKeywords.Keys }
+    
+    foreach ($areaLabel in $labelsToUse) {
+        # Start with default keywords if we have them
+        if ($defaultKeywords.ContainsKey($areaLabel)) {
+            $areaKeywords[$areaLabel] = $defaultKeywords[$areaLabel]
+        }
+        else {
+            # Generate keywords from label name (e.g., area-SomeFeature -> @('some', 'feature', 'somefeature'))
+            $labelBase = $areaLabel -replace '^area-', ''
+            $keywords = @($labelBase.ToLower())
+            # Split PascalCase into words
+            $words = [regex]::Matches($labelBase, '[A-Z][a-z]+') | ForEach-Object { $_.Value.ToLower() }
+            if ($words) {
+                $keywords += $words
+            }
+            $areaKeywords[$areaLabel] = $keywords
+        }
+    }
+    
+    # Extract text to search for keywords
+    $text = "$($issue.title) $($issue.body)"
+    
+    $suggestedAreas = @()
+    foreach ($area in $areaKeywords.Keys) {
+        $keywordMatches = 0
+        foreach ($keyword in $areaKeywords[$area]) {
+            if ($text -match $keyword) {
+                $keywordMatches++
+            }
+        }
+        if ($keywordMatches -gt 0) {
+            # Calculate confidence based on keyword matches
+            $confidence = 25  # Base
+            $confidence += [math]::Min($keywordMatches * 15, 45)  # Up to 45 for keywords
+            $confidence = [math]::Min($confidence, 100)
+            
+            $suggestedAreas += @{
+                area = $area
+                keywordMatches = $keywordMatches
+                confidence = $confidence
+            }
+        }
+    }
+    
+    # Sort by confidence descending
+    $result.suggestedAreas = @($suggestedAreas | Sort-Object { $_.confidence } -Descending | Select-Object -First 3)
+    
+    # Flag if multiple candidates (reduces confidence)
+    if ($suggestedAreas.Count -gt 1) {
+        foreach ($sa in $result.suggestedAreas) {
+            $sa.confidence = [math]::Max(0, $sa.confidence - 15)
+        }
+    }
+}
+
 # Output
 switch ($OutputFormat) {
     'summary' {
@@ -173,6 +270,15 @@ switch ($OutputFormat) {
         Write-Host "     Needs triage:   $(if ($result.needsTriage) { '⚠️ Yes' } else { '✅ No' })" -ForegroundColor $(if ($result.needsTriage) { 'Yellow' } else { 'Green' })
         Write-Host "     Comments:       $($result.commentCount)" -ForegroundColor Gray
         Write-Host ""
+        
+        # Show suggested areas if no area label
+        if (-not $result.hasAreaLabel -and $result.suggestedAreas.Count -gt 0) {
+            Write-Host "  🏷️ Suggested Areas:" -ForegroundColor Yellow
+            foreach ($sa in $result.suggestedAreas) {
+                Write-Host "     $($sa.area) [confidence:$($sa.confidence)]" -ForegroundColor Yellow
+            }
+            Write-Host ""
+        }
         
         if ($result.body) {
             Write-Host "  📝 Issue Body (first 500 chars):" -ForegroundColor White
