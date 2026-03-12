@@ -21,13 +21,12 @@ function Get-ScoringConfig {
     $defaultConfig = @{
         weights = @{
             reactions = 30
-            age = 25
-            comments = 20
-            severity = 15
-            blockers = 10
+            age = 30
+            comments = 30
+            severity = 10
+            blockers = 0
         }
         thresholds = @{
-            hot_reactions = 10
             aging_days = 90
             trending_comments = 5
             trending_days = 14
@@ -36,12 +35,17 @@ function Get-ScoringConfig {
         labelPriority = @(
             "regression"
             "blocker"
-            "hot"
+            "popular"
             "aging"
             "trending"
-            "popular"
         )
         maxLabelsPerIssue = 2
+        severityLabels = @{
+            critical = @("regression", "crash", "hang", "data-loss", "security", "P0")
+            high = @("bug", "P1")
+            medium = @("performance", "feature proposal", "feature-proposal", "P2")
+            low = @("documentation", "enhancement", "P3")
+        }
     }
 
     if ($ConfigPath -and (Test-Path $ConfigPath)) {
@@ -57,7 +61,6 @@ function Get-ScoringConfig {
             }
             # Merge thresholds
             if ($loaded.thresholds) {
-                $defaultConfig.thresholds.hot_reactions = [int]$loaded.thresholds.hot_reactions
                 $defaultConfig.thresholds.aging_days = [int]$loaded.thresholds.aging_days
                 $defaultConfig.thresholds.trending_comments = [int]$loaded.thresholds.trending_comments
                 $defaultConfig.thresholds.trending_days = [int]$loaded.thresholds.trending_days
@@ -89,6 +92,8 @@ function Get-AreaContacts {
 
         See the template at:
         .github/skills/issue-triage-report/references/area-contacts.json
+
+        Schema uses a single "contact" field per area.
     #>
     param(
         [string]$ContactsPath
@@ -102,9 +107,14 @@ function Get-AreaContacts {
                 # (ConvertFrom-Json -AsHashtable is only available in PS 6.0+)
                 $hashtable = @{}
                 foreach ($prop in $loaded.areaContacts.PSObject.Properties) {
-                    $hashtable[$prop.Name] = @{
-                        primary = $prop.Value.primary
-                        secondary = $prop.Value.secondary
+                    if ($prop.Value.contact) {
+                        $hashtable[$prop.Name] = @{
+                            contact = $prop.Value.contact
+                            notes = $prop.Value.notes
+                        }
+                    }
+                    else {
+                        Write-Warning "Area '$($prop.Name)' missing required 'contact' field - skipping"
                     }
                 }
                 return $hashtable
@@ -324,36 +334,76 @@ function Get-IssueScore {
         default { 0 }
     }
 
-    # 4. Severity score
+    # 4. Severity score - use configurable severity labels
     $labelNames = @()
     if ($Issue.labels) {
         $labelNames = @($Issue.labels | ForEach-Object { $_.name })
     }
 
-    if ($labelNames -contains "regression") {
-        $score.Severity = $weights.severity
-        $score.SeverityLabel = "regression"
-    }
-    else {
-        $hasCrash = @($labelNames | Where-Object { $_ -match "crash|hang|data-loss" }).Count -gt 0
-        if ($hasCrash) {
-            $score.Severity = [math]::Floor($weights.severity * 0.8)
-            $score.SeverityLabel = "crash/hang"
-        }
-        elseif ($labelNames -contains "bug") {
-            $score.Severity = [math]::Floor($weights.severity * 0.53)
-            $score.SeverityLabel = "bug"
-        }
-        elseif ($labelNames -contains "performance") {
-            $score.Severity = [math]::Floor($weights.severity * 0.4)
-            $score.SeverityLabel = "performance"
+    # Get severity labels from config or use defaults
+    $severityLabels = if ($Config.severityLabels) {
+        $Config.severityLabels
+    } else {
+        @{
+            critical = @("regression", "crash", "hang", "data-loss", "security", "P0")
+            high = @("bug", "P1")
+            medium = @("performance", "feature proposal", "feature-proposal", "P2")
+            low = @("documentation", "enhancement", "P3")
         }
     }
 
-    # 5. Blocker score
+    # Check for critical severity labels (100% of severity weight)
+    $hasCritical = $false
+    foreach ($critLabel in $severityLabels.critical) {
+        if ($labelNames -contains $critLabel) {
+            $score.Severity = $weights.severity
+            $score.SeverityLabel = $critLabel
+            $hasCritical = $true
+            break
+        }
+    }
+
+    if (-not $hasCritical) {
+        # Check for high severity labels (80% of severity weight)
+        $hasHigh = $false
+        foreach ($highLabel in $severityLabels.high) {
+            if ($labelNames -contains $highLabel) {
+                $score.Severity = [math]::Floor($weights.severity * 0.8)
+                $score.SeverityLabel = $highLabel
+                $hasHigh = $true
+                break
+            }
+        }
+
+        if (-not $hasHigh) {
+            # Check for medium severity labels (50% of severity weight)
+            $hasMedium = $false
+            foreach ($medLabel in $severityLabels.medium) {
+                if ($labelNames -contains $medLabel) {
+                    $score.Severity = [math]::Floor($weights.severity * 0.5)
+                    $score.SeverityLabel = $medLabel
+                    $hasMedium = $true
+                    break
+                }
+            }
+
+            if (-not $hasMedium) {
+                # Check for low severity labels (20% of severity weight)
+                foreach ($lowLabel in $severityLabels.low) {
+                    if ($labelNames -contains $lowLabel) {
+                        $score.Severity = [math]::Floor($weights.severity * 0.2)
+                        $score.SeverityLabel = $lowLabel
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    # 5. Blocker score (only if weight > 0)
     $hasBlocker = @($labelNames | Where-Object { $_ -match "block|blocker|blocking" }).Count -gt 0
     $score.IsBlocker = $hasBlocker
-    if ($hasBlocker) {
+    if ($hasBlocker -and $weights.blockers -gt 0) {
         $score.Blockers = $weights.blockers
     }
 
@@ -382,7 +432,7 @@ function Get-HighlightLabels {
         The scoring configuration hashtable.
 
     .OUTPUTS
-        [array] Array of highlight label strings (e.g., "🔥 Hot", "⏰ Aging").
+        [array] Array of highlight label strings (e.g., "🌟 Popular", "⏰ Aging").
     #>
     param(
         [object]$Issue,
@@ -406,8 +456,9 @@ function Get-HighlightLabels {
     if ($Score.IsBlocker) {
         $labels += "🚧 Blocker"
     }
-    if ($Score.RawReactions -ge $thresholds.hot_reactions) {
-        $labels += "🔥 Hot"
+    # Consolidated Popular label (replaces both Hot and old Popular)
+    if ($Score.RawReactions -ge $thresholds.popular_reactions) {
+        $labels += "🌟 Popular"
     }
     if ($Score.RawAge -gt $thresholds.aging_days -and $labelNames -contains "needs-triage") {
         $labels += "⏰ Aging"
@@ -416,11 +467,159 @@ function Get-HighlightLabels {
         $labels += "📈 Trending"
     }
 
-    $hasFeatureProposal = $labelNames -contains "feature proposal" -or $labelNames -contains "feature-proposal"
-    if ($hasFeatureProposal -and $Score.RawReactions -ge $thresholds.popular_reactions) {
-        $labels += "📢 Popular"
-    }
-
     # Return only top N labels
     return $labels | Select-Object -First $maxLabels
+}
+
+function Get-ScoreConfidence {
+    <#
+    .SYNOPSIS
+        Calculates confidence level for issue scoring.
+
+    .DESCRIPTION
+        Returns a numeric confidence value (0-100) based on data completeness
+        and scoring factor quality. Format: [confidence:XX] for grep-friendliness.
+
+    .PARAMETER Issue
+        The GitHub issue object.
+
+    .PARAMETER Score
+        The score hashtable from Get-IssueScore.
+
+    .OUTPUTS
+        [int] Confidence value 0-100.
+    #>
+    param(
+        [object]$Issue,
+        [hashtable]$Score
+    )
+
+    $confidence = 0
+
+    # Data completeness factors (max 60 points)
+    # Has reactions data
+    if ($null -ne $Issue.reactionGroups) {
+        $confidence += 15
+    }
+    # Has comments data
+    if ($null -ne $Issue.comments) {
+        $confidence += 15
+    }
+    # Has labels
+    if ($Issue.labels -and $Issue.labels.Count -gt 0) {
+        $confidence += 15
+    }
+    # Has created date (age certainty)
+    if ($Issue.createdAt) {
+        $confidence += 15
+    }
+
+    # Score quality factors (max 40 points)
+    # Higher scores are more confident (clear priority signals)
+    if ($Score.Total -ge 60) {
+        $confidence += 25
+    }
+    elseif ($Score.Total -ge 40) {
+        $confidence += 15
+    }
+    elseif ($Score.Total -ge 20) {
+        $confidence += 10
+    }
+
+    # Multiple scoring factors contributing (not just one dimension)
+    $factorsContributing = 0
+    if ($Score.Reactions -gt 0) { $factorsContributing++ }
+    if ($Score.Age -gt 0) { $factorsContributing++ }
+    if ($Score.Comments -gt 0) { $factorsContributing++ }
+    if ($Score.Severity -gt 0) { $factorsContributing++ }
+
+    if ($factorsContributing -ge 3) {
+        $confidence += 15
+    }
+    elseif ($factorsContributing -ge 2) {
+        $confidence += 10
+    }
+
+    return [math]::Min($confidence, 100)
+}
+
+function Format-Confidence {
+    <#
+    .SYNOPSIS
+        Formats confidence value as grep-friendly string.
+
+    .PARAMETER Confidence
+        Numeric confidence value 0-100.
+
+    .OUTPUTS
+        [string] Formatted string like "[confidence:85]".
+    #>
+    param(
+        [int]$Confidence
+    )
+
+    return "[confidence:$Confidence]"
+}
+
+function Get-AreaSuggestionConfidence {
+    <#
+    .SYNOPSIS
+        Calculates confidence for area label suggestions.
+
+    .DESCRIPTION
+        Returns confidence (0-100) for how likely a suggested area label is correct.
+        Based on keyword matching, code path identification, and similar issues.
+
+    .PARAMETER Issue
+        The GitHub issue object.
+
+    .PARAMETER SuggestedArea
+        The suggested area label string.
+
+    .PARAMETER MatchFactors
+        Hashtable with match quality indicators:
+        - KeywordMatches: Number of relevant keywords found
+        - CodePathFound: Boolean if code path was identified
+        - SimilarIssueFound: Boolean if similar issue with same area exists
+        - MultipleAreaCandidates: Boolean if multiple areas are possible
+
+    .OUTPUTS
+        [int] Confidence value 0-100.
+    #>
+    param(
+        [object]$Issue,
+        [string]$SuggestedArea,
+        [hashtable]$MatchFactors = @{}
+    )
+
+    $confidence = 25  # Base confidence
+
+    # Keyword match strength (0-35 points)
+    $keywordMatches = if ($MatchFactors.KeywordMatches) { $MatchFactors.KeywordMatches } else { 0 }
+    if ($keywordMatches -ge 5) {
+        $confidence += 35
+    }
+    elseif ($keywordMatches -ge 3) {
+        $confidence += 25
+    }
+    elseif ($keywordMatches -ge 1) {
+        $confidence += 15
+    }
+
+    # Code path identified (0-25 points)
+    if ($MatchFactors.CodePathFound) {
+        $confidence += 25
+    }
+
+    # Similar issue with same area found (0-15 points)
+    if ($MatchFactors.SimilarIssueFound) {
+        $confidence += 15
+    }
+
+    # Single clear area vs multiple candidates (penalty)
+    if ($MatchFactors.MultipleAreaCandidates) {
+        $confidence -= 20
+    }
+
+    return [math]::Max(0, [math]::Min($confidence, 100))
 }

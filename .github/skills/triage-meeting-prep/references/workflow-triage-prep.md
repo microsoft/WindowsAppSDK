@@ -396,7 +396,7 @@ Now draft the reply using research findings:
    - Documentation links
    - Technical context from code analysis
 
-4. **Assign confidence level (0-100)**:
+4. **Assign confidence level (0-100)** using `[confidence:XX]` format:
    - **80-100**: Clear response backed by research
    - **60-79**: Good draft, research supports it
    - **40-59**: Limited research, needs team input
@@ -416,6 +416,28 @@ Now draft the reply using research findings:
 - Customer frustration level high: -15
 - Requires team decision to reopen: -20
 - Research inconclusive: -25
+
+**Confidence output format**: `[confidence:XX]` — grep-friendly for filtering.
+
+```bash
+# Find high-confidence suggestions (80+)
+grep "\[confidence:[89][0-9]\]" summary.md
+
+# Find low-confidence items needing review
+grep "\[confidence:[0-3][0-9]\]" summary.md
+```
+
+```powershell
+# Find high-confidence suggestions (80+)
+Select-String -Path summary.md -Pattern '\[confidence:[89][0-9]\]'
+
+# Find low-confidence items needing review
+Select-String -Path summary.md -Pattern '\[confidence:[0-3][0-9]\]'
+
+# List all items with confidence, sorted by value
+Get-Content summary.md | Select-String '\[confidence:(\d+)\]' | 
+    ForEach-Object { $_.Line }
+```
 
 ---
 

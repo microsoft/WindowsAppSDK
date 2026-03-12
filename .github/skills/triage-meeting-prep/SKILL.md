@@ -36,10 +36,12 @@ The skill tracks **four critical categories** for each meeting:
 
 | Category | Description | Action Required |
 |----------|-------------|-----------------|
-| 🔥 **Hot Issues** | ≥5 increased activity (comments + reactions) | May need priority attention |
+| 🌟 **Popular Issues** | ≥5 reactions (community interest) | May need priority attention |
 | 🆕 **Created This Week** | Issues created since last weekly triage | Review + assign area |
 | ⏳ **Older Pending** | Older issues still without area labels | Follow up — why no action? |
-| ✅ **Closed (need reply)** | Closed issues with customer follow-up | Draft reply with confidence level |
+| ✅ **Closed (need reply)** | Closed issues with customer follow-up | Draft reply with `[confidence:XX]` |
+
+All suggestions include confidence scoring in `[confidence:XX]` format for easy filtering.
 
 ## When to Use This Skill
 
@@ -178,7 +180,7 @@ Individual issue reviews are saved to `Generated Files/issueReview/<issue-number
 | `overview.md` | Full issue analysis with scores and suggested actions (linked from summary) |
 | `implementation-plan.md` | Technical implementation details (if applicable) |
 
-> **Key Output**: The `summary.md` includes the **Suggested Actions** section extracted from each issue's `overview.md`.
+> **Key Output**: The `summary.md` includes the **Suggested Actions** section extracted from each issue's `overview.md`, with `[confidence:XX]` scores.
 
 ## Detailed Workflow
 
@@ -188,7 +190,7 @@ See [workflow-triage-prep.md](./references/workflow-triage-prep.md) for the comp
 
 | Category | Definition | Action Needed |
 |----------|------------|---------------|
-| 🔥 **Hot Issues** | ≥5 combined new comments + reactions since last triage | May need priority attention |
+| 🌟 **Popular Issues** | ≥5 reactions (community interest) | May need priority attention |
 | 🆕 **Created This Week** | `createdAt` is after last weekly triage date | Use `Get-IssueDetails.ps1` + assign area |
 | ⏳ **Older Pending** | Created before this week, still no area label | Follow up — why not actioned? |
 | ✅ **Resolved** | In previous state, NOT in current | Acknowledge (got area label or closed) |

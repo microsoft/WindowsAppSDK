@@ -1,13 +1,12 @@
 {
   "weights": {
     "reactions": 30,
-    "age": 25,
-    "comments": 20,
-    "severity": 15,
-    "blockers": 10
+    "age": 30,
+    "comments": 30,
+    "severity": 10,
+    "blockers": 0
   },
   "thresholds": {
-    "hot_reactions": 10,
     "aging_days": 90,
     "trending_comments": 10,
     "trending_days": 14,
@@ -16,16 +15,15 @@
   "labelPriority": [
     "regression",
     "blocker",
-    "hot",
+    "popular",
     "aging",
-    "trending",
-    "popular"
+    "trending"
   ],
   "maxLabelsPerIssue": 2,
   "severityLabels": {
-    "critical": ["regression", "crash", "hang", "data-loss"],
-    "high": ["bug", "security"],
-    "medium": ["performance"],
-    "low": ["documentation", "enhancement"]
+    "critical": ["regression", "crash", "hang", "data-loss", "security", "P0"],
+    "high": ["bug", "P1"],
+    "medium": ["performance", "feature proposal", "feature-proposal", "P2"],
+    "low": ["documentation", "enhancement", "P3"]
   }
 }
