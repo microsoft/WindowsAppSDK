@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.WindowsAppSDK.Base</id>
+    <version>0.0.0.0</version>
+    <title>Microsoft Windows App SDK Base Package</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">license.txt</license>
+    <projectUrl>https://github.com/microsoft/windowsappsdk</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/microsoft/WindowsAppSDK/main/assets/WindowsAppSDK64.png</iconUrl>
+    <description>The Windows App SDK empowers all Windows Desktop apps with modern Windows UI, APIs, and platform features, including back-compat support. This is a package that is used as a dependency by other Windows App SDK component packages and not meant to be directly referenced.</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>Windows "Windows App SDK" WinAppSDK WinUI XAML Fluent Controls Downlevel Compatibility TreeView ColorPicker NavigationView MenuBar Resources Native DWriteCore "Interactive Experiences" ixp "Project Reunion" ProjectReunion</tags>
+    <dependencies>
+      <dependency id="Microsoft.Windows.SDK.BuildTools" version="10.0.26100.4654" />
+      <dependency id="Microsoft.Windows.SDK.BuildTools.MSIX" version="0.0.0.0" />
+    </dependencies>
+  </metadata>
+</package>

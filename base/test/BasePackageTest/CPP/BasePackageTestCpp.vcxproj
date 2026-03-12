@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Ge_SC_Unpkg|x64">
+      <Configuration>Ge_SC_Unpkg</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RS5_FD_Unpkg|x64">
+      <Configuration>RS5_FD_Unpkg</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Ge_FD_Unpkg_NoBoot|x64">
+      <Configuration>Ge_FD_Unpkg_NoBoot</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RS5_FD_Unpkg_NoBoot|x64">
+      <Configuration>RS5_FD_Unpkg_NoBoot</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="H19H1_SC_Pkg|x64">
+      <Configuration>H19H1_SC_Pkg</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RS5_SC_Pkg_URF|x64">
+      <Configuration>RS5_SC_Pkg_URF</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RS5_SC_Pkg_NoURF|x64">
+      <Configuration>RS5_SC_Pkg_NoURF</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RS5_FD_Pkg|x64">
+      <Configuration>RS5_FD_Pkg</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RS5_SC_Pkg_URF_Fdn|x64">
+      <Configuration>RS5_SC_Pkg_URF_Fdn</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</ProjectGuid>
+    <RootNamespace>BasePackageTestCpp</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+
+  <!-- Config 1: Germanium, SC=true, Unpackaged → SUCCESS: no DLLs -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Ge_SC_Unpkg'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.26100.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+  </PropertyGroup>
+
+  <!-- Config 2: RS5, SC=false, Unpackaged → SUCCESS: bootstrap DLL present
+       Note: Auto-initializer disabled (needs Foundation VersionInfo.h). Bootstrap DLL
+       still copied via CopyBootstrapDllToOutDir target (checks SC, not BootstrapInit). -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Unpkg'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <MicrosoftWindowsAppSDKPackageDir>$(MSBuildProjectDirectory)\</MicrosoftWindowsAppSDKPackageDir>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <_WindowsAppSDKSkipBootstrapRequiredCheck>true</_WindowsAppSDKSkipBootstrapRequiredCheck>
+    <_WindowsAppSDKKeepBootstrapBinaries>true</_WindowsAppSDKKeepBootstrapBinaries>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+  </PropertyGroup>
+
+  <!-- Config 3: Germanium, SC=false, Unpackaged, BootstrapInit=false → SUCCESS: no DLLs -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Ge_FD_Unpkg_NoBoot'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.26100.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <MicrosoftWindowsAppSDKPackageDir>$(MSBuildProjectDirectory)\</MicrosoftWindowsAppSDKPackageDir>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+  </PropertyGroup>
+
+  <!-- Config 4: RS5, SC=false, Unpackaged, BootstrapInit=false → ERROR: bootstrapper required -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Unpkg_NoBoot'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <MicrosoftWindowsAppSDKPackageDir>$(MSBuildProjectDirectory)\</MicrosoftWindowsAppSDKPackageDir>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+  </PropertyGroup>
+
+  <!-- Config 5: 19H1, SC=true, Packaged → SUCCESS: no DLLs -->
+  <PropertyGroup Condition="'$(Configuration)' == 'H19H1_SC_Pkg'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.18362.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <AppxPackage>true</AppxPackage>
+  </PropertyGroup>
+
+  <!-- Config 6: RS5, SC=true, Packaged, URF=true (default) → ERROR: Foundation required -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_URF'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <AppxPackage>true</AppxPackage>
+  </PropertyGroup>
+
+  <!-- Config 7: RS5, SC=true, Packaged, URF=false → ERROR: URF not optional -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_NoURF'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <AppxPackage>true</AppxPackage>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+  </PropertyGroup>
+
+  <!-- Config 8: RS5, SC=false, Packaged → SUCCESS: no DLLs (DeploymentMgr only) -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Pkg'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <AppxPackage>true</AppxPackage>
+    <MicrosoftWindowsAppSDKPackageDir>$(MSBuildProjectDirectory)\</MicrosoftWindowsAppSDKPackageDir>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <_WindowsAppSDKSkipBootstrapRequiredCheck>true</_WindowsAppSDKSkipBootstrapRequiredCheck>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+  </PropertyGroup>
+
+  <!-- Config 9: RS5, SC=true, Packaged, URF=true (default), Foundation referenced → SUCCESS: no DLLs
+       WindowsAppSdkFoundation=true simulates Foundation being present (set by Foundation's props).
+       WindowsAppSDKUndockedRegFreeWinRTRequiresFoundation validation checks this property. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_URF_Fdn'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <AppxPackage>true</AppxPackage>
+    <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
+  <!-- Import Base package props from packages.config restore location -->
+  <Import Project="packages\Microsoft.WindowsAppSDK.Base.1.8.0\build\native\Microsoft.WindowsAppSDK.Base.props"
+          Condition="Exists('packages\Microsoft.WindowsAppSDK.Base.1.8.0\build\native\Microsoft.WindowsAppSDK.Base.props')" />
+
+  <PropertyGroup>
+    <OutDir>$(MSBuildProjectDirectory)\out\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(MSBuildProjectDirectory)\obj\$(Configuration)\$(Platform)\</IntDir>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- Add defines per config for the test assertions -->
+  <ItemDefinitionGroup Condition="'$(Configuration)' == 'Ge_SC_Unpkg' or '$(Configuration)' == 'Ge_FD_Unpkg_NoBoot' or '$(Configuration)' == 'H19H1_SC_Pkg' or '$(Configuration)' == 'RS5_FD_Pkg' or '$(Configuration)' == 'RS5_SC_Pkg_URF_Fdn'">
+    <ClCompile>
+      <PreprocessorDefinitions>EXPECT_NO_DLLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)' == 'RS5_FD_Unpkg'">
+    <ClCompile>
+      <PreprocessorDefinitions>EXPECT_BOOTSTRAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+
+  <!-- Import Base package targets from packages.config restore location -->
+  <Import Project="packages\Microsoft.WindowsAppSDK.Base.1.8.0\build\native\Microsoft.WindowsAppSDK.Base.targets"
+          Condition="Exists('packages\Microsoft.WindowsAppSDK.Base.1.8.0\build\native\Microsoft.WindowsAppSDK.Base.targets')" />
+
+  <Target Name="EnsureNuGetPackageRestore" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('packages\Microsoft.WindowsAppSDK.Base.1.8.0\build\native\Microsoft.WindowsAppSDK.Base.targets')"
+           Text="NuGet packages not restored. Run 'nuget restore' first." />
+  </Target>
+
+</Project>

@@ -1,0 +1,56 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+
+  Shared targets for both managed and native Base package consumers.
+  Expects _WindowsAppSDKMinTPV to be set before import.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- Default to SelfContained when no Runtime package is referenced -->
+    <PropertyGroup Condition="'$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(WindowsAppSDKSelfContained)' == '' and '$(OutputType)' != 'Library'">
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+        <_WindowsAppSDKSelfContainedSetByDefault>true</_WindowsAppSDKSelfContainedSetByDefault>
+    </PropertyGroup>
+
+    <!-- Compute the build number from the effective minimum target platform version -->
+    <PropertyGroup>
+        <_WindowsAppSDKTPVBuild Condition="'$(_WindowsAppSDKMinTPV)' != ''">$([System.Version]::Parse('$(_WindowsAppSDKMinTPV)').Build)</_WindowsAppSDKTPVBuild>
+    </PropertyGroup>
+
+    <!-- Informational: notify when running in default self-contained mode -->
+    <Target Name="WindowsAppSDKNotifySelfContainedMode" Condition="'$(_WindowsAppSDKSelfContainedSetByDefault)' == 'true'">
+        <Message Text="The Windows App SDK is running by default in self-contained mode." Importance="high" />
+    </Target>
+
+    <!-- Error: framework-dependent apps must reference the Runtime package -->
+    <Target Name="WindowsAppSDKFrameworkPackageDependentWithoutPackages" Condition="'$(WindowsAppSDKSelfContained)' != 'true' and '$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(OutputType)' != 'Library'">
+        <Error Text="A framework package dependent Windows App SDK app requires a package reference to Microsoft.WindowsAppSDK.Runtime. Please add a reference to this package or set the &lt;WindowsAppSdkSelfContained&gt; property to true." />
+    </Target>
+
+    <!-- Error: SelfContained should not be applied to class libraries -->
+    <Target Name="WindowsAppSDKSelfContainedAudit" BeforeTargets="Build" Condition="'$(WindowsAppSDKSelfContainedAudit)'!='false' and '$(WindowsAppSDKSelfContained)'=='true' and '$(OutputType)'=='Library'">
+        <Error Text="WindowsAppSDKSelfContained should not be applied to a class library." />
+    </Target>
+
+    <!-- Validation: Bootstrapper is required for framework-dependent unpackaged apps on pre-Germanium -->
+    <Target Name="WindowsAppSDKBootstrapRequired" BeforeTargets="PrepareForBuild"
+            Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'false' and '$(_WindowsAppSDKSkipBootstrapRequiredCheck)' != 'true' and '$(WindowsAppSDKSelfContained)' != 'true' and '$(WindowsPackageType)' == 'None' and ('$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe') and '$(_WindowsAppSDKMinTPV)' != ''">
+        <Error Condition="$(_WindowsAppSDKTPVBuild) &lt; 26100"
+               Text="The Windows App SDK Bootstrapper is required for framework-dependent unpackaged apps targeting Windows versions prior to 10.0.26100.0. Remove the WindowsAppSdkBootstrapInitialize=false setting or set WindowsAppSDKSelfContained=true." />
+    </Target>
+
+    <!-- Validation: UndockedRegFreeWinRT is required for self-contained apps on pre-19H1 -->
+    <Target Name="WindowsAppSDKUndockedRegFreeWinRTRequired" BeforeTargets="PrepareForBuild"
+            Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'false' and '$(WindowsAppSDKSelfContained)' == 'true' and '$(_WindowsAppSDKMinTPV)' != ''">
+        <Error Condition="$(_WindowsAppSDKTPVBuild) &lt; 18362"
+               Text="Undocked Reg-Free WinRT activation is required for self-contained apps targeting Windows versions prior to 10.0.18362.0. Remove the WindowsAppSdkUndockedRegFreeWinRTInitialize=false setting." />
+    </Target>
+
+    <!-- Validation: UndockedRegFreeWinRT requires Foundation package (for Microsoft.WindowsAppRuntime.dll) -->
+    <Target Name="WindowsAppSDKUndockedRegFreeWinRTRequiresFoundation" BeforeTargets="PrepareForBuild"
+            Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true' and '$(WindowsAppSDKSelfContained)' == 'true' and '$(WindowsAppSdkFoundation)' != 'true' and '$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(_WindowsAppSDKMinTPV)' != ''">
+        <Error Condition="$(_WindowsAppSDKTPVBuild) &lt; 18362"
+               Text="Undocked Reg-Free WinRT activation requires the Microsoft.WindowsAppSDK.Foundation package. Add a PackageReference to Microsoft.WindowsAppSDK.Foundation." />
+    </Target>
+
+</Project>

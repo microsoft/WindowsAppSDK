@@ -1,0 +1,31 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <VerifyLaunchSettings Condition="'$(VerifyLaunchSettings)'=='' and '$(WindowsPackageType)'=='MSIX' and '$(MSBuildProjectExtension)'=='.csproj' and '$(BuildingInsideVisualStudio)'=='true'">true</VerifyLaunchSettings>
+    </PropertyGroup>
+
+    <Target Name="VerifyLaunchSettings" Condition="'$(VerifyLaunchSettings)'=='true'" BeforeTargets="Build">
+        <PropertyGroup>
+            <LaunchSettingsJson>$(ProjectDir)Properties\launchSettings.json</LaunchSettingsJson>
+            <MsixPackageCommandRegEx>.*&quot;commandName&quot; *: *&quot;MsixPackage&quot;.*</MsixPackageCommandRegEx>
+        </PropertyGroup>
+
+        <Error
+          Text="$(LaunchSettingsJson) was not found. To debug a packaged single-project MSIX solution, a profile with command name MsixPackage in launchSettings.json is required. For more information, visit https://aka.ms/winappsdk.singleproj."
+          HelpLink="https://aka.ms/winappsdk.singleproj"
+          Condition="!Exists('$(LaunchSettingsJson)')" />
+
+        <ReadLinesFromFile File="$(LaunchSettingsJson)" >
+            <Output TaskParameter="Lines" ItemName="LaunchSettingsLines"/>
+        </ReadLinesFromFile>
+        <ItemGroup>
+            <MsixPackageCommandLine Include="@(LaunchSettingsLines)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Identity)', '$(MsixPackageCommandRegEx)'))"/>
+        </ItemGroup>
+        <Error
+          Text="$(LaunchSettingsJson) does not contain a profile with commandName 'MsixPackage'. To debug a packaged single-project MSIX solution, a profile with command name MsixPackage in launchSettings.json is required. For more information, visit https://aka.ms/winappsdk.singleproj."
+          HelpLink="https://aka.ms/winappsdk.singleproj"
+          Condition="'@(MsixPackageCommandLine)'==''"/>
+    </Target>
+</Project>

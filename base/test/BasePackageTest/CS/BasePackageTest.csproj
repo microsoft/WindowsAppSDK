@@ -1,0 +1,128 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <Platform>x64</Platform>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Platforms>AnyCPU;x64</Platforms>
+    <Configurations>Ge_SC_Unpkg;RS5_FD_Unpkg;Ge_FD_Unpkg_NoBoot;RS5_FD_Unpkg_NoBoot;H19H1_SC_Pkg;RS5_SC_Pkg_URF;RS5_SC_Pkg_NoURF;RS5_FD_Pkg;RS5_SC_Pkg_URF_Fdn</Configurations>
+  </PropertyGroup>
+
+  <!-- Config 1: Germanium, SC=true, Unpackaged → SUCCESS: no bootstrap DLLs -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Ge_SC_Unpkg'">
+    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <DefineConstants>EXPECT_NO_BOOTSTRAP</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Config 2: RS5, SC=false, Unpackaged → SUCCESS: bootstrap DLLs present
+       Note: Auto-initializer disabled (needs Foundation types). _KeepBootstrapBinaries
+       ensures NuGet-delivered DLLs are not removed. _SkipBootstrapRequiredCheck
+       suppresses the pre-Germanium validation since this is Base-only testing. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Unpkg'">
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <MicrosoftWindowsAppSDKPackageDir>$(MSBuildProjectDirectory)\</MicrosoftWindowsAppSDKPackageDir>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <_WindowsAppSDKSkipBootstrapRequiredCheck>true</_WindowsAppSDKSkipBootstrapRequiredCheck>
+    <_WindowsAppSDKKeepBootstrapBinaries>true</_WindowsAppSDKKeepBootstrapBinaries>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+    <DefineConstants>EXPECT_BOOTSTRAP</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Config 3: Germanium, SC=false, Unpackaged, BootstrapInit=false → SUCCESS: no bootstrap DLLs -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Ge_FD_Unpkg_NoBoot'">
+    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <MicrosoftWindowsAppSDKPackageDir>$(MSBuildProjectDirectory)\</MicrosoftWindowsAppSDKPackageDir>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+    <DefineConstants>EXPECT_NO_BOOTSTRAP</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Config 4: RS5, SC=false, Unpackaged, BootstrapInit=false → ERROR: bootstrapper required -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Unpkg_NoBoot'">
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <MicrosoftWindowsAppSDKPackageDir>$(MSBuildProjectDirectory)\</MicrosoftWindowsAppSDKPackageDir>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+  </PropertyGroup>
+
+  <!-- Config 5: 19H1, SC=true, Packaged → SUCCESS: no DLLs -->
+  <PropertyGroup Condition="'$(Configuration)' == 'H19H1_SC_Pkg'">
+    <TargetFramework>net8.0-windows10.0.18362.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <DefineConstants>EXPECT_NO_BOOTSTRAP</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Config 6: RS5, SC=true, Packaged, URF=true (default) → ERROR: Foundation required -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_URF'">
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+  </PropertyGroup>
+
+  <!-- Config 7: RS5, SC=true, Packaged, URF=false → ERROR: URF not optional -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_NoURF'">
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+  </PropertyGroup>
+
+  <!-- Config 8: RS5, SC=false, Packaged → SUCCESS: no bootstrap DLLs (DeploymentMgr only) -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Pkg'">
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <MicrosoftWindowsAppSDKPackageDir>$(MSBuildProjectDirectory)\</MicrosoftWindowsAppSDKPackageDir>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <_WindowsAppSDKSkipBootstrapRequiredCheck>true</_WindowsAppSDKSkipBootstrapRequiredCheck>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+    <DefineConstants>EXPECT_NO_BOOTSTRAP</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Config 9: RS5, SC=true, Packaged, URF=true (default), Foundation referenced → SUCCESS: no bootstrap DLLs
+       Foundation provides URF support via Microsoft.WindowsAppRuntime.dll, so URF validation passes.
+       No DefineConstants — verification handled by test runner (Foundation adds extra DLLs).
+       NU1605 suppressed: Foundation's nuspec references a newer Base version range than our local build. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_URF_Fdn'">
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <NoWarn>$(NoWarn);NU1605</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK.Base" Version="1.8.0" />
+  </ItemGroup>
+
+  <!-- Config 9 also references Foundation (provides URF support via Microsoft.WindowsAppRuntime.dll) -->
+  <ItemGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_URF_Fdn'">
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="1.8.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,57 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<!--<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="WindowsAppSDKSingleFileVerifyConfiguration">-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <IncludeAllContentForSelfExtract Condition="'$(IncludeAllContentForSelfExtract)'==''">true</IncludeAllContentForSelfExtract>
+    </PropertyGroup>
+
+    <!--Assert that all relevant properties are properly set.  
+        Generally, we can't default these for the user, as they influence both props and targets file imports.-->
+    <Target Name="WindowsAppSDKSingleFileVerifyConfiguration" Condition="'$(WindowsAppSDKSingleFileVerifyConfiguration)'!='false'" BeforeTargets="PrepareForBuild">
+
+        <Error Condition="'$(EnableMsixTooling)'!='true'"
+            Text="PublishSingleFile requires EnableMsixTooling for embedded resources.pri generation:
+    &lt;PropertyGroup&gt;
+        &lt;EnableMsixTooling&gt;true&lt;/EnableMsixTooling&gt;
+    &lt;/PropertyGroup&gt;
+" />
+
+        <Error Condition="'$(WindowsPackageType)'!='none'"
+            Text="PublishSingleFile only supports unpackaged apps:
+    &lt;PropertyGroup&gt;
+        &lt;WindowsPackageType&gt;None&lt;/WindowsPackageType&gt;
+    &lt;/PropertyGroup&gt;
+" />
+
+        <Error Condition="'$(IncludeAllContentForSelfExtract)'!='true'"
+            Text="PublishSingleFile requires IncludeAllContentForSelfExtract for Dll SxS redirection:
+    &lt;PropertyGroup&gt;
+        &lt;IncludeAllContentForSelfExtract&gt;true&lt;/IncludeAllContentForSelfExtract&gt;
+    &lt;/PropertyGroup&gt;
+" />
+
+        <Warning Condition="'$(WindowsAppSDKSelfContained)'!='true'"
+            Text="PublishSingleFile is recommended only for Windows App SDK Self-Contained apps:
+    &lt;PropertyGroup&gt;
+        &lt;WindowsAppSDKSelfContained&gt;true&lt;/WindowsAppSDKSelfContained&gt;
+    &lt;/PropertyGroup&gt;
+" />
+
+        <Warning Condition="'$(SelfContained)'!='true'"
+            Text="PublishSingleFile is recommended only for .NET SelfContained apps:
+    &lt;PropertyGroup&gt;
+        &lt;SelfContained&gt;true&lt;/SelfContained&gt;
+    &lt;/PropertyGroup&gt;
+" />
+
+        <Warning Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'!='true'"
+            Text="PublishSingleFile requires MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY to be set before program entry:
+    Environment.SetEnvironmentVariable(&quot;MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY&quot;, AppContext.BaseDirectory);
+" />
+
+    </Target>
+
+</Project>

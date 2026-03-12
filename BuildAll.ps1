@@ -36,6 +36,8 @@ $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
 $ComponentBasePath = "BuildOutput/ComponentNuget"
+$BasePackagePath = "BuildOutput/BaseNuget"
+$BaseComponentPath = "BuildOutput/BaseComponentNuget"
 
 # FUTURE(YML2PS): Update build to no longer place generated files in sources directory
 if ($Clean)
@@ -292,27 +294,17 @@ Try {
         }
 
         $nuSpecsPath = "build\NuSpecs"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.targets" -Destination "$BasePath\build\native\Microsoft.WindowsAppSDK.Foundation.targets"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.props" -Destination "$BasePath\build\native\Microsoft.WindowsAppSDK.Foundation.props"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.C.props" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.WinRt.props" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.AutoInitializer.targets" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.CompatibilitySetter.targets" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.DeploymentManager.targets" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.targets" -Destination "$BasePath\build\native\Microsoft.WindowsAppSDK.Foundation.targets"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.props" -Destination "$BasePath\build\native\Microsoft.WindowsAppSDK.Foundation.props"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.C.props" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.WinRt.props" -Destination "$BasePath\build\native"
+
+        # Bootstrapper and auto-initialization native targets have moved to the Base package.
 
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.AutoInitializer.CS.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$BasePath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$BasePath\build"
+
+        # Bootstrapper and auto-initialization managed targets have moved to the Base package.
 
         Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$BasePath\AppxManifest.xml"
 
@@ -338,12 +330,10 @@ Try {
         # Copy MRT metadata files.
         Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.C.props" -Destination "$BasePath\build\native"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.props" -Destination "$BasePath\build\native"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\README.md" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\MRM.h" -Destination "$BasePath\include"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -Destination "$BasePath\include"
 
-        # If AnyCPU generates another dll it needs to be added here.
-        Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net6.0-windows10.0.17763.0"
+        # Bootstrap.Net.dll has moved to the Base package.
 
         #------------------
         #    Move other files and prepare manifest and appxmanifest.xml
@@ -503,6 +493,158 @@ Try {
             Copy-Item -Path $IntellisenseFile -Destination $DestinationDir
         }
     }
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "StageBaseFiles"))
+    {
+        #------------------
+        #    Stage files for Base Package
+        #------------------
+        if(-not (test-path "$BasePackagePath"))
+        {
+            new-item -path "$BasePackagePath" -itemtype "directory"
+        }
+        if(-not (test-path "$BaseComponentPath"))
+        {
+            new-item -path "$BaseComponentPath" -itemtype "directory"
+        }
+        if(-not (test-path "$BasePackagePath\build\native"))
+        {
+            new-item -path "$BasePackagePath\build\native" -itemtype "directory" -force
+        }
+        if(-not (test-path "$BaseComponentPath\build\native"))
+        {
+            new-item -path "$BaseComponentPath\build\native" -itemtype "directory" -force
+        }
+        if(-not (test-path "$BasePackagePath\include"))
+        {
+            new-item -path "$BasePackagePath\include" -itemtype "directory" -force
+        }
+
+        $nuSpecsPath = "base\build\NuSpecs"
+
+        # Stage Base native targets
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.Base.targets" -Destination "$BasePackagePath\build\native\Microsoft.WindowsAppSDK.Base.targets"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.AutoInitializer.targets" -Destination "$BasePackagePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.Bootstrap.targets" -Destination "$BasePackagePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.CompatibilitySetter.targets" -Destination "$BasePackagePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.DeploymentManager.targets" -Destination "$BasePackagePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\native\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.targets" -Destination "$BasePackagePath\build\native"
+
+        # Stage Base managed targets
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.props" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.BaseCommon.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.AutoInitializer.CS.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$BasePackagePath\build"
+
+        # Stage deployment-mode targets (from aggregator)
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.SelfContained.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.SingleFile.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.SingleProject.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Arm64Ec.targets" -Destination "$BasePackagePath\build"
+
+        # Stage native props (delegates to parent props)
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.Native.props" -Destination "$BasePackagePath\build\native\Microsoft.WindowsAppSDK.Base.props"
+
+        # Stage Bootstrap binaries and auto-initializer source files per-platform
+        foreach($configurationToRun in $configuration.Split(","))
+        {
+            foreach($platformToRun in $platform.Split(","))
+            {
+                $buildOutputDir = "BuildOutput\$configurationToRun\$platformToRun"
+                $bootstrapOutput = "$buildOutputDir\WindowsAppRuntime_BootstrapDLL"
+                $autoInitOutput = "$buildOutputDir\WindowsAppRuntime_DLL"
+
+                # Bootstrap binaries
+                if(-not (test-path "$BasePackagePath\runtimes\win-$platformToRun\native"))
+                {
+                    new-item -path "$BasePackagePath\runtimes\win-$platformToRun\native" -itemtype "directory" -force
+                }
+                if(-not (test-path "$BasePackagePath\lib\win10-$platformToRun"))
+                {
+                    new-item -path "$BasePackagePath\lib\win10-$platformToRun" -itemtype "directory" -force
+                }
+                Copy-Item -path "$bootstrapOutput\Microsoft.WindowsAppRuntime.Bootstrap.dll" -destination "$BasePackagePath\runtimes\win-$platformToRun\native" -force -ErrorAction SilentlyContinue
+                Copy-Item -path "$bootstrapOutput\Microsoft.WindowsAppRuntime.Bootstrap.pdb" -destination "$BasePackagePath\runtimes\win-$platformToRun\native" -force -ErrorAction SilentlyContinue
+                Copy-Item -path "$bootstrapOutput\Microsoft.WindowsAppRuntime.Bootstrap.lib" -destination "$BasePackagePath\lib\win10-$platformToRun" -force -ErrorAction SilentlyContinue
+
+                # MddBootstrap.h header
+                Copy-Item -path "$bootstrapOutput\MddBootstrap.h" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+
+                # Auto-initializer source files
+                Copy-Item -path "$autoInitOutput\WindowsAppRuntimeAutoInitializer.cpp" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+                Copy-Item -path "$autoInitOutput\WindowsAppRuntimeAutoInitializer.cs" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+                Copy-Item -path "$autoInitOutput\DeploymentManagerAutoInitializer.cpp" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+                Copy-Item -path "$autoInitOutput\DeploymentManagerAutoInitializer.cs" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+                Copy-Item -path "$autoInitOutput\UndockedRegFreeWinRT-AutoInitializer.cpp" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+                Copy-Item -path "$autoInitOutput\UndockedRegFreeWinRT-AutoInitializer.cs" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+
+                # Bootstrap auto-initializer source files
+                Copy-Item -path "$bootstrapOutput\MddBootstrapAutoInitializer.cpp" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+                Copy-Item -path "$bootstrapOutput\MddBootstrapAutoInitializer.cs" -destination "$BasePackagePath\include" -force -ErrorAction SilentlyContinue
+            }
+        }
+
+        # Stage Bootstrap.Net.dll
+        $anyCpuConfig = $configuration.Split(",")[0]
+        $bootstrapNetDir = "BuildOutput\$anyCpuConfig\AnyCPU\Microsoft.WindowsAppRuntime.Bootstrap.Net"
+        if(-not (test-path "$BasePackagePath\lib\net6.0-windows10.0.17763.0"))
+        {
+            new-item -path "$BasePackagePath\lib\net6.0-windows10.0.17763.0" -itemtype "directory" -force
+        }
+        Copy-Item -path "$bootstrapNetDir\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll" -destination "$BasePackagePath\lib\net6.0-windows10.0.17763.0" -force -ErrorAction SilentlyContinue
+
+        # Copy Base package files to component path
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePackagePath 'build') `
+            -dest (Join-Path $BaseComponentPath 'build')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePackagePath 'include') `
+            -dest (Join-Path $BaseComponentPath 'include')
+
+        build\Scripts\RobocopyWrapper.ps1 `
+            -Source (Join-Path $BasePackagePath 'build') `
+            -dest (Join-Path $BaseComponentPath 'buildTransitive')
+
+        # Copy transport package specific props / targets
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.TransportPackage.targets" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.TransportPackage.props" -Destination "$BasePackagePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.TransportPackage.targets" -Destination "$BasePackagePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.TransportPackage.props" -Destination "$BasePackagePath\build\native"
+
+        Copy-Item -Path "LICENSE" -Destination "$BasePackagePath\license.txt" -force
+        Copy-Item -Path "LICENSE" -Destination "$BaseComponentPath\license.txt" -force
+
+        # Copy runtimes and lib to component path
+        foreach($platformToRun in $platform.Split(","))
+        {
+            if (test-path "$BasePackagePath\runtimes\win-$platformToRun")
+            {
+                build\Scripts\RobocopyWrapper.ps1 `
+                    -Source "$BasePackagePath\runtimes\win-$platformToRun" `
+                    -dest "$BaseComponentPath\runtimes\win-$platformToRun"
+            }
+            if (test-path "$BasePackagePath\lib\win10-$platformToRun")
+            {
+                build\Scripts\RobocopyWrapper.ps1 `
+                    -Source "$BasePackagePath\lib\win10-$platformToRun" `
+                    -dest "$BaseComponentPath\lib\win10-$platformToRun"
+            }
+        }
+        if (test-path "$BasePackagePath\lib\net6.0-windows10.0.17763.0")
+        {
+            build\Scripts\RobocopyWrapper.ps1 `
+                -Source "$BasePackagePath\lib\net6.0-windows10.0.17763.0" `
+                -dest "$BaseComponentPath\lib\net6.0-windows10.0.17763.0"
+        }
+    }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
         # Remove ProjectCapability for the one in the transport package
@@ -588,6 +730,42 @@ Try {
 
         # Make the foundation transport package.
         nuget pack $nuspecPath -BasePath $ComponentBasePath -OutputDirectory $OutputDirectory
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
+            exit 1
+        }
+    }
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackBaseNuget"))
+    {
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Base.TransportPackage.nuspec"
+        Copy-Item -Path ".\base\build\NuSpecs\Microsoft.WindowsAppSDK.Base.TransportPackage.nuspec" -Destination $nuspecPath
+
+        # Add the version to the nuspec.
+        [xml]$publicNuspec = Get-Content -Path $nuspecPath
+        $publicNuspec.package.metadata.version = $PackageVersion
+        Set-Content -Value $publicNuspec.OuterXml $nuspecPath
+
+        # Make the Base transport package.
+        nuget pack $nuspecPath -BasePath $BasePackagePath -OutputDirectory $OutputDirectory
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
+            exit 1
+        }
+
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Base.nuspec"
+        Copy-Item -Path ".\base\build\NuSpecs\Microsoft.WindowsAppSDK.Base.nuspec" -Destination $nuspecPath
+
+        # Add the version to the nuspec.
+        [xml]$publicNuspec = Get-Content -Path $nuspecPath
+        $publicNuspec.package.metadata.version = $ComponentPackageVersion
+        Set-Content -Value $publicNuspec.OuterXml $nuspecPath
+
+        # Make the Base component package.
+        nuget pack $nuspecPath -BasePath $BaseComponentPath -OutputDirectory $OutputDirectory
 
         if ($lastexitcode -ne 0)
         {
