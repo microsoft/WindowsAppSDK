@@ -25,27 +25,77 @@ namespace TP = ::Test::Packages;
 
 namespace Test::ABForward
 {
+    // Helper: exercises real Windows Runtime activation via RoGetActivationFactory.
+    // For types WITH factories: validates DLL load + factory resolution + COM negotiation.
+    // For types WITHOUT factories (event args, result types, version-gated APIs):
+    //   REGDB_E_CLASSNOTREG or CLASS_E_CLASSNOTAVAILABLE is expected.
+    template<typename T>
+    void VerifyRuntimeActivation()
+    {
+        try
+        {
+            auto factory = winrt::get_activation_factory<T>();
+            VERIFY_IS_NOT_NULL(factory);
+            Log::Comment(String().Format(L"%s: Factory activation succeeded - runtime ABI validated",
+                winrt::name_of<T>().data()));
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            if (ex.code() == REGDB_E_CLASSNOTREG ||
+                ex.code() == CLASS_E_CLASSNOTAVAILABLE)
+            {
+                Log::Comment(String().Format(L"%s: No factory available (0x%08X) - expected for non-activatable types",
+                    winrt::name_of<T>().data(), static_cast<uint32_t>(ex.code())));
+            }
+            else
+            {
+                VERIFY_FAIL(String().Format(L"%s: Unexpected activation error: 0x%08X",
+                    winrt::name_of<T>().data(), static_cast<uint32_t>(ex.code())));
+            }
+        }
+    }
+
     class FunctionalTests
     {
     private:
         winrt::hstring packageFamilyName{};
 
-        void AddPackages()
+        bool EnsurePackagesInstalled()
         {
             auto packageManager{ Windows::Management::Deployment::PackageManager() };
 
-            auto frameworkPackages{ packageManager.FindPackages(packageFamilyName) };
+            // Use FindPackagesForUser (current user) — does not require elevation.
+            auto frameworkPackages{ packageManager.FindPackagesForUser(L"", packageFamilyName) };
 
-            if (!frameworkPackages.First().HasCurrent())
+            if (frameworkPackages.First().HasCurrent())
+            {
+                Log::Comment(String().Format(L"Found installed framework package: %s",
+                    packageFamilyName.c_str()));
+                return true;
+            }
+
+            // Framework not installed — try to deploy it (requires elevation).
+            Log::Warning(String().Format(L"Framework package %s not found. Attempting to install...",
+                packageFamilyName.c_str()));
+            try
             {
                 auto frameworkUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime").c_str()) };
                 auto frameworkOp{ packageManager.AddPackageAsync(frameworkUri, nullptr, DeploymentOptions::None) };
-                auto frameworkResult{ frameworkOp.get() };
-            }
+                frameworkOp.get();
 
-            auto ddlmUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime.DDLM").c_str()) };
-            auto ddlmOp{ packageManager.AddPackageAsync(ddlmUri, nullptr, DeploymentOptions::None) };
-            auto ddlmResult{ ddlmOp.get() };
+                auto ddlmUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime.DDLM").c_str()) };
+                auto ddlmOp{ packageManager.AddPackageAsync(ddlmUri, nullptr, DeploymentOptions::None) };
+                ddlmOp.get();
+                return true;
+            }
+            catch (winrt::hresult_error const& ex)
+            {
+                Log::Error(String().Format(
+                    L"Could not install framework packages (0x%08X). "
+                    L"Pre-install the runtime or run tests elevated.",
+                    static_cast<uint32_t>(ex.code())));
+                return false;
+            }
         }
 
     public:
@@ -66,7 +116,10 @@ namespace Test::ABForward
                 winrt::hstring(L"_") +
                 winrt::hstring(WASDK_PUBLISHER);
 
-            AddPackages();
+            if (!EnsurePackagesInstalled())
+            {
+                return false;
+            }
 
             const UINT32 c_Version_MajorMinor{ ABFORWARD_RUNTIME_VERSION_MAJOR << 16 | ABFORWARD_RUNTIME_VERSION_MINOR };
             const PACKAGE_VERSION minVersion{};
@@ -106,26 +159,17 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_AuthFailure)
         {
-            // AuthFailure is non-activatable (returned by OAuth2Manager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::AuthFailure>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Security::Authentication::OAuth::AuthFailure>();
         }
 
         TEST_METHOD(OAuth_AuthRequestResult)
         {
-            // AuthRequestResult is non-activatable (returned by OAuth2Manager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::AuthRequestResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Security::Authentication::OAuth::AuthRequestResult>();
         }
 
         TEST_METHOD(OAuth_AuthResponse)
         {
-            // AuthResponse is non-activatable (returned by OAuth2Manager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::AuthResponse>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Security::Authentication::OAuth::AuthResponse>();
         }
 
         TEST_METHOD(OAuth_OAuth2Manager)
@@ -146,26 +190,17 @@ namespace Test::ABForward
 
         TEST_METHOD(OAuth_TokenFailure)
         {
-            // TokenFailure is non-activatable (returned by OAuth2Manager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::TokenFailure>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Security::Authentication::OAuth::TokenFailure>();
         }
 
         TEST_METHOD(OAuth_TokenRequestResult)
         {
-            // TokenRequestResult is non-activatable (returned by OAuth2Manager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::TokenRequestResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Security::Authentication::OAuth::TokenRequestResult>();
         }
 
         TEST_METHOD(OAuth_TokenResponse)
         {
-            // TokenResponse is non-activatable (returned by OAuth2Manager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Security::Authentication::OAuth::TokenResponse>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Security::Authentication::OAuth::TokenResponse>();
         }
 
         // =====================================================================
@@ -206,7 +241,7 @@ namespace Test::ABForward
             try
             {
                 auto context{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContext(0) };
-                // Context may be null for invalid context ID 0 — that's OK, the type activated
+                // Context may be null for invalid context ID 0 - that's OK, the type activated
                 Log::Comment(String().Format(L"PackageDependencyContext created (may be null for invalid ID)"));
             }
             catch (winrt::hresult_error const& ex)
@@ -241,10 +276,7 @@ namespace Test::ABForward
 
         TEST_METHOD(DeploymentResult)
         {
-            // DeploymentResult is non-activatable (returned by DeploymentManager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult>();
         }
 
         TEST_METHOD(DeploymentInitializeOptions)
@@ -351,10 +383,7 @@ namespace Test::ABForward
 
         TEST_METHOD(AppNotificationActivatedEventArgs)
         {
-            // Non-activatable (event args, only received from event handlers)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs>();
         }
 
         TEST_METHOD(AppNotificationProgressData)
@@ -428,10 +457,7 @@ namespace Test::ABForward
 
         TEST_METHOD(PackageDeploymentResult)
         {
-            // Non-activatable (returned by PackageDeploymentManager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult>();
         }
 
         TEST_METHOD(AddPackageOptions)
@@ -515,10 +541,7 @@ namespace Test::ABForward
 
         TEST_METHOD(PackageVolume)
         {
-            // Non-activatable (obtained from PackageDeploymentManager methods)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Management::Deployment::PackageVolume>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Management::Deployment::PackageVolume>();
         }
 
         // =====================================================================
@@ -547,18 +570,12 @@ namespace Test::ABForward
 
         TEST_METHOD(CameraCaptureUIPhotoCaptureSettings)
         {
-            // Non-activatable (obtained from CameraCaptureUI.PhotoSettings())
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoCaptureSettings>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoCaptureSettings>();
         }
 
         TEST_METHOD(CameraCaptureUIVideoCaptureSettings)
         {
-            // Non-activatable (obtained from CameraCaptureUI.VideoSettings())
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoCaptureSettings>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoCaptureSettings>();
         }
 
         // =====================================================================
@@ -582,26 +599,17 @@ namespace Test::ABForward
 
         TEST_METHOD(PushNotificationChannel)
         {
-            // Non-activatable (obtained from PushNotificationManager operations)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel>();
         }
 
         TEST_METHOD(PushNotificationCreateChannelResult)
         {
-            // Non-activatable (returned by channel creation operations)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult>();
         }
 
         TEST_METHOD(PushNotificationReceivedEventArgs)
         {
-            // Non-activatable (event args from PushNotificationManager events)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs>();
         }
 
         // =====================================================================
@@ -632,7 +640,7 @@ namespace Test::ABForward
             {
                 auto appData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
                 auto localSettings{ appData.LocalSettings() };
-                // LocalSettings may be null if the package family isn't fully registered — that's OK
+                // LocalSettings may be null if the package family isn't fully registered - that's OK
                 Log::Comment(String().Format(L"ApplicationDataContainer: LocalSettings %s",
                     localSettings ? L"available" : L"null (expected without full package identity)"));
             }
@@ -697,18 +705,12 @@ namespace Test::ABForward
 
         TEST_METHOD(PickFileResult)
         {
-            // Non-activatable (returned by picker operations)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Storage::Pickers::PickFileResult>();
         }
 
         TEST_METHOD(PickFolderResult)
         {
-            // Non-activatable (returned by picker operations)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Storage::Pickers::PickFolderResult>();
         }
 
         // =====================================================================
@@ -748,7 +750,7 @@ namespace Test::ABForward
             {
                 auto loader{ winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceLoader() };
                 VERIFY_IS_NOT_NULL(loader);
-                // GetString will throw without a PRI file — that's fine, class activated
+                // GetString will throw without a PRI file - that's fine, class activated
                 try
                 {
                     loader.GetString(L"test");
@@ -781,39 +783,27 @@ namespace Test::ABForward
 
         TEST_METHOD(Resources_ResourceContext)
         {
-            // Non-activatable (created from ResourceManager)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceContext>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceContext>();
         }
 
         TEST_METHOD(Resources_ResourceCandidate)
         {
-            // Non-activatable (returned from resource queries)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceCandidate>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceCandidate>();
         }
 
         TEST_METHOD(Resources_ResourceMap)
         {
-            // Non-activatable (obtained from ResourceManager)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceMap>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceMap>();
         }
 
         TEST_METHOD(Resources_ResourceNotFoundEventArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceNotFoundEventArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::ApplicationModel::Resources::ResourceNotFoundEventArgs>();
         }
 
         TEST_METHOD(Resources_KnownResourceQualifierName)
         {
-            // Static-only class — call a static property
+            // Static-only class - call a static property
             auto language{ winrt::Microsoft::Windows::ApplicationModel::Resources::KnownResourceQualifierName::Language() };
             VERIFY_IS_FALSE(language.empty());
             Log::Comment(String().Format(L"KnownResourceQualifierName::Language = %s", language.c_str()));
@@ -825,10 +815,7 @@ namespace Test::ABForward
 
         TEST_METHOD(Foundation_DecimalHelper)
         {
-            // Static-only class — verify type metadata
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Foundation::DecimalHelper>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Foundation::DecimalHelper>();
         }
 
         // =====================================================================
@@ -837,7 +824,7 @@ namespace Test::ABForward
 
         TEST_METHOD(Globalization_ApplicationLanguages)
         {
-            // Static-only class — read PrimaryLanguageOverride
+            // Static-only class - read PrimaryLanguageOverride
             try
             {
                 [[maybe_unused]] auto lang{ winrt::Microsoft::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride() };
@@ -867,10 +854,7 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_AIFeatureReadyResult)
         {
-            // Non-activatable (returned by availability checks)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::AIFeatureReadyResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::AIFeatureReadyResult>();
         }
 
         // =====================================================================
@@ -879,7 +863,7 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_ContentFilterOptions)
         {
-            // Activatable — hardware-dependent
+            // Activatable - hardware-dependent
             try
             {
                 auto options{ winrt::Microsoft::Windows::AI::ContentSafety::ContentFilterOptions() };
@@ -894,18 +878,12 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_ImageContentFilterSeverity)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::ContentSafety::ImageContentFilterSeverity>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::ContentSafety::ImageContentFilterSeverity>();
         }
 
         TEST_METHOD(AI_TextContentFilterSeverity)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::ContentSafety::TextContentFilterSeverity>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::ContentSafety::TextContentFilterSeverity>();
         }
 
         // =====================================================================
@@ -914,10 +892,7 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_EmbeddingVector)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Foundation::EmbeddingVector>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Foundation::EmbeddingVector>();
         }
 
         // =====================================================================
@@ -926,7 +901,7 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_ImageDescriptionGenerator)
         {
-            // Has static GetReadyState() — hardware-dependent
+            // Has static GetReadyState() - hardware-dependent
             try
             {
                 [[maybe_unused]] auto state{ winrt::Microsoft::Windows::AI::Imaging::ImageDescriptionGenerator::GetReadyState() };
@@ -941,15 +916,12 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_ImageDescriptionResult)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Imaging::ImageDescriptionResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Imaging::ImageDescriptionResult>();
         }
 
         TEST_METHOD(AI_ImageObjectExtractor)
         {
-            // Has static GetReadyState() — hardware-dependent
+            // Has static GetReadyState() - hardware-dependent
             try
             {
                 [[maybe_unused]] auto state{ winrt::Microsoft::Windows::AI::Imaging::ImageObjectExtractor::GetReadyState() };
@@ -964,15 +936,12 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_ImageObjectExtractorHint)
         {
-            // Activatable with parameters — verify type metadata
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Imaging::ImageObjectExtractorHint>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Imaging::ImageObjectExtractorHint>();
         }
 
         TEST_METHOD(AI_ImageObjectRemover)
         {
-            // Has static GetReadyState() — hardware-dependent
+            // Has static GetReadyState() - hardware-dependent
             try
             {
                 [[maybe_unused]] auto state{ winrt::Microsoft::Windows::AI::Imaging::ImageObjectRemover::GetReadyState() };
@@ -987,7 +956,7 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_ImageScaler)
         {
-            // Has static GetReadyState() — hardware-dependent
+            // Has static GetReadyState() - hardware-dependent
             try
             {
                 [[maybe_unused]] auto state{ winrt::Microsoft::Windows::AI::Imaging::ImageScaler::GetReadyState() };
@@ -1002,31 +971,22 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_RecognizedLine)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Imaging::RecognizedLine>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Imaging::RecognizedLine>();
         }
 
         TEST_METHOD(AI_RecognizedText)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Imaging::RecognizedText>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Imaging::RecognizedText>();
         }
 
         TEST_METHOD(AI_RecognizedWord)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Imaging::RecognizedWord>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Imaging::RecognizedWord>();
         }
 
         TEST_METHOD(AI_TextRecognizer)
         {
-            // Has static GetReadyState() — hardware-dependent
+            // Has static GetReadyState() - hardware-dependent
             try
             {
                 [[maybe_unused]] auto state{ winrt::Microsoft::Windows::AI::Imaging::TextRecognizer::GetReadyState() };
@@ -1045,7 +1005,7 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_LanguageModel)
         {
-            // Has static GetReadyState() — hardware-dependent
+            // Has static GetReadyState() - hardware-dependent
             try
             {
                 [[maybe_unused]] auto state{ winrt::Microsoft::Windows::AI::Text::LanguageModel::GetReadyState() };
@@ -1060,15 +1020,12 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_LanguageModelContext)
         {
-            // Non-default-constructible — verify type metadata
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::LanguageModelContext>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::LanguageModelContext>();
         }
 
         TEST_METHOD(AI_LanguageModelOptions)
         {
-            // Activatable — hardware-dependent
+            // Activatable - hardware-dependent
             try
             {
                 auto options{ winrt::Microsoft::Windows::AI::Text::LanguageModelOptions() };
@@ -1083,31 +1040,22 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_LanguageModelEmbeddingVectorResult)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::LanguageModelEmbeddingVectorResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::LanguageModelEmbeddingVectorResult>();
         }
 
         TEST_METHOD(AI_LanguageModelResponseResult)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::LanguageModelResponseResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::LanguageModelResponseResult>();
         }
 
         TEST_METHOD(AI_ConversationItem)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::ConversationItem>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::ConversationItem>();
         }
 
         TEST_METHOD(AI_ConversationSummaryOptions)
         {
-            // Activatable — hardware-dependent
+            // Activatable - hardware-dependent
             try
             {
                 auto options{ winrt::Microsoft::Windows::AI::Text::ConversationSummaryOptions() };
@@ -1122,42 +1070,27 @@ namespace Test::ABForward
 
         TEST_METHOD(AI_TextRewriter)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::TextRewriter>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::TextRewriter>();
         }
 
         TEST_METHOD(AI_TextSummarizer)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::TextSummarizer>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::TextSummarizer>();
         }
 
         TEST_METHOD(AI_TextToTableConverter)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::TextToTableConverter>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::TextToTableConverter>();
         }
 
         TEST_METHOD(AI_TextToTableResponseResult)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::TextToTableResponseResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::TextToTableResponseResult>();
         }
 
         TEST_METHOD(AI_TextToTableRow)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::Text::TextToTableRow>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::Text::TextToTableRow>();
         }
 
         // =====================================================================
@@ -1166,10 +1099,7 @@ namespace Test::ABForward
 
         TEST_METHOD(Graphics_ImageBuffer)
         {
-            // Non-default-constructible — verify type metadata
-            auto name = winrt::name_of<winrt::Microsoft::Graphics::Imaging::ImageBuffer>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Graphics::Imaging::ImageBuffer>();
         }
 
         // =====================================================================
@@ -1178,66 +1108,42 @@ namespace Test::ABForward
 
         TEST_METHOD(ML_ModelCatalog)
         {
-            // Non-default-constructible — requires ModelCatalogSource array. Verify type metadata.
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::MachineLearning::ModelCatalog>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::MachineLearning::ModelCatalog>();
         }
 
         TEST_METHOD(ML_ModelCatalogSource)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::MachineLearning::ModelCatalogSource>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::MachineLearning::ModelCatalogSource>();
         }
 
         TEST_METHOD(ML_CatalogModelInfo)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::MachineLearning::CatalogModelInfo>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::MachineLearning::CatalogModelInfo>();
         }
 
         TEST_METHOD(ML_CatalogModelInstance)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::MachineLearning::CatalogModelInstance>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::MachineLearning::CatalogModelInstance>();
         }
 
         TEST_METHOD(ML_CatalogModelInstanceResult)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::MachineLearning::CatalogModelInstanceResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::MachineLearning::CatalogModelInstanceResult>();
         }
 
         TEST_METHOD(ML_ExecutionProvider)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::MachineLearning::ExecutionProvider>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::MachineLearning::ExecutionProvider>();
         }
 
         TEST_METHOD(ML_ExecutionProviderCatalog)
         {
-            // Static class — verify type metadata
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::MachineLearning::ExecutionProviderCatalog>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::MachineLearning::ExecutionProviderCatalog>();
         }
 
         TEST_METHOD(ML_ExecutionProviderReadyResult)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::AI::MachineLearning::ExecutionProviderReadyResult>();
         }
 
         // =====================================================================
@@ -1269,90 +1175,57 @@ namespace Test::ABForward
 
         TEST_METHOD(Widgets_WidgetContext)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetContext>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetContext>();
         }
 
         TEST_METHOD(Widgets_WidgetInfo)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetInfo>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetInfo>();
         }
 
         TEST_METHOD(Widgets_WidgetActionInvokedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetActionInvokedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetActionInvokedArgs>();
         }
 
         TEST_METHOD(Widgets_WidgetAnalyticsInfoReportedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetAnalyticsInfoReportedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetAnalyticsInfoReportedArgs>();
         }
 
         TEST_METHOD(Widgets_WidgetContextChangedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetContextChangedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetContextChangedArgs>();
         }
 
         TEST_METHOD(Widgets_WidgetCustomizationRequestedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetCustomizationRequestedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetCustomizationRequestedArgs>();
         }
 
         TEST_METHOD(Widgets_WidgetErrorInfoReportedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetErrorInfoReportedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetErrorInfoReportedArgs>();
         }
 
         TEST_METHOD(Widgets_WidgetMessageReceivedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetMessageReceivedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetMessageReceivedArgs>();
         }
 
         TEST_METHOD(Widgets_WidgetResourceRequest)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetResourceRequest>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetResourceRequest>();
         }
 
         TEST_METHOD(Widgets_WidgetResourceRequestedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetResourceRequestedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetResourceRequestedArgs>();
         }
 
         TEST_METHOD(Widgets_WidgetResourceResponse)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Providers::WidgetResourceResponse>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Providers::WidgetResourceResponse>();
         }
 
         // =====================================================================
@@ -1369,106 +1242,67 @@ namespace Test::ABForward
 
         TEST_METHOD(Feeds_CustomQueryParametersUpdateOptions)
         {
-            // Non-default-constructible — verify type metadata
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::CustomQueryParametersUpdateOptions>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::CustomQueryParametersUpdateOptions>();
         }
 
         TEST_METHOD(Feeds_FeedProviderInfo)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedProviderInfo>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedProviderInfo>();
         }
 
         TEST_METHOD(Feeds_FeedResourceResponse)
         {
-            // Non-default-constructible — verify type metadata
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedResourceResponse>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedResourceResponse>();
         }
 
         TEST_METHOD(Feeds_CustomQueryParametersRequestedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::CustomQueryParametersRequestedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::CustomQueryParametersRequestedArgs>();
         }
 
         TEST_METHOD(Feeds_FeedAnalyticsInfoReportedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedAnalyticsInfoReportedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedAnalyticsInfoReportedArgs>();
         }
 
         TEST_METHOD(Feeds_FeedDisabledArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedDisabledArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedDisabledArgs>();
         }
 
         TEST_METHOD(Feeds_FeedEnabledArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedEnabledArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedEnabledArgs>();
         }
 
         TEST_METHOD(Feeds_FeedErrorInfoReportedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedErrorInfoReportedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedErrorInfoReportedArgs>();
         }
 
         TEST_METHOD(Feeds_FeedMessageReceivedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedMessageReceivedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedMessageReceivedArgs>();
         }
 
         TEST_METHOD(Feeds_FeedProviderDisabledArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedProviderDisabledArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedProviderDisabledArgs>();
         }
 
         TEST_METHOD(Feeds_FeedProviderEnabledArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedProviderEnabledArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedProviderEnabledArgs>();
         }
 
         TEST_METHOD(Feeds_FeedResourceRequest)
         {
-            // Non-activatable
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedResourceRequest>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedResourceRequest>();
         }
 
         TEST_METHOD(Feeds_FeedResourceRequestedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedResourceRequestedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Feeds::Providers::FeedResourceRequestedArgs>();
         }
 
         // =====================================================================
@@ -1477,18 +1311,12 @@ namespace Test::ABForward
 
         TEST_METHOD(Widgets_FeedAnnouncement)
         {
-            // Non-default-constructible — verify type metadata
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Notifications::FeedAnnouncement>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Notifications::FeedAnnouncement>();
         }
 
         TEST_METHOD(Widgets_FeedAnnouncementInvokedArgs)
         {
-            // Non-activatable (event args)
-            auto name = winrt::name_of<winrt::Microsoft::Windows::Widgets::Notifications::FeedAnnouncementInvokedArgs>();
-            VERIFY_IS_NOT_NULL(name.data());
-            Log::Comment(String().Format(L"Type verified: %s", name.data()));
+            VerifyRuntimeActivation<winrt::Microsoft::Windows::Widgets::Notifications::FeedAnnouncementInvokedArgs>();
         }
 
         // =====================================================================
