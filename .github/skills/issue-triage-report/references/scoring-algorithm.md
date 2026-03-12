@@ -6,38 +6,40 @@ This document describes the scoring algorithm used to identify high-priority iss
 
 Each open issue receives a score from 0-100 based on weighted factors. Issues with the highest scores per feature area are marked as highlights with descriptive labels indicating why they're important.
 
+Each score also includes a **confidence value** (0-100) in the format `[confidence:XX]` indicating how reliable the score is based on data completeness.
+
 ## Scoring Factors
 
-### 1. Reactions (Weight: 25 points max)
+### 1. Reactions (Weight: 30 points max)
 
 Community engagement measured by GitHub reactions (👍, ❤️, 🚀, 👀, 🎉, 😕, 😄).
 
 | Reactions | Score |
 |-----------|-------|
 | 0 | 0 |
-| 1-4 | 5 |
-| 5-9 | 10 |
-| 10-19 | 15 |
-| 20-49 | 20 |
-| 50+ | 25 |
+| 1-4 | 6 |
+| 5-9 | 12 |
+| 10-19 | 18 |
+| 20-49 | 24 |
+| 50+ | 30 |
 
 **Rationale**: High reaction counts indicate community demand and widespread impact.
 
-**Highlight Label**: `🔥 Hot` when reactions ≥ 10
+**Highlight Label**: `🌟 Popular` when reactions ≥ 5
 
 ---
 
-### 2. Age (Weight: 20 points max)
+### 2. Age (Weight: 30 points max)
 
 Time since issue was created, with higher scores for older untriaged issues.
 
 | Days Open | Score |
 |-----------|-------|
 | 0-30 | 0 |
-| 31-60 | 5 |
-| 61-90 | 10 |
-| 91-180 | 15 |
-| 181+ | 20 |
+| 31-60 | 7 |
+| 61-90 | 15 |
+| 91-180 | 22 |
+| 181+ | 30 |
 
 **Rationale**: Older issues without resolution deserve attention to prevent backlog growth.
 
@@ -45,82 +47,114 @@ Time since issue was created, with higher scores for older untriaged issues.
 
 ---
 
-### 3. Comments (Weight: 15 points max)
+### 3. Comments (Weight: 30 points max)
 
 Discussion activity measured by comment count.
 
 | Comments | Score |
 |----------|-------|
 | 0 | 0 |
-| 1-2 | 3 |
-| 3-5 | 6 |
-| 6-10 | 10 |
-| 11+ | 15 |
-
-**Recent Activity Bonus**: +5 if commented in last 14 days
+| 1-2 | 6 |
+| 3-5 | 12 |
+| 6-10 | 20 |
+| 11+ | 30 |
 
 **Rationale**: Active discussions indicate ongoing relevance and potential blockers.
 
-**Highlight Label**: `📈 Trending` when comments ≥ 5 AND recent activity (shows the issue is heating up NOW)
+**Highlight Label**: `📈 Trending` when comments ≥ 10 (indicates high activity)
 
 ---
 
-### 4. Severity Labels (Weight: 15 points max)
+### 4. Severity Labels (Weight: 10 points max)
 
-Priority based on issue labels indicating severity or type.
+Priority based on issue labels indicating severity or type. Supports P-scale labels.
 
-| Label | Score |
-|-------|-------|
-| `regression` | 15 |
-| `crash`, `hang`, `data-loss` | 12 |
-| `bug` | 8 |
-| `performance` | 6 |
-| `documentation` | 2 |
-| None of above | 0 |
+| Severity Tier | Labels | Score |
+|---------------|--------|-------|
+| Critical | `regression`, `crash`, `hang`, `data-loss`, `security`, `P0` | 10 |
+| High | `bug`, `P1` | 8 |
+| Medium | `performance`, `feature proposal`, `feature-proposal`, `P2` | 5 |
+| Low | `documentation`, `enhancement`, `P3` | 2 |
+| None | None of above | 0 |
 
-**Rationale**: Regressions and crashes have direct user impact.
+**Rationale**: Regressions, crashes, and security issues have direct user impact.
 
 **Highlight Labels**:
 - `🐛 Regression` when has `regression` label
-- (Bug severity shown in score, not separate label)
+- (Other severity shown in score, not separate label)
 
 ---
 
-### 6. Blocker Status (Weight: 10 points max)
+### 5. Blocker Status (Weight: 0 points - disabled)
 
-Issues that block other work or teams.
+Previously tracked issues blocking other work. Now disabled to make room for equal weighting of reactions, age, and comments.
 
-| Condition | Score |
-|-----------|-------|
-| Has `blocking` or `blocker` label | 10 |
-| Linked as blocking another issue | 8 |
-| Mentioned in blocking context | 5 |
-| No blocker indicators | 0 |
-
-**Rationale**: Blockers have multiplicative impact on productivity.
-
-**Highlight Label**: `🚧 Blocker` when has blocking indicators
+**Highlight Label**: `🚧 Blocker` when has blocking indicators (still shown as highlight even with 0 weight)
 
 ---
 
 ## Composite Score Calculation
 
 ```
-Total Score = Σ(factor_score × factor_weight / max_factor_weight)
-
-Normalized Score = (Total Score / 100) × 100
+Total Score = Reactions + Age + Comments + Severity
+            = 30 + 30 + 30 + 10 = 100 max
 ```
 
 ### Example Calculation
 
 Issue #2894:
-- Reactions: 25 (score: 24)
-- Age: 120 days (score: 18)
-- Comments: 8 (score: 13)
-- Labels: `bug` (score: 8)
-- Blocker: No (score: 0)
+- Reactions: 25 → 24 points (80% of 30)
+- Age: 120 days → 22 points (91-180 bracket)
+- Comments: 8 → 20 points (6-10 bracket)
+- Labels: `bug` (P1 equivalent) → 8 points
 
-**Total**: 24 + 18 + 13 + 8 + 0 = **63/100**
+**Total**: 24 + 22 + 20 + 8 = **74/100**
+
+---
+
+## Confidence Scoring
+
+Each score includes a confidence value indicating data reliability:
+
+### Confidence Factors
+
+| Factor | Points |
+|--------|--------|
+| Has reactions data | +15 |
+| Has comments data | +15 |
+| Has labels | +15 |
+| Has created date | +15 |
+| Score ≥ 60 (clear priority) | +25 |
+| Score 40-59 | +15 |
+| Score 20-39 | +10 |
+| 3+ factors contributing | +15 |
+| 2 factors contributing | +10 |
+
+**Output Format**: `[confidence:85]` — grep-friendly for filtering high-confidence items.
+
+### Example
+
+```bash
+# Find high-confidence highlights (80+)
+grep "\[confidence:[89][0-9]\]" report.md
+
+# Find low-confidence items (below 50)
+grep "\[confidence:[0-4][0-9]\]" report.md
+```
+
+```powershell
+# Find high-confidence highlights (80+)
+Select-String -Path report.md -Pattern '\[confidence:[89][0-9]\]'
+
+# Find low-confidence items (below 50)
+Select-String -Path report.md -Pattern '\[confidence:[0-4][0-9]\]'
+
+# Count issues by confidence range
+Get-Content report.md | Select-String '\[confidence:(\d+)\]' -AllMatches | 
+    ForEach-Object { $_.Matches.Groups[1].Value } | 
+    Group-Object { [math]::Floor([int]$_ / 10) * 10 } | 
+    Sort-Object Name
+```
 
 ---
 
@@ -132,10 +166,9 @@ After scoring, assign labels based on the highest-scoring factors:
 |----------|-------|-----------|
 | 1 | `🐛 Regression` | Has `regression` label |
 | 2 | `🚧 Blocker` | Has blocking indicators |
-| 3 | `🔥 Hot` | Reactions ≥ 10 (all-time popularity) |
+| 3 | `🌟 Popular` | Reactions ≥ 5 |
 | 4 | `⏰ Aging` | Days > 90 + needs-triage |
-| 5 | `📈 Trending` | Comments ≥ 5 + recent activity (heating up NOW) |
-| 6 | ` Popular` | Feature proposal + reactions ≥ 5 |
+| 5 | `📈 Trending` | Comments ≥ 10 |
 
 **Rule**: Each issue gets **at most 2 labels** (most relevant based on score contribution).
 
@@ -171,27 +204,31 @@ These thresholds can be adjusted in `ScoringConfig.json`:
 {
   "weights": {
     "reactions": 30,
-    "age": 25,
-    "comments": 20,
-    "severity": 15,
-    "blockers": 10
+    "age": 30,
+    "comments": 30,
+    "severity": 10,
+    "blockers": 0
   },
   "thresholds": {
-    "hot_reactions": 10,
     "aging_days": 90,
-    "trending_comments": 5,
+    "trending_comments": 10,
     "trending_days": 14,
     "popular_reactions": 5
   },
   "labelPriority": [
     "regression",
     "blocker",
-    "hot",
+    "popular",
     "aging",
-    "trending",
-    "popular"
+    "trending"
   ],
-  "maxLabelsPerIssue": 2
+  "maxLabelsPerIssue": 2,
+  "severityLabels": {
+    "critical": ["regression", "crash", "hang", "data-loss", "security", "P0"],
+    "high": ["bug", "P1"],
+    "medium": ["performance", "feature proposal", "feature-proposal", "P2"],
+    "low": ["documentation", "enhancement", "P3"]
+  }
 }
 ```
 
@@ -203,17 +240,18 @@ When generating reports:
 
 1. Fetch all open issues per area
 2. Calculate scores for each issue
-3. Sort by score descending
-4. Take top N issues (default: 3)
-5. Assign highlight labels
-6. Format for display
+3. Calculate confidence for each score
+4. Sort by score descending
+5. Take top N issues (default: 3)
+6. Assign highlight labels
+7. Format for display with confidence
 
 ### Output Example
 
 ```markdown
 | Feature Area | ... | Highlights |
 |--------------|-----|------------|
-| area-Notification | ... | 🔥 [#2894](link) Hot, ⏰ [#3001](link) Aging |
+| area-Notification | ... | 🌟 [#2894](link) [confidence:85], ⏰ [#3001](link) [confidence:72] |
 ```
 
 ---

@@ -170,11 +170,13 @@ function Get-HighlightedIssues {
     foreach ($issue in $Issues) {
         $score = Get-IssueScore -Issue $issue -Config $Config
         $labels = Get-HighlightLabels -Issue $issue -Score $score -Config $Config
+        $confidence = Get-ScoreConfidence -Issue $issue -Score $score
 
         $scoredIssues += @{
             Number = $issue.number
             Title = $issue.title
             Score = $score.Total
+            Confidence = $confidence
             Labels = $labels
             ScoreBreakdown = $score
         }
@@ -186,13 +188,13 @@ function Get-HighlightedIssues {
     return $highlights
 }
 
-# Note: Get-IssueScore and Get-HighlightLabels are now defined in ReportLib.ps1
+# Note: Get-IssueScore, Get-HighlightLabels, and Get-ScoreConfidence are now defined in ReportLib.ps1
 # to provide a single source of truth for scoring logic across the skill.
 
 function Format-HighlightsMarkdown {
     <#
     .SYNOPSIS
-        Formats highlighted issues as markdown links with labels.
+        Formats highlighted issues as markdown links with labels and confidence.
     #>
     param(
         [array]$Highlights,
@@ -208,10 +210,11 @@ function Format-HighlightsMarkdown {
         $labelArray = @($h.Labels)
         $label = if ($labelArray.Count -gt 0) { $labelArray[0] } else { "" }
         $link = "[#$($h.Number)](https://github.com/$Repository/issues/$($h.Number))"
+        $confStr = "[confidence:$($h.Confidence)]"
         if ($label) {
-            $parts += "$label $link"
+            $parts += "$label $link $confStr"
         } else {
-            $parts += $link
+            $parts += "$link $confStr"
         }
     }
 
@@ -330,10 +333,10 @@ try {
         $highlights = Get-HighlightedIssues -Issues $openIssues -Config $Config -MaxHighlights $HighlightCount
         $highlightsFormatted = Format-HighlightsMarkdown -Highlights $highlights -Repository $Repo
 
-        # Get contact
+        # Get contact - use new schema (single contact field)
         $contact = if ($AreaContacts[$areaLabel]) {
             $c = $AreaContacts[$areaLabel]
-            if ($c.secondary) { "$($c.primary), $($c.secondary)" } else { $c.primary }
+            if ($c.contact) { $c.contact } else { "TBD" }
         } else {
             "TBD"
         }
