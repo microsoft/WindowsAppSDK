@@ -27,7 +27,7 @@ compatibility directions.
 
 | # | API (Full Class Name) | Namespace | Fails Forward? | Fails Backward? | HRESULT | Component Owner | Notes |
 |---|----------------------|-----------|:--------------:|:---------------:|---------|-----------------|-------|
-| 1 | `DeploymentManager::GetStatus()` | `Microsoft.Windows.ApplicationModel.WindowsAppRuntime` | ✅ YES | ✅ YES | 0xC0000409 (process crash) | AppModel/Deployment team | **CRITICAL**: Calling GetStatus() causes fast-fail crash (STATUS_STACK_BUFFER_OVERRUN) in BOTH directions. Test host process is killed. |
+| 1 | `DeploymentManager::GetStatus()` | `Microsoft.Windows.ApplicationModel.WindowsAppRuntime` | ✅ YES | ✅ YES | 0xC0000409 (process crash) | AppModel/Deployment team | **NOT an ABI break.** Crashes same-version too. `GetStatus()` calls `FAIL_FAST_HR_IF(!IsPackagedProcess())` at `dev\Deployment\DeploymentManager.cpp:56` — any non-packaged caller is fast-failed. Inconsistent with `Initialize()` which gracefully returns `Ok` for unpackaged processes (line 225-228). Consider returning an error instead of crashing. |
 | 2 | `UniversalBGTask.Task` | `Microsoft.Windows.ApplicationModel.Background.UniversalBGTask` | ✅ YES | ✅ YES | REGDB_E_CLASSNOTREG (0x80040154) | AppModel/Background team | Class not registered in either runtime direction. |
 | 3 | `WidgetManager` | `Microsoft.Windows.Widgets.Providers` | ✅ YES | ✅ YES | REGDB_E_CLASSNOTREG (0x80040154) | Widgets team | Class not registered. May require Widget host infrastructure not present in test environment. |
 | 4 | `FeedManager` | `Microsoft.Windows.Widgets.Feeds.Providers` | ✅ YES | ✅ YES | REGDB_E_CLASSNOTREG (0x80040154) | Widgets/Feeds team | Class not registered. May require Widget host infrastructure not present in test environment. |
