@@ -42,7 +42,7 @@
       "type": "parameter",
       "datatype": "choice",
       "replaces": "$DotNetVersion$",
-      "defaultValue": "net8.0",
+      "defaultValue": "net10.0",
       "description": "Base target framework moniker (TFM) for the WinUI project.",
       "choices": [
         { "choice": "net8.0", "description": "Target .NET 8 (LTS)" },
