@@ -91,7 +91,7 @@ function Get-AllAreaLabels {
 
     Write-Verbose "Fetching area labels from $Repository..."
     $labels = gh label list --repo $Repository --search "area-" --json name --limit 100 | ConvertFrom-Json
-    return $labels | ForEach-Object { $_.name } | Sort-Object
+    return $labels | ForEach-Object { $_.name } | Where-Object { $_ -like 'area-*' } | Sort-Object
 }
 
 function Get-IssuesForArea {
@@ -317,9 +317,9 @@ try {
             $closedIssues = Get-IssuesForArea -Repository $Repo -AreaLabel $areaLabel -GetClosed
             # Filter to last 30 days
             $thirtyDaysAgo = (Get-Date).AddDays(-30)
-            $recentlyClosed = $closedIssues | Where-Object {
+            $recentlyClosed = @($closedIssues | Where-Object {
                 [datetime]$_.updatedAt -gt $thirtyDaysAgo
-            }
+            })
             $closedCount = $recentlyClosed.Count
         }
 
