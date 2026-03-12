@@ -60,8 +60,11 @@ dotnet new winui-window -n SecondaryWindow --project .\MyApp.csproj
 
 ### Choosing a Target Framework
 
-All templates default to `net10.0-windows10.0.19041.0`. To target a different
-.NET version, pass `--dotnet-version` when creating the project:
+By default, templates automatically detect your installed .NET SDK version and
+set the target framework accordingly. For example, if you have .NET 10 SDK
+installed, the TFM will be `net10.0-windows10.0.26100.0`.
+
+To target a specific .NET version instead, pass `--dotnet-version`:
 
 ```shell
 dotnet new winui --dotnet-version net8.0 -n MyApp
