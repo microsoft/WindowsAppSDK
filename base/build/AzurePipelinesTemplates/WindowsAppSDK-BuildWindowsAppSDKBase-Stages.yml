@@ -149,33 +149,12 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          $paddedRevision = '$(Revision)'
-          if([int]$(Revision) -lt 10)
-          {
-            $paddedRevision = '00' + '$(Revision)'
-          }
-          elseif ([int]$(Revision) -lt 100)
-          {
-            $paddedRevision = '0' + '$(Revision)'
-          }
-          Write-Host "paddedRevision " $paddedRevision
+          $version = '$(version)'
 
-          if ([int]$(Revision) -gt 999)
-          {
-            Write-Host "Revision Number limit reach. Please try again the next day"
-            Write-Host "##vso[task.complete result=Failed;]DONE"
-          }
-
-          $buildType = '${{ parameters.BuildType }}'
-          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).$(PatchVersion)'
-          $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
-          $version = $majorMinorPatchRev + '-' + $buildType
-
-          # If using release versioning, drop the version suffix, which includes a tag & build stamp.
-          # This should only be done when prepping final release packages.
-
+          # For official builds, allow VersionTag override
           if ('${{ parameters.IsOfficial }}' -eq 'true')
           {
+            $buildType = '${{ parameters.BuildType }}'
             $versionTag = '$(VersionTag)'
 
             # Allow override from pipeline variable
@@ -203,16 +182,28 @@ stages:
               Write-Host "##vso[task.complete result=Failed;]DONE"
             }
 
-            $formattedTag = ''
             if(-not [String]::IsNullOrEmpty($versionTag))
             {
-              $formattedTag = '-' + $versionTag
+              # Replace the prerelease tag portion of the version
+              $dashIndex = $version.IndexOf('-')
+              if ($dashIndex -gt 0) {
+                $version = $version.Substring(0, $dashIndex) + '-' + $versionTag
+              } else {
+                $version = $version + '-' + $versionTag
+              }
+            }
+            elseif ($buildType -eq "stable")
+            {
+              # Stable: strip prerelease tag entirely
+              $dashIndex = $version.IndexOf('-')
+              if ($dashIndex -gt 0) {
+                $version = $version.Substring(0, $dashIndex)
+              }
             }
             Write-Host "Using Release Versioning"
-            $version = $majorMinorPatchRev + $formattedTag
           }
 
-          # Write the version we generated here to Version.Details.xml for BuildAll.ps1 to read from
+          # Write the version to Version.Details.xml for BuildAll.ps1 to read from
           [xml]$versionDetailsPath = Get-Content -Path "eng\Version.Details.xml"
           $WindowsAppSDKConfigVersionDependency = $versionDetailsPath.Dependencies.ToolsetDependencies.Dependency | Where-Object { $_.Name -eq "Microsoft.WindowsAppSDK.Version" }
           $WindowsAppSDKConfigVersionDependency.Version = $version
