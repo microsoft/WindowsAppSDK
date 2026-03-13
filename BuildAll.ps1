@@ -499,8 +499,18 @@ Try {
         #    Build the minimal Foundation projects needed for the Base package:
         #    WindowsAppRuntime_DLL (for .lib) and WindowsAppRuntime_BootstrapDLL (for Bootstrap.dll)
         #------------------
-        NugetRestore "WindowsAppRuntime" "WindowsAppRuntime.sln"
-        # Bootstrap.Net is SDK-style; /restore in the msbuild invocation handles it
+
+        # Restore NuGet packages for the solution (packages.config projects)
+        # Clear NUGET_RESTORE_MSBUILD_ARGS to avoid multi-platform arg issues
+        $savedMsBuildArgs = $env:NUGET_RESTORE_MSBUILD_ARGS
+        $env:NUGET_RESTORE_MSBUILD_ARGS = ""
+        nuget restore WindowsAppRuntime.sln -configfile NuGet.config
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: nuget.exe restore WindowsAppRuntime.sln FAILED."
+            exit 1
+        }
+        $env:NUGET_RESTORE_MSBUILD_ARGS = $savedMsBuildArgs
 
         foreach($configurationToRun in $configuration.Split(","))
         {
@@ -508,8 +518,7 @@ Try {
             {
                 write-host "Building WindowsAppRuntime_DLL for Base: $configurationToRun|$platformToRun"
                 & $msBuildPath /restore `
-                                WindowsAppRuntime.sln `
-                                /t:WindowsAppRuntime_DLL `
+                                "dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj" `
                                 /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
                                 /p:RestoreConfigFile=NuGet.config `
@@ -526,8 +535,7 @@ Try {
 
                 write-host "Building WindowsAppRuntime_BootstrapDLL for Base: $configurationToRun|$platformToRun"
                 & $msBuildPath /restore `
-                                WindowsAppRuntime.sln `
-                                /t:WindowsAppRuntime_BootstrapDLL `
+                                "dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj" `
                                 /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
                                 /p:RestoreConfigFile=NuGet.config `
