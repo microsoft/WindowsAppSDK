@@ -37,8 +37,8 @@ body:
       description: Specify the version of Windows App SDK (or Project Reunion) you're using.
       options:
         - "Windows App SDK 1.8.5: 1.8.260209005"
-        - "Windows App SDK 1.8 Preview 1: 1.8.250814004-preview1"
-        - "Windows App SDK 2.0 Experimental 4: 2.0.0-experimental4"
+        - "Windows App SDK 2.0 Preview 1: 2.0.0-preview1"
+        - "Windows App SDK 2.0 Experimental 5: 2.0.0-experimental5"
   - type: dropdown
     attributes:
       label: Packaging type
