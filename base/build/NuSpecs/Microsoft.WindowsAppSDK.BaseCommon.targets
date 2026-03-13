@@ -46,6 +46,12 @@
                Text="Undocked Reg-Free WinRT activation is required for self-contained apps targeting Windows versions prior to 10.0.18362.0. Remove the WindowsAppSdkUndockedRegFreeWinRTInitialize=false setting." />
     </Target>
 
+    <!-- Validation: DeploymentManager initialization requires Foundation package -->
+    <Target Name="WindowsAppSDKDeploymentManagerRequiresFoundation" BeforeTargets="PrepareForBuild"
+            Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true' and '$(WindowsAppSdkFoundation)' != 'true'">
+        <Error Text="DeploymentManager initialization requires the Microsoft.WindowsAppSDK.Foundation package. Add a PackageReference to Microsoft.WindowsAppSDK.Foundation, or set WindowsAppSdkDeploymentManagerInitialize=false." />
+    </Target>
+
     <!-- Validation: UndockedRegFreeWinRT requires Foundation package (for Microsoft.WindowsAppRuntime.dll) -->
     <Target Name="WindowsAppSDKUndockedRegFreeWinRTRequiresFoundation" BeforeTargets="PrepareForBuild"
             Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true' and '$(WindowsAppSDKSelfContained)' == 'true' and '$(WindowsAppSdkFoundation)' != 'true' and '$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(_WindowsAppSDKMinTPV)' != ''">

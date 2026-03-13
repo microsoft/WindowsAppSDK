@@ -99,12 +99,11 @@
     <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
     <_WindowsAppSDKSkipBootstrapRequiredCheck>true</_WindowsAppSDKSkipBootstrapRequiredCheck>
     <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
-    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
-    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
     <DefineConstants>EXPECT_NO_BOOTSTRAP</DefineConstants>
   </PropertyGroup>
 
-  <!-- Config 9: RS5, SC=true, Packaged, URF=true (default), Foundation referenced → SUCCESS: no bootstrap DLLs
+  <!-- Config 9:RS5, SC=true, Packaged, URF=true (default), Foundation referenced → SUCCESS: no bootstrap DLLs
        Foundation provides URF support via Microsoft.WindowsAppRuntime.dll, so URF validation passes.
        No DefineConstants — verification handled by test runner (Foundation adds extra DLLs).
        NU1605 suppressed: Foundation's nuspec references a newer Base version range than our local build. -->

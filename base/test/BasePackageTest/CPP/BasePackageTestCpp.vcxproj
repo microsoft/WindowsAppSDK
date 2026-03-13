@@ -156,11 +156,10 @@
     <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
     <_WindowsAppSDKSkipBootstrapRequiredCheck>true</_WindowsAppSDKSkipBootstrapRequiredCheck>
     <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
-    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
-    <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
+    <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
   </PropertyGroup>
 
-  <!-- Config 9: RS5, SC=true, Packaged, URF=true (default), Foundation referenced → SUCCESS: no DLLs
+  <!-- Config 9:RS5, SC=true, Packaged, URF=true (default), Foundation referenced → SUCCESS: no DLLs
        WindowsAppSdkFoundation=true simulates Foundation being present (set by Foundation's props).
        WindowsAppSDKUndockedRegFreeWinRTRequiresFoundation validation checks this property. -->
   <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_URF_Fdn'" Label="Configuration">

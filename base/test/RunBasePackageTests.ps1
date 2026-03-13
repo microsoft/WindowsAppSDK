@@ -1,14 +1,44 @@
 # RunBasePackageTests.ps1
 # Builds all Base package test configurations and verifies results.
-# Usage: .\base\test\RunBasePackageTests.ps1
+# Can be run from any directory — automatically finds repo root.
 param(
-    [string]$MsBuildPath = "F:\Program Files\Microsoft Visual Studio\18\Insiders\MSBuild\Current\Bin\MSBuild.exe"
+    [string]$MsBuildPath
 )
 
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Continue'
 $script:PassCount = 0
 $script:FailCount = 0
+
+# Find repo root (walk up from script location looking for .git)
+$scriptDir = $PSScriptRoot
+$repoRoot = $scriptDir
+while ($repoRoot -and !(Test-Path (Join-Path $repoRoot ".git"))) {
+    $repoRoot = Split-Path $repoRoot -Parent
+}
+if (!$repoRoot -or !(Test-Path (Join-Path $repoRoot ".git"))) {
+    Write-Host "ERROR: Could not find repo root from $scriptDir" -ForegroundColor Red
+    exit 1
+}
+Write-Host "Repo root: $repoRoot"
+Push-Location $repoRoot
+
+# Auto-detect MSBuild if not specified
+if (!$MsBuildPath) {
+    $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    if (Test-Path $vswhere) {
+        $vsPath = & $vswhere -latest -requires Microsoft.Component.MSBuild -property installationPath 2>$null
+        if ($vsPath) {
+            $MsBuildPath = Join-Path $vsPath "MSBuild\Current\Bin\MSBuild.exe"
+        }
+    }
+    if (!$MsBuildPath -or !(Test-Path $MsBuildPath)) {
+        Write-Host "ERROR: Could not find MSBuild. Pass -MsBuildPath explicitly." -ForegroundColor Red
+        Pop-Location
+        exit 1
+    }
+    Write-Host "MSBuild: $MsBuildPath"
+}
 
 function Test-BuildSuccess {
     param([string]$Name, [string]$BuildCmd, [scriptblock]$Verify)
@@ -165,11 +195,11 @@ Test-BuildError "C# 7: RS5_SC_Pkg_NoURF" `
     "dotnet build $csProj -c RS5_SC_Pkg_NoURF --no-incremental --no-restore -v q 2>&1" `
     "Undocked Reg-Free WinRT activation is required for self-contained apps targeting Windows versions prior to 10.0.18362.0"
 
-# Config 8: RS5_FD_Pkg — no bootstrap DLLs
+# Config 8: RS5_FD_Pkg — ERROR expected (DeploymentMgr requires Foundation)
 dotnet restore $csProj -p:Configuration=RS5_FD_Pkg 2>&1 | Out-Null
-Test-BuildSuccess "C# 8: RS5_FD_Pkg" `
+Test-BuildError "C# 8: RS5_FD_Pkg" `
     "dotnet build $csProj -c RS5_FD_Pkg --no-incremental --no-restore -v q 2>&1" `
-    { Test-NoDlls "base\test\BasePackageTest\CS\bin\x64\RS5_FD_Pkg\net8.0-windows10.0.17763.0\win-x64" -AllowedDlls $csAllowed }
+    "DeploymentManager initialization requires the Microsoft.WindowsAppSDK.Foundation package"
 
 # Config 9: RS5_SC_Pkg_URF_Fdn — Foundation referenced, URF=true, no bootstrap DLLs
 # Foundation adds extra DLLs but bootstrap should still be absent (SC=true)
@@ -232,10 +262,10 @@ Test-BuildError "C++ 7: RS5_SC_Pkg_NoURF" `
     "& $msbuild $cppProj /p:Configuration=RS5_SC_Pkg_NoURF /p:Platform=x64 /nr:false /v:q 2>&1" `
     "Undocked Reg-Free WinRT activation is required for self-contained apps targeting Windows versions prior to 10.0.18362.0"
 
-# Config 8: RS5_FD_Pkg — no DLLs
-Test-BuildSuccess "C++ 8: RS5_FD_Pkg" `
+# Config 8: RS5_FD_Pkg — ERROR expected (DeploymentMgr requires Foundation)
+Test-BuildError "C++ 8: RS5_FD_Pkg" `
     "& $msbuild $cppProj /p:Configuration=RS5_FD_Pkg /p:Platform=x64 /nr:false /v:q 2>&1" `
-    { Test-NoDlls "base\test\BasePackageTest\CPP\out\RS5_FD_Pkg\x64" }
+    "DeploymentManager initialization requires the Microsoft.WindowsAppSDK.Foundation package"
 
 # Config 9: RS5_SC_Pkg_URF_Fdn — Foundation simulated, URF=true, no DLLs
 Test-BuildSuccess "C++ 9: RS5_SC_Pkg_URF_Fdn" `
@@ -249,4 +279,5 @@ Write-Host "`n======================" -ForegroundColor White
 Write-Host "Results: $script:PassCount passed, $script:FailCount failed" -ForegroundColor $(if ($script:FailCount -eq 0) { "Green" } else { "Red" })
 Write-Host "======================" -ForegroundColor White
 
+Pop-Location
 exit $script:FailCount
