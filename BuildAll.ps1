@@ -493,11 +493,11 @@ Try {
             Copy-Item -Path $IntellisenseFile -Destination $DestinationDir
         }
     }
-    if ($AzureBuildStep -eq "BuildBaseFoundation")
+    if ($AzureBuildStep -eq "BuildBase")
     {
         #------------------
         #    Build the Bootstrap DLL and Bootstrap.Net for the Base package.
-        #    Bootstrap no longer links Microsoft.WindowsAppRuntime.lib; no Foundation DLL build needed.
+        #    No Foundation build dependency required.
         #------------------
 
         # Restore NuGet packages for the solution (packages.config projects)

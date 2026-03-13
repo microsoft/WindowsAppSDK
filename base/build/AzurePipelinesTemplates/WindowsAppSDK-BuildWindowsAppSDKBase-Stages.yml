@@ -222,11 +222,11 @@ stages:
         slnDirectory: $(Build.SourcesDirectory)
 
     - task: PowerShell@2
-      name: BuildBaseFoundation
-      displayName: 'Build Foundation projects for Base package'
+      name: BuildBase
+      displayName: 'Build Bootstrap DLL and Bootstrap.Net'
       inputs:
         filePath: 'BuildAll.ps1'
-        arguments: -AzureBuildStep BuildBaseFoundation -Platform "x86,x64,arm64" -Configuration Release
+        arguments: -AzureBuildStep BuildBase -Platform "x86,x64,arm64" -Configuration Release
 
     - task: PowerShell@2
       name: StageBaseFiles
