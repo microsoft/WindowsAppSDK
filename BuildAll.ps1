@@ -496,8 +496,8 @@ Try {
     if ($AzureBuildStep -eq "BuildBaseFoundation")
     {
         #------------------
-        #    Build the minimal Foundation projects needed for the Base package:
-        #    WindowsAppRuntime_DLL (for .lib) and WindowsAppRuntime_BootstrapDLL (for Bootstrap.dll)
+        #    Build the Bootstrap DLL and Bootstrap.Net for the Base package.
+        #    Bootstrap no longer links Microsoft.WindowsAppRuntime.lib; no Foundation DLL build needed.
         #------------------
 
         # Restore NuGet packages for the solution (packages.config projects)
@@ -516,23 +516,6 @@ Try {
         {
             foreach($platformToRun in $platform.Split(","))
             {
-                write-host "Building WindowsAppRuntime_DLL for Base: $configurationToRun|$platformToRun"
-                & $msBuildPath /restore `
-                                "dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj" `
-                                /p:Configuration=$configurationToRun `
-                                /p:Platform=$platformToRun `
-                                /p:RestoreConfigFile=NuGet.config `
-                                /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime_DLL.$platformToRun.$configurationToRun.binlog" `
-                                $WindowsAppSDKVersionProperty `
-                                /p:WindowsAppSDKCleanIntermediateFiles=true `
-                                /p:AppxSymbolPackageEnabled=false `
-                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
-                if ($lastexitcode -ne 0)
-                {
-                    write-host "ERROR: msbuild.exe WindowsAppRuntime_DLL FAILED."
-                    exit 1
-                }
-
                 write-host "Building WindowsAppRuntime_BootstrapDLL for Base: $configurationToRun|$platformToRun"
                 & $msBuildPath /restore `
                                 "dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj" `
