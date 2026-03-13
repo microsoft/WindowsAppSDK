@@ -14,7 +14,7 @@
   <!-- "BeforeCompile" is used here to ensure this happens at the same time as possible codegen from WindowsAppSdkCompatibilitySetterTarget -->
   <Target Name="WindowsAppRuntimeAutoInitializer" BeforeTargets="BeforeCompile">
     <ItemGroup>
-      <Compile Include="$(RepoRoot)\dev\common\WindowsAppRuntimeAutoInitializer.cs"/>
+      <Compile Include="$(RepoRoot)\base\dev\include\WindowsAppRuntimeAutoInitializer.cs"/>
     </ItemGroup>
   </Target>
 

@@ -140,7 +140,7 @@ Try {
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildFoundation") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
     {
         NugetRestore "WindowsAppRuntime" "WindowsAppRuntime.sln"
-        NugetRestore "Microsoft.WindowsAppRuntime.Bootstrap.Net" "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
+        NugetRestore "Microsoft.WindowsAppRuntime.Bootstrap.Net" "base\dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
 
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
@@ -243,7 +243,7 @@ Try {
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
         # build and restore AnyCPU
-        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
+        & $msBuildPath /restore "base\dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
@@ -518,7 +518,7 @@ Try {
             {
                 write-host "Building WindowsAppRuntime_BootstrapDLL for Base: $configurationToRun|$platformToRun"
                 & $msBuildPath /restore `
-                                "dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj" `
+                                "base\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj" `
                                 /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
                                 /p:RestoreConfigFile=NuGet.config `
@@ -536,7 +536,7 @@ Try {
         }
 
         # Build Bootstrap.Net (AnyCPU)
-        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
+        & $msBuildPath /restore "base\dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU /p:Platform=AnyCPU /p:RestoreConfigFile=NuGet.config
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: msbuild.exe Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
@@ -603,15 +603,15 @@ Try {
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Base.Native.props" -Destination "$BasePackagePath\build\native\Microsoft.WindowsAppSDK.Base.props"
 
         # Stage auto-initializer source files from their source locations (no build needed)
-        Copy-Item -path "dev\Common\WindowsAppRuntimeAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
-        Copy-Item -path "dev\Common\WindowsAppRuntimeAutoInitializer.cs" -destination "$BasePackagePath\include" -force
-        Copy-Item -path "dev\Deployment\DeploymentManagerAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
-        Copy-Item -path "dev\Deployment\DeploymentManagerAutoInitializer.cs" -destination "$BasePackagePath\include" -force
-        Copy-Item -path "dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT-AutoInitializer.cpp" -destination "$BasePackagePath\include" -force
-        Copy-Item -path "dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT-AutoInitializer.cs" -destination "$BasePackagePath\include" -force
-        Copy-Item -path "dev\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h" -destination "$BasePackagePath\include" -force
-        Copy-Item -path "dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
-        Copy-Item -path "dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\include\WindowsAppRuntimeAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\include\WindowsAppRuntimeAutoInitializer.cs" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\include\DeploymentManagerAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\include\DeploymentManagerAutoInitializer.cs" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\include\UndockedRegFreeWinRT-AutoInitializer.cpp" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\include\UndockedRegFreeWinRT-AutoInitializer.cs" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp" -destination "$BasePackagePath\include" -force
+        Copy-Item -path "base\dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs" -destination "$BasePackagePath\include" -force
 
         # Stage Bootstrap binaries per-platform (from build output)
         foreach($configurationToRun in $configuration.Split(","))
