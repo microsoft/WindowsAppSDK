@@ -4,7 +4,7 @@
     "default": {
       "name": "default",
       "createdDate": "2025-05-10 01:01:01Z",
-      "lastUpdatedDate": "2025-08-14 01:01:01Z"
+      "lastUpdatedDate": "2025-12-09 01:01:01Z"
     }
   },
   "results": {
@@ -110,6 +110,1150 @@
       "justification": "This is an externally built test tool.",
       "createdDate": "2025-08-14 01:01:01Z",
       "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    },
+    "00fabb384aefd3f709835f0328d6c7106d39a4dd30d37ad14c3cddb4d1cef449": {
+      "signature": "00fabb384aefd3f709835f0328d6c7106d39a4dd30d37ad14c3cddb4d1cef449",
+      "target": "BuildOutput/Release/x86/Test_CompatibilitySetter_CPP/Test_CompatibilitySetter_CPP.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "6a7e84fb434c23e67161cc408e6f8567689bd7aea4374e3b89c71db3e58ba1d8": {
+      "signature": "6a7e84fb434c23e67161cc408e6f8567689bd7aea4374e3b89c71db3e58ba1d8",
+      "target": "out/Release/x86/Test_CompatibilitySetter_CPP/Test_CompatibilitySetter_CPP.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "54ef0d85693e6ed05dc46d996cf6ea4a8b456752cc55c1d589c5dcc4abf3f14a": {
+      "signature": "54ef0d85693e6ed05dc46d996cf6ea4a8b456752cc55c1d589c5dcc4abf3f14a",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-console-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "bf8be3379cfe2feccac6e5f337feaeba20bd5179e03c7db3390d3d8a67b6023b": {
+      "signature": "bf8be3379cfe2feccac6e5f337feaebau20bd5179e03c7db3390d3d8a67b6023b",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-console-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "7ad3f527d7b8032ae6bee29a6ad32d9faa61fc322df1cac1b2d740cf63ee6c00": {
+      "signature": "7ad3f527d7b8032ae6bee29a6ad32d9faa61fc322df1cac1b2d740cf63ee6c00",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-console-l1-2-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "93596fa7abacdb4c199550aba3ff8af165e992a2875b80e0f2ac8ac473e95589": {
+      "signature": "93596fa7abacdb4c199550aba3ff8af165e992a2875b80e0f2ac8ac473e95589",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-console-l1-2-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "c5f2e18d2917df692d1d231765043bae2dcdc812af255727a5b9bc112658cbfb": {
+      "signature": "c5f2e18d2917df692d1d231765043bae2dcdc812af255727a5b9bc112658cbfb",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-datetime-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "0bc6c3486ae4b40472afda0da9f733e4fcddf681b4789f0ee47774da5dc7a4d2": {
+      "signature": "0bc6c3486ae4b40472afda0da9f733e4fcddf681b4789f0ee47774da5dc7a4d2",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-datetime-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "a660725cf5afbad98bf26ab455ce9b0f977b6c122f4f9ca7c09e30bf2657ef98": {
+      "signature": "a660725cf5afbad98bf26ab455ce9b0f977b6c122f4f9ca7c09e30bf2657ef98",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-debug-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "17015b3ca239bda4580d8edc82b152e2e1cabc587c2b75a691632f3687cf46dd": {
+      "signature": "17015b3ca239bda4580d8edc82b152e2e1cabc587c2b75a691632f3687cf46dd",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-debug-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "ff84b57f57f6362c55a38ded660f0e309fcff28af85565b68d5695004e0f6818": {
+      "signature": "ff84b57f57f6362c55a38ded660f0e309fcff28af85565b68d5695004e0f6818",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-errorhandling-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "08efd413c958173715f85e75e293f9e16fdd53ebabce75d7e00f97d255401682": {
+      "signature": "08efd413c958173715f85e75e293f9e16fdd53ebabce75d7e00f97d255401682",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-errorhandling-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "f48fedc3ac89e81c985e774658945a545f118964858f1d684743e03d8e2f7c71": {
+      "signature": "f48fedc3ac89e81c985e774658945a545f118964858f1d684743e03d8e2f7c71",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-fibers-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "f1111dc02fc3a905a9d5978121bfeac1d9b55e49fff62f147e227b2267cfb34a": {
+      "signature": "f1111dc02fc3a905a9d5978121bfeac1d9b55e49fff62f147e227b2267cfb34a",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-fibers-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "35f959a9bcf29b2f48db306adeb5f2156d5067f052fe9720e0e546237e83360d": {
+      "signature": "35f959a9bcf29b2f48db306adeb5f2156d5067f052fe9720e0e546237e83360d",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-file-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "e00da7469ce9edeb7d90f013ad6ccc1c581b6f5e9571bb50c51caaa90d6abe16": {
+      "signature": "e00da7469ce9edeb7d90f013ad6ccc1c581b6f5e9571bb50c51caaa90d6abe16",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-file-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "25843fea3fac6e797359f84f0f3665fe57063e63ab0a154fdf888e5cf3b2b5d7": {
+      "signature": "25843fea3fac6e797359f84f0f3665fe57063e63ab0a154fdf888e5cf3b2b5d7",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-file-l1-2-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "e1cda4949483c7ba8a3cb552de6d8b9771178245c4bf25fbbf5771113ff60951": {
+      "signature": "e1cda4949483c7ba8a3cb552de6d8b9771178245c4bf25fbbf5771113ff60951",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-file-l1-2-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "6659801cf0fa57c1257da31dd9c12f820dc58a627b7de32e9ad2688c5a79ab1d": {
+      "signature": "6659801cf0fa57c1257da31dd9c12f820dc58a627b7de32e9ad2688c5a79ab1d",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-file-l2-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "7de9c2301718d1c41745e6882c090d3b09e9bedf4dc64cf156c8d1b8e5bdb6be": {
+      "signature": "7de9c2301718d1c41745e6882c090d3b09e9bedf4dc64cf156c8d1b8e5bdb6be",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-file-l2-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "563ef23fdb1e9a37917737aedbe253ebd3239ed7aee7d97be71cee35583d461f": {
+      "signature": "563ef23fdb1e9a37917737aedbe253ebd3239ed7aee7d97be71cee35583d461f",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-handle-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "2721184f765953bc479771c931a3a9e5737b24e656c3dd0195807cc4c9eee3a2": {
+      "signature": "2721184f765953bc479771c931a3a9e5737b24e656c3dd0195807cc4c9eee3a2",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-handle-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "25bdb1143ba4756c4ac1e66ea96fa99f0d10238f3b756901265e3a351605f8c1": {
+      "signature": "25bdb1143ba4756c4ac1e66ea96fa99f0d10238f3b756901265e3a351605f8c1",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-heap-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "1f327f18493e967c965e2f6469129d0fbb01163c2af65d31c8dc16d7bfdd0c30": {
+      "signature": "1f327f18493e967c965e2f6469129d0fbb01163c2af65d31c8dc16d7bfdd0c30",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-heap-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "dfd551fc9468ff5fb69fc1eeed456f918a602e1522e09ef3b9b33cc025362a8b": {
+      "signature": "dfd551fc9468ff5fb69fc1eeed456f918a602e1522e09ef3b9b33cc025362a8b",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-interlocked-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "7b32a8e4461b062d11f65b92a930558d7834ab69ae2215a976d1acb9071ac70c": {
+      "signature": "7b32a8e4461b062d11f65b92a930558d7834ab69ae2215a976d1acb9071ac70c",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-interlocked-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "481b032674e045a009d4807d0753bd9a99e15103e902f43b9c1924299afdf51c": {
+      "signature": "481b032674e045a009d4807d0753bd9a99e15103e902f43b9c1924299afdf51c",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-libraryloader-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "8914c7cca01b4d5db7c2a71a1c63f6283c28dc217357bb4abd50416737f88cce": {
+      "signature": "8914c7cca01b4d5db7c2a71a1c63f6283c28dc217357bb4abd50416737f88cce",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-libraryloader-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "b1f274b15f21ad329e2ed9eb726e872c9c663186d415f7f06a3e8c67dbd73990": {
+      "signature": "b1f274b15f21ad329e2ed9eb726e872c9c663186d415f7f06a3e8c67dbd73990",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-localization-l1-2-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "363fd2bd837061029ac7189380837d28b00e7bba9d3e6ae7ab0241d7991fdb93": {
+      "signature": "363fd2bd837061029ac7189380837d28b00e7bba9d3e6ae7ab0241d7991fdb93",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-localization-l1-2-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "c0a33b88ab6114ff32e1141ab4a743736bf42c4780d8ed94b78f4b9d40831a70": {
+      "signature": "c0a33b88ab6114ff32e1141ab4a743736bf42c4780d8ed94b78f4b9d40831a70",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-memory-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "972ccdcd77a8cd5b3acc18292593c0cc10bb87bfe30f99331baede3b54150f4d": {
+      "signature": "972ccdcd77a8cd5b3acc18292593c0cc10bb87bfe30f99331baede3b54150f4d",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-memory-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "37307701bf6b9d8546268fddde4aee933ec77ed98c16f9eb58a3ee8b89ea1517": {
+      "signature": "37307701bf6b9d8546268fddde4aee933ec77ed98c16f9eb58a3ee8b89ea1517",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-namedpipe-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "7df8c26043c25e4849ff854ec9751dfc14f97024cce385646a07945df2693f9e": {
+      "signature": "7df8c26043c25e4849ff854ec9751dfc14f97024cce385646a07945df2693f9e",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-namedpipe-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "66a565da9c6a0bcd9dbcc27b1d719a3c5f128cda5e03e93ebb975adf9836e383": {
+      "signature": "66a565da9c6a0bcd9dbcc27b1d719a3c5f128cda5e03e93ebb975adf9836e383",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-processenvironment-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "89bb3ef5672ac90f1e53a66f9119ef24d1f813ae30b909134dd41dd1a325982c": {
+      "signature": "89bb3ef5672ac90f1e53a66f9119ef24d1f813ae30b909134dd41dd1a325982c",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-processenvironment-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "2396a51a70b06f5eadbf3e47ed6949a5ec11376c20e815081b607d2856f61131": {
+      "signature": "2396a51a70b06f5eadbf3e47ed6949a5ec11376c20e815081b607d2856f61131",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-processthreads-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "af74a1f5da2143f94201955408f6b9c5240ace338a42aca8c71f8ba7984c5691": {
+      "signature": "af74a1f5da2143f94201955408f6b9c5240ace338a42aca8c71f8ba7984c5691",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-processthreads-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "19b4fb71fa66feb8316e1091b26a3e078aa54782b3960e1efc1ac87de6a0a7d6": {
+      "signature": "19b4fb71fa66feb8316e1091b26a3e078aa54782b3960e1efc1ac87de6a0a7d6",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-processthreads-l1-1-1.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "4e4484ff9954f540e35097add886c7a8cd20c218110b5cab5719c9eeca8977fa": {
+      "signature": "4e4484ff9954f540e35097add886c7a8cd20c218110b5cab5719c9eeca8977fa",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-processthreads-l1-1-1.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "5683b2159e1bb7017ded68c114b29e0b14caf90d85449e38d57332ff3e7c32ab": {
+      "signature": "5683b2159e1bb7017ded68c114b29e0b14caf90d85449e38d57332ff3e7c32ab",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-profile-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "0adeb363ff47b5946efeb1beba059f1b89d023b99fcb98a000d9106a3c302a6d": {
+      "signature": "0adeb363ff47b5946efeb1beba059f1b89d023b99fcb98a000d9106a3c302a6d",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-profile-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "73f4a60939ab5d8a4325e78c673ff14d08a31dcf5cdaed76c7f567468718bf06": {
+      "signature": "73f4a60939ab5d8a4325e78c673ff14d08a31dcf5cdaed76c7f567468718bf06",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-rtlsupport-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "731056a8cf65dbd1e22f315c453c8124b5f34044e4560170296b75e00a1fd78d": {
+      "signature": "731056a8cf65dbd1e22f315c453c8124b5f34044e4560170296b75e00a1fd78d",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-rtlsupport-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "73f20256ec02139f128f8e28b8927c28ffd3c178ba0576888d9ea2b7c6421b25": {
+      "signature": "73f20256ec02139f128f8e28b8927c28ffd3c178ba0576888d9ea2b7c6421b25",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-string-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "dc0d71e59c7eb0edb91f1e2b003c3d7a7c29eee3a18a7cef5f1c27bc78c3a8d9": {
+      "signature": "dc0d71e59c7eb0edb91f1e2b003c3d7a7c29eee3a18a7cef5f1c27bc78c3a8d9",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-string-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "456771f42d28c3e3d2b5ea7ea20b68fed1993d88d7219aa6b0bf8dbd71c58c59": {
+      "signature": "456771f42d28c3e3d2b5ea7ea20b68fed1993d88d7219aa6b0bf8dbd71c58c59",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-synch-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "ebe29b44579e292d0534c3b7726e9399d5df1100fbd2fbfd0ec40b545faec4e8": {
+      "signature": "ebe29b44579e292d0534c3b7726e9399d5df1100fbd2fbfd0ec40b545faec4e8",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-synch-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "a23997eb5c5e06aafd0131d3b5ea37754da833b04ac927b436c84d67100ae2e3": {
+      "signature": "a23997eb5c5e06aafd0131d3b5ea37754da833b04ac927b436c84d67100ae2e3",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-synch-l1-2-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "d0ac203e58a3c308cd5c42d7cb3e54ce262f44dab2e5a32d9320644037230705": {
+      "signature": "d0ac203e58a3c308cd5c42d7cb3e54ce262f44dab2e5a32d9320644037230705",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-synch-l1-2-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "2763797fdb0bdde44625e723dbeb2ee05cff77f37ee9929ec1a57260aee32495": {
+      "signature": "2763797fdb0bdde44625e723dbeb2ee05cff77f37ee9929ec1a57260aee32495",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-sysinfo-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "2d51b6a44eb97c686c328901d85f63abac1207f3e94da9830bc96689bec3d202": {
+      "signature": "2d51b6a44eb97c686c328901d85f63abac1207f3e94da9830bc96689bec3d202",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-sysinfo-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "1840d4fd2b3c629f99093be959b50fe1f1bd93c583070f055eee9c1c902188d1": {
+      "signature": "1840d4fd2b3c629f99093be959b50fe1f1bd93c583070f055eee9c1c902188d1",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-timezone-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "ab548d657fe44cea3a36bcd30943174ce40d05cc1891084f136284ef3ffd5d20": {
+      "signature": "ab548d657fe44cea3a36bcd30943174ce40d05cc1891084f136284ef3ffd5d20",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-timezone-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "ed264198a131aa80002d405aad4bc5d29d72dd089e507330123575ca63734b50": {
+      "signature": "ed264198a131aa80002d405aad4bc5d29d72dd089e507330123575ca63734b50",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-util-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "56f0e515fc2eb3977f21b374407dc97211473394cdd162d8890f1d898aae2ec9": {
+      "signature": "56f0e515fc2eb3977f21b374407dc97211473394cdd162d8890f1d898aae2ec9",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-util-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "d7c6dff2064623f98321a42c6ff7304402161f70280ae48a37bac34a04684e74": {
+      "signature": "d7c6dff2064623f98321a42c6ff7304402161f70280ae48a37bac34a04684e74",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/API-MS-Win-core-xstate-l2-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "0e30e3f724c9a38e2bb37f3853dbb6ce3a5448d499dd0f344592872fdd3ce49a": {
+      "signature": "0e30e3f724c9a38e2bb37f3853dbb6ce3a5448d499dd0f344592872fdd3ce49a",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/API-MS-Win-core-xstate-l2-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "550fb4fd56671d1eec94e014137838914a2597fa06cf3bf948c9f1bf98e9643e": {
+      "signature": "550fb4fd56671d1eec94e014137838914a2597fa06cf3bf948c9f1bf98e9643e",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-conio-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "ead1699c9dc205670c77245546dd6336cacb3cc0223e61ee1475c5393744d1bf": {
+      "signature": "ead1699c9dc205670c77245546dd6336cacb3cc0223e61ee1475c5393744d1bf",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-conio-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "5ad8ed96eaf8e6d39ce905a1f0055de9604fec1cc3c87c04fcd11435c933c64e": {
+      "signature": "5ad8ed96eaf8e6d39ce905a1f0055de9604fec1cc3c87c04fcd11435c933c64e",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-convert-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "b0b3d87ece733cb36f7e4be1c59f4a9b249bd739168f0e4aeb96d98ff6f4a630": {
+      "signature": "b0b3d87ece733cb36f7e4be1c59f4a9b249bd739168f0e4aeb96d98ff6f4a630",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-convert-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "95b9c630c9899631a0f357d6f316320f59984a56bbd341e777ba659af4299e9b": {
+      "signature": "95b9c630c9899631a0f357d6f316320f59984a56bbd341e777ba659af4299e9b",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-environment-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "465a01d891eaa49128100064eb2ca0d3920283768516f4242973b31e289e2e8e": {
+      "signature": "465a01d891eaa49128100064eb2ca0d3920283768516f4242973b31e289e2e8e",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-environment-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "285146683fb2f304704f98051fcf9800b0fc94e218f1b65158b9d9f3bf9ce000": {
+      "signature": "285146683fb2f304704f98051fcf9800b0fc94e218f1b65158b9d9f3bf9ce000",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-filesystem-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "635f1afcf8555e9aab54cc924c940a82924ceae3210a8408e4d6e1a3c50f96c2": {
+      "signature": "635f1afcf8555e9aab54cc924c940a82924ceae3210a8408e4d6e1a3c50f96c2",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-filesystem-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "4bbbf46089ba0895fbd6e5d4cd3477a322f091ea8224aec61058b9f67f87de05": {
+      "signature": "4bbbf46089ba0895fbd6e5d4cd3477a322f091ea8224aec61058b9f67f87de05",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-heap-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "fa87da450ca7b6a41cfe991dc29824e781c7e9da5338c9dab2103b97b299649d": {
+      "signature": "fa87da450ca7b6a41cfe991dc29824e781c7e9da5338c9dab2103b97b299649d",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-heap-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "18d017d9a9b5a6c96449577801d19679e3e6fa28401ede3a659dbb6f85a780a7": {
+      "signature": "18d017d9a9b5a6c96449577801d19679e3e6fa28401ede3a659dbb6f85a780a7",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-locale-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "f23d2dc50e9a23a58eabc278471ede8972e29d6b1e5ae60e0e579ba59e148075": {
+      "signature": "f23d2dc50e9a23a58eabc278471ede8972e29d6b1e5ae60e0e579ba59e148075",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-locale-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "1114ce418e3768b234fd9830e2ce17de6d1a3f7bc512c4ce17dc1b00203109d4": {
+      "signature": "1114ce418e3768b234fd9830e2ce17de6d1a3f7bc512c4ce17dc1b00203109d4",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-math-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "a54ca6599c995fb498c94b003d4b5c3861fc33534573d8953de8cb1d86e2f4e5": {
+      "signature": "a54ca6599c995fb498c94b003d4b5c3861fc33534573d8953de8cb1d86e2f4e5",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-math-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "f64a3be77c4487959cbd8e2606dccfb51ef2c6e17f80b084d15046beaed6e2c9": {
+      "signature": "f64a3be77c4487959cbd8e2606dccfb51ef2c6e17f80b084d15046beaed6e2c9",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-multibyte-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "17870aba45fcf0c1bbb108778f2b26af9d2627915dffff38e79fe245747b03ac": {
+      "signature": "17870aba45fcf0c1bbb108778f2b26af9d2627915dffff38e79fe245747b03ac",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-multibyte-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "acebc2da547d45d5a4b3f3c9981ea32194527a4005bbc8bea4abc32cdcfc4aec": {
+      "signature": "acebc2da547d45d5a4b3f3c9981ea32194527a4005bbc8bea4abc32cdcfc4aec",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-private-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "2b903c8f2bcfc2022f44fb74fc7ac07c1eff3f5dc1f9da25c4f0568c1be8a98c": {
+      "signature": "2b903c8f2bcfc2022f44fb74fc7ac07c1eff3f5dc1f9da25c4f0568c1be8a98c",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-private-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "61ed2416aac3e78d58e89fbdd3f32efe447400a7675de8e7e88f2e41bd35fa39": {
+      "signature": "61ed2416aac3e78d58e89fbdd3f32efe447400a7675de8e7e88f2e41bd35fa39",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-process-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "ef9d3baef806a9aa002b90a2dfbf9cae1d38beba628324ba1c4d7d7ec1de4dd5": {
+      "signature": "ef9d3baef806a9aa002b90a2dfbf9cae1d38beba628324ba1c4d7d7ec1de4dd5",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-process-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "a08b38eafeb18fc8070d171a8b89ba7a1ea5fa56804667db0468f9c21d32af89": {
+      "signature": "a08b38eafeb18fc8070d171a8b89ba7a1ea5fa56804667db0468f9c21d32af89",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-runtime-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "802e9e1da272d8c61e915797daa13f27ec03f9931d0b1db88f62add9141395a9": {
+      "signature": "802e9e1da272d8c61e915797daa13f27ec03f9931d0b1db88f62add9141395a9",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-runtime-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "f42c28794b492635e39e1d0006261fc1b319299a9b8bbf24fe6681e9716ccb5e": {
+      "signature": "f42c28794b492635e39e1d0006261fc1b319299a9b8bbf24fe6681e9716ccb5e",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-stdio-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "d25d0ed4d6b4fa2175b4169d8655b3e5968aa86bec3dd1aff4b5af776601d036": {
+      "signature": "d25d0ed4d6b4fa2175b4169d8655b3e5968aa86bec3dd1aff4b5af776601d036",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-stdio-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "772ebd3e0a606fd8fd43e6011a204208c7a9e6d8dafe11afd5fe1f72de5a386d": {
+      "signature": "772ebd3e0a606fd8fd43e6011a204208c7a9e6d8dafe11afd5fe1f72de5a386d",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-string-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "2d591337326bdc6cc5f96a63edf56cbabb403600d714d8c589a5f248c4b165d4": {
+      "signature": "2d591337326bdc6cc5f96a63edf56cbabb403600d714d8c589a5f248c4b165d4",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-string-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "60fdd440f4481c787a515e6fcee4faf3713d473b7cdfe9b80d05524a0673b222": {
+      "signature": "60fdd440f4481c787a515e6fcee4faf3713d473b7cdfe9b80d05524a0673b222",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-time-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "73a4ecb49e0fad438017e91ed6d40b8af2c1c3bc5e085c9df22750285b37ebc7": {
+      "signature": "73a4ecb49e0fad438017e91ed6d40b8af2c1c3bc5e085c9df22750285b37ebc7",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-time-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "aaa841fb32b3e7fa3025e5c5206983d4613601ab5561c4ac7c377e247f136829": {
+      "signature": "aaa841fb32b3e7fa3025e5c5206983d4613601ab5561c4ac7c377e247f136829",
+      "target": "BuildOutput/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-utility-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
+      "type": null
+    },
+    "bce1a76009080acefc870298662a8f7ed083b09d4ae493d264bbc26356ff0b0e": {
+      "signature": "bce1a76009080acefc870298662a8f7ed083b09d4ae493d264bbc26356ff0b0e",
+      "target": "out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-crt-utility-l1-1-0.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-12-09 01:01:01Z",
+      "expirationDate": "2025-06-30 01:01:01Z",
       "type": null
     }
   }
