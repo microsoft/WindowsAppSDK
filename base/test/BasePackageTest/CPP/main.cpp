@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 // Validates Base package binplacement behavior for different configurations.
 // EXPECT_NO_DLLS: No DLLs expected alongside the exe.
 // EXPECT_BOOTSTRAP: Bootstrap DLL MUST be present alongside the exe.

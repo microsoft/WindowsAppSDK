@@ -44,27 +44,25 @@
     <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</ProjectGuid>
     <RootNamespace>BasePackageTestCpp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-  </PropertyGroup>
-
-  <!-- Config 1: Germanium, SelfContained=true, Unpackaged → SUCCESS: no DLLs -->
-  <PropertyGroup Condition="'$(Configuration)' == 'Ge_SC_Unpkg'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+
+  <!-- Config 1: Germanium, SelfContained=true, Unpackaged 
+    SUCCESS: no DLLs -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Ge_SC_Unpkg'" Label="Configuration">
     <WindowsTargetPlatformMinVersion>10.0.26100.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
 
-  <!-- Config 2: RS5, SelfContained=false, Unpackaged → SUCCESS: bootstrap DLL present
+  <!-- Config 2: RS5, SelfContained=false, Unpackaged 
+    SUCCESS: bootstrap DLL required
        Note: Auto-initializer disabled (needs Foundation VersionInfo.h). Bootstrap DLL
        still copied via CopyBootstrapDllToOutDir target (checks SC, not BootstrapInit). -->
   <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Unpkg'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
@@ -77,12 +75,9 @@
     <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
   </PropertyGroup>
 
-  <!-- Config 3: Germanium, SelfContained=false, Unpackaged, BootstrapInit=false → SUCCESS: no DLLs -->
+  <!-- Config 3: Germanium, SelfContained=false, Unpackaged, BootstrapInit=false
+    SUCCESS: DLLs -->
   <PropertyGroup Condition="'$(Configuration)' == 'Ge_FD_Unpkg_NoBoot'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WindowsTargetPlatformMinVersion>10.0.26100.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
@@ -93,12 +88,9 @@
     <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
   </PropertyGroup>
 
-  <!-- Config 4: RS5, SelfContained=false, Unpackaged, BootstrapInit=false → ERROR: bootstrapper required -->
+  <!-- Config 4: RS5, SelfContained=false, Unpackaged, BootstrapInit=false 
+    ERROR: bootstrapper required -->
   <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Unpkg_NoBoot'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
@@ -109,46 +101,34 @@
     <WindowsAppSdkAutoInitialize>false</WindowsAppSdkAutoInitialize>
   </PropertyGroup>
 
-  <!-- Config 5: 19H1, SelfContained=true, Packaged → SUCCESS: no DLLs -->
+  <!-- Config 5: 19H1, SelfContained=true, Packaged 
+    SUCCESS: no DLLs -->
   <PropertyGroup Condition="'$(Configuration)' == 'H19H1_SC_Pkg'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WindowsTargetPlatformMinVersion>10.0.18362.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <AppxPackage>true</AppxPackage>
   </PropertyGroup>
 
-  <!-- Config 6: RS5, SelfContained=true, Packaged, URF=true (default) → ERROR: Foundation required -->
+  <!-- Config 6: RS5, SelfContained=true, Packaged, URF=true (default) 
+    ERROR: Foundation required -->
   <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_URF'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <AppxPackage>true</AppxPackage>
   </PropertyGroup>
 
-  <!-- Config 7: RS5, SelfContained=true, Packaged, URF=false → ERROR: URF not optional -->
+  <!-- Config 7: RS5, SelfContained=true, Packaged, URF=false 
+    ERROR: URF not optional -->
   <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_NoURF'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <AppxPackage>true</AppxPackage>
     <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
   </PropertyGroup>
 
-  <!-- Config 8: RS5, SelfContained=false, Packaged → SUCCESS: no DLLs (DeploymentMgr only) -->
+  <!-- Config 8: RS5, SelfContained=false, Packaged 
+    SUCCESS: no DLLs (DeploymentMgr only) -->
   <PropertyGroup Condition="'$(Configuration)' == 'RS5_FD_Pkg'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
     <AppxPackage>true</AppxPackage>
@@ -159,14 +139,11 @@
     <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
   </PropertyGroup>
 
-  <!-- Config 9:RS5, SelfContained=true, Packaged, URF=true (default), Foundation referenced → SUCCESS: no DLLs
+  <!-- Config 9:RS5, SelfContained=true, Packaged, URF=true (default), Foundation referenced 
+    SUCCESS: no DLLs
        WindowsAppSdkFoundation=true simulates Foundation being present (set by Foundation's props).
        WindowsAppSDKUndockedRegFreeWinRTRequiresFoundation validation checks this property. -->
   <PropertyGroup Condition="'$(Configuration)' == 'RS5_SC_Pkg_URF_Fdn'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <AppxPackage>true</AppxPackage>
