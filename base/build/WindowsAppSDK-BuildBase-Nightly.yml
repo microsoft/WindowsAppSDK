@@ -48,8 +48,8 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   - 'preview'
   
 variables:
-- template: build\WindowsAppSDK-CommonVariables.yml
-- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: ../../build/WindowsAppSDK-CommonVariables.yml
+- template: AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-Aggregator-TestConfig.yml@WindowsAppSDKConfig
 - group: WindowsAppSDK-Build-Variables
 # Only the "WinAppSDK-Build-PR (OneBranch)" pipeline is currently prepped for 1ES hosted image validation.
@@ -135,11 +135,11 @@ extends:
       # ob_outputDirectory instead, hence, the two rounds may catch different issues.
 
     stages:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-PayloadTrackingTool-Stage.yml@WindowsAppSDKAggregator
+    - template: AzurePipelinesTemplates/WindowsAppSDK-PayloadTrackingTool-Stage.yml@WindowsAppSDKAggregator
       parameters:
         ServicingTag: ${{ parameters.ServicingTag }}
 
-    - template: base\build\AzurePipelinesTemplates\WindowsAppSDK-BuildWindowsAppSDKBase-Stages.yml
+    - template: base/build/AzurePipelinesTemplates/WindowsAppSDK-BuildWindowsAppSDKBase-Stages.yml@self
       parameters:
         IsOfficial: false
         PushPackageToInternalFeed: ${{ parameters.PushPackageToInternalFeed }}
