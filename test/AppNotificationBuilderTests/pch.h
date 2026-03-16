@@ -49,6 +49,7 @@
 #include <AppNotificationBuilderUtility.h>
 #include <WindowsAppRuntime.SelfContained.h>
 #include <WindowsAppRuntime.VersionInfo.h>
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 #define VERIFY_THROWS_HR(expression, hr)        \
             VERIFY_THROWS_SPECIFIC(expression,          \

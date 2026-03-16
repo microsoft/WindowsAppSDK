@@ -1,20 +1,17 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <Target Name="AddUndockedRegFreeWinRTCppDefines" BeforeTargets="ClCompile" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'">
-        <ItemGroup>
-            <ClCompile>
-                <PreprocessorDefinitions>MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-                <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitializeLoadLibrary)' == 'true'">MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE_LOADLIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            </ClCompile>
-        </ItemGroup>
-    </Target>
+    <ItemDefinitionGroup>
+        <!-- Add the appropriate definition to the ClCompile ItemDefinitionGroup to apply to all compilations -->
+        <ClCompile>
+            <PreprocessorDefinitions>MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitializeLoadLibrary)' == 'true'">MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE_LOADLIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        </ClCompile>
+    </ItemDefinitionGroup>
 
-    <Target Name="GenerateUndockedRegFreeWinRTCpp" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'">
+    <Target Name="GenerateUndockedRegFreeWinRTCpp">
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\UndockedRegFreeWinRT-AutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
-                <PreprocessorDefinitions>MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-                <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitializeLoadLibrary)' == 'true'">MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE_LOADLIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             </ClCompile>
         </ItemGroup>
     </Target>

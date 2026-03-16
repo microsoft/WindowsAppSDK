@@ -165,6 +165,8 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\decimalcppwinrt.h $NugetDir\i
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\MsixDynamicDependency.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\wil_msixdynamicdependency.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeInsights.h $NugetDir\include\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\AppModel.Identity.IsPackagedProcess.h $NugetDir\include\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntime.SelfContained.h $NugetDir\include\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Security.AccessControl.h $NugetDir\include\
 #
 # Libraries (*.lib)

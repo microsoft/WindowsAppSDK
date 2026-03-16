@@ -151,6 +151,56 @@ Provide actionable recommendations for issue triage and assignment:
 - Search queries should include: issue keywords, module names, error messages, feature descriptions
 - Cross-reference semantic results with GitHub issue search for comprehensive coverage
 
+### F) Check Documentation for Known Limitations or Unsupported Scenarios
+
+**When to check documentation:**
+- Issue reports unexpected behavior or errors
+- Issue asks "why doesn't X work?" or "how do I do Y?"
+- Issue mentions specific APIs, configurations, or scenarios
+- Error messages suggest missing requirements
+
+**Research process:**
+
+1. **Extract key terms from the issue:**
+   - API names, class names, method names
+   - Error codes and messages
+   - Configuration or deployment type mentioned
+   - Windows version or SDK version
+
+2. **Search official documentation using `fetch_webpage` tool:**
+   - Windows App SDK docs: `https://docs.microsoft.com/windows/apps/windows-app-sdk/`
+   - API reference: `https://docs.microsoft.com/windows/windows-app-sdk/api/`
+   - Known issues: `https://docs.microsoft.com/windows/apps/windows-app-sdk/stable-channel#known-issues`
+   - Release notes for version-specific information
+   
+3. **Search the codebase for context:**
+   - Use `grep_search` with API/class names from the issue
+   - Use `semantic_search` with the issue description
+   - Look for comments, TODOs, or documentation in code
+
+4. **Analyze findings to determine if:**
+   - The scenario is documented as unsupported or limited
+   - There's a known workaround in docs or codebase
+   - The behavior is by design with documented reasons
+   - The issue is a valid bug (expected behavior differs from actual)
+
+5. **If documentation confirms a limitation:**
+   - Note the documentation URL as reference
+   - Draft a response explaining the limitation
+   - Include any workarounds found
+   - Recommend appropriate labels based on findings
+
+**Output format for Documentation Check section in overview.md:**
+```markdown
+### Documentation Check
+- **Scenario type**: [Unsupported / Known limitation / By design / Requires specific configuration]
+- **Documentation found**: [Yes/No]
+- **Reference URL**: [link]
+- **Summary**: [Brief explanation of what docs say]
+- **Recommended response**: [Draft reply to post on issue]
+- **Recommended labels**: `by-design`, `documentation`, `area-External`, etc.
+```
+
 **Output format for Suggested Actions section in overview.md:**
 ```markdown
 ## Suggested Actions
