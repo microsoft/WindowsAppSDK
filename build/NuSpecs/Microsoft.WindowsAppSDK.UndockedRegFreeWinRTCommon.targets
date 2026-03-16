@@ -2,9 +2,8 @@
 
     <!-- Targets file common to both managed and native projects that helps enable access to Undocked RegFree WinRT-->
 
-    <PropertyGroup Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='' and ('$(WindowsAppSDKSelfContained)'=='true' or '$(PublishSingleFile)'=='true')">
+    <PropertyGroup Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='' and '$(WindowsAppSDKSelfContained)'=='true'">
         <!--Allows GenerateUndockedRegFreeWinRTCS/GenerateUndockedRegFreeWinRTCpp to run-->
-        <!--SelfContained and PublishSingleFile both need ModuleInitializer to set MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY-->
         <WindowsAppSdkUndockedRegFreeWinRTInitialize>true</WindowsAppSdkUndockedRegFreeWinRTInitialize>
     </PropertyGroup>
 
