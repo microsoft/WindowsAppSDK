@@ -134,7 +134,7 @@ extends:
       # ob_outputDirectory instead, hence, the two rounds may catch different issues.
 
     stages:
-    - template: AzurePipelinesTemplates/WindowsAppSDK-PayloadTrackingTool-Stage.yml@WindowsAppSDKAggregator
+    - template: build/AzurePipelinesTemplates/WindowsAppSDK-PayloadTrackingTool-Stage.yml@WindowsAppSDKAggregator
       parameters:
         ServicingTag: ${{ parameters.ServicingTag }}
 
