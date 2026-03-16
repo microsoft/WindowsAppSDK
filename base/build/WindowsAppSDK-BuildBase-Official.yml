@@ -71,7 +71,7 @@ resources:
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
     
-name: $(MajorVersion).$(MinorVersion).$(date:yyMM)$(date:dd).$(Revision)-${{ parameters.BuildType }}
+name: $(version)
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
