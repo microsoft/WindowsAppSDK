@@ -26,10 +26,6 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   displayName: "Sign packages and their contents"
   type: boolean
   default: true
-- name: "ServicingTag"
-  displayName: "ServicingTag (Runs PayloadTracking's VerifyingServicingRelease if Provided)"
-  type: string
-  default: 'PlaceHolder'
 - name: runStaticAnalysis
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
@@ -66,15 +62,6 @@ resources:
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
-    - repository: WindowsAppSDKAggregator
-      type: git
-      name: ProjectReunion/WindowsAppSDKAggregator
-      ref: refs/heads/main
-    - repository: WindowsAppSDKSamples
-      type: github
-      endpoint: 'GitHub - benkuhn - 2-18'
-      name: microsoft/WindowsAppSDK-Samples
-      ref: $(SamplesBranch)
     - repository: WindowsAppSDKConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
@@ -135,10 +122,6 @@ extends:
       # ob_outputDirectory instead, hence, the two rounds may catch different issues.
 
     stages:
-    - template: build/AzurePipelinesTemplates/WindowsAppSDK-PayloadTrackingTool-Stage.yml@WindowsAppSDKAggregator
-      parameters:
-        ServicingTag: ${{ parameters.ServicingTag }}
-
     - template: AzurePipelinesTemplates/WindowsAppSDK-BuildWindowsAppSDKBase-Stages.yml@self
       parameters:
         IsOfficial: false
