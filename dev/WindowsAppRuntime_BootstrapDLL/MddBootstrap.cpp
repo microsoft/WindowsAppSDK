@@ -358,6 +358,46 @@ void VerifyInitializationIsCompatible(
                     g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
 }
 
+// Helper function to set MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY environment variable
+// for Hybrid Deployment Mode. This allows loadFrom in app.manifest to use absolute paths.
+static void SetBaseDirectoryEnvironmentVariable()
+{
+    // Check if environment variable already exists (for PublishSingleFile compatibility).
+    // PublishSingleFile's ModuleInitializer sets this to the temporary extraction directory.
+    wchar_t existingValue[MAX_PATH];
+    DWORD result = GetEnvironmentVariableW(
+        L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY",
+        existingValue,
+        ARRAYSIZE(existingValue)
+    );
+
+    if (result > 0)
+    {
+        // Already set by PublishSingleFile or other mechanism, don't override
+        return;
+    }
+
+    // Get the current process exe path
+    wchar_t exePath[MAX_PATH];
+    if (GetModuleFileNameW(NULL, exePath, MAX_PATH) == 0)
+    {
+        // Unable to get exe path, silently fail
+        return;
+    }
+
+    // Extract directory part
+    std::wstring exeDir(exePath);
+    size_t lastSlash = exeDir.find_last_of(L'\\');
+    if (lastSlash != std::wstring::npos)
+    {
+        exeDir = exeDir.substr(0, lastSlash);
+    }
+
+    // Set environment variable to exe directory
+    // This allows Hybrid mode to load newer component DLLs from the application directory
+    SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", exeDir.c_str());
+}
+
 void FirstTimeInitialization(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -393,6 +433,9 @@ void FirstTimeInitialization(
         // Update the activity context
         auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
         activityContext.SetInitializationPackageFullName(packageFullName.get());
+
+        // Set environment variable for Hybrid Deployment Mode (allows loadFrom in app.manifest)
+        SetBaseDirectoryEnvironmentVariable();
 
         // Pass along test information (if necessary)
         if (!g_test_frameworkPackageNamePrefix.empty())
@@ -451,6 +494,9 @@ void FirstTimeInitialization(
         // Remove our temporary path addition
         RemoveFrameworkFromPath(frameworkPackageInfo->path);
         dllDirectoryCookie.reset();
+
+        // Set environment variable for Hybrid Deployment Mode (allows loadFrom in app.manifest)
+        SetBaseDirectoryEnvironmentVariable();
 
         // Pass along test information (if necessary)
         if (!g_test_ddlmPackageNamePrefix.empty())
