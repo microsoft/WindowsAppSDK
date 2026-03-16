@@ -139,7 +139,7 @@ extends:
       parameters:
         ServicingTag: ${{ parameters.ServicingTag }}
 
-    - template: base/build/AzurePipelinesTemplates/WindowsAppSDK-BuildWindowsAppSDKBase-Stages.yml@self
+    - template: AzurePipelinesTemplates/WindowsAppSDK-BuildWindowsAppSDKBase-Stages.yml@self
       parameters:
         IsOfficial: false
         PushPackageToInternalFeed: ${{ parameters.PushPackageToInternalFeed }}
