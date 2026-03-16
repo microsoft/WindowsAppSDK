@@ -32,6 +32,31 @@ namespace PickerCommon {
     void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName);
     void ValidateInitialFileTypeIndex(int const& value);
 
+    // Inserts WSL into the navigation pane of COM file dialogs that don't show it by default.
+    // IFileSaveDialog and IFileOpenDialog with FOS_PICKFOLDERS hide the WSL node;
+    // this handler re-adds it by polling the navigation tree until the Shell finishes loading.
+    struct WslNavigationInserter : winrt::implements<WslNavigationInserter, IFileDialogEvents>
+    {
+        bool m_inserted{ false };
+
+        static winrt::com_ptr<INameSpaceTreeControl> s_nstc;
+        static winrt::com_ptr<IShellItem> s_wslItem;
+        static UINT_PTR s_timerId;
+        static DWORD s_lastRootCount;
+        static int s_stableChecks;
+
+        static void CALLBACK PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept;
+        static void CancelPendingInsertion() noexcept;
+
+        IFACEMETHODIMP OnFolderChange(IFileDialog* pfd) noexcept override;
+        IFACEMETHODIMP OnFileOk(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnFolderChanging(IFileDialog*, IShellItem*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnSelectionChange(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnShareViolation(IFileDialog*, IShellItem*, FDE_SHAREVIOLATION_RESPONSE*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnTypeChange(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnOverwrite(IFileDialog*, IShellItem*, FDE_OVERWRITE_RESPONSE*) noexcept override { return S_OK; }
+    };
+
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;

@@ -120,6 +120,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.ConfigureDialog(dialog);
         dialog->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
 
+        // Register event handler to insert WSL into the navigation pane.
+        auto wslInserter = winrt::make<PickerCommon::WslNavigationInserter>();
+        DWORD adviseCookie{};
+        check_hresult(dialog->Advise(wslInserter.get(), &adviseCookie));
+        auto unadvise = wil::scope_exit([&] {
+            dialog->Unadvise(adviseCookie);
+            PickerCommon::WslNavigationInserter::CancelPendingInsertion();
+        });
+
         if (FAILED(dialog->Show(parameters.HWnd)) || cancellationToken())
         {
             logTelemetry.Stop(m_telemetryHelper, false);
@@ -169,6 +178,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         FILEOPENDIALOGOPTIONS dialogOptions;
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_ALLOWMULTISELECT));
+
+        // Register event handler to insert WSL into the navigation pane.
+        auto wslInserter = winrt::make<PickerCommon::WslNavigationInserter>();
+        DWORD adviseCookie{};
+        check_hresult(dialog->Advise(wslInserter.get(), &adviseCookie));
+        auto unadvise2 = wil::scope_exit([&] {
+            dialog->Unadvise(adviseCookie);
+            PickerCommon::WslNavigationInserter::CancelPendingInsertion();
+        });
 
         if (FAILED(dialog->Show(parameters.HWnd)) || cancellationToken())
         {

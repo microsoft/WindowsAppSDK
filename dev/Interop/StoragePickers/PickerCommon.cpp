@@ -10,6 +10,7 @@
 #include "ShObjIdl.h"
 #include "shobjidl_core.h"
 #include <KnownFolders.h>
+#include <shlguid.h>
 #include <filesystem>
 #include <format>
 #include <utility>
@@ -103,6 +104,115 @@ namespace {
 
 namespace PickerCommon {
     using namespace winrt;
+
+    // WslNavigationInserter static members
+    winrt::com_ptr<INameSpaceTreeControl> WslNavigationInserter::s_nstc;
+    winrt::com_ptr<IShellItem> WslNavigationInserter::s_wslItem;
+    UINT_PTR WslNavigationInserter::s_timerId{ 0 };
+    DWORD WslNavigationInserter::s_lastRootCount{ 0 };
+    int WslNavigationInserter::s_stableChecks{ 0 };
+
+    void CALLBACK WslNavigationInserter::PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept
+    {
+        if (!s_nstc || !s_wslItem)
+        {
+            KillTimer(nullptr, timerId);
+            s_timerId = 0;
+            return;
+        }
+
+        winrt::com_ptr<IShellItemArray> roots;
+        DWORD count = 0;
+        if (SUCCEEDED(s_nstc->GetRootItems(roots.put())) && roots)
+        {
+            roots->GetCount(&count);
+        }
+
+        if (count > 0 && count == s_lastRootCount)
+        {
+            s_stableChecks++;
+        }
+        else
+        {
+            s_stableChecks = 0;
+            s_lastRootCount = count;
+        }
+
+        // Root count unchanged for 2 consecutive polls — Shell is done loading.
+        if (s_stableChecks >= 2)
+        {
+            KillTimer(nullptr, timerId);
+            s_timerId = 0;
+            s_nstc->AppendRoot(s_wslItem.get(),
+                SHCONTF_FOLDERS | SHCONTF_NONFOLDERS,
+                NSTCRS_VISIBLE,
+                nullptr);
+            s_nstc = nullptr;
+            s_wslItem = nullptr;
+        }
+    }
+
+    void WslNavigationInserter::CancelPendingInsertion() noexcept
+    {
+        if (s_timerId)
+        {
+            KillTimer(nullptr, s_timerId);
+            s_timerId = 0;
+        }
+        s_nstc = nullptr;
+        s_wslItem = nullptr;
+    }
+
+    IFACEMETHODIMP WslNavigationInserter::OnFolderChange(IFileDialog* pfd) noexcept
+    {
+        if (m_inserted)
+        {
+            return S_OK;
+        }
+        m_inserted = true;
+
+        winrt::com_ptr<IServiceProvider> sp;
+        if (FAILED(pfd->QueryInterface(IID_PPV_ARGS(sp.put()))))
+        {
+            return S_OK;
+        }
+
+        winrt::com_ptr<IShellBrowser> sb;
+        if (FAILED(sp->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(sb.put()))) || !sb)
+        {
+            return S_OK;
+        }
+
+        winrt::com_ptr<IServiceProvider> sbSp;
+        if (FAILED(sb->QueryInterface(IID_PPV_ARGS(sbSp.put()))))
+        {
+            return S_OK;
+        }
+
+        winrt::com_ptr<INameSpaceTreeControl> nstc;
+        if (FAILED(sbSp->QueryService(IID_INameSpaceTreeControl, IID_PPV_ARGS(nstc.put()))) || !nstc)
+        {
+            return S_OK;
+        }
+
+        winrt::com_ptr<IShellItem> wslItem;
+        if (FAILED(SHCreateItemFromParsingName(L"\\\\wsl.localhost", nullptr, IID_PPV_ARGS(wslItem.put()))) || !wslItem)
+        {
+            wslItem = nullptr;
+            if (FAILED(SHCreateItemFromParsingName(L"\\\\wsl$", nullptr, IID_PPV_ARGS(wslItem.put()))) || !wslItem)
+            {
+                return S_OK;
+            }
+        }
+
+        s_nstc = nstc;
+        s_wslItem = wslItem;
+        s_lastRootCount = 0;
+        s_stableChecks = 0;
+        s_timerId = SetTimer(nullptr, 0, 50, PollTimerProc);
+
+        return S_OK;
+    }
 
     bool IsHStringNullOrEmpty(winrt::hstring value)
     {
