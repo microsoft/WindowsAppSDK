@@ -111,7 +111,13 @@ static UsingWin11Support g_usingWin11Support{ UsingWin11Support::Unknown };
 
 static IDynamicDependencyLifetimeManager* g_lifetimeManager{};
 static wil::unique_event g_endTheLifetimeManagerEvent;
-static wil::unique_hmodule g_windowsAppRuntimeDll;
+// Raw HMODULE (not unique_hmodule) to match delay-load lifetime semantics:
+// The runtime DLL must NOT be freed when Bootstrap.dll is unloaded,
+// because the helper app pattern loads Bootstrap.dll into a local unique_hmodule,
+// calls MddBootstrapInitialize, then frees Bootstrap.dll. The runtime DLL must
+// stay loaded so its in-process package graph state persists for WinRT activation.
+// Only MddBootstrapShutdown explicitly frees this handle.
+static HMODULE g_windowsAppRuntimeDll{};
 static PFN_MddTryCreatePackageDependency g_pfnMddTryCreatePackageDependency{};
 static PFN_MddAddPackageDependency g_pfnMddAddPackageDependency{};
 static PFN_MddRemovePackageDependency g_pfnMddRemovePackageDependency{};
@@ -287,7 +293,11 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
         g_pfnMddAddPackageDependency = nullptr;
         g_pfnMddRemovePackageDependency = nullptr;
         g_pfnVersionInfoTestInitialize = nullptr;
-        g_windowsAppRuntimeDll.reset();
+        if (g_windowsAppRuntimeDll)
+        {
+            FreeLibrary(g_windowsAppRuntimeDll);
+            g_windowsAppRuntimeDll = nullptr;
+        }
 
         if (g_endTheLifetimeManagerEvent)
         {
@@ -447,7 +457,7 @@ void FirstTimeInitialization(
                 {
                     FAIL_FAST_IF_FAILED(pfnTestInit(frameworkPackageFamilyName.c_str(), nullptr));
                 }
-                g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
+                g_windowsAppRuntimeDll = windowsAppRuntimeDll.release();
                 g_pfnVersionInfoTestInitialize = pfnTestInit;
             }
         }
@@ -551,7 +561,7 @@ void FirstTimeInitialization(
         //
         g_lifetimeManager = lifetimeManager.detach();
         g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
-        g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
+        g_windowsAppRuntimeDll = windowsAppRuntimeDll.release();
         g_pfnMddTryCreatePackageDependency = pfnTryCreate;
         g_pfnMddAddPackageDependency = pfnAdd;
         g_pfnMddRemovePackageDependency = pfnRemove;
