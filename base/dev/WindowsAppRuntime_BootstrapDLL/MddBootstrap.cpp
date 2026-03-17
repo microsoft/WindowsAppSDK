@@ -280,7 +280,11 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
         // Last one out turn out the lights...
         if (g_packageDependencyContext)
         {
-            if (g_pfnMddRemovePackageDependency)
+            if (g_usingWin11Support == UsingWin11Support::Yes)
+            {
+                MddCore::Win11::RemovePackageDependency(g_packageDependencyContext);
+            }
+            else if (g_pfnMddRemovePackageDependency)
             {
                 g_pfnMddRemovePackageDependency(g_packageDependencyContext);
             }
