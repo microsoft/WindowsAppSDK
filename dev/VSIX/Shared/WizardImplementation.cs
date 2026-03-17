@@ -213,6 +213,14 @@ namespace WindowsAppSDK.TemplateUtilities
                 catch (Exception ex)
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                    if (IsNuGetRestoreDisabledException(ex))
+                    {
+                        LogError($"NuGet restore is disabled. Error: {ex.Message}");
+                        _ = DisplayInfoBarAsync(Resources._1056);
+                        return;
+                    }
+
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                     _failedPackageExceptions[packageId] = ex;
                 }
@@ -312,6 +320,22 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 return true;
             }
+        }
+
+        private static bool IsNuGetRestoreDisabledException(Exception ex)
+        {
+            for (var current = ex; current != null; current = current.InnerException)
+            {
+                if (current.Message != null &&
+                    (current.Message.IndexOf("NuGet restore is currently disabled", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     current.Message.IndexOf("package restore is disabled", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     current.Message.IndexOf("EnableNuGetPackageRestore", StringComparison.OrdinalIgnoreCase) >= 0))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void UnadviseSolutionEvents()
