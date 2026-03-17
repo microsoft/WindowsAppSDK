@@ -41,7 +41,5 @@
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cs" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cpp" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)AppModel.Identity.IsPackagedProcess.h" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h" />
   </ItemGroup>
 </Project>
