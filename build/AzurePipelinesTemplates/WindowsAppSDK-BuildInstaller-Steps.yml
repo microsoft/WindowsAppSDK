@@ -7,7 +7,7 @@ parameters:
   default: false 
 - name: IsOneBranch
   type: boolean
-  default: false
+  default: true
 - name: runStaticAnalysis
   type: boolean
   default: false
