@@ -1,0 +1,14 @@
+[
+  {
+    "File": "Extension\\Cpp\\Dev17\\Standalone\\source.extension.vsixmanifest",
+    "HadPreview": true,
+    "PreviewValue": "true",
+    "Version": "2026.03.13"
+  },
+  {
+    "File": "Extension\\Cs\\Dev17\\Standalone\\source.extension.vsixmanifest",
+    "HadPreview": true,
+    "PreviewValue": "true",
+    "Version": "2026.03.13"
+  }
+]
