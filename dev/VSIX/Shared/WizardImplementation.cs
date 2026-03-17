@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using EnvDTE;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
@@ -34,7 +35,7 @@ namespace WindowsAppSDK.TemplateUtilities
         InfoBar
     }
 
-    public partial class NuGetPackageInstaller : IWizard
+    public partial class NuGetPackageInstaller : IWizard, IVsSolutionEvents
     {
         internal static Guid SolutionVCProjectGuid = new Guid("8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942");
         private Project _project;
@@ -44,6 +45,8 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
         private BuildGuard _buildGuard = new BuildGuard();
+        private IVsSolution _solution;
+        private uint _solutionEventsCookie;
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -74,6 +77,17 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
             }
+
+            if (_nuGetPackages != null && _nuGetPackages.Any())
+            {
+                _solution = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolution)) as IVsSolution;
+                if (_solution != null)
+                {
+                    _solution.AdviseSolutionEvents(this, out _solutionEventsCookie);
+                }
+
+                _buildGuard.DisableBuilds();
+            }
         }
 
         public void ProjectFinishedGenerating(Project project)
@@ -96,8 +110,6 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 int canceled = 0; // Initialize as not canceled
-
-                _buildGuard.DisableBuilds();
 
                 try
                 {
@@ -130,6 +142,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 finally
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    UnadviseSolutionEvents();
                     _buildGuard.EnableBuilds();
                 }
             });
@@ -200,6 +213,7 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 // For C++ projects, installation is synchronous so builds are already
                 // re-enabled by the finally block. Dispose as a safety net.
+                UnadviseSolutionEvents();
                 _buildGuard.Dispose();
 
                 if (_failedPackageExceptions.Count > 0)
@@ -225,6 +239,69 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             OutputWindowHelper.ShowMessageInOutputWindow(errorMessage);
+        }
+
+        private void UnadviseSolutionEvents()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_solution != null && _solutionEventsCookie != 0)
+            {
+                _solution.UnadviseSolutionEvents(_solutionEventsCookie);
+                _solutionEventsCookie = 0;
+            }
+        }
+
+        public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            _buildGuard.DisableBuilds();
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
         }
 
         private void SaveAllProjects()
