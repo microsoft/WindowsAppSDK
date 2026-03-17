@@ -39,6 +39,14 @@
       "valueSource": "name",
       "valueTransform": "identity",
       "replaces": "$fileinputname$"
+    },
+    "userControlType": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": {
+        "value": "UserControl"
+      },
+      "replaces": "__WINUI_USERCONTROL__"
     }
   },
   "constraints": {

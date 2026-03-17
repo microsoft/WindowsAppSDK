@@ -39,6 +39,22 @@
       "valueSource": "name",
       "valueTransform": "identity",
       "replaces": "$fileinputname$"
+    },
+    "contentDialogType": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": {
+        "value": "ContentDialog"
+      },
+      "replaces": "__WINUI_CONTENT_DIALOG__"
+    },
+    "contentDialogButtonClickEventArgsType": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": {
+        "value": "ContentDialogButtonClickEventArgs"
+      },
+      "replaces": "__WINUI_CONTENT_DIALOG_BUTTON_CLICK_EVENT_ARGS__"
     }
   },
   "constraints": {
