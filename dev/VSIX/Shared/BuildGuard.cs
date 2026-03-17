@@ -15,12 +15,15 @@ using Resources = WindowsAppSDK.Cpp.Extension.Dev17.VSPackage;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
-    internal sealed class BuildGuard : IVsUpdateSolutionEvents2, IVsInfoBarUIEvents, IDisposable
+    internal sealed class BuildGuard : IVsUpdateSolutionEvents2, IVsUpdateSolutionEvents4, IVsInfoBarUIEvents, IDisposable
     {
         private IVsSolutionBuildManager2 _solutionBuildManager;
+        private IVsSolutionBuildManager5 _solutionBuildManager5;
         private uint _adviseCookie;
+        private uint _adviseCookie4;
         private bool _isBlocking;
         private bool _isAdvised;
+        private bool _isAdvised4;
         private bool _disposed;
         private bool _infoBarShown;
         private IVsInfoBarUIElement _infoBarUIElement;
@@ -56,6 +59,13 @@ namespace WindowsAppSDK.TemplateUtilities
                 _isBlocking = true;
                 _infoBarShown = false;
             }
+
+            _solutionBuildManager5 = _solutionBuildManager as IVsSolutionBuildManager5;
+            if (_solutionBuildManager5 != null)
+            {
+                _solutionBuildManager5.AdviseUpdateSolutionEvents4(this, out _adviseCookie4);
+                _isAdvised4 = true;
+            }
         }
 
         public void EnableBuilds()
@@ -70,6 +80,12 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 _solutionBuildManager.UnadviseUpdateSolutionEvents(_adviseCookie);
                 _isAdvised = false;
+            }
+
+            if (_isAdvised4 && _solutionBuildManager5 != null)
+            {
+                _solutionBuildManager5.UnadviseUpdateSolutionEvents4(_adviseCookie4);
+                _isAdvised4 = false;
             }
         }
 
@@ -213,6 +229,47 @@ namespace WindowsAppSDK.TemplateUtilities
         public int UpdateProjectCfg_Done(IVsHierarchy pHierProj, IVsCfg pCfgProj, IVsCfg pCfgSln, uint dwAction, int fSuccess, int fCancel)
         {
             return VSConstants.S_OK;
+        }
+
+        public void UpdateSolution_QueryDelayFirstUpdateAction(out int pfDelay)
+        {
+            pfDelay = 0;
+
+            if (_isBlocking)
+            {
+                if (_shouldRelease != null && _shouldRelease())
+                {
+                    ThreadHelper.ThrowIfNotOnUIThread();
+                    EnableBuilds();
+                    return;
+                }
+
+                pfDelay = 1;
+            }
+        }
+
+        public void UpdateSolution_BeginFirstUpdateAction()
+        {
+        }
+
+        public void UpdateSolution_EndLastUpdateAction()
+        {
+        }
+
+        public void UpdateSolution_BeginUpdateAction(uint dwAction)
+        {
+        }
+
+        public void UpdateSolution_EndUpdateAction(uint dwAction)
+        {
+        }
+
+        public void OnActiveProjectCfgChangeBatchBegin()
+        {
+        }
+
+        public void OnActiveProjectCfgChangeBatchEnd()
+        {
         }
 
         public void Dispose()
