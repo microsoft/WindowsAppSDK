@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Resources;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Imaging;
@@ -48,6 +50,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private static volatile bool s_installationComplete;
         private IVsSolution _solution;
         private uint _solutionEventsCookie;
+        private bool _packageRestoreEnabled = true;
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -81,6 +84,15 @@ namespace WindowsAppSDK.TemplateUtilities
 
             if (_nuGetPackages != null && _nuGetPackages.Any())
             {
+                _packageRestoreEnabled = IsNuGetPackageRestoreEnabled();
+
+                if (!_packageRestoreEnabled)
+                {
+                    LogError("NuGet package restore is disabled. Skipping automatic package installation.");
+                    _ = DisplayInfoBarAsync(Resources._1056);
+                    return;
+                }
+
                 if (s_installationComplete)
                 {
                     s_buildGuard = new BuildGuard();
@@ -160,6 +172,15 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private async Task StartInstallationAsync()
         {
+            if (!_packageRestoreEnabled)
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                LogError("NuGet package restore is disabled. Skipping package installation.");
+                var packageNames = string.Join(", ", _nuGetPackages);
+                _failedPackageExceptions[packageNames] = new InvalidOperationException("NuGet package restore is disabled.");
+                return;
+            }
+
             if (_componentModel == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -249,6 +270,48 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             OutputWindowHelper.ShowMessageInOutputWindow(errorMessage);
+        }
+
+        private static bool IsNuGetPackageRestoreEnabled()
+        {
+            try
+            {
+                string configPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "NuGet",
+                    "NuGet.Config");
+
+                if (!File.Exists(configPath))
+                {
+                    return true;
+                }
+
+                var doc = XDocument.Load(configPath);
+                var packageRestore = doc.Descendants("packageRestore").FirstOrDefault();
+                if (packageRestore == null)
+                {
+                    return true;
+                }
+
+                var enabledElement = packageRestore.Elements("add")
+                    .FirstOrDefault(e => string.Equals(
+                        (string)e.Attribute("key"), "enabled", StringComparison.OrdinalIgnoreCase));
+
+                if (enabledElement != null)
+                {
+                    string value = (string)enabledElement.Attribute("value");
+                    if (string.Equals(value, "False", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
         }
 
         private void UnadviseSolutionEvents()

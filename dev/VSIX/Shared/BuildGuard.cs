@@ -101,7 +101,13 @@ namespace WindowsAppSDK.TemplateUtilities
                     return VSConstants.S_OK;
                 }
 
-                pfCancelUpdate = 1;
+                // When Events4 is available, delay via QueryDelayFirstUpdateAction
+                // instead of canceling here (canceling triggers "build errors" dialogs).
+                if (!_isAdvised4)
+                {
+                    pfCancelUpdate = 1;
+                }
+
                 ShowInfoBar();
             }
 
@@ -195,7 +201,10 @@ namespace WindowsAppSDK.TemplateUtilities
                     return VSConstants.S_OK;
                 }
 
-                pfCancelUpdate = 1;
+                if (!_isAdvised4)
+                {
+                    pfCancelUpdate = 1;
+                }
             }
 
             return VSConstants.S_OK;
@@ -220,7 +229,10 @@ namespace WindowsAppSDK.TemplateUtilities
                     return VSConstants.S_OK;
                 }
 
-                pfCancel = 1;
+                if (!_isAdvised4)
+                {
+                    pfCancel = 1;
+                }
             }
 
             return VSConstants.S_OK;
@@ -233,13 +245,14 @@ namespace WindowsAppSDK.TemplateUtilities
 
         public void UpdateSolution_QueryDelayFirstUpdateAction(out int pfDelay)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             pfDelay = 0;
 
             if (_isBlocking)
             {
                 if (_shouldRelease != null && _shouldRelease())
                 {
-                    ThreadHelper.ThrowIfNotOnUIThread();
                     EnableBuilds();
                     return;
                 }

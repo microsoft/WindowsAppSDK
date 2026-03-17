@@ -255,4 +255,7 @@
   <data name="1055" xml:space="preserve">
     <value>Build is currently disabled while NuGet packages are being installed. The build will be available once package installation is complete.</value>
   </data>
+  <data name="1056" xml:space="preserve">
+    <value>NuGet package restore is disabled. Enable "Allow NuGet to download missing packages" in Tools &gt; Options &gt; NuGet Package Manager to automatically install required packages.</value>
+  </data>
 </root>
