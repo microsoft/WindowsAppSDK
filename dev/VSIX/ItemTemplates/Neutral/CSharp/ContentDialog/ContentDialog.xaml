@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentDialog
+<__WINUI_CONTENT_DIALOG__
     x:Class="$rootnamespace$.$safeitemname$"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -15,4 +15,4 @@
     <Grid>
 
     </Grid>
-</ContentDialog>
+</__WINUI_CONTENT_DIALOG__>

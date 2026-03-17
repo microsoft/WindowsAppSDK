@@ -18,7 +18,7 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace $rootnamespace$;
 
-public sealed partial class $safeitemname$ : UserControl
+public sealed partial class $safeitemname$ : __WINUI_USERCONTROL__
 {
     public $safeitemname$()
     {
