@@ -24,6 +24,14 @@ namespace WindowsAppSDK.TemplateUtilities
         private bool _disposed;
         private bool _infoBarShown;
         private IVsInfoBarUIElement _infoBarUIElement;
+        private Func<bool> _shouldRelease;
+
+        public bool IsBlocking => _isBlocking;
+
+        public void SetReleaseCondition(Func<bool> condition)
+        {
+            _shouldRelease = condition;
+        }
 
         public void DisableBuilds()
         {
@@ -71,6 +79,12 @@ namespace WindowsAppSDK.TemplateUtilities
 
             if (_isBlocking)
             {
+                if (_shouldRelease != null && _shouldRelease())
+                {
+                    EnableBuilds();
+                    return VSConstants.S_OK;
+                }
+
                 pfCancelUpdate = 1;
                 ShowInfoBar();
             }
@@ -160,6 +174,11 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             if (_isBlocking)
             {
+                if (_shouldRelease != null && _shouldRelease())
+                {
+                    return VSConstants.S_OK;
+                }
+
                 pfCancelUpdate = 1;
             }
 
@@ -180,6 +199,11 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             if (_isBlocking)
             {
+                if (_shouldRelease != null && _shouldRelease())
+                {
+                    return VSConstants.S_OK;
+                }
+
                 pfCancel = 1;
             }
 
