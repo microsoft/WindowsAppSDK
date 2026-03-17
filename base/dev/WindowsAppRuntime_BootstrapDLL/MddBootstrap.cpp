@@ -14,6 +14,31 @@
 
 #include <filesystem>
 
+// Function pointer types for dynamically-loaded Microsoft.WindowsAppRuntime.dll APIs
+using PFN_MddTryCreatePackageDependency = HRESULT(STDAPICALLTYPE*)(
+    PSID user,
+    _In_ PCWSTR packageFamilyName,
+    PACKAGE_VERSION minVersion,
+    MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
+    MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options,
+    _Outptr_result_maybenull_ PWSTR* packageDependencyId);
+
+using PFN_MddAddPackageDependency = HRESULT(STDAPICALLTYPE*)(
+    _In_ PCWSTR packageDependencyId,
+    INT32 rank,
+    MddAddPackageDependencyOptions options,
+    _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
+    _Outptr_opt_result_maybenull_ PWSTR* packageFullName);
+
+using PFN_MddRemovePackageDependency = void(STDAPICALLTYPE*)(
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext);
+
+using PFN_WindowsAppRuntime_VersionInfo_TestInitialize = HRESULT(STDAPICALLTYPE*)(
+    PCWSTR frameworkPackageFamilyName,
+    PCWSTR mainPackageFamilyName);
+
 HRESULT _MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -86,7 +111,17 @@ static UsingWin11Support g_usingWin11Support{ UsingWin11Support::Unknown };
 
 static IDynamicDependencyLifetimeManager* g_lifetimeManager{};
 static wil::unique_event g_endTheLifetimeManagerEvent;
-static wil::unique_hmodule g_windowsAppRuntimeDll;
+// Raw HMODULE (not unique_hmodule) to match delay-load lifetime semantics:
+// The runtime DLL must NOT be freed when Bootstrap.dll is unloaded,
+// because the helper app pattern loads Bootstrap.dll into a local unique_hmodule,
+// calls MddBootstrapInitialize, then frees Bootstrap.dll. The runtime DLL must
+// stay loaded so its in-process package graph state persists for WinRT activation.
+// Only MddBootstrapShutdown explicitly frees this handle.
+static HMODULE g_windowsAppRuntimeDll{};
+static PFN_MddTryCreatePackageDependency g_pfnMddTryCreatePackageDependency{};
+static PFN_MddAddPackageDependency g_pfnMddAddPackageDependency{};
+static PFN_MddRemovePackageDependency g_pfnMddRemovePackageDependency{};
+static PFN_WindowsAppRuntime_VersionInfo_TestInitialize g_pfnVersionInfoTestInitialize{};
 static wil::unique_process_heap_string g_packageDependencyId;
 static MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 
@@ -245,13 +280,28 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
         // Last one out turn out the lights...
         if (g_packageDependencyContext)
         {
-            MddRemovePackageDependency(g_packageDependencyContext);
+            if (g_usingWin11Support == UsingWin11Support::Yes)
+            {
+                MddCore::Win11::RemovePackageDependency(g_packageDependencyContext);
+            }
+            else if (g_pfnMddRemovePackageDependency)
+            {
+                g_pfnMddRemovePackageDependency(g_packageDependencyContext);
+            }
             g_packageDependencyContext = nullptr;
         }
 
         g_packageDependencyId.reset();
 
-        g_windowsAppRuntimeDll.reset();
+        g_pfnMddTryCreatePackageDependency = nullptr;
+        g_pfnMddAddPackageDependency = nullptr;
+        g_pfnMddRemovePackageDependency = nullptr;
+        g_pfnVersionInfoTestInitialize = nullptr;
+        if (g_windowsAppRuntimeDll)
+        {
+            FreeLibrary(g_windowsAppRuntimeDll);
+            g_windowsAppRuntimeDll = nullptr;
+        }
 
         if (g_endTheLifetimeManagerEvent)
         {
@@ -401,7 +451,19 @@ void FirstTimeInitialization(
             FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackagePublisherId.empty());
             FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_mainPackageNamePrefix.empty());
 
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName.c_str());
+            // Dynamically load the DLL to call VersionInfo_TestInitialize (test-only path)
+            auto windowsAppRuntimeDll = wil::unique_hmodule(LoadLibraryExW(L"Microsoft.WindowsAppRuntime.dll", nullptr, 0));
+            if (windowsAppRuntimeDll)
+            {
+                auto pfnTestInit = reinterpret_cast<PFN_WindowsAppRuntime_VersionInfo_TestInitialize>(
+                    GetProcAddress(windowsAppRuntimeDll.get(), "WindowsAppRuntime_VersionInfo_TestInitialize"));
+                if (pfnTestInit)
+                {
+                    FAIL_FAST_IF_FAILED(pfnTestInit(frameworkPackageFamilyName.c_str(), nullptr));
+                }
+                g_windowsAppRuntimeDll = windowsAppRuntimeDll.release();
+                g_pfnVersionInfoTestInitialize = pfnTestInit;
+            }
         }
 
         // Track our initialized state
@@ -437,16 +499,33 @@ void FirstTimeInitialization(
             THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppRuntimeDllFilename.c_str());
         }
 
+        // Resolve function pointers from the dynamically-loaded DLL
+        auto pfnTryCreate = reinterpret_cast<PFN_MddTryCreatePackageDependency>(
+            GetProcAddress(windowsAppRuntimeDll.get(), "MddTryCreatePackageDependency"));
+        THROW_LAST_ERROR_IF_NULL_MSG(pfnTryCreate, "Failed to resolve MddTryCreatePackageDependency from %ls", windowsAppRuntimeDllFilename.c_str());
+
+        auto pfnAdd = reinterpret_cast<PFN_MddAddPackageDependency>(
+            GetProcAddress(windowsAppRuntimeDll.get(), "MddAddPackageDependency"));
+        THROW_LAST_ERROR_IF_NULL_MSG(pfnAdd, "Failed to resolve MddAddPackageDependency from %ls", windowsAppRuntimeDllFilename.c_str());
+
+        auto pfnRemove = reinterpret_cast<PFN_MddRemovePackageDependency>(
+            GetProcAddress(windowsAppRuntimeDll.get(), "MddRemovePackageDependency"));
+        THROW_LAST_ERROR_IF_NULL_MSG(pfnRemove, "Failed to resolve MddRemovePackageDependency from %ls", windowsAppRuntimeDllFilename.c_str());
+
+        // VersionInfo_TestInitialize is test-only; resolve but don't fail if missing
+        auto pfnTestInit = reinterpret_cast<PFN_WindowsAppRuntime_VersionInfo_TestInitialize>(
+            GetProcAddress(windowsAppRuntimeDll.get(), "WindowsAppRuntime_VersionInfo_TestInitialize"));
+
         // Add the framework package to the package graph
         const MddPackageDependencyProcessorArchitectures architectureFilter{};
         const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
         const MddCreatePackageDependencyOptions createOptions{};
         wil::unique_process_heap_string packageDependencyId;
-        THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, frameworkPackageInfo->packageFamilyName, minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
+        THROW_IF_FAILED(pfnTryCreate(nullptr, frameworkPackageInfo->packageFamilyName, minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
         //
         const MddAddPackageDependencyOptions addOptions{};
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
-        THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
+        THROW_IF_FAILED(pfnAdd(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
 
         // Remove our temporary path addition
         RemoveFrameworkFromPath(frameworkPackageInfo->path);
@@ -475,7 +554,10 @@ void FirstTimeInitialization(
                                                                   packagVersionTagDelimiter, packageVersionTag) };
             FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, mainPackageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", mainPackageFamilyName.c_str());
 
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName.c_str(), mainPackageFamilyName.c_str());
+            if (pfnTestInit)
+            {
+                FAIL_FAST_IF_FAILED(pfnTestInit(frameworkPackageFamilyName.c_str(), mainPackageFamilyName.c_str()));
+            }
         }
 
         // Track our initialized state
@@ -483,7 +565,11 @@ void FirstTimeInitialization(
         //
         g_lifetimeManager = lifetimeManager.detach();
         g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
-        g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
+        g_windowsAppRuntimeDll = windowsAppRuntimeDll.release();
+        g_pfnMddTryCreatePackageDependency = pfnTryCreate;
+        g_pfnMddAddPackageDependency = pfnAdd;
+        g_pfnMddRemovePackageDependency = pfnRemove;
+        g_pfnVersionInfoTestInitialize = pfnTestInit;
         g_packageDependencyId = std::move(packageDependencyId);
         g_packageDependencyContext = packageDependencyContext;
         //

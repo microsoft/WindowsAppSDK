@@ -1,0 +1,341 @@
+parameters:
+- name: BuildType
+  type: string
+  default: 'stable'
+- name: IsOfficial
+  type: boolean
+  default: false
+- name: PushPackageToInternalFeed
+  displayName: "Push Release Versioned Windows App SDK Packages To InternalFeed (Only applicable in Release Builds)"
+  type: boolean
+  default: false
+- name: SignOutput
+  displayName: "Sign packages and their contents"
+  type: boolean
+  default: false
+- name: PublishToMaestro
+  displayName: "Publish To Maestro"
+  type: boolean
+  default: false
+- name: runStaticAnalysis
+  type: boolean
+  default: true
+
+stages:
+- stage: WindowsAppSDKBasePackage
+  dependsOn: ''
+  condition: and(succeeded(), ne(variables.EnableTestImageValidation, true))
+  jobs:
+  - job: Build
+    pool:
+      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+      type: windows
+    variables:
+      - name: ob_outputDirectory
+        value: '$(REPOROOT)\out'
+      - name: ob_sdl_codeSignValidation_excludes
+        value: '$(CodeSignValidationExclude)'
+      - name: ob_artifactBaseName
+        value: "WindowsAppSDK_Base_Nuget"
+      - name: ob_sdl_apiscan_enabled
+        value: ${{ iif(parameters.runStaticAnalysis, true, false) }}
+      # Focus on scanning x64fre, as a start.
+      - name: ob_sdl_apiscan_softwareFolder
+        value: '$(REPOROOT)\BuildOutput\Release\x64'
+      - name: ob_sdl_apiscan_symbolsFolder
+        value:  '$(REPOROOT)\BuildOutput\Release\x64;SRV*https://symweb.azurefd.net'
+      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - name: localCompilerOverridePackageName
+        value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
+      - name: localCompilerOverridePackageVersion
+        value: $[coalesce(variables.compilerOverridePackageVersion, variables.global_CompilerOverridePackageVersion)]
+      - name: localCompilerOverrideNupkgVersion
+        value: $[coalesce(variables.compilerOverrideNupkgVersion, variables.global_CompilerOverrideNupkgVersion)]
+      - name: ob_sdl_checkCompliantCompilerWarnings
+        value: true # This setting has no effect unless ob_sdl_msbuildOverride below is also set to true.
+      - name: ob_sdl_prefast_runDuring
+        value: 'Guardian' # The default 'Build' setting does not match the fact that we are calling msbuild.exe directly.
+      - name: ob_sdl_msbuildOverride
+        value: true # Because we are calling MSBuild directly instead of through the MSBuild@1 or VSBuild@1 tasks. 
+    steps:
+    - script: |
+        echo ob_sdl_apiscan_enabled               : $(ob_sdl_apiscan_enabled)
+        echo ob_sdl_checkCompliantCompilerWarnings: $(ob_sdl_checkCompliantCompilerWarnings)
+        echo ob_sdl_prefast_runDuring             : $(ob_sdl_prefast_runDuring)
+        echo ob_sdl_msbuildOverride               : $(ob_sdl_msbuildOverride)
+        echo Agent.JobName                        : $(Agent.JobName)
+        echo AppxContentFolder                    : $(AppxContentFolder)
+        echo Build.ArtifactStagingDirectory       : $(Build.ArtifactStagingDirectory)
+        echo Build.BuildId                        : $(Build.BuildId)
+        echo Build.Reason                         : $(Build.Reason)
+        echo Build.RequestedFor                   : $(Build.RequestedFor)
+        echo Build.SourceBranch                   : $(Build.SourceBranch)
+        echo Build.SourcesDirectory               : $(Build.SourcesDirectory)
+        echo buildConfiguration                   : $(buildConfiguration)
+        echo buildPlatform                        : $(buildPlatform)
+        echo CodeSignValidationExclude            : $(CodeSignValidationExclude)
+        echo compilerOverridePackageName          : $(compilerOverridePackageName)
+        echo compilerOverridePackageVersion       : $(compilerOverridePackageVersion)
+        echo DownloadCenterUri                    : $(DownloadCenterUri)
+        echo downloadDetail.portalName            : $(downloadDetail.portalName)
+        echo EnforceVersionSyncPackages           : $(EnforceVersionSyncPackages)
+        echo feature                              : $(feature)
+        echo global_CompilerOverridePackageName   : $(global_CompilerOverridePackageName)
+        echo global_CompilerOverridePackageVersion: $(global_CompilerOverridePackageVersion)
+        echo imageName                            : $(imageName)
+        echo LastReleaseNugetVersion              : $(LastReleaseNugetVersion)
+        echo LatestShortUrl                       : $(LatestShortUrl)
+        echo localCompilerOverrideNupkgVersion    : $(localCompilerOverrideNupkgVersion)
+        echo localCompilerOverridePackageName     : $(localCompilerOverridePackageName)
+        echo localCompilerOverridePackageVersion  : $(localCompilerOverridePackageVersion)
+        echo MajorVersion                         : $(MajorVersion)
+        echo mySourceBranch                       : $(mySourceBranch)
+        echo ob_outputDirectory                   : $(ob_outputDirectory)
+        echo PayloadTrackingGitHubPAT             : $(PayloadTrackingGitHubPAT)
+        echo poolName                             : $(poolName)
+        echo PreviousWindowsAppSDKVersion         : $(PreviousWindowsAppSDKVersion)
+        echo RedirectionAppID                     : $(RedirectionAppID)
+        echo RedirectionAppIdUrl                  : $(RedirectionAppIdUrl)
+        echo RedirectionAuthority                 : $(RedirectionAuthority)
+        echo RedirectionCert                      : $(RedirectionCert)
+        echo RedirectionServiceEndpoint           : $(RedirectionServiceEndpoint)
+        echo REPOROOT                             : $(REPOROOT)
+        echo Revision                             : $(Revision)
+        echo SamplesBranch                        : $(SamplesBranch)
+        echo SamplesRepoName                      : $(SamplesRepoName)
+        echo SelfContainedSwitch                  : $(SelfContainedSwitch)
+        echo System.AccessToken                   : $(System.AccessToken)
+        echo System.ArtifactsDirectory            : $(System.ArtifactsDirectory)
+        echo System.DefinitionId                  : $(System.DefinitionId)
+        echo System.PullRequest.targetBranchName  : $(System.PullRequest.targetBranchName)
+        echo System.StageName                     : $(System.StageName)
+        echo System.TeamProjectId                 : $(System.TeamProjectId)
+        echo testLocale                           : $(testLocale)
+        echo testPayloadArtifactDir               : $(testPayloadArtifactDir)
+        echo testPayloadDir                       : $(testPayloadDir)
+        echo VCToolsInstallDir                    : $(VCToolsInstallDir)
+        echo VersionTag                           : $(VersionTag)
+        echo vPackDescription                     : $(vPackDescription)
+        echo vPackName                            : $(vPackName)
+        echo vPackSourceFolder                    : $(vPackSourceFolder)
+        echo vPackVersion                         : $(vPackVersion)
+        echo WindowsAppSDKPackageVersion          : $(WindowsAppSDKPackageVersion)
+        echo WindowsAppSDKPackageVersionMajorMinor: $(WindowsAppSDKPackageVersionMajorMinor)
+        echo windowsPublicsWinmdVersion           : $(windowsPublicsWinmdVersion)
+        echo WindowsSDKVersion                    : $(WindowsSDKVersion)
+        echo _useBuildOutputFromBuildId           : $(_useBuildOutputFromBuildId)
+        echo _useBuildOutputFromPipeline          : $(_useBuildOutputFromPipeline)
+        echo CallerEnablesTestImageValidation     : $(CallerEnablesTestImageValidation)
+        echo EnableTestImageValidation            : $(EnableTestImageValidation)
+        echo CallerEnablesBuildImageValidation    : $(CallerEnablesBuildImageValidation)
+        echo EnableBuildImageValidation           : $(EnableBuildImageValidation)
+        echo TestImageToValidate                  : $(TestImageToValidate)
+      displayName: 'Variables'
+
+    - template: ../../../build/AzurePipelinesTemplates/WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+    - task: UseDotNet@2
+      continueOnError: true
+      inputs:
+        packageType: 'sdk'
+        useGlobalJson: true
+        performMultiLevelLookup: true
+
+    - task: NuGetAuthenticate@1
+
+    - task: PowerShell@2
+      name: DetermineNugetPackageVersion
+      displayName: 'Determine Nuget Package Version'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $version = '$(version)'
+
+          # For official builds, allow VersionTag override
+          if ('${{ parameters.IsOfficial }}' -eq 'true')
+          {
+            $buildType = '${{ parameters.BuildType }}'
+            $versionTag = '$(VersionTag)'
+
+            # Allow override from pipeline variable
+            $versionTagOverride = '$(VersionTagOverride)'.Trim()
+            if (-not [String]::IsNullOrEmpty($versionTagOverride)) {
+                Write-Host "VersionTagOverride provided: $versionTagOverride"
+                $versionTag = $versionTagOverride
+            }
+
+            Write-Host "VersionTag: " $versionTag
+            if ($buildType -ne "stable" -and -not $versionTag.StartsWith($buildType))
+            {
+              if (-not [String]::IsNullOrEmpty($versionTagOverride)) {
+                Write-Host "ERROR: VersionTagOverride '$versionTagOverride' must start with '$buildType'"
+              } else {
+                Write-Host "ERROR: Variable VersionTag '$versionTag' must start with '$buildType'"
+              }
+              Write-Host "Please update this variable and restart the build"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+            if ($buildType -eq "stable" -and -not [String]::IsNullOrEmpty($versionTag))
+            {
+              Write-Host "Stable builds must have an empty VersionTag"
+              Write-Host "Please update this variable and restart the build"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+
+            if(-not [String]::IsNullOrEmpty($versionTag))
+            {
+              # Replace the prerelease tag portion of the version
+              $dashIndex = $version.IndexOf('-')
+              if ($dashIndex -gt 0) {
+                $version = $version.Substring(0, $dashIndex) + '-' + $versionTag
+              } else {
+                $version = $version + '-' + $versionTag
+              }
+            }
+            elseif ($buildType -eq "stable")
+            {
+              # Stable: strip prerelease tag entirely
+              $dashIndex = $version.IndexOf('-')
+              if ($dashIndex -gt 0) {
+                $version = $version.Substring(0, $dashIndex)
+              }
+            }
+            Write-Host "Using Release Versioning"
+          }
+
+          # Write the version to Version.Details.xml for BuildAll.ps1 to read from
+          [xml]$versionDetailsPath = Get-Content -Path "eng\Version.Details.xml"
+          $WindowsAppSDKConfigVersionDependency = $versionDetailsPath.Dependencies.ToolsetDependencies.Dependency | Where-Object { $_.Name -eq "Microsoft.WindowsAppSDK.Version" }
+          $WindowsAppSDKConfigVersionDependency.Version = $version
+    
+          Set-Content -Encoding utf8 -Value $versionDetailsPath.OuterXml -Path "eng\Version.Details.xml"
+          Write-Host 'Package Version: ' $version
+          Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;isOutput=true]$version"
+          Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;]$version"
+
+    - task: WinUndockNativeCompiler@1
+      displayName: 'Setup native compiler version override'
+      inputs:
+        microsoftDropReadPat: $(System.AccessToken)
+        compilerPackageName: $(localCompilerOverridePackageName)
+        compilerPackageVersion: $(localCompilerOverridePackageVersion)
+        slnDirectory: $(Build.SourcesDirectory)
+
+    - task: PowerShell@2
+      name: BuildBase
+      displayName: 'Build Bootstrap DLL and Bootstrap.Net'
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -AzureBuildStep BuildBase -Platform "x86,x64,arm64" -Configuration Release
+
+    - task: PowerShell@2
+      name: StageBaseFiles
+      displayName: 'Stage Base Package Files'
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -AzureBuildStep StageBaseFiles -Platform "x86,x64,arm64" -Configuration Release
+
+    - task: PowerShell@2
+      name: PackBaseNuget
+      displayName: 'Pack Base NuGet Packages'
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -AzureBuildStep PackBaseNuget -Platform "x86,x64,arm64" -Configuration Release
+
+    # Guardian's PREFast only supports auto detection of msbuild/vsbuild tasks. Hence, explicitly invoke the PREFast task as a workaround.
+    - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+      - task: SDLNativeRules@3
+        #condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
+        displayName: Run the PREfast SDL Native Rules
+        inputs:
+          # Using the auto parameter below is simpler, but because we are not using the msbuild/vsbuild task above for the build operation above,
+          # the PREFast task is unable to auto infer the build arguments. Hence, using a simplified explicit msbuild commandline instead.
+          #userProvideBuildInfo: auto
+          setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
+          msBuildArchitecture: amd64
+          msBuildCommandline: 'msbuild.exe /nologo /nr:false /p:configuration=Release /p:platform=x64 $(Build.SourcesDirectory)\WindowsAppRuntime.Dev.sln'
+          # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+          excludedPaths: |
+            $(Build.SourcesDirectory)\packages
+          # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+          rulesetName: Custom
+          customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+          policyName: 'WindowsUndocked'
+        continueOnError: true
+        env:
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+    # Nuget sign the Nuget Packages
+    - ${{ if eq(parameters.SignOutput, 'true') }}:
+      - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+        parameters:
+          DisplayName: ' CodeSign Nuget packages'
+          FolderPath: '$(REPOROOT)\BuildOutput'
+          Pattern: |
+            Microsoft.WindowsAppSDK.Base.*.nupkg
+          UseMinimatch: true
+          KeyCode: 'CP-401405'
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(REPOROOT)\BuildOutput'
+        Contents: |
+          **/*.nupkg
+        targetFolder: $(ob_outputDirectory)\NugetPackages
+
+    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+      displayName: 'Component Governance Detection'
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'NuGet push Microsoft.WindowsAppSDK NuGet packages to Project.Reunion.nuget.internal'
+      condition: or(eq(${{ parameters.PushPackageToInternalFeed }}, true), eq(variables['Build.Reason'], 'Schedule'))
+      inputs:
+        command: 'push'
+        packagesToPush: '$(ob_outputDirectory)/NugetPackages/Microsoft.WindowsAppSDK.Base.*.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'internal'
+        # ignore conflicts which come from rerunning with the same input packages
+        allowPackageConflicts: true
+        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
+        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+
+    - task: PowerShell@2
+      displayName: 'Verify Nuspec Fields'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $elements = @(
+              "<copyright>© Microsoft Corporation. All rights reserved.</copyright>"
+              "<authors>Microsoft</authors>"
+              "<owners>Microsoft</owners>"
+          );
+
+          $issues = "";
+          foreach ($element in $elements)
+          {
+              $foundElementBase = Select-String -Path $(REPOROOT)\base\build\NuSpecs\Microsoft.WindowsAppSDK.Base.nuspec -Pattern $element;
+              if ([string]::IsNullOrEmpty($foundElementBase)) { $issues += $element; }
+          }
+
+          if (![string]::IsNullOrEmpty($issues))
+          {
+              Write-Host ##vso[task.logissue type=error;] The following elements are missing or wrong: $issues
+              Exit 1
+          }
+
+- stage: PublishBasePackageToMaestro
+  dependsOn:
+  - WindowsAppSDKBasePackage
+  condition: |
+    and(eq(${{ parameters.PushPackageToInternalFeed }}, true), eq(${{ parameters.PublishToMaestro }}, true), ne(variables.EnableTestImageValidation, true), ne(variables.EnableBuildImageValidation, true))
+  jobs:
+  - job: PublishNugetPackage
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
+    steps:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}\\AzurePipelinesTemplates/WindowsAppSDK-PublishToMaestro-Steps.yml@WindowsAppSDKConfig
+      parameters:
+        NuGetArtifactNames:
+        - "WindowsAppSDK_Base_Nuget"

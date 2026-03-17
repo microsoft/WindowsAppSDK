@@ -2,22 +2,7 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.BootstrapCommon.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.CS.targets" Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'"/>
+  <!-- Bootstrapper and auto-initialization targets have moved to the Microsoft.WindowsAppSDK.Base package. -->
 
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'"/>
-
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
-
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" />
-
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializer.CS.targets" Condition="'$(WindowsAppSdkAutoInitialize)' == 'true'"/>
-  
-  <ItemGroup>
-    <Compile Condition="'$(WindowsAppSDKAggregatePackage)' == 'true' and '$(WindowsAppSdkIncludeVersionInfo)'=='true'" Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
-  </ItemGroup>
 
 </Project>

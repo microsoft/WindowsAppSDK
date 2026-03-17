@@ -159,7 +159,7 @@ PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win1
 PublishFile $OverrideDir\PushNotifications-Override.json $NugetDir\runtimes\win10-$Platform\native
 #
 # Includes (*.h)
-PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h $NugetDir\include
+# MddBootstrap.h has moved to the Base package.
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\decimal.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\decimalcppwinrt.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\MsixDynamicDependency.h $NugetDir\include
@@ -170,7 +170,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntime.SelfContain
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Security.AccessControl.h $NugetDir\include\
 #
 # Libraries (*.lib)
-PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.lib $NugetDir\lib\win10-$Platform
+# Microsoft.WindowsAppRuntime.Bootstrap.lib has moved to the Base package.
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $NugetDir\lib\win10-$Platform
 #
 # MSIX Framework package - DLLs/EXEs
@@ -205,8 +205,7 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # Native (not managed, AppLocal / no MSIX)
-PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll $NugetDir\runtimes\win-$Platform\native
-PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.pdb $NugetDir\runtimes\win-$Platform\native
+# Microsoft.WindowsAppRuntime.Bootstrap.dll/pdb have moved to the Base package.
 PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll $NugetDir\runtimes\win-$Platform\native
 PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.pdb $NugetDir\runtimes\win-$Platform\native
 #
@@ -230,21 +229,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd $NugetDir\lib\uap10.0
 #
-# Common Auto-Initializer Files
-PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeAutoInitializer.cpp $NugetDir\include
-PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeAutoInitializer.cs $NugetDir\include
-#
-# Bootstrap Auto-Initializer Files
-PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp $NugetDir\include
-PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs $NugetDir\include
-#
-# DeploymentManager Auto-Initializer Files
-PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cpp $NugetDir\include
-PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cs $NugetDir\include
-#
-# UndockedRegFreeWinRT (URFW) Auto-Initializer Files
-PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\UndockedRegFreeWinRT-AutoInitializer.cpp $NugetDir\include
-PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\UndockedRegFreeWinRT-AutoInitializer.cs $NugetDir\include
+# Auto-initializer files have moved to the Base package.
 #
 # Build overrides
 PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native

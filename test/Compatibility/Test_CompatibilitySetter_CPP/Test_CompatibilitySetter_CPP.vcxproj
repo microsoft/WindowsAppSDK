@@ -135,7 +135,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
+    <ProjectReference Include="$(RepoRoot)\base\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -145,7 +145,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 
   <!-- MAIN TEST CONTENT: PART 2 -->
-  <Import Project="$(RepoRoot)\build\NuSpecs\WindowsAppSDK-Nuget-Native.CompatibilitySetter.targets" />
+  <Import Project="$(RepoRoot)\base\build\NuSpecs\native\Microsoft.WindowsAppSDK.CompatibilitySetter.targets" />
   <Target Name="VerifyCompatibilitySetterFile" AfterTargets="ClCompile">
     <!-- Make sure the setter file was generated. -->
     <Error Condition="!Exists('$(GeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cpp')" Text="Missing file: $(GeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cpp" />

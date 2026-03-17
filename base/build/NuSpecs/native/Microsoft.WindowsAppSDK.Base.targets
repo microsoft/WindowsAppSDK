@@ -1,0 +1,67 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="WindowsAppSDKNotifySelfContainedMode;WindowsAppSDKFrameworkPackageDependentWithoutPackages">
+    <!-- Platform mapping: Win32 → x86, others pass through -->
+    <PropertyGroup>
+        <_WindowsAppSDKBasePlatform Condition="'$(Platform)' == 'Win32'">x86</_WindowsAppSDKBasePlatform>
+        <_WindowsAppSDKBasePlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_WindowsAppSDKBasePlatform>
+    </PropertyGroup>
+
+    <!-- Add include path for MddBootstrap.h and auto-initializer headers -->
+    <ItemDefinitionGroup>
+        <ClCompile>
+            <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+        </ClCompile>
+    </ItemDefinitionGroup>
+
+    <!-- Add Bootstrap.lib to the linker inputs when not SelfContained -->
+    <ItemDefinitionGroup Condition="'$(WindowsAppSDKSelfContained)' != 'true'">
+        <Link>
+            <AdditionalDependencies>$(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKBasePlatform)\Microsoft.WindowsAppRuntime.Bootstrap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+        </Link>
+    </ItemDefinitionGroup>
+
+    <!-- Compute the effective minimum target platform version for OS-version-dependent behavior.
+         Prefers WindowsTargetPlatformMinVersion; falls back to WindowsTargetPlatformVersion, then TargetPlatformVersion. -->
+    <PropertyGroup>
+        <_WindowsAppSDKMinTPV Condition="'$(WindowsTargetPlatformMinVersion)' != ''">$(WindowsTargetPlatformMinVersion)</_WindowsAppSDKMinTPV>
+        <_WindowsAppSDKMinTPV Condition="'$(_WindowsAppSDKMinTPV)' == '' and '$(WindowsTargetPlatformVersion)' != ''">$(WindowsTargetPlatformVersion)</_WindowsAppSDKMinTPV>
+        <_WindowsAppSDKMinTPV Condition="'$(_WindowsAppSDKMinTPV)' == ''">$(TargetPlatformVersion)</_WindowsAppSDKMinTPV>
+    </PropertyGroup>
+
+    <!-- Import shared targets (SC default, TPVBuild computation, validation targets) -->
+    <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.BaseCommon.targets" />
+
+    <!--Import Arm64EC configuration support -->
+    <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.Arm64Ec.targets" Condition="'$(Platform)'=='arm64ec'"/>
+
+    <!--Import after all other props to ensure WindowsAppSDKSelfContained is set (required for SelfContained projects)-->
+    <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.SelfContained.targets" Condition="'$(WindowsAppSDKSelfContained)'=='true'"/>
+
+    <!-- Bootstrapper and auto-initialization support -->
+    <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.BootstrapCommon.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.targets" Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'"/>
+
+    <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.targets" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'"/>
+
+    <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManager.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
+
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.CompatibilitySetter.targets" />
+
+    <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializer.targets" Condition="'$(WindowsAppSdkAutoInitialize)' == 'true'"/>
+
+    <!-- Copy Bootstrap.dll to output for non-SelfContained, non-Packaged native apps with bootstrap enabled -->
+    <Target Name="CopyBootstrapDllToOutDir"
+            Condition="'$(WindowsAppSDKSelfContained)' != 'true' and '$(AppxPackage)' != 'true' and ('$(WindowsAppSdkBootstrapInitialize)' != 'false' or '$(_WindowsAppSDKKeepBootstrapBinaries)' == 'true')"
+            AfterTargets="Build" BeforeTargets="Binplace">
+        <Copy
+            SourceFiles="$(MSBuildThisFileDirectory)..\..\runtimes\win-$(_WindowsAppSDKBasePlatform)\native\Microsoft.WindowsAppRuntime.Bootstrap.dll"
+            SkipUnchangedFiles="true"
+            DestinationFolder="$(OutDir)" />
+    </Target>
+
+</Project>

@@ -34,12 +34,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" />
+    <ProjectReference Include="..\..\..\..\..\base\dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" />
   </ItemGroup>
 
   <Target Name="GenerateBootstrapAutoInitializeCS" BeforeTargets="BeforeCompile">
     <ItemGroup>
-      <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\base\dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)..\WindowsAppSDK-VersionInfo.cs" />
     </ItemGroup>
   </Target>

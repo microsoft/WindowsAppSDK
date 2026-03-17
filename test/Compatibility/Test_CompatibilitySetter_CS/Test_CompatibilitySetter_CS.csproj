@@ -21,7 +21,7 @@
     <WindowsAppSDKDisabledChanges>None, None, (RuntimeCompatibilityChange)23456, None</WindowsAppSDKDisabledChanges>
   </PropertyGroup>
 
-  <Import Project="$(RepoRoot)\build\NuSpecs\Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" />
+  <Import Project="$(RepoRoot)\base\build\NuSpecs\Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" />
   <Target Name="VerifyCompatibilitySetterFile" AfterTargets="CoreCompile">
     <!-- Make sure the setter file was generated. -->
     <Error Condition="!Exists('$(WindowsAppSDKGeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cs')" Text="Missing file: $(WindowsAppSDKGeneratedFilesDir)\WindowsAppSDKCompatibilitySetter.cs" />

@@ -7,6 +7,11 @@
         <WindowsAppSdkUndockedRegFreeWinRTInitialize>true</WindowsAppSdkUndockedRegFreeWinRTInitialize>
     </PropertyGroup>
 
+    <!-- Default to true for apps targeting pre-19H1, where manifest-based WinRT activation is not natively supported -->
+    <PropertyGroup Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='' and '$(_WindowsAppSDKTPVBuild)' != '' and $(_WindowsAppSDKTPVBuild) &lt; 18362">
+        <WindowsAppSdkUndockedRegFreeWinRTInitialize>true</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitializeLoadLibrary)'=='' and '$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">
         <WindowsAppSdkUndockedRegFreeWinRTInitializeLoadLibrary>true</WindowsAppSdkUndockedRegFreeWinRTInitializeLoadLibrary>
     </PropertyGroup>

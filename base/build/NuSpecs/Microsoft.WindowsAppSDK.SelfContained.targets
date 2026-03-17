@@ -1,0 +1,535 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!--Enable SelfContained mode (disabling Framework Package) in any project that sets WindowsAppSDKSelfContained-->
+    <PropertyGroup>
+        <WindowsAppSDKFrameworkPackage>false</WindowsAppSDKFrameworkPackage>
+
+        <!--Disable redundant unpacking of framework package to work around Xaml tooling issue in VS 16.9-->
+        <WindowsAppSDKCopyXamlToolingLibs>false</WindowsAppSDKCopyXamlToolingLibs>
+
+        <!--Disable framework package references for all projects-->
+        <WindowsAppSDKFrameworkPackageReference>false</WindowsAppSDKFrameworkPackageReference>
+
+        <ManifestTool Condition="'$(ManifestTool)'=='' and Exists('$(MSBuildThisFileDirectory)\..\tools\mt.exe')">$(MSBuildThisFileDirectory)\..\tools\mt.exe</ManifestTool>
+        <ManifestTool Condition="'$(ManifestTool)'=='' and Exists('$(WindowsSDKBuildToolsBinVersionedArchFolder)\mt.exe')">$(WindowsSDKBuildToolsBinVersionedArchFolder)\mt.exe</ManifestTool>
+        <ManifestTool Condition="'$(ManifestTool)'=='' and Exists('$(WindowsSdkDir)bin\$(Platform)\mt.exe')">$(WindowsSdkDir)bin\$(Platform)\mt.exe</ManifestTool>
+        <ManifestTool Condition="'$(ManifestTool)'==''">mt.exe</ManifestTool>
+
+        <!--Microsoft.Common.CurrentVersion.targets initializes many *DependsOn properties,
+            so GetCopyToOutputDirectoryItemsDependsOn must be assigned here.-->
+        <GetCopyToOutputDirectoryItemsDependsOn>
+            $(GetCopyToOutputDirectoryItemsDependsOn);
+            AddMicrosoftWindowsAppSDKPayloadFilesFromMsix;
+            AddMicrosoftWindowsAppSDKPayloadFilesFromComponents
+        </GetCopyToOutputDirectoryItemsDependsOn>
+
+        <EmbedManifest>true</EmbedManifest>
+        <GenerateManifest>true</GenerateManifest>
+
+        <!-- If IntermediateOutputPath is relative, prepend MSBuildProjectDirectory -->
+        <SelfContainedIntermediateOutputPath>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)','$(IntermediateOutputPath)'))</SelfContainedIntermediateOutputPath>
+        <SelfContainedIntermediateOutputPath Condition="$([System.IO.Path]::IsPathRooted($(IntermediateOutputPath)))">$(IntermediateOutputPath)</SelfContainedIntermediateOutputPath>
+    </PropertyGroup>
+
+    <Target Name="_OverrideGetPriIndexName"
+        AfterTargets="GetPriIndexName"
+        BeforeTargets="MarkupCompilePass1">
+        <!--
+        Setting PRI index name. The XAML compiler use this in the LoadComponent() string.
+        -->
+        <PropertyGroup>
+            <PriIndexName Condition="'$(MSBuildProjectExtension)' != '.wapproj'"></PriIndexName>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="GetNewAppManifestValues" DependsOnTargets="ResolveReferences">
+        <PropertyGroup>
+            <!--C# projects define an ApplicationManifest property, C++ projects a Manifest item - look for either-->
+            <UserApplicationManifest>$(ApplicationManifest)</UserApplicationManifest>
+            <UserApplicationManifest Condition="'$(UserApplicationManifest)'==''">@(Manifest)</UserApplicationManifest>
+            <ApplicationManifest>$(SelfContainedIntermediateOutputPath)Manifests\app.manifest</ApplicationManifest>
+        </PropertyGroup>
+        <ItemGroup>
+            <Manifest Include="$(ApplicationManifest)" />
+        </ItemGroup>
+    </Target>
+
+    <Target Name="GetWindowsAppSDKNativePlatform">
+        <PropertyGroup>
+            <NativePlatform>Invalid</NativePlatform>
+            <NativePlatform Condition="'$(Platform)' == 'x86'">x86</NativePlatform>
+            <NativePlatform Condition="'$(Platform)' == 'Win32'">x86</NativePlatform>
+            <NativePlatform Condition="'$(Platform)' == 'x64'">x64</NativePlatform>
+            <NativePlatform Condition="'$(Platform)' == 'arm64'">arm64</NativePlatform>
+            <NativePlatform Condition="'$(Platform)' == 'arm64ec'">arm64ec</NativePlatform>
+        </PropertyGroup>
+        <PropertyGroup Condition="'$(Platform)' == 'AnyCPU' or '$(Platform)' == 'Any CPU'">
+            <NativePlatform Condition="'$(RuntimeIdentifier)' == 'win10-x64' or '$(RuntimeIdentifier)' == 'win-x64'">x64</NativePlatform>
+            <NativePlatform Condition="'$(RuntimeIdentifier)' == 'win10-x86' or '$(RuntimeIdentifier)' == 'win-x86'">x86</NativePlatform>
+            <NativePlatform Condition="'$(RuntimeIdentifier)' == 'win10-arm64' or '$(RuntimeIdentifier)' == 'win-arm64'">arm64</NativePlatform>
+            <NativePlatform Condition="'$(RuntimeIdentifier)' == 'win-arm'">arm</NativePlatform>
+        </PropertyGroup>
+        <Error Condition="'$(NativePlatform)' == 'Invalid'"
+            Text="WindowsAppSDKSelfContained requires a supported Windows architecture." />
+    </Target>
+	
+    <Target Name="GetExtractMicrosoftWindowsAppSDKMsixFilesInputs"
+        DependsOnTargets="ResolveReferences;GetWindowsAppSDKNativePlatform">
+        <PropertyGroup>
+            <MicrosoftWindowsAppSDKMsixContent>$(SelfContainedIntermediateOutputPath)MsixContent</MicrosoftWindowsAppSDKMsixContent>
+            <WindowsAppSDKAppxManifest>$(MicrosoftWindowsAppSDKMsixContent)\AppxManifest.xml</WindowsAppSDKAppxManifest>
+        </PropertyGroup>
+        <ItemGroup>
+            <MicrosoftWindowsAppSDKMsix Include="$([MSBuild]::NormalizeDirectory('$(MicrosoftWindowsAppSDKPackageDir)','tools\Msix\win10-$(NativePlatform)'))Microsoft.WindowsAppRuntime.?.?.Msix"/>
+            <MicrosoftWindowsAppSDKMsix Include="$([MSBuild]::NormalizeDirectory('$(MicrosoftWindowsAppSDKPackageDir)','tools\Msix\win10-$(NativePlatform)'))Microsoft.WindowsAppRuntime.?.?-*.Msix"/>
+        </ItemGroup>        
+    </Target>
+
+    <Target Name="ExtractMicrosoftWindowsAppSDKMsixFiles"
+      Condition="'$(MSBuildProjectExtension)' != '.wapproj' and '$(MicrosoftWindowsAppSDKPackageDir)' != ''"
+      Inputs="@(MicrosoftWindowsAppSDKMsix)"
+      Outputs="$(WindowsAppSDKAppxManifest)"
+      DependsOnTargets="GetExtractMicrosoftWindowsAppSDKMsixFilesInputs">
+        <Unzip
+          SourceFiles="@(MicrosoftWindowsAppSDKMsix)"
+          DestinationFolder="$(MicrosoftWindowsAppSDKMsixContent)"
+          SkipUnchangedFiles="true"
+          OverwriteReadOnlyFiles="true" />
+        <!-- We do not need to copy over the merged resources.pri from the msix, each required pri will be copied over separately -->
+        <Delete Files="$(MicrosoftWindowsAppSDKMsixContent)\resources.pri"/>
+    </Target>
+
+  <Target Name="AddMicrosoftWindowsAppSDKPayloadFilesFromMsix"
+    Condition="'$(MSBuildProjectExtension)' != '.wapproj'  and '$(MicrosoftWindowsAppSDKPackageDir)' != ''"
+    BeforeTargets="AssignTargetPaths;CoreCompile"
+    DependsOnTargets="ExtractMicrosoftWindowsAppSDKMsixFiles" >
+    <ItemGroup>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.dll"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\workloads*.json"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\restartAgent.exe"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\map.html"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.mui"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.onnxe"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.png"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.winmd"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.xaml"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.xbf"/>
+      <MicrosoftWindowsAppSDKFiles Remove="@(MicrosoftWindowsAppSDKFilesExcluded)"/>
+      <MicrosoftWindowsAppSDKFilesRes Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.pri"/>
+    </ItemGroup>
+    <CreateItem Include="@(MicrosoftWindowsAppSDKFiles)"
+        AdditionalMetadata="CopyToOutputDirectory=PreserveNewest;Link=%(MicrosoftWindowsAppSDKFiles.RecursiveDir)%(MicrosoftWindowsAppSDKFiles.Filename)%(MicrosoftWindowsAppSDKFiles.Extension)" >
+      <Output TaskParameter="Include" ItemName="None"/>
+    </CreateItem>
+    <CreateItem Include="@(MicrosoftWindowsAppSDKFilesRes)"
+        AdditionalMetadata="CopyToOutputDirectory=PreserveNewest;Link=%(MicrosoftWindowsAppSDKFilesRes.RecursiveDir)%(MicrosoftWindowsAppSDKFilesRes.Filename)%(MicrosoftWindowsAppSDKFilesRes.Extension)" >
+      <Output TaskParameter="Include" ItemName="ReferenceCopyLocalPaths"/>
+    </CreateItem>
+  </Target>
+	
+  <Target Name="AddMicrosoftWindowsAppSDKPayloadFilesFromComponents"
+    Condition="'$(MSBuildProjectExtension)' != '.wapproj' and '$(MicrosoftWindowsAppSDKPackageDir)' == ''"
+    BeforeTargets="AssignTargetPaths;CoreCompile"
+    DependsOnTargets="GetWindowsAppSDKNativePlatform" >
+    <PropertyGroup>
+        <MicrosoftWindowsAppSDKPFrameworkSubFolder>runtimes-framework\win-$(NativePlatform)\native</MicrosoftWindowsAppSDKPFrameworkSubFolder>
+        <MicrosoftWindowsAppSDKMetadataSubFolder Condition="'$(TargetPlatformVersion)'=='10.0.17763.0'">10.0.17763.0</MicrosoftWindowsAppSDKMetadataSubFolder>
+        <MicrosoftWindowsAppSDKMetadataSubFolder Condition="'$(MicrosoftWindowsAppSDKMetadataSubFolder)'==''">10.0.18362.0</MicrosoftWindowsAppSDKMetadataSubFolder>
+    </PropertyGroup>
+    <ItemGroup>
+      <MicrosoftWindowsAppSDKDllFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\*.dll"/>
+      <MicrosoftWindowsAppSDKFiles Include="@(MicrosoftWindowsAppSDKDllFiles)"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\workloads*.json"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\restartAgent.exe"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\map.html"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\*.mui"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\*.onnxe"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\*.png"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)metadata\*.winmd"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)metadata\$(MicrosoftWindowsAppSDKMetadataSubFolder)\*.winmd"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\*.winmd"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\*.xaml"/>
+      <MicrosoftWindowsAppSDKFiles Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\*.xbf"/>
+      <MicrosoftWindowsAppSDKFiles Remove="@(MicrosoftWindowsAppSDKFilesExcluded)"/>
+      <MicrosoftWindowsAppSDKFilesRes Include="%(WindowsAppSdkComponentPackages.Identity)$(MicrosoftWindowsAppSDKPFrameworkSubFolder)\**\*.pri"/>
+
+      <!-- Create a list of appx fragments from the components that have one. -->
+      <MicrosoftWindowsAppSDKAppxFragmentFiles Include="@(WindowsAppSdkComponentPackages -> '%(Identity)\runtimes-framework\package.appxfragment')" 
+                                               Condition="Exists('%(WindowsAppSdkComponentPackages.Identity)\runtimes-framework\package.appxfragment')" />
+    </ItemGroup>
+    <CreateItem Include="@(MicrosoftWindowsAppSDKFiles)"
+        AdditionalMetadata="CopyToOutputDirectory=PreserveNewest;Link=%(MicrosoftWindowsAppSDKFiles.RecursiveDir)%(MicrosoftWindowsAppSDKFiles.Filename)%(MicrosoftWindowsAppSDKFiles.Extension)" >
+      <Output TaskParameter="Include" ItemName="None"/>
+    </CreateItem>
+    <CreateItem Include="@(MicrosoftWindowsAppSDKFilesRes)"
+        AdditionalMetadata="CopyToOutputDirectory=PreserveNewest;Link=%(MicrosoftWindowsAppSDKFilesRes.RecursiveDir)%(MicrosoftWindowsAppSDKFilesRes.Filename)%(MicrosoftWindowsAppSDKFilesRes.Extension)" >
+      <Output TaskParameter="Include" ItemName="ReferenceCopyLocalPaths"/>
+    </CreateItem>
+  </Target>	
+
+    <Target Name="_RemoveWindowsAppSDKFrameworkReferences" AfterTargets="_ExpandProjectReferences" Outputs="@(FrameworkSdkReference)">
+        <ItemGroup>
+            <FrameworkSdkReference Remove="@(FrameworkSdkReference->HasMetadata('WindowsAppSDK'))"/>
+        </ItemGroup>
+    </Target>
+
+    <!-- Prevent WinUI's legacy app-local behavior from colliding with WindowsAppSDK InApp behavior -->
+    <Target Name="_GetPathToXAMLWinRTImplementations" />
+    <Target Name="_ReplaceMUXWinRTRegistrations" />
+
+    <UsingTask TaskName="GenerateAppManifestFromAppx" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <RedirectDlls ParameterType="System.Boolean" Required="true" />
+            <MsixContentDir ParameterType="System.String" Required="true" />
+            <InAppxManifest ParameterType="System.String" Required="true" />
+            <OutAppManifest ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Collections.Generic" />
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.Linq" />
+            <Using Namespace="System.Text" />
+            <Using Namespace="System.Xml" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+            var headerF = @"<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<assembly manifestVersion='1.0'
+    xmlns:asmv3='urn:schemas-microsoft-com:asm.v3'
+    xmlns:winrtv1='urn:schemas-microsoft-com:winrt.v1'
+    xmlns='urn:schemas-microsoft-com:asm.v1'>";
+            var sb = new StringBuilder();
+            sb.AppendLine(headerF);
+            
+            var dllFileFormat = RedirectDlls ? 
+                @"    <asmv3:file name='{0}' loadFrom='%MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY%{0}'>" :
+                @"    <asmv3:file name='{0}'>";
+
+            if (!string.IsNullOrEmpty(InAppxManifest))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(InAppxManifest);
+                var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                nsmgr.AddNamespace("m", "http://schemas.microsoft.com/appx/manifest/foundation/windows10");
+                // Add InProcessServer elements to the generated appxmanifest
+                var xQuery = "./m:Package/m:Extensions/m:Extension/m:InProcessServer";
+                var dllFiles = (from di in (new DirectoryInfo(MsixContentDir).EnumerateFiles("*.dll")) select di.Name).ToList();
+                foreach (XmlNode winRTFactory in doc.SelectNodes(xQuery, nsmgr))
+                {
+                    var dllFileNode = winRTFactory.SelectSingleNode("./m:Path", nsmgr);
+                    var dllFile = dllFileNode.InnerText;
+                    var typesNames = winRTFactory.SelectNodes("./m:ActivatableClass", nsmgr).OfType<XmlNode>();
+                    sb.AppendFormat(dllFileFormat, dllFile);
+                    sb.AppendLine();
+                    foreach (var typeNode in typesNames)
+                    {
+                        var attribs = typeNode.Attributes.OfType<XmlAttribute>().ToArray();
+                        var typeName = attribs
+                            .OfType<XmlAttribute>()
+                            .SingleOrDefault(x => x.Name == "ActivatableClassId")
+                            .InnerText;
+                        var xmlEntryFormat =
+@"        <winrtv1:activatableClass name='{0}' threadingModel='both'/>";
+                        sb.AppendFormat(xmlEntryFormat, typeName);
+                        sb.AppendLine();
+                        dllFiles.RemoveAll(e => e.Equals(dllFile, StringComparison.OrdinalIgnoreCase));
+                    }
+                    sb.AppendLine(@"    </asmv3:file>");
+                }
+                if(RedirectDlls)
+                {
+                    foreach (var dllFile in dllFiles)
+                    {
+                        sb.AppendFormat(dllFileFormat, dllFile);
+                        sb.AppendLine(@"</asmv3:file>");
+                    }
+                }
+                // Add ProxyStub elements to the generated appxmanifest
+                xQuery = "./m:Package/m:Extensions/m:Extension/m:ProxyStub";
+                dllFiles = (from di in (new DirectoryInfo(MsixContentDir).EnumerateFiles("*.dll")) select di.Name).ToList();
+                foreach (XmlNode proxystub in doc.SelectNodes(xQuery, nsmgr))
+                {
+                    var classIDAdded = false;
+                    
+                    var dllFileNode = proxystub.SelectSingleNode("./m:Path", nsmgr);
+                    var dllFile = dllFileNode.InnerText;
+                    // exclude PushNotificationsLongRunningTask, which requires the Singleton (which is unavailable for self-contained apps)
+                    // exclude Widgets entries unless/until they have been tested and verified by the Widgets team
+                    if (dllFile == "PushNotificationsLongRunningTask.ProxyStub.dll" || dllFile == "Microsoft.Windows.Widgets.dll")
+                    {
+                        continue;
+                    }
+                    var typesNamesForProxy = proxystub.SelectNodes("./m:Interface", nsmgr).OfType<XmlNode>();
+                    sb.AppendFormat(dllFileFormat, dllFile);
+                    sb.AppendLine();
+                    foreach (var typeNode in typesNamesForProxy)
+                    {
+                        if(!classIDAdded)
+                        {
+                            var classIdAttribute = proxystub.Attributes.OfType<XmlAttribute>().ToArray();
+                            var classID = classIdAttribute
+                                .OfType<XmlAttribute>()
+                                .SingleOrDefault(x => x.Name == "ClassId")
+                                .InnerText;
+
+                            var xmlEntryFormat = @"        <asmv3:comClass clsid='{{{0}}}'/>";
+                            sb.AppendFormat(xmlEntryFormat, classID);
+                            classIDAdded = true;
+                        }
+                        var attribs = typeNode.Attributes.OfType<XmlAttribute>().ToArray();
+                        var typeID = attribs
+                            .OfType<XmlAttribute>()
+                            .SingleOrDefault(x => x.Name == "InterfaceId")
+                            .InnerText;
+                        var typeNames = attribs
+                            .OfType<XmlAttribute>()
+                            .SingleOrDefault(x => x.Name == "Name")
+                            .InnerText;
+                        var xmlEntryFormatForStubs = @"        <asmv3:comInterfaceProxyStub name='{0}' iid='{{{1}}}'/>";
+                        sb.AppendFormat(xmlEntryFormatForStubs, typeNames, typeID);
+                        sb.AppendLine();
+                        dllFiles.RemoveAll(e => e.Equals(dllFile, StringComparison.OrdinalIgnoreCase));
+                    }
+                    sb.AppendLine(@"    </asmv3:file>");
+                }
+                if(RedirectDlls)
+                {
+                    foreach (var dllFile in dllFiles)
+                    {
+                        sb.AppendFormat(dllFileFormat, dllFile);
+                        sb.AppendLine(@"</asmv3:file>");
+                    }
+                }				
+            }
+            sb.AppendLine(@"</assembly>");
+            var manifestContent = sb.ToString();
+            File.WriteAllText(OutAppManifest, manifestContent, Encoding.UTF8);
+]]>
+            </Code>
+        </Task>
+    </UsingTask>
+	
+    <UsingTask TaskName="GenerateAppManifestFromAppxFragments" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <RedirectDlls ParameterType="System.Boolean" Required="true" />
+            <FrameworkDlls ParameterType="System.String[]" Required="true" />
+            <AppxFragments ParameterType="System.String[]" Required="true" />
+            <OutAppManifest ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Collections.Generic" />
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.Linq" />
+            <Using Namespace="System.Text" />
+            <Using Namespace="System.Xml" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+            var headerF = @"<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<assembly manifestVersion='1.0'
+    xmlns:asmv3='urn:schemas-microsoft-com:asm.v3'
+    xmlns:winrtv1='urn:schemas-microsoft-com:winrt.v1'
+    xmlns='urn:schemas-microsoft-com:asm.v1'>";
+            var sb = new StringBuilder();
+            sb.AppendLine(headerF);
+            
+            var dllFileFormat = RedirectDlls ? 
+                @"    <asmv3:file name='{0}' loadFrom='%MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY%{0}'>" :
+                @"    <asmv3:file name='{0}'>";
+            var dllFiles = FrameworkDlls.Select(Path.GetFileName).ToList();
+
+            foreach (String appxFragment in AppxFragments)
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(appxFragment);
+                var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                nsmgr.AddNamespace("m", "http://schemas.microsoft.com/appx/manifest/foundation/windows10");
+                var xQuery = "./m:Fragment/m:Extensions/m:Extension/m:InProcessServer";
+                foreach (XmlNode winRTFactory in doc.SelectNodes(xQuery, nsmgr))
+                {
+                    var dllFileNode = winRTFactory.SelectSingleNode("./m:Path", nsmgr);
+                    var dllFile = dllFileNode.InnerText;
+                    var typesNames = winRTFactory.SelectNodes("./m:ActivatableClass", nsmgr).OfType<XmlNode>();
+                    sb.AppendFormat(dllFileFormat, dllFile);
+                    sb.AppendLine();
+                    foreach (var typeNode in typesNames)
+                    {
+                        var attribs = typeNode.Attributes.OfType<XmlAttribute>().ToArray();
+                        var typeName = attribs
+                            .OfType<XmlAttribute>()
+                            .SingleOrDefault(x => x.Name == "ActivatableClassId")
+                            .InnerText;
+                        var xmlEntryFormat =
+@"        <winrtv1:activatableClass name='{0}' threadingModel='both'/>";
+                        sb.AppendFormat(xmlEntryFormat, typeName);
+                        sb.AppendLine();
+                        dllFiles.RemoveAll(e => e.Equals(dllFile, StringComparison.OrdinalIgnoreCase));
+                    }
+                    sb.AppendLine(@"    </asmv3:file>");
+                }
+				
+                // Add ProxyStub elements to the generated appxmanifest
+                xQuery = "./m:Fragment/m:Extensions/m:Extension/m:ProxyStub";
+                foreach (XmlNode proxystub in doc.SelectNodes(xQuery, nsmgr))
+                {
+                    var classIDAdded = false;
+                    
+                    var dllFileNode = proxystub.SelectSingleNode("./m:Path", nsmgr);
+                    var dllFile = dllFileNode.InnerText;
+                    // exclude PushNotificationsLongRunningTask, which requires the Singleton (which is unavailable for self-contained apps)
+                    // exclude Widgets entries unless/until they have been tested and verified by the Widgets team
+                    if (dllFile == "PushNotificationsLongRunningTask.ProxyStub.dll" || dllFile == "Microsoft.Windows.Widgets.dll")
+                    {
+                        continue;
+                    }
+                    var typesNamesForProxy = proxystub.SelectNodes("./m:Interface", nsmgr).OfType<XmlNode>();
+                    sb.AppendFormat(dllFileFormat, dllFile);
+                    sb.AppendLine();
+                    foreach (var typeNode in typesNamesForProxy)
+                    {
+                        if(!classIDAdded)
+                        {
+                            var classIdAttribute = proxystub.Attributes.OfType<XmlAttribute>().ToArray();
+                            var classID = classIdAttribute
+                                .OfType<XmlAttribute>()
+                                .SingleOrDefault(x => x.Name == "ClassId")
+                                .InnerText;
+
+                            var xmlEntryFormat = @"        <asmv3:comClass clsid='{{{0}}}'/>";
+                            sb.AppendFormat(xmlEntryFormat, classID);
+                            classIDAdded = true;
+                        }
+                        var attribs = typeNode.Attributes.OfType<XmlAttribute>().ToArray();
+                        var typeID = attribs
+                            .OfType<XmlAttribute>()
+                            .SingleOrDefault(x => x.Name == "InterfaceId")
+                            .InnerText;
+                        var typeNames = attribs
+                            .OfType<XmlAttribute>()
+                            .SingleOrDefault(x => x.Name == "Name")
+                            .InnerText;
+                        var xmlEntryFormatForStubs = @"        <asmv3:comInterfaceProxyStub name='{0}' iid='{{{1}}}'/>";
+                        sb.AppendFormat(xmlEntryFormatForStubs, typeNames, typeID);
+                        sb.AppendLine();
+                        dllFiles.RemoveAll(e => e.Equals(dllFile, StringComparison.OrdinalIgnoreCase));
+                    }
+                    sb.AppendLine(@"    </asmv3:file>");
+                }
+            }
+			
+            if(RedirectDlls)
+            {
+                foreach (var dllFile in dllFiles)
+                {
+                    sb.AppendFormat(dllFileFormat, dllFile);
+                    sb.AppendLine(@"</asmv3:file>");
+                }
+            }
+			
+            sb.AppendLine(@"</assembly>");
+            var manifestContent = sb.ToString();
+            File.WriteAllText(OutAppManifest, manifestContent, Encoding.UTF8);
+]]>
+            </Code>
+        </Task>
+    </UsingTask>	
+
+    <Target Name="CreateWinRTRegistration"
+      BeforeTargets="AssignTargetPaths;CoreCompile"
+      DependsOnTargets="GetNewAppManifestValues;ExtractMicrosoftWindowsAppSDKMsixFiles;AddMicrosoftWindowsAppSDKPayloadFilesFromComponents"
+      Inputs="$(MSBuildAllProjects);$(UserApplicationManifest);$(WindowsAppSDKAppxManifest);@(MicrosoftWindowsAppSDKAppxFragmentFiles)"
+      Outputs="$(ApplicationManifest)"
+      Condition="'$(MSBuildProjectExtension)' != '.wapproj'">
+        <MakeDir Directories="$(SelfContainedIntermediateOutputPath)Manifests\" />
+        <PropertyGroup>
+            <WindowsAppSDKAppManifest>$(SelfContainedIntermediateOutputPath)Manifests\WindowsAppSDK.manifest</WindowsAppSDKAppManifest>
+            <WindowsAppSDKRedirectDlls>false</WindowsAppSDKRedirectDlls>
+            <WindowsAppSDKRedirectDlls Condition="'$(PublishSingleFile)'=='true'">true</WindowsAppSDKRedirectDlls>
+        </PropertyGroup>
+        <GenerateAppManifestFromAppx
+            Condition="'$(MicrosoftWindowsAppSDKPackageDir)' != ''"
+            RedirectDlls="$(WindowsAppSDKRedirectDlls)"
+            MsixContentDir="$(MicrosoftWindowsAppSDKMsixContent)"
+            InAppxManifest="$(WindowsAppSDKAppxManifest)"
+            OutAppManifest="$(WindowsAppSDKAppManifest)">
+        </GenerateAppManifestFromAppx>
+        <GenerateAppManifestFromAppxFragments
+            Condition="'$(MicrosoftWindowsAppSDKPackageDir)' == ''"
+            RedirectDlls="$(WindowsAppSDKRedirectDlls)"
+            FrameworkDlls="@(MicrosoftWindowsAppSDKDllFiles)"
+            AppxFragments="@(MicrosoftWindowsAppSDKAppxFragmentFiles)"
+            OutAppManifest="$(WindowsAppSDKAppManifest)">
+        </GenerateAppManifestFromAppxFragments>		
+        <ItemGroup>
+            <MtMergeInputs Include="$(WindowsAppSDKAppManifest)" />
+            <MtMergeInputs Condition="'$(UserApplicationManifest)'!=''" Include="$(UserApplicationManifest)" />
+            <UpToDateCheckInput Condition="'$(UserApplicationManifest)'!=''" Include="$(UserApplicationManifest)" />
+        </ItemGroup>
+        <Message Importance="low" Text="WindowsAppSDKSelfContained merging manifests: @(MtMergeInputs)" />
+        <Exec
+          Command="&quot;$(ManifestTool)&quot; -nologo -manifest @(MtMergeInputs->'&quot;%(Identity)&quot;', ' ') -out:&quot;$(ApplicationManifest)&quot;"
+          WorkingDirectory="$(MSBuildProjectDirectory)" >
+        </Exec>
+        <Touch Files="$(ApplicationManifest)" />
+    </Target>
+
+    <Target Name="_StompSourceProjectForWapProject" BeforeTargets="_ConvertItems" Condition="'$(MSBuildProjectExtension)' == '.wapproj'">
+        <ItemGroup>
+            <!-- Stomp all "SourceProject" values for all incoming dependencies to flatten the package. -->
+            <_TemporaryFilteredWapProjOutput Include="@(_FilteredNonWapProjProjectOutput)" />
+            <_FilteredNonWapProjProjectOutput Remove="@(_TemporaryFilteredWapProjOutput)" />
+            <_FilteredNonWapProjProjectOutput Include="@(_TemporaryFilteredWapProjOutput)">
+                <!-- Blank the SourceProject here to vend all files into the root of the package. -->
+                <SourceProject>
+                </SourceProject>
+            </_FilteredNonWapProjProjectOutput>
+
+            <!-- We need to disable DeterminePriPackageFiles for 2 reasons:
+              1. We are moving all the payload to root with @_FilteredNonWapProjProjectOutput
+                  DeterminePriPackageFiles searches in the payload for primary resources that need to be deployed to root.
+                  We dont need any of the work to determine which parts of the payload belong to a primary resource becuase we
+                  already moved all the payload to root.
+              2. The search for primary resources is super expensive, and large projects this search can takes minutes to complete,
+                  even for an incremental build with no changes. -->
+            <_DetailedPriXml Remove="@(_DetailedPriXml)" />
+
+        </ItemGroup>
+    </Target>
+
+    <!-- Workaround for VCRT issue: https://github.com/microsoft/vcrt-forwarders/issues/37 -->
+    <Target Name="_FixUpProjectConfigurations"
+        BeforeTargets="ResolveVCRTForwarderReferences"
+        Condition="'@(ProjectReferenceWithConfiguration)' != '' And '$(VCRTForwarders-IncludeDebugCRT)' == '' And '$(MSBuildProjectExtension)' == '.wapproj'">
+        <ItemGroup>
+            <_SavedProjectReferenceWithConfiguration Include="@(ProjectReferenceWithConfiguration)">
+                <Configuration>$(Configuration)</Configuration>
+                <Platform>$(Platform)</Platform>
+            </_SavedProjectReferenceWithConfiguration>
+            <ProjectReferenceWithConfiguration Remove="@(ProjectReferenceWithConfiguration)" />
+            <ProjectReferenceWithConfiguration Include="@(_SavedProjectReferenceWithConfiguration)" />
+        </ItemGroup>
+    </Target>
+
+    <Target Name="_RemoveWinMDFromAppxManifest"
+          BeforeTargets="_GenerateCurrentProjectAppxManifest">
+        <ItemGroup>
+            <_AppxWinmdFilesToHarvest Remove="@(_AppxWinmdFilesToHarvest)" />
+        </ItemGroup>
+    </Target>
+
+    <!--Define compile-time constants-->
+    <Target Name="WindowsAppSDKSelfContainedCompileTimeConstants"
+            BeforeTargets="ClCompile"
+            Condition="'$(WindowsAppSDKSelfContained)'=='true'">
+        <ItemGroup>
+            <ClCompile>
+                <PreprocessorDefinitions>%(PreprocessorDefinitions);MICROSOFT_WINDOWSAPPSDK_SELFCONTAINED=1</PreprocessorDefinitions>
+            </ClCompile>
+        </ItemGroup>
+    </Target>
+    <PropertyGroup Condition="'$(WindowsAppSDKSelfContained)'=='true'">
+        <DefineConstants>$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_SELFCONTAINED</DefineConstants>
+    </PropertyGroup>
+
+</Project>

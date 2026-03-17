@@ -1,0 +1,23 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);WindowsAppSDKVerifyKitVersion</PrepareForBuildDependsOn>
+  </PropertyGroup>
+
+  <Target Name="WindowsAppSDKVerifyKitVersion" Condition="'$(WindowsAppSDKVerifyKitVersion)'!='false' and '@(Midl)'!=''">
+    <PropertyGroup>
+      <WindowsAppSDKAtLeast22000>false</WindowsAppSDKAtLeast22000>
+      <WindowsAppSDKAtLeast22000 Condition="'$(TargetPlatformVersion)' &gt;= '10.0.22000.0'">true</WindowsAppSDKAtLeast22000>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <!-- Checking if any component packages are experimental such as Microsoft.WindowsAppSDK[.Component].<ver>-experimental or Microsoft.WindowsAppSDK[.Component]\<ver>-experimental. -->
+      <!-- The regex doesn't directly check if it is experimental, but rather if it is not a preview or a stable build (with or without -stable suffix) to allow for components to use other suffixes. -->
+      <_ExperimentalPackages Include="@(WindowsAppSdkComponentPackages)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Identity)', 'Microsoft\.WindowsAppSDK([.\\][^\\]*)*-(?!stable)(?!preview)'))" />
+    </ItemGroup>
+
+    <Error Condition="$(WindowsAppSDKAtLeast22000) != 'true' and '@(_ExperimentalPackages)' != ''" Text="This version of Windows App SDK requires Windows SDK version 10.0.22000.0 or later." />
+  </Target>
+</Project>

@@ -1,0 +1,131 @@
+#####################################################################################################################################
+#                                               OneBranch Pipelines - Official                                                      #
+#####################################################################################################################################
+#                                                                                                                                   #
+# This pipeline was created by EasyStart from a sample located at:                                                                  #
+#                               https://aka.ms/obpipelines/easystart/samples                                                        #
+#                                                                                                                                   #
+# Windows Undocked Wiki:        https://www.osgwiki.com/wiki/Windows_Undocked_Template                                              #
+# General OB Documentation:     https://aka.ms/obpipelines                                                                          #
+# Build MSBuild project:        https://dev.azure.com/onebranch/OneBranch/_wiki/wikis/OneBranch.wiki/6045/Build-MSBuild-project     #
+# Yaml Schema:                  https://aka.ms/obpipelines/yaml/schema                                                              #
+# Retail Tasks:                 https://aka.ms/obpipelines/tasks                                                                    #
+# Support:                      https://aka.ms/onebranchsup                                                                         #
+#                                                                                                                                   #
+#####################################################################################################################################
+
+# https://aka.ms/obpipelines/triggers
+trigger: none
+
+parameters: # parameters are shown up in ADO UI in a build queue time
+- name: "PushPackageToInternalFeed"
+  displayName: "Push Windows App SDK Packages To InternalFeed"
+  type: boolean
+  default: true
+- name: "SignOutput"
+  displayName: "Sign packages and their contents"
+  type: boolean
+  default: true
+- name: runStaticAnalysis
+  displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
+  type: boolean
+  default: true
+- name: PublishToMaestro
+  displayName: "Publish To Maestro"
+  type: boolean
+  default: true
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+  values:
+  - 'stable'
+  - 'experimental'
+  - 'preview'
+
+variables:
+- template: ../../build/WindowsAppSDK-CommonVariables.yml
+- template: AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: WindowsAppSDK-Aggregator-TestConfig.yml@WindowsAppSDKConfig
+- group: WindowsAppSDK-Build-Variables
+# Only the "WinAppSDK-Build-PR (OneBranch)" pipeline is currently prepped for 1ES hosted image validation.
+# Hence, EnableTestImageValidation and EnableBuildImageValidation are hardwired to false here, such that 
+# the pipeline always behaves normally.
+- name: EnableTestImageValidation
+  value: false
+- name: EnableBuildImageValidation
+  value: false
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKVersionConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    
+name: $(version)
+
+extends:
+  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    platform:
+      name: 'windows_undocked' # windows undocked
+
+    featureFlags:
+      WindowsHostVersion:
+        Version: 2022
+        Network: R1
+
+    globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
+      tsa:
+        enabled:  $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
+      isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      asyncSdl: # https://aka.ms/obpipelines/asyncsdl
+        enabled: false
+      # suppression:
+      #   suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
+      policheck:
+        exclusionsFile: $(Build.SourcesDirectory)\.config\PolicheckExclusions.xml
+      binskim:
+        enabled: true
+        break: true
+        # The following serves as an include/exclude example (*untested*).
+        # analyzeTargetGlob: '+:file|**\bin\**\*.dll;-:file|**\Microsoft.WindowsAppRuntime.Insights.Resource.dll'
+      prefast:
+        ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+          enabled: true
+        ${{ else }}:
+          enabled: false
+        break: true
+        # Use "severity: 'Warning'" to be more sensitive, break on Warnings+Errors.
+        # Use "severity: 'Note'" to be even more sensitive, break on Notes+Warnings+Errors.
+        # Use "severity: 'Default'" to get back to default, i.e., break on Errors. Can't get less sensitive than that.
+        severity: Default
+        # Use "exclusionsFile: <<FILE PATH>>" to apply a local exclusion file.
+      apiscan:
+        # We will enable APIScan on a per-job basis downstream as needed.
+        enabled: false
+        # TODO: Once we've cleared away all existing errors, consider setting this to true.
+        break: false
+
+      # Don't bother to disable tools that are already run by default in SourceAnalysis, because in SourceAnalysis
+      # those tools target Build.SourcesDirectory by default, while here in BinaryAnalysis they target
+      # ob_outputDirectory instead, hence, the two rounds may catch different issues.
+
+    stages:
+    - template: AzurePipelinesTemplates/WindowsAppSDK-BuildWindowsAppSDKBase-Stages.yml@self
+      parameters:
+        IsOfficial: true
+        PushPackageToInternalFeed: ${{ parameters.PushPackageToInternalFeed }}
+        SignOutput: ${{ parameters.SignOutput }}
+        PublishToMaestro: ${{ parameters.PublishToMaestro }}
+        BuildType : ${{ parameters.BuildType }}
+        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}

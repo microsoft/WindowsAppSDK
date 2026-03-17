@@ -107,7 +107,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\base\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,7 +125,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\base\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,7 +148,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\base\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,7 +167,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\base\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,7 +185,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\base\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -203,7 +203,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\inc;$(ProjectDir)..\..\base\dev\WindowsAppRuntime_BootstrapDLL\;$(MSBuildProjectDirectory)\..\..\dev\common;$(MSBuildProjectDirectory)\..\..\dev\Detours</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -255,7 +255,7 @@
     <ProjectReference Include="..\..\dev\Detours\Detours.vcxproj">
       <Project>{d6bc25c5-1aa7-4c4a-a02c-b42dedbfea33}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
+    <ProjectReference Include="..\..\base\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -1,0 +1,112 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="WindowsAppSDKNotifySelfContainedMode;WindowsAppSDKFrameworkPackageDependentWithoutPackages">
+
+    <!-- Compute the effective minimum target platform version for OS-version-dependent behavior.
+         Prefers TargetPlatformMinVersion; falls back to TargetPlatformVersion if not set. -->
+    <PropertyGroup>
+        <_WindowsAppSDKMinTPV Condition="'$(TargetPlatformMinVersion)' != ''">$(TargetPlatformMinVersion)</_WindowsAppSDKMinTPV>
+        <_WindowsAppSDKMinTPV Condition="'$(_WindowsAppSDKMinTPV)' == ''">$(TargetPlatformVersion)</_WindowsAppSDKMinTPV>
+    </PropertyGroup>
+
+    <!-- Import shared targets (SC default, TPVBuild computation, validation targets) -->
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.BaseCommon.targets" />
+
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.SingleFile.targets" Condition="'$(PublishSingleFile)'=='true'"/>
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.SingleProject.targets" Condition="'$(EnableMsixTooling)'=='true'"/>
+
+    <!--Import Arm64EC configuration support -->
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Arm64Ec.targets" Condition="'$(Platform)'=='arm64ec'"/>
+
+    <!--Import after all other props to ensure WindowsAppSDKSelfContained is set (required for SelfContained projects)-->
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.SelfContained.targets" Condition="'$(WindowsAppSDKSelfContained)'=='true'"/>
+
+    <!-- Bootstrapper and auto-initialization support -->
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.BootstrapCommon.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.CS.targets" Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'"/>
+
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'"/>
+
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
+
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.CompatibilitySetter.CS.targets" />
+
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializerCommon.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AutoInitializer.CS.targets" Condition="'$(WindowsAppSdkAutoInitialize)' == 'true'"/>
+
+    <ItemGroup>
+      <Compile Condition="'$(WindowsAppSDKAggregatePackage)' == 'true' and '$(WindowsAppSdkIncludeVersionInfo)'=='true'" Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
+    </ItemGroup>
+
+    <!-- Remove Bootstrap binaries from output when they are not needed:
+         - SelfContained=true: OS provides dynamic dependency support
+         - BootstrapInitialize explicitly disabled (on Germanium+, where it's optional)
+         - Packaged apps (appxmanifest handles framework dependency) -->
+    <Target Name="WindowsAppSDKRemoveBootstrapFromOutput" BeforeTargets="_CopyFilesMarkedCopyLocal;CopyFilesToOutputDirectory"
+            Condition="'$(WindowsAppSDKSelfContained)'=='true' or ('$(WindowsAppSdkBootstrapInitialize)' == 'false' and '$(_WindowsAppSDKKeepBootstrapBinaries)' != 'true')">
+        <ItemGroup>
+            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(Filename)' == 'Microsoft.WindowsAppRuntime.Bootstrap'" />
+            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(Filename)' == 'Microsoft.WindowsAppRuntime.Bootstrap.Net'" />
+            <RuntimeCopyLocalItems Remove="@(RuntimeCopyLocalItems)" Condition="'%(Filename)' == 'Microsoft.WindowsAppRuntime.Bootstrap'" />
+            <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)" Condition="'%(Filename)' == 'Microsoft.WindowsAppRuntime.Bootstrap'" />
+        </ItemGroup>
+    </Target>
+
+    <Target Name="RemoveVCLibsFrameworkPackageDependencies" BeforeTargets="_ConvertItems" AfterTargets="GetInstalledSDKLocations" Condition="'$(MSBuildProjectExtension)'=='.wapproj'">
+        <ItemGroup>
+            <!-- Remove VCLibs references made by DesktopBridge _ResolveVCLibDependencies -->
+            <FrameworkSdkPackage Remove="@(FrameworkPackageDependencies)"/>
+            <!-- And prevent additional VCLibs references made by DesktopBridge _ConvertItems -->
+            <InstalledSDKLocations Remove="@(InstalledSDKLocations)" />
+        </ItemGroup>
+    </Target>
+
+    <PropertyGroup>
+        <ResolveReferencesDependsOn Condition="'$(MSBuildProjectExtension)'=='.csproj' and '$(WindowsAppSDKVerifyCsWinRtVersions)'!='false' and '$(WindowsAppSDKVerifyWinrtRuntimeVersion)'!='false'">
+            $(ResolveReferencesDependsOn);WindowsAppSDKVerifyCsWinRtVersions
+        </ResolveReferencesDependsOn>
+    </PropertyGroup>
+    <Target Name="WindowsAppSDKVerifyCsWinRtVersions" DependsOnTargets="ResolveAssemblyReferences">
+        <PropertyGroup>
+            <_TargetFrameworkRequired>6.0</_TargetFrameworkRequired>
+            <_TargetFrameworkCompatible Condition="$([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '$(_TargetFrameworkRequired)'))">True</_TargetFrameworkCompatible>
+        </PropertyGroup>
+        <ItemGroup>
+            <_WindowsSdkPackage Include="$(WindowsSdkPackageVersion)" Condition="'$(WindowsSdkPackageVersion)' != ''">
+                <Referenced>$(WindowsSdkPackageVersion)</Referenced>
+                <Required>10.0.$([System.Version]::Parse("$(WindowsSdkPackageVersion.Split('-')[0])").Build).38</Required>
+            </_WindowsSdkPackage>
+            <_WindowsSdkPackage Include="@(ResolvedFrameworkReference)" Condition="'$(WindowsSdkPackageVersion)' == '' and '@(ResolvedFrameworkReference)' != '' and 
+                    ('%(Identity)' == 'Microsoft.Windows.SDK.NET.Ref' or '%(Identity)' == 'Microsoft.Windows.SDK.NET.Ref.Windows')">
+                <Referenced>%(ResolvedFrameworkReference.TargetingPackVersion)</Referenced>
+                <Required>10.0.$([System.Version]::Parse("%(ResolvedFrameworkReference.TargetingPackVersion)").Build).38</Required>
+            </_WindowsSdkPackage>
+            <_WindowsSdkCompatible Include="@(_WindowsSdkPackage)" Condition="'@(_WindowsSdkPackage)' != '' and $([MSBuild]::VersionGreaterThanOrEquals(%(Referenced), %(Required)))" />
+        </ItemGroup>
+        <PropertyGroup>
+            <_WindowsSdkPackageRequired>@(_WindowsSdkPackage->'%(Required)')</_WindowsSdkPackageRequired>
+        </PropertyGroup>
+        <Error Condition="'$(_TargetFrameworkCompatible)'!='True'"
+            Text="This version of the Windows App SDK requires .NET $(_TargetFrameworkRequired).
+    Please update your TargetFramework to specify net$(_TargetFrameworkRequired) or later.
+" />
+        <Error Condition="'$(_WindowsSdkPackageRequired)'==''"
+            Text="The Windows App SDK requires a specific target OS version. Please set the &lt;TargetFramework&gt; property to an appropriate value. For more information, visit https://aka.ms/winappsdk.TFM." 
+            HelpLink="https://aka.ms/winappsdk.TFM" />
+        <Error Condition="'@(_WindowsSdkCompatible)'==''"
+            Text="This version of the Windows App SDK requires Microsoft.Windows.SDK.NET.Ref $(_WindowsSdkPackageRequired) or later. Please add property &lt;WindowsSdkPackageVersion&gt;$(_WindowsSdkPackageRequired)&lt;/WindowsSdkPackageVersion&gt; to your project. For more information, visit https://aka.ms/winappsdk.winsdkpkg." 
+            HelpLink="https://aka.ms/winappsdk.winsdkpkg" />
+        <Warning Condition="'$(CsWinRTAotOptimizerEnabled)' == '' and '$(PublishAot)'=='true'"
+            Text="This version of the Windows App SDK requires CsWinRTAotOptimizerEnabled set to enable PublishAot support.
+    This will be automatically set if you update to .NET SDK 6.0.134, 6.0.426, 8.0.109, 8.0.305 or 8.0.402 (or later).
+    Or you can add a reference to the Microsoft.Windows.CsWinRT 2.1.1 (or later) NuGet package which will also set it.
+" />
+
+        <Warning Condition="'$(CsWinRTAotOptimizerEnabled)' != '' and '$(CsWinRTAotOptimizerEnabled)' != 'true' and '$(PublishAot)'=='true'"
+            Text="This version of the Windows App SDK requires CsWinRTAotOptimizerEnabled set to true to enable PublishAot support." />
+    </Target>
+
+</Project>
