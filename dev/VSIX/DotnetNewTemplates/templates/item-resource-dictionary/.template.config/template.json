@@ -39,6 +39,14 @@
       "valueSource": "name",
       "valueTransform": "identity",
       "replaces": "$fileinputname$"
+    },
+    "resourceDictionaryType": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": {
+        "value": "ResourceDictionary"
+      },
+      "replaces": "__WINUI_RESOURCE_DICTIONARY__"
     }
   },
   "constraints": {

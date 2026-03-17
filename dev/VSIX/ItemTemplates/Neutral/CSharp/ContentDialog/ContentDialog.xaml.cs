@@ -7,18 +7,18 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace $rootnamespace$;
 
-public sealed partial class $safeitemname$ : ContentDialog
+public sealed partial class $safeitemname$ : __WINUI_CONTENT_DIALOG__
 {
     public $safeitemname$()
     {
         InitializeComponent();
     }
 
-    private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private void ContentDialog_PrimaryButtonClick(__WINUI_CONTENT_DIALOG__ sender, __WINUI_CONTENT_DIALOG_BUTTON_CLICK_EVENT_ARGS__ args)
     {
     }
 
-    private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private void ContentDialog_SecondaryButtonClick(__WINUI_CONTENT_DIALOG__ sender, __WINUI_CONTENT_DIALOG_BUTTON_CLICK_EVENT_ARGS__ args)
     {
     }
 }
