@@ -44,7 +44,8 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
-        private BuildGuard _buildGuard = new BuildGuard();
+        private static BuildGuard s_buildGuard = new BuildGuard();
+        private static volatile bool s_installationComplete;
         private IVsSolution _solution;
         private uint _solutionEventsCookie;
 
@@ -80,13 +81,21 @@ namespace WindowsAppSDK.TemplateUtilities
 
             if (_nuGetPackages != null && _nuGetPackages.Any())
             {
+                if (s_installationComplete)
+                {
+                    s_buildGuard = new BuildGuard();
+                    s_installationComplete = false;
+                }
+
+                s_buildGuard.SetReleaseCondition(() => s_installationComplete);
+
                 _solution = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolution)) as IVsSolution;
                 if (_solution != null)
                 {
                     _solution.AdviseSolutionEvents(this, out _solutionEventsCookie);
                 }
 
-                _buildGuard.DisableBuilds();
+                s_buildGuard.DisableBuilds();
             }
         }
 
@@ -141,9 +150,10 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
                 finally
                 {
+                    s_installationComplete = true;
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     UnadviseSolutionEvents();
-                    _buildGuard.EnableBuilds();
+                    s_buildGuard.EnableBuilds();
                 }
             });
         }
@@ -214,7 +224,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 // For C++ projects, installation is synchronous so builds are already
                 // re-enabled by the finally block. Dispose as a safety net.
                 UnadviseSolutionEvents();
-                _buildGuard.Dispose();
+                s_buildGuard.Dispose();
 
                 if (_failedPackageExceptions.Count > 0)
                 {
@@ -255,7 +265,11 @@ namespace WindowsAppSDK.TemplateUtilities
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            _buildGuard.DisableBuilds();
+            s_buildGuard.DisableBuilds();
+            if (s_buildGuard.IsBlocking)
+            {
+                UnadviseSolutionEvents();
+            }
             return VSConstants.S_OK;
         }
 
