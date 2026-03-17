@@ -43,6 +43,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
+        private BuildGuard _buildGuard = new BuildGuard();
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -96,30 +97,40 @@ namespace WindowsAppSDK.TemplateUtilities
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 int canceled = 0; // Initialize as not canceled
 
-                // Start the package installation task but do not await it here
-                var installationTask = StartInstallationAsync();
+                _buildGuard.DisableBuilds();
 
-                // Start the threaded wait dialog
-                if (_waitDialog != null)
+                try
                 {
-                    _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
+                    // Start the package installation task but do not await it here
+                    var installationTask = StartInstallationAsync();
+
+                    // Start the threaded wait dialog
+                    if (_waitDialog != null)
+                    {
+                        _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
+                    }
+
+                    // Now await the installation task to complete
+                    await installationTask;
+
+                    // Once the installation is complete, end the wait dialog
+                    if (_waitDialog != null)
+                    {
+                        _waitDialog.EndWaitDialog(out canceled);
+                    }
+
+                    // If _waitDialog is null, canceled remains 0 (not canceled)
+                    // Check if the process was canceled before proceeding
+                    if (canceled == 0) // If not canceled, finalize the process
+                    {
+                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                        SaveAllProjects();
+                    }
                 }
-
-                // Now await the installation task to complete
-                await installationTask;
-
-                // Once the installation is complete, end the wait dialog
-                if (_waitDialog != null)
-                {
-                    _waitDialog.EndWaitDialog(out canceled);
-                }
-
-                // If _waitDialog is null, canceled remains 0 (not canceled)
-                // Check if the process was canceled before proceeding
-                if (canceled == 0) // If not canceled, finalize the process
+                finally
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    SaveAllProjects();
+                    _buildGuard.EnableBuilds();
                 }
             });
         }
@@ -187,6 +198,10 @@ namespace WindowsAppSDK.TemplateUtilities
             Guid _projectGuid = GetProjectGuid(_project);
             if (_projectGuid.Equals(SolutionVCProjectGuid))
             {
+                // For C++ projects, installation is synchronous so builds are already
+                // re-enabled by the finally block. Dispose as a safety net.
+                _buildGuard.Dispose();
+
                 if (_failedPackageExceptions.Count > 0)
                 {
                     var errorMessage = CreateErrorMessage(ErrorMessageFormat.MessageBox);

@@ -256,4 +256,7 @@ For more details on the error, check the General tab in the Output window.</valu
   <data name="1054" xml:space="preserve">
     <value>No output information available.</value>
   </data>
+  <data name="1055" xml:space="preserve">
+    <value>Build is currently disabled while NuGet packages are being installed. The build will be available once package installation is complete.</value>
+  </data>
 </root>
