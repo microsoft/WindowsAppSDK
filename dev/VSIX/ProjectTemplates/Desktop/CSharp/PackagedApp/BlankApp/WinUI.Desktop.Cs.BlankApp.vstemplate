@@ -34,7 +34,8 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.cs">App.xaml.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml">MainWindow.xaml</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.cs">MainWindow.xaml.cs</ProjectItem>
-    </Project>      
+      <ProjectItem ReplaceParameters="false">NuGet.config</ProjectItem>
+    </Project>
     <CustomParameters>
       <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.SDK.BuildTools"/>
     </CustomParameters>

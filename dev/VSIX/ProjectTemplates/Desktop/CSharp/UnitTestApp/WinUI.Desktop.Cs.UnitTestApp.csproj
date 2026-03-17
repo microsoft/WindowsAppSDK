@@ -76,6 +76,7 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="NuGet.config" />
     <Content Include="WinUI.Desktop.Cs.UnitTestApp.ico" />
     <Content Include="WinUI.Desktop.Cs.UnitTestApp.png" />
     <VSTemplate Include="WinUI.Desktop.Cs.UnitTestApp.vstemplate" />
