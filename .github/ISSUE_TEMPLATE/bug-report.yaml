@@ -31,14 +31,11 @@ body:
     attributes:
       label: Screenshots
       description: If applicable, add screenshots here to help explain your problem
-  - type: dropdown
+  - type: input
     attributes:
       label: NuGet package version
-      description: Specify the version of Windows App SDK (or Project Reunion) you're using.
-      options:
-        - "Windows App SDK 1.8.5: 1.8.260209005"
-        - "Windows App SDK 1.8 Preview 1: 1.8.250814004-preview1"
-        - "Windows App SDK 2.0 Experimental 6: 2.0.0-experimental6"
+      description: "Enter the Windows App SDK NuGet package version you're using (e.g., 1.8.260317003). You can find this in your project's packages.config or .csproj file."
+      placeholder: "e.g., 1.8.260317003"
   - type: dropdown
     attributes:
       label: Packaging type
