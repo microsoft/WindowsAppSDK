@@ -116,6 +116,16 @@ namespace WindowsAppSDK.TemplateUtilities
             ThreadHelper.ThrowIfNotOnUIThread();
             _project = project;
             Guid _projectGuid = GetProjectGuid(project);
+
+            if (!_packageRestoreEnabled && _nuGetPackages != null && _nuGetPackages.Any())
+            {
+                if (!_projectGuid.Equals(SolutionVCProjectGuid))
+                {
+                    AddPackageReferencesToProject();
+                }
+                return;
+            }
+
             if (_projectGuid.Equals(SolutionVCProjectGuid))
             {
                 ThreadHelper.JoinableTaskFactory.Run(async () =>
@@ -217,6 +227,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     if (IsNuGetRestoreDisabledException(ex))
                     {
                         LogError($"NuGet restore is disabled. Error: {ex.Message}");
+                        AddPackageReferencesToProject();
                         _ = DisplayInfoBarAsync(Resources._1056);
                         return;
                     }
@@ -278,6 +289,57 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             OutputWindowHelper.ShowMessageInOutputWindow(errorMessage);
+        }
+
+        private void AddPackageReferencesToProject()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            try
+            {
+                if (_project == null || _nuGetPackages == null)
+                {
+                    return;
+                }
+
+                string projectPath = _project.FullName;
+                if (!File.Exists(projectPath))
+                {
+                    return;
+                }
+
+                var doc = XDocument.Load(projectPath);
+                XNamespace ns = doc.Root.GetDefaultNamespace();
+
+                var itemGroup = doc.Root.Elements(ns + "ItemGroup")
+                    .FirstOrDefault(ig => ig.Elements(ns + "PackageReference").Any());
+
+                if (itemGroup == null)
+                {
+                    itemGroup = new XElement(ns + "ItemGroup");
+                    doc.Root.Add(itemGroup);
+                }
+
+                foreach (var packageId in _nuGetPackages)
+                {
+                    bool alreadyExists = itemGroup.Elements(ns + "PackageReference")
+                        .Any(e => string.Equals(
+                            (string)e.Attribute("Include"), packageId, StringComparison.OrdinalIgnoreCase));
+
+                    if (!alreadyExists)
+                    {
+                        itemGroup.Add(new XElement(ns + "PackageReference",
+                            new XAttribute("Include", packageId),
+                            new XAttribute("Version", "*")));
+                    }
+                }
+
+                doc.Save(projectPath);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to add package references to project file: {ex.Message}");
+            }
         }
 
         private static bool IsNuGetPackageRestoreEnabled()
