@@ -32,6 +32,8 @@ body:
       label: Screenshots
       description: If applicable, add screenshots here to help explain your problem
   - type: input
+    validations:
+      required: true
     attributes:
       label: NuGet package version
       description: "Enter the Windows App SDK NuGet package version you're using (e.g., 1.8.260317003). You can find this in your project's packages.config or .csproj file."
