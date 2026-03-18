@@ -1,0 +1,57 @@
+name: Validate Issue Version
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  validate-version:
+    if: contains(github.event.issue.body, '### NuGet package version')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check NuGet version format
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const match = body.match(/### NuGet package version\s*\n\s*(.+)/);
+            const version = match?.[1]?.trim();
+
+            if (!version || version === '_No response_') {
+              core.info('No version provided, skipping validation.');
+              return;
+            }
+
+            // Expect at least a major.minor.patch pattern (e.g., 1.8.5 or 1.8.260317003)
+            const isValid = /^\d+\.\d+\.\d+/.test(version);
+
+            if (!isValid) {
+              const comment = [
+                `⚠️ The NuGet package version \`${version}\` doesn't appear to be in the expected format.`,
+                '',
+                'Expected a version like `1.8.260317003` or `1.8.5`.',
+                'You can find the version in your project\'s `.csproj` file under `<PackageReference Include="Microsoft.WindowsAppSDK" Version="..." />`',
+                'or in your `packages.config` file.',
+                '',
+                'Please edit the issue to update the version. Thanks! 🙏'
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+
+              await github.rest.issues.addLabels({
+                ...context.repo,
+                issue_number: context.issue.number,
+                labels: ['needs-author-feedback']
+              });
+
+              core.warning(`Invalid version format: ${version}`);
+            } else {
+              core.info(`Version format looks valid: ${version}`);
+            }
