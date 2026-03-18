@@ -82,6 +82,7 @@ extends:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
+        Version: 2022
         Network: R1
 
     platform:
@@ -116,7 +117,7 @@ extends:
       binskim:
         enabled: true
         break: true
-        analyzeTargetGlob: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe
+        analyzeTargetGlob: $(BinskimExclusionForFoundationRepo)
       prefast:
         ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
           enabled: true

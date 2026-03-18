@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Leeres Fenster (WinUI 3 in Desktop)</value>
+    <value>Leeres Fenster</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Experimentell] Leeres Fenster (WinUI 3 in Desktop)</value>
+    <value>[Experimentell] Leeres Fenster</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Ein leeres Fenster für Desktop-Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
+    <value>Ein leeres Fenster (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>Leere Seite (WinUI 3)</value>
+    <value>Leere Seite</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Experimentell] Leere Seite (WinUI 3)</value>
+    <value>[Experimentell] Leere Seite</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Eine leere Seite für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
+    <value>Eine leere Seite (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Ressourcenverzeichnis (WinUI 3)</value>
+    <value>Ressourcenverzeichnis</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Experimentell] Ressourcenverzeichnis (WinUI 3)</value>
+    <value>[Experimentell] Ressourcenverzeichnis</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Eine leere, schlüsselgesteuerte Sammlung von XAML-Ressourcen für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
+    <value>Eine leere, schlüsselierte Sammlung von XAML-Ressourcen (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Ressourcendatei (.resw)</value>
@@ -151,60 +151,109 @@
     <value>[Experimentell] Ressourcendatei (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Eine Datei zum Speichern von Zeichenfolgen und bedingten Ressourcen für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
+    <value>Eine Datei zum Speichern von Zeichenfolgen- und bedingten Ressourcen (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>Benutzerdefiniertes Steuerelement (WinUI 3)</value>
+    <value>Steuerelement mit Vorlagen</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Experimentell] Benutzerdefiniertes Steuerelement (WinUI 3)</value>
+    <value>[Experimentell] Steuerelement mit Vorlagen</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Ein benutzerdefiniertes Steuerelement für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
+    <value>Ein leeres benutzerdefiniertes Steuerelement mit der entsprechenden Standardformatierung (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Benutzersteuerelement (WinUI 3)</value>
+    <value>Benutzersteuerelement</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Experimentell] Benutzersteuerelement (WinUI 3)</value>
+    <value>[Experimentell] Benutzerkontrolle</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Ein Benutzersteuerelement für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
+    <value>Ein leeres Benutzersteuerelement (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Leere App, verpackt mit Paketerstellungsprojekt für Windows-Anwendungen (WinUI 3 in Desktop)</value>
+    <value>Leere WinUI-App (mit Paketerstellungsprojekt für Windows-Anwendungen verpackt)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimentell] Leere App, verpackt mit Paketerstellungsprojekt für Windows-Anwendungen (WinUI 3 in Desktop)</value>
+    <value>[Experimentell] Leere WinUI-App (mit Paketerstellungsprojekt für Windows-Anwendungen verpackt)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows-UI-Bibliothek (WinUI 3) basiert. Ein WAP-Projekt (Paketerstellungsprojekt für Windows-Anwendungen) ist enthalten, um ein MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store zu erstellen.</value>
+    <value>Eine Projektvorlage zum Erstellen einer WinUI-App. Ein WAP-Projekt (Paketerstellungsprojekt für Windows-Anwendungen) ist enthalten, um ein MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store zu erstellen.</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Leere App, verpackt (WinUI 3 in Desktop)</value>
+    <value>Leere WinUI-App (verpackt)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Experimentell] Leere App, verpackt (WinUI 3 in Desktop)</value>
+    <value>[Experimentell] Leere WinUI-App (verpackt)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows-UI-Bibliothek (WinUI 3) basiert, zusammen mit einem MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store.</value>
+    <value>Eine Projektvorlage zum Erstellen einer WinUI-App zusammen mit einem MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Komponente für Windows-Runtime (WinUI 3)</value>
+    <value>WinUI-Komponente für Windows-Runtime</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimentell] Komponente für Windows-Runtime (WinUI 3)</value>
+    <value>[Experimentell] WinUI-Komponente für Windows-Runtime (C++/WinRT)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Ein Projekt zum Erstellen einer C++/WinRT-Komponente für Windows-Runtime (WINMD) für Desktop- und UWP-Apps (Universelle Windows-Plattform), die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
+    <value>Ein Projekt zum Erstellen einer C++/WinRT-Komponente für Windows-Runtime (WINMD) für Desktop- und Universelle Windows-Plattform-Apps (UWP), basierend auf WinUI.</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Komponententest-App (WinUI 3)</value>
+    <value>WinUI-Komponententest-App</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Experimentell] Komponententest-App (WinUI 3)</value>
+    <value>[Experimentell] WinUI-Komponententest-App</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Ein Projekt zum Erstellen einer C++-/WinRT-Komponententest-App für WinUI 3 mit MSTest.</value>
+    <value>Ein Projekt zum Erstellen einer C++/WinRT-Komponententest-App für WinUI mithilfe von MSTest.</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>Leere WinUI-App</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Ein Projekt zum Erstellen einer leeren WinUI-App.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>Paketerstellungsprojekt für Windows-Anwendungen für WinUI</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Eine Projektvorlage, die MSIX-Pakete mit WinUI-Anwendungen zum Querladen oder Verteilen über den Microsoft Store erstellt.</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>NuGet-Pakete werden in das Projekt installiert...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Wird ausgeführt...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>Fehlende Paketverweise</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Für {0} können den folgenden Paketen keine Verweise hinzugefügt werden: {1}. Fügen Sie vor dem Erstellen Paketverweise hinzu.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] Den folgenden Paketen können keine Verweise hinzugefügt werden: {1}.
+
+Dies ist ein Umgebungsfehler. Fügen Sie Vor dem Erstellen des Projekts Paketverweise hinzu.
+
+Weitere Informationen zum Fehler finden Sie auf der Registerkarte "Allgemein" im Ausgabefenster.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>NuGet-Pakete verwalten</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>Fehlerdetails anzeigen</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>Fehlende Paketverweise für {0}:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Fügen Sie die Paketverweise manuell hinzu, bevor Sie mit dem Erstellen beginnen.</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>Allgemein</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>Keine Ausgabedaten verfügbar.</value>
   </data>
 </root>
