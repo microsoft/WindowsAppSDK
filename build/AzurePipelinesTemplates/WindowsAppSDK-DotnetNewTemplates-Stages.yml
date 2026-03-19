@@ -9,9 +9,12 @@ parameters:
 - name: publishToInternalFeed
   type: boolean
   default: true
+- name: SignOutput
+  type: boolean
+  default: false
 
 stages:
-- stage: DotnetNewTemplates_BuildAndPack
+- stage: DotnetNewTemplates_Build
   displayName: 'Build and pack dotnet new templates'
   dependsOn: []
   jobs:
@@ -88,6 +91,14 @@ stages:
         outputDir: '$(ob_outputDirectory)'
         workingDirectory: '$(templateProjectDir)'
 
+    - ${{ if eq(parameters.SignOutput, true) }}:
+      - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+        parameters:
+          FolderPath: '$(ob_outputDirectory)'
+          Pattern: '*.nupkg'
+          KeyCode: 'CP-401405'
+          UseMinimatch: true
+
     - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
       displayName: 'Publish dotnet template pack to internal feed'
       condition: and(succeeded(), eq('${{ parameters.publishToInternalFeed }}', 'true'))
@@ -97,4 +108,6 @@ stages:
         verbosityPush: 'Detailed'
         nuGetFeedType: 'internal'
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+        allowPackageConflicts: true
+
 
