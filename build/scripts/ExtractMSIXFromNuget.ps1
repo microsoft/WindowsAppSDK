@@ -67,19 +67,19 @@ function Extract-MSIXFromNuget ($NugetPath)
         }
 
         # Find Main
-        if ($filename -match '^.*(x86|x64|arm64)\\Microsoft\.WindowsAppRuntime\.Main([-.](\d+))?(-[A-Za-z.0-9]+)?(\.appx|\.msix)$')
+        if ($filename -match '^.*(x86|x64|arm64)\\Microsoft\.WindowsAppRuntime\.Main([-.](\d+)(.\d+)?)?(-[A-Za-z.0-9]+)?(\.appx|\.msix)$')
         {
             $DestFilename = 'main_' + $Matches[1] + '.msix'
         }
 
         # Find Singleton
-        if ($filename -match '^.*(x86|x64|arm64)\\Microsoft\.WindowsAppRuntime\.Singleton([-.](\d+))(-[A-Za-z.0-9]+)?(\.appx|\.msix)$')
+        if ($filename -match '^.*(x86|x64|arm64)\\Microsoft\.WindowsAppRuntime\.Singleton([-.](\d+)(.\d+)?)(-[A-Za-z.0-9]+)?(\.appx|\.msix)$')
         {
             $DestFilename = 'singleton_' + $Matches[1] + '.msix'
         }
 
         # Find DDLM
-        if ($filename -match '^.*(x86|x64|arm64)\\Microsoft\.WindowsAppRuntime\.DDLM([-.](\d+))?(-[A-Za-z.0-9]+)?(\.appx|\.msix)$')
+        if ($filename -match '^.*(x86|x64|arm64)\\Microsoft\.WindowsAppRuntime\.DDLM([-.](\d+)(.\d+)?)?(-[A-Za-z.0-9]+)?(\.appx|\.msix)$')
         {
             $DestFilename = 'ddlm_' + $Matches[1] + '.msix'
         }
