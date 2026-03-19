@@ -32,14 +32,13 @@
 
 ## 📋 Getting started with Windows App SDK
 
-* [Build your first app with WinUI](https://learn.microsoft.com/windows/apps/get-started/start-here)
+* [Build your first app with WinUI](https://aka.ms/winui-getstarted)
 * [Developer documentation](https://aka.ms/windowsappsdkdocs)
 * [Samples & resources](https://learn.microsoft.com/windows/apps/get-started/samples)
   * [Windows App SDK samples](https://github.com/microsoft/WindowsAppSDK-Samples)
   * [WinUI 3 Gallery](https://github.com/microsoft/WinUI-Gallery)
   * [AI Dev Gallery (Preview)](https://github.com/microsoft/ai-dev-gallery)
   * [Windows Community Toolkit](https://github.com/CommunityToolkit/Windows)
-  * [Template Studio](https://github.com/microsoft/TemplateStudio)
 * [FAQ](docs/faq.md)
 * [Contribution guide](docs/contributor-guide.md)
 * [Roadmap](./docs/roadmap.md)
@@ -86,3 +85,9 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Licensing
+
+This project is licensed under the terms in [LICENSE](LICENSE).
+
+The [`.github/skills/`](.github/skills/) directory contains GitHub Copilot agent skills that may have their own licensing terms. Check each skill's directory for its license file.

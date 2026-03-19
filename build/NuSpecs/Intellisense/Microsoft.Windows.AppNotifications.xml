@@ -80,11 +80,11 @@
       <returns>A list of AppNotification objects.</returns>
     </member>
     <member name="M:Microsoft.Windows.AppNotifications.AppNotificationManager.IsSupported">
-      <summary>Gets a boolean value indicating if the Microsoft.Windows.PushNotifications notification APIs are supported for the calling app. 
+      <summary>Gets a boolean value indicating if the Microsoft.Windows.AppNotifications notification APIs are supported for the calling app. 
 
 &gt; [!NOTE]
-&gt; The PushNotificationManager class has a dependency on the Singleton package.</summary>
-      <returns>True if push notifications APIs are supported; otherwise, false.</returns>
+&gt; The AppNotificationManager class has a dependency on the Singleton package.</summary>
+      <returns>True if app notifications APIs are supported; otherwise, false.</returns>
     </member>
     <member name="M:Microsoft.Windows.AppNotifications.AppNotificationManager.Register">
       <summary>Registers the app to receive NotificationInvoked events when the user interacts with an app notification.
