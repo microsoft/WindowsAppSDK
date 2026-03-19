@@ -20,11 +20,14 @@ name: $(version)
 trigger: none
 
 parameters:
-- name: "PublishDotnetNewTemplates"
-  displayName: "Publish dotnet new templates artifact"
+- name: "PublishDotnetNewTemplatesToInternalFeed"
+  displayName: "Publish dotnet new templates to internal feed"
+  type: boolean
+  default: false
+- name: "SignOutput"
+  displayName: "Sign the NuGet package with ESRP"
   type: boolean
   default: true
-
 variables:
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
@@ -34,6 +37,10 @@ resources:
     - repository: templates
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
     - repository: WindowsAppSDKVersionConfig
       type: git
@@ -98,8 +105,14 @@ extends:
         break: false
 
     stages:
-    - ${{ if eq(parameters.PublishDotnetNewTemplates, true) }}:
-      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
-        parameters:
-          pool:
-            type: windows
+    - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
+      parameters:
+        pool:
+          type: windows
+        publishToInternalFeed: ${{ parameters.PublishDotnetNewTemplatesToInternalFeed }}
+        SignOutput: ${{ parameters.SignOutput }}
+
+    # NuGet.org publishing is handled by the separate non-OneBranch pipeline:
+    # WindowsAppSDK-DotnetNewTemplates-Publish.yml
+    # OneBranch agents block outbound internet, so a standalone pipeline with
+    # standard Azure-hosted agents is used for the NuGet.org push.
