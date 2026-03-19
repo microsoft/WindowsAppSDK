@@ -46,6 +46,26 @@ inline void Initialize_StopSuccessActivity(
         initializeActivityContext.GetUseExistingPackageIfHigherVersion());
 }
 
+inline void GetStatus_StopSuccessActivity(
+    ::WindowsAppRuntime::Deployment::Activity::Context& activityContext,
+    const winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus& deploymentStatus)
+{
+    activityContext.GetActivity().StopWithResult(
+        S_OK,
+        static_cast<UINT32>(0),
+        static_cast<PCSTR>(nullptr),
+        static_cast<unsigned int>(0),
+        static_cast<PCWSTR>(nullptr),
+        static_cast<PCSTR>(nullptr),
+        static_cast<UINT32>(deploymentStatus),
+        static_cast<UINT32>(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::None),
+        static_cast<PCWSTR>(nullptr),
+        S_OK,
+        static_cast<PCWSTR>(nullptr),
+        GUID{},
+        false /*useExistingPackageIfHigherVersion*/);
+}
+
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
     static bool s_isInitialized{ false };
@@ -53,8 +73,67 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus()
     {
-        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
-        return GetStatus(GetCurrentFrameworkPackageFullName());
+        // Start telemetry FIRST so we capture all failures, including unpackaged process errors.
+        auto& activityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+
+        // Start activity immediately with safe defaults - the WIL callback will capture any errors.
+        activityContext.GetActivity().Start(
+            false /*forceDeployment*/,
+            Security::IntegrityLevel::IsElevated(),
+            true  /*isPackagedProcess - assume true, we check below*/,
+            false /*isFullTrustPackage*/,
+            0     /*integrityLevel*/,
+            false /*isRepair*/,
+            true  /*isGetStatus*/);
+
+        // Now check if packaged - errors are captured by telemetry
+        const bool isPackagedProcess{ AppModel::Identity::IsPackagedProcess() };
+        if (!isPackagedProcess)
+        {
+            // Stop telemetry and fail fast
+            activityContext.GetActivity().StopWithResult(
+                HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE),
+                static_cast<UINT32>(wil::FailureType::FailFast),
+                __FILE__,
+                __LINE__,
+                L"GetStatus called from unpackaged process",
+                static_cast<PCSTR>(nullptr),
+                static_cast<UINT32>(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown),
+                static_cast<UINT32>(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::None),
+                L"IsPackagedProcess",
+                S_OK,
+                static_cast<PCWSTR>(nullptr),
+                GUID{},
+                false);
+            FAIL_FAST_HR(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
+        }
+
+        try
+        {
+            auto result = GetStatus(GetCurrentFrameworkPackageFullName());
+            GetStatus_StopSuccessActivity(activityContext, result.Status());
+            return result;
+        }
+        catch (...)
+        {
+            // Capture exception in telemetry before re-throwing
+            const HRESULT hr = wil::ResultFromCaughtException();
+            activityContext.GetActivity().StopWithResult(
+                hr,
+                static_cast<UINT32>(wil::FailureType::Exception),
+                static_cast<PCSTR>(nullptr),
+                static_cast<unsigned int>(0),
+                static_cast<PCWSTR>(nullptr),
+                static_cast<PCSTR>(nullptr),
+                static_cast<UINT32>(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown),
+                static_cast<UINT32>(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::None),
+                L"GetStatus",
+                S_OK,
+                static_cast<PCWSTR>(nullptr),
+                GUID{},
+                false);
+            throw;
+        }
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
@@ -66,13 +145,88 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
-        return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
+        // Start telemetry FIRST so we capture all failures, including framework discovery errors.
+        auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+
+        // Start activity immediately with safe defaults - the WIL callback will capture any errors
+        // that occur during GetCurrentFrameworkPackageFullName() or subsequent operations.
+        initializeActivityContext.GetActivity().Start(
+            deploymentInitializeOptions.ForceDeployment(),
+            false /*isElevated - actual value determined later*/,
+            true  /*isPackagedProcess - assume true as safe default*/,
+            false /*isFullTrustPackage - determined later*/,
+            0     /*integrityLevel - determined later*/,
+            false /*isRepair*/,
+            false /*isGetStatus*/);
+
+        try
+        {
+            return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
+        }
+        catch (...)
+        {
+            // Capture exception in telemetry before re-throwing
+            const HRESULT hr = wil::ResultFromCaughtException();
+            initializeActivityContext.GetActivity().StopWithResult(
+                hr,
+                static_cast<UINT32>(wil::FailureType::Exception),
+                static_cast<PCSTR>(nullptr),
+                static_cast<unsigned int>(0),
+                static_cast<PCWSTR>(nullptr),
+                static_cast<PCSTR>(nullptr),
+                static_cast<UINT32>(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::PackageInstallRequired),
+                static_cast<UINT32>(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::DiscoverFramework),
+                L"GetCurrentFrameworkPackageFullName",
+                S_OK,
+                static_cast<PCWSTR>(nullptr),
+                GUID{},
+                false);
+            throw;
+        }
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Repair()
     {
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options{};
-        return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
+
+        // Start telemetry FIRST so we capture all failures, including framework discovery errors.
+        auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+
+        // Start activity immediately with safe defaults - the WIL callback will capture any errors
+        // that occur during GetCurrentFrameworkPackageFullName() or subsequent operations.
+        initializeActivityContext.GetActivity().Start(
+            options.ForceDeployment(),
+            false /*isElevated - actual value determined later*/,
+            true  /*isPackagedProcess - assume true as safe default*/,
+            false /*isFullTrustPackage - determined later*/,
+            0     /*integrityLevel - determined later*/,
+            true  /*isRepair*/,
+            false /*isGetStatus*/);
+
+        try
+        {
+            return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
+        }
+        catch (...)
+        {
+            // Capture exception in telemetry before re-throwing
+            const HRESULT hr = wil::ResultFromCaughtException();
+            initializeActivityContext.GetActivity().StopWithResult(
+                hr,
+                static_cast<UINT32>(wil::FailureType::Exception),
+                static_cast<PCSTR>(nullptr),
+                static_cast<unsigned int>(0),
+                static_cast<PCWSTR>(nullptr),
+                static_cast<PCSTR>(nullptr),
+                static_cast<UINT32>(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::PackageInstallRequired),
+                static_cast<UINT32>(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::DiscoverFramework),
+                L"GetCurrentFrameworkPackageFullName",
+                S_OK,
+                static_cast<PCWSTR>(nullptr),
+                GUID{},
+                false);
+            throw;
+        }
     }
 
     std::wstring ExtractFormattedVersionTag(const std::wstring& versionTag)
@@ -217,8 +371,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             initializeActivityContext.SetIsFullTrustPackage();
         }
 
-        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
-                                                      isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
+        // Only start telemetry if not already running (public APIs start it before calling us).
+        if (!initializeActivityContext.GetActivity().IsRunning())
+        {
+            initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated(),
+                                                          isPackagedProcess, initializeActivityContext.GetIsFullTrustPackage(), integrityLevel, isRepair);
+        }
 
         // DeploymentManager API requires a packaged process?
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult deploymentResult{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown, S_OK };
