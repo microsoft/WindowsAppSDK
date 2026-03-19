@@ -61,7 +61,7 @@ function Extract-MSIXFromNuget ($NugetPath)
         #  * .msix      = MSIX packages are always named *.msix
 
         # Find the base Frameworks
-        if ($filename -match '^.*(x86|x64|arm64)\\Microsoft\.WindowsAppRuntime[-.](\d+)(-[A-Za-z.0-9]+)?(\.appx|\.msix)$')
+        if ($filename -match '^.*(x86|x64|arm64)\\Microsoft\.WindowsAppRuntime[-.](\d+)(.\d+)?(-[A-Za-z.0-9]+)?(\.appx|\.msix)$')
         {
             $DestFilename = 'framework_' + $Matches[1] + '.msix'
         }
