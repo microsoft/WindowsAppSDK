@@ -18,6 +18,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
 using Microsoft.VisualStudio.Threading;
 using NuGet.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
+
 
 // Although the strings are the same in the wizard for both extensions,
 // they are included with both their respective VSPackages.
@@ -45,6 +47,9 @@ namespace WindowsAppSDK.TemplateUtilities
         private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
+        private IVsShell _shell;
+        private IVsInfoBarHost _infoBarHost;
+        private IVsInfoBarUIFactory _infoBarUIFactory;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
         private static BuildGuard s_buildGuard = new BuildGuard();
         private static volatile bool s_installationComplete;
@@ -68,6 +73,27 @@ namespace WindowsAppSDK.TemplateUtilities
                 System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
             }
 
+            _shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
+            if (_shell == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsShell service.");
+            }
+            else
+            {
+                _shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out object infoBarHostObj);
+                _infoBarHost = infoBarHostObj as IVsInfoBarHost;
+                if (_infoBarHost == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsInfoBarHost from IVsShell.");
+                }
+            }
+
+            _infoBarUIFactory = ServiceProvider.GlobalProvider.GetService(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
+            if (_infoBarUIFactory == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsInfoBarUIFactory service.");
+            }
+
             if (_componentModel != null)
             {
                 _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
@@ -76,6 +102,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
                 }
             }
+
             // Assuming package list is passed via a custom parameter in the .vstemplate file
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
@@ -89,7 +116,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 if (!_packageRestoreEnabled)
                 {
                     LogError("NuGet package restore is disabled. Skipping automatic package installation.");
-                    _ = DisplayInfoBarAsync(Resources._1056);
                     return;
                 }
 
@@ -117,12 +143,25 @@ namespace WindowsAppSDK.TemplateUtilities
             _project = project;
             Guid _projectGuid = GetProjectGuid(project);
 
+            if (_nuGetPackages != null && _nuGetPackages.Any())
+            {
+                var projectName = _project?.Name ?? "Unknown Project";
+                var packageNames = string.Join(", ", _nuGetPackages);
+                s_buildGuard.SetInfoBarMessage(string.Format(Resources._1055, projectName, packageNames));
+            }
+
             if (!_packageRestoreEnabled && _nuGetPackages != null && _nuGetPackages.Any())
             {
+                // Write C# package references to the project so that auto-download can install packages
+                // after project generation completes.
                 if (!_projectGuid.Equals(SolutionVCProjectGuid))
                 {
                     AddPackageReferencesToProject();
                 }
+
+                var projectName = _project?.Name ?? "Unknown Project";
+                var packageNames = string.Join(", ", _nuGetPackages);
+                _ = DisplayInfoBarAsync(string.Format(Resources._1056, projectName, packageNames));
                 return;
             }
 
@@ -228,7 +267,9 @@ namespace WindowsAppSDK.TemplateUtilities
                     {
                         LogError($"NuGet restore is disabled. Error: {ex.Message}");
                         AddPackageReferencesToProject();
-                        _ = DisplayInfoBarAsync(Resources._1056);
+                        var projectName = _project?.Name ?? "Unknown Project";
+                        var packageNames = string.Join(", ", _nuGetPackages);
+                        _ = DisplayInfoBarAsync(string.Format(Resources._1056, projectName, packageNames));
                         return;
                     }
 
@@ -239,11 +280,25 @@ namespace WindowsAppSDK.TemplateUtilities
 
             if (_failedPackageExceptions.Count > 0)
             {
-                // Build error message in the requested format
-                var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                LogError(errorMessage);
-                _ = DisplayInfoBarAsync(errorMessage);
+
+                bool isRestoreDisabled = _failedPackageExceptions.Values
+                    .Any(e => IsNuGetRestoreDisabledException(e));
+
+                if (isRestoreDisabled)
+                {
+                    AddPackageReferencesToProject();
+                    var projectName = _project?.Name ?? "Unknown Project";
+                    var packageNames = string.Join(", ", _nuGetPackages);
+                    _ = DisplayInfoBarAsync(string.Format(Resources._1056, projectName, packageNames));
+                }
+                else
+                {
+                    // Build error message in the requested format
+                    var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
+                    LogError(errorMessage);
+                    _ = DisplayInfoBarAsync(errorMessage);
+                }
             }
         }
 
@@ -268,6 +323,18 @@ namespace WindowsAppSDK.TemplateUtilities
 
                 if (_failedPackageExceptions.Count > 0)
                 {
+                    bool isRestoreDisabled = _failedPackageExceptions.Values
+                        .Any(ex => IsNuGetRestoreDisabledException(ex));
+
+                    if (isRestoreDisabled)
+                    {
+                        var projectName = _project?.Name ?? "Unknown Project";
+                        var packageNames = string.Join(", ", _nuGetPackages);
+                        _ = DisplayInfoBarAsync(string.Format(Resources._1056, projectName, packageNames));
+                        ShowOutputWindow(CreateDetailedErrorMessage());
+                        return;
+                    }
+
                     var errorMessage = CreateErrorMessage(ErrorMessageFormat.MessageBox);
                     LogError(errorMessage);
 
@@ -342,6 +409,8 @@ namespace WindowsAppSDK.TemplateUtilities
             }
         }
 
+        // NuGet package restore is enabled by default, so only return false if we can confirm it is disabled in
+        // the user's config.
         private static bool IsNuGetPackageRestoreEnabled()
         {
             try
@@ -351,11 +420,13 @@ namespace WindowsAppSDK.TemplateUtilities
                     "NuGet",
                     "NuGet.Config");
 
+                // If no NuGet.config is provided, package restore is enabled by default
                 if (!File.Exists(configPath))
                 {
                     return true;
                 }
 
+                // If package restore is not disabled, then it is enabled by default
                 var doc = XDocument.Load(configPath);
                 var packageRestore = doc.Descendants("packageRestore").FirstOrDefault();
                 if (packageRestore == null)
@@ -370,6 +441,8 @@ namespace WindowsAppSDK.TemplateUtilities
                 if (enabledElement != null)
                 {
                     string value = (string)enabledElement.Attribute("value");
+
+                    // Only explicit disabling of package restore should return false.
                     if (string.Equals(value, "False", StringComparison.OrdinalIgnoreCase))
                     {
                         return false;
@@ -618,6 +691,23 @@ namespace WindowsAppSDK.TemplateUtilities
             });
         }
 
+        private void ShowAutomaticPackageDownloadNotEnabledErrorDialog()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var errorMessage = "Automatic NuGet package download is not enabled. The required packages for this project template cannot be installed automatically.\n\n" +
+                "To enable automatic package download, go to Tools > Options > NuGet Package Manager and check 'Allow NuGet to download missing packages'.\n\n" +
+                "After enabling this option, please close and reopen the solution, then the packages will be installed automatically.";
+            MessageBox.Show(
+                errorMessage,
+                "Automatic Package Download Disabled",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            // Also log to activity log
+            LogError("Automatic NuGet package download is disabled. User prompted to enable it.");
+            // Show in output window
+            ShowOutputWindow($"Automatic NuGet package download is disabled. User prompted to enable it.\n{errorMessage}");
+        }
+
         private void ShowLocalizationErrorDialog(MissingManifestResourceException ex)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -656,23 +746,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
             infoBarUi.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
 
-            IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
-            if (shell == null)
-            {
-                LogError("Could not obtain IVsShell service");
-                return;
-            }
-
-            // Get the main window's InfoBar host using VSSPROPID_MainWindowInfoBarHost
-            object infoBarHostObj;
-            int hr = shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out infoBarHostObj);
-            if (!(infoBarHostObj is IVsInfoBarHost infoBarHost))
-            {
-                LogError("Could not obtain IVsInfoBarHost service");
-                return;
-            }
-
-            infoBarHost.AddInfoBar(infoBarUi);
+            _infoBarHost.AddInfoBar(infoBarUi);
         }
 
         private IVsInfoBarUIElement CreateInfoBarUI(IVsInfoBar infoBar)
@@ -684,14 +758,13 @@ namespace WindowsAppSDK.TemplateUtilities
                 return null;
             }
 
-            IVsInfoBarUIFactory infoBarUIFactory = ServiceProvider.GlobalProvider.GetService(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
-            if (infoBarUIFactory == null)
+            if (_infoBarUIFactory == null)
             {
                 LogError("Could not obtain IVsInfoBarUIFactory service");
                 return null;
             }
 
-            return infoBarUIFactory.CreateInfoBar(infoBar);
+            return _infoBarUIFactory.CreateInfoBar(infoBar);
         }
 
         private IVsInfoBar CreateNuGetInfoBar(string message)
