@@ -28,12 +28,18 @@ namespace WindowsAppSDK.TemplateUtilities
         private bool _infoBarShown;
         private IVsInfoBarUIElement _infoBarUIElement;
         private Func<bool> _shouldRelease;
+        private string _infoBarMessage;
 
         public bool IsBlocking => _isBlocking;
 
         public void SetReleaseCondition(Func<bool> condition)
         {
             _shouldRelease = condition;
+        }
+
+        public void SetInfoBarMessage(string message)
+        {
+            _infoBarMessage = message;
         }
 
         public void DisableBuilds()
@@ -130,7 +136,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 var infoBarModel = new InfoBarModel(
                     textSpans: new[]
                     {
-                        new InfoBarTextSpan(Resources._1055)
+                        new InfoBarTextSpan(_infoBarMessage ?? Resources._1055)
                     },
                     image: KnownMonikers.StatusInformation,
                     isCloseButtonVisible: true);
