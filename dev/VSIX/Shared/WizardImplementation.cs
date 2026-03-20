@@ -735,31 +735,18 @@ namespace WindowsAppSDK.TemplateUtilities
 
                 infoBarUi.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
 
-                if (TryAddInfoBarToMainWindow(infoBarUi))
-                {
-                    return;
-                }
-
-                // Main window InfoBar host is not yet available. This can happen
+                // The main window InfoBar host may not be available immediately
                 // during template wizard execution while VS transitions from the
-                // New Project dialog. Wait for SolutionExistsContext, which activates
-                // once the solution is fully loaded and the main window is ready.
-                var context = KnownUIContexts.SolutionExistsContext;
-                if (context != null)
+                // New Project dialog. Retry briefly while the main window initializes.
+                for (int retry = 0; retry < 5; retry++)
                 {
-                    void OnContextChanged(object sender, UIContextChangedEventArgs args)
+                    if (TryAddInfoBarToMainWindow(infoBarUi))
                     {
-                        if (args.Activated)
-                        {
-                            context.UIContextChanged -= OnContextChanged;
-                            _ = ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
-                            {
-                                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                                TryAddInfoBarToMainWindow(infoBarUi);
-                            });
-                        }
+                        return;
                     }
-                    context.UIContextChanged += OnContextChanged;
+
+                    await Task.Delay(1000);
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 }
             }
             catch (Exception ex)
