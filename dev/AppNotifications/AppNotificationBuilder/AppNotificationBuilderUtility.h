@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -21,22 +21,32 @@ namespace AppNotificationBuilder
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
 
-inline std::unordered_map<wchar_t, std::wstring> GetXmlEscapeEncodings()
+// Optimizing string encoding by replacing unordered_map with a switch statement.
+// This avoids hashing overhead and potential heap allocations.
+inline PCWSTR GetXmlEscapeEncoding(wchar_t ch)
 {
-    static std::unordered_map<wchar_t, std::wstring> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"}, {L'>', L"&gt;"}, {L'\'', L"&apos;"}};
-    return encodings;
+    switch (ch)
+    {
+    case L'&': return L"&amp;";
+    case L'\"': return L"&quot;";
+    case L'<': return L"&lt;";
+    case L'>': return L"&gt;";
+    case L'\'': return L"&apos;";
+    default: return nullptr;
+    }
 }
 
-inline std::unordered_map<wchar_t, std::wstring> GetPercentEncodings()
+// Optimizing string encoding by replacing unordered_map with a switch statement.
+// This avoids hashing overhead and potential heap allocations.
+inline PCWSTR GetPercentEncoding(wchar_t ch)
 {
-    static std::unordered_map<wchar_t, std::wstring> encodings = {{ L'%', L"%25"}, {L';', L"%3B"}, {L'=', L"%3D"} };
-    return encodings;
-}
-
-inline std::unordered_map<std::wstring, wchar_t> GetPercentEncodingsReverse()
-{
-    static std::unordered_map<std::wstring, wchar_t> encodings = { { L"%25", L'%' }, {L"%3B", L';' }, { L"%3D", L'=' } };
-    return encodings;
+    switch (ch)
+    {
+    case L'%': return L"%25";
+    case L';': return L"%3B";
+    case L'=': return L"%3D";
+    default: return nullptr;
+    }
 }
 
 inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
@@ -99,22 +109,26 @@ inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoun
 inline std::wstring EncodeArgument(std::wstring const& value)
 {
     std::wstring encodedValue{};
+    encodedValue.reserve(value.size());
 
-    auto percentEncodings{ GetPercentEncodings() };
-    auto xmlEncodings{ GetXmlEscapeEncodings() };
     for (auto ch : value)
     {
-        if (percentEncodings.find(ch) != percentEncodings.end())
+        auto percentEncoding{ GetPercentEncoding(ch) };
+        if (percentEncoding)
         {
-            encodedValue.append(percentEncodings[ch]);
-        }
-        else if (xmlEncodings.find(ch) != xmlEncodings.end())
-        {
-            encodedValue.append(xmlEncodings[ch]);
+            encodedValue.append(percentEncoding);
         }
         else
         {
-            encodedValue.push_back(ch);
+            auto xmlEncoding{ GetXmlEscapeEncoding(ch) };
+            if (xmlEncoding)
+            {
+                encodedValue.append(xmlEncoding);
+            }
+            else
+            {
+                encodedValue.push_back(ch);
+            }
         }
     }
 
@@ -124,13 +138,14 @@ inline std::wstring EncodeArgument(std::wstring const& value)
 inline std::wstring EncodeXml(winrt::hstring const& value)
 {
     std::wstring encodedValue{};
+    encodedValue.reserve(value.size());
 
-    auto xmlEncodings{ GetXmlEscapeEncodings() };
     for (auto ch : value)
     {
-        if (xmlEncodings.find(ch) != xmlEncodings.end())
+        auto xmlEncoding{ GetXmlEscapeEncoding(ch) };
+        if (xmlEncoding)
         {
-            encodedValue.append(xmlEncodings[ch]);
+            encodedValue.append(xmlEncoding);
         }
         else
         {
@@ -143,25 +158,39 @@ inline std::wstring EncodeXml(winrt::hstring const& value)
 
 // Decoding process based off the Windows Community Toolkit:
 // https://github.com/CommunityToolkit/WindowsCommunityToolkit/blob/rel/7.1.0/Microsoft.Toolkit.Uwp.Notifications/Toasts/ToastArguments.cs#L389inline
+// Optimized to avoid temporary string allocations from substr() and map lookups.
 inline std::wstring Decode(std::wstring const& value)
 {
     std::wstring result{};
-    auto percentEncodings{ GetPercentEncodingsReverse() };
+    result.reserve(value.size());
 
     // Need to unescape special characters
     for (size_t index = 0; index < value.size();)
     {
-        std::wstring curr{ value.substr(index, c_maxEncodingSize) };
-        if (percentEncodings.find(curr) != percentEncodings.end())
+        if (value[index] == L'%' && index + 2 < value.size())
         {
-            result.push_back(percentEncodings[curr]);
-            index += c_maxEncodingSize;
+            if (value[index + 1] == L'2' && value[index + 2] == L'5')
+            {
+                result.push_back(L'%');
+                index += 3;
+                continue;
+            }
+            else if (value[index + 1] == L'3' && value[index + 2] == L'B')
+            {
+                result.push_back(L';');
+                index += 3;
+                continue;
+            }
+            else if (value[index + 1] == L'3' && value[index + 2] == L'D')
+            {
+                result.push_back(L'=');
+                index += 3;
+                continue;
+            }
         }
-        else
-        {
-            result.push_back(value.at(index));
-            index++;
-        }
+
+        result.push_back(value.at(index));
+        index++;
     }
     return result;
 }
