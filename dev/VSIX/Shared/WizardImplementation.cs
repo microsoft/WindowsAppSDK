@@ -735,42 +735,57 @@ namespace WindowsAppSDK.TemplateUtilities
 
                 infoBarUi.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
 
-                IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
-                if (shell == null)
+                if (TryAddInfoBarToMainWindow(infoBarUi))
                 {
-                    ShowOutputWindow("[InfoBar] Failed: Could not obtain IVsShell service.");
                     return;
                 }
 
-                // The main window InfoBar host may not be available immediately
-                // during template wizard execution while the main window initializes.
-                IVsInfoBarHost infoBarHost = null;
-                for (int retry = 0; retry < 5; retry++)
+                // Main window InfoBar host is not yet available. This can happen
+                // during template wizard execution while VS transitions from the
+                // New Project dialog. Wait for SolutionExistsContext, which activates
+                // once the solution is fully loaded and the main window is ready.
+                var context = KnownUIContexts.SolutionExistsContext;
+                if (context != null)
                 {
-                    shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out object infoBarHostObj);
-                    if (infoBarHostObj is IVsInfoBarHost host)
+                    void OnContextChanged(object sender, UIContextChangedEventArgs args)
                     {
-                        infoBarHost = host;
-                        break;
+                        if (args.Activated)
+                        {
+                            context.UIContextChanged -= OnContextChanged;
+                            _ = ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+                            {
+                                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                                TryAddInfoBarToMainWindow(infoBarUi);
+                            });
+                        }
                     }
-
-                    await Task.Delay(1000);
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                }
-
-                if (infoBarHost != null)
-                {
-                    infoBarHost.AddInfoBar(infoBarUi);
-                }
-                else
-                {
-                    ShowOutputWindow("[InfoBar] Failed: Main window InfoBar host not available after retries.");
+                    context.UIContextChanged += OnContextChanged;
                 }
             }
             catch (Exception ex)
             {
                 ShowOutputWindow($"[InfoBar] Exception: {ex.Message}");
             }
+        }
+
+        private bool TryAddInfoBarToMainWindow(IVsInfoBarUIElement infoBarUi)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
+            if (shell == null)
+            {
+                return false;
+            }
+
+            shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out object infoBarHostObj);
+            if (infoBarHostObj is IVsInfoBarHost infoBarHost)
+            {
+                infoBarHost.AddInfoBar(infoBarUi);
+                return true;
+            }
+
+            return false;
         }
 
         private IVsInfoBarUIElement CreateInfoBarUI(IVsInfoBar infoBar)
