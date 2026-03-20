@@ -466,7 +466,7 @@ namespace WindowsAppSDK.Cs.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{0}] Build is currently disabled while NuGet packages are being installed: {1}. The build will be available once package installation is complete..
+        ///   Looks up a localized string similar to [{0}] Builds are currently paused while NuGet packages are being installed: {1}. The build will begin once package installation is complete..
         /// </summary>
         internal static string _1055 {
             get {
@@ -475,7 +475,7 @@ namespace WindowsAppSDK.Cs.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{0}] NuGet package auto-download is disabled. Unable to install: {1}. To resolve, either enable &quot;Allow NuGet to download missing packages&quot; in Tools &gt; Options &gt; NuGet Package Manager and restore the solution, or install the packages manually via the NuGet Package Manager..
+        ///   Looks up a localized string similar to [{0}] NuGet package auto-download is disabled. Unable to install: {1}. To resolve, either enable &quot;Allow NuGet to download missing packages&quot; and &quot;Automatically check for missing packages during build in Visual Studio&quot; in Tools &gt; Options &gt; NuGet Package Manager and restore the solution, or install the packages manually via the NuGet Package Manager..
         /// </summary>
         internal static string _1056 {
             get {

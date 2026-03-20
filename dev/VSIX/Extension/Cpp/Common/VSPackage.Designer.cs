@@ -470,7 +470,7 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{0}] Build is currently disabled while NuGet packages are being installed: {1}. The build will be available once package installation is complete..
+        ///   Looks up a localized string similar to [{0}] Builds are currently paused while NuGet packages are being installed: {1}. The build will begin once package installation is complete..
         /// </summary>
         internal static string _1055 {
             get {
