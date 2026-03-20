@@ -684,23 +684,6 @@ namespace WindowsAppSDK.TemplateUtilities
             });
         }
 
-        private void ShowAutomaticPackageDownloadNotEnabledErrorDialog()
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            var errorMessage = "Automatic NuGet package download is not enabled. The required packages for this project template cannot be installed automatically.\n\n" +
-                "To enable automatic package download, go to Tools > Options > NuGet Package Manager and check 'Allow NuGet to download missing packages'.\n\n" +
-                "After enabling this option, please close and reopen the solution, then the packages will be installed automatically.";
-            MessageBox.Show(
-                errorMessage,
-                "Automatic Package Download Disabled",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning);
-            // Also log to activity log
-            LogError("Automatic NuGet package download is disabled. User prompted to enable it.");
-            // Show in output window
-            ShowOutputWindow($"Automatic NuGet package download is disabled. User prompted to enable it.\n{errorMessage}");
-        }
-
         private void ShowLocalizationErrorDialog(MissingManifestResourceException ex)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
