@@ -110,10 +110,10 @@ SDK 1.0, 1.1 and 2.0 (Stable) are installed on an x86 system, the user will have
 
 * Microsoft.WindowsAppRuntime.1.0
 * Microsoft.WindowsAppRuntime.1.1
-* Microsoft.WindowsAppRuntime.2
+* Microsoft.WindowsAppRuntime.2.0
 * MicrosoftCorporationII.WinAppRuntime.Main.1.0
 * MicrosoftCorporationII.WinAppRuntime.Main.1.1
-* MicrosoftCorporationII.WinAppRuntime.Main.2
+* MicrosoftCorporationII.WinAppRuntime.Main.2.0
 * MicrosoftCorporationII.WinAppRuntime.Singleton (version 2.0)
 * Microsoft.WinAppRuntime.DDLM.0.146.711.0-x8
 * Microsoft.WinAppRuntime.DDLM.1000.328.1510.0-x8
@@ -143,15 +143,15 @@ for more details.
 
 Windows App SDK's MSIX packages use the following naming rules for package identity:
 
-* Name = Microsoft.WindowsAppRuntime[.SubName].\<Major\>[-VersionTag][ChannelBuildNumber]
+* Name = Microsoft.WindowsAppRuntime[.SubName].\<Major\>.\<Minor\>[-VersionTag]
 * Publisher = "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
 
 where
 
 * SubName -- optional package sub-name. Use to distinguish amongst the different packages
 * Major -- major version of the release, e.g. "1" for Windows App SDK 1.0
-* VersionTag -- optional version tag to distinguish amongst channels, e.g. "-preview" for Windows App SDK Preview
-* ChannelBuildNumber -- optional Build number (up to 2 digits, base 36[0-9a-z], no leading 0s) designating which build number of the channel for the Major release we are on
+* Minor -- minor version of the release, e.g. "0" for Windows App SDK 1.0
+* VersionTag -- optional version tag to distinguish amongst channels and releases of a channel, e.g. "-preview2" for Windows App SDK 1.0 Preview 2
 
 ## 3.1. Package Naming - SubName
 
@@ -159,10 +159,10 @@ The following SubName values are used:
 
 | SubName | Package | Example |
 |-|-|-|
-| | Framework | Microsoft.WindowsAppRuntime.2-experimental10 |
-| Main | Main | MicrosoftCorporationII.WinAppRuntime.Main.2-e10 |
-| Singleton | Singleton | MicrosoftCorporationII.WinAppRuntime.Singleton-e10 |
-| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.2.3.11.0-x6-e10 |
+| | Framework | Microsoft.WindowsAppRuntime.1.0-experimental1 |
+| Main | Main | MicrosoftCorporationII.WinAppRuntime.Main.1.0-e1 |
+| Singleton | Singleton | MicrosoftCorporationII.WinAppRuntime.Singleton-e1 |
+| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.0.146.711.0-x6-e1 |
 
 ## 3.2. Package Naming - Main
 
@@ -175,7 +175,7 @@ where
 * ReleaseMajor = project release major version number. See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
 * ShortVersionTag = short form of the VersionTag
 
-ShortVersionTag is derived from a VersionTag by combining the 1st letter and up to the last 2 digit (depending on build number) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
+ShortVersionTag is derived from a VersionTag by combining the 1st letter and the last digit (if any) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
 
 ## 3.3. Package Naming - Singleton
 
@@ -198,21 +198,30 @@ DDLM packages follow a different naming scheme
 
 where
 
-* Version = MSIX version number (which matches the project release version). See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
+* Version = MSIX version number (not the project release version). See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
 * ShortArchitecture = short form of the Architecture (x6=x64, x8=x86, a6=arm64)
 * ShortVersionTag = short form of the VersionTag
 
-ShortVersionTag is derived by combining the 1st letter of the versionTag and the entire channelBuildNumber for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
+ShortVersionTag is derived from a VersionTag by combining the 1st letter and the last digit (if any) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
 
 ```C#
-string ToShortVersionTag(string versionTag, string channelBuildNumber)
+string ToShortVersionTag(string versionTag)
 {
     if (String.IsNullOrEmpty(versionTag))
     {
         return versionTag;
     }
     string prefix = versionTag.substr(0, 1);
-    return prefix + channelBuildNumber;
+    if (versionTag.length > 1)
+    {
+        char lastChar = versionTag.substr(versionTag.length - 1, 1);
+        if (('0' <= lastChar) && (lastChar <= '9'))
+        {
+            suffix = lastChar.ToString();
+            return prefix + suffix;
+        }
+    }
+    return prefix;
 }
 ```
 
