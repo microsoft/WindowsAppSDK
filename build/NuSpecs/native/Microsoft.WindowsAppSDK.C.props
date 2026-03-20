@@ -23,20 +23,6 @@
     </Link>
   </ItemDefinitionGroup>
 
-  <ItemDefinitionGroup Condition="'$(AppxPackage)' != 'true'">
-    <Link>
-      <AdditionalDependencies>
-        $(_FoundationLibFolder)\Microsoft.WindowsAppRuntime.Bootstrap.lib;
-        %(AdditionalDependencies);
-      </AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-
-  <Target Name="CopyMicrosoftWindowsAppRuntimeBootstrapdllToOutDir" Condition="'$(AppxPackage)' != 'true'" AfterTargets="Build" BeforeTargets="Binplace">
-    <Copy
-      SourceFiles="$(MSBuildThisFileDirectory)..\..\runtimes\win-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.Bootstrap.dll"
-      SkipUnchangedFiles="true"
-      DestinationFolder="$(OutDir)"/>
-  </Target>
+  <!-- Bootstrap.lib and Bootstrap.dll are now provided by the Microsoft.WindowsAppSDK.Base package -->
 
 </Project>
