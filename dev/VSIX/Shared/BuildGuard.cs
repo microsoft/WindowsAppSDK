@@ -32,6 +32,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsShell _shell;
         private uint _shellPropertyCookie;
         private bool _isShellPropertyAdvised;
+        private bool _wasJustReleased;
 
         public bool IsBlocking => _isBlocking;
 
@@ -87,26 +88,25 @@ namespace WindowsAppSDK.TemplateUtilities
             ThreadHelper.ThrowIfNotOnUIThread();
 
             _isBlocking = false;
+            _wasJustReleased = true;
 
             UnadviseShellPropertyChanges();
-            DismissInfoBar();
 
-            if (_isAdvised && _solutionBuildManager != null)
-            {
-                _solutionBuildManager.UnadviseUpdateSolutionEvents(_adviseCookie);
-                _isAdvised = false;
-            }
-
-            if (_isAdvised4 && _solutionBuildManager5 != null)
-            {
-                _solutionBuildManager5.UnadviseUpdateSolutionEvents4(_adviseCookie4);
-                _isAdvised4 = false;
-            }
+            // Don't unadvise from build events yet - we need to stay subscribed
+            // so we can dismiss the info bar when the build actually starts
         }
 
         public int UpdateSolution_Begin(ref int pfCancelUpdate)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_wasJustReleased)
+            {
+                _wasJustReleased = false;
+                DismissInfoBar();
+                UnadviseFromBuildEvents();
+                return VSConstants.S_OK;
+            }
 
             if (_isBlocking)
             {
@@ -245,6 +245,23 @@ namespace WindowsAppSDK.TemplateUtilities
             }
         }
 
+        private void UnadviseFromBuildEvents()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_isAdvised && _solutionBuildManager != null)
+            {
+                _solutionBuildManager.UnadviseUpdateSolutionEvents(_adviseCookie);
+                _isAdvised = false;
+            }
+
+            if (_isAdvised4 && _solutionBuildManager5 != null)
+            {
+                _solutionBuildManager5.UnadviseUpdateSolutionEvents4(_adviseCookie4);
+                _isAdvised4 = false;
+            }
+        }
+
         public void OnActionItemClicked(IVsInfoBarUIElement infoBarUIElement, IVsInfoBarActionItem actionItem)
         {
         }
@@ -289,6 +306,16 @@ namespace WindowsAppSDK.TemplateUtilities
 
         public int UpdateProjectCfg_Begin(IVsHierarchy pHierProj, IVsCfg pCfgProj, IVsCfg pCfgSln, uint dwAction, ref int pfCancel)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_wasJustReleased)
+            {
+                _wasJustReleased = false;
+                DismissInfoBar();
+                UnadviseFromBuildEvents();
+                return VSConstants.S_OK;
+            }
+
             if (_isBlocking)
             {
                 if (_shouldRelease != null && _shouldRelease())
@@ -315,6 +342,14 @@ namespace WindowsAppSDK.TemplateUtilities
             ThreadHelper.ThrowIfNotOnUIThread();
 
             pfDelay = 0;
+
+            if (_wasJustReleased)
+            {
+                _wasJustReleased = false;
+                DismissInfoBar();
+                UnadviseFromBuildEvents();
+                return;
+            }
 
             if (_isBlocking)
             {
@@ -360,7 +395,11 @@ namespace WindowsAppSDK.TemplateUtilities
                 ThreadHelper.JoinableTaskFactory.Run(async () =>
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    EnableBuilds();
+                    _isBlocking = false;
+                    _wasJustReleased = false;
+                    DismissInfoBar();
+                    UnadviseFromBuildEvents();
+                    UnadviseShellPropertyChanges();
                 });
             }
         }
