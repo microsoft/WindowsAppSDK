@@ -191,8 +191,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 return;
             }
 
-            _infoBarShown = true;
-
             try
             {
                 var infoBarModel = new InfoBarModel(
@@ -227,6 +225,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 if (infoBarHostObj is IVsInfoBarHost infoBarHost)
                 {
                     infoBarHost.AddInfoBar(_infoBarUIElement);
+                    _infoBarShown = true;
                 }
             }
             catch (Exception)
