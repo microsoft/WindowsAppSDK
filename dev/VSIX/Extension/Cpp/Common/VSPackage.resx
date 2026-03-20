@@ -257,7 +257,7 @@ For more details on the error, check the General tab in the Output window.</valu
     <value>No output information available.</value>
   </data>
   <data name="1055" xml:space="preserve">
-    <value>[{0}] Build is currently disabled while NuGet packages are being installed: {1}. The build will be available once package installation is complete.</value>
+    <value>[{0}] Builds are currently paused while NuGet packages are being installed: {1}. The build will begin once package installation is complete.</value>
   </data>
   <data name="1056" xml:space="preserve">
     <value>[{0}] NuGet package auto-download is disabled. Unable to install: {1}. Click "Manage NuGet Packages" below to install the required packages manually.</value>
