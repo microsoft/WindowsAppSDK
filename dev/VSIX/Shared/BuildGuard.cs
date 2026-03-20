@@ -15,7 +15,7 @@ using Resources = WindowsAppSDK.Cpp.Extension.Dev17.VSPackage;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
-    internal sealed class BuildGuard : IVsUpdateSolutionEvents2, IVsUpdateSolutionEvents4, IVsInfoBarUIEvents, IDisposable
+    internal sealed class BuildGuard : IVsUpdateSolutionEvents2, IVsUpdateSolutionEvents4, IVsInfoBarUIEvents, IVsShellPropertyEvents, IDisposable
     {
         private IVsSolutionBuildManager2 _solutionBuildManager;
         private IVsSolutionBuildManager5 _solutionBuildManager5;
@@ -29,6 +29,9 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsInfoBarUIElement _infoBarUIElement;
         private Func<bool> _shouldRelease;
         private string _infoBarMessage;
+        private IVsShell _shell;
+        private uint _shellPropertyCookie;
+        private bool _isShellPropertyAdvised;
 
         public bool IsBlocking => _isBlocking;
 
@@ -39,7 +42,12 @@ namespace WindowsAppSDK.TemplateUtilities
 
         public void SetInfoBarMessage(string message)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _infoBarMessage = message;
+            if (_isBlocking)
+            {
+                ShowInfoBarWhenShellReady();
+            }
         }
 
         public void DisableBuilds()
@@ -80,6 +88,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
             _isBlocking = false;
 
+            UnadviseShellPropertyChanges();
             DismissInfoBar();
 
             if (_isAdvised && _solutionBuildManager != null)
@@ -120,6 +129,59 @@ namespace WindowsAppSDK.TemplateUtilities
             return VSConstants.S_OK;
         }
 
+        private void ShowInfoBarWhenShellReady()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_shell == null)
+            {
+                _shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
+            }
+
+            if (_shell == null)
+            {
+                return;
+            }
+
+            if (_shell.GetProperty((int)__VSSPROPID.VSSPROPID_Zombie, out object zombie) == VSConstants.S_OK
+                && zombie is bool isZombie && !isZombie)
+            {
+                ShowInfoBar();
+                return;
+            }
+
+            // Shell not yet initialized; defer until it is
+            if (!_isShellPropertyAdvised)
+            {
+                _shell.AdviseShellPropertyChanges(this, out _shellPropertyCookie);
+                _isShellPropertyAdvised = true;
+            }
+        }
+
+        public int OnShellPropertyChange(int propid, object var)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (propid == (int)__VSSPROPID.VSSPROPID_Zombie && var is bool isZombie && !isZombie)
+            {
+                ShowInfoBar();
+                UnadviseShellPropertyChanges();
+            }
+
+            return VSConstants.S_OK;
+        }
+
+        private void UnadviseShellPropertyChanges()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_isShellPropertyAdvised && _shell != null)
+            {
+                _shell.UnadviseShellPropertyChanges(_shellPropertyCookie);
+                _isShellPropertyAdvised = false;
+            }
+        }
+
         private void ShowInfoBar()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -155,7 +217,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
                 _infoBarUIElement.Advise(this, out _);
 
-                IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
+                IVsShell shell = _shell ?? ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
                 if (shell == null)
                 {
                     return;
