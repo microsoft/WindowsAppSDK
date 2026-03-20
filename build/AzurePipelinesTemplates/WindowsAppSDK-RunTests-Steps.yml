@@ -163,9 +163,14 @@ steps:
           Write-Host "##vso[task.setvariable variable=SAMPLES_ROOT_PATH;isOutput=true]$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples"
           Write-Host "##vso[task.setvariable variable=SAMPLES_ROOT_PATH;]$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples"
 
+  - task: NuGetAuthenticate@1
+    displayName: "NuGet authenticate for VSTest platform install"
+
   - task: VisualStudioTestPlatformInstaller@1
     inputs:
       versionSelector: latestStable
+      packageFeedSelector: customFeed
+      customFeed: "https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json"
 
   - task: PowerShell@2
     displayName: Add test locale to User Language List
