@@ -149,12 +149,16 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          $version = '$(version)'
+          # Build the component package version using the same format as Foundation:
+          # {Major}.{Minor}.{YYMMDDnnn}-{buildType}
+          # This ensures Base version sorts higher than existing dependencies like 2.0.2-preview
+          $paddedRevision = ([string]$(versionCounter)).PadLeft(3, '0')
+          $buildType = '${{ parameters.BuildType }}'
+          $version = '$(MajorVersion).$(MinorVersion).$(versionMinDate)' + $paddedRevision + '-' + $buildType
 
           # For official builds, allow VersionTag override
           if ('${{ parameters.IsOfficial }}' -eq 'true')
           {
-            $buildType = '${{ parameters.BuildType }}'
             $versionTag = '$(VersionTag)'
 
             # Allow override from pipeline variable
@@ -182,25 +186,13 @@ stages:
               Write-Host "##vso[task.complete result=Failed;]DONE"
             }
 
+            $formattedTag = ''
             if(-not [String]::IsNullOrEmpty($versionTag))
             {
-              # Replace the prerelease tag portion of the version
-              $dashIndex = $version.IndexOf('-')
-              if ($dashIndex -gt 0) {
-                $version = $version.Substring(0, $dashIndex) + '-' + $versionTag
-              } else {
-                $version = $version + '-' + $versionTag
-              }
-            }
-            elseif ($buildType -eq "stable")
-            {
-              # Stable: strip prerelease tag entirely
-              $dashIndex = $version.IndexOf('-')
-              if ($dashIndex -gt 0) {
-                $version = $version.Substring(0, $dashIndex)
-              }
+              $formattedTag = '-' + $versionTag
             }
             Write-Host "Using Release Versioning"
+            $version = '$(MajorVersion).$(MinorVersion).$(versionMinDate)' + $paddedRevision + $formattedTag
           }
 
           # Write the version to Version.Details.xml for BuildAll.ps1 to read from
