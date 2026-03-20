@@ -13,7 +13,7 @@ steps:
 - task: UseDotNet@2
   displayName: Use .NET SDK 10
   inputs:
-    version: 10.0.x
+    version: 10.0.1xx
 
   # Extract the build revision number from Build.BuildNumber. This is needed to pass to build-nupkg.
   # This relies on the format of the pipeline name being of the format: $(date:yyMM).$(date:dd)$(rev:rrr)
