@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
 using Microsoft.VisualStudio.Threading;
 using NuGet.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
 
 
 // Although the strings are the same in the wizard for both extensions,
@@ -47,8 +46,6 @@ namespace WindowsAppSDK.TemplateUtilities
         private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
-        private IVsShell _shell;
-        private IVsInfoBarHost _infoBarHost;
         private IVsInfoBarUIFactory _infoBarUIFactory;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
         private static BuildGuard s_buildGuard = new BuildGuard();
@@ -71,21 +68,6 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_waitDialog == null)
             {
                 System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
-            }
-
-            _shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
-            if (_shell == null)
-            {
-                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsShell service.");
-            }
-            else
-            {
-                _shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out object infoBarHostObj);
-                _infoBarHost = infoBarHostObj as IVsInfoBarHost;
-                if (_infoBarHost == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsInfoBarHost from IVsShell.");
-                }
             }
 
             _infoBarUIFactory = ServiceProvider.GlobalProvider.GetService(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
@@ -423,6 +405,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 // If no NuGet.config is provided, package restore is enabled by default
                 if (!File.Exists(configPath))
                 {
+                    System.Diagnostics.Debug.WriteLine($"NuGet.Config not found at: {configPath}. Assuming package restore is enabled.");
                     return true;
                 }
 
@@ -431,6 +414,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 var packageRestore = doc.Descendants("packageRestore").FirstOrDefault();
                 if (packageRestore == null)
                 {
+                    System.Diagnostics.Debug.WriteLine("No packageRestore section found in NuGet.Config. Assuming enabled.");
                     return true;
                 }
 
@@ -445,14 +429,17 @@ namespace WindowsAppSDK.TemplateUtilities
                     // Only explicit disabling of package restore should return false.
                     if (string.Equals(value, "False", StringComparison.OrdinalIgnoreCase))
                     {
+                        System.Diagnostics.Debug.WriteLine("NuGet package restore is explicitly disabled in NuGet.Config.");
                         return false;
                     }
                 }
 
+                System.Diagnostics.Debug.WriteLine("NuGet package restore is enabled (no explicit disable found).");
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Error reading NuGet.Config: {ex.Message}. Assuming package restore is enabled.");
                 return true;
             }
         }
@@ -730,23 +717,60 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private async Task DisplayInfoBarAsync(string errorMessage)
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            var infoBar = CreateNuGetInfoBar(errorMessage);
-            var infoBarUi = CreateInfoBarUI(infoBar);
-
-            // Write detailed error message to output window
-            var detailedErrorMessage = CreateDetailedErrorMessage();
-            ShowOutputWindow(detailedErrorMessage);
-
-            if (infoBarUi == null)
+            try
             {
-                LogError("Could not create InfoBar UI element. Logged error message to output window.");
-                return;
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var infoBar = CreateNuGetInfoBar(errorMessage);
+                var infoBarUi = CreateInfoBarUI(infoBar);
+
+                // Write detailed error message to output window
+                var detailedErrorMessage = CreateDetailedErrorMessage();
+                ShowOutputWindow(detailedErrorMessage);
+
+                if (infoBarUi == null)
+                {
+                    ShowOutputWindow("[InfoBar] Failed: Could not create InfoBar UI element.");
+                    return;
+                }
+
+                infoBarUi.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
+
+                IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
+                if (shell == null)
+                {
+                    ShowOutputWindow("[InfoBar] Failed: Could not obtain IVsShell service.");
+                    return;
+                }
+
+                // The main window InfoBar host may not be available immediately
+                // during template wizard execution while the main window initializes.
+                IVsInfoBarHost infoBarHost = null;
+                for (int retry = 0; retry < 5; retry++)
+                {
+                    shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out object infoBarHostObj);
+                    if (infoBarHostObj is IVsInfoBarHost host)
+                    {
+                        infoBarHost = host;
+                        break;
+                    }
+
+                    await Task.Delay(1000);
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                }
+
+                if (infoBarHost != null)
+                {
+                    infoBarHost.AddInfoBar(infoBarUi);
+                }
+                else
+                {
+                    ShowOutputWindow("[InfoBar] Failed: Main window InfoBar host not available after retries.");
+                }
             }
-
-            infoBarUi.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
-
-            _infoBarHost.AddInfoBar(infoBarUi);
+            catch (Exception ex)
+            {
+                ShowOutputWindow($"[InfoBar] Exception: {ex.Message}");
+            }
         }
 
         private IVsInfoBarUIElement CreateInfoBarUI(IVsInfoBar infoBar)
