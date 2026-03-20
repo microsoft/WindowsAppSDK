@@ -63,7 +63,7 @@
     <Compile Include="..\..\..\Shared\WizardInfoBarEvents.cs" Link="WizardInfoBarEvents.cs" />
     <Compile Include="..\..\..\Shared\OutputWindowHelper.cs" Link="OutputWindowHelper.cs" />
     <Compile Include="..\..\..\Shared\BuildGuard.cs" Link="BuildGuard.cs" />
-    <Compile Include="..\Common\VSPackage.Designer.cs">
+    <Compile Include="..\Common\VSPackage.Designer.cs" Link="Resources\VSPackage.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>VSPackage.resx</DependentUpon>
