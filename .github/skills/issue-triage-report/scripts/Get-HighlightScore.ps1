@@ -86,11 +86,8 @@ function Get-DetailedIssueScore {
         default { 0 }
     }
 
-    if ($totalReactions -ge $thresholds.hot_reactions) {
-        $breakdown.Reactions.Reason = "🔥 Hot (high community interest)"
-    }
-    elseif ($totalReactions -ge 5) {
-        $breakdown.Reactions.Reason = "Notable community interest"
+    if ($totalReactions -ge $thresholds.popular_reactions) {
+        $breakdown.Reactions.Reason = "🌟 Popular (community interest)"
     }
 
     # 2. Age
@@ -129,35 +126,81 @@ function Get-DetailedIssueScore {
         $breakdown.Comments.Reason = "📈 Trending ($commentCount comments recently)"
     }
 
-    # 4. Severity
+    # 4. Severity - use configurable labels
+    $labelNames = @()
+    if ($Issue.labels) {
+        $labelNames = @($Issue.labels | ForEach-Object { $_.name })
+    }
+
+    $severityLabels = if ($Config.severityLabels) {
+        $Config.severityLabels
+    } else {
+        @{
+            critical = @("regression", "crash", "hang", "data-loss", "security", "P0")
+            high = @("bug", "P1")
+            medium = @("performance", "feature proposal", "feature-proposal", "P2")
+            low = @("documentation", "enhancement", "P3")
+        }
+    }
+
     $severityLabel = ""
-    if (Test-HasLabel -Labels $Issue.labels -LabelName "regression") {
-        $severityLabel = "regression"
-        $breakdown.Severity.Score = $weights.severity
-        $breakdown.Severity.Reason = "🐛 Regression"
+    $severityFound = $false
+
+    # Check critical
+    foreach ($critLabel in $severityLabels.critical) {
+        if ($labelNames -contains $critLabel) {
+            $severityLabel = $critLabel
+            $breakdown.Severity.Score = $weights.severity
+            $breakdown.Severity.Reason = "🔴 Critical: $critLabel"
+            $severityFound = $true
+            break
+        }
     }
-    elseif (Test-HasLabelMatching -Labels $Issue.labels -Pattern "crash|hang|data-loss") {
-        $severityLabel = "crash/hang"
-        $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.8)
-        $breakdown.Severity.Reason = "Critical: crash/hang/data-loss"
+
+    # Check high
+    if (-not $severityFound) {
+        foreach ($highLabel in $severityLabels.high) {
+            if ($labelNames -contains $highLabel) {
+                $severityLabel = $highLabel
+                $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.8)
+                $breakdown.Severity.Reason = "🟠 High: $highLabel"
+                $severityFound = $true
+                break
+            }
+        }
     }
-    elseif (Test-HasLabel -Labels $Issue.labels -LabelName "bug") {
-        $severityLabel = "bug"
-        $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.53)
-        $breakdown.Severity.Reason = "Bug report"
+
+    # Check medium
+    if (-not $severityFound) {
+        foreach ($medLabel in $severityLabels.medium) {
+            if ($labelNames -contains $medLabel) {
+                $severityLabel = $medLabel
+                $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.5)
+                $breakdown.Severity.Reason = "🟡 Medium: $medLabel"
+                $severityFound = $true
+                break
+            }
+        }
     }
-    elseif (Test-HasLabel -Labels $Issue.labels -LabelName "performance") {
-        $severityLabel = "performance"
-        $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.4)
-        $breakdown.Severity.Reason = "Performance issue"
+
+    # Check low
+    if (-not $severityFound) {
+        foreach ($lowLabel in $severityLabels.low) {
+            if ($labelNames -contains $lowLabel) {
+                $severityLabel = $lowLabel
+                $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.2)
+                $breakdown.Severity.Reason = "🟢 Low: $lowLabel"
+                break
+            }
+        }
     }
     $breakdown.Severity.Raw = $severityLabel
 
-    # 5. Blockers
+    # 5. Blockers (only if weight > 0)
     $isBlocker = Test-HasLabelMatching -Labels $Issue.labels -Pattern "block|blocker|blocking"
     $breakdown.Blockers.Raw = $isBlocker
 
-    if ($isBlocker) {
+    if ($isBlocker -and $weights.blockers -gt 0) {
         $breakdown.Blockers.Score = $weights.blockers
         $breakdown.Blockers.Reason = "🚧 Blocker issue"
     }
@@ -181,7 +224,8 @@ function Format-ScoreBreakdown {
     #>
     param(
         [hashtable]$ScoreResult,
-        [object]$Issue
+        [object]$Issue,
+        [int]$Confidence = 0
     )
 
     $sb = [System.Text.StringBuilder]::new()
@@ -211,6 +255,9 @@ function Format-ScoreBreakdown {
         $raw = $data.Raw
         $reason = $data.Reason
 
+        # Skip factors with 0 max score (disabled)
+        if ($max -eq 0) { continue }
+
         $bar = "█" * [math]::Floor($score / $max * 10)
         $bar = $bar.PadRight(10, "░")
 
@@ -223,7 +270,7 @@ function Format-ScoreBreakdown {
     }
 
     [void]$sb.AppendLine("  ───────────────────────────────────────────────────────")
-    [void]$sb.AppendLine("  TOTAL SCORE: $($ScoreResult.TotalScore) / $($ScoreResult.MaxPossible)")
+    [void]$sb.AppendLine("  TOTAL SCORE: $($ScoreResult.TotalScore) / $($ScoreResult.MaxPossible) [confidence:$Confidence]")
     [void]$sb.AppendLine("")
 
     # Highlight recommendation
@@ -280,15 +327,24 @@ if ($issue.state -ne "OPEN") {
 # Calculate score
 $scoreResult = Get-DetailedIssueScore -Issue $issue -Config $Config
 
+# Calculate confidence using shared function
+$confidence = Get-ScoreConfidence -Issue $issue -Score @{
+    Total = $scoreResult.TotalScore
+    Reactions = $scoreResult.Breakdown.Reactions.Score
+    Age = $scoreResult.Breakdown.Age.Score
+    Comments = $scoreResult.Breakdown.Comments.Score
+    Severity = $scoreResult.Breakdown.Severity.Score
+}
+
 # Output
 if ($VerbosePreference -eq "Continue" -or $PSBoundParameters.ContainsKey('Verbose')) {
-    $output = Format-ScoreBreakdown -ScoreResult $scoreResult -Issue $issue
+    $output = Format-ScoreBreakdown -ScoreResult $scoreResult -Issue $issue -Confidence $confidence
     Write-Output $output
 }
 else {
     # Simple output
     Write-Host ""
-    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore)/100" -ForegroundColor Green
+    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore)/100 [confidence:$confidence]" -ForegroundColor Green
     Write-Host ""
 
     # Show top contributing factors
