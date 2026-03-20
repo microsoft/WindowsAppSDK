@@ -141,9 +141,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     AddPackageReferencesToProject();
                 }
 
-                var projectName = _project?.Name ?? "Unknown Project";
-                var packageNames = string.Join(", ", _nuGetPackages);
-                _ = DisplayInfoBarAsync(string.Format(Resources._1056, projectName, packageNames));
+                _ = DisplayInfoBarAsync(GetRestoreDisabledMessage());
                 return;
             }
 
@@ -249,9 +247,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     {
                         LogError($"NuGet restore is disabled. Error: {ex.Message}");
                         AddPackageReferencesToProject();
-                        var projectName = _project?.Name ?? "Unknown Project";
-                        var packageNames = string.Join(", ", _nuGetPackages);
-                        _ = DisplayInfoBarAsync(string.Format(Resources._1056, projectName, packageNames));
+                        _ = DisplayInfoBarAsync(GetRestoreDisabledMessage());
                         return;
                     }
 
@@ -270,9 +266,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 if (isRestoreDisabled)
                 {
                     AddPackageReferencesToProject();
-                    var projectName = _project?.Name ?? "Unknown Project";
-                    var packageNames = string.Join(", ", _nuGetPackages);
-                    _ = DisplayInfoBarAsync(string.Format(Resources._1056, projectName, packageNames));
+                    _ = DisplayInfoBarAsync(GetRestoreDisabledMessage());
                 }
                 else
                 {
@@ -310,9 +304,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
                     if (isRestoreDisabled)
                     {
-                        var projectName = _project?.Name ?? "Unknown Project";
-                        var packageNames = string.Join(", ", _nuGetPackages);
-                        _ = DisplayInfoBarAsync(string.Format(Resources._1056, projectName, packageNames));
+                        _ = DisplayInfoBarAsync(GetRestoreDisabledMessage());
                         ShowOutputWindow(CreateDetailedErrorMessage());
                         return;
                     }
@@ -332,6 +324,20 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
                 return;
             }
+        }
+
+        private string GetRestoreDisabledMessage()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var projectName = _project?.Name ?? "Unknown Project";
+            var packageNames = string.Join(", ", _nuGetPackages);
+
+            // C++ projects can't use PackageReference, so they need manual install
+            // via the NuGet Package Manager. C# projects can re-enable auto-download
+            // and restore the solution.
+            return GetProjectGuid(_project).Equals(SolutionVCProjectGuid)
+                ? string.Format(Resources._1057, projectName, packageNames)
+                : string.Format(Resources._1056, projectName, packageNames);
         }
 
         private void ShowOutputWindow(string errorMessage)

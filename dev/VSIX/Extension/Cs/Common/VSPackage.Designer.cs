@@ -479,5 +479,11 @@ namespace WindowsAppSDK.Cs.Extension.Dev17 {
                 return ResourceManager.GetString("1056", resourceCulture);
             }
         }
+        
+        internal static string _1057 {
+            get {
+                return ResourceManager.GetString("1057", resourceCulture);
+            }
+        }
     }
 }
