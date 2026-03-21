@@ -16,12 +16,16 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)UnpackagedApplicationData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)UnpackagedApplicationDataContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UnpackagedApplicationData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UnpackagedApplicationDataContainer.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)ApplicationData.idl" />
