@@ -22,8 +22,7 @@ namespace Test::Package::Tests
         BEGIN_TEST_CLASS(PackageTests_PackageGraph_Packaged_WinRT)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_METHOD_PROPERTY(L"UAP:RuntimeBehavior", L"PackagedClassicApp")
-            TEST_METHOD_PROPERTY(L"UAP:TrustLevel", L"MediumIL")
+            TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)

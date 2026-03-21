@@ -14,6 +14,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.IsPackagedProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Package.h">
       <Filter>Header Files</Filter>
     </ClInclude>
