@@ -479,12 +479,6 @@ namespace WindowsAppSDK.TemplateUtilities
 
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            s_buildGuard.DisableBuilds();
-            if (s_buildGuard.IsBlocking)
-            {
-                UnadviseSolutionEvents();
-            }
             return VSConstants.S_OK;
         }
 
