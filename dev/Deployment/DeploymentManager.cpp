@@ -267,6 +267,39 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                          packageFullName.c_str(), deploymentInitializeOptions.ForceDeployment() ? 'Y' : 'N',
                          deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N' );
         }
+        catch (...)
+        {
+            const HRESULT hr{ wil::ResultFromCaughtException() };
+
+            auto packageIdentity{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
+            PCWSTR c_packageNamePrefix{ L"microsoft.windowsappruntime." };
+            const size_t c_packageNamePrefixLength{ ARRAYSIZE(L"microsoft.windowsappruntime.") - 1 };
+            std::wstring release;
+            if (CompareStringOrdinal(packageIdentity.Name(), -1, c_packageNamePrefix, -1, TRUE) == CSTR_EQUAL)
+            {
+                release = packageIdentity.Name() + c_packageNamePrefixLength;
+            }
+            else
+            {
+                release = std::format(L"??? ({})", packageFullName);
+            }
+            std::ignore = LOG_IF_FAILED(Initialize_Log(hr, packageIdentity, release));
+
+            if (IsDebuggerPresent())
+            {
+                DebugBreak();
+            }
+
+            if (deploymentInitializeOptions.OnErrorShowUI() ||
+                ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_ONERRORSHOWUI"))
+            {
+                std::ignore = LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
+            }
+
+            THROW_HR_MSG(hr, "PackageFullName=%ls Options: ForceDeployment=%c OnErrorShowUI=%c isRepair:%c",
+                         packageFullName.c_str(), deploymentInitializeOptions.ForceDeployment() ? 'Y' : 'N',
+                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N');
+        }
 
         // Success!
         s_isInitialized = true;
