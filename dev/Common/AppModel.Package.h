@@ -143,10 +143,19 @@ namespace details
         std::uint32_t* pathLength,
         _Out_writes_opt_(*pathLength) PWSTR path)
     {
-        std::call_once(g_onceFlag, initialize);
-        RETURN_HR_IF_NULL(E_NOTIMPL, g_getPackagePathByFullName2);
+        // GetPackagePathByFullName2 first appeared in 20H1. Handle older systems
+        if (packagePathType == PackagePathType_Install)
+        {
+            RETURN_IF_FAILED(GetPackagePathByFullName(packageFullName, pathLength, path));
+        }
+        else
+        {
+            std::call_once(g_onceFlag, initialize);
+            RETURN_HR_IF_NULL(E_NOTIMPL, g_getPackagePathByFullName2);
 
-        return g_getPackagePathByFullName2(packageFullName, packagePathType, pathLength, path);
+            RETURN_IF_FAILED(g_getPackagePathByFullName2(packageFullName, packagePathType, pathLength, path));
+        }
+        return S_OK;
     }
 }
 
