@@ -17,12 +17,9 @@ namespace WindowsAppSDK.TemplateUtilities
 {
     internal sealed class BuildGuard : IVsUpdateSolutionEvents2, IVsUpdateSolutionEvents4, IVsInfoBarUIEvents, IVsShellPropertyEvents, IDisposable
     {
-        private IVsSolutionBuildManager2 _solutionBuildManager;
         private IVsSolutionBuildManager5 _solutionBuildManager5;
-        private uint _adviseCookie;
         private uint _adviseCookie4;
         private bool _isBlocking;
-        private bool _isAdvised;
         private bool _isAdvised4;
         private bool _disposed;
         private bool _infoBarShown;
@@ -60,26 +57,16 @@ namespace WindowsAppSDK.TemplateUtilities
                 return;
             }
 
-            _solutionBuildManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager2;
-            if (_solutionBuildManager == null)
-            {
-                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsSolutionBuildManager2 service.");
-                return;
-            }
-
-            int hr = _solutionBuildManager.AdviseUpdateSolutionEvents(this, out _adviseCookie);
-            if (hr == VSConstants.S_OK)
-            {
-                _isAdvised = true;
-                _isBlocking = true;
-                _infoBarShown = false;
-            }
-
-            _solutionBuildManager5 = _solutionBuildManager as IVsSolutionBuildManager5;
+            _solutionBuildManager5 = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager5;
             if (_solutionBuildManager5 != null)
             {
-                _solutionBuildManager5.AdviseUpdateSolutionEvents4(this, out _adviseCookie4);
-                _isAdvised4 = true;
+                if (_solutionBuildManager5 != null)
+                {
+                    _solutionBuildManager5.AdviseUpdateSolutionEvents4(this, out _adviseCookie4);
+                    _isAdvised4 = true;
+                    _isBlocking = true;
+                    _infoBarShown = false;
+                }
             }
         }
 
@@ -114,13 +101,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     EnableBuilds();
                     return VSConstants.S_OK;
-                }
-
-                // When Events4 is available, delay via QueryDelayFirstUpdateAction
-                // instead of canceling here (canceling triggers "build errors" dialogs).
-                if (!_isAdvised4)
-                {
-                    pfCancelUpdate = 1;
                 }
 
                 ShowInfoBar();
@@ -249,12 +229,6 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (_isAdvised && _solutionBuildManager != null)
-            {
-                _solutionBuildManager.UnadviseUpdateSolutionEvents(_adviseCookie);
-                _isAdvised = false;
-            }
-
             if (_isAdvised4 && _solutionBuildManager5 != null)
             {
                 _solutionBuildManager5.UnadviseUpdateSolutionEvents4(_adviseCookie4);
@@ -283,11 +257,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 if (_shouldRelease != null && _shouldRelease())
                 {
                     return VSConstants.S_OK;
-                }
-
-                if (!_isAdvised4)
-                {
-                    pfCancelUpdate = 1;
                 }
             }
 
@@ -322,11 +291,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     return VSConstants.S_OK;
                 }
-
-                if (!_isAdvised4)
-                {
-                    pfCancel = 1;
-                }
             }
 
             return VSConstants.S_OK;
@@ -357,6 +321,10 @@ namespace WindowsAppSDK.TemplateUtilities
                 {
                     EnableBuilds();
                     return;
+                }
+                else if (!_infoBarShown)
+                {
+                    ShowInfoBar();
                 }
 
                 pfDelay = 1;
