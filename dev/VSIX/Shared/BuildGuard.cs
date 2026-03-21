@@ -15,7 +15,7 @@ using Resources = WindowsAppSDK.Cpp.Extension.Dev17.VSPackage;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
-    internal sealed class BuildGuard : IVsUpdateSolutionEvents2, IVsUpdateSolutionEvents4, IVsInfoBarUIEvents, IVsShellPropertyEvents, IDisposable
+    internal sealed class BuildGuard : IVsUpdateSolutionEvents4, IVsInfoBarUIEvents, IVsShellPropertyEvents, IDisposable
     {
         private IVsSolutionBuildManager5 _solutionBuildManager5;
         private uint _adviseCookie4;
@@ -243,62 +243,6 @@ namespace WindowsAppSDK.TemplateUtilities
         public void OnClosed(IVsInfoBarUIElement infoBarUIElement)
         {
             _infoBarUIElement = null;
-        }
-
-        public int UpdateSolution_Done(int fSucceeded, int fModified, int fCancelCommand)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int UpdateSolution_StartUpdate(ref int pfCancelUpdate)
-        {
-            if (_isBlocking)
-            {
-                if (_shouldRelease != null && _shouldRelease())
-                {
-                    return VSConstants.S_OK;
-                }
-            }
-
-            return VSConstants.S_OK;
-        }
-
-        public int UpdateSolution_Cancel()
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnActiveProjectCfgChange(IVsHierarchy pIVsHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int UpdateProjectCfg_Begin(IVsHierarchy pHierProj, IVsCfg pCfgProj, IVsCfg pCfgSln, uint dwAction, ref int pfCancel)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            if (_wasJustReleased)
-            {
-                _wasJustReleased = false;
-                DismissInfoBar();
-                UnadviseFromBuildEvents();
-                return VSConstants.S_OK;
-            }
-
-            if (_isBlocking)
-            {
-                if (_shouldRelease != null && _shouldRelease())
-                {
-                    return VSConstants.S_OK;
-                }
-            }
-
-            return VSConstants.S_OK;
-        }
-
-        public int UpdateProjectCfg_Done(IVsHierarchy pHierProj, IVsCfg pCfgProj, IVsCfg pCfgSln, uint dwAction, int fSuccess, int fCancel)
-        {
-            return VSConstants.S_OK;
         }
 
         public void UpdateSolution_QueryDelayFirstUpdateAction(out int pfDelay)
