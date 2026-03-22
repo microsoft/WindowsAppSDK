@@ -157,7 +157,7 @@ namespace Test::Package::Tests
             std::filesystem::path expected;
             if (IsExternalLocationSupported())
             {
-                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal);
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_UserExternal);
             }
             const std::filesystem::path actual{ absoluteFilename.c_str() };
             VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
