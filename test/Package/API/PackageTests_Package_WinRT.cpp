@@ -156,7 +156,8 @@ namespace Test::Package::Tests
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
             const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Effective) };
-            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
+            const std::filesystem::path actual{ absoluteFilename.c_str() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
         }
 
         TEST_METHOD(GetFilePath_InstallPath)
@@ -174,12 +175,6 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_MutablePath)
         {
-            if (!IsMutableLocationSupported())
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Mutable location is not supported on this system. Skipping test");
-                return;
-            }
-
             winrt::hstring packageFullName{ Mutable_PackageFullName };
             winrt::hstring fileName{ L"AppxManifest.xml" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMutablePath };
@@ -187,18 +182,17 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Mutable) };
-            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
+            std::filesystem::path expected;
+            if (IsMutableLocationSupported())
+            {
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Mutable);
+            }
+            const std::filesystem::path actual{ absoluteFilename.c_str() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str())));
         }
 
         TEST_METHOD(GetFilePath_MachineExternalPath)
         {
-            if (!IsExternalLocationSupported())
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ExternalLocation is not supported on this system. Skipping test");
-                return;
-            }
-
             winrt::hstring packageFullName{ MachineExternal_PackageFullName };
             winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchMachineExternalPath };
@@ -206,18 +200,17 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal) };
-            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
+            std::filesystem::path expected;
+            if (IsExternalLocationSupported())
+            {
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal);
+            }
+            const std::filesystem::path actual{ absoluteFilename.c_str() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str())));
         }
 
         TEST_METHOD(GetFilePath_UserExternalPath)
         {
-            if (!IsExternalLocationSupported())
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ExternalLocation is not supported on this system. Skipping test");
-                return;
-            }
-
             winrt::hstring packageFullName{ UserExternal_PackageFullName };
             winrt::hstring fileName{ L"Shadow.cat" };
             const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchUserExternalPath };
@@ -225,8 +218,13 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_UserExternal) };
-            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
+            std::filesystem::path expected;
+            if (IsExternalLocationSupported())
+            {
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_UserExternal);
+            }
+            const std::filesystem::path actual{ absoluteFilename.c_str() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str())));
         }
 
         TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)

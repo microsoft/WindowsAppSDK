@@ -28,7 +28,7 @@ namespace Test::Package::Tests
         TEST_CLASS_SETUP(ClassSetup)
         {
             // Windows App SDK's Dynamic Dependency API doesn't support packaged processes
-            // Ue the OS Dynamic Dependency API (if available)
+            // Use the OS Dynamic Dependency API (if available)
             if (!::WindowsVersion::IsWindows11_24H2OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageGraph tests require >= 24H2. Skipping tests");
