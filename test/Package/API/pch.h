@@ -10,6 +10,7 @@
 #include <shlobj.h>
 
 #include <MsixDynamicDependency.h>
+#include <package_runtime.h>
 
 #include <wil/cppwinrt.h>
 #include <wil/filesystem.h>

@@ -48,6 +48,17 @@ namespace Test::Package::Tests
 {
     namespace TP = ::Test::Packages;
 
+    inline bool IsMutableLocationSupported()
+    {
+        return !!::IsPackageFeatureSupported(PackageFeature_PackagePath_Mutable);
+    }
+
+    inline bool IsExternalLocationSupported()
+    {
+        return !!::IsPackageFeatureSupported(PackageFeature_PackagePath_ExternalLocation);
+    }
+
+
     inline bool IsPackageRegistered_Framework()
     {
         return TP::IsPackageRegistered(TP::Framework::c_packageFullName);

@@ -30,13 +30,11 @@ namespace Test::Package::Tests
         {
             ::TB::Setup();
 
-            //RemovePackage_MachineExternal();
             RemovePackage_UserExternal();
             RemovePackage_Mutable();
 
             AddPackage_Mutable();
             AddPackage_UserExternal();
-            //AddPackage_MachineExternal();
 
             return true;
         }
@@ -121,8 +119,11 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Effective) };
-            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
+            // GetFilePath() w/o specifying Search*Path == SearchEffectivePath but we don't have any matching pacakges
+            // with Mutable or External locations so we'll resolve the Install path
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Install) };
+            const std::filesystem::path actual{ absoluteFilename.c_str() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls AbsoluteFilename:%ls", expected.c_str(), actual.c_str()));
         }
 
         TEST_METHOD(GetFilePath_InstallPath)
@@ -147,8 +148,13 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Mutable) };
-            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
+            const std::filesystem::path expected;
+            if (IsMutableLocationSupported())
+            {
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Mutable);
+            }
+            const std::filesystem::path actual{ absoluteFilename.c_str() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str())));
         }
 
         TEST_METHOD(GetFilePath_MachineExternalPath)
@@ -160,8 +166,13 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal) };
-            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
+            std::filesystem::path expected;
+            if (IsExternalLocationSupported())
+            {
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal);
+            }
+            const std::filesystem::path actual{ absoluteFilename.c_str() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str())));
         }
 
         TEST_METHOD(GetFilePath_UserExternalPath)
@@ -173,8 +184,13 @@ namespace Test::Package::Tests
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
             VERIFY_IS_FALSE(absoluteFilename.empty());
-            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_UserExternal) };
-            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.c_str()});
+            std::filesystem::path expected;
+            if (IsExternalLocationSupported())
+            {
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_UserExternal);
+            }
+            const std::filesystem::path actual{ absoluteFilename.c_str() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str())));
         }
 
         TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)
