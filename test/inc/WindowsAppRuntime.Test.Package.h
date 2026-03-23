@@ -4,6 +4,7 @@
 #ifndef __WINDOWSAPPRUNTIME_TEST_PACKAGE_H
 #define __WINDOWSAPPRUNTIME_TEST_PACKAGE_H
 
+#include <windows.h>
 #include <appmodel.h>
 
 #include <WindowsAppRuntime.Test.FileSystem.h>
