@@ -18,7 +18,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszFile)
     {
-        m_lastFailure.file = *failure.pszFile;
+        m_lastFailure.file = failure.pszFile;
     }
     else
     {
@@ -29,7 +29,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = *failure.pszMessage;
+        m_lastFailure.message = failure.pszMessage;
     }
     else
     {
@@ -38,7 +38,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszModule)
     {
-        m_lastFailure.module = *failure.pszModule;
+        m_lastFailure.module = failure.pszModule;
     }
     else
     {

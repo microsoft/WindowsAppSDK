@@ -232,9 +232,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions, isRepair);
         }
-        catch (winrt::hresult_error const& e)
+        catch (...)
         {
-            const HRESULT hr{ e.code() };
+            const HRESULT hr{ wil::ResultFromCaughtException() };
 
             auto packageIdentity{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
             PCWSTR c_packageNamePrefix{ L"microsoft.windowsappruntime." };
@@ -242,7 +242,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             std::wstring release;
             if (CompareStringOrdinal(packageIdentity.Name(), -1, c_packageNamePrefix, -1, TRUE) == CSTR_EQUAL)
             {
-                release =  packageIdentity.Name() + c_packageNamePrefixLength;
+                release = packageIdentity.Name() + c_packageNamePrefixLength;
             }
             else
             {
@@ -265,7 +265,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             THROW_HR_MSG(hr, "PackageFullName=%ls Options: ForceDeployment=%c OnErrorShowUI=%c isRepair:%c",
                          packageFullName.c_str(), deploymentInitializeOptions.ForceDeployment() ? 'Y' : 'N',
-                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N' );
+                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N');
         }
 
         // Success!
