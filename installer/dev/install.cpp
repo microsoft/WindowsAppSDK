@@ -353,6 +353,11 @@ namespace WindowsAppRuntimeInstaller
         {
             if (isPackageInstalledAndIsPackageStatusOK)
             {
+                if (!quiet)
+                {
+                    std::wcout << std::endl;
+                    std::wcout << L"Package already installed: " << packageProperties->fullName.get() << std::endl;
+                }
                 // If currently installed Package (either same or higher version than the version from the installer) is in good state, clear the package higher version and return.
                 installActivityContext.SetExistingPackageIfHigherVersion(L"");  
                 return;
