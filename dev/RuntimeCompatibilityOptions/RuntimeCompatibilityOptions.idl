@@ -34,6 +34,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         AppLifecycle_SharedMemoryRedirectionQueueFix = 60972838,
         SplitMenuFlyoutItem_Available = 60878987,
         TextIntelligence_Insights = 61106039,
+
+        // 1.8.7
+        DeploymentManager_DiagnosabilityFix = 57688028,
     };
 
     /// Represents a version of the Windows App Runtime.

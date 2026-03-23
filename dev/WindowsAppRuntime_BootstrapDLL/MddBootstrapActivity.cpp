@@ -6,6 +6,11 @@
 #include "pch.h"
 #include "MddBootstrapActivity.h"
 
+#include <FrameworkUdk/Containment.h>
+
+// Bug 57688028: [1.8 servicing] Deployment exceptions masked as ERROR_UNHANDLED_EXCEPTION; SetLastFailure logging single chars
+#define WINAPPSDK_CHANGEID_57688028 57688028, WinAppSDK_1_8_7
+
 WindowsAppRuntime::MddBootstrap::Activity::Context& WindowsAppRuntime::MddBootstrap::Activity::Context::Get()
 {
     return g_bootstrapActivityContext;
@@ -18,7 +23,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszFile)
     {
-        m_lastFailure.file = failure.pszFile;
+        m_lastFailure.file = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_57688028>() ? failure.pszFile : std::wstring(1, *failure.pszFile);
     }
     else
     {
@@ -29,7 +34,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = failure.pszMessage;
+        m_lastFailure.message = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_57688028>() ? failure.pszMessage : std::wstring(1, *failure.pszMessage);
     }
     else
     {
@@ -38,7 +43,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszModule)
     {
-        m_lastFailure.module = failure.pszModule;
+        m_lastFailure.module = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_57688028>() ? failure.pszModule : std::wstring(1, *failure.pszModule);
     }
     else
     {

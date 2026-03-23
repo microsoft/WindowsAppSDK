@@ -18,6 +18,9 @@
 // Bug 61124029: [1.8 servicing] Fixing reset activity data on deployment initialization
 #define WINAPPSDK_CHANGEID_61124029 61124029, WinAppSDK_1_8_6
 
+// Bug 57688028: [1.8 servicing] Deployment exceptions masked as ERROR_UNHANDLED_EXCEPTION; SetLastFailure logging single chars
+#define WINAPPSDK_CHANGEID_57688028 57688028, WinAppSDK_1_8_7
+
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 
@@ -211,7 +214,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         catch (...)
         {
-            const HRESULT hr{ wil::ResultFromCaughtException() };
+            const HRESULT hr = [&]() -> HRESULT {
+                if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_57688028>())
+                {
+                    return wil::ResultFromCaughtException();
+                }
+                try { throw; }
+                catch (winrt::hresult_error const& e) { return e.code(); }
+                // Non-winrt::hresult_error exceptions propagate (old behavior)
+            }();
 
             auto packageIdentity{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
             PCWSTR c_packageNamePrefix{ L"microsoft.windowsappruntime." };
