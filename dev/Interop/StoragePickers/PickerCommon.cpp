@@ -138,11 +138,13 @@ namespace PickerCommon {
             s_lastRootCount = count;
         }
 
-        // Root count unchanged for 2 consecutive polls — Shell is done loading.
+        // Root count unchanged for 2 consecutive polls, meaning navigation pane has done loading.
         if (s_stableChecks >= 2)
         {
             KillTimer(nullptr, timerId);
             s_timerId = 0;
+
+            // Insert the wsl node.
             s_nstc->AppendRoot(s_wslItem.get(),
                 SHCONTF_FOLDERS | SHCONTF_NONFOLDERS,
                 NSTCRS_VISIBLE,
@@ -163,6 +165,8 @@ namespace PickerCommon {
         s_wslItem = nullptr;
     }
 
+    // IFileDialogEvents::OnFolderChange is called when the dialog is opened.
+    // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialogevents-onfolderchange
     IFACEMETHODIMP WslNavigationInserter::OnFolderChange(IFileDialog* pfd) noexcept
     {
         if (m_inserted)

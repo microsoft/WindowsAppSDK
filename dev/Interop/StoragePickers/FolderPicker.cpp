@@ -121,11 +121,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         dialog->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
 
         // Register event handler to insert WSL into the navigation pane.
+        // Use SUCCEEDED() instead of check_hresult() so the picker still opens if registration fails.
         auto wslInserter = winrt::make<PickerCommon::WslNavigationInserter>();
         DWORD adviseCookie{};
-        check_hresult(dialog->Advise(wslInserter.get(), &adviseCookie));
+        bool wslAdvised = SUCCEEDED(dialog->Advise(wslInserter.get(), &adviseCookie));
         auto unadvise = wil::scope_exit([&] {
-            dialog->Unadvise(adviseCookie);
+            if (wslAdvised)
+            {
+                dialog->Unadvise(adviseCookie);
+            }
             PickerCommon::WslNavigationInserter::CancelPendingInsertion();
         });
 
@@ -180,11 +184,15 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(dialog->SetOptions(dialogOptions | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_ALLOWMULTISELECT));
 
         // Register event handler to insert WSL into the navigation pane.
+        // Use SUCCEEDED() instead of check_hresult() so the picker still opens if registration fails.
         auto wslInserter = winrt::make<PickerCommon::WslNavigationInserter>();
         DWORD adviseCookie{};
-        check_hresult(dialog->Advise(wslInserter.get(), &adviseCookie));
+        bool wslAdvised = SUCCEEDED(dialog->Advise(wslInserter.get(), &adviseCookie));
         auto unadvise2 = wil::scope_exit([&] {
-            dialog->Unadvise(adviseCookie);
+            if (wslAdvised)
+            {
+                dialog->Unadvise(adviseCookie);
+            }
             PickerCommon::WslNavigationInserter::CancelPendingInsertion();
         });
 
