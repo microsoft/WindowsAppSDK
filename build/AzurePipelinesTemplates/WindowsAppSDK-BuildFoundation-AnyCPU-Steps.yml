@@ -28,7 +28,7 @@ steps:
   name: BuildFoundation
   inputs:
     filePath: 'BuildAll.ps1'
-    arguments: -AzureBuildStep "BuildAnyCPU"
+    arguments: -AzureBuildStep "BuildAnyCPU" -CleanIntermediateFiles
 
 - ${{ if eq(parameters.runPREfast, 'true') }}:
   - task: SDLNativeRules@3
