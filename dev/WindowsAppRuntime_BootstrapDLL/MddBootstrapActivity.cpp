@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -8,8 +8,8 @@
 
 #include <FrameworkUdk/Containment.h>
 
-// Bug 57688028: [1.8 servicing] Deployment exceptions masked as ERROR_UNHANDLED_EXCEPTION; SetLastFailure logging single chars
-#define WINAPPSDK_CHANGEID_57688028 57688028, WinAppSDK_1_8_7
+// Bug 61543987: [1.8 servicing] Deployment exceptions masked as ERROR_UNHANDLED_EXCEPTION; SetLastFailure logging single chars
+#define WINAPPSDK_CHANGEID_61543987 61543987, WinAppSDK_1_8_7
 
 WindowsAppRuntime::MddBootstrap::Activity::Context& WindowsAppRuntime::MddBootstrap::Activity::Context::Get()
 {
@@ -23,7 +23,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszFile)
     {
-        m_lastFailure.file = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_57688028>() ? failure.pszFile : std::wstring(1, *failure.pszFile);
+        m_lastFailure.file = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>() ? failure.pszFile : std::wstring(1, *failure.pszFile);
     }
     else
     {
@@ -34,7 +34,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_57688028>() ? failure.pszMessage : std::wstring(1, *failure.pszMessage);
+        m_lastFailure.message = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>() ? failure.pszMessage : std::wstring(1, *failure.pszMessage);
     }
     else
     {
@@ -43,7 +43,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszModule)
     {
-        m_lastFailure.module = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_57688028>() ? failure.pszModule : std::wstring(1, *failure.pszModule);
+        m_lastFailure.module = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>() ? failure.pszModule : std::wstring(1, *failure.pszModule);
     }
     else
     {
