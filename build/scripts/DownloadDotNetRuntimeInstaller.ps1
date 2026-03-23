@@ -41,7 +41,27 @@ else
 if(-not(Test-Path $outputPath))
 {
     Write-Host "Downloading $downloadurl to $outputPath"
-    Invoke-WebRequest $downloadurl -OutFile $outputPath -UseBasicParsing
+    $maxRetries = 3
+    for ($retry = 1; $retry -le $maxRetries; $retry++)
+    {
+        try
+        {
+            Invoke-WebRequest $downloadurl -OutFile $outputPath -UseBasicParsing
+            Write-Host "Download succeeded."
+            break
+        }
+        catch
+        {
+            Write-Host "Download attempt $retry of $maxRetries failed: $_"
+            if ($retry -eq $maxRetries)
+            {
+                throw
+            }
+            $delay = $retry * 30
+            Write-Host "Retrying in $delay seconds..."
+            Start-Sleep -Seconds $delay
+        }
+    }
 }
 else
 {
