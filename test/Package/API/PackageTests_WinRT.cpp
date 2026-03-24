@@ -106,9 +106,14 @@ namespace Test::Package::Tests
             }
         }
 
-        TEST_METHOD(GetFilePath_NullPackageFullName_PackagedProcess_InstallPath)
+        TEST_METHOD(GetFilePath_NoSuchPackage)
         {
-            //TODO
+            winrt::hstring packageFullName{ L"Does.Not.Exist_1.2.3.4_neutral__1234567890abc" };
+            winrt::hstring fileName{ L"AppxManifest.xml" };
+            const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName) };
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
+            VERIFY_IS_TRUE(absoluteFilename.empty());
         }
 
         TEST_METHOD(GetFilePath)

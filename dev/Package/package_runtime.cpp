@@ -334,6 +334,12 @@ STDAPI GetPackageFilePath(
     auto rc{ ::OpenPackageInfoByFullName(packageFullName, 0, wil::out_param(packageInfoReference)) };
     if (rc != ERROR_SUCCESS)
     {
+        const auto hr{ HRESULT_FROM_WIN32(rc) };
+        if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+        {
+            // Package not found == File not found
+            return S_OK;
+        }
         THROW_WIN32_MSG(rc, "OpenPackageInfoByFullName(%ls,...)", packageFullName);
     }
     auto path{ appmodel::get_package_file(packageFullName, filename, effectiveOptions, packageInfoReference.get()) };

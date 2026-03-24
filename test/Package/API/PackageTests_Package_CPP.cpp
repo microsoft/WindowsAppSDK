@@ -92,9 +92,16 @@ namespace Test::Package::Tests
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), ::GetPackageFilePath(noPackageFullName, fileName, options, wil::out_param(absoluteFilename)));
         }
 
-        TEST_METHOD(GetPackageFilePath_NullPackageFullName_PackagedProcess_InstallPath)
+        TEST_METHOD(GetPackageFilePath_NoSuchPackage)
         {
-            //TODO
+            PCWSTR packageFullName{ L"Does.Not.Exist_1.2.3.4_neutral__1234567890abc" };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_None };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"Actual:%ls", !actual ? L"<null>" : actual.get()));
         }
 
         TEST_METHOD(GetPackageFilePath)
