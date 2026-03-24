@@ -14,6 +14,10 @@
 #include <wil/resource.h>
 #include <string>
 #include <appmodel.h>
+#include <FrameworkUdk/Containment.h>
+
+// Bug 61555948: [1.8.6 servicing] RuntimeInformation_PartBInsightsFlags - Add IsPackagedProcess and IsSelfContained to common insights PartB fields
+#define WINAPPSDK_CHANGEID_61555948 61555948, WinAppSDK_1_8_6
     namespace Microsoft::WindowsAppRuntime::Insights
     {
     enum class TraceLoggingInformationFlags : std::uint32_t
@@ -56,31 +60,34 @@
                     f |= Insights::TraceLoggingInformationFlags::IsDebuggerPresent;
                 }
 
+                if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61555948>())
                 {
-                    UINT32 n{};
-                    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
-                    if ((rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER))
                     {
-                        LOG_HR(HRESULT_FROM_WIN32(rc));
-                    }
-                    else if (rc == ERROR_INSUFFICIENT_BUFFER)
-                    {
-                        f |= Insights::TraceLoggingInformationFlags::IsPackagedProcess;
-                    }
-                }
-
-                {
-                    auto module{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
-                    if (module)
-                    {
-                        using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
-                        auto fn{ reinterpret_cast<IsSelfContainedFn>(::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained")) };
-                        if (fn)
+                        UINT32 n{};
+                        const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
+                        if ((rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER))
                         {
-                            BOOL result{};
-                            if (SUCCEEDED_LOG(fn(&result)) && result)
+                            LOG_HR(HRESULT_FROM_WIN32(rc));
+                        }
+                        else if (rc == ERROR_INSUFFICIENT_BUFFER)
+                        {
+                            f |= Insights::TraceLoggingInformationFlags::IsPackagedProcess;
+                        }
+                    }
+
+                    {
+                        auto module{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
+                        if (module)
+                        {
+                            using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
+                            auto fn{ reinterpret_cast<IsSelfContainedFn>(::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained")) };
+                            if (fn)
                             {
-                                f |= Insights::TraceLoggingInformationFlags::IsSelfContained;
+                                BOOL result{};
+                                if (SUCCEEDED_LOG(fn(&result)) && result)
+                                {
+                                    f |= Insights::TraceLoggingInformationFlags::IsSelfContained;
+                                }
                             }
                         }
                     }
