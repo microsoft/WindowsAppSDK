@@ -15,8 +15,8 @@
         </ClCompile>
     </ItemDefinitionGroup>
 
-    <!-- Add Bootstrap.lib to the linker inputs when not SelfContained -->
-    <ItemDefinitionGroup Condition="'$(WindowsAppSDKSelfContained)' != 'true'">
+    <!-- Add Bootstrap.lib to the linker inputs for unpackaged apps -->
+    <ItemDefinitionGroup Condition="'$(AppxPackage)' != 'true'">
         <Link>
             <AdditionalDependencies>$(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKBasePlatform)\Microsoft.WindowsAppRuntime.Bootstrap.lib;%(AdditionalDependencies)</AdditionalDependencies>
         </Link>
