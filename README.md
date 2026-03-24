@@ -32,14 +32,13 @@
 
 ## 📋 Getting started with Windows App SDK
 
-* [Build your first app with WinUI](https://learn.microsoft.com/windows/apps/get-started/start-here)
+* [Build your first app with WinUI](https://aka.ms/winui-getstarted)
 * [Developer documentation](https://aka.ms/windowsappsdkdocs)
 * [Samples & resources](https://learn.microsoft.com/windows/apps/get-started/samples)
   * [Windows App SDK samples](https://github.com/microsoft/WindowsAppSDK-Samples)
   * [WinUI 3 Gallery](https://github.com/microsoft/WinUI-Gallery)
   * [AI Dev Gallery (Preview)](https://github.com/microsoft/ai-dev-gallery)
   * [Windows Community Toolkit](https://github.com/CommunityToolkit/Windows)
-  * [Template Studio](https://github.com/microsoft/TemplateStudio)
 * [FAQ](docs/faq.md)
 * [Contribution guide](docs/contributor-guide.md)
 * [Roadmap](./docs/roadmap.md)
