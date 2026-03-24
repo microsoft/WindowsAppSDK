@@ -140,12 +140,23 @@ inline std::filesystem::path get_package_file_for_location(
     _In_ PCWSTR filename,
     PackagePathType packagePathType)
 {
-    std::filesystem::path absoluteFilename;
-
-    auto packagePath{ ::AppModel::Package::GetPath<std::wstring>(packageFullName, packagePathType) };
+    // Availability is a matter of timeline:
+    //   * PackagePathType_Install is available since Win8
+    //   * PackagePathType_Mutable is available since 19H1
+    //   * PackagePathType_Effective is available since 19H1
+    //   * PackagePathType_MachineExternalLocation is available since 20H1
+    //   * PackagePathType_UserExternalLocation is available since 20H1
+    //   * PackagePathType_EffectiveExternalLocation is available since 20H1
+    // GetPackagePathByFullName() is available since Win8
+    // GetPackagePathByFullName2() is available since 19H1 (though not all PackagePathType values were supported that early)
+    //
+    // Treat asks for locations not supported by the current system the same as not-found
+    //
+    // This is all handled by GetPackagePathByFullName2IfSupported() so just ask it for the path
+    std::wstring packagePath{ ::AppModel::Package::GetPath<std::wstring>(packageFullName, packagePathType) };
     if (!packagePath.empty())
     {
-        absoluteFilename = packagePath;
+        std::filesystem::path absoluteFilename{ packagePath };
         absoluteFilename /= filename;
         if (std::filesystem::exists(absoluteFilename))
         {

@@ -11,6 +11,7 @@
 
 #include <AppModel.Identity.h>
 #include <ExportLoader.h>
+#include <IsWindowsVersion.h>
 
 namespace AppModel::Package
 {
@@ -136,6 +137,7 @@ namespace details
     }
 
     /// Get the path for a package, if GetPackagePathByFullName2() is available.
+    /// Return an empty path if the PackagePathType isn't supported on current platform (*pathLength=0, *path="").
     /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
     inline HRESULT GetPackagePathByFullName2IfSupported(
         _In_ PCWSTR packageFullName,
@@ -143,17 +145,42 @@ namespace details
         std::uint32_t* pathLength,
         _Out_writes_opt_(*pathLength) PWSTR path)
     {
-        // GetPackagePathByFullName2 first appeared in 20H1. Handle older systems
-        if (packagePathType == PackagePathType_Install)
-        {
-            RETURN_IF_FAILED(GetPackagePathByFullName(packageFullName, pathLength, path));
-        }
-        else
+        // Availability is a matter of timeline:
+        //   * PackagePathType_Install is available since Win8
+        //   * PackagePathType_Mutable is available since 19H1
+        //   * PackagePathType_Effective is available since 19H1
+        //   * PackagePathType_MachineExternalLocation is available since 20H1
+        //   * PackagePathType_UserExternalLocation is available since 20H1
+        //   * PackagePathType_EffectiveExternalLocation is available since 20H1
+        // GetPackagePathByFullName() is available since Win8
+        // GetPackagePathByFullName2() is available since 19H1 (though not all PackagePathType values were supported that early)
+        //
+        // Treat asks for locations not supported by the current system the same as not-found
+
+        if (::WindowsVersion::IsWindows10_20H1OrGreater() ||
+            (::WindowsVersion::IsWindows10_19H1OrGreater() &&
+                ((packagePathType == PackagePathType_Install) || (packagePathType == PackagePathType_Mutable) || (packagePathType == PackagePathType_Effective))))
         {
             std::call_once(g_onceFlag, initialize);
             RETURN_HR_IF_NULL(E_NOTIMPL, g_getPackagePathByFullName2);
 
             RETURN_IF_FAILED(g_getPackagePathByFullName2(packageFullName, packagePathType, pathLength, path));
+        }
+        else if ((packagePathType == PackagePathType_Install) || (packagePathType == PackagePathType_Effective))
+        {
+            // Only Install location is supported by the current system
+            // Effective is thus equivalent to Install
+            // Either way, rock it old school...
+            RETURN_IF_FAILED(::GetPackagePathByFullName(packageFullName, pathLength, path));
+        }
+        else
+        {
+            // The requested location isn't possible on the current system
+            if (path && (*pathLength > 0))
+            {
+                *path = L'\0';
+            }
+            *pathLength = 0;
         }
         return S_OK;
     }
@@ -171,7 +198,14 @@ inline Tstring GetPath(_In_ PCWSTR packageFullName, PackagePathType packagePathT
     const auto hr{ details::GetPackagePathByFullName2IfSupported(packageFullName, packagePathType, &pathLength, path) };
     if (SUCCEEDED(hr))
     {
-        return details::MakeFromPCWSTR<Tstring>(path);
+        if (pathLength > 0)
+        {
+            return details::MakeFromPCWSTR<Tstring>(path);
+        }
+        else
+        {
+            return Tstring{};
+        }
     }
     else if ((hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND)) ||
              (hr == HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_MUTABLE_DIRECTORY)) ||
