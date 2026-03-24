@@ -48,7 +48,8 @@ DEFINE_ENUM_FLAG_OPERATORS(MddBootstrapInitializeOptions)
 /// If the request is not compatible with the framework package currently in use
 /// the API fails and an error is returned.
 ///
-/// @param majorMinorVersion the major and minor version to use, e..g 0x00010002 for Major.Minor=1.2
+/// @param majorMinorVersion the major and minor version to use. The minor version is ignored for release 2.0+;
+///        minor is only used for release 1.x, e.g. 0x00010002 is Major.Minor=1.2 whereas 0x0002xxxx is Major=2.
 /// @param versionTag the version pre-release identifier, or NULL if none.
 /// @param minVersion the minimum version to use
 STDAPI MddBootstrapInitialize(
@@ -67,7 +68,8 @@ STDAPI MddBootstrapInitialize(
 /// If the request is not compatible with the framework package currently in use
 /// the API fails and an error is returned.
 ///
-/// @param majorMinorVersion the major and minor version to use, e..g 0x00010002 for Major.Minor=1.2
+/// @param majorMinorVersion the major and minor version to use. The minor version is ignored for release 2.0+;
+///        minor is only used for release 1.x, e.g. 0x00010002 is Major.Minor=1.2 whereas 0x0002xxxx is Major=2.
 /// @param versionTag the version pre-release identifier, or NULL if none.
 /// @param minVersion the minimum version to use
 STDAPI MddBootstrapInitialize2(
@@ -190,6 +192,7 @@ namespace DynamicDependency::Bootstrap
     /// candidate is selected.
     ///
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+    ///        The minor version is ignored for release 2.0+; minor is only used for release 1.x, e.g. 0x00010002 is Major.Minor=1.2 whereas 0x0002xxxx is Major=2.
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @param minVersion the minimum version to use
     /// @param options optional behavior
@@ -238,6 +241,7 @@ namespace DynamicDependency::Bootstrap
     /// candidate is selected.
     ///
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+    ///        The minor version is ignored for release 2.0+; minor is only used for release 1.x, e.g. 0x00010002 is Major.Minor=1.2 whereas 0x0002xxxx is Major=2.
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @param minVersion the minimum version to use
     /// @param options optional behavior
@@ -293,6 +297,7 @@ namespace DynamicDependency::Bootstrap
     /// candidate is selected.
     ///
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+    ///        The minor version is ignored for release 2.0+; minor is only used for release 1.x, e.g. 0x00010002 is Major.Minor=1.2 whereas 0x0002xxxx is Major=2.
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @param minVersion the minimum version to use
     /// @param options optional behavior
