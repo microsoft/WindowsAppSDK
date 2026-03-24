@@ -214,7 +214,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         catch (...)
         {
-            const HRESULT hr = [&]() -> HRESULT {
+            const HRESULT hr = []() -> HRESULT {
                 if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
                 {
                     return wil::ResultFromCaughtException();
