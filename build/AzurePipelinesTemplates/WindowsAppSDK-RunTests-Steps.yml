@@ -74,10 +74,15 @@ steps:
 
   - task: powerShell@2
     displayName: 'Run dotnet installer'
+    continueOnError: true
     inputs:
       targetType: 'inline'
       script: |
-            $(Build.SourcesDirectory)\redist\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
+            if (Test-Path "$(Build.SourcesDirectory)\redist\dotnet-windowsdesktop-runtime-installer.exe") {
+                & "$(Build.SourcesDirectory)\redist\dotnet-windowsdesktop-runtime-installer.exe" /quiet /install /norestart
+            } else {
+                Write-Host "##[warning]dotnet Desktop Runtime installer not found - skipping (.NET 5 download may have failed)"
+            }
 
   - task: PowerShell@2
     displayName: 'Install VCLibs and VCLibs Desktop'

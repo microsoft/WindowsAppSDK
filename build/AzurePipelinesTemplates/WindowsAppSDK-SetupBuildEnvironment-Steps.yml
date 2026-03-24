@@ -85,6 +85,7 @@ steps:
 
 - task: PowerShell@2
   displayName: 'Download dotnet installer'
+  continueOnError: true
   condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
   inputs:
     targetType: filePath
