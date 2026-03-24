@@ -48,7 +48,7 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
         }
         else
         {
-            m_lastFailure.file = std::wstring(1, *failure.pszFile);
+            m_lastFailure.file = *failure.pszFile;
         }
     }
     else
@@ -66,7 +66,7 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
         }
         else
         {
-            m_lastFailure.message = std::wstring(1, *failure.pszMessage);
+            m_lastFailure.message = *failure.pszMessage;
         }
     }
     else
