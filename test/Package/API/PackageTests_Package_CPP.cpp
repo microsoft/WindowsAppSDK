@@ -101,7 +101,7 @@ namespace Test::Package::Tests
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
-            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"Actual:%ls", !actual ? L"<null>" : actual.get()));
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"Actual:%ls", !absoluteFilename ? L"<null>" : absoluteFilename.get()));
         }
 
         TEST_METHOD(GetPackageFilePath)
