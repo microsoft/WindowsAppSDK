@@ -60,7 +60,14 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>() ? failure.pszMessage : std::wstring(1, *failure.pszMessage);
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.message = failure.pszMessage;
+        }
+        else
+        {
+            m_lastFailure.message = std::wstring(1, *failure.pszMessage);
+        }
     }
     else
     {

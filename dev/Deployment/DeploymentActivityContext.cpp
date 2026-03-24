@@ -60,7 +60,14 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>() ? failure.pszMessage : std::wstring(1, *failure.pszMessage);
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.message = failure.pszMessage;
+        }
+        else
+        {
+            m_lastFailure.message = std::wstring(1, *failure.pszMessage);
+        }
     }
     else
     {
@@ -69,7 +76,14 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
 
     if (failure.pszModule)
     {
-        m_lastFailure.module = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>() ? failure.pszModule : std::wstring(1, *failure.pszModule);
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.module = failure.pszModule;
+        }
+        else
+        {
+            m_lastFailure.module = std::wstring(1, *failure.pszModule);
+        }
     }
     else
     {
