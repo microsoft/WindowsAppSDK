@@ -297,6 +297,7 @@ function Get-IssueScore {
         RawReactions = 0
         RawAge = 0
         RawComments = 0
+        RawUpdateAgeDays = 0
         SeverityLabel = ""
         IsBlocker = $false
     }
@@ -317,6 +318,18 @@ function Get-IssueScore {
     # 2. Age score (use UTC for consistency)
     $ageInDays = Get-IssueAgeInDays -CreatedAt $Issue.createdAt
     $score.RawAge = $ageInDays
+
+    # Days since last update (for trending recency check)
+    if ($Issue.updatedAt) {
+        try {
+            $updated = [datetime]$Issue.updatedAt
+            $score.RawUpdateAgeDays = ([datetime]::UtcNow - $updated).Days
+        } catch {
+            $score.RawUpdateAgeDays = [int]::MaxValue
+        }
+    } else {
+        $score.RawUpdateAgeDays = [int]::MaxValue
+    }
 
     $score.Age = switch ($ageInDays) {
         { $_ -ge 181 } { $weights.age; break }
@@ -468,7 +481,7 @@ function Get-HighlightLabels {
     if ($Score.RawAge -gt $thresholds.aging_days -and $labelNames -contains "needs-triage") {
         $labels += "⏰ Aging"
     }
-    if ($Score.RawComments -ge $thresholds.trending_comments) {
+    if ($Score.RawComments -ge $thresholds.trending_comments -and $Score.RawUpdateAgeDays -le $thresholds.trending_days) {
         $labels += "📈 Trending"
     }
 
