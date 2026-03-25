@@ -22,8 +22,18 @@
         <Message Text="The Windows App SDK is running by default in self-contained mode." Importance="high" />
     </Target>
 
-    <!-- Error: framework-dependent apps must reference the Runtime package -->
-    <Target Name="WindowsAppSDKFrameworkPackageDependentWithoutPackages" Condition="'$(WindowsAppSDKSelfContained)' != 'true' and '$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(OutputType)' != 'Library'">
+    <!-- Error: framework-dependent apps must reference the Runtime package.
+         Skip this check for packaging projects (.wapproj), packaged apps (AppxPackage=true),
+         and apps built within the Foundation pipeline (WindowsAppSdkFoundation=true or component packages referenced). -->
+    <Target Name="WindowsAppSDKFrameworkPackageDependentWithoutPackages"
+            Condition="'$(WindowsAppSDKSelfContained)' != 'true'
+                       and '$(MicrosoftWindowsAppSDKPackageDir)' == ''
+                       and '$(OutputType)' != 'Library'
+                       and '$(AppxPackage)' != 'true'
+                       and '$(MSBuildProjectExtension)' != '.wapproj'
+                       and '$(WindowsAppSdkFoundation)' != 'true'
+                       and '$(WindowsAppSDKAggregatePackage)' != 'true'
+                       and '@(WindowsAppSdkComponentPackages)' == ''">
         <Error Text="A framework package dependent Windows App SDK app requires a package reference to Microsoft.WindowsAppSDK.Runtime. Please add a reference to this package or set the &lt;WindowsAppSdkSelfContained&gt; property to true." />
     </Target>
 
