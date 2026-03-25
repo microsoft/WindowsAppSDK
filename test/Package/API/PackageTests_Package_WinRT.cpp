@@ -188,11 +188,15 @@ namespace Test::Package::Tests
             const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
-            VERIFY_IS_FALSE(absoluteFilename.empty());
             std::filesystem::path expected;
             if (IsMutableLocationSupported())
             {
+                VERIFY_IS_FALSE(absoluteFilename.empty());
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Mutable);
+            }
+            else
+            {
+                VERIFY_IS_TRUE(absoluteFilename.empty());
             }
             const std::filesystem::path actual{ absoluteFilename.c_str() };
             VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
@@ -206,11 +210,15 @@ namespace Test::Package::Tests
             const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
-            VERIFY_IS_FALSE(absoluteFilename.empty());
             std::filesystem::path expected;
             if (IsExternalLocationSupported())
             {
+                VERIFY_IS_FALSE(absoluteFilename.empty());
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal);
+            }
+            else
+            {
+                VERIFY_IS_TRUE(absoluteFilename.empty());
             }
             const std::filesystem::path actual{ absoluteFilename.c_str() };
             VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
@@ -224,11 +232,15 @@ namespace Test::Package::Tests
             const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::Package::GetFilePath(fileName, packageFullName, options) };
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.c_str()));
-            VERIFY_IS_FALSE(absoluteFilename.empty());
             std::filesystem::path expected;
             if (IsExternalLocationSupported())
             {
+                VERIFY_IS_FALSE(absoluteFilename.empty());
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_UserExternal);
+            }
+            else
+            {
+                VERIFY_IS_TRUE(absoluteFilename.empty());
             }
             const std::filesystem::path actual{ absoluteFilename.c_str() };
             VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));

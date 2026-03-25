@@ -144,11 +144,15 @@ namespace Test::Package::Tests
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
-            VERIFY_IS_NOT_NULL(absoluteFilename);
             std::filesystem::path expected;
             if (IsMutableLocationSupported())
             {
+                VERIFY_IS_NOT_NULL(absoluteFilename);
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Mutable);
+            }
+            else
+            {
+                VERIFY_IS_NULL(absoluteFilename);
             }
             const std::filesystem::path actual{ absoluteFilename.get() };
             VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
@@ -163,11 +167,15 @@ namespace Test::Package::Tests
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
-            VERIFY_IS_NOT_NULL(absoluteFilename);
             std::filesystem::path expected;
             if (IsExternalLocationSupported())
             {
+                VERIFY_IS_NOT_NULL(absoluteFilename);
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_MachineExternal);
+            }
+            else
+            {
+                VERIFY_IS_NULL(absoluteFilename);
             }
             const std::filesystem::path actual{ absoluteFilename.get() };
             VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
@@ -182,11 +190,15 @@ namespace Test::Package::Tests
             VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
 
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
-            VERIFY_IS_NOT_NULL(absoluteFilename);
             std::filesystem::path expected;
             if (IsExternalLocationSupported())
             {
+                VERIFY_IS_NOT_NULL(absoluteFilename);
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_UserExternal);
+            }
+            else
+            {
+                VERIFY_IS_NULL(absoluteFilename);
             }
             const std::filesystem::path actual{ absoluteFilename.get() };
             VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
