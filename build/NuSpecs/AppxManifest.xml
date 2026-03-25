@@ -46,6 +46,9 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
 
+        <!-- Package -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Package" ThreadingModel="both" />
+
         <!-- WinAppSDK Deployment -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" ThreadingModel="both" />
