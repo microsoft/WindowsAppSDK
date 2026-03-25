@@ -198,39 +198,7 @@ For `area-External` label (issues to redirect to other teams):
 
 ## Thresholds Configuration
 
-These thresholds can be adjusted in `ScoringConfig.json`:
-
-```json
-{
-  "weights": {
-    "reactions": 30,
-    "age": 30,
-    "comments": 30,
-    "severity": 10,
-    "blockers": 0
-  },
-  "thresholds": {
-    "aging_days": 90,
-    "trending_comments": 10,
-    "trending_days": 14,
-    "popular_reactions": 5
-  },
-  "labelPriority": [
-    "regression",
-    "blocker",
-    "popular",
-    "aging",
-    "trending"
-  ],
-  "maxLabelsPerIssue": 2,
-  "severityLabels": {
-    "critical": ["regression", "crash", "hang", "data-loss", "security", "P0"],
-    "high": ["bug", "P1"],
-    "medium": ["performance", "feature proposal", "feature-proposal", "P2"],
-    "low": ["documentation", "enhancement", "P3"]
-  }
-}
-```
+These thresholds can be adjusted in `ScoringConfig.json` (`.github\skills\issue-triage-report\scripts\ScoringConfig.json`)
 
 ---
 
