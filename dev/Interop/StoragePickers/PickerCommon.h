@@ -32,21 +32,26 @@ namespace PickerCommon {
     void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName);
     void ValidateInitialFileTypeIndex(int const& value);
 
-    // Inserts WSL into the navigation pane of COM file dialogs that don't show it by default.
-    // IFileSaveDialog and IFileOpenDialog with FOS_PICKFOLDERS hide the WSL node;
-    // this handler re-adds it by polling the navigation tree until the Shell finishes loading.
-    struct WslNavigationInserter : winrt::implements<WslNavigationInserter, IFileDialogEvents>
+    // Shows the WSL node in the navigation pane of COM file dialogs that hide it by default.
+    // The WSL node was hidden in FileSavePicker (IFileSaveDialog) and FolderPicker (IFileOpenDialog + FOS_PICKFOLDERS + FOS_FORCEFILESYSTEM);
+    // It takes time for the navigation pane to load nodes.
+    // This handler checks the root nodes and looks for the WSL node in children nodes.
+    // When finds the existing hidden WSL node, makes it visible.
+    struct WslNodeRevealer : winrt::implements<WslNodeRevealer, IFileDialogEvents>
     {
-        bool m_inserted{ false };
+        bool m_revealed{ false };
 
         static winrt::com_ptr<INameSpaceTreeControl> s_nstc;
         static winrt::com_ptr<IShellItem> s_wslItem;
         static UINT_PTR s_timerId;
-        static DWORD s_lastRootCount;
-        static int s_stableChecks;
+        static int s_pollCount;
+
+        // looking for the navigation node for 1 second at most
+        static constexpr UINT s_pollIntervalMs{ 10 };
+        static constexpr int s_maxPollCount{ 100 };
 
         static void CALLBACK PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept;
-        static void CancelPendingInsertion() noexcept;
+        static void CancelPendingReveal() noexcept;
 
         IFACEMETHODIMP OnFolderChange(IFileDialog* pfd) noexcept override;
         IFACEMETHODIMP OnFileOk(IFileDialog*) noexcept override { return S_OK; }

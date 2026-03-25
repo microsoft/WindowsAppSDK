@@ -188,17 +188,17 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_STRICTFILETYPES));
 
-        // Register event handler to insert WSL into the navigation pane.
+        // Register event handler to show the WSL node in the navigation pane.
         // Use SUCCEEDED() instead of check_hresult() so the picker still opens if registration fails.
-        auto wslInserter = winrt::make<PickerCommon::WslNavigationInserter>();
+        auto wslRevealer = winrt::make<PickerCommon::WslNodeRevealer>();
         DWORD adviseCookie{};
-        bool wslAdvised = SUCCEEDED(dialog->Advise(wslInserter.get(), &adviseCookie));
+        bool wslAdvised = SUCCEEDED(dialog->Advise(wslRevealer.get(), &adviseCookie));
         auto unadvise = wil::scope_exit([&] {
             if (wslAdvised)
             {
                 dialog->Unadvise(adviseCookie);
             }
-            PickerCommon::WslNavigationInserter::CancelPendingInsertion();
+            PickerCommon::WslNodeRevealer::CancelPendingReveal();
         });
 
         if (FAILED(dialog->Show(parameters.HWnd)))

@@ -102,22 +102,62 @@ namespace {
 
 }
 
+namespace {
+
+    // Search immediate children of parentItem for the WSL item.
+    // If found, make it visible via INameSpaceTreeControl::SetItemState.
+    bool FindAndShowWslInChildren(winrt::com_ptr<IShellItem> const& wslItem, winrt::com_ptr<IShellItem> const& parentItem, winrt::com_ptr<INameSpaceTreeControl> const& nstc) noexcept
+    {
+        if (!parentItem || !wslItem || !nstc)
+        {
+            return false;
+        }
+
+        winrt::com_ptr<IEnumShellItems> enumItems;
+        if (FAILED(parentItem->BindToHandler(nullptr, BHID_EnumItems, IID_PPV_ARGS(enumItems.put()))) || !enumItems)
+        {
+            return false;
+        }
+
+        winrt::com_ptr<IShellItem> childItem;
+        ULONG fetched = 0;
+        while (SUCCEEDED(enumItems->Next(1, childItem.put(), &fetched)) && fetched > 0)
+        {
+            if (childItem)
+            {
+                int order = 0;
+                if (childItem->Compare(wslItem.get(), SICHINT_CANONICAL, &order) == S_OK && order == 0)
+                {
+                    nstc->SetItemState(childItem.get(), NSTCIS_EXPANDED, NSTCIS_EXPANDED);
+                    return true;
+                }
+                childItem = nullptr;
+            }
+            fetched = 0;
+        }
+
+        return false;
+    }
+
+}
+
 namespace PickerCommon {
     using namespace winrt;
 
-    // WslNavigationInserter static members
-    winrt::com_ptr<INameSpaceTreeControl> WslNavigationInserter::s_nstc;
-    winrt::com_ptr<IShellItem> WslNavigationInserter::s_wslItem;
-    UINT_PTR WslNavigationInserter::s_timerId{ 0 };
-    DWORD WslNavigationInserter::s_lastRootCount{ 0 };
-    int WslNavigationInserter::s_stableChecks{ 0 };
+    // WslNodeRevealer static members
+    winrt::com_ptr<INameSpaceTreeControl> WslNodeRevealer::s_nstc;
+    winrt::com_ptr<IShellItem> WslNodeRevealer::s_wslItem;
+    UINT_PTR WslNodeRevealer::s_timerId{ 0 };
+    int WslNodeRevealer::s_pollCount{ 0 };
 
-    void CALLBACK WslNavigationInserter::PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept
+    void CALLBACK WslNodeRevealer::PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept
     {
-        if (!s_nstc || !s_wslItem)
+        if (!s_nstc || !s_wslItem || ++s_pollCount >= s_maxPollCount)
         {
             KillTimer(nullptr, timerId);
             s_timerId = 0;
+            s_nstc = nullptr;
+            s_wslItem = nullptr;
             return;
         }
 
@@ -125,36 +165,40 @@ namespace PickerCommon {
         DWORD count = 0;
         if (SUCCEEDED(s_nstc->GetRootItems(roots.put())) && roots)
         {
-            roots->GetCount(&count);
+            if (FAILED(roots->GetCount(&count)))
+            {
+                count = 0;
+            }
         }
 
-        if (count > 0 && count == s_lastRootCount)
+        // Wait until at least one root node has loaded.
+        if (count == 0)
         {
-            s_stableChecks++;
-        }
-        else
-        {
-            s_stableChecks = 0;
-            s_lastRootCount = count;
+            return;
         }
 
-        // Root count unchanged for 2 consecutive polls, meaning navigation pane has done loading.
-        if (s_stableChecks >= 2)
-        {
-            KillTimer(nullptr, timerId);
-            s_timerId = 0;
+        KillTimer(nullptr, timerId);
+        s_timerId = 0;
 
-            // Insert the wsl node.
-            s_nstc->AppendRoot(s_wslItem.get(),
-                SHCONTF_FOLDERS | SHCONTF_NONFOLDERS,
-                NSTCRS_VISIBLE,
-                nullptr);
-            s_nstc = nullptr;
-            s_wslItem = nullptr;
+        // Search for the WSL node in the immediate children of each root node.
+        for (DWORD i = 0; i < count; i++)
+        {
+            winrt::com_ptr<IShellItem> rootItem;
+            if (SUCCEEDED(roots->GetItemAt(i, rootItem.put())) && rootItem)
+            {
+                if (FindAndShowWslInChildren(s_wslItem, rootItem, s_nstc))
+                {
+                    break;
+                }
+            }
         }
+
+        s_nstc = nullptr;
+        s_wslItem = nullptr;
+        s_pollCount = 0;
     }
 
-    void WslNavigationInserter::CancelPendingInsertion() noexcept
+    void WslNodeRevealer::CancelPendingReveal() noexcept
     {
         if (s_timerId)
         {
@@ -163,17 +207,24 @@ namespace PickerCommon {
         }
         s_nstc = nullptr;
         s_wslItem = nullptr;
+        s_pollCount = 0;
     }
 
     // IFileDialogEvents::OnFolderChange is called when the dialog is opened.
     // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialogevents-onfolderchange
-    IFACEMETHODIMP WslNavigationInserter::OnFolderChange(IFileDialog* pfd) noexcept
+    IFACEMETHODIMP WslNodeRevealer::OnFolderChange(IFileDialog* pfd) noexcept
     {
-        if (m_inserted)
+        if (m_revealed)
         {
             return S_OK;
         }
-        m_inserted = true;
+        m_revealed = true;
+
+        // Only one reveal operation may be active at a time.
+        if (s_timerId != 0)
+        {
+            return S_OK;
+        }
 
         winrt::com_ptr<IServiceProvider> sp;
         if (FAILED(pfd->QueryInterface(IID_PPV_ARGS(sp.put()))))
@@ -211,9 +262,8 @@ namespace PickerCommon {
 
         s_nstc = nstc;
         s_wslItem = wslItem;
-        s_lastRootCount = 0;
-        s_stableChecks = 0;
-        s_timerId = SetTimer(nullptr, 0, 50, PollTimerProc);
+        s_pollCount = 0;
+        s_timerId = SetTimer(nullptr, 0, s_pollIntervalMs, PollTimerProc);
 
         return S_OK;
     }
