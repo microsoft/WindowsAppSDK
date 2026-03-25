@@ -147,64 +147,41 @@ $result.needsTriage = $triageLabels.Count -gt 0
 
 # Calculate area suggestion confidence if no area label
 if (-not $result.hasAreaLabel) {
-    # Fetch available area labels from the repository using Get-RepositoryLabels.ps1
+    # Load area keywords from area-keywords.json
     $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-    $getLabelsScript = Join-Path $scriptDir "Get-RepositoryLabels.ps1"
-    
-    $availableAreaLabels = @()
-    if (Test-Path $getLabelsScript) {
-        try {
-            $rawLabels = & $getLabelsScript -Repository $Repository -Filter "area-*" -OutputFormat json 2>$null
-            if ($LASTEXITCODE -eq 0 -and $rawLabels) {
-                $labelData = $rawLabels | ConvertFrom-Json
-                $availableAreaLabels = @($labelData | ForEach-Object { $_.name })
-                Write-Verbose "Fetched $($availableAreaLabels.Count) area labels from repository"
-            }
-        }
-        catch {
-            Write-Verbose "Could not fetch area labels: $_"
-        }
+    $skillDir = Split-Path -Parent $scriptDir
+    $keywordsFile = Join-Path $skillDir "area-keywords.json"
+
+    if (-not (Test-Path $keywordsFile)) {
+        Write-Error "Area keywords file not found: $keywordsFile"
+        exit 1
     }
-    
-    # Build keyword map - use fetched labels or fall back to common ones
-    # Keywords are derived from label names (strip 'area-' prefix and expand)
+
+    $keywordsJson = Get-Content -Path $keywordsFile -Raw -ErrorAction Stop
+    try {
+        $keywordsData = $keywordsJson | ConvertFrom-Json -ErrorAction Stop
+    }
+    catch {
+        Write-Error "Failed to parse area keywords file '$keywordsFile': $_"
+        exit 1
+    }
+
+    if ($null -eq $keywordsData -or ($keywordsData | Get-Member -MemberType NoteProperty).Count -eq 0) {
+        Write-Error "Area keywords file '$keywordsFile' is empty or contains no label entries."
+        exit 1
+    }
+
+    # Convert parsed JSON object to hashtable
     $areaKeywords = @{}
-    
-    # Default keywords for common areas (fallback and enhancement)
-    # area-Notifications covers all notification types (toast, badge, push, app notifications)
-    $defaultKeywords = @{
-        'area-Notifications' = @('notification', 'toast', 'badge', 'push', 'appnotification', 'pushnotification', 'wns')
-        'area-Packaging' = @('msix', 'package', 'deploy', 'install', 'appx', 'deployment')
-        'area-Windowing' = @('window', 'appwindow', 'titlebar', 'backdrop', 'presenter')
-        'area-Widgets' = @('widget', 'dashboard')
-        'area-AppLifecycle' = @('lifecycle', 'activation', 'restart', 'single instance', 'appinstance')
-        'area-PowerManagement' = @('power', 'battery', 'suspend', 'resume', 'powermanager')
-        'area-MRTCore' = @('resource', 'mrt', 'localization', 'pri', 'resourcemanager')
-        'area-DWriteCore' = @('font', 'dwrite', 'text', 'typography')
-        'area-AccessControl' = @('access', 'security', 'token', 'permission')
-        'area-Environment' = @('environment', 'variable', 'env')
-    }
-    
-    # Use fetched labels if available, otherwise use default set
-    $labelsToUse = if ($availableAreaLabels.Count -gt 0) { $availableAreaLabels } else { $defaultKeywords.Keys }
-    
-    foreach ($areaLabel in $labelsToUse) {
-        # Start with default keywords if we have them
-        if ($defaultKeywords.ContainsKey($areaLabel)) {
-            $areaKeywords[$areaLabel] = $defaultKeywords[$areaLabel]
+    foreach ($prop in $keywordsData.PSObject.Properties) {
+        if ($null -eq $prop.Value -or @($prop.Value).Count -eq 0) {
+            Write-Error "Area keywords file '$keywordsFile' has no keywords for label '$($prop.Name)'."
+            exit 1
         }
-        else {
-            # Generate keywords from label name (e.g., area-SomeFeature -> @('some', 'feature', 'somefeature'))
-            $labelBase = $areaLabel -replace '^area-', ''
-            $keywords = @($labelBase.ToLower())
-            # Split PascalCase into words
-            $words = [regex]::Matches($labelBase, '[A-Z][a-z]+') | ForEach-Object { $_.Value.ToLower() }
-            if ($words) {
-                $keywords += $words
-            }
-            $areaKeywords[$areaLabel] = $keywords
-        }
+        $areaKeywords[$prop.Name] = @($prop.Value)
     }
+
+    Write-Verbose "Loaded $($areaKeywords.Count) area keyword entries from $keywordsFile"
     
     # Extract text to search for keywords
     $text = "$($issue.title) $($issue.body)"
