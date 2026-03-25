@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+#include <wil/cppwinrt.h>
+
 // Forward-declare the various AutoInitialize functions
 namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
 {

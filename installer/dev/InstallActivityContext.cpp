@@ -4,6 +4,11 @@
 #include "pch.h"
 #include "InstallActivityContext.h"
 
+#include <FrameworkUdk/Containment.h>
+
+// Bug 61543987: [1.8 servicing] Deployment exceptions masked as ERROR_UNHANDLED_EXCEPTION; SetLastFailure logging single chars
+#define WINAPPSDK_CHANGEID_61543987 61543987, WinAppSDK_1_8_7
+
 WindowsAppRuntimeInstaller::InstallActivity::Context& WindowsAppRuntimeInstaller::InstallActivity::Context::Get()
 {
     return g_installActivityContext;
@@ -37,7 +42,14 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
 
     if (failure.pszFile)
     {
-        m_lastFailure.file = *failure.pszFile;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.file = failure.pszFile;
+        }
+        else
+        {
+            m_lastFailure.file = *failure.pszFile;
+        }
     }
     else
     {
@@ -48,7 +60,14 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = *failure.pszMessage;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.message = failure.pszMessage;
+        }
+        else
+        {
+            m_lastFailure.message = *failure.pszMessage;
+        }
     }
     else
     {

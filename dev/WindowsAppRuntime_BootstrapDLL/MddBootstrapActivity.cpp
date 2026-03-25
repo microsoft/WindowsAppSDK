@@ -1,10 +1,15 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
 
 #include "pch.h"
 #include "MddBootstrapActivity.h"
+
+#include <FrameworkUdk/Containment.h>
+
+// Bug 61543987: [1.8 servicing] Deployment exceptions masked as ERROR_UNHANDLED_EXCEPTION; SetLastFailure logging single chars
+#define WINAPPSDK_CHANGEID_61543987 61543987, WinAppSDK_1_8_7
 
 WindowsAppRuntime::MddBootstrap::Activity::Context& WindowsAppRuntime::MddBootstrap::Activity::Context::Get()
 {
@@ -18,7 +23,14 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszFile)
     {
-        m_lastFailure.file = *failure.pszFile;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.file = failure.pszFile;
+        }
+        else
+        {
+            m_lastFailure.file = *failure.pszFile;
+        }
     }
     else
     {
@@ -29,7 +41,14 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = *failure.pszMessage;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.message = failure.pszMessage;
+        }
+        else
+        {
+            m_lastFailure.message = *failure.pszMessage;
+        }
     }
     else
     {
@@ -38,7 +57,14 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
 
     if (failure.pszModule)
     {
-        m_lastFailure.module = *failure.pszModule;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.module = failure.pszModule;
+        }
+        else
+        {
+            m_lastFailure.module = *failure.pszModule;
+        }
     }
     else
     {
