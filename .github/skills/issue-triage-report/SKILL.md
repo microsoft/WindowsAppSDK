@@ -51,8 +51,7 @@ The area contacts file maps feature areas to team members. This file is **requir
    {
      "areaContacts": {
        "area-FeatureName": {
-         "primary": "Primary Contact Name",
-         "secondary": "Secondary Contact or null",
+         "contact": "Contact Name",
          "notes": "Optional notes"
        }
      },
@@ -180,15 +179,25 @@ Retrieve or update the area-to-contact mapping configuration.
 
 Issues are scored (0-100) based on multiple factors. See [scoring-algorithm.md](./references/scoring-algorithm.md) for complete details.
 
+Each score includes a confidence value `[confidence:XX]` indicating data reliability (grep-friendly format).
+
 ### Quick Reference: Score Factors
 
 | Factor | Weight | Description |
 |--------|--------|-------------|
 | **Reactions** | 30 | Total reactions (👍, ❤️, 🚀, etc.) indicate community interest |
-| **Age** | 25 | Older untriaged issues get higher priority |
-| **Comments** | 20 | Active discussion indicates importance |
-| **Severity** | 15 | Labels like `bug`, `regression`, `crash` increase score |
-| **Blockers** | 10 | Issues blocking other work get prioritized |
+| **Age** | 30 | Older untriaged issues get higher priority |
+| **Comments** | 30 | Active discussion indicates importance |
+| **Severity** | 10 | Labels like `bug`, `regression`, `crash`, `P0`-`P3` increase score |
+
+### Severity Label Tiers
+
+| Tier | Labels | Score |
+|------|--------|-------|
+| Critical | `regression`, `crash`, `hang`, `data-loss`, `security`, `P0` | 100% |
+| High | `bug`, `P1` | 80% |
+| Medium | `performance`, `feature proposal`, `P2` | 50% |
+| Low | `documentation`, `enhancement`, `P3` | 20% |
 
 ### Highlight Labels (Output)
 
@@ -196,12 +205,11 @@ The report adds reason labels to highlighted issues:
 
 | Label | Meaning |
 |-------|---------|
-| `🔥 Hot` | High reaction count (community demand) |
+| `🌟 Popular` | High reaction count (≥5 reactions) |
 | `⏰ Aging` | Open > 90 days without triage |
 | `🐛 Regression` | Marked as regression or recent breakage |
 | `🚧 Blocker` | Blocking other issues or teams |
-| `📈 Trending` | High comment activity recently |
-| ` Popular` | Feature proposal with significant support |
+| `📈 Trending` | High comment activity (≥10 comments) |
 
 ## Report Output Format
 
@@ -210,8 +218,8 @@ The report adds reason labels to highlighted issues:
 ```markdown
 | Feature Area | Area Contact | Open | Triage | Proposals | Closed | Highlights |
 |--------------|--------------|------|--------|-----------|--------|------------|
-| area-Notification | Notifications Owner | 34 | 8 | 11 | 0 | 🔥 [#2894](link) Hot, ⏰ [#3001](link) Aging |
-| area-Widgets | Widgets Owner | 21 | 10 | 4 | 0 | 📈 [#3958](link) Trending |
+| area-Notification | Contact Name | 34 | 8 | 11 | 0 | 🌟 [#2894](link) [confidence:85], ⏰ [#3001](link) [confidence:72] |
+| area-Widgets | Contact Name | 21 | 10 | 4 | 0 | 📈 [#3958](link) [confidence:68] |
 ```
 
 ### Special Status Indicators
@@ -226,7 +234,15 @@ The report adds reason labels to highlighted issues:
 
 ### Area Contacts
 
-Contact mappings are stored in [area-contacts.md](./references/area-contacts.md). Update this file when team assignments change.
+Contact mappings are stored in [area-contacts.json](./references/area-contacts.json). Update this file when team assignments change.
+
+```json
+{
+  "areaContacts": {
+    "area-FeatureName": { "contact": "Contact Name", "notes": "Optional notes" }
+  }
+}
+```
 
 ### Custom Scoring Weights
 
@@ -236,15 +252,22 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
 {
   "weights": {
     "reactions": 30,
-    "age": 25,
-    "comments": 20,
-    "severity": 15,
-    "blockers": 10
+    "age": 30,
+    "comments": 30,
+    "severity": 10,
+    "blockers": 0
   },
   "thresholds": {
-    "hot_reactions": 10,
     "aging_days": 90,
-    "trending_comments": 5
+    "trending_comments": 10,
+    "trending_days": 14,
+    "popular_reactions": 5
+  },
+  "severityLabels": {
+    "critical": ["regression", "crash", "hang", "data-loss", "security", "P0"],
+    "high": ["bug", "P1"],
+    "medium": ["performance", "feature proposal", "feature-proposal", "P2"],
+    "low": ["documentation", "enhancement", "P3"]
   }
 }
 ```
@@ -262,8 +285,8 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
 ## Common Commands Reference
 
 ```powershell
-# List all area labels
-gh label list --repo microsoft/WindowsAppSDK --search "area-" --json name
+# List all area labels (uses Get-RepositoryLabels.ps1 as the single source of truth)
+./.github/skills/triage-meeting-prep/scripts/Get-RepositoryLabels.ps1 -Filter "area-*" -OutputFormat table
 
 # Get issue details with reactions
 gh issue view 4651 --repo microsoft/WindowsAppSDK --json number,title,labels,reactionGroups,createdAt,comments,author
