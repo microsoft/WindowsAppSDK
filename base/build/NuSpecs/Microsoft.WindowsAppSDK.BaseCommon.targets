@@ -6,8 +6,8 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <!-- Default to SelfContained when no Runtime package is referenced -->
-    <PropertyGroup Condition="'$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(WindowsAppSDKSelfContained)' == '' and '$(OutputType)' != 'Library'">
+    <!-- Default to SelfContained when no Runtime package is referenced (non-packaged apps only) -->
+    <PropertyGroup Condition="'$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(WindowsAppSDKSelfContained)' == '' and '$(OutputType)' != 'Library' and '$(AppxPackage)' != 'true'">
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
         <_WindowsAppSDKSelfContainedSetByDefault>true</_WindowsAppSDKSelfContainedSetByDefault>
     </PropertyGroup>
