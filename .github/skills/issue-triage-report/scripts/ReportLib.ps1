@@ -99,11 +99,11 @@ function Get-ScoringConfig {
 function Get-AreaContacts {
     <#
     .SYNOPSIS
-        Loads the area-to-contact mapping from JSON file.
+        Loads the area-to-contact mapping from JSON file (failfast, no defaults).
 
     .DESCRIPTION
-        Loads contacts from the specified path. If no contacts file is found,
-        returns an empty hashtable and writes a warning.
+        Loads contacts from the specified path. Throws if the file is missing,
+        malformed, or if any area entry lacks a required 'contact' field.
 
         Users should create their own area-contacts.json file at:
         <repo-root>/.user/issue-triage-report/area-contacts.json
@@ -114,41 +114,35 @@ function Get-AreaContacts {
         Schema uses a single "contact" field per area.
     #>
     param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$ContactsPath
     )
 
-    if ($ContactsPath -and (Test-Path $ContactsPath)) {
-        try {
-            $loaded = Get-Content $ContactsPath -Raw | ConvertFrom-Json
-            if ($loaded.areaContacts) {
-                # Convert PSObject to hashtable for PS 5.1 compatibility
-                # (ConvertFrom-Json -AsHashtable is only available in PS 6.0+)
-                $hashtable = @{}
-                foreach ($prop in $loaded.areaContacts.PSObject.Properties) {
-                    if ($prop.Value.contact) {
-                        $hashtable[$prop.Name] = @{
-                            contact = $prop.Value.contact
-                            notes = $prop.Value.notes
-                        }
-                    }
-                    else {
-                        Write-Warning "Area '$($prop.Name)' missing required 'contact' field - skipping"
-                    }
-                }
-                return $hashtable
-            }
-        }
-        catch {
-            Write-Warning "Failed to load contacts from $ContactsPath`: $_"
-        }
-    }
-    else {
-        Write-Warning "Area contacts file not found at: $ContactsPath"
-        Write-Warning "Please create your contacts file at: <repo-root>/.user/issue-triage-report/area-contacts.json"
-        Write-Warning "See template at: .github/skills/issue-triage-report/references/area-contacts.json"
+    # Validate contacts file exists
+    if (-not (Test-Path -LiteralPath $ContactsPath -PathType Leaf)) {
+        throw "Area contacts file not found: $ContactsPath. Please create your contacts file at: <repo-root>/.user/issue-triage-report/area-contacts.json. See template at: .github/skills/issue-triage-report/references/area-contacts.json"
     }
 
-    return @{}
+    $loaded = Get-Content $ContactsPath -Raw | ConvertFrom-Json
+
+    if (-not $loaded.areaContacts) {
+        throw "Area contacts file missing required 'areaContacts' section: $ContactsPath"
+    }
+
+    # Convert PSObject to hashtable for PS 5.1 compatibility
+    # (ConvertFrom-Json -AsHashtable is only available in PS 6.0+)
+    $hashtable = @{}
+    foreach ($prop in $loaded.areaContacts.PSObject.Properties) {
+        if (-not $prop.Value.contact) {
+            throw "Area '$($prop.Name)' missing required 'contact' field in: $ContactsPath"
+        }
+        $hashtable[$prop.Name] = @{
+            contact = $prop.Value.contact
+            notes = $prop.Value.notes
+        }
+    }
+    return $hashtable
 }
 
 function Get-TotalReactions {
