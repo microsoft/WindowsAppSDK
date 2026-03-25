@@ -55,164 +55,70 @@ $Config = Get-ScoringConfig -ConfigPath $ConfigPath
 function Get-DetailedIssueScore {
     <#
     .SYNOPSIS
-        Calculates detailed score breakdown for an issue.
+        Wraps Get-IssueScore with a detailed breakdown for diagnostic display.
+
+    .DESCRIPTION
+        Delegates all scoring math to Get-IssueScore (ReportLib.ps1) and adds
+        presentation metadata (Reason strings, MaxScore) for the formatted output.
     #>
     param(
         [object]$Issue,
         [hashtable]$Config
     )
 
+    $score = Get-IssueScore -Issue $issue -Config $Config
     $weights = $Config.weights
     $thresholds = $Config.thresholds
 
+    # Build breakdown with presentation metadata on top of canonical scores
     $breakdown = @{
-        Reactions = @{ Raw = 0; Score = 0; MaxScore = $weights.reactions; Reason = "" }
-        Age = @{ Raw = 0; Score = 0; MaxScore = $weights.age; Reason = "" }
-        Comments = @{ Raw = 0; Score = 0; MaxScore = $weights.comments; Reason = "" }
-        Severity = @{ Raw = ""; Score = 0; MaxScore = $weights.severity; Reason = "" }
-        Blockers = @{ Raw = $false; Score = 0; MaxScore = $weights.blockers; Reason = "" }
+        Reactions = @{ Raw = $score.RawReactions; Score = $score.Reactions; MaxScore = $weights.reactions; Reason = "" }
+        Age       = @{ Raw = $score.RawAge;       Score = $score.Age;       MaxScore = $weights.age;       Reason = "" }
+        Comments  = @{ Raw = $score.RawComments;  Score = $score.Comments;  MaxScore = $weights.comments;  Reason = "" }
+        Severity  = @{ Raw = $score.SeverityLabel; Score = $score.Severity; MaxScore = $weights.severity;  Reason = "" }
+        Blockers  = @{ Raw = $score.IsBlocker;    Score = $score.Blockers;  MaxScore = $weights.blockers;  Reason = "" }
     }
 
-    # 1. Reactions
-    $totalReactions = Get-TotalReactions -ReactionGroups $Issue.reactionGroups
-    $breakdown.Reactions.Raw = $totalReactions
-
-    $breakdown.Reactions.Score = switch ($totalReactions) {
-        { $_ -ge 50 } { $weights.reactions; break }
-        { $_ -ge 20 } { [math]::Floor($weights.reactions * 0.8); break }
-        { $_ -ge 10 } { [math]::Floor($weights.reactions * 0.6); break }
-        { $_ -ge 5 }  { [math]::Floor($weights.reactions * 0.4); break }
-        { $_ -ge 1 }  { [math]::Floor($weights.reactions * 0.2); break }
-        default { 0 }
-    }
-
-    if ($totalReactions -ge $thresholds.popular_reactions) {
+    # Reason strings (presentation only — scoring math lives in Get-IssueScore)
+    if ($score.RawReactions -ge $thresholds.popular_reactions) {
         $breakdown.Reactions.Reason = "🌟 Popular (community interest)"
     }
 
-    # 2. Age
-    $ageInDays = Get-IssueAgeInDays -CreatedAt $Issue.createdAt
-    $breakdown.Age.Raw = $ageInDays
-
-    $breakdown.Age.Score = switch ($ageInDays) {
-        { $_ -ge 181 } { $weights.age; break }
-        { $_ -ge 91 }  { [math]::Floor($weights.age * 0.75); break }
-        { $_ -ge 61 }  { [math]::Floor($weights.age * 0.5); break }
-        { $_ -ge 31 }  { [math]::Floor($weights.age * 0.25); break }
-        default { 0 }
-    }
-
     $hasNeedsTriage = Test-HasLabel -Labels $Issue.labels -LabelName "needs-triage"
-    if ($ageInDays -gt $thresholds.aging_days -and $hasNeedsTriage) {
-        $breakdown.Age.Reason = "⏰ Aging (needs triage for $ageInDays days)"
+    if ($score.RawAge -gt $thresholds.aging_days -and $hasNeedsTriage) {
+        $breakdown.Age.Reason = "⏰ Aging (needs triage for $($score.RawAge) days)"
     }
-    elseif ($ageInDays -gt $thresholds.aging_days) {
-        $breakdown.Age.Reason = "Open for $ageInDays days"
-    }
-
-    # 3. Comments
-    $commentCount = if ($Issue.comments) { $Issue.comments.Count } else { 0 }
-    $breakdown.Comments.Raw = $commentCount
-
-    $breakdown.Comments.Score = switch ($commentCount) {
-        { $_ -ge 11 } { $weights.comments; break }
-        { $_ -ge 6 }  { [math]::Floor($weights.comments * 0.67); break }
-        { $_ -ge 3 }  { [math]::Floor($weights.comments * 0.4); break }
-        { $_ -ge 1 }  { [math]::Floor($weights.comments * 0.2); break }
-        default { 0 }
+    elseif ($score.RawAge -gt $thresholds.aging_days) {
+        $breakdown.Age.Reason = "Open for $($score.RawAge) days"
     }
 
-    if ($commentCount -ge $thresholds.trending_comments) {
-        $breakdown.Comments.Reason = "📈 Trending ($commentCount comments recently)"
+    if ($score.RawComments -ge $thresholds.trending_comments) {
+        $breakdown.Comments.Reason = "📈 Trending ($($score.RawComments) comments recently)"
     }
 
-    # 4. Severity - use configurable labels
-    $labelNames = @()
-    if ($Issue.labels) {
-        $labelNames = @($Issue.labels | ForEach-Object { $_.name })
-    }
-
-    $severityLabels = if ($Config.severityLabels) {
-        $Config.severityLabels
-    } else {
-        @{
-            critical = @("regression", "crash", "hang", "data-loss", "security", "P0")
-            high = @("bug", "P1")
-            medium = @("performance", "feature proposal", "feature-proposal", "P2")
-            low = @("documentation", "enhancement", "P3")
+    if ($score.SeverityLabel) {
+        $severityLabels = $Config.severityLabels
+        if ($severityLabels.critical -contains $score.SeverityLabel) {
+            $breakdown.Severity.Reason = "🔴 Critical: $($score.SeverityLabel)"
+        }
+        elseif ($severityLabels.high -contains $score.SeverityLabel) {
+            $breakdown.Severity.Reason = "🟠 High: $($score.SeverityLabel)"
+        }
+        elseif ($severityLabels.medium -contains $score.SeverityLabel) {
+            $breakdown.Severity.Reason = "🟡 Medium: $($score.SeverityLabel)"
+        }
+        elseif ($severityLabels.low -contains $score.SeverityLabel) {
+            $breakdown.Severity.Reason = "🟢 Low: $($score.SeverityLabel)"
         }
     }
 
-    $severityLabel = ""
-    $severityFound = $false
-
-    # Check critical
-    foreach ($critLabel in $severityLabels.critical) {
-        if ($labelNames -contains $critLabel) {
-            $severityLabel = $critLabel
-            $breakdown.Severity.Score = $weights.severity
-            $breakdown.Severity.Reason = "🔴 Critical: $critLabel"
-            $severityFound = $true
-            break
-        }
-    }
-
-    # Check high
-    if (-not $severityFound) {
-        foreach ($highLabel in $severityLabels.high) {
-            if ($labelNames -contains $highLabel) {
-                $severityLabel = $highLabel
-                $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.8)
-                $breakdown.Severity.Reason = "🟠 High: $highLabel"
-                $severityFound = $true
-                break
-            }
-        }
-    }
-
-    # Check medium
-    if (-not $severityFound) {
-        foreach ($medLabel in $severityLabels.medium) {
-            if ($labelNames -contains $medLabel) {
-                $severityLabel = $medLabel
-                $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.5)
-                $breakdown.Severity.Reason = "🟡 Medium: $medLabel"
-                $severityFound = $true
-                break
-            }
-        }
-    }
-
-    # Check low
-    if (-not $severityFound) {
-        foreach ($lowLabel in $severityLabels.low) {
-            if ($labelNames -contains $lowLabel) {
-                $severityLabel = $lowLabel
-                $breakdown.Severity.Score = [math]::Floor($weights.severity * 0.2)
-                $breakdown.Severity.Reason = "🟢 Low: $lowLabel"
-                break
-            }
-        }
-    }
-    $breakdown.Severity.Raw = $severityLabel
-
-    # 5. Blockers (only if weight > 0)
-    $isBlocker = Test-HasLabelMatching -Labels $Issue.labels -Pattern "block|blocker|blocking"
-    $breakdown.Blockers.Raw = $isBlocker
-
-    if ($isBlocker -and $weights.blockers -gt 0) {
-        $breakdown.Blockers.Score = $weights.blockers
+    if ($score.IsBlocker -and $weights.blockers -gt 0) {
         $breakdown.Blockers.Reason = "🚧 Blocker issue"
     }
 
-    # Calculate total
-    $totalScore = $breakdown.Reactions.Score + $breakdown.Age.Score +
-                  $breakdown.Comments.Score +
-                  $breakdown.Severity.Score + $breakdown.Blockers.Score
-
     return @{
         Breakdown = $breakdown
-        TotalScore = $totalScore
+        TotalScore = $score.Total
         MaxPossible = 100
     }
 }
