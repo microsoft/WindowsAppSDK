@@ -32,16 +32,6 @@ This document explains every field in [`ScoringConfig.json`](../scripts/ScoringC
 
 Controls how many points each factor can contribute to the 0–100 composite score. The values **must** sum to 100 (or less, if you intentionally disable a factor by setting it to 0).
 
-```json
-"weights": {
-  "reactions": 30,
-  "age":       30,
-  "comments":  30,
-  "severity":  10,
-  "blockers":   0
-}
-```
-
 | Field | Type | Description |
 |-------|------|-------------|
 | `reactions` | int | Max points from GitHub reaction count (👍 ❤️ 🚀 👀 🎉 😕 😄). Higher reaction counts award a larger fraction of this value. |
