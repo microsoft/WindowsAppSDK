@@ -358,17 +358,11 @@ function Get-IssueScore {
         $labelNames = @($Issue.labels | ForEach-Object { $_.name })
     }
 
-    # Get severity labels from config or use defaults
-    $severityLabels = if ($Config.severityLabels) {
-        $Config.severityLabels
-    } else {
-        @{
-            critical = @("regression", "crash", "hang", "data-loss", "security", "P0")
-            high = @("bug", "P1")
-            medium = @("performance", "feature proposal", "feature-proposal", "P2")
-            low = @("documentation", "enhancement", "P3")
-        }
+    # Severity labels must be provided by config (no defaults)
+    if (-not $Config.severityLabels) {
+        throw "Config missing required 'severityLabels'. Ensure ScoringConfig.json is loaded via Get-ScoringConfig."
     }
+    $severityLabels = $Config.severityLabels
 
     # Check for critical severity labels (100% of severity weight)
     $hasCritical = $false
