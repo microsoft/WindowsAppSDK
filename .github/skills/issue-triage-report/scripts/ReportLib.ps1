@@ -285,7 +285,6 @@ function Get-IssueScore {
     )
 
     $weights = $Config.weights
-    $thresholds = $Config.thresholds
 
     $score = @{
         Reactions = 0
