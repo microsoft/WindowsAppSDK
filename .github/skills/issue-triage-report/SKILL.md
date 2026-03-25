@@ -284,8 +284,8 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
 ## Common Commands Reference
 
 ```powershell
-# List all area labels
-gh label list --repo microsoft/WindowsAppSDK --search "area-" --json name
+# List all area labels (uses Get-RepositoryLabels.ps1 as the single source of truth)
+./.github/skills/triage-meeting-prep/scripts/Get-RepositoryLabels.ps1 -Filter "area-*" -OutputFormat table
 
 # Get issue details with reactions
 gh issue view 4651 --repo microsoft/WindowsAppSDK --json number,title,labels,reactionGroups,createdAt,comments,author
