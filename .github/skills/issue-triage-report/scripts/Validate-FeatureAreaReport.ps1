@@ -50,25 +50,27 @@ function Assert-GhCli {
 function Get-AreaLabels {
     <#
     .SYNOPSIS
-        Discovers all area-* labels in the repository via GitHub CLI.
+        Discovers all area-* labels in the repository via Get-RepositoryLabels.ps1.
     #>
     param(
         [string]$Repo
     )
 
-    $labelsJson = gh label list --repo $Repo --search "area-" --limit 200 --json "name"
-    $labels = @($labelsJson | ConvertFrom-Json)
-    if ($null -eq $labels -or ($labels.Count -eq 1 -and $null -eq $labels[0])) {
+    $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $SkillsRoot = Split-Path (Split-Path $ScriptDir -Parent) -Parent
+    $LabelsScript = Join-Path $SkillsRoot "triage-meeting-prep\scripts\Get-RepositoryLabels.ps1"
+
+    if (-not (Test-Path $LabelsScript)) {
+        Write-Error "Get-RepositoryLabels.ps1 not found at: $LabelsScript"
+        exit 1
+    }
+
+    $labels = @(& $LabelsScript -Repository $Repo -Filter "area-*" -OutputFormat json | ConvertFrom-Json)
+    if ($null -eq $labels -or $labels.Count -eq 0) {
         return @()
     }
 
-    # Filter to labels starting with "area-" and sort alphabetically
-    $areaLabels = @($labels |
-        Where-Object { $_.name -like 'area-*' } |
-        Sort-Object -Property name |
-        ForEach-Object { $_.name })
-
-    return $areaLabels
+    return @($labels | Sort-Object -Property name | ForEach-Object { $_.name })
 }
 
 function Get-AreaIssueStats {

@@ -85,13 +85,22 @@ $AreaContacts = Get-AreaContacts -ContactsPath $ContactsPath
 function Get-AllAreaLabels {
     <#
     .SYNOPSIS
-        Fetches all labels starting with "area-" from the repository.
+        Fetches all labels starting with "area-" from the repository
+        using Get-RepositoryLabels.ps1 as the single source of truth.
     #>
     param([string]$Repository)
 
-    Write-Verbose "Fetching area labels from $Repository..."
-    $labels = gh label list --repo $Repository --search "area-" --json name --limit 100 | ConvertFrom-Json
-    return $labels | ForEach-Object { $_.name } | Where-Object { $_ -like 'area-*' } | Sort-Object
+    Write-Verbose "Fetching area labels from $Repository via Get-RepositoryLabels.ps1..."
+    $SkillsRoot = Split-Path $SkillDir -Parent
+    $LabelsScript = Join-Path $SkillsRoot "triage-meeting-prep\scripts\Get-RepositoryLabels.ps1"
+
+    if (-not (Test-Path $LabelsScript)) {
+        Write-Error "Get-RepositoryLabels.ps1 not found at: $LabelsScript"
+        exit 1
+    }
+
+    $labels = & $LabelsScript -Repository $Repository -Filter "area-*" -OutputFormat json | ConvertFrom-Json
+    return @($labels | ForEach-Object { $_.name } | Sort-Object)
 }
 
 function Get-IssuesForArea {
