@@ -12,71 +12,89 @@
 function Get-ScoringConfig {
     <#
     .SYNOPSIS
-        Loads the scoring configuration from JSON file or returns defaults.
+        Loads the scoring configuration from ScoringConfig.json (failfast, no defaults).
+
+    .DESCRIPTION
+        All required fields must be present in the JSON file. Throws if any
+        required section or field is missing.
     #>
     param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$ConfigPath
     )
 
-    $defaultConfig = @{
+    # Validate config file exists
+    if (-not (Test-Path -LiteralPath $ConfigPath -PathType Leaf)) {
+        throw "Scoring config file not found: $ConfigPath"
+    }
+
+    # Validate JSON structure and correct filename
+    if ([System.IO.Path]::GetFileName($ConfigPath) -cne "ScoringConfig.json") {
+        throw "ConfigPath must point to ScoringConfig.json. Got: $ConfigPath"
+    }
+
+    $loaded = Get-Content $ConfigPath -Raw | ConvertFrom-Json
+
+    # --- Validate required top-level sections ---
+    foreach ($section in @("weights", "thresholds", "maxLabelsPerIssue", "severityLabels")) {
+        if ($null -eq $loaded.$section) {
+            throw "ScoringConfig.json missing required section: '$section'"
+        }
+    }
+
+    # --- Validate required weight fields ---
+    foreach ($field in @("reactions", "age", "comments", "severity", "blockers")) {
+        if ($null -eq $loaded.weights.$field) {
+            throw "ScoringConfig.json 'weights' missing required field: '$field'"
+        }
+    }
+
+    # --- Validate required threshold fields ---
+    foreach ($field in @("aging_days", "trending_comments", "trending_days", "popular_reactions")) {
+        if ($null -eq $loaded.thresholds.$field) {
+            throw "ScoringConfig.json 'thresholds' missing required field: '$field'"
+        }
+    }
+
+    # --- Validate required severity label levels ---
+    foreach ($level in @("critical", "high", "medium", "low")) {
+        if ($null -eq $loaded.severityLabels.$level) {
+            throw "ScoringConfig.json 'severityLabels' missing required level: '$level'"
+        }
+    }
+
+    # --- Build config hashtable entirely from loaded values (no defaults) ---
+    $config = @{
         weights = @{
-            reactions = 30
-            age = 30
-            comments = 30
-            severity = 10
-            blockers = 0
+            reactions = [int]$loaded.weights.reactions
+            age       = [int]$loaded.weights.age
+            comments  = [int]$loaded.weights.comments
+            severity  = [int]$loaded.weights.severity
+            blockers  = [int]$loaded.weights.blockers
         }
         thresholds = @{
-            aging_days = 90
-            trending_comments = 5
-            trending_days = 14
-            popular_reactions = 5
+            aging_days        = [int]$loaded.thresholds.aging_days
+            trending_comments = [int]$loaded.thresholds.trending_comments
+            trending_days     = [int]$loaded.thresholds.trending_days
+            popular_reactions = [int]$loaded.thresholds.popular_reactions
         }
-        labelPriority = @(
-            "regression"
-            "blocker"
-            "popular"
-            "aging"
-            "trending"
-        )
-        maxLabelsPerIssue = 2
+        maxLabelsPerIssue = [int]$loaded.maxLabelsPerIssue
         severityLabels = @{
-            critical = @("regression", "crash", "hang", "data-loss", "security", "P0")
-            high = @("bug", "P1")
-            medium = @("performance", "feature proposal", "feature-proposal", "P2")
-            low = @("documentation", "enhancement", "P3")
+            critical = @($loaded.severityLabels.critical)
+            high     = @($loaded.severityLabels.high)
+            medium   = @($loaded.severityLabels.medium)
+            low      = @($loaded.severityLabels.low)
         }
     }
 
-    if ($ConfigPath -and (Test-Path $ConfigPath)) {
-        try {
-            $loaded = Get-Content $ConfigPath -Raw | ConvertFrom-Json
-            # Merge weights
-            if ($loaded.weights) {
-                $defaultConfig.weights.reactions = [int]$loaded.weights.reactions
-                $defaultConfig.weights.age = [int]$loaded.weights.age
-                $defaultConfig.weights.comments = [int]$loaded.weights.comments
-                $defaultConfig.weights.severity = [int]$loaded.weights.severity
-                $defaultConfig.weights.blockers = [int]$loaded.weights.blockers
-            }
-            # Merge thresholds
-            if ($loaded.thresholds) {
-                $defaultConfig.thresholds.aging_days = [int]$loaded.thresholds.aging_days
-                $defaultConfig.thresholds.trending_comments = [int]$loaded.thresholds.trending_comments
-                $defaultConfig.thresholds.trending_days = [int]$loaded.thresholds.trending_days
-                $defaultConfig.thresholds.popular_reactions = [int]$loaded.thresholds.popular_reactions
-            }
-            if ($loaded.maxLabelsPerIssue) {
-                $defaultConfig.maxLabelsPerIssue = [int]$loaded.maxLabelsPerIssue
-            }
-        }
-        catch {
-            Write-Warning "Failed to load config from $ConfigPath, using defaults: $_"
-        }
+    if ($loaded.labelPriority) {
+        $config.labelPriority = @($loaded.labelPriority)
     }
 
-    return $defaultConfig
+    return $config
 }
+
 
 function Get-AreaContacts {
     <#
