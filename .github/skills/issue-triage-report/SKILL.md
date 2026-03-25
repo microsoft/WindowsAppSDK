@@ -260,6 +260,7 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
   "thresholds": {
     "aging_days": 90,
     "trending_comments": 10,
+    "trending_days": 14,
     "popular_reactions": 5
   },
   "severityLabels": {

@@ -92,8 +92,8 @@ function Get-DetailedIssueScore {
         $breakdown.Age.Reason = "Open for $($score.RawAge) days"
     }
 
-    if ($score.RawComments -ge $thresholds.trending_comments) {
-        $breakdown.Comments.Reason = "📈 Trending ($($score.RawComments) comments recently)"
+    if ($score.RawComments -ge $thresholds.trending_comments -and $score.RawUpdateAgeDays -le $thresholds.trending_days) {
+        $breakdown.Comments.Reason = "📈 Trending ($($score.RawComments) comments, updated within $($thresholds.trending_days) days)"
     }
 
     if ($score.SeverityLabel) {

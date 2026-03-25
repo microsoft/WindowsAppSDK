@@ -61,7 +61,7 @@ Discussion activity measured by comment count.
 
 **Rationale**: Active discussions indicate ongoing relevance and potential blockers.
 
-**Highlight Label**: `📈 Trending` when comments ≥ 5 AND recent activity (shows the issue is trending NOW)
+**Highlight Label**: `📈 Trending` when comments ≥ 10 AND updated within 14 days (shows the issue is trending NOW)
 
 ---
 
@@ -168,7 +168,7 @@ After scoring, assign labels based on the highest-scoring factors:
 | 2 | `🚧 Blocker` | Has blocking indicators |
 | 3 | `🌟 Popular` | Reactions ≥ 5 |
 | 4 | `⏰ Aging` | Days > 90 + needs-triage |
-| 5 | `📈 Trending` | Comments ≥ 10 |
+| 5 | `📈 Trending` | Comments ≥ 10 AND updated within 14 days |
 
 **Rule**: Each issue gets **at most 2 labels** (most relevant based on score contribution).
 
@@ -198,7 +198,14 @@ For `area-External` label (issues to redirect to other teams):
 
 ## Thresholds Configuration
 
-These thresholds can be adjusted in `ScoringConfig.json` (`.github\skills\issue-triage-report\scripts\ScoringConfig.json`)
+These thresholds can be adjusted in `ScoringConfig.json` (`.github\skills\issue-triage-report\scripts\ScoringConfig.json`):
+
+| Threshold | Default | Description |
+|-----------|---------|-------------|
+| `aging_days` | 90 | Days before an untriaged issue is flagged as aging |
+| `trending_comments` | 10 | Minimum comments to qualify as trending |
+| `trending_days` | 14 | Maximum days since last update to qualify as trending |
+| `popular_reactions` | 5 | Minimum reactions to qualify as popular |
 
 ---
 
