@@ -76,7 +76,7 @@ extends:
       binskim:
         enabled: true
         break: true
-        analyzeTargetGlob: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe
+        analyzeTargetGlob: $(BinskimExclusionForFoundationRepo)
       prefast:
         ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
           enabled: true
@@ -100,13 +100,15 @@ extends:
         SignOutput: false
         runApiScan: ${{ parameters.runStaticAnalysis }}
         runPREFast: false
-    
+        testMatrix: ${{ variables.PipelineTests }}
+        
     - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
         parameters:
           SignOutput: false
           runApiScan: false
           runPREFast: true
+          testMatrix: ${{ variables.PipelineTests }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
