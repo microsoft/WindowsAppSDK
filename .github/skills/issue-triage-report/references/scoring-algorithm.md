@@ -61,7 +61,7 @@ Discussion activity measured by comment count.
 
 **Rationale**: Active discussions indicate ongoing relevance and potential blockers.
 
-**Highlight Label**: `📈 Trending` when comments ≥ 10 (indicates high activity)
+**Highlight Label**: `📈 Trending` when comments ≥ 5 AND recent activity (shows the issue is trending NOW)
 
 ---
 
