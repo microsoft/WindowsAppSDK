@@ -132,7 +132,6 @@ namespace Microsoft::Windows::Storage
                 std::vector<winrt::hstring> strings;
                 while (p < end && *p != L'\0')
                 {
-                    winrt::hstring str{ p };
                     auto len{ wcsnlen(p, static_cast<size_t>(end - p)) };
                     winrt::hstring str{ p, static_cast<winrt::hstring::size_type>(len) };
                     strings.push_back(str);
@@ -911,7 +910,7 @@ namespace Microsoft::Windows::Storage
         THROW_HR_IF_NULL(RO_E_CLOSED, m_key);
     }
 
-    void UnpackagedApplicationDataContainer::_VerifyContainerName(winrt::hstring const& name);
+    void UnpackagedApplicationDataContainer::_VerifyContainerName(winrt::hstring const& name)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, name.empty(), "Container name not valid (%ls)", name.c_str());
 
@@ -920,7 +919,7 @@ namespace Microsoft::Windows::Storage
             THROW_HR_IF_MSG(E_INVALIDARG, *s == L'\\', "Container name not valid (%ls)", name.c_str());
         }
 
-        THROW_HR_IF_MSG(E_INVALIDARG, contains_prohibited_characters(name), "Container name not valid (%ls)", name.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, contains_prohibited_character(name), "Container name not valid (%ls)", name.c_str());
         THROW_HR_IF_MSG(E_INVALIDARG, CompareStringOrdinal(name.c_str(), -1, L".", -1, FALSE) == CSTR_EQUAL, "Container name not valid (%ls)", name.c_str());
         THROW_HR_IF_MSG(E_INVALIDARG, CompareStringOrdinal(name.c_str(), -1, L"..", -1, FALSE) == CSTR_EQUAL, "Container name not valid (%ls)", name.c_str());
     }

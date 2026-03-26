@@ -33,3 +33,5 @@
 #include <microsoft.foundation.string.h>
 #include <security.integritylevel.h>
 #include <security.user.h>
+
+#include "Validate.h"

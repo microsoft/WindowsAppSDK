@@ -413,12 +413,12 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         }
         return path;
     }
-    bool ApplicationData::_VerifyPublisher(PCWSTR string)
+    bool ApplicationData::_VerifyPublisher(winrt::hstring const& string)
     {
-        return !::Microsoft::Foundation::String::IsNullOrEmpty(string) && !is_prohibited_string(string);
+        return !::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()) && !is_prohibited_string(string.c_str());
     }
-    bool ApplicationData::_VerifyProduct(PCWSTR string)
+    bool ApplicationData::_VerifyProduct(winrt::hstring const& string)
     {
-        return !::Microsoft::Foundation::String::IsNullOrEmpty(string) && !is_prohibited_string(string);
+        return !::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()) && !is_prohibited_string(string.c_str());
     }
 }

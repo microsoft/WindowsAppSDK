@@ -230,7 +230,6 @@ namespace Microsoft::Windows::Storage
         m_publisher.clear();
         m_product.clear();
         m_localPath.clear();
-        m_machinePath.clear();
     }
     winrt::hstring UnpackagedApplicationData::GetPublisherCachePath(winrt::hstring const& folderName)
     {
