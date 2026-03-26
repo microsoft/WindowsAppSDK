@@ -43,6 +43,10 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         static std::filesystem::path _MachinePath(hstring const& packageFamilyName);
         static bool _PathExists(std::filesystem::path const& path);
         static hstring StorageFolderToPath(winrt::Windows::Storage::StorageFolder storageFolder);
+        static bool string_contains_any(winrt::hstring const& string, _In_ PCWSTR characters);
+        static bool string_contains_any(PCWSTR string, _In_ PCWSTR characters);
+        static bool _VerifyPublisher(PCWSTR string);
+        static bool _VerifyProduct(PCWSTR string);
 
     private:
         std::unique_ptr<::Microsoft::Windows::Storage::UnpackagedApplicationData> m_unpackagedApplicationData;

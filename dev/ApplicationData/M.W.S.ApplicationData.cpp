@@ -109,8 +109,9 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
     {
-        THROW_HR_IF_MSG(E_INVALIDARG, publisher.empty(), "Publisher not valid");
-        THROW_HR_IF_MSG(E_INVALIDARG, product.empty(), "Product not valid");
+        _VerifyPublisher(publisher);
+        _VerifyProduct(publisher);
+
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(publisher, product);
     }
     bool ApplicationData::IsMachinePathSupported()
@@ -411,5 +412,13 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             path = storageFolder.Path();
         }
         return path;
+    }
+    bool ApplicationData::_VerifyPublisher(PCWSTR string)
+    {
+        return !::Microsoft::Foundation::String::IsNullOrEmpty(string) && !is_prohibited_string(string);
+    }
+    bool ApplicationData::_VerifyProduct(PCWSTR string)
+    {
+        return !::Microsoft::Foundation::String::IsNullOrEmpty(string) && !is_prohibited_string(string);
     }
 }

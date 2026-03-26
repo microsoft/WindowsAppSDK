@@ -22,6 +22,7 @@ namespace Microsoft::Windows::Storage
 
     private:
         void _VerifyNotClosed();
+        void _VerifyContainerName(winrt::hstring const& name);
 
     private:
         wil::shared_hkey m_key;

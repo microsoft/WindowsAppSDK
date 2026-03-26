@@ -446,6 +446,44 @@ namespace Test::ApplicationData::Tests
             VERIFY_ARE_EQUAL(E_NOTIMPL, asyncAction.ErrorCode());
         }
 
+        TEST_METHOD(GetForUnpackaged_InvalidParameter)
+        {
+            constexpr PCWSTR c_invalidIds[]{
+                L"",
+                L"foo/bar",
+                L"foo\\bar",
+                L"foo@bar",
+                L".",
+                L"..",
+                L"lpt1",
+                L"lpt1.invalid",
+            };
+            for (PCWSTR invalidId : c_invalidIds)
+            {
+                try
+                {
+                    const winrt::hstring invalid{ invalidId };
+                    [[maybe_unused]] auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(invalid, Product) };
+                    VERIFY_FAIL(L"Success is not expected");
+                }
+                catch (winrt::hresult_error& e)
+                {
+                    VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Invalid:%s => 0x%X %s", invalid.c_str(), e.code(), e.message().c_str()));
+                }
+
+                try
+                {
+                    const winrt::hstring invalid{};
+                    [[maybe_unused]] auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, invalid) };
+                    VERIFY_FAIL(L"Success is not expected");
+                }
+                catch (winrt::hresult_error& e)
+                {
+                    VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Invalid:%s => 0x%X %s", invalid.c_str(), e.code(), e.message().c_str()));
+                }
+            }
+        }
+
         TEST_METHOD(ContainerOperations)
         {
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };

@@ -17,8 +17,7 @@ namespace Microsoft::Windows::Storage
     UnpackagedApplicationData::UnpackagedApplicationData(winrt::hstring const& publisher, winrt::hstring const& product) :
         m_publisher(publisher),
         m_product(product),
-        m_localPath(),
-        m_machinePath()
+        m_localPath()
     {
     }
     bool UnpackagedApplicationData::IsMachinePathSupported()
@@ -182,7 +181,7 @@ namespace Microsoft::Windows::Storage
             break;
         }
         default:
-            THROW_HR_MSG(E_INVALIDARG, "%d", static_cast<int>(locality));
+            THROW_HR_MSG(E_NOTIMPL, "%d", static_cast<int>(locality));
         }
 
         auto logTelemetry{ ApplicationDataTelemetry::UnpackagedClearAsync::Start(locality, publisher, product) };
@@ -232,7 +231,6 @@ namespace Microsoft::Windows::Storage
         m_product.clear();
         m_localPath.clear();
         m_machinePath.clear();
-        m_temporaryPath.clear();
     }
     winrt::hstring UnpackagedApplicationData::GetPublisherCachePath(winrt::hstring const& folderName)
     {

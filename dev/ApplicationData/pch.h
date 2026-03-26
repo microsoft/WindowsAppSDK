@@ -30,5 +30,6 @@
 
 #include <appmodel.identity.h>
 #include <microsoft.filesystem.path.h>
+#include <microsoft.foundation.string.h>
 #include <security.integritylevel.h>
 #include <security.user.h>

@@ -126,12 +126,15 @@ namespace Microsoft::Windows::Storage
             {
                 std::vector<BYTE> buffer(dataSize);
                 THROW_IF_WIN32_ERROR(::RegQueryValueExW(key, valueName, nullptr, nullptr, buffer.data(), &dataSize));
+                THROW_HR_IF(E_UNEXPECTED, dataSize % sizeof(wchar_t) != 0);
                 auto* p{ reinterpret_cast<const wchar_t*>(buffer.data()) };
                 auto* end{ reinterpret_cast<const wchar_t*>(buffer.data() + dataSize) };
                 std::vector<winrt::hstring> strings;
                 while (p < end && *p != L'\0')
                 {
                     winrt::hstring str{ p };
+                    auto len{ wcsnlen(p, static_cast<size_t>(end - p)) };
+                    winrt::hstring str{ p, static_cast<winrt::hstring::size_type>(len) };
                     strings.push_back(str);
                     p += str.size() + 1;
                 }
@@ -673,6 +676,7 @@ namespace Microsoft::Windows::Storage
                     catch (...)
                     {
                         // Skip values that cannot be read
+                        LOG_CAUGHT_EXCEPTION();
                     }
                 }
                 return snapshot.GetView();
@@ -741,6 +745,7 @@ namespace Microsoft::Windows::Storage
                     catch (...)
                     {
                         // Skip values that cannot be read
+                        LOG_CAUGHT_EXCEPTION();
                     }
                 }
                 return winrt::make<RegistryPropertySetIterator>(std::move(items));
@@ -868,6 +873,8 @@ namespace Microsoft::Windows::Storage
     {
         _VerifyNotClosed();
 
+        _VerifyContainerName(name);
+
         if (disposition == winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Existing)
         {
             auto subKey{ wil::reg::open_shared_key(m_key.get(), name.c_str(), wil::reg::key_access::readwrite) };
@@ -886,6 +893,8 @@ namespace Microsoft::Windows::Storage
     {
         _VerifyNotClosed();
 
+        _VerifyContainerName(name);
+
         const auto hr{ HRESULT_FROM_WIN32(::RegDeleteTreeW(m_key.get(), name.c_str())) };
         if (SUCCEEDED(hr))
         {
@@ -900,5 +909,19 @@ namespace Microsoft::Windows::Storage
     void UnpackagedApplicationDataContainer::_VerifyNotClosed()
     {
         THROW_HR_IF_NULL(RO_E_CLOSED, m_key);
+    }
+
+    void UnpackagedApplicationDataContainer::_VerifyContainerName(winrt::hstring const& name);
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, name.empty(), "Container name not valid (%ls)", name.c_str());
+
+        for (PCWSTR s = name.c_str(); *s != L'\0'; ++s)
+        {
+            THROW_HR_IF_MSG(E_INVALIDARG, *s == L'\\', "Container name not valid (%ls)", name.c_str());
+        }
+
+        THROW_HR_IF_MSG(E_INVALIDARG, contains_prohibited_characters(name), "Container name not valid (%ls)", name.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, CompareStringOrdinal(name.c_str(), -1, L".", -1, FALSE) == CSTR_EQUAL, "Container name not valid (%ls)", name.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, CompareStringOrdinal(name.c_str(), -1, L"..", -1, FALSE) == CSTR_EQUAL, "Container name not valid (%ls)", name.c_str());
     }
 }

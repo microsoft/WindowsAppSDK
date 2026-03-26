@@ -26,6 +26,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UnpackagedApplicationData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UnpackagedApplicationDataContainer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Validate.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)ApplicationData.idl" />
