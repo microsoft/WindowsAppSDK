@@ -10,7 +10,8 @@ resources:
 jobs:
 - job: SyncMirror
   dependsOn: []
-  pool: 'Azure Pipelines'
+  pool:
+    vmImage: 'windows-latest'
   steps:
   - checkout: InternalWindowsAppSDK
     persistCredentials: true

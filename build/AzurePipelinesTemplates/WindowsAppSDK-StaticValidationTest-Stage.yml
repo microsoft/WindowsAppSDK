@@ -12,7 +12,9 @@ stages:
     pool:
       type: windows
       isCustom: true
-      name: 'Azure Pipelines' # This stage is purely for ES, hence this custom pool
+      name: Azure Pipelines
+      vmImage: 'windows-latest'
+
       # If we just let the pool give us MMS2022, we will get an error saying an artifact for 1ESPT is missing.
       demands: ImageOverride -equals MMS2022-1ES-GPT      
     timeoutInMinutes: 120

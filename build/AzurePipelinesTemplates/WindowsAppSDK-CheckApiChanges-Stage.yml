@@ -19,7 +19,9 @@ stages:
     pool:
       type: windows
       isCustom: true
-      name: 'Azure Pipelines'
+      name: Azure Pipelines
+      vmImage: 'windows-latest'
+
     timeoutInMinutes: 120
     steps:
     - checkout: self

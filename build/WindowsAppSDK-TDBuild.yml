@@ -15,7 +15,9 @@ jobs:
   pool:
     type: windows
     isCustom: true
-    name: 'Azure Pipelines'
+    name: Azure Pipelines
+    vmImage: 'windows-latest'
+
     demands: ImageOverride -equals MMS2022
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-CallTouchDownBuild-Steps.yml
