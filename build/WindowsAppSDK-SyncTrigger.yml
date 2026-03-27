@@ -10,8 +10,7 @@ resources:
 jobs:
 - job: SyncMirror
   dependsOn: []
-  pool:
-    vmImage: 'windows-latest'
+  pool: 'ProjectReunionESPool-2022'
   steps:
   - checkout: InternalWindowsAppSDK
     persistCredentials: true

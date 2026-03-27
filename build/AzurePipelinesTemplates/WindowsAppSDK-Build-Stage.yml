@@ -28,9 +28,7 @@ stages:
     pool:
       type: windows
       isCustom: true
-      name: Azure Pipelines
-      vmImage: 'windows-latest'
-
+      name: 'ProjectReunionESPool-2022' # This stage is purely a test stage so we will use our own pools here
     steps:
     - task: powershell@2
       displayName: 'Verify copyright headers'
@@ -46,7 +44,8 @@ stages:
         type: windows
       ${{ if not( parameters.IsOneBranch ) }}:
         type: windows
-
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
