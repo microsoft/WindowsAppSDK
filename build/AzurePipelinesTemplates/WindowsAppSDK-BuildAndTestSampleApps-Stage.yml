@@ -5,9 +5,6 @@
 # 3. Foundation pipeline only supports running sample app testing in one specific stage.
 
 parameters:
-  - name: "IsOneBranch"
-    type: boolean
-    default: true
   - name: TestSampleApps
     displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
     type: boolean
@@ -72,7 +69,6 @@ stages:
   jobs:
   - template: WindowsAppSDK-BuildSamplesCompat-Job.yml
     parameters:
-      IsOneBranch: ${{ parameters.IsOneBranch }}
       JobName: "SamplesCompatTest"
       FeatureAreas: ${{ parameters.sampleFeatureAreasList.SamplesCompatTest }}
       BuildConfig:
@@ -96,7 +92,6 @@ stages:
   jobs:
   - template: WindowsAppSDK-BuildSamplesCompat-Job.yml
     parameters:
-      IsOneBranch: ${{ parameters.IsOneBranch }}
       JobName: "SamplesCompatTest"
       FeatureAreas: ${{ parameters.sampleFeatureAreasList.SamplesCompatTest }}
       BuildConfig:
@@ -126,7 +121,6 @@ stages:
         samplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_x64
         callingStage: 'TestSampleApps'
         sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}
-        IsOneBranch: ${{ parameters.IsOneBranch }}
         TestMatrix: $[ variables.SampleAppsTests ]
 
   - ${{ if eq(parameters.TestOnArm64, true)}}:
@@ -144,5 +138,4 @@ stages:
           samplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_arm64
           callingStage: 'TestSampleApps'
           sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}
-          IsOneBranch: ${{ parameters.IsOneBranch }}
           TestMatrix: $[ variables.SampleAppsTestsArm64 ]

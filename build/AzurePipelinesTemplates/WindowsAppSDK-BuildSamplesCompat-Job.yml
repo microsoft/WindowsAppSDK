@@ -1,9 +1,6 @@
 # This yml file is used to build sample apps, having the same structure and pattern as Aggregator repo:
 # https://microsoft.visualstudio.com/ProjectReunion/_git/WindowsAppSDKAggregator?path=/build/AzurePipelinesTemplates/WindowsAppSDK-BuildSamplesCompat-Job.yml
 parameters:
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: JobName
   type: string
   default: 'SamplesCompatTest'
@@ -34,12 +31,7 @@ parameters:
 jobs:
 - job: ${{ parameters.JobName }}
   pool:
-    ${{ if parameters.IsOneBranch }}:
-      type: windows
-    ${{ if not( parameters.IsOneBranch ) }}:
-      type: windows
-      isCustom: true
-      name: 'ProjectReunionESPool-2022'
+    type: windows
   timeoutInMinutes: 120
   strategy:
     maxParallel: ${{ parameters.maxParallel }}
@@ -383,12 +375,6 @@ jobs:
         dir /s $(Build.ArtifactStagingDirectory)
       condition: succeededOrFailed()
       displayName: DIAG - Show staging trees to validate filtering
-
-    - ${{ if not( parameters.IsOneBranch ) }}:
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(ob_outputDirectory)'
-          artifactName: '$(ob_artifactBaseName)$(ob_artifactSuffix)'
 
 # The idea of merging the artifacts for the featureAreas produced by one call to this yml file has
 # been attempted and abandoned. Although this will free the subsequent Stages that run the SampleTests
