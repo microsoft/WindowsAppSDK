@@ -33,7 +33,7 @@ stages:
       ${{ if not( parameters.IsOneBranch ) }}:
         type: windows
         isCustom: true
-        name: 'ProjectReunionESPool-2022'
+        name: 'Azure Pipelines'
     # In the less likely case of running APIScan and/or PREfast, give it more time.
     ${{ if or(parameters.runApiScan, parameters.runPREfast) }}:
       timeoutInMinutes: 180
@@ -116,7 +116,7 @@ stages:
       ${{ if not( parameters.IsOneBranch ) }}:
         type: windows
         isCustom: true
-        name: 'ProjectReunionESPool-2022'
+        name: 'Azure Pipelines'
     # In the less likely case of running APIScan and/or PREfast, give it more time.
     ${{ if or(parameters.runApiScan, parameters.runPREfast) }}:
       timeoutInMinutes: 150
@@ -199,7 +199,7 @@ stages:
       pool:
         type: windows
         isCustom: true
-        name: 'ProjectReunionESPool-2022'
+        name: 'Azure Pipelines'
       steps:
       - powershell: |
           $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json

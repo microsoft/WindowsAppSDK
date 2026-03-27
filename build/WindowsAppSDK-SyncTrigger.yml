@@ -10,7 +10,7 @@ resources:
 jobs:
 - job: SyncMirror
   dependsOn: []
-  pool: 'ProjectReunionESPool-2022'
+  pool: 'Azure Pipelines'
   steps:
   - checkout: InternalWindowsAppSDK
     persistCredentials: true
