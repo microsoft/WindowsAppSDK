@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace winrt::Microsoft::Windows::Storage::implementation
+namespace Microsoft::Windows::Storage
 {
 /// Allowed characters = ASCII alphanumeric, SPACE, DASH, DOT, UNDERSCORE
 /// Avoid https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file
@@ -73,7 +73,7 @@ inline bool is_prohibited_string(_In_ PCWSTR string)
     // Contains prohibited character(s)
     if (contains_prohibited_character(string))
     {
-        return false;
+        return true;
     }
 
     // Equals a prohibited string
@@ -81,7 +81,7 @@ inline bool is_prohibited_string(_In_ PCWSTR string)
     {
         if (::CompareStringOrdinal(string, -1, c_prohibitedStringsEquals[index], -1, TRUE) == CSTR_EQUAL)
         {
-            return false;
+            return true;
         }
     }
 
@@ -90,10 +90,10 @@ inline bool is_prohibited_string(_In_ PCWSTR string)
     {
         if (startswith_ordinal_nocase(string, c_prohibitedStringsStartsWith[index]))
         {
-            return false;
+            return true;
         }
     }
 
-    return true;
+    return false;
 }
 }

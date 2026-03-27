@@ -136,7 +136,7 @@ namespace Test::ApplicationData::Tests
                 try
                 {
                     [[maybe_unused]] auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(invalid, Product) };
-                    VERIFY_FAIL(L"Success is not expected");
+                    VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
                 }
                 catch (winrt::hresult_error& e)
                 {
@@ -146,7 +146,7 @@ namespace Test::ApplicationData::Tests
                 try
                 {
                     [[maybe_unused]] auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, invalid) };
-                    VERIFY_FAIL(L"Success is not expected");
+                    VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", Publisher.c_str(), invalid.c_str()));
                 }
                 catch (winrt::hresult_error& e)
                 {
@@ -452,11 +452,17 @@ namespace Test::ApplicationData::Tests
         {
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             VERIFY_IS_NOT_NULL(applicationData);
-            winrt::hstring folderName{ L"Does.Not.Exist" };
-            [[maybe_unused]] auto asyncAction{ applicationData.ClearPublisherCacheFolderAsync(folderName) };
-            asyncAction.get();  // ClearPublisherCacheFolderAsync is expected to fail with E_NOTIMPL, but it should do so by completing the async action with an error, not by throwing from the method itself
-            VERIFY_ARE_EQUAL(winrt::Windows::Foundation::AsyncStatus::Error, asyncAction.Status());
-            VERIFY_ARE_EQUAL(E_NOTIMPL, asyncAction.ErrorCode());
+
+            try
+            {
+                winrt::hstring folderName{ L"Does.Not.Exist" };
+                [[maybe_unused]] auto folder{ applicationData.GetPublisherCacheFolder(folderName) };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_NOTIMPL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
         }
 
         TEST_METHOD(ContainerOperations)

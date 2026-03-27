@@ -14,6 +14,8 @@
 
 #include "ApplicationDataTelemetry.h"
 
+#include "Validate.h"
+
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::SharedLocal) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::SharedLocal));
@@ -110,7 +112,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
     {
         _VerifyPublisher(publisher);
-        _VerifyProduct(publisher);
+        _VerifyProduct(product);
 
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(publisher, product);
     }
@@ -413,12 +415,14 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         }
         return path;
     }
-    bool ApplicationData::_VerifyPublisher(winrt::hstring const& string)
+    void ApplicationData::_VerifyPublisher(winrt::hstring const& string)
     {
-        return !::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()) && !is_prohibited_string(string.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()), "Publisher not valid (%ls)", string.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Windows::Storage::is_prohibited_string(string.c_str()), "Publisher not valid (%ls)", string.c_str());
     }
-    bool ApplicationData::_VerifyProduct(winrt::hstring const& string)
+    void ApplicationData::_VerifyProduct(winrt::hstring const& string)
     {
-        return !::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()) && !is_prohibited_string(string.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()), "Product not valid (%ls)", string.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Windows::Storage::is_prohibited_string(string.c_str()), "Product not valid (%ls)", string.c_str());
     }
 }

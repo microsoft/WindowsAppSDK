@@ -5,6 +5,8 @@
 
 #include "UnpackagedApplicationDataContainer.h"
 
+#include "Validate.h"
+
 namespace Microsoft::Windows::Storage
 {
     namespace
@@ -919,7 +921,7 @@ namespace Microsoft::Windows::Storage
             THROW_HR_IF_MSG(E_INVALIDARG, *s == L'\\', "Container name not valid (%ls)", name.c_str());
         }
 
-        THROW_HR_IF_MSG(E_INVALIDARG, contains_prohibited_character(name), "Container name not valid (%ls)", name.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Windows::Storage::contains_prohibited_character(name.c_str()), "Container name not valid (%ls)", name.c_str());
         THROW_HR_IF_MSG(E_INVALIDARG, CompareStringOrdinal(name.c_str(), -1, L".", -1, FALSE) == CSTR_EQUAL, "Container name not valid (%ls)", name.c_str());
         THROW_HR_IF_MSG(E_INVALIDARG, CompareStringOrdinal(name.c_str(), -1, L"..", -1, FALSE) == CSTR_EQUAL, "Container name not valid (%ls)", name.c_str());
     }
