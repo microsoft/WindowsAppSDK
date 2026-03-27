@@ -40,18 +40,19 @@ namespace PickerCommon {
     struct WslNodeRevealer : winrt::implements<WslNodeRevealer, IFileDialogEvents>
     {
         bool m_revealed{ false };
-
-        static winrt::com_ptr<INameSpaceTreeControl> s_nstc;
-        static winrt::com_ptr<IShellItem> s_wslItem;
-        static UINT_PTR s_timerId;
-        static int s_pollCount;
+        bool m_timerPending{ false };
+        int m_pollCount{ 0 };
+        HWND m_timerHwnd{ nullptr };
+        winrt::com_ptr<INameSpaceTreeControl> m_nstc;
+        winrt::com_ptr<IShellItem> m_wslItem;
 
         // looking for the navigation node for 1 second at most
         static constexpr UINT s_pollIntervalMs{ 10 };
         static constexpr int s_maxPollCount{ 100 };
 
         static void CALLBACK PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept;
-        static void CancelPendingReveal() noexcept;
+        void CancelPendingReveal() noexcept;
+        HRESULT TryStartReveal(IFileDialog* pfd) noexcept;
 
         IFACEMETHODIMP OnFolderChange(IFileDialog* pfd) noexcept override;
         IFACEMETHODIMP OnFileOk(IFileDialog*) noexcept override { return S_OK; }
