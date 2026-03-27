@@ -17,7 +17,8 @@ namespace Microsoft::Windows::Storage
     UnpackagedApplicationData::UnpackagedApplicationData(winrt::hstring const& publisher, winrt::hstring const& product) :
         m_publisher(publisher),
         m_product(product),
-        m_localPath()
+        m_localPath(),
+        m_temporaryPath()
     {
     }
     bool UnpackagedApplicationData::IsMachinePathSupported()
@@ -230,6 +231,7 @@ namespace Microsoft::Windows::Storage
         m_publisher.clear();
         m_product.clear();
         m_localPath.clear();
+        m_temporaryPath.clear();
     }
     winrt::hstring UnpackagedApplicationData::GetPublisherCachePath(winrt::hstring const& folderName)
     {

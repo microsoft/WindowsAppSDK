@@ -916,13 +916,12 @@ namespace Microsoft::Windows::Storage
     {
         THROW_HR_IF_MSG(E_INVALIDARG, name.empty(), "Container name not valid (%ls)", name.c_str());
 
+        const size_t c_registryKeyNameMaxLength{ 255 };
+        THROW_HR_IF_MSG(E_INVALIDARG, name.size() > c_registryKeyNameMaxLength, "Container name not valid (%ls)", name.c_str());
+
         for (PCWSTR s = name.c_str(); *s != L'\0'; ++s)
         {
             THROW_HR_IF_MSG(E_INVALIDARG, *s == L'\\', "Container name not valid (%ls)", name.c_str());
         }
-
-        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Windows::Storage::contains_prohibited_character(name.c_str()), "Container name not valid (%ls)", name.c_str());
-        THROW_HR_IF_MSG(E_INVALIDARG, CompareStringOrdinal(name.c_str(), -1, L".", -1, FALSE) == CSTR_EQUAL, "Container name not valid (%ls)", name.c_str());
-        THROW_HR_IF_MSG(E_INVALIDARG, CompareStringOrdinal(name.c_str(), -1, L"..", -1, FALSE) == CSTR_EQUAL, "Container name not valid (%ls)", name.c_str());
     }
 }

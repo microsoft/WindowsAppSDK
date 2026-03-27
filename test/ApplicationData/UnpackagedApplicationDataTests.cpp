@@ -53,9 +53,9 @@ namespace Test::ApplicationData::Tests
         void CreateResources()
         {
             CreateResources_FileSystem();
-             // Registry resources are created by the code under test, so no need to create them here
-             // But delete any pre-existing in case a previous test crashed or otherwise didn't complete and clean up properly
-             DeleteResources_Registry();
+            // Registry resources are created by the code under test, so no need to create them here
+            // But delete any pre-existing in case a previous test crashed or otherwise didn't complete and clean up properly
+            DeleteResources_Registry();
         }
 
         void CreateResources_FileSystem()
@@ -96,11 +96,11 @@ namespace Test::ApplicationData::Tests
 
         void DeleteResources_Registry()
         {
-            PCWSTR c_product{ L"Software\\TestApplicationData_Contoso" };
-            const auto hr{ HRESULT_FROM_WIN32(::RegDeleteTreeW(HKEY_CURRENT_USER, c_product)) };
+            const auto regkey{ std::filesystem::path{ L"SOFTWARE" } / Publisher.c_str() };
+            const auto hr{ HRESULT_FROM_WIN32(::RegDeleteTreeW(HKEY_CURRENT_USER, regkey.c_str())) };
             if (!wil::reg::is_registry_not_found(hr))
             {
-                VERIFY_SUCCEEDED(hr, WEX::Common::String().Format(L"RegDeleteTreeW HKEY_CURRENT_USER\\%s", c_product));
+                VERIFY_SUCCEEDED(hr, WEX::Common::String().Format(L"RegDeleteTreeW HKEY_CURRENT_USER\\%s", regkey.c_str()));
             }
         }
 
@@ -117,9 +117,6 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(GetForUnpackaged_InvalidParameter)
         {
-            const winrt::hstring publisher{ L"FabrikamTest" };
-            const winrt::hstring product{ L"ApplicationDataTest" };
-
             constexpr static PCWSTR c_invalidIds[]{
                 L"",
                 L"foo/bar",
@@ -462,6 +459,104 @@ namespace Test::ApplicationData::Tests
             catch (winrt::hresult_error& e)
             {
                 VERIFY_ARE_EQUAL(E_NOTIMPL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
+        }
+
+        TEST_METHOD(CreateContainer_InvalidParameter)
+        {
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
+            VERIFY_IS_NOT_NULL(applicationData);
+            auto localSettings{ applicationData.LocalSettings() };
+            VERIFY_IS_NOT_NULL(localSettings);
+
+            const winrt::hstring empty;
+            constexpr auto disposition{ winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Always };
+            try
+            {
+                [[maybe_unused]] auto container{ localSettings.CreateContainer(empty, disposition) };
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Name:%s", empty.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Name:%s => 0x%X %s", empty.c_str(), e.code(), e.message().c_str()));
+            }
+
+            const winrt::hstring invalid{ L"foo\\bar" };
+            try
+            {
+                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalid, disposition) };
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalid.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+            }
+
+            constexpr size_t c_nameMaxLength{ 255 };
+            const std::wstring nameMaxLengthString(c_nameMaxLength, L'h');
+            const winrt::hstring nameMaxLength{ nameMaxLengthString.c_str() };
+            auto maxLengthContainer{ localSettings.CreateContainer(nameMaxLength, disposition) };
+            VERIFY_IS_NOT_NULL(maxLengthContainer);
+            localSettings.DeleteContainer(nameMaxLength);
+
+            const std::wstring nameTooLongString(c_nameMaxLength + 1, L'k');
+            const winrt::hstring nameTooLong{ nameTooLongString.c_str() };
+            VERIFY_IS_NOT_NULL(maxLengthContainer);
+            try
+            {
+                [[maybe_unused]] auto container{ localSettings.CreateContainer(nameTooLong, disposition) };
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", nameTooLong.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+            }
+        }
+
+        TEST_METHOD(DeleteContainer_InvalidParameter)
+        {
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
+            VERIFY_IS_NOT_NULL(applicationData);
+            auto localSettings{ applicationData.LocalSettings() };
+            VERIFY_IS_NOT_NULL(localSettings);
+
+            const winrt::hstring empty;
+            try
+            {
+                localSettings.DeleteContainer(empty);
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Name:%s", empty.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Name:%s => 0x%X %s", empty.c_str(), e.code(), e.message().c_str()));
+            }
+
+            const winrt::hstring invalid{ L"foo\\bar" };
+            try
+            {
+                localSettings.DeleteContainer(invalid);
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalid.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+            }
+
+            constexpr size_t c_nameMaxLength{ 255 };
+            const std::wstring nameMaxLengthString(c_nameMaxLength, L'h');
+            const winrt::hstring nameMaxLength{ nameMaxLengthString.c_str() };
+            localSettings.DeleteContainer(nameMaxLength);
+
+            const std::wstring nameTooLongString(c_nameMaxLength + 1, L'k');
+            const winrt::hstring nameTooLong{ nameTooLongString.c_str() };
+            try
+            {
+                localSettings.DeleteContainer(nameTooLong);
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", nameTooLong.c_str(), Product.c_str(), e.code(), e.message().c_str()));
             }
         }
 
