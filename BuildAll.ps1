@@ -622,6 +622,9 @@ Try {
         $vi_patch = [int]$numericParts[2]
         $vi_channel = if ($versionParts.Length -gt 1) { $versionParts[1] } else { "" }
         $vi_tag = $vi_channel
+        $vi_shorttag = if ($vi_tag.Length -gt 0) { $vi_tag.Substring(0,1) + ($vi_tag -replace '[^0-9]','') } else { "" }
+        $vi_formatted_tag = if ($vi_tag.Length -gt 0) { "-$vi_tag" } else { "" }
+        $vi_formatted_shorttag = if ($vi_shorttag.Length -gt 0) { "-$vi_shorttag" } else { "" }
         $vi_majorminor = ($vi_major -shl 16) -bor $vi_minor
         $vi_majorminor_hex = "{0:X8}" -f $vi_majorminor
         $vi_version_uint64 = [uint64]$vi_major -shl 48 -bor [uint64]$vi_minor -shl 32 -bor [uint64]$vi_patch -shl 16
@@ -637,28 +640,37 @@ Try {
 #ifndef _WINDOWSAPPSDK_VERSIONINFO_H__
 #define _WINDOWSAPPSDK_VERSIONINFO_H__
 
-#define WINDOWSAPPSDK_RELEASE_MAJOR              ${vi_major}u
-#define WINDOWSAPPSDK_RELEASE_MINOR              ${vi_minor}u
-#define WINDOWSAPPSDK_RELEASE_PATCH              ${vi_patch}u
-#define WINDOWSAPPSDK_RELEASE_MAJORMINOR         0x${vi_majorminor_hex}u
-#define WINDOWSAPPSDK_RELEASE_CHANNEL            "${vi_channel}"
-#define WINDOWSAPPSDK_RELEASE_CHANNEL_W          L"${vi_channel}"
-#define WINDOWSAPPSDK_RELEASE_TAG                "${vi_tag}"
-#define WINDOWSAPPSDK_RELEASE_TAG_W              L"${vi_tag}"
+#define WINDOWSAPPSDK_RELEASE_MAJOR                         ${vi_major}u
+#define WINDOWSAPPSDK_RELEASE_MINOR                         ${vi_minor}u
+#define WINDOWSAPPSDK_RELEASE_PATCH                         ${vi_patch}u
+#define WINDOWSAPPSDK_RELEASE_MAJORMINOR                    0x${vi_majorminor_hex}u
+#define WINDOWSAPPSDK_RELEASE_CHANNEL                       "${vi_channel}"
+#define WINDOWSAPPSDK_RELEASE_CHANNEL_W                     L"${vi_channel}"
+#define WINDOWSAPPSDK_RELEASE_VERSION_TAG                   "${vi_tag}"
+#define WINDOWSAPPSDK_RELEASE_VERSION_TAG_W                 L"${vi_tag}"
+#define WINDOWSAPPSDK_RELEASE_VERSION_SHORTTAG              "${vi_shorttag}"
+#define WINDOWSAPPSDK_RELEASE_VERSION_SHORTTAG_W            L"${vi_shorttag}"
+#define WINDOWSAPPSDK_RELEASE_FORMATTED_VERSION_TAG         "${vi_formatted_tag}"
+#define WINDOWSAPPSDK_RELEASE_FORMATTED_VERSION_TAG_W       L"${vi_formatted_tag}"
+#define WINDOWSAPPSDK_RELEASE_FORMATTED_VERSION_SHORTTAG    "${vi_formatted_shorttag}"
+#define WINDOWSAPPSDK_RELEASE_FORMATTED_VERSION_SHORTTAG_W  L"${vi_formatted_shorttag}"
 
-#define WINDOWSAPPSDK_RUNTIME_VERSION_UINT64     0x${vi_version_uint64_hex}ui64
+#define WINDOWSAPPSDK_RUNTIME_VERSION_UINT64                0x${vi_version_uint64_hex}ui64
 
 #ifdef __cplusplus
 #if (__cplusplus >= 201703L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L))
 namespace Microsoft::WindowsAppSDK
 {
-    constexpr uint16_t Release_Major{ ${vi_major} };
-    constexpr uint16_t Release_Minor{ ${vi_minor} };
-    constexpr uint16_t Release_Patch{ ${vi_patch} };
-    constexpr uint32_t Release_MajorMinor{ 0x${vi_majorminor_hex} };
+    constexpr uint16_t Release_Major{ static_cast<uint16_t>(${vi_major}) };
+    constexpr uint16_t Release_Minor{ static_cast<uint16_t>(${vi_minor}) };
+    constexpr uint32_t Release_Patch{ ${vi_patch}u };
+    constexpr uint32_t Release_MajorMinor{ 0x${vi_majorminor_hex}u };
     constexpr PCWSTR Release_Channel{ L"${vi_channel}" };
-    constexpr PCWSTR Release_Tag{ L"${vi_tag}" };
-    constexpr uint64_t Runtime_Version_UInt64{ 0x${vi_version_uint64_hex} };
+    constexpr PCWSTR Release_VersionTag{ L"${vi_tag}" };
+    constexpr PCWSTR Release_VersionShortTag{ L"${vi_shorttag}" };
+    constexpr PCWSTR Release_FormattedVersionTag{ L"${vi_formatted_tag}" };
+    constexpr PCWSTR Release_FormattedVersionShortTag{ L"${vi_formatted_shorttag}" };
+    constexpr uint64_t Runtime_Version_UInt64{ 0x${vi_version_uint64_hex}ui64 };
 }
 #endif // __cplusplus >= 201703L || _MSVC_LANG >= 201703L
 #endif // __cplusplus
