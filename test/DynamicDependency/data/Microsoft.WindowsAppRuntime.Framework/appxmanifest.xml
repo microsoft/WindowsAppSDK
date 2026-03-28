@@ -6,12 +6,12 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.4.1"
+    Name="Microsoft.WindowsAppRuntime.4"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>Microsoft.WindowsAppRuntime.Framework 4.1 fake for tests</DisplayName>
+    <DisplayName>Microsoft.WindowsAppRuntime.Framework 4.* fake for tests</DisplayName>
     <PublisherDisplayName>Windows App Runtime</PublisherDisplayName>
     <Logo>logo.png</Logo>
     <Framework>true</Framework>
