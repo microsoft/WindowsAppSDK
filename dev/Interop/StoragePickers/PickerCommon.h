@@ -32,6 +32,37 @@ namespace PickerCommon {
     void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName);
     void ValidateInitialFileTypeIndex(int const& value);
 
+    // Shows the WSL node in the navigation pane of COM file dialogs that hide it by default.
+    // The WSL node was hidden in FileSavePicker (IFileSaveDialog) and FolderPicker (IFileOpenDialog + FOS_PICKFOLDERS + FOS_FORCEFILESYSTEM);
+    // It takes time for the navigation pane to load nodes.
+    // This handler checks the root nodes and looks for the WSL node in children nodes.
+    // When finds the existing hidden WSL node, makes it visible.
+    struct WslNodeRevealer : winrt::implements<WslNodeRevealer, IFileDialogEvents>
+    {
+        bool m_revealed{ false };
+        bool m_timerPending{ false };
+        int m_pollCount{ 0 };
+        HWND m_timerHwnd{ nullptr };
+        winrt::com_ptr<INameSpaceTreeControl> m_nstc;
+        winrt::com_ptr<IShellItem> m_wslItem;
+
+        // looking for the navigation node for 1 second at most
+        static constexpr UINT s_pollIntervalMs{ 10 };
+        static constexpr int s_maxPollCount{ 100 };
+
+        static void CALLBACK PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept;
+        void CancelPendingReveal() noexcept;
+        HRESULT TryStartReveal(IFileDialog* pfd) noexcept;
+
+        IFACEMETHODIMP OnFolderChange(IFileDialog* pfd) noexcept override;
+        IFACEMETHODIMP OnFileOk(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnFolderChanging(IFileDialog*, IShellItem*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnSelectionChange(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnShareViolation(IFileDialog*, IShellItem*, FDE_SHAREVIOLATION_RESPONSE*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnTypeChange(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnOverwrite(IFileDialog*, IShellItem*, FDE_OVERWRITE_RESPONSE*) noexcept override { return S_OK; }
+    };
+
     struct PickerParameters {
         HWND HWnd{};
         winrt::hstring CommitButtonText;
