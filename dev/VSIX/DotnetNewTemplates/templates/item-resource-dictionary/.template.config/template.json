@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary",
   "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary",
   "name": "WinUI Resource Dictionary (Item)",
-  "shortName": "winui-resourcedictionary",
+  "shortName": ["winui-resourcedictionary", "winui3-resourcedictionary"],
   "sourceName": "ResourceDictionary",
   "defaultName": "ResourceDictionary",
   "description": "Adds a WinUI 3 ResourceDictionary for sharing styles and resources.",

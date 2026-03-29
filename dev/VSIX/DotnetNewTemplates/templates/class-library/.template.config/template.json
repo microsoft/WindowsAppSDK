@@ -9,8 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.ClassLibrary",
   "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.ClassLibrary",
   "name": "WinUI Class Library",
-  "shortName": "winui-lib",
-  "shortNameList": ["wasdk-classlib"],
+  "shortName": ["winui-lib", "winui3-lib", "wasdk-classlib"],
   "sourceName": "ProjectTemplate",
   "defaultName": "WinUILibrary",
   "description": "Creates a WinUI 3 class library for sharing UI components.",
@@ -77,6 +76,13 @@
       "replaces": "$DotNetVersion$"
     }
   },
+  "sources": [
+    {
+      "rename": {
+        "gitignore.txt": ".gitignore"
+      }
+    }
+  ],
   "primaryOutputs": [
     { "path": "ProjectTemplate.csproj" }
   ],

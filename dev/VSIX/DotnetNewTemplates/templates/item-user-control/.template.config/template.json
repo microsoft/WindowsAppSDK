@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy",
   "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy",
   "name": "WinUI User Control (Item)",
-  "shortName": "winui-usercontrol",
+  "shortName": ["winui-usercontrol", "winui3-usercontrol"],
   "sourceName": "UserControl",
   "defaultName": "UserControl",
   "description": "Adds a WinUI 3 UserControl with markup and code-behind.",

@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog",
   "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ContentDialog",
   "name": "WinUI Content Dialog (Item)",
-  "shortName": "winui-dialog",
+  "shortName": ["winui-dialog", "winui3-dialog"],
   "sourceName": "ContentDialog",
   "defaultName": "ContentDialog",
   "description": "Adds a WinUI 3 ContentDialog with markup and code-behind.",
