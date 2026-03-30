@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.IsPackagedProcess.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Package.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.PackageGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Foundation.String.h" />
