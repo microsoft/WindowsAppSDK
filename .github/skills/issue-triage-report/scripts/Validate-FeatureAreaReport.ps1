@@ -56,7 +56,7 @@ function Get-AreaLabels {
         [string]$Repo
     )
 
-    $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $ScriptDir = $PSScriptRoot
     $SkillsRoot = Split-Path (Split-Path $ScriptDir -Parent) -Parent
     $LabelsScript = Join-Path $SkillsRoot "triage-meeting-prep\scripts\Get-RepositoryLabels.ps1"
 
