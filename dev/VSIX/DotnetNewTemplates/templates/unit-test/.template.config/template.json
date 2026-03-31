@@ -9,8 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest",
   "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.UnitTest",
   "name": "WinUI Unit Test App",
-  "shortName": "winui-unittest",
-  "shortNameList": ["wasdk-unittest"],
+  "shortName": ["winui-unittest", "winui3-unittest", "wasdk-unittest"],
   "sourceName": "ProjectTemplate",
   "defaultName": "WinUITests",
   "description": "Creates a WinUI 3 packaged test app that is pre-wired for MSTest.",
@@ -121,7 +120,10 @@
             }
           ]
         }
-      ]
+      ],
+      "rename": {
+        "gitignore.txt": ".gitignore"
+      }
     }
   ],
   "primaryOutputs": [
