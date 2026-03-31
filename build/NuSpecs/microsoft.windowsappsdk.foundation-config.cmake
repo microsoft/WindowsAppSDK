@@ -38,9 +38,6 @@ if(CMAKE_VERSION VERSION_LESS 3.31)
     message(FATAL_ERROR "Microsoft.WindowsAppSDK.Foundation requires at least CMake 3.31, but CMake ${CMAKE_VERSION} is in use.")
 endif()
 
-if(NOT COMMAND add_nuget_packages)
-    message(FATAL_ERROR "This overlay requires the NuGetCMakePackage library. Please see https://github.com/mschofie/NuGetCMakePackage/blob/37002b2f28f38aa8d7476e108b3bf760223608d3/.github/copilot-instructions.md")
-endif()
 
 find_package(Microsoft.WindowsAppSDK.InteractiveExperiences CONFIG REQUIRED)
 
