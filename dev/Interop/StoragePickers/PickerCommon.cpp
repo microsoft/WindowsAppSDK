@@ -146,22 +146,23 @@ namespace PickerCommon {
 
     void CALLBACK WslNodeRevealer::PollTimerProc(HWND hwnd, UINT, UINT_PTR timerId, DWORD) noexcept
     {
-        // timerId is reinterpret_cast<UINT_PTR>(this), valid because SetTimer was called
-        // with a non-NULL hWnd, which causes the system to use the supplied nIDEvent as-is.
-        auto* self = reinterpret_cast<WslNodeRevealer*>(timerId);
+        reinterpret_cast<WslNodeRevealer*>(timerId)->RevealWslNodeWhenReady(hwnd);
+    }
 
-        if (!self->m_nstc || !self->m_wslItem || ++self->m_pollCount >= s_maxPollCount)
+    void WslNodeRevealer::RevealWslNodeWhenReady(HWND hwnd) noexcept
+    {
+        if (!m_nstc || !m_wslItem || ++m_pollCount >= s_maxPollCount)
         {
-            KillTimer(hwnd, timerId);
-            self->m_timerPending = false;
-            self->m_nstc = nullptr;
-            self->m_wslItem = nullptr;
+            KillTimer(hwnd, reinterpret_cast<UINT_PTR>(this));
+            m_timerPending = false;
+            m_nstc = nullptr;
+            m_wslItem = nullptr;
             return;
         }
 
         winrt::com_ptr<IShellItemArray> roots;
         DWORD count = 0;
-        if (SUCCEEDED(self->m_nstc->GetRootItems(roots.put())) && roots)
+        if (SUCCEEDED(m_nstc->GetRootItems(roots.put())) && roots)
         {
             if (FAILED(roots->GetCount(&count)))
             {
@@ -175,8 +176,8 @@ namespace PickerCommon {
             return;
         }
 
-        KillTimer(hwnd, timerId);
-        self->m_timerPending = false;
+        KillTimer(hwnd, reinterpret_cast<UINT_PTR>(this));
+        m_timerPending = false;
 
         // Search for the WSL node in the immediate children of each root node.
         for (DWORD i = 0; i < count; i++)
@@ -184,16 +185,16 @@ namespace PickerCommon {
             winrt::com_ptr<IShellItem> rootItem;
             if (SUCCEEDED(roots->GetItemAt(i, rootItem.put())) && rootItem)
             {
-                if (FindAndShowWslInChildren(self->m_wslItem, rootItem, self->m_nstc))
+                if (FindAndShowWslInChildren(m_wslItem, rootItem, m_nstc))
                 {
                     break;
                 }
             }
         }
 
-        self->m_nstc = nullptr;
-        self->m_wslItem = nullptr;
-        self->m_pollCount = 0;
+        m_nstc = nullptr;
+        m_wslItem = nullptr;
+        m_pollCount = 0;
     }
 
     void WslNodeRevealer::CancelPendingReveal() noexcept

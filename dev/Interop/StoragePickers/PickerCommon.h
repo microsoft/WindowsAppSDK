@@ -51,6 +51,7 @@ namespace PickerCommon {
         static constexpr int s_maxPollCount{ 100 };
 
         static void CALLBACK PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept;
+        void RevealWslNodeWhenReady(HWND hwnd) noexcept;
         void CancelPendingReveal() noexcept;
         HRESULT TryStartReveal(IFileDialog* pfd) noexcept;
 
