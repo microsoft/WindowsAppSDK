@@ -2,9 +2,6 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: runApiScan
   type: boolean
   default: true
@@ -40,12 +37,7 @@ stages:
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
     pool:
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+      type: windows
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
@@ -66,7 +58,6 @@ stages:
     - template: WindowsAppSDK-BuildFoundation-AnyCPU-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
-        IsOneBranch: ${{ parameters.IsOneBranch }}
         runPREfast : ${{ parameters.runPREfast }}
 
 # extract BuildFoundation and BuildMRT into WindowsAppSDK-Build-Stage-Per-Platform.yml. Separate the build stage per platform
@@ -74,7 +65,6 @@ stages:
 - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
   parameters:
     SignOutput: ${{ parameters.SignOutput }}
-    IsOneBranch: ${{ parameters.IsOneBranch }}
     runPREfast : ${{ parameters.runPREfast }}
     runApiScan : ${{ parameters.runApiScan }}
     BuildPlatform: x64
@@ -84,7 +74,6 @@ stages:
   - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
     parameters:
       SignOutput: ${{ parameters.SignOutput }}
-      IsOneBranch: ${{ parameters.IsOneBranch }}
       runPREfast : ${{ parameters.runPREfast }}
       runApiScan : ${{ parameters.runApiScan }}
       BuildPlatform: x86
@@ -93,7 +82,6 @@ stages:
   - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
     parameters:
       SignOutput: ${{ parameters.SignOutput }}
-      IsOneBranch: ${{ parameters.IsOneBranch }}
       runPREfast : ${{ parameters.runPREfast }}
       runApiScan : ${{ parameters.runApiScan }}
       BuildPlatform: arm64
