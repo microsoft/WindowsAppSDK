@@ -914,14 +914,18 @@ namespace Microsoft::Windows::Storage
 
     void UnpackagedApplicationDataContainer::_VerifyContainerName(winrt::hstring const& name)
     {
-        THROW_HR_IF_MSG(E_INVALIDARG, name.empty(), "Container name not valid (%ls)", name.c_str());
-
+        // Container name max length must be <= 255
         const size_t c_registryKeyNameMaxLength{ 255 };
         THROW_HR_IF_MSG(E_INVALIDARG, name.size() > c_registryKeyNameMaxLength, "Container name not valid (%ls)", name.c_str());
 
+        // Container name cannot contain a backslash
         for (PCWSTR s = name.c_str(); *s != L'\0'; ++s)
         {
             THROW_HR_IF_MSG(E_INVALIDARG, *s == L'\\', "Container name not valid (%ls)", name.c_str());
         }
+
+        // Container name cannot be "." or ".."
+        THROW_HR_IF_MSG(E_INVALIDARG, name == L".", "Container name not valid (%ls)", name.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, name == L"..", "Container name not valid (%ls)", name.c_str());
     }
 }

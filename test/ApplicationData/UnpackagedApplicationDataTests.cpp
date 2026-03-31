@@ -471,15 +471,8 @@ namespace Test::ApplicationData::Tests
 
             const winrt::hstring empty;
             constexpr auto disposition{ winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Always };
-            try
-            {
-                [[maybe_unused]] auto container{ localSettings.CreateContainer(empty, disposition) };
-                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Name:%s", empty.c_str()));
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Name:%s => 0x%X %s", empty.c_str(), e.code(), e.message().c_str()));
-            }
+            auto container{ localSettings.CreateContainer(empty, disposition) };
+            VERIFY_IS_NOT_NULL(container);
 
             const winrt::hstring invalid{ L"foo\\bar" };
             try
@@ -511,6 +504,29 @@ namespace Test::ApplicationData::Tests
             {
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", nameTooLong.c_str(), Product.c_str(), e.code(), e.message().c_str()));
             }
+
+            const winrt::hstring invalid{ L"." };
+            try
+            {
+                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalid, disposition) };
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalid.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+            }
+
+            const winrt::hstring invalid{ L".." };
+            try
+            {
+                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalid, disposition) };
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalid.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+            }
+
         }
 
         TEST_METHOD(DeleteContainer_InvalidParameter)
