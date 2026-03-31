@@ -4,5 +4,13 @@
 
   <!-- Bootstrapper and auto-initialization targets have moved to the Microsoft.WindowsAppSDK.Base package. -->
 
+  <!-- When the Foundation component package is referenced without the aggregator meta-package
+       (e.g. in Foundation pipeline sample builds), prevent the Base package from defaulting
+       to SelfContained mode. Without the meta-package, there's no framework MSIX to extract
+       DLLs from, so SelfContained would leave the app with missing runtime DLLs.
+       These apps are framework-dependent and rely on the registered framework package. -->
+  <PropertyGroup Condition="'$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(WindowsAppSDKSelfContained)' == ''">
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+  </PropertyGroup>
 
 </Project>
