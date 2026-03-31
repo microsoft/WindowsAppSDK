@@ -2,9 +2,6 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: runApiScan
   type: boolean
   default: true
@@ -24,8 +21,6 @@ steps:
     arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
-  parameters:
-    IsOneBranch: ${{ parameters.IsOneBranch }}
 
 - task: NuGetAuthenticate@1
 
@@ -172,9 +167,3 @@ steps:
     Contents: Microsoft.Taef.*\**
     TargetFolder: '$(ob_outputDirectory)\redist'
 
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: PublishBuildArtifacts@1
-    condition: always()
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'
