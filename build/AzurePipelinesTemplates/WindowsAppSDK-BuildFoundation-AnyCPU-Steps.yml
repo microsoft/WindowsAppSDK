@@ -2,9 +2,6 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: runPREfast
   type: boolean
   default: false
@@ -21,8 +18,6 @@ steps:
     arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
-  parameters:
-    IsOneBranch: ${{ parameters.IsOneBranch }}
 
 - task: PowerShell@2
   name: BuildFoundation
@@ -77,8 +72,3 @@ steps:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'
