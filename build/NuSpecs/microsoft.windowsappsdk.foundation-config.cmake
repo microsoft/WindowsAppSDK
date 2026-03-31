@@ -38,60 +38,24 @@ if(CMAKE_VERSION VERSION_LESS 3.31)
     message(FATAL_ERROR "Microsoft.WindowsAppSDK.Foundation requires at least CMake 3.31, but CMake ${CMAKE_VERSION} is in use.")
 endif()
 
-find_package(Microsoft.Windows.CppWinRT CONFIG REQUIRED)
-find_package(Microsoft.WindowsAppSDK.InteractiveExperiences CONFIG REQUIRED)
-
-if(NOT (TARGET Microsoft.Windows.CppWinRT))
-    message(FATAL_ERROR "Microsoft.Windows.CppWinRT target not found. A CMake package definition for CppWinRT is required. An existing package definition is available from the NuGetCMakePackage repository: https://github.com/mschofie/NuGetCMakePackage")
+if(NOT COMMAND add_nuget_packages)
+    message(FATAL_ERROR "This overlay requires the NuGetCMakePackage library. Please see https://github.com/mschofie/NuGetCMakePackage/blob/37002b2f28f38aa8d7476e108b3bf760223608d3/.github/copilot-instructions.md")
 endif()
 
+find_package(Microsoft.WindowsAppSDK.InteractiveExperiences CONFIG REQUIRED)
+
 block(SCOPE_FOR VARIABLES)
-    # Set the 'PLATFORM_IDENTIFIER' - mapping CMake constructs to the identifiers that the NuGet package layout uses.
-    if(CMAKE_GENERATOR MATCHES "^Visual Studio")
-        set(PLATFORM_IDENTIFIER ${CMAKE_GENERATOR_PLATFORM})
-    else()
-        set(PLATFORM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
-        if(PLATFORM_PROCESSOR STREQUAL "")
-            set(PLATFORM_PROCESSOR ${CMAKE_HOST_PROCESSOR})
-        endif()
-        if(PLATFORM_PROCESSOR STREQUAL "AMD64")
-            set(PLATFORM_IDENTIFIER "x64")
-        elseif(PLATFORM_PROCESSOR STREQUAL "ARM64")
-            set(PLATFORM_IDENTIFIER "arm64")
-        endif()
-    endif()
+    wasdk_detect_platform()
 
-    if(PLATFORM_IDENTIFIER STREQUAL "")
-        message(FATAL_ERROR "Unable to determine the platform identifier.")
-    endif()
-
-    get_property(PACKAGE_LOCATION GLOBAL PROPERTY NUGET_LOCATION-MICROSOFT_WINDOWSAPPSDK_FOUNDATION)
-    get_property(PACKAGE_VERSION  GLOBAL PROPERTY NUGET_VERSION-MICROSOFT_WINDOWSAPPSDK_FOUNDATION)
+    # NuGet package root: this file lives at build/cmake/PACKAGE_NAME_LOWER-config.cmake
+    set(PACKAGE_LOCATION "${CMAKE_CURRENT_LIST_DIR}/../..")
 
     #[[====================================================================================================================
         Target: Microsoft.WindowsAppSDK.Foundation
     ====================================================================================================================]]#
+    file(GLOB _WINMD_FILES "${PACKAGE_LOCATION}/metadata/*.winmd")
     add_cppwinrt_projection(Microsoft.WindowsAppSDK.Foundation
-        INPUTS
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.ApplicationModel.Background.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.ApplicationModel.DynamicDependency.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.ApplicationModel.Resources.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.AppLifecycle.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.AppNotifications.Builder.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.AppNotifications.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.BadgeNotifications.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.Foundation.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.Globalization.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.Management.Deployment.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.Media.Capture.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.PushNotifications.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.Security.AccessControl.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.Storage.Pickers.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.Storage.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.System.Power.winmd
-            ${PACKAGE_LOCATION}/metadata/Microsoft.Windows.System.winmd
+        INPUTS ${_WINMD_FILES}
         OPTIMIZE
         DEPS
             Microsoft.WindowsAppSDK.InteractiveExperiences
@@ -201,10 +165,7 @@ block(SCOPE_FOR VARIABLES)
     add_library(Microsoft.WindowsAppSDK.Foundation_SelfContainedRuntime SHARED IMPORTED GLOBAL)
 
     set(FRAMEWORK_PATH "${PACKAGE_LOCATION}/runtimes-framework/win-${PLATFORM_IDENTIFIER}/native")
-    set(FRAMEWORK_DLLS
-        "${FRAMEWORK_PATH}/Microsoft.Windows.ApplicationModel.Resources.dll"
-        "${FRAMEWORK_PATH}/Microsoft.WindowsAppRuntime.dll"
-    )
+    file(GLOB FRAMEWORK_DLLS "${FRAMEWORK_PATH}/*.dll")
 
     set_target_properties(Microsoft.WindowsAppSDK.Foundation_SelfContainedRuntime
         PROPERTIES
@@ -214,52 +175,11 @@ block(SCOPE_FOR VARIABLES)
 
     add_library(Microsoft.WindowsAppSDK.Foundation_SelfContained INTERFACE)
 
-    # Transform appxfragment into SxS activation manifest via XSLT
-    set(_XSLT_FILE "${CMAKE_BINARY_DIR}/__xslt/TransformAppxFragment.xslt")
-    set(_PS_FILE "${CMAKE_BINARY_DIR}/__xslt/Invoke-XsltTransform.ps1")
-    set(_FOUNDATION_MANIFEST_FILE "${CMAKE_BINARY_DIR}/__manifests/Microsoft.WindowsAppSDK.Foundation.manifest")
-    set(_FOUNDATION_FRAGMENT "${PACKAGE_LOCATION}/runtimes-framework/package.appxfragment")
-
-    if(NOT EXISTS "${_XSLT_FILE}")
-        file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/__xslt")
-        file(WRITE "${_XSLT_FILE}" [=[<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:appx="http://schemas.microsoft.com/appx/manifest/foundation/windows10" exclude-result-prefixes="appx">
-<xsl:output method="xml" indent="yes" encoding="UTF-8" standalone="yes"/>
-<xsl:strip-space elements="*"/>
-<xsl:template match="/"><assembly manifestVersion="1.0" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:winrtv1="urn:schemas-microsoft-com:winrt.v1" xmlns="urn:schemas-microsoft-com:asm.v1"><xsl:apply-templates select="//appx:InProcessServer"/></assembly></xsl:template>
-<xsl:template match="appx:InProcessServer"><asmv3:file name="{appx:Path}" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3"><xsl:apply-templates select="appx:ActivatableClass"/></asmv3:file></xsl:template>
-<xsl:template match="appx:ActivatableClass"><winrtv1:activatableClass name="{@ActivatableClassId}" threadingModel="both" xmlns:winrtv1="urn:schemas-microsoft-com:winrt.v1"/></xsl:template>
-</xsl:stylesheet>
-]=])
-        file(WRITE "${_PS_FILE}" [=[param([string]$XsltPath,[string]$InputPath,[string]$OutputPath)
-$xslt = New-Object System.Xml.Xsl.XslCompiledTransform
-$xslt.Load($XsltPath)
-$dir = Split-Path $OutputPath -Parent
-if (-not (Test-Path $dir)) { New-Item -Path $dir -ItemType Directory -Force | Out-Null }
-$w = [System.Xml.XmlWriter]::Create($OutputPath, $xslt.OutputSettings)
-try { $xslt.Transform($InputPath, $w) } finally { $w.Close() }
-$t = [System.IO.File]::ReadAllText($OutputPath)
-$t = $t -replace 'encoding="utf-8"','encoding="UTF-8"'
-$t = $t -replace '<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:winrtv1="urn:schemas-microsoft-com:winrt.v1">',("<assembly manifestVersion=""1.0""
-    xmlns:asmv3=""urn:schemas-microsoft-com:asm.v3""
-    xmlns:winrtv1=""urn:schemas-microsoft-com:winrt.v1""
-    xmlns=""urn:schemas-microsoft-com:asm.v1"">")
-[System.IO.File]::WriteAllText($OutputPath, $t, [System.Text.UTF8Encoding]::new($false))
-]=])
-    endif()
-
-    if(EXISTS "${_FOUNDATION_FRAGMENT}")
-        file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/__manifests")
-        execute_process(
-            COMMAND powershell -ExecutionPolicy Bypass -File "${_PS_FILE}"
-                -XsltPath "${_XSLT_FILE}" -InputPath "${_FOUNDATION_FRAGMENT}" -OutputPath "${_FOUNDATION_MANIFEST_FILE}"
-            RESULT_VARIABLE _XFORM_RESULT
-        )
-        if(_XFORM_RESULT STREQUAL 0)
-            target_sources(Microsoft.WindowsAppSDK.Foundation_SelfContained INTERFACE "${_FOUNDATION_MANIFEST_FILE}")
-            target_link_options(Microsoft.WindowsAppSDK.Foundation_SelfContained INTERFACE /MANIFEST)
-        endif()
-    endif()
+    wasdk_transform_appxfragment(
+        Microsoft.WindowsAppSDK.Foundation_SelfContained
+        "${PACKAGE_LOCATION}/runtimes-framework/package.appxfragment"
+        "${CMAKE_BINARY_DIR}/__manifests/Microsoft.WindowsAppSDK.Foundation.manifest"
+    )
 
     target_link_libraries(Microsoft.WindowsAppSDK.Foundation_SelfContained
         INTERFACE
