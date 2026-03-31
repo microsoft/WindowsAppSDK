@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Page",
   "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Page",
   "name": "WinUI Blank Page (Item)",
-  "shortName": "winui-page",
+  "shortName": ["winui-page", "winui3-page"],
   "sourceName": "BlankPage",
   "defaultName": "BlankPage",
   "description": "Adds a WinUI 3 Page with XAML markup and code-behind.",

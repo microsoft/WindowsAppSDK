@@ -31,6 +31,11 @@
     <None Include="README.md" Pack="true" PackagePath="README.md" />
   </ItemGroup>
 
+  <!-- Shared .gitignore for all project templates -->
+  <PropertyGroup>
+    <_GitignoreSource>templates\gitignore.txt</_GitignoreSource>
+  </PropertyGroup>
+
   <!-- WinUI Blank App template -->
   <ItemGroup>
     <None Include="templates\single-project\.template.config\**\*.*"
@@ -49,6 +54,9 @@
     <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.blankapp/Package.appxmanifest" />
+    <None Include="$(_GitignoreSource)"
+          Pack="true"
+          PackagePath="content/winui.blankapp/gitignore.txt" />
   </ItemGroup>
 
   <!-- WinUI NavigationView template -->
@@ -63,6 +71,9 @@
     <None Include="..\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.navview/Package.appxmanifest" />
+    <None Include="$(_GitignoreSource)"
+          Pack="true"
+          PackagePath="content/winui.navview/gitignore.txt" />
   </ItemGroup>
 
   <!-- WinUI Class Library template -->
@@ -74,6 +85,9 @@
           Exclude="..\ProjectTemplates\Desktop\CSharp\ClassLibrary\bin\**;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\obj\**;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.ico;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.png;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.vstemplate"
           Pack="true"
           PackagePath="content/winui.classlib/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(_GitignoreSource)"
+          Pack="true"
+          PackagePath="content/winui.classlib/gitignore.txt" />
   </ItemGroup>
 
   <!-- WinUI Unit Test template -->
@@ -88,6 +102,36 @@
     <None Include="..\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.unittest/Package.appxmanifest" />
+    <None Include="$(_GitignoreSource)"
+          Pack="true"
+          PackagePath="content/winui.unittest/gitignore.txt" />
+  </ItemGroup>
+
+  <!-- WinUI MVVM App template -->
+  <ItemGroup>
+    <None Include="templates\mvvm-app\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/winui.mvvmapp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\MvvmApp\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\MvvmApp\bin\**;..\ProjectTemplates\Desktop\CSharp\MvvmApp\obj\**"
+          Pack="true"
+          PackagePath="content/winui.mvvmapp/%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- Reuse Assets, Properties, app.manifest, and Package.appxmanifest from blank app -->
+    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Assets\**\*.*"
+          Pack="true"
+          PackagePath="content/winui.mvvmapp/Assets/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Properties\**\*.*"
+          Pack="true"
+          PackagePath="content/winui.mvvmapp/Properties/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\app.manifest"
+          Pack="true"
+          PackagePath="content/winui.mvvmapp/app.manifest" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
+          Pack="true"
+          PackagePath="content/winui.mvvmapp/Package.appxmanifest" />
+    <None Include="$(_GitignoreSource)"
+          Pack="true"
+          PackagePath="content/winui.mvvmapp/gitignore.txt" />
   </ItemGroup>
 
   <!-- WinUI Blank Window item template -->

@@ -20,6 +20,7 @@ dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
 | Short Name       | Description                                              |
 |------------------|----------------------------------------------------------|
 | `winui`          | WinUI 3 blank app with single-project MSIX packaging     |
+| `winui-mvvm`     | WinUI 3 MVVM app with CommunityToolkit.Mvvm               |
 | `winui-navview`  | WinUI 3 NavigationView starter app                       |
 | `winui-lib`      | WinUI 3 class library for sharing UI components          |
 | `winui-unittest` | WinUI 3 packaged test app configured for MSTest          |
