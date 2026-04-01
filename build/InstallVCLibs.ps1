@@ -2,12 +2,13 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet("x86", "x64", "arm64")]
     [string]$Platform,
-    
+
     # Expecting BuildOutput\Release
     [Parameter(Mandatory = $true)]
     [string]$SourceDirectory
 )
 
+Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 Write-Host "Installing VCLibs packages for platform: $Platform" -ForegroundColor Green
@@ -34,17 +35,16 @@ $InstalledPackages = @{}
 
 foreach ($Package in $VCLibsPackages) {
     $PackageName = $Package.Name
-    
+
     if ($InstalledPackages.ContainsKey($PackageName)) {
         continue
     }
-    
+
     try {
         Write-Host "Installing: $PackageName" -ForegroundColor White
         Add-AppxPackage -Path $Package.FullName -ForceApplicationShutdown
-        
+
         $InstalledPackages[$PackageName] = $Package.FullName
-        $TotalInstalled++
         Write-Host "  -> Success" -ForegroundColor Green
     }
     catch {

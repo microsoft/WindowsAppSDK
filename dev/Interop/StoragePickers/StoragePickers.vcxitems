@@ -53,6 +53,19 @@
     <Midl Include="$(MSBuildThisFileDirectory)Microsoft.Windows.Storage.Pickers.idl" />
   </ItemGroup>
   <ItemGroup>
-    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\*\*.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\cs-CZ\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\de-DE\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en-US\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\es-ES\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\fr-FR\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\it-IT\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\ja-JP\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\ko-KR\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\pl-PL\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\pt-BR\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\ru-RU\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\tr-TR\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\zh-CN\StoragePickers.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\zh-TW\StoragePickers.resw" />
   </ItemGroup>
 </Project>

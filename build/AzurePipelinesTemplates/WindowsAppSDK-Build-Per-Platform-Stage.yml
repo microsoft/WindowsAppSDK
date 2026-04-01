@@ -2,9 +2,6 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: runApiScan
   type: boolean
   default: true
@@ -28,12 +25,7 @@ stages:
   jobs:
   - job: BuildFoundation
     pool:
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+      type: windows
     # In the less likely case of running APIScan and/or PREfast, give it more time.
     ${{ if or(parameters.runApiScan, parameters.runPREfast) }}:
       timeoutInMinutes: 180
@@ -104,19 +96,13 @@ stages:
     - template: WindowsAppSDK-BuildFoundation-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
-        IsOneBranch: ${{ parameters.IsOneBranch }}
         runApiScan: ${{ parameters.runApiScan }}
         runPREfast: ${{ parameters.runPREfast }}
 
   - job: BuildMRT
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+      type: windows
     # In the less likely case of running APIScan and/or PREfast, give it more time.
     ${{ if or(parameters.runApiScan, parameters.runPREfast) }}:
       timeoutInMinutes: 150
@@ -189,7 +175,6 @@ stages:
     - template: WindowsAppSDK-BuildMRT-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
-        IsOneBranch: ${{ parameters.IsOneBranch }}
         runPREfast : ${{ parameters.runPREfast }}
         runApiScan : ${{ parameters.runApiScan }}
 

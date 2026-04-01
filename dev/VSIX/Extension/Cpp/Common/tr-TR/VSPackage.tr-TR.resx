@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Boş Pencere (Masaüstünde WinUI 3)</value>
+    <value>Boş Pencere</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Deneysel] Boş Pencere (Masaüstünde WinUI 3)</value>
+    <value>[Deneysel] Boş Pencere</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Windows UI Kitaplığı’nı (WinUI 3) temel alan Masaüstü uygulamaları için boş bir pencere.</value>
+    <value>Boş bir pencere (WinUI).</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>Boş Sayfa (WinUI 3)</value>
+    <value>Boş Sayfa</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Deneysel] Boş Sayfa (WinUI 3)</value>
+    <value>[Deneysel] Boş Sayfa</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için boş bir sayfa.</value>
+    <value>Boş bir sayfa (WinUI).</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Kaynak Sözlüğü (WinUI 3)</value>
+    <value>Kaynak Sözlüğü</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Deneysel] Kaynak Sözlüğü (WinUI 3)</value>
+    <value>[Deneysel] Kaynak Sözlüğü</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için boş bir anahtarlı XAML kaynakları koleksiyonu.</value>
+    <value>Boş, anahtarlı XAML kaynakları koleksiyonu (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Kaynak Dosyası (.resw)</value>
@@ -151,60 +151,109 @@
     <value>[Deneysel] Kaynak Dosyası (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Windows UI Kitaplığı’nı (WinUI 3) temel alan uygulamalar için dize ve koşullu kaynakları depolamaya yönelik bir dosya.</value>
+    <value>Dize ve koşullu kaynakları (WinUI) depolamak için bir dosya.</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>Özel Denetim (WinUI 3)</value>
+    <value>Şablonlanmış Denetim</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Deneysel] Özel Denetim (WinUI 3)</value>
+    <value>[Deneysel] Şablonlanmış Denetim</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir özel denetim.</value>
+    <value>Uygun varsayılan stile sahip boş bir özel denetim (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Kullanıcı Kontrolü (WinUI 3)</value>
+    <value>Kullanıcı Denetimi</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Deneysel] Kullanıcı Kontrolü (WinUI 3)</value>
+    <value>[Deneysel] Kullanıcı Kontrolü</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir kullanıcı kontrolü.</value>
+    <value>Boş bir kullanıcı kontrolü (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Boş Uygulama, Paketli Windows Uygulama Paketleme Projesi (Masaüstünde WinUI 3)</value>
+    <value>WinUI Boş Uygulama (Windows Uygulama Paketleme Projesiyle Paketlenmiş)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Deneysel] Boş Uygulama, Paketli Windows Uygulama Paketleme Projesi (Masaüstünde WinUI 3)</value>
+    <value>[Deneysel] WinUI Boş Uygulama (Windows Uygulama Paketleme Projesiyle Paketlenmiş)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Windows UI Kitaplığı’nı (WinUI 3) temel alan bir Masaüstü uygulaması oluşturmaya yönelik bir proje şablonu. Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketi oluşturmak için Windows Uygulama Paketleme (WAP) projesi dahildir.</value>
+    <value>Bir WinUI uygulaması oluşturmaya yönelik bir proje şablonu. Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketi oluşturmak için Windows Uygulama Paketleme (WAP) projesi dahildir.</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Boş Uygulama, Paketlenmiş (Masaüstünde WinUI 3)</value>
+    <value>WinUI Boş Uygulaması (Paketlenmiş)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Deneysel] Boş Uygulama, Paketlenmiş (Masaüstünde WinUI 3)</value>
+    <value>[Deneysel] WinUI Boş Uygulaması (Paketlenmiş)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketi ile birlikte Windows UI Kitaplığı’nı (WinUI 3) temel alan bir Masaüstü uygulaması oluşturmaya yönelik bir proje şablonu.</value>
+    <value>Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketiyle birlikte WinUI uygulaması oluşturmaya yönelik bir proje şablonu.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Windows Çalışma Zamanı Bileşeni (WinUI 3)</value>
+    <value>WinUI Windows Çalışma Zamanı Bileşeni</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Deneysel] Windows Çalışma Zamanı Bileşeni (WinUI 3)</value>
+    <value>[Deneysel] WinUI Windows Çalışma Zamanı Bileşeni (C++/WinRT)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan, hem Masaüstü hem de Evrensel Windows Platformu (UWP) uygulamaları için bir C++/WinRT Windows Çalışma Zamanı Bileşeni (.winmd) oluşturmaya yönelik proje.</value>
+    <value>WinUI’yi temel alan, hem masaüstü hem de Evrensel Windows Platformu (UWP) uygulamaları için bir C++/WinRT Windows Çalışma Zamanı Bileşeni (.winmd) oluşturmaya yönelik proje.</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Birim Testi Uygulaması (WinUI 3)</value>
+    <value>WinUI Birim Testi Uygulaması</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Deneysel] Birim Testi Uygulaması (WinUI 3)</value>
+    <value>[Deneysel] WinUI Birim Testi Uygulaması</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>MSTest kullanarak WinUI 3 için bir C++/WinRT birim testi uygulamasını oluşturmaya yönelik bir proje.</value>
+    <value>MSTest kullanarak WinUI için bir C++/WinRT birim testi uygulamasını oluşturmaya yönelik bir proje.</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>WinUI Boş Uygulaması</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Boş bir WinUI uygulaması oluşturmak için bir proje.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>WinUI için Windows Uygulama Paketleme Projesi</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Takım projesi aracılığıyla dışarıdan yükleme veya dağıtım için WinUI uygulamaları içeren MSIX paketleri Microsoft Store.</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>Projeye NuGet paketleri yükleniyor...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>İşlem sürüyor...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>Eksik Paket Başvuruları</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Şu paketlere başvurular eklenemiyor: {0}: {1}. Lütfen derlemeden önce paket başvuruları ekleyin.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] Şu paketlere başvurular eklenemiyor: {1}.
+
+Bu bir ortam hatasıdır. Projeyi derlemeden önce lütfen paket başvuruları ekleyin.
+
+Hatayla ilgili daha fazla ayrıntı için Çıkış penceresindeki Genel sekmesine bakın.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>NuGet Paketlerini yönet</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>Hata ayrıntılarına bakın</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>{0} için Eksik Paket Başvuruları:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>Derlemeden önce paket referanslarını el ile ekleyin.</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>Kullanılabilir çıkış bilgisi yok.</value>
   </data>
 </root>

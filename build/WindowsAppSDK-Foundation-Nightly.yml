@@ -49,6 +49,10 @@ parameters:
   displayName: "Whether Maestro publishing should depend on successful Sample tests"
   type: boolean
   default: false
+- name: "CheckApiChanges"
+  displayName: "Whether to run Api Diff against latest stable package"
+  type: boolean
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
@@ -85,6 +89,7 @@ extends:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
+        Version: 2022
         Network: R1
 
     platform:
@@ -119,7 +124,7 @@ extends:
       binskim:
         enabled: true
         break: true
-        analyzeTargetGlob: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe
+        analyzeTargetGlob: $(BinskimExclusionForFoundationRepo)
       prefast:
         ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
           enabled: true
@@ -157,6 +162,11 @@ extends:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
+
+    - ${{ if eq( parameters.CheckApiChanges, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self
+        parameters:
+          CompareAgainstExperimental: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:

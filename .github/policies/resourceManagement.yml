@@ -281,7 +281,7 @@ configuration:
       then:
       - addReply:
           reply: >- 
-              Hi @${issueAuthor}, thank you for your contribution! This issue appears to be external to the WindowsAppSDK.
+              [external-classification] Hi @${issueAuthor}, thank you for your contribution! This issue appears to be external to the WindowsAppSDK.
               To help route it appropriately, please submit your feedback via the Feedback Hub by pressing [Windows] + [F],
               and include detailed information and diagnostics. We appreciate your help in improving the platform!
       - removeLabel:
@@ -297,8 +297,13 @@ configuration:
           label: area-External
       - isOpen
       - commentContains:
-          pattern: '\/[E|e]xternal'
+          pattern: '^\[external-classification\]'
           isRegex: True
+      - or:
+        - activitySenderHasPermission:
+            permission: Write
+        - activitySenderHasPermission:
+            permission: Admin
       then:
       - closeIssue
 

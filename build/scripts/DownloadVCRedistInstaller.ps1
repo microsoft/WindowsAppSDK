@@ -21,7 +21,7 @@ $downloadurl = "https://aka.ms/vs/17/release/vc_redist.$Platform.exe"
 if(-not(Test-Path $outputPath))
 {
     Write-Host "Downloading $downloadurl to $outputPath"
-    Invoke-WebRequest $downloadurl -OutFile $outputPath
+    Invoke-WebRequest $downloadurl -OutFile $outputPath -UseBasicParsing
 }
 else
 {

@@ -4,7 +4,7 @@
     "extensions": [
         {
             "vsixId": "Microsoft.SingleProjectMSIXPackagingTools.Dev17",
-            "name": "Single-project MSIX Packaging Tools for VS 2022"
+            "name": "Single-project MSIX Packaging Tools for VS 2022-26"
         }
     ]
 }

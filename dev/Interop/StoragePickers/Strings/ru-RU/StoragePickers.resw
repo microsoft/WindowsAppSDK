@@ -135,4 +135,10 @@
   <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
     <value>Предложенное имя файла превышает максимально допустимое число символов.</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDINITIALFILETYPEINDEX" xml:space="preserve">
+    <value>Значение InitialFileTypeIndex не может быть меньше -1 или выходит за пределы допустимого диапазона.</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDAPPIDFORSETTINGSIDENTIFIER" xml:space="preserve">
+    <value>Не удалось определить удостоверение приложения для SettingsIdentifier.</value>
+  </data>
 </root>

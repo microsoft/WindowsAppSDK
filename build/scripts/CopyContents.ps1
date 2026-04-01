@@ -6,6 +6,9 @@ param (
   [string]$TargetDir = ''
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 foreach ($Contents in $ContentsList)
 {
     $ContentsPath = (Join-Path $SourceDir $Contents)
