@@ -136,10 +136,6 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
     }
 
     // PowerSourceKind Functions
-    EventType& PowerSourceKind_Event()
-    {
-        return Factory()->m_powerSourceKindChangedEvent;
-    }
 
     void PowerSourceKind_Register()
     {
@@ -204,44 +200,9 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
             Factory()->m_systemIdleStatusHandle));
     }
 
-    ULONG GetEffectivePowerModeVersion()
-    {
-        // We check for the version supported by checking if the feature is supported
-        // Using NULL as an indicator for uninitialized cache value
-        auto& version{ Factory()->m_powerModeVersion };
-        if (!version)
-        {
-            void* handle{};
-            auto hr{ PowerRegisterForEffectivePowerModeNotifications(
-                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, void*) {}, nullptr, &handle) };
-            version = SUCCEEDED(hr) ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
-            THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(handle));
-        }
-        return version;
-    }
 
-    EventType& EffectivePowerMode_Event()
-    {
-        return Factory()->m_powerModeChangedEvent;
-    }
 
-    void EffectivePowerMode_Register()
-    {
-        ULONG version{ GetEffectivePowerModeVersion() };
-        auto& powerModeHandle{ Factory()->m_powerModeHandle };
-        THROW_IF_FAILED(PowerRegisterForEffectivePowerModeNotifications(
-            version, [](EFFECTIVE_POWER_MODE mode, void*)
-            {
-                PowerManager::EffectivePowerModeChanged_Callback(mode);
-            }, nullptr, &powerModeHandle));
-    }
 
-    void EffectivePowerMode_Unregister()
-    {
-        auto& powerModeHandle{ Factory()->m_powerModeHandle };
-        THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(powerModeHandle));
-        powerModeHandle = nullptr;
-    }
 
     void EffectivePowerMode_Update()
     {
