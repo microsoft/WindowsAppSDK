@@ -101,6 +101,14 @@
         {
           "choice": "10.0.26100.0",
           "description": "10.0.26100.0"
+        },
+        {
+          "choice": "10.0.26200.0",
+          "description": "10.0.26200.0"
+        },
+        {
+          "choice": "10.0.28000.0",
+          "description": "10.0.28000.0"
         }
       ],
       "description": "Minimum supported Windows version."
