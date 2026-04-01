@@ -29,3 +29,7 @@ EXPORTS
     WindowsAppRuntime_VersionInfo_TestInitialize
 
     WindowsAppRuntime_EnsureIsLoaded
+
+    GetPackageFilePath
+    GetPackageFilePathInPackageGraph
+    IsPackageFeatureSupported
