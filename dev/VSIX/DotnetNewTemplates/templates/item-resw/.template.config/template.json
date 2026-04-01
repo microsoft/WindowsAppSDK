@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw",
   "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Resw",
   "name": "WinUI Resources File (Item)",
-  "shortName": "winui-resw",
+  "shortName": ["winui-resw", "winui3-resw"],
   "sourceName": "Resources",
   "defaultName": "Resources",
   "description": "Adds a RESW resources file for localized strings.",

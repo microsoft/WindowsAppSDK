@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl",
   "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl",
   "name": "WinUI Templated Control (Item)",
-  "shortName": "winui-templatedcontrol",
+  "shortName": ["winui-templatedcontrol", "winui3-templatedcontrol"],
   "sourceName": "CustomControl",
   "defaultName": "CustomControl",
   "description": "Adds a WinUI 3 templated control with a code-behind skeleton.",

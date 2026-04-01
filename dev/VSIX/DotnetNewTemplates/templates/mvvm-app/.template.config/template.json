@@ -1,18 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": [ "Windows", "WinUI", "Desktop", "XAML" ],
+  "classifications": ["Windows", "WinUI", "Desktop", "MVVM"],
   "tags": {
     "language": "C#",
     "type": "project"
   },
-  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp",
-  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.BlankApp",
-  "name": "WinUI Blank App",
-  "shortName": ["winui", "winui3", "wasdk-single"],
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.MvvmApp",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.MvvmApp",
+  "name": "WinUI MVVM App",
+  "shortName": ["winui-mvvm", "winui3-mvvm"],
   "sourceName": "ProjectTemplate",
-  "defaultName": "WinUIApp",
-  "description": "Creates a WinUI 3 desktop app with single-project MSIX packaging.",
+  "defaultName": "WinUIMvvmApp",
+  "description": "Creates a WinUI 3 desktop app with MVVM pattern using CommunityToolkit.Mvvm.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {
@@ -64,8 +64,7 @@
         { "choice": "net8.0", "description": "Target .NET 8" },
         { "choice": "net9.0", "description": "Target .NET 9" },
         { "choice": "net10.0", "description": "Target .NET 10" }
-      ],
-      "defaultValue": "net10.0"
+      ]
     },
     "resolvedDotnetVersion": {
       "type": "generated",
@@ -76,33 +75,11 @@
       },
       "replaces": "$DotNetVersion$"
     },
-    "targetPlatformMinVersion": {
+    "targetPlatformMinVersion":{
       "type": "parameter",
-      "datatype": "choice",
+      "datatype": "text",
       "replaces": "$targetplatformminversion$",
-      "defaultValue": "10.0.26100.0",
-      "choices": [
-        {
-          "choice": "10.0.17763.0",
-          "description": "10.0.17763.0"
-        },
-        {
-          "choice": "10.0.19041.0",
-          "description": "10.0.19041.0"
-        },
-        {
-          "choice": "10.0.22000.0",
-          "description": "10.0.22000.0"
-        },
-        {
-          "choice": "10.0.22621.0",
-          "description": "10.0.22621.0"
-        },
-        {
-          "choice": "10.0.26100.0",
-          "description": "10.0.26100.0"
-        }
-      ],
+      "defaultValue": "10.0.17763.0",
       "description": "Minimum supported Windows version."
     },
     "publisherDn": {
@@ -199,6 +176,16 @@
         "reference": "Microsoft.Windows.SDK.BuildTools"
       },
       "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" }]
+    },
+    {
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "description": "Update CommunityToolkit.Mvvm to the latest stable version.",
+      "args": {
+        "referenceType": "package",
+        "reference": "CommunityToolkit.Mvvm"
+      },
+      "manualInstructions": [{ "text": "Run 'dotnet add package CommunityToolkit.Mvvm'" }]
     },
     {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
