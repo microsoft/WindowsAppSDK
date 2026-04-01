@@ -135,4 +135,10 @@
   <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
     <value>O nome de arquivo sugerido excede o número máximo de caracteres permitidos.</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDINITIALFILETYPEINDEX" xml:space="preserve">
+    <value>InitialFileTypeIndex não pode ser menor que -1 ou fora do intervalo.</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDAPPIDFORSETTINGSIDENTIFIER" xml:space="preserve">
+    <value>Não é possível determinar a identidade do aplicativo para SettingsIdentifier.</value>
+  </data>
 </root>
