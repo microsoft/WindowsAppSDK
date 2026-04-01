@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_TAEF_CPPWINRT_H
@@ -75,6 +75,58 @@ namespace WEX::TestExecution
             }
         }
     };
+}
+
+namespace winrt
+{
+/// Define a winrt::hstring variant that compares as case-independent (L"ABC" == L"abc" == L"aBc")
+class hstring_nocase
+{
+public:
+    explicit hstring_nocase(winrt::hstring const& string) : m_string(string) { }
+
+    explicit hstring_nocase(PCWSTR string) : m_string(string) { }
+
+    ~hstring_nocase() = default;
+
+    bool empty() const { return m_string.empty(); }
+
+    PCWSTR c_str() const { return m_string.c_str(); }
+
+public:
+    static int compare(winrt::hstring_nocase const& left, winrt::hstring_nocase const& right)
+    {
+        return CompareStringOrdinal(left.c_str(), -1, right.c_str(), -1, TRUE) - CSTR_EQUAL;
+    }
+
+private:
+    winrt::hstring m_string;
+};
+}
+
+bool operator==(winrt::hstring_nocase const& left, winrt::hstring_nocase const& right)
+{
+    return winrt::hstring_nocase::compare(left, right) == 0;
+}
+bool operator!=(winrt::hstring_nocase const& left, winrt::hstring_nocase const& right)
+{
+    return winrt::hstring_nocase::compare(left, right) != 0;
+}
+bool operator<(winrt::hstring_nocase const& left, winrt::hstring_nocase const& right)
+{
+    return winrt::hstring_nocase::compare(left, right) < 0;
+}
+bool operator<=(winrt::hstring_nocase const& left, winrt::hstring_nocase const& right)
+{
+    return winrt::hstring_nocase::compare(left, right) <= 0;
+}
+bool operator>(winrt::hstring_nocase const& left, winrt::hstring_nocase const& right)
+{
+    return winrt::hstring_nocase::compare(left, right) > 0;
+}
+bool operator>=(winrt::hstring_nocase const& left, winrt::hstring_nocase const& right)
+{
+    return winrt::hstring_nocase::compare(left, right) >= 0;
 }
 
 #endif // __WINDOWSAPPRUNTIME_TEST_TAEF_CPPWINRT_H
