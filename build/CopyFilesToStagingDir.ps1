@@ -1,7 +1,6 @@
 [CmdLetBinding()]
 Param(
     [string]$BuildOutputDir,
-    [string]$OverrideDir,
     [string]$PublishDir,
     [string]$NugetDir,
     [string]$Platform,
@@ -35,9 +34,6 @@ function PublishFile {
         Write-Host "Not copying '$source' to $destinationDir because it did not exist"
     }
 }
-
-PublishFile $OverrideDir\DynamicDependency-Override.json $FullPublishDir\
-PublishFile $OverrideDir\PushNotifications-Override.json $FullPublishDir\
 
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
@@ -151,13 +147,6 @@ PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\Microsoft
 PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windows.System.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windows.System.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 
-#
-# Dynamic Dependency build overrides
-PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
-#
-# Push Notifications build overrides
-PublishFile $OverrideDir\PushNotifications-Override.json $NugetDir\runtimes\win10-$Platform\native
-#
 # Includes (*.h)
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\decimal.h $NugetDir\include
@@ -243,7 +232,3 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\DeploymentManagerAutoInitiali
 # UndockedRegFreeWinRT (URFW) Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\UndockedRegFreeWinRT-AutoInitializer.cpp $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\UndockedRegFreeWinRT-AutoInitializer.cs $NugetDir\include
-#
-# Build overrides
-PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
-PublishFile $OverrideDir\PushNotifications-Override.json $NugetDir\runtimes\win10-$Platform\native
