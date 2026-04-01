@@ -474,15 +474,15 @@ namespace Test::ApplicationData::Tests
             auto container{ localSettings.CreateContainer(empty, disposition) };
             VERIFY_IS_NOT_NULL(container);
 
-            const winrt::hstring invalid{ L"foo\\bar" };
+            const winrt::hstring invalidBackslash{ L"foo\\bar" };
             try
             {
-                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalid, disposition) };
-                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalidBackslash, disposition) };
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidBackslash.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalid.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalidBackslash.c_str(), Product.c_str(), e.code(), e.message().c_str()));
             }
 
             constexpr size_t c_nameMaxLength{ 255 };
@@ -498,33 +498,33 @@ namespace Test::ApplicationData::Tests
             try
             {
                 [[maybe_unused]] auto container{ localSettings.CreateContainer(nameTooLong, disposition) };
-                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", nameTooLong.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
             {
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", nameTooLong.c_str(), Product.c_str(), e.code(), e.message().c_str()));
             }
 
-            const winrt::hstring invalid{ L"." };
+            const winrt::hstring invalidDot{ L"." };
             try
             {
-                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalid, disposition) };
-                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalidDot, disposition) };
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidDot.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalid.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalidDot.c_str(), Product.c_str(), e.code(), e.message().c_str()));
             }
 
-            const winrt::hstring invalid{ L".." };
+            const winrt::hstring invalidDotDot{ L".." };
             try
             {
-                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalid, disposition) };
-                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalidDotDot, disposition) };
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidDotDot.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalid.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalidDotDot.c_str(), Product.c_str(), e.code(), e.message().c_str()));
             }
 
         }
@@ -537,25 +537,17 @@ namespace Test::ApplicationData::Tests
             VERIFY_IS_NOT_NULL(localSettings);
 
             const winrt::hstring empty;
-            try
-            {
-                localSettings.DeleteContainer(empty);
-                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Name:%s", empty.c_str()));
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Name:%s => 0x%X %s", empty.c_str(), e.code(), e.message().c_str()));
-            }
+            localSettings.DeleteContainer(empty);
 
-            const winrt::hstring invalid{ L"foo\\bar" };
+            const winrt::hstring invalidBackslash{ L"foo\\bar" };
             try
             {
-                localSettings.DeleteContainer(invalid);
-                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+                localSettings.DeleteContainer(invalidBackslash);
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidBackslash.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalid.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalidBackslash.c_str(), Product.c_str(), e.code(), e.message().c_str()));
             }
 
             constexpr size_t c_nameMaxLength{ 255 };
@@ -568,12 +560,35 @@ namespace Test::ApplicationData::Tests
             try
             {
                 localSettings.DeleteContainer(nameTooLong);
-                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalid.c_str(), Product.c_str()));
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", nameTooLong.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
             {
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", nameTooLong.c_str(), Product.c_str(), e.code(), e.message().c_str()));
             }
+
+            const winrt::hstring invalidDot{ L"." };
+            try
+            {
+                localSettings.DeleteContainer(invalidDot);
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidDot.c_str(), Product.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalidDot.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+            }
+
+            const winrt::hstring invalidDotDot{ L".." };
+            try
+            {
+                localSettings.DeleteContainer(invalidDotDot);
+                VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidDotDot.c_str(), Product.c_str()));
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"Publisher:%s Product:%s => 0x%X %s", invalidDotDot.c_str(), Product.c_str(), e.code(), e.message().c_str()));
+            }
+
         }
 
         TEST_METHOD(ContainerOperations)
