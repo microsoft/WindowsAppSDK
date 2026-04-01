@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": ["Windows", "WinUI", "Desktop", "Navigation"],
+  "classifications": ["Windows", "WinUI", "Desktop", "XAML"],
   "tags": {
     "language": "C#",
     "type": "project"
@@ -54,7 +54,8 @@
         { "choice": "net8.0", "description": "Target .NET 8" },
         { "choice": "net9.0", "description": "Target .NET 9" },
         { "choice": "net10.0", "description": "Target .NET 10" }
-      ]
+      ],
+      "defaultValue": "net10.0"
     },
     "resolvedDotnetVersion": {
       "type": "generated",
@@ -65,11 +66,42 @@
       },
       "replaces": "$DotNetVersion$"
     },
-    "targetPlatformMinVersion":{
+    "targetPlatformMinVersion": {
       "type": "parameter",
-      "datatype": "text",
+      "datatype": "choice",
       "replaces": "$targetplatformminversion$",
-      "defaultValue": "10.0.17763.0"
+      "defaultValue": "10.0.26100.0",
+      "choices": [
+        {
+          "choice": "10.0.17763.0",
+          "description": "10.0.17763.0"
+        },
+        {
+          "choice": "10.0.19041.0",
+          "description": "10.0.19041.0"
+        },
+        {
+          "choice": "10.0.22000.0",
+          "description": "10.0.22000.0"
+        },
+        {
+          "choice": "10.0.22621.0",
+          "description": "10.0.22621.0"
+        },
+        {
+          "choice": "10.0.26100.0",
+          "description": "10.0.26100.0"
+        },
+        {
+          "choice": "10.0.26200.0",
+          "description": "10.0.26200.0"
+        },
+        {
+          "choice": "10.0.28000.0",
+          "description": "10.0.28000.0"
+        }
+      ],
+      "description": "Minimum supported Windows version."
     },
     "publisherDn": {
       "type": "parameter",
