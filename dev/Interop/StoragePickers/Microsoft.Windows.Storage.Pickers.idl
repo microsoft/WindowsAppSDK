@@ -1,0 +1,135 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <TerminalVelocityFeatures-StoragePickers2.h>
+
+namespace Microsoft.Windows.Storage.Pickers
+{
+    [contractversion(2.0)]
+    apicontract StoragePickersContract {};
+
+    [contract(StoragePickersContract, 1.8)]
+    enum PickerViewMode
+    {
+        List,
+        Thumbnail,
+    };
+
+    [contract(StoragePickersContract, 1.8)]
+    enum PickerLocationId
+    {
+        DocumentsLibrary,
+        ComputerFolder,
+        Desktop,
+        Downloads,
+        MusicLibrary = 5,
+        PicturesLibrary,
+        VideosLibrary,
+        Objects3D,
+        Unspecified,
+    };
+
+    [contract(StoragePickersContract, 1.8)]
+    runtimeclass PickFileResult
+    {
+        String Path { get; };
+    }
+
+    [contract(StoragePickersContract, 1.8)]
+    runtimeclass FileOpenPicker
+    {
+        FileOpenPicker(Microsoft.UI.WindowId windowId);
+
+        Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
+        Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+        String CommitButtonText;
+
+        [contract(StoragePickersContract, 2.0)]
+        String Title;
+
+        [contract(StoragePickersContract, 2.0)]
+        String SettingsIdentifier;
+
+        [contract(StoragePickersContract, 2.0)]
+        Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
+
+        Windows.Foundation.Collections.IVector<String> FileTypeFilter{ get; };
+
+        [contract(StoragePickersContract, 2.0)]
+        Int32 InitialFileTypeIndex;
+
+        [contract(StoragePickersContract, 2.0)]
+        String SuggestedFolder;
+
+        [contract(StoragePickersContract, 2.0)]
+        String SuggestedStartFolder;
+
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSingleFileAsync();
+        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFileResult> > PickMultipleFilesAsync();
+    }
+
+    [contract(StoragePickersContract, 1.8)]
+    runtimeclass FileSavePicker
+    {
+        FileSavePicker(Microsoft.UI.WindowId windowId);
+
+        Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+        String CommitButtonText;
+
+        [contract(StoragePickersContract, 2.0)]
+        String Title;
+
+        [contract(StoragePickersContract, 2.0)]
+        String SettingsIdentifier;
+
+        Windows.Foundation.Collections.IMap<String, Windows.Foundation.Collections.IVector<String> > FileTypeChoices{ get; };
+
+        [contract(StoragePickersContract, 2.0)]
+        Int32 InitialFileTypeIndex;
+
+        String DefaultFileExtension;
+        String SuggestedFileName;
+        String SuggestedFolder;
+
+        [contract(StoragePickersContract, 2.0)]
+        String SuggestedStartFolder;
+
+        [contract(StoragePickersContract, 2.0)]
+		Boolean ShowOverwritePrompt;
+
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFileResult> PickSaveFileAsync();
+    }
+
+    [contract(StoragePickersContract, 1.8)]
+    runtimeclass PickFolderResult
+    {
+        String Path { get; };
+    }
+
+    [contract(StoragePickersContract, 1.8)]
+    runtimeclass FolderPicker
+    {
+        FolderPicker(Microsoft.UI.WindowId windowId);
+
+        Microsoft.Windows.Storage.Pickers.PickerViewMode ViewMode;
+        Microsoft.Windows.Storage.Pickers.PickerLocationId SuggestedStartLocation;
+        String CommitButtonText;
+
+        [contract(StoragePickersContract, 2.0)]
+        String Title;
+
+        [contract(StoragePickersContract, 2.0)]
+        String SettingsIdentifier;
+
+        [contract(StoragePickersContract, 2.0)]
+        String SuggestedFolder;
+
+        [contract(StoragePickersContract, 2.0)]
+        String SuggestedStartFolder;
+
+        [remote_sync] Windows.Foundation.IAsyncOperation<PickFolderResult> PickSingleFolderAsync();
+
+        [contract(StoragePickersContract, 2.0)]
+        [remote_sync] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<PickFolderResult> > PickMultipleFoldersAsync();
+    }
+}

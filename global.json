@@ -1,6 +1,6 @@
 {
   "tools": {
-    "dotnet": "6.0.414"
+    "dotnet": "6.0.425"
   },
   "msbuild-sdks": {
     "Microsoft.WinAppSDK.EngCommon": "1.6.240418"

@@ -9,8 +9,6 @@
 
 #include <WindowsAppRuntime.VersionInfo.h>
 
-#include <TerminalVelocityFeatures-VersionInfo.h>
-
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
     uint16_t ReleaseInfo::Major()
@@ -48,8 +46,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     const ::Microsoft::WindowsAppSDK::VersionInfo& ReleaseInfo::GetVersionInfo()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_VersionInfoAPI::IsEnabled());
-
         const ::Microsoft::WindowsAppSDK::VersionInfo* versionInfo{ ::Microsoft::WindowsAppSDK::GetVersionInfo() };
         return *versionInfo;
     }

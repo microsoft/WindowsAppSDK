@@ -13,7 +13,7 @@ $repoInstallDir  = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\.dotnet")
 $filename = "$PSScriptRoot\..\..\..\eng\Versions.Dependencies.props"
 $xml = [xml](Get-Content $filename -EA:Stop)
 $dotNotSdkVersion = $xml.SelectSingleNode("/Dependencies/ToolsetDependencies/Dependency[@Name='CsWinRT.Dependency.DotNetCoreSdk']").Version
-$dotNotSdkVersionLkg = if (-not $skipLKG) $dotNotSdkVersion
+$dotNotSdkVersionLkg = if (-not $skipLKG) { $dotNotSdkVersion }
 
 if ($version -ne "")
 {
@@ -154,7 +154,7 @@ Write-Host "Installing .NET SDK..."
 
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
 
-Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile $dotnetInstallScript
+Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile $dotnetInstallScript -UseBasicParsing
 
 if (-not $latestAlreadyInstalled)
 {

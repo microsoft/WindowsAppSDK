@@ -12,6 +12,11 @@
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
+  <!-- Suppress CS8305: Feature is for evaluation purposes only and is subject to change or removal in future updates. -->
+  <PropertyGroup>
+    <NoWarn>8305</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.Common">
       <PrivateAssets>all</PrivateAssets>
@@ -41,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="$(RepoRoot)\eng\common\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+    <Compile Include="$(RepoRoot)\build\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>

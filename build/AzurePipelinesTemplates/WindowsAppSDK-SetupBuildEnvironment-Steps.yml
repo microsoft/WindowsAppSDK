@@ -1,8 +1,3 @@
-parameters:
-- name: "IsOneBranch"
-  type: boolean
-  default: True
-
 steps:
 - task: UseDotNet@2
   displayName: Use .NET Core SDK 6
@@ -59,29 +54,21 @@ steps:
     arguments: >
       -SdkVersion "10.1.17763"
 
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: powershell@2
-    inputs:
-      targetType: filePath
-      filePath: build\scripts\Install-WindowsSdkISO.ps1
-      arguments: 18362
-    displayName: 'Install Insider SDK (18362)'
-
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
     targetType: filePath
-    filePath: eng\common\DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
+    filePath: tools\DevCheck\DevCheck.ps1
+    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2
   displayName: GenerateVersionInfo
   inputs:
-    filePath: '$(Build.SourcesDirectory)\eng\common\VersionInfo\GenerateVersionInfo.ps1'
+    filePath: '$(Build.SourcesDirectory)\build\VersionInfo\GenerateVersionInfo.ps1'
     arguments: >
-      -ProductMajor "$(major)"
-      -ProductMinor "$(minor)"
+      -ProductMajor "$(MajorVersion)"
+      -ProductMinor "$(MinorVersion)"
 
 - task: PowerShell@2
   displayName: 'Download dotnet installer'
@@ -89,7 +76,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadDotNetRuntimeInstaller.ps1'
-    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\redist"
 
 - task: PowerShell@2
   displayName: 'Download vcredist installer'
@@ -97,7 +84,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCRedistInstaller.ps1'
-    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\redist"
 
 - task: PowerShell@2
   displayName: 'Download desktop bridge CRT'
@@ -105,7 +92,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCLibsDesktop.ps1'
-    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\redist"
 
 - task: powershell@2
   displayName: 'Create DynamicDependencies TerminalVelocity features'
@@ -124,6 +111,22 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
+  displayName: 'Create ApplicationData TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-ApplicationData.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Storage.ApplicationData -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-ApplicationData.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create BackgroundTask TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-BackgroundTask.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.ApplicationModel.Background -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-BackgroundTask.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
   displayName: 'Create AppNotifications TerminalVelocity features'
   inputs:
     targetType: filePath
@@ -132,11 +135,11 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
-  displayName: 'Create VersionInfo TerminalVelocity features'
+  displayName: 'Create CallingPreviewSupport TerminalVelocity features'
   inputs:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-VersionInfo.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-VersionInfo.h
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.CallingPreviewSupport -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CallingPreviewSupport.h
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
@@ -161,6 +164,30 @@ steps:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
     arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PackageManager.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Management.Deployment -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PackageManager.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create CameraCaptureUI TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CameraCaptureUI.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Media.Capture -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-CameraCaptureUI.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create OAuth2Manager TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-StoragePickers.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Storage.Pickers -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-StoragePickers.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create OAuth2Manager TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-OAuth.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Security.Authentication.OAuth -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-OAuth.h
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2

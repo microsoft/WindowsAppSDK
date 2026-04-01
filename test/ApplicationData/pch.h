@@ -11,6 +11,8 @@
 
 #include <wil/cppwinrt.h>
 #include <wil/filesystem.h>
+#include <wil/registry.h>
+#include <wil/token_helpers.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -25,9 +27,14 @@
 #include <WexTestClass.h>
 
 #include <AppModel.Package.h>
+#include <Microsoft.FileSystem.Path.h>
+#include <Security.IntegrityLevel.h>
+#include <Security.User.h>
 
+#include <WindowsAppRuntime.Test.Diagnostics.h>
 #include <WindowsAppRuntime.Test.AppModel.h>
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
+#include <WindowsAppRuntime.Test.TAEF.cppwinrt.h>
 
 #endif //PCH_H

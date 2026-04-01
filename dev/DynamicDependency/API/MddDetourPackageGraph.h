@@ -6,6 +6,8 @@
 
 #include "appmodel_msixdynamicdependency.h"
 
+bool MddNeedsDetours() noexcept;
+
 HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept;
 
 void WINAPI MddDetourPackageGraphShutdown() noexcept;

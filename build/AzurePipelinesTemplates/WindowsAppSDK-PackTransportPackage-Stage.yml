@@ -1,39 +1,38 @@
 parameters:
 - name: "PublishPackage"
   type: boolean
-  default: True
+  default: true
 - name: "SignOutput"
   type: boolean
-  default: True
-- name: "IsOneBranch"
-  type: boolean
-  default: True
+  default: true
 - name: "IsOfficial"
   type: boolean
-  default: False
+  default: false
 - name: "BuildMockWindowsAppSDK"
   type: boolean
-  default: True
+  default: true
 
 stages:
 - stage: Pack
-  dependsOn: Build
-  condition: not(failed())
+  dependsOn: 
+    - Build_AnyCPU
+    - Build_x86
+    - Build_x64
+    - Build_arm64
+  condition:
+    and(succeeded(), eq(variables['useBuildOutputFromBuildId'],''))
   jobs:
   - job: NugetPackage
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+      type: windows
     timeoutInMinutes: 120
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
+      ob_sdl_prefast_enabled: false    # We currently do not build native code in this job.  
     steps:
+    - checkout: WindowsAppSDKConfig
     - task: NuGetAuthenticate@1
 
     - task: DownloadPipelineArtifact@2
@@ -128,11 +127,10 @@ stages:
           **\*.pdb
         targetFolder: $(Build.ArtifactStagingDirectory)\symbols
 
-    - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
+    - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
       parameters:
         SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
         IsOfficial: ${{ parameters.IsOfficial }}
-        PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\eng\common\Scripts\PublishPublicSymbols.ps1'
 
     - task: PowerShell@2
       name: SetVersion
@@ -147,15 +145,83 @@ stages:
           Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
 
           Write-Host $packageVersion
-          [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+          [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
           $publicNuspec.package.metadata.version = $packageVersion
-          Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+          Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+
+    - task: PowerShell@2
+      name: DetermineComponentNugetPackageVersion
+      displayName: 'Determine Component Nuget Package Version'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $paddedRevision = '$(versionCounter)'
+          if([int]$(versionCounter) -lt 10)
+          {
+            $paddedRevision = '00' + '$(versionCounter)'
+          }
+          elseif ([int]$(versionCounter) -lt 100)
+          {
+            $paddedRevision = '0' + '$(versionCounter)'
+          }
+          Write-Host "paddedRevision " $paddedRevision
+
+          if ([int]$(versionCounter) -gt 999)
+          {
+            Write-Host "Revision Number limit reach. Please try again the next day"
+            Write-Host "##vso[task.complete result=Failed;]DONE"
+          }
+
+          $buildType = '$(channel)'
+          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).$(versionMinDate)'
+          $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
+          
+          if ($env:ComponentType)
+          {
+            Write-Host "componentType " $env:ComponentType
+            $majorMinorPatchRev = $majorMinorPatchRev + $env:ComponentType
+          }
+          
+          $version = $majorMinorPatchRev + '-' + $buildType
+
+          # If using release versioning, drop the version suffix, which includes a tag & build stamp.
+          # This should only be done when prepping final release packages.
+
+          if ('${{ parameters.IsOfficial }}' -eq 'true')
+          {
+            $versionTag = '$(VersionTag)'
+            Write-Host "VersionTag: " $versionTag
+            if ($buildType -ne "stable" -and -not $versionTag.StartsWith($buildType))
+            {
+              Write-Host "Variable VersionTag must start with " $buildType
+              Write-Host "Please update this variable and restart the build"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+            if ($buildType -eq "stable" -and -not [String]::IsNullOrEmpty($versionTag))
+            {
+              Write-Host "Stable builds must have an empty VersionTag"
+              Write-Host "Please update this variable and restart the build"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+
+            $formattedTag = ''
+            if(-not [String]::IsNullOrEmpty($versionTag))
+            {
+              $formattedTag = '-' + $versionTag
+            }
+            Write-Host "Using Release Versioning"
+            $version = $majorMinorPatchRev + $formattedTag
+          }
+
+          Write-Host 'Component Package Version: ' $version
+          Write-Host "##vso[task.setvariable variable=componentPackageVersion;isOutput=true]$version"
+          Write-Host "##vso[task.setvariable variable=componentPackageVersion;]$version"
 
     - task: PowerShell@2
       name: PackNuget
       inputs:
         filePath: 'BuildAll.ps1'
-        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)" -ComponentPackageVersion "$(componentPackageVersion)"
 
     # Disable building MockWindowsAppSDK until we can consider the public vs private scenario
     # - ${{ if eq(parameters.BuildMockWindowsAppSDK, 'true') }}:
@@ -185,15 +251,9 @@ stages:
         SourceFolder: '$(build.artifactStagingDirectory)\FullNuget'
         TargetFolder: '$(ob_outputDirectory)'
 
-    - ${{ if not( parameters.IsOneBranch ) }}:
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(ob_outputDirectory)'
-          artifactName: '$(ob_artifactBaseName)'
-
     - ${{ if eq(parameters.PublishPackage, 'true') }}:
       # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-      - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      - task: NuGetCommand@2
         displayName: 'NuGet push to ProjectReunion.nuget.internal'
         inputs:
           command: 'push'

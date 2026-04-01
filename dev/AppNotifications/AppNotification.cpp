@@ -119,4 +119,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         auto lock{ m_lock.lock_exclusive() };
         m_notificationId = id;
     }
+
+    winrt::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig AppNotification::ConferencingConfig()
+    {
+        auto lock{ m_lock.lock_shared() };
+        return m_conferencingConfig;
+    }
+
+    void AppNotification::ConferencingConfig(winrt::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig const& conferencingConfig)
+    {
+        THROW_HR_IF(E_NOTIMPL, !AppNotificationConferencingConfig::IsCallingPreviewSupported());
+        auto lock{ m_lock.lock_exclusive() };
+        m_conferencingConfig = conferencingConfig;
+    }
 }

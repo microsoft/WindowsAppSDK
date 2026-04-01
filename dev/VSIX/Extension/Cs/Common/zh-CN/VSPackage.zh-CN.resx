@@ -118,31 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>空白窗口 (桌面版中的 WinUI 3)</value>
+    <value>空白窗口</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[实验性] 空白窗口(桌面版中的 WinUI 3)</value>
+    <value>[实验性] 空白窗口</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>基于 Windows UI 库 (WinUI 3) 的桌面应用的空白窗口。</value>
+    <value>空白窗口(WinUI)。</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>空白页 (WinUI 3)</value>
+    <value>空白页</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[实验性] 空白页 (WinUI 3)</value>
+    <value>[实验性] 空白页</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>基于 Windows UI 库 (WinUI 3) 的应用的空白页。</value>
+    <value>空白页(WinUI)。</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>资源字典 (WinUI 3)</value>
+    <value>资源字典</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[实验性] 资源字典 (WinUI 3)</value>
+    <value>[实验性] 资源字典</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>基于 Windows UI 库 (WinUI 3) 应用的 XAML 资源的空密钥集合。</value>
+    <value>WinUI) (XAML 资源的空密钥集合。</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>资源文件 (.resw)</value>
@@ -151,60 +151,105 @@
     <value>[实验性] 资源文件 (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>用于存储基于 Windows UI 库 (WinUI 3) 的应用字符串和条件资源文件。</value>
+    <value>用于存储字符串和条件资源的文件(WinUI)。</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>自定义控件 (WinUI 3)</value>
+    <value>模板化控件</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[实验性] 自定义控件 (WinUI 3)</value>
+    <value>[实验性] 模板化控件</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>基于 Windows UI 库 (WinUI 3) 的应用的自定义控件。</value>
+    <value>具有适当默认样式的空白自定义控件 (WinUI)。</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>用户控件 (WinUI 3)</value>
+    <value>用户控件</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[实验性] 用户控件 (WinUI 3)</value>
+    <value>[实验性] 用户控件</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>基于 Windows UI 库 (WinUI 3) 的应用的用户控件。</value>
+    <value>空白用户控件(WinUI)。</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>类库 (桌面版中的 WinUI 3)</value>
+    <value>WinUI 类库</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[实验性] 类库 (桌面版中的 WinUI 3)</value>
+    <value>[实验性] WinUI 类库</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>用于创建基于 Windows UI 库 (WinUI 3) 桌面应用托管类库 (.dll) 的项目。</value>
+    <value>用于 (.dll) (WinUI) 创建托管类库的项目。</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>空白应用，使用 Windows 应用程序打包项目打包(桌面版中的 WinUI 3)</value>
+    <value>WinUI 空白应用(使用 Windows 应用程序打包项目打包)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[实验性] 空白应用，使用 Windows 应用程序打包项目打包(桌面版中的 WinUI 3)</value>
+    <value>[实验性] WinUI 空白应用(使用 Windows 应用程序打包项目打包)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>用于基于 Windows UI 库 (WinUI 3) 创建桌面应用的项目模板。包含 Windows 应用程序打包 (WAP) 项目，用于创建 MSIX 包，以便通过 Microsoft Store 进行旁加载或分发。</value>
+    <value>用于创建 WinUI 应用的项目模板。包含 Windows 应用程序打包(WAP)项目，用于创建 MSIX 包，以便通过 Microsoft Store 进行旁加载或分发。</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>空白应用，已打包(桌面版中的 WinUI 3)</value>
+    <value>WinUI 空白应用(已打包)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[实验性] 空白应用，已打包(桌面版中的 WinUI 3)</value>
+    <value>[实验性] WinUI 空白应用(已打包)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>用于基于 Windows UI 库 (WinUI 3) 创建桌面应用的项目模板，以及用于通过 Microsoft Store 旁加载或分发的 MSIX 包。</value>
+    <value>一个项目模板，用于创建 WinUI 应用以及 MSIX 包，以便通过 Microsoft Store 进行旁加载或分发。</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>单元测试应用(桌面中的 WinUI 3)</value>
+    <value>WinUI 单元测试应用</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Experimental] 单元测试应用(桌面中的 WinUI 3)</value>
+    <value>[实验性] WinUI 单元测试应用</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>用于使用 MSTest 为 WinUI 3 应用创建单元测试应用的项目。</value>
+    <value>用于使用 MSTest 为 WinUI 创建 C# 单元测试应用的项目。</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>WinUI 空白应用</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>用于创建空 WinUI 应用的项目。</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>适用于 WinUI 的 Windows 应用程序打包项目</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>一个项目模板，用于创建 MSIX 包，其中包含用于通过Microsoft Store旁加载或分发的 WinUI 应用程序。</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>正在将 NuGet 包安装到项目中...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>操作在进行中...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>缺少包引用</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>无法为 {0} 添加对以下包的引用： {1}。请在生成前添加包引用。</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}]无法添加对以下包的引用： {1}。这是环境错误。请在生成项目之前添加包引用。</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>管理 NuGet 包</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>查看错误详细信息</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>{0} 缺少以下包引用:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>请在生成项目前手动添加包引用。</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>常规</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>没有可用的输出信息。</value>
   </data>
 </root>

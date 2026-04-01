@@ -315,7 +315,7 @@
   </Target>
   <!-- Include header files from the dev chunks -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
   </Target>
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrap.h" />

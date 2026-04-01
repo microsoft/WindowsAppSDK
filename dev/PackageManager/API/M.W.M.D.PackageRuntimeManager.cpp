@@ -103,12 +103,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         THROW_HR_IF_NULL_MSG(E_INVALIDARG, packageUri, "PackageUri:<null>");
     }
 
-    void PackageRuntimeManager::Validate(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options) const
+    void PackageRuntimeManager::Validate(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& /*options*/ ) const
     {
         // Nothing to do!
     }
 
-    void PackageRuntimeManager::Validate(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options) const
+    void PackageRuntimeManager::Validate(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& /*options*/) const
     {
         // Nothing to do!
     }

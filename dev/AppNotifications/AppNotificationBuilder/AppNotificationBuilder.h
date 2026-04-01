@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -65,6 +65,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         static bool IsUrgentScenarioSupported();
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddCameraPreview();
+
     private:
         void ThrowIfMaxInputItemsExceeded();
         std::wstring GetDuration();
@@ -75,6 +77,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetImages();
         std::wstring GetActions();
         std::wstring GetProgressBars();
+        std::wstring GetCameraPreview();
 
         std::wstring m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
@@ -93,6 +96,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::vector<AppNotificationComboBox> m_comboBoxList{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
+        bool m_useCameraPreview{false};
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation

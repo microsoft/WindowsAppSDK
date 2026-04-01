@@ -38,7 +38,7 @@
       <BinRoot Condition="$(BinRoot) == ''">$(OutputPath)</BinRoot>
     </PropertyGroup>
     <Message Importance="high" Text="Binplacing to: $(BinRoot)" />
-    <Copy SourceFiles="$(TargetVsixContainer)" DestinationFolder="$(BinRoot)"/>
+    <Copy SkipUnchangedFiles="true" SourceFiles="$(TargetVsixContainer)" DestinationFolder="$(BinRoot)"/>
 	<Move Condition="'$(JsonName)' != '' AND Exists('$(BaseIntermediateOutputPath)\$(JsonName)')" SourceFiles="$(BaseIntermediateOutputPath)\$(JsonName)" DestinationFiles="$(BaseIntermediateOutputPath)\$(AssemblyName).$(Deployment).json"/>
   </Target>
 

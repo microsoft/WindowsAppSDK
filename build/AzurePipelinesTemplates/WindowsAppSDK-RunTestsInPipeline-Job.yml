@@ -6,19 +6,27 @@ parameters:
 - name: jobName
   type: string
   default: PipelineTests
-- name: dependsOn
+- name: samplesArtifactName
+  displayName: "Supply a valid base name for Sample Apps BuildOutput to trigger publishing of the artifact"
+  type: string
+  default: ''
+- name: sampleFeatureAreasList
   type: object
-  default:
-  - ''
-  # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+  default: []
+- name: callingStage
+  type: string
+  default: ''
 - name: testMatrix
   type: object
   default: ''
+- name: buildPlatform
+  type: string
+  default: x64
 
 jobs:
 - job: ${{ parameters.jobName }}
   strategy:
-    matrix: ${{ parameters.testMatrix }}
+    matrix: ${{ parameters.TestMatrix }}
   pool:
     type: windows
     isCustom: true
@@ -27,10 +35,32 @@ jobs:
   timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+    AZURE_PIPELINES_DEDUP_PARALLELISM: 16
+    artifactAttempt: ''
+    artifactStatus: 'Succeeded'
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(artifactStatus)$(artifactAttempt)'
+    ob_artifactBaseName: '$(System.StageName)_$(imageName)'
+    # As the name of this job suggests, we currently don't build any code here, but only run tests; therefore, not bothering to enable BinSkim scans
+    # here. OTOH, if we leave BinSkim enabled, then the "Guardian: BinSkim" task in the Post* jobs injected into our pipeline by OneBranch 
+    # for this job would hit the following non-fatal, but noisy AnalyzeArgumentNoValuesException error:
+    #
+    # ##[error]Error running binskim job: 1 of 1
+    # ##[error]AnalyzeArgumentNoValuesException: Argument Target has no values. Check your configuration. -- Additional arguments:Microsoft.Guardian.InvalidResponseFileContentsException: InvalidResponseFileContentsException: Cannot create a response file with zero arguments. Ensure that your arguments are correctly set up.
+    # at Microsoft.Guardian.ResponseFileFormatterPlaintext.Format(IList`1 arguments, ResponseFileOptions Options)
+    # at Microsoft.Guardian.ResponseFileManager.CreateResponseFile(IList`1 arguments, String formatterName, ResponseFileOptions options, String outputPathOverride)
+    # at Microsoft.Guardian.CliAnalyzerResponseFileManager.SetupResponseFile(CliAnalyzerConfig analyzeConfig, ToolConfig toolConfig)
+    ob_sdl_binskim_enabled: false
   steps:
+    - checkout: self
+      path: s
+    - checkout: WindowsAppSDKConfig
+
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:
         buildPlatform: $(buildPlatform)
         buildConfiguration: $(buildConfiguration)
         testLocale: $(testLocale)
         ImageName: $(imageName)
+        callingStage: ${{ parameters.callingStage }}
+        samplesArtifactName: ${{ parameters.samplesArtifactName }}
+        sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}

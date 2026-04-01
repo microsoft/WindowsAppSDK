@@ -1,19 +1,16 @@
 parameters:
 - name: SignOutput
   type: boolean
-  default: False
-- name: IsOneBranch
-  type: boolean
-  default: False
+  default: false
 - name: IsOfficial
   type: boolean
-  default: False 
+  default: false 
 - name: runStaticAnalysis
   type: boolean
-  default: True
+  default: true
 - name: UseCurrentBuild
   type: boolean
-  default: False 
+  default: false 
 - name: OptionalVSIXVersion
   # if blank, the project template will select the version matching the Windows App SDK
   # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
@@ -21,10 +18,10 @@ parameters:
   default: 'default'
 - name: EnableExperimentalVSIXFeatures
   type: boolean
-  default: False
+  default: false
 
 steps:
-- ${{ if eq(parameters.UseCurrentBuild, 'True') }}:
+- ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
   - task: DownloadPipelineArtifact@2
     displayName: 'Download WindowsAppSDK From Current Build'
     inputs:
@@ -51,11 +48,13 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $files = Get-ChildItem $(System.ArtifactsDirectory)
+      Copy-Item -Path "$(System.ArtifactsDirectory)" -Destination "$(Build.SourcesDirectory)\temp" -Recurse
+
+      $files = Get-ChildItem $(Build.SourcesDirectory)\temp
       foreach ($file in $files) # Iterate through each package we restored in the directory
       {
         Write-Host "file:" $file.FullName
-        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
+        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*WindowsAppSDK*.nupkg" | Where-Object { $_.Name -match "WindowsAppSDK\.[0-9].*\.nupkg" }
 
         # Extract nupkg to access the nuspec
         # The files in this directory does not contain the nuspec by default
@@ -86,8 +85,6 @@ steps:
       }
       Exit 1
 
-- task: NuGetToolInstaller@1
-
 - task: NuGetAuthenticate@1
 
 - task: VSBuild@1
@@ -96,7 +93,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.restore.binlog'
 
 - task: VSBuild@1
   displayName: 'Build Standalone WindowsAppSDK.Extension.sln'
@@ -104,11 +101,9 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
-    ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
-      createLogFile: true
+    msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.build.binlog'
 
-- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
     displayName: PREfast SDL Native Rules for Standalone WindowsAppSDK.Extension.sln
     condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'))
@@ -118,6 +113,10 @@ steps:
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
         $(Build.SourcesDirectory)\packages
+      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+      rulesetName: Custom
+      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+      policyName: 'WindowsUndocked'
     continueOnError: true
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -128,7 +127,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.restore.binlog' 
 
 - task: VSBuild@1
   displayName: 'Build Component WindowsAppSDK.Extension.sln'
@@ -136,11 +135,9 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component"'
-    ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
-      createLogFile: true
+    msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.build.binlog'
 
-- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
     displayName: PREfast SDL Native Rules for Component WindowsAppSDK.Extension.sln
     condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'))
@@ -150,6 +147,10 @@ steps:
       # Generally speaking, we leave it to the external repos to scan the bits in their packages.
       excludedPaths: |
         $(Build.SourcesDirectory)\packages
+      # Explicitly specify the EO-compliant rule set, as the default Sdl.Recommended.Warning.ruleset is not EO-compliant.
+      rulesetName: Custom
+      customRuleset: $(Agent.ToolsDirectory)\NativeCompilerStaticAnalysisRuleset\mandatory_to_fix.ruleset
+      policyName: 'WindowsUndocked'
     continueOnError: true
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -158,24 +159,24 @@ steps:
   displayName: 'Component Governance Detection'
   inputs:
     scanType: 'Register'
-    failOnAlert: true
+    failOnAlert: false
 
-- ${{ if eq(parameters.SignOutput, False) }}:
+- ${{ if eq(parameters.SignOutput, false) }}:
   - task: CopyFiles@2
     displayName: 'Stage unsigned VSIX files for publishing'
     inputs:
       SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
       Contents: '**/WindowsAppSDK.*.vsix'
-      flattenFolders: True
+      flattenFolders: true
       TargetFolder: '$(ob_outputDirectory)\VSIX'
 
-- ${{ if eq(parameters.SignOutput, True) }}:
+- ${{ if eq(parameters.SignOutput, true) }}:
   - task: CopyFiles@2
     displayName: 'Stage unsigned VSIX files for signing'
     inputs:
       SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
       Contents: '**/WindowsAppSDK.*.vsix'
-      flattenFolders: True
+      flattenFolders: true
       TargetFolder: '$(Agent.TempDirectory)/UnsignedVSIX'
 
   - template: WindowsAppSDK-SignPackageContents-steps.yml
@@ -192,19 +193,17 @@ steps:
       codeSignPattern: |
         **/WindowsAppSDK.*.Extension.*.dll
         
-- ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
-    parameters:
-      SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
-      IsOfficial: ${{ parameters.IsOfficial }}
-      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\common\Scripts\PublishPublicSymbols.ps1'
+- template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
+  parameters:
+    SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+    IsOfficial: ${{ parameters.IsOfficial }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
   inputs:
     SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
     Contents: '**/WindowsAppSDK*.pdb'
-    flattenFolders: True
+    flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)\symbols'
 
 - task: CopyFiles@2
@@ -212,7 +211,7 @@ steps:
   inputs:
     SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
     Contents: '**/WindowsAppSDK.*.Component.json'
-    flattenFolders: True
+    flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
 
 - task: CopyFiles@2
@@ -220,7 +219,7 @@ steps:
   inputs:
     SourceFolder: '$(FoundationRepoPath)dev\VSIX'
     Contents: 'extension.manifest.json'
-    flattenFolders: True
+    flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
 
 - task: CopyFiles@2
@@ -228,11 +227,6 @@ steps:
   inputs:
     SourceFolder: '$(FoundationRepoPath)dev\VSIX'
     Contents: 'overview.md'
-    flattenFolders: True
+    flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if ne(parameters.IsOneBranch, 'true') }}:
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'

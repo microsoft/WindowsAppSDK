@@ -27,33 +27,45 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="1.7.0-CI-26107.1701.240510-1748.0">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="2.0.0-preview-27200.1852.260127-0700.2">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>5190f048458d3dd446318391385a832e081e4e9e</Sha>
+      <Sha>ef844e363e6f66622875fc591eccaa0d335dfce3</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.7.0-main.20240513.0">
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.7.0-main.20241009.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
-      <Sha>2c1c46a69150a164073a76607be58f10c5a3b94c</Sha>
+      <Sha>f52676312ebf1d66ef59731feb4fad29a713a897</Sha>
+    </Dependency>
+    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="2.0.0-preview-27200.1852.260127-0700.2">
+      <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
+      <Sha>ef844e363e6f66622875fc591eccaa0d335dfce3</Sha>
+    </Dependency>
+    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="2.0.260122002-experimental">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
+      <Sha>e8a2bfd2258e2a61c2b3e6d3692d5ed45eb9cde5</Sha>
+    </Dependency>
+    <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.0.6-preview">
+      <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
+      <Sha>ef844e363e6f66622875fc591eccaa0d335dfce3</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.6.240418">
-      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
-      <Sha>1b726bba007f2b3817b320693a1267f8b1c620b1</Sha>
+    <Dependency Name="Microsoft.WindowsAppSDK.Version" Version="1.8.0">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKConfig</Uri>
+      <Sha>7425c8ed21b96fcc72bf04bd17a4f1d2ee870fc4</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.1.0-prerelease.240605.1">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.1.1">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="6.0.414">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="6.0.425">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.22">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.33">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="29">
+    <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="38">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>

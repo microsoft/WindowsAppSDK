@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT license.
 
 #pragma once
@@ -62,7 +62,8 @@ public:
             std::wstring const& appId,
             winrt::hstring const& payload,
             winrt::hstring const& tag,
-            winrt::hstring const& group) noexcept try
+            winrt::hstring const& group,
+            bool isCallingPreviewSupported) noexcept try
         {
             TraceLoggingClassWriteStart(
                 Show,
@@ -72,7 +73,8 @@ public:
                 TraceLoggingUInt32(tag.size(), "TagSize"),
                 TraceLoggingUInt32(group.size(), "GroupSize"),
                 TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+                TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"),
+                TraceLoggingBool(isCallingPreviewSupported, "IsCallingPreviewSupported"));
         }
         CATCH_LOG() 
     END_ACTIVITY_CLASS();

@@ -105,6 +105,6 @@
   </Target>
   -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="MrtCoreUnpackagedTests.testdef" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="MrtCoreUnpackagedTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>

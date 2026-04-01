@@ -20,6 +20,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.FileSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Metadata.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Package.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.TAEF.cppwinrt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.TAEF.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TestDef.h" />
   </ItemGroup>

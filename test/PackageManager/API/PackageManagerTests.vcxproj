@@ -115,9 +115,11 @@
     <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Framework.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Main.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_EnsureReady.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_EnsureReady_RegisterNewerIfAvailable.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_Module.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Register.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Remove.cpp" />
@@ -125,6 +127,7 @@
     <ClCompile Include="PackageDeploymentManagerTests_Reset.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Stage.cpp" />
     <ClCompile Include="PackageRuntimeManagerTests.cpp" />
+    <ClCompile Include="PackageVolumeTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -153,7 +156,7 @@
     </Reference>
   </ItemGroup>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="Test.testdef" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="Test.testdef" DestinationFolder="$(OutDir)" />
   </Target>
   <ItemGroup>
     <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">

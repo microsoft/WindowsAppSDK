@@ -1,0 +1,116 @@
+{
+  "version": "latest",
+  "suppressionSets": {
+    "default": {
+      "name": "default",
+      "createdDate": "2025-05-10 01:01:01Z",
+      "lastUpdatedDate": "2025-08-14 01:01:01Z"
+    }
+  },
+  "results": {
+    "58d2e348b7c4e8db14dc1739a5bc5006205eba647265cf87ee56bb300a5d8fc7": {
+      "signature": "58d2e348b7c4e8db14dc1739a5bc5006205eba647265cf87ee56bb300a5d8fc7",
+      "target": "BuildOutput/Release/x86/AppLifecycleTests/AppLifecycleTests.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-08-14 01:01:01Z",
+      "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    },
+    "be6d65b082e18cd568ac0abf34b901f98259613e73326d6aba7e1ca3b1702c76": {
+      "signature": "be6d65b082e18cd568ac0abf34b901f98259613e73326d6aba7e1ca3b1702c76",
+      "target": "out/Release/x86/AppLifecycleTests/AppLifecycleTests.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-08-14 01:01:01Z",
+      "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    },
+    "522db1f6a0a634c92446bd28465c5948e373b81bf143a0939d3df05de4777a33": {
+      "signature": "522db1f6a0a634c92446bd28465c5948e373b81bf143a0939d3df05de4777a33",
+      "target": "APIScanTarget/Release/x64/WindowsAppRuntime_DLL/Microsoft.WindowsAppRuntime.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-08-14 01:01:01Z",
+      "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    },
+    "4410641016891c2163d4316bb057131f69e17344e7ce5b4ddc1c42bb46d248d0": {
+      "signature": "4410641016891c2163d4316bb057131f69e17344e7ce5b4ddc1c42bb46d248d0",
+      "target": "APIScanTarget/Release/x64/Microsoft.WindowsAppRuntime.Framework/msix/Microsoft.WindowsAppRuntime.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "Bug:56908599 - we already compile this binary with the '/ZH:SHA_256' flag.",
+      "createdDate": "2025-08-14 01:01:01Z",
+      "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    },
+    "9212a5f0261585cd0be21aeffc128b991c5af5f529af4b9e37bfd74e7e0c2766": {
+      "signature": "9212a5f0261585cd0be21aeffc128b991c5af5f529af4b9e37bfd74e7e0c2766",
+      "target": "BuildOutput/Release/x86/Test_Common/Test_Common.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-08-14 01:01:01Z",
+      "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    },
+    "74c5109d5e47f1b4d0405f3e1467aa3b12c9bc173d984306b15bb7f8ded4cc4a": {
+      "signature": "74c5109d5e47f1b4d0405f3e1467aa3b12c9bc173d984306b15bb7f8ded4cc4a",
+      "target": "out/Release/x86/Test_Common/Test_Common.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-08-14 01:01:01Z",
+      "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    },
+    "5f029410ced016a21177a24bc0228d34b7f2f16c0f4fa297cf6fb03a2243bb30": {
+      "signature": "5f029410ced016a21177a24bc0228d34b7f2f16c0f4fa297cf6fb03a2243bb30",
+      "target": "out/Release/ARM64/Test_Common/Test_Common.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-08-14 01:01:01Z",
+      "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    },
+    "36703cbf814fe83c098261f3d605cd054836793e1b34201b7a74008b0fe3d39e": {
+      "signature": "36703cbf814fe83c098261f3d605cd054836793e1b34201b7a74008b0fe3d39e",
+      "target": "BuildOutput/Release/ARM64/Test_Common/Test_Common.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": "This is an externally built test tool.",
+      "createdDate": "2025-08-14 01:01:01Z",
+      "expirationDate": "2026-05-31 01:01:01Z",
+      "type": null
+    }
+  }
+}

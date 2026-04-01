@@ -7,7 +7,7 @@
     <TemplateID>Microsoft.WinUI.Desktop.CppWinRT.UnitTestApp</TemplateID>
     <ProjectType>VC</ProjectType>
     <CreateNewFolder>true</CreateNewFolder>
-    <DefaultName>App</DefaultName>
+    <DefaultName>UnitTestApp</DefaultName>
     <ProvideDefaultName>true</ProvideDefaultName>
     <LocationField>Enabled</LocationField>
     <EnableLocationBrowseButton>true</EnableLocationBrowseButton>

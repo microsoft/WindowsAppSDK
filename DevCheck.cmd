@@ -1,5 +1,5 @@
 @echo off
 
-powershell -ExecutionPolicy Unrestricted -NoLogo -NoProfile -File %~dp0\eng\common\DevCheck.ps1 %*
+powershell -ExecutionPolicy Unrestricted -NoLogo -NoProfile -File %~dp0\tools\DevCheck\DevCheck.ps1 %*
 
 exit /b %ERRORLEVEL%

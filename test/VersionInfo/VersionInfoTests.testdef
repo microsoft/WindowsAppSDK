@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Version Info Tests",
+            "Filename": "VersionInfoTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}

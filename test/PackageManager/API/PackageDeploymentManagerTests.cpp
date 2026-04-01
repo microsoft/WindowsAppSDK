@@ -21,6 +21,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(PackageDeploymentManagerTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")    /****SEEME****/
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
@@ -30,6 +31,8 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
+
+            TD::DumpExecutionContext();
 
             ::TB::Setup();
             return true;
@@ -67,5 +70,24 @@ void Test::PackageManager::Tests::VerifyDeploymentSucceeded(
                    deploymentResult.ErrorText().empty() };
     VERIFY_IS_TRUE(ok, WEX::Common::String().Format(L"Status:%d Error:0x%X ExtendedError:0x%X ErrorText:%ls %ls",
                    deploymentResult.Status(), deploymentResult.Error(), deploymentResult.ExtendedError(),
+                   deploymentResult.ErrorText().c_str(), message));
+}
+
+void Test::PackageManager::Tests::VerifyDeploymentSucceeded(
+    const winrt::Windows::Management::Deployment::DeploymentResult& deploymentResult,
+    PCSTR filename,
+    int line,
+    PCSTR function)
+{
+    WEX::Common::String source;
+    source.Format(L"File: %hs, Function: %hs, Line: %d", filename, function, line);
+    PCWSTR message{ static_cast<PCWSTR>(source) };
+
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"VERIFY Deployment Suceeded: %ls", message));
+
+    const bool ok{ (deploymentResult.ExtendedErrorCode() == S_OK) &&
+                   deploymentResult.ErrorText().empty() };
+    VERIFY_IS_TRUE(ok, WEX::Common::String().Format(L"ExtendedError:0x%X ErrorText:%ls %ls",
+                   deploymentResult.ExtendedErrorCode(),
                    deploymentResult.ErrorText().c_str(), message));
 }

@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <stdint.h>
 #include <stdlib.h>
+
 #include <MddBootstrap.h>
 #include <WindowsAppSDK-VersionInfo.h>
 
@@ -24,14 +25,10 @@
 
 namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
 {
-    struct AutoInitialize
+    namespace AutoInitialize
     {
-        AutoInitialize()
-        {
-            Initialize();
-        }
-
-        ~AutoInitialize()
+        // Called by WindowsAppRuntimeAutoInitializer.cpp
+        void Shutdown()
         {
             ::MddBootstrapShutdown();
         }
@@ -66,7 +63,8 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
 #endif
         }
 
-        static void Initialize()
+        // Called by WindowsAppRuntimeAutoInitializer.cpp
+        void Initialize()
         {
             const UINT32 c_majorMinorVersion{ WINDOWSAPPSDK_RELEASE_MAJORMINOR };
             PCWSTR c_versionTag{ WINDOWSAPPSDK_RELEASE_VERSION_TAG_W };
@@ -79,5 +77,4 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
             }
         }
     };
-    static AutoInitialize g_autoInitialize;
 }

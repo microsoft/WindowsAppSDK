@@ -264,8 +264,22 @@ if ($InstallWindowsSDK)
 {
     # Static(ish) link for Windows SDK
     # Note: there is a delay from Windows SDK announcements to availability via the static link
-    $uri = "https://software-download.microsoft.com/download/sg/Windows_InsiderPreview_SDK_en-us_$($buildNumber)_1.iso";
-
+    $uri = ""
+    if ($buildNumber -eq "26100")
+    {
+        # Per https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/
+        # Windows SDK for Windows 11 (10.0.25100.4654)
+        #   * Install SDK (setup.exe) = https://go.microsoft.com/fwlink/?linkid=2327008
+        #   *           Download .iso = https://go.microsoft.com/fwlink/?linkid=2326092
+        $uri = "https://go.microsoft.com/fwlink/?linkid=2326092"
+    }
+    else
+    {
+        Write-Host
+        Write-Host "Only version 26100 is available"
+        Write-Host
+        Exit 1
+    }
     if ($env:TEMP -eq $null)
     {
         $env:TEMP = Join-Path $env:SystemDrive 'temp'

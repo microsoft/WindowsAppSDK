@@ -1,9 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT license.
 
 #pragma once
 
 #include <WindowsAppRuntimeInsights.h>
+
+#include "M.W.M.D.PackageDeploymentManager.h"
 
 DECLARE_TRACELOGGING_CLASS(PackageManagementTelemetryProvider,
     "Microsoft.WindowsAppSDK.Deployment.PackageManagementTelemetry",
@@ -135,12 +137,13 @@ public:
                 TraceLoggingWideString(package.c_str(), "Package"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& package, winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingWideString(package.c_str(), "Package"));
+                TraceLoggingWideString(package.c_str(), "Package"),
+                TraceLoggingInt32(static_cast<std::int32_t>(readyOrNewerStatus), "ReadyOrNewerStatus"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
@@ -171,12 +174,13 @@ public:
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
         }
         CATCH_LOG()
-        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId, winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus readyOrNewerStatus) noexcept try
         {
             TraceLoggingClassWriteStop(
                 EnsurePackageSetReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
+                TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"),
+                TraceLoggingInt32(static_cast<std::int32_t>(readyOrNewerStatus), "ReadyOrNewerStatus"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();

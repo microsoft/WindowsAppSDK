@@ -222,6 +222,12 @@
     <ProjectReference Include="$(RepoRoot)\test\Deployment\data\WindowsAppRuntime.Test.Singleton\WindowsAppRuntime.Test.Singleton.vcxproj">
       <Project>{0b01db78-f115-4c90-b28f-7819071303c6}</Project>
     </ProjectReference>
+    <ProjectReference Include="$(RepoRoot)\test\Deployment\data\WindowsAppRuntime.Test.SingletonHigherVersion\WindowsAppRuntime.Test.SingletonHigherVersion.vcxproj">
+      <Project>{462cf10a-e6b5-4005-8e25-132d1de589b7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(RepoRoot)\test\Deployment\data\WindowsAppRuntime.Test.SingletonLowerVersion\WindowsAppRuntime.Test.SingletonLowerVersion.vcxproj">
+      <Project>{7a3c8f5d-9b2e-4a1f-8d6c-3e9f7b4a2c1d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-Capabilities-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
@@ -234,6 +240,9 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
+  <Target Name="CopyFiles" AfterTargets="Build">
+    <Copy SkipUnchangedFiles="true" SourceFiles="DeploymentTests.testdef" DestinationFolder="$(OutDir)" />
+  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>

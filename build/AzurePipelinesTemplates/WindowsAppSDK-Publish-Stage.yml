@@ -1,15 +1,34 @@
 parameters:
 - name: "PublishToMaestro"
   type: boolean
-  default: True
+  default: true
 - name: "IgnoreFailures"
   type: boolean
-  default: True
+  default: true
+- name: "TestSampleApps"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: false
+- name: "TestOnArm64"
+  displayName: "Enable running of sample tests on arm64 platform (Default: false)"
+  type: boolean
+  default: false
+- name: "MaestroDependOnTestSamples"
+  displayName: "Whether Maestro publishing should depend on successful Sample tests"
+  type: boolean
+  default: false
 stages:
 - stage: Publish
   dependsOn:
-  - Test
-  - Pack
+  - Test_x86
+  - Test_x64
+  - ${{ if eq(parameters.TestOnArm64, true)}}:
+    - Test_arm64
+  - StaticValidationTest
+  - ${{ if and(eq( parameters.TestSampleApps, true ), eq( parameters.MaestroDependOnTestSamples, true )) }}:
+    - TestSampleApps_x64
+    - ${{ if eq( parameters.TestOnArm64, true ) }}:
+      - TestSampleApps_arm64
   condition: not(failed())
   jobs:
   # Publish
@@ -22,8 +41,7 @@ stages:
     variables:
       WindowsAppSDKPackageVersion: $[ stageDependencies.Pack.NugetPackage.outputs['SetVersion.packageVersion'] ]
     steps:
-    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml@self
+    - template: AzurePipelinesTemplates/WindowsAppSDK-PublishToMaestro-Steps.yml@WindowsAppSDKConfig
       parameters:
-        AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-        AssetVersions: $(WindowsAppSDKPackageVersion)
-        TriggerSubscription: true
+        NuGetArtifactNames:
+        - 'TransportPackage'
