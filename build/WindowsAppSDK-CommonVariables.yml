@@ -2,13 +2,13 @@ variables:
   _useBuildOutputFromPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
   _useBuildOutputFromBuildId: $[coalesce(variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
 
-  channel: 'preview'
+  channel: 'experimental'
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
   versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
   versionCounter: $[counter(variables['versionDate'], 0)]
   version: $[format('{0}.{1}.{2}-{3}.{4}', variables['MajorVersion'], variables['MinorVersion'], variables['PatchVersion'], variables['versionDate'], variables['versionCounter'])]
-  SamplesBranch: "release/2.0-stable" # Used in the Samples Build Compat Test
+  SamplesBranch: "release/2.0-experimental" # Used in the Samples Build Compat Test
   
   #OneBranch Variables
   CDP_DEFINITION_BUILD_COUNT: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
