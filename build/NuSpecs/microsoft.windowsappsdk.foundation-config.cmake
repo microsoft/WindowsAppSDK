@@ -14,18 +14,31 @@
             Windows App SDK, and is intended to be used by library authors who want to consume the Windows App SDK
             Foundation APIs.
 
-        * Microsoft.WindowsAppSDK.Foundation_Framework - A target representing the Windows App SDK Foundation APIs that
-            also takes a dependency on the 'Framework Package' of the Windows App SDK. Target properties can be set on
-            _consuming_ target to control:
-                * `WindowsAppSdkBootstrapInitialize` - Whether to automatically initialize the Framework Package via
-                    the 'dynamic dependency' bootstrap logic.
-                * `WindowsAppSdkDeploymentManagerInitialize` - Whether to automatically initialize the Deployment
-                    Manager bootstrap logic.
+        * Microsoft.WindowsAppSDK.Foundation_Framework - A target representing the Windows App SDK Foundation APIs for
+            framework-dependent deployment scenarios. Auto-initialization behavior is controlled by target properties
+            on the _consuming_ target:
+
+                * `WindowsPackageType` - "MSIX" (default) for packaged apps, "None" for unpackaged apps.
+                    Drives which auto-initializers are enabled by default.
+                * `WindowsAppSdkBootstrapInitialize` - Automatically initializes the Framework Package via
+                    the Dynamic Dependency bootstrap logic. Required for unpackaged framework-dependent apps.
+                    Defaults to TRUE when WindowsPackageType is "None".
+                * `WindowsAppSdkDeploymentManagerInitialize` - Automatically initializes the Deployment Manager
+                    for Main/Singleton functionality (e.g., Push Notifications). Required for packaged
+                    framework-dependent apps. Defaults to TRUE when WindowsPackageType is "MSIX".
+                * `WindowsAppSdkCompatibilityInitialize` - Enables A/B Containment facilities for controlling
+                    servicing release behavior. Opt-in only (default FALSE). Applies to both framework-dependent
+                    and self-contained scenarios.
 
         * Microsoft.WindowsAppSDK.Foundation_SelfContained - An interface target that represents the Windows App SDK
-            Foundation APIs for self-contained deployment scenarios. Projects should normally link against this target,
-            which in turn depends on `Microsoft.WindowsAppSDK.Foundation_SelfContainedRuntime` to provide the required
-            implementation dependencies of the Windows App SDK.
+            Foundation APIs for self-contained deployment scenarios. Auto-initialization behavior is controlled by:
+
+                * `WindowsAppSdkUndockedRegFreeWinRTInitialize` - Enables manifest-based WinRT activation for
+                    downlevel (< 19H1) devices. Defaults to TRUE when target platform < 10.0.18362.0,
+                    FALSE otherwise. Can be explicitly set TRUE/FALSE to override.
+                * `WindowsAppSdkCompatibilityInitialize` - Enables A/B Containment facilities for controlling
+                    servicing release behavior. Opt-in only (default FALSE). Applies to both framework-dependent
+                    and self-contained scenarios.
 
     License:
         See the LICENSE file in the package root for more information.
@@ -49,6 +62,8 @@ block(SCOPE_FOR VARIABLES)
 
     #[[====================================================================================================================
         Target: Microsoft.WindowsAppSDK.Foundation
+
+        Base target: CppWinRT projection + headers. No runtime components.
     ====================================================================================================================]]#
     file(GLOB _WINMD_FILES "${PACKAGE_LOCATION}/metadata/*.winmd")
     add_cppwinrt_projection(Microsoft.WindowsAppSDK.Foundation
@@ -64,102 +79,156 @@ block(SCOPE_FOR VARIABLES)
     )
 
     #[[====================================================================================================================
-        Target: Microsoft.WindowsAppSDK.Foundation_Framework
-    ====================================================================================================================]]#
-    add_library(Microsoft.WindowsAppSDK.Foundation_Framework INTERFACE)
+        Target: Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
 
-    target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
+        Auto-initializer for unpackaged framework-dependent apps. Provides the Bootstrap DLL
+        (Microsoft.WindowsAppRuntime.Bootstrap.lib/.dll), adds MddBootstrapAutoInitializer.cpp, and sets
+        the MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP preprocessor definition.
+        All bootstrap files are in the Foundation NuGet — does NOT depend on the Runtime NuGet package.
+    ====================================================================================================================]]#
+    # Internal target for the Bootstrap binary — not a public API surface.
+    # Linked via _DynamicDependencyBootstrap so TARGET_RUNTIME_DLLS propagates automatically.
+    add_library(Microsoft.WindowsAppSDK.Foundation._BootstrapBinary SHARED IMPORTED)
+    set_target_properties(Microsoft.WindowsAppSDK.Foundation._BootstrapBinary
+        PROPERTIES
+            IMPORTED_IMPLIB "${PACKAGE_LOCATION}/lib/native/${PLATFORM_IDENTIFIER}/Microsoft.WindowsAppRuntime.Bootstrap.lib"
+            IMPORTED_LOCATION "${PACKAGE_LOCATION}/runtimes/win-${PLATFORM_IDENTIFIER}/native/Microsoft.WindowsAppRuntime.Bootstrap.dll"
+    )
+
+    add_library(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap INTERFACE)
+
+    target_sources(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
         INTERFACE
-            Microsoft.WindowsAppSDK.Foundation
+            "${PACKAGE_LOCATION}/include/MddBootstrapAutoInitializer.cpp"
+    )
+
+    target_compile_definitions(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
+        INTERFACE
+            MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP
+    )
+
+    target_link_libraries(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
+        INTERFACE
+            Microsoft.WindowsAppSDK.Foundation._BootstrapBinary
     )
 
     #[[====================================================================================================================
-        Targets:
-            Microsoft.WindowsAppSDK.Foundation_Bootstrap
-            Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
-            Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap
+        Target: Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap
 
-        Note: Consumers should not consume these targets directly. Instead, consume 'Microsoft.WindowsAppSDK.Foundation_Framework'
-        and set target properties on the _consuming_ target.
+        Auto-initializer for packaged framework-dependent apps that use Main/Singleton functionality
+        (e.g., Push Notifications). Adds DeploymentManagerAutoInitializer.cpp and the
+        MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER preprocessor definition.
+        DeploymentManager calls WinRT APIs (not Bootstrap APIs) — no Bootstrap.lib linkage needed.
+    ====================================================================================================================]]#
+    add_library(Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap INTERFACE)
 
-        These targets need the Microsoft.WindowsAppSDK.Runtime package to be present. If the package cannot be found,
-        these targets will not be created, and the end-user will need to bootstrap the Framework manually.
+    target_sources(Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap
+        INTERFACE
+            "${PACKAGE_LOCATION}/include/DeploymentManagerAutoInitializer.cpp"
+    )
+
+    target_compile_definitions(Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap
+        INTERFACE
+            MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER
+    )
+
+    #[[====================================================================================================================
+        Target: Microsoft.WindowsAppSDK.Foundation_UndockedRegFreeWinRT
+
+        Auto-initializer for self-contained apps running on downlevel (< 19H1) devices. Enables
+        manifest-based WinRT activation. Not required for framework-dependent apps or self-contained
+        apps targeting >= 19H1 (opt out via WindowsAppSdkUndockedRegFreeWinRTInitialize=FALSE).
+    ====================================================================================================================]]#
+    add_library(Microsoft.WindowsAppSDK.Foundation_UndockedRegFreeWinRT INTERFACE)
+
+    target_sources(Microsoft.WindowsAppSDK.Foundation_UndockedRegFreeWinRT
+        INTERFACE
+            "${PACKAGE_LOCATION}/include/UndockedRegFreeWinRT-AutoInitializer.cpp"
+    )
+
+    target_compile_definitions(Microsoft.WindowsAppSDK.Foundation_UndockedRegFreeWinRT
+        INTERFACE
+            MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT
+    )
+
+    #[[====================================================================================================================
+        Target: Microsoft.WindowsAppSDK.Foundation_Compatibility
+
+        Auto-initializer for A/B Containment facilities to control servicing release behavior.
+        Opt-in only — requires setting WindowsAppSdkCompatibilityInitialize=TRUE on the consuming target.
+    ====================================================================================================================]]#
+    add_library(Microsoft.WindowsAppSDK.Foundation_Compatibility INTERFACE)
+
+    target_compile_definitions(Microsoft.WindowsAppSDK.Foundation_Compatibility
+        INTERFACE
+            MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY
+    )
+
+    #[[====================================================================================================================
+        Runtime Package Detection (not a target — configure-time setup)
+
+        The Runtime NuGet (Microsoft.WindowsAppSDK.Runtime) is NOT a build dependency of Foundation.
+        It is probed here to perform two optional setup tasks:
+
+        1. Version info: The Runtime NuGet ships WindowsAppSDK-VersionInfo.h and .json containing
+           the framework package identity (name, version, publisher). If present, these are extracted
+           and stored as cache variables (WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME, etc.) for use by
+           wasdk_generate_appx_manifest() when generating AppxManifest.xml for packaged apps.
+
+        2. Bootstrap linkage: If Runtime is found, the _DynamicDependencyBootstrap target is linked
+           to the Runtime target so that version info headers are available to MddBootstrapAutoInitializer.
+
+        The Runtime_FOUND result also controls _Framework target behavior downstream:
+            - Runtime FOUND:     _Framework provides full auto-init (Bootstrap/DeploymentManager genexes).
+            - Runtime NOT FOUND: _Framework gracefully falls back to _SelfContained behavior.
     ====================================================================================================================]]#
     find_package(Microsoft.WindowsAppSDK.Runtime CONFIG QUIET)
-    if(NOT Microsoft.WindowsAppSDK.Runtime_FOUND)
-        message(VERBOSE "Microsoft.WindowsAppSDK.Runtime *not* found. The 'bootstrap' logic will *not* be available, and the Framework will need to be bootstrapped manually.")
-    else()
-        add_library(Microsoft.WindowsAppSDK.Foundation_Bootstrap SHARED IMPORTED GLOBAL)
-
-        target_sources(Microsoft.WindowsAppSDK.Foundation_Bootstrap
-            INTERFACE
-                "${PACKAGE_LOCATION}/include/WindowsAppRuntimeAutoInitializer.cpp"
-        )
-
-        set_target_properties(Microsoft.WindowsAppSDK.Foundation_Bootstrap
-            PROPERTIES
-                IMPORTED_IMPLIB "${PACKAGE_LOCATION}/lib/native/${PLATFORM_IDENTIFIER}/Microsoft.WindowsAppRuntime.Bootstrap.lib"
-                IMPORTED_LOCATION "${PACKAGE_LOCATION}/runtimes/win-${PLATFORM_IDENTIFIER}/native/Microsoft.WindowsAppRuntime.Bootstrap.dll"
-        )
-
-        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Bootstrap
+    if(Microsoft.WindowsAppSDK.Runtime_FOUND)
+        # Wire version info headers from Runtime into the bootstrap target
+        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
             INTERFACE
                 Microsoft.WindowsAppSDK.Runtime
         )
 
-        # The 'Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap' target adds the
-        # 'MddBootstrapAutoInitializer.cpp' source, and the MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP
-        # preprocessor definition.
-        add_library(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap INTERFACE)
+        # Extract framework package identity for AppxManifest generation
+        get_property(_RUNTIME_LOCATION GLOBAL PROPERTY NUGET_LOCATION-MICROSOFT_WINDOWSAPPSDK_RUNTIME)
+        set(_VERSION_JSON "${_RUNTIME_LOCATION}/WindowsAppSDK-VersionInfo.json")
+        if(EXISTS "${_VERSION_JSON}")
+            file(READ "${_VERSION_JSON}" _VERSION_JSON_CONTENT)
 
-        target_sources(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
-            INTERFACE
-                "${PACKAGE_LOCATION}/include/MddBootstrapAutoInitializer.cpp"
-        )
+            string(JSON _FRAMEWORK_PFN GET "${_VERSION_JSON_CONTENT}" "Runtime" "Packages" "Framework" "PackageFamilyName")
+            string(REGEX REPLACE "_[^_]+$" "" _FRAMEWORK_PACKAGE_NAME "${_FRAMEWORK_PFN}")
+            string(JSON _RUNTIME_VERSION GET "${_VERSION_JSON_CONTENT}" "Runtime" "Version" "DotQuadNumber")
+            string(JSON _RUNTIME_PUBLISHER GET "${_VERSION_JSON_CONTENT}" "Runtime" "Identity" "Publisher")
 
-        target_compile_definitions(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
-            INTERFACE
-                MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP
-        )
+            set(WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME "${_FRAMEWORK_PACKAGE_NAME}" CACHE INTERNAL "")
+            set(WINDOWSAPPSDK_FRAMEWORK_MIN_VERSION "${_RUNTIME_VERSION}" CACHE INTERNAL "")
+            set(WINDOWSAPPSDK_FRAMEWORK_PUBLISHER "${_RUNTIME_PUBLISHER}" CACHE INTERNAL "")
+        endif()
 
-        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
-            INTERFACE
-                Microsoft.WindowsAppSDK.Foundation_Bootstrap
-        )
-
-        # The 'Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap' target adds the
-        # 'DeploymentManagerAutoInitializer.cpp' source, and the MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER
-        # preprocessor definition.
-        add_library(Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap INTERFACE)
-
-        target_sources(Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap
-            INTERFACE
-                "${PACKAGE_LOCATION}/include/DeploymentManagerAutoInitializer.cpp"
-        )
-
-        target_compile_definitions(Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap
-            INTERFACE
-                MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER
-        )
-
-        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap
-            INTERFACE
-                Microsoft.WindowsAppSDK.Foundation_Bootstrap
-        )
-
-        # 'Microsoft.WindowsAppSDK.Foundation_Framework' should now depend on the individual bootstrap targets,
-        # conditional on properties of the consuming target.
-        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
-            INTERFACE
-                $<$<BOOL:$<TARGET_PROPERTY:WindowsAppSdkBootstrapInitialize>>:Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap>
-                $<$<BOOL:$<TARGET_PROPERTY:WindowsAppSdkDeploymentManagerInitialize>>:Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap>
-        )
+        message(STATUS "WindowsAppSDK: Runtime package found — framework-dependent deployment available.")
+        message(STATUS "WindowsAppSDK: For packaged apps, call wasdk_generate_appx_manifest() to generate "
+            "AppxManifest.xml with framework PackageDependency.")
+    else()
+        message(STATUS "WindowsAppSDK: Runtime package not found — only self-contained deployment is available. "
+            "If Foundation_Framework is linked, it will automatically fall back to self-contained behavior.")
     endif()
 
     #[[====================================================================================================================
+        Target: Microsoft.WindowsAppSDK.Foundation_SelfContainedRuntime
         Target: Microsoft.WindowsAppSDK.Foundation_SelfContained
+
+        Self-contained deployment target. Bundles runtime DLLs and SxS manifest. Auto-initialization:
+
+            WindowsAppSdkUndockedRegFreeWinRTInitialize
+                Defaults to TRUE when target platform < 10.0.18362.0 (19H1), FALSE otherwise.
+                Enables manifest-based WinRT activation for downlevel devices.
+                Can be explicitly set TRUE/FALSE to override.
+
+            WindowsAppSdkCompatibilityInitialize (default: FALSE)
+                Opt-in for A/B Containment.
     ====================================================================================================================]]#
-    add_library(Microsoft.WindowsAppSDK.Foundation_SelfContainedRuntime SHARED IMPORTED GLOBAL)
+    add_library(Microsoft.WindowsAppSDK.Foundation_SelfContainedRuntime SHARED IMPORTED)
 
     set(FRAMEWORK_PATH "${PACKAGE_LOCATION}/runtimes-framework/win-${PLATFORM_IDENTIFIER}/native")
     file(GLOB FRAMEWORK_DLLS "${FRAMEWORK_PATH}/*.dll")
@@ -183,5 +252,225 @@ block(SCOPE_FOR VARIABLES)
             Microsoft.WindowsAppSDK.Foundation
             Microsoft.WindowsAppSDK.Foundation_SelfContainedRuntime
     )
+
+    # The orchestrator is always compiled — it conditionally invokes initializers via preprocessor defines
+    target_sources(Microsoft.WindowsAppSDK.Foundation_SelfContained
+        INTERFACE
+            "${PACKAGE_LOCATION}/include/WindowsAppRuntimeAutoInitializer.cpp"
+    )
+
+    # UndockedRegFreeWinRT — required for self-contained apps on downlevel (< 19H1) devices.
+    # Default: TRUE when target platform < 10.0.18362.0 (19H1), FALSE otherwise.
+    # Developer can override by explicitly setting WindowsAppSdkUndockedRegFreeWinRTInitialize TRUE/FALSE.
+    set(_FOUNDATION_REGFREE_DEFAULT FALSE)
+    if(NOT "${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}" STREQUAL "")
+        set(_FOUNDATION_PLATFORM_VERSION "${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}")
+    elseif(DEFINED ENV{WindowsSDKVersion})
+        string(REGEX REPLACE "^([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
+            _FOUNDATION_PLATFORM_VERSION "$ENV{WindowsSDKVersion}")
+    endif()
+    if(DEFINED _FOUNDATION_PLATFORM_VERSION AND _FOUNDATION_PLATFORM_VERSION VERSION_LESS "10.0.18362.0")
+        set(_FOUNDATION_REGFREE_DEFAULT TRUE)
+    endif()
+
+    if(_FOUNDATION_REGFREE_DEFAULT)
+        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_SelfContained
+            INTERFACE
+                $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:WindowsAppSdkUndockedRegFreeWinRTInitialize>,FALSE>>:Microsoft.WindowsAppSDK.Foundation_UndockedRegFreeWinRT>
+        )
+    else()
+        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_SelfContained
+            INTERFACE
+                $<$<STREQUAL:$<TARGET_PROPERTY:WindowsAppSdkUndockedRegFreeWinRTInitialize>,TRUE>:Microsoft.WindowsAppSDK.Foundation_UndockedRegFreeWinRT>
+        )
+    endif()
+
+    # Compatibility — opt-in only
+    target_link_libraries(Microsoft.WindowsAppSDK.Foundation_SelfContained
+        INTERFACE
+            $<$<BOOL:$<TARGET_PROPERTY:WindowsAppSdkCompatibilityInitialize>>:Microsoft.WindowsAppSDK.Foundation_Compatibility>
+    )
+
+    #[[====================================================================================================================
+        Target: Microsoft.WindowsAppSDK.Foundation_Framework
+
+        Framework-dependent deployment target. Auto-initialization behavior is driven by target properties
+        on the consuming target:
+
+            WindowsPackageType (default: "MSIX")
+                "MSIX"  -> DeploymentManager auto-init enabled by default
+                "None"  -> Bootstrap (DynDep) auto-init enabled by default
+
+            WindowsAppSdkBootstrapInitialize         -> opt-in/out for bootstrap
+            WindowsAppSdkDeploymentManagerInitialize  -> opt-in/out for deployment manager
+            WindowsAppSdkCompatibilityInitialize      -> opt-in for A/B Containment
+
+        The WindowsAppRuntimeAutoInitializer.cpp orchestrator is always compiled as a source; it
+        conditionally calls each initializer based on the preprocessor defines set by the linked targets.
+
+        If the Runtime package is not found, _Framework falls back to self-contained behavior.
+    ====================================================================================================================]]#
+    add_library(Microsoft.WindowsAppSDK.Foundation_Framework INTERFACE)
+
+    target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
+        INTERFACE
+            Microsoft.WindowsAppSDK.Foundation
+    )
+
+    if(Microsoft.WindowsAppSDK.Runtime_FOUND)
+        # Framework-dependent: wire auto-init orchestrator and conditional initializers
+        target_sources(Microsoft.WindowsAppSDK.Foundation_Framework
+            INTERFACE
+                "${PACKAGE_LOCATION}/include/WindowsAppRuntimeAutoInitializer.cpp"
+        )
+
+        # Bootstrap (DynDep init) — for unpackaged framework-dependent apps.
+        #   Enabled if:  WindowsAppSdkBootstrapInitialize is explicitly TRUE
+        #   OR:          WindowsAppSdkBootstrapInitialize is not set AND WindowsPackageType is "None"
+        #   Disabled if: WindowsAppSdkBootstrapInitialize is explicitly FALSE
+        set(_BOOTSTRAP_EXPLICIT_TRUE  "$<STREQUAL:$<TARGET_PROPERTY:WindowsAppSdkBootstrapInitialize>,TRUE>")
+        set(_BOOTSTRAP_NOT_SET        "$<STREQUAL:$<TARGET_PROPERTY:WindowsAppSdkBootstrapInitialize>,>")
+        set(_PACKAGE_TYPE_IS_NONE     "$<STREQUAL:$<TARGET_PROPERTY:WindowsPackageType>,None>")
+        set(_BOOTSTRAP_DEFAULT_ON     "$<AND:${_BOOTSTRAP_NOT_SET},${_PACKAGE_TYPE_IS_NONE}>")
+
+        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
+            INTERFACE
+                $<$<OR:${_BOOTSTRAP_EXPLICIT_TRUE},${_BOOTSTRAP_DEFAULT_ON}>:Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap>
+        )
+
+        # DeploymentManager — for packaged (MSIX) framework-dependent apps.
+        #   Enabled if:  WindowsAppSdkDeploymentManagerInitialize is explicitly TRUE
+        #   OR:          WindowsAppSdkDeploymentManagerInitialize is not set AND WindowsPackageType is not "None"
+        #                (default — PackageType unset is treated as MSIX)
+        #   Disabled if: WindowsAppSdkDeploymentManagerInitialize is explicitly FALSE
+        set(_DEPLOYMGR_EXPLICIT_TRUE  "$<STREQUAL:$<TARGET_PROPERTY:WindowsAppSdkDeploymentManagerInitialize>,TRUE>")
+        set(_DEPLOYMGR_NOT_SET        "$<STREQUAL:$<TARGET_PROPERTY:WindowsAppSdkDeploymentManagerInitialize>,>")
+        set(_PACKAGE_TYPE_NOT_NONE    "$<NOT:${_PACKAGE_TYPE_IS_NONE}>")
+        set(_DEPLOYMGR_DEFAULT_ON     "$<AND:${_DEPLOYMGR_NOT_SET},${_PACKAGE_TYPE_NOT_NONE}>")
+
+        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
+            INTERFACE
+                $<$<OR:${_DEPLOYMGR_EXPLICIT_TRUE},${_DEPLOYMGR_DEFAULT_ON}>:Microsoft.WindowsAppSDK.Foundation_DeploymentManagerBootstrap>
+        )
+
+        # Compatibility — opt-in only (both framework-dependent and self-contained)
+        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
+            INTERFACE
+                $<$<BOOL:$<TARGET_PROPERTY:WindowsAppSdkCompatibilityInitialize>>:Microsoft.WindowsAppSDK.Foundation_Compatibility>
+        )
+    else()
+        # Fallback: Runtime package not found — framework-dependent deployment is not viable.
+        # Wire _Framework to delegate entirely to _SelfContained so the developer gets a working
+        # build with self-contained behavior. All self-contained logic (runtime DLLs, SxS manifest,
+        # UndockedRegFreeWinRT, Compatibility) comes from _SelfContained — no duplication here.
+        target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
+            INTERFACE
+                Microsoft.WindowsAppSDK.Foundation_SelfContained
+        )
+    endif()
+
+    #[[====================================================================================================================
+        wasdk_generate_appx_manifest()
+
+        Generates an AppxManifest.xml for packaged apps. For framework-dependent apps, automatically
+        includes the <PackageDependency> entry for the Windows App Runtime Framework package.
+
+            wasdk_generate_appx_manifest(
+                TARGET <target>
+                OUTPUT <output-path>
+                IDENTITY_NAME <name>
+                IDENTITY_PUBLISHER <publisher>
+                IDENTITY_VERSION <version>
+                [DISPLAY_NAME <name>]
+                [DESCRIPTION <description>]
+                [LOGO <path>]
+            )
+
+        The TARGET must already be defined via add_executable(). If the target links
+        Microsoft.WindowsAppSDK.Foundation_Framework, a <PackageDependency> for the Windows App Runtime
+        Framework package is automatically included. If the target links _SelfContained, no
+        PackageDependency is added.
+    ====================================================================================================================]]#
+    function(wasdk_generate_appx_manifest)
+        set(ONE_VALUE_KEYWORDS TARGET OUTPUT IDENTITY_NAME IDENTITY_PUBLISHER IDENTITY_VERSION DISPLAY_NAME DESCRIPTION LOGO)
+        cmake_parse_arguments(PARSE_ARGV 0 APPX "" "${ONE_VALUE_KEYWORDS}" "")
+
+        if(NOT APPX_TARGET)
+            message(FATAL_ERROR "wasdk_generate_appx_manifest: TARGET is required")
+        endif()
+        if(NOT APPX_OUTPUT)
+            set(APPX_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml")
+        endif()
+        if(NOT APPX_IDENTITY_NAME OR NOT APPX_IDENTITY_PUBLISHER OR NOT APPX_IDENTITY_VERSION)
+            message(FATAL_ERROR "wasdk_generate_appx_manifest: IDENTITY_NAME, IDENTITY_PUBLISHER, and IDENTITY_VERSION are required")
+        endif()
+        if(NOT APPX_DISPLAY_NAME)
+            set(APPX_DISPLAY_NAME "${APPX_IDENTITY_NAME}")
+        endif()
+        if(NOT APPX_DESCRIPTION)
+            set(APPX_DESCRIPTION "${APPX_DISPLAY_NAME}")
+        endif()
+        if(NOT APPX_LOGO)
+            set(APPX_LOGO "Logo.png")
+        endif()
+
+        # Determine architecture
+        wasdk_detect_platform()
+        if(PLATFORM_IDENTIFIER STREQUAL "x64")
+            set(_PROC_ARCH "x64")
+        elseif(PLATFORM_IDENTIFIER STREQUAL "arm64")
+            set(_PROC_ARCH "arm64")
+        else()
+            set(_PROC_ARCH "x64")
+        endif()
+
+        # Build the PackageDependency section if framework info is available
+        set(_PACKAGE_DEPENDENCY "")
+        if(DEFINED WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME)
+            set(_PACKAGE_DEPENDENCY "    <PackageDependency Name=\"${WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME}\" MinVersion=\"${WINDOWSAPPSDK_FRAMEWORK_MIN_VERSION}\" Publisher=\"${WINDOWSAPPSDK_FRAMEWORK_PUBLISHER}\" />\n")
+        endif()
+
+        # Generate the manifest
+        file(WRITE "${APPX_OUTPUT}"
+"<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<Package xmlns=\"http://schemas.microsoft.com/appx/manifest/foundation/windows10\"
+         xmlns:uap=\"http://schemas.microsoft.com/appx/manifest/uap/windows10\"
+         xmlns:rescap=\"http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities\"
+         IgnorableNamespaces=\"uap rescap\">
+  <Identity Name=\"${APPX_IDENTITY_NAME}\"
+            Version=\"${APPX_IDENTITY_VERSION}\"
+            Publisher=\"${APPX_IDENTITY_PUBLISHER}\"
+            ProcessorArchitecture=\"${_PROC_ARCH}\" />
+  <Properties>
+    <DisplayName>${APPX_DISPLAY_NAME}</DisplayName>
+    <PublisherDisplayName>${APPX_IDENTITY_PUBLISHER}</PublisherDisplayName>
+    <Description>${APPX_DESCRIPTION}</Description>
+    <Logo>${APPX_LOGO}</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name=\"Windows.Desktop\" MinVersion=\"10.0.17763.0\" MaxVersionTested=\"10.0.26100.0\" />
+${_PACKAGE_DEPENDENCY}  </Dependencies>
+  <Resources>
+    <Resource Language=\"en-us\" />
+  </Resources>
+  <Applications>
+    <Application Id=\"App\" Executable=\"${APPX_TARGET}.exe\" EntryPoint=\"Windows.FullTrustApplication\">
+      <uap:VisualElements DisplayName=\"${APPX_DISPLAY_NAME}\" Description=\"${APPX_DESCRIPTION}\"
+                          BackgroundColor=\"transparent\" Square150x150Logo=\"${APPX_LOGO}\" Square44x44Logo=\"${APPX_LOGO}\">
+        <uap:DefaultTile Wide310x150Logo=\"${APPX_LOGO}\" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name=\"runFullTrust\" />
+  </Capabilities>
+</Package>
+")
+
+        # Copy manifest + logo to output directory post-build
+        add_custom_command(TARGET ${APPX_TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${APPX_OUTPUT}" $<TARGET_FILE_DIR:${APPX_TARGET}>
+        )
+    endfunction()
 
 endblock()
