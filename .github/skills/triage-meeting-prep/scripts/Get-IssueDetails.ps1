@@ -145,79 +145,10 @@ $result.hasAreaLabel = $areaLabels.Count -gt 0
 $result.areaLabels = @($areaLabels | ForEach-Object { $_.name })
 $result.needsTriage = $triageLabels.Count -gt 0
 
-# Calculate area suggestion confidence if no area label
-if (-not $result.hasAreaLabel) {
-    # Load area keywords from area-keywords.json
-    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-    $skillDir = Split-Path -Parent $scriptDir
-    $keywordsFile = Join-Path $skillDir "area-keywords.json"
-
-    if (-not (Test-Path $keywordsFile)) {
-        Write-Error "Area keywords file not found: $keywordsFile"
-        exit 1
-    }
-
-    $keywordsJson = Get-Content -Path $keywordsFile -Raw -ErrorAction Stop
-    try {
-        $keywordsData = $keywordsJson | ConvertFrom-Json -ErrorAction Stop
-    }
-    catch {
-        Write-Error "Failed to parse area keywords file '$keywordsFile': $_"
-        exit 1
-    }
-
-    if ($null -eq $keywordsData -or ($keywordsData | Get-Member -MemberType NoteProperty).Count -eq 0) {
-        Write-Error "Area keywords file '$keywordsFile' is empty or contains no label entries."
-        exit 1
-    }
-
-    # Convert parsed JSON object to hashtable
-    $areaKeywords = @{}
-    foreach ($prop in $keywordsData.PSObject.Properties) {
-        if ($null -eq $prop.Value -or @($prop.Value).Count -eq 0) {
-            Write-Error "Area keywords file '$keywordsFile' has no keywords for label '$($prop.Name)'."
-            exit 1
-        }
-        $areaKeywords[$prop.Name] = @($prop.Value)
-    }
-
-    Write-Verbose "Loaded $($areaKeywords.Count) area keyword entries from $keywordsFile"
-    
-    # Extract text to search for keywords
-    $text = "$($issue.title) $($issue.body)"
-    
-    $suggestedAreas = @()
-    foreach ($area in $areaKeywords.Keys) {
-        $keywordMatches = 0
-        foreach ($keyword in $areaKeywords[$area]) {
-            if ($text -match $keyword) {
-                $keywordMatches++
-            }
-        }
-        if ($keywordMatches -gt 0) {
-            # Calculate confidence based on keyword matches
-            $confidence = 25  # Base
-            $confidence += [math]::Min($keywordMatches * 15, 45)  # Up to 45 for keywords
-            $confidence = [math]::Min($confidence, 100)
-            
-            $suggestedAreas += @{
-                area = $area
-                keywordMatches = $keywordMatches
-                confidence = $confidence
-            }
-        }
-    }
-    
-    # Sort by confidence descending
-    $result.suggestedAreas = @($suggestedAreas | Sort-Object { $_.confidence } -Descending | Select-Object -First 3)
-    
-    # Flag if multiple candidates (reduces confidence)
-    if ($suggestedAreas.Count -gt 1) {
-        foreach ($sa in $result.suggestedAreas) {
-            $sa.confidence = [math]::Max(0, $sa.confidence - 15)
-        }
-    }
-}
+# Note: Area classification is performed by the agent using LLM reasoning.
+# The agent uses Get-RepositoryLabels.ps1 -Filter "area-*" to fetch valid
+# area labels with descriptions, then reasons about the best match based on
+# the issue title, body, and comments. See SKILL.md for the confidence rubric.
 
 # Output
 switch ($OutputFormat) {
@@ -248,12 +179,8 @@ switch ($OutputFormat) {
         Write-Host "     Comments:       $($result.commentCount)" -ForegroundColor Gray
         Write-Host ""
         
-        # Show suggested areas if no area label
-        if (-not $result.hasAreaLabel -and $result.suggestedAreas.Count -gt 0) {
-            Write-Host "  🏷️ Suggested Areas:" -ForegroundColor Yellow
-            foreach ($sa in $result.suggestedAreas) {
-                Write-Host "     $($sa.area) [confidence:$($sa.confidence)]" -ForegroundColor Yellow
-            }
+        if (-not $result.hasAreaLabel) {
+            Write-Host "  🏷️ Area Classification: Pending (agent will classify using LLM reasoning)" -ForegroundColor Yellow
             Write-Host ""
         }
         
