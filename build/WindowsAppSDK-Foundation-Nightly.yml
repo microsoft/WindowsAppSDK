@@ -58,6 +58,7 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
+- group: WinAppSDK-Foundation-Build-Variables
 - name: maxParallelForBuildSamplesCompatJob_x64
   value: 20
 - name: maxParallelForBuildSamplesCompatJob_arm64
@@ -79,7 +80,7 @@ resources:
       ref: refs/heads/main
     - repository: WindowsAppSDKSamples
       type: github
-      endpoint: 'GitHub - benkuhn - 2-18'
+      endpoint: 'WinAppSDK-Github'
       name: microsoft/WindowsAppSDK-Samples
       ref: $(SamplesBranch)
 
