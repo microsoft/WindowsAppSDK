@@ -16,6 +16,8 @@
 
 #include "Validate.h"
 
+#include <FrameworkUdk/Containment.h>
+
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::SharedLocal) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::SharedLocal));
@@ -111,10 +113,14 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
     {
-        _VerifyPublisher(publisher);
-        _VerifyProduct(product);
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_ApplicationData_GetForUnpackaged>())
+        {
+            _VerifyPublisher(publisher);
+            _VerifyProduct(product);
 
-        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(publisher, product);
+            return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(publisher, product);
+        }
+        throw winrt::hresult_not_implemented(L"GetForUnpackaged is not implemented.");
     }
     bool ApplicationData::IsMachinePathSupported()
     {
