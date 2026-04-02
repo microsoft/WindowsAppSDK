@@ -19,12 +19,14 @@ if (!($FoundationPackagesFolder -eq ""))
 {
     Get-ChildItem $FoundationPackagesFolder | 
     Where-Object { $_.Name -like "Microsoft.WindowsAppSDK.*" -or 
-                   $_.Name -like "Microsoft.Windows.SDK.BuildTools.*"} | 
+                   $_.Name -like "Microsoft.Windows.SDK.BuildTools.*" -or
+                   $_.Name -like "Microsoft.Windows.ImplementationLibrary.*"} | 
     Where-Object { $_.Name -notlike "*.nupkg" } |
     ForEach-Object { 
         if ($_.Name -match "^(Microsoft\.WindowsAppSDK\.[a-zA-Z]+)\.([0-9].*)$" -or
             $_.Name -match "^(Microsoft\.Windows\.SDK\.BuildTools\.MSIX)\.([0-9].*)$" -or
-            $_.Name -match "^(Microsoft\.Windows\.SDK\.BuildTools)\.([0-9].*)$")
+            $_.Name -match "^(Microsoft\.Windows\.SDK\.BuildTools)\.([0-9].*)$" -or
+            $_.Name -match "^(Microsoft\.Windows\.ImplementationLibrary)\.([0-9].*)$")
         {
             $packagesToUpdateTable[$Matches[1]] = $Matches[2]
             Write-Host "Found $($Matches[1]) - $($Matches[2])"
