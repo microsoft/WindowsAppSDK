@@ -419,7 +419,7 @@ function Get-IssueScore {
     }
 
     # 5. Blocker score (only if weight > 0)
-    $hasBlocker = @($labelNames | Where-Object { $_ -match "block|blocker|blocking" }).Count -gt 0
+    $hasBlocker = @($labelNames | Where-Object { $_ -match "block" }).Count -gt 0
     $score.IsBlocker = $hasBlocker
     if ($hasBlocker -and $weights.blockers -gt 0) {
         $score.Blockers = $weights.blockers
