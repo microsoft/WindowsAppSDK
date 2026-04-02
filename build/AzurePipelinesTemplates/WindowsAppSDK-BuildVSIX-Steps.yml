@@ -41,7 +41,7 @@ steps:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
-      project: $(System.TeamProjectId)
+      project: 55e8140e-57ac-4e5f-8f9c-c7c15b51929d # TODO: replace with $(System.TeamProjectId) once we can have a full WinAppSDK Build on the new mono repo
       pipeline: $(OfficialPipelineID) 
       pipelineId: $(LatestOfficialBuildID) 
     
