@@ -5,9 +5,6 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: true
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: "IsOfficial"
   type: boolean
   default: false
@@ -28,22 +25,13 @@ stages:
   - job: NugetPackage
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+      type: windows
     timeoutInMinutes: 120
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
       ob_sdl_prefast_enabled: false    # We currently do not build native code in this job.  
     steps:
-    - ${{ if not( parameters.IsOneBranch ) }}:
-      - checkout: self
-        path: s
-
     - checkout: WindowsAppSDKConfig
     - task: NuGetAuthenticate@1
 
@@ -262,12 +250,6 @@ stages:
       inputs:
         SourceFolder: '$(build.artifactStagingDirectory)\FullNuget'
         TargetFolder: '$(ob_outputDirectory)'
-
-    - ${{ if not( parameters.IsOneBranch ) }}:
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(ob_outputDirectory)'
-          artifactName: '$(ob_artifactBaseName)'
 
     - ${{ if eq(parameters.PublishPackage, 'true') }}:
       # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(

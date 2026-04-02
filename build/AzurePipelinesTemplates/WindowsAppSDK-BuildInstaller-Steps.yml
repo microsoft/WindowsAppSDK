@@ -5,9 +5,6 @@ parameters:
 - name: IsOfficial
   type: boolean
   default: false 
-- name: IsOneBranch
-  type: boolean
-  default: true
 - name: runStaticAnalysis
   type: boolean
   default: false
@@ -291,12 +288,11 @@ steps:
     failOnAlert: false
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
-- ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
-    parameters:
-      SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
-      IsOfficial: ${{ parameters.IsOfficial }}
-      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+- template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
+  parameters:
+    SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
+    IsOfficial: ${{ parameters.IsOfficial }}
+    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
@@ -322,9 +318,3 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
-- ${{ if ne(parameters.IsOneBranch, 'true') }}:
-  - task: PublishBuildArtifacts@1
-    condition: ne(variables.SkipInstallerBuild, true)
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'

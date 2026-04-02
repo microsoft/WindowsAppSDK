@@ -10,6 +10,7 @@
 #include "ShObjIdl.h"
 #include "shobjidl_core.h"
 #include <KnownFolders.h>
+#include <shlguid.h>
 #include <filesystem>
 #include <format>
 #include <utility>
@@ -101,8 +102,169 @@ namespace {
 
 }
 
+namespace {
+
+    // Search immediate children of parentItem for the WSL item.
+    // If found, make it visible via INameSpaceTreeControl::SetItemState.
+    bool FindAndShowWslInChildren(winrt::com_ptr<IShellItem> const& wslItem, winrt::com_ptr<IShellItem> const& parentItem, winrt::com_ptr<INameSpaceTreeControl> const& nstc) noexcept
+    {
+        if (!parentItem || !wslItem || !nstc)
+        {
+            return false;
+        }
+
+        winrt::com_ptr<IEnumShellItems> enumItems;
+        if (FAILED(parentItem->BindToHandler(nullptr, BHID_EnumItems, IID_PPV_ARGS(enumItems.put()))) || !enumItems)
+        {
+            return false;
+        }
+
+        winrt::com_ptr<IShellItem> childItem;
+        ULONG fetched = 0;
+        while (SUCCEEDED(enumItems->Next(1, childItem.put(), &fetched)) && fetched > 0)
+        {
+            if (childItem)
+            {
+                int order = 0;
+                if (childItem->Compare(wslItem.get(), SICHINT_CANONICAL, &order) == S_OK && order == 0)
+                {
+                    nstc->SetItemState(childItem.get(), NSTCIS_EXPANDED, NSTCIS_EXPANDED);
+                    return true;
+                }
+                childItem = nullptr;
+            }
+            fetched = 0;
+        }
+
+        return false;
+    }
+
+}
+
 namespace PickerCommon {
     using namespace winrt;
+
+    void CALLBACK WslNodeRevealer::PollTimerProc(HWND hwnd, UINT, UINT_PTR timerId, DWORD) noexcept
+    {
+        reinterpret_cast<WslNodeRevealer*>(timerId)->RevealWslNodeWhenReady(hwnd);
+    }
+
+    void WslNodeRevealer::RevealWslNodeWhenReady(HWND hwnd) noexcept
+    {
+        if (!m_nstc || !m_wslItem || ++m_pollCount >= s_maxPollCount)
+        {
+            KillTimer(hwnd, reinterpret_cast<UINT_PTR>(this));
+            m_timerPending = false;
+            m_nstc = nullptr;
+            m_wslItem = nullptr;
+            return;
+        }
+
+        winrt::com_ptr<IShellItemArray> roots;
+        DWORD count = 0;
+        if (SUCCEEDED(m_nstc->GetRootItems(roots.put())) && roots)
+        {
+            if (FAILED(roots->GetCount(&count)))
+            {
+                count = 0;
+            }
+        }
+
+        // Wait until at least one root node has loaded.
+        if (count == 0)
+        {
+            return;
+        }
+
+        KillTimer(hwnd, reinterpret_cast<UINT_PTR>(this));
+        m_timerPending = false;
+
+        // Search for the WSL node in the immediate children of each root node.
+        for (DWORD i = 0; i < count; i++)
+        {
+            winrt::com_ptr<IShellItem> rootItem;
+            if (SUCCEEDED(roots->GetItemAt(i, rootItem.put())) && rootItem)
+            {
+                if (FindAndShowWslInChildren(m_wslItem, rootItem, m_nstc))
+                {
+                    break;
+                }
+            }
+        }
+
+        m_nstc = nullptr;
+        m_wslItem = nullptr;
+        m_pollCount = 0;
+    }
+
+    void WslNodeRevealer::CancelPendingReveal() noexcept
+    {
+        if (m_timerPending)
+        {
+            KillTimer(m_timerHwnd, reinterpret_cast<UINT_PTR>(this));
+            m_timerPending = false;
+            m_timerHwnd = nullptr;
+        }
+        m_nstc = nullptr;
+        m_wslItem = nullptr;
+        m_pollCount = 0;
+    }
+
+    // IFileDialogEvents::OnFolderChange is called when the dialog is opened.
+    // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialogevents-onfolderchange
+    IFACEMETHODIMP WslNodeRevealer::OnFolderChange(IFileDialog* pfd) noexcept
+    {
+        if (!m_revealed)
+        {
+            m_revealed = true;
+            TryStartReveal(pfd); // best-effort; ignore failure so the picker always opens
+        }
+        return S_OK;
+    }
+
+    HRESULT WslNodeRevealer::TryStartReveal(IFileDialog* pfd) noexcept
+    {
+        winrt::com_ptr<IServiceProvider> sp;
+        RETURN_IF_FAILED(pfd->QueryInterface(IID_PPV_ARGS(sp.put())));
+
+        winrt::com_ptr<IShellBrowser> sb;
+        RETURN_IF_FAILED(sp->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(sb.put())));
+
+        winrt::com_ptr<IServiceProvider> sbSp;
+        RETURN_IF_FAILED(sb->QueryInterface(IID_PPV_ARGS(sbSp.put())));
+
+        winrt::com_ptr<INameSpaceTreeControl> nstc;
+        RETURN_IF_FAILED(sbSp->QueryService(IID_INameSpaceTreeControl, IID_PPV_ARGS(nstc.put())));
+
+        // Resolve the WSL root shell item, falling back from \\wsl.localhost to \\wsl$.
+        winrt::com_ptr<IShellItem> wslItem;
+        if (FAILED(SHCreateItemFromParsingName(L"\\\\wsl.localhost", nullptr, IID_PPV_ARGS(wslItem.put()))))
+        {
+            RETURN_IF_FAILED(SHCreateItemFromParsingName(L"\\\\wsl$", nullptr, IID_PPV_ARGS(wslItem.put())));
+        }
+
+        // Obtain the dialog's HWND so we can attach the timer to it.
+        // SetTimer with a non-NULL hWnd uses the supplied nIDEvent as-is (letting us
+        // recover `this` in PollTimerProc) and synthesizes WM_TIMER via the window's
+        // message loop rather than posting to the thread queue, so KillTimer is atomic.
+        winrt::com_ptr<IOleWindow> oleWindow;
+        RETURN_IF_FAILED(pfd->QueryInterface(IID_PPV_ARGS(oleWindow.put())));
+        HWND dialogHwnd = nullptr;
+        RETURN_IF_FAILED(oleWindow->GetWindow(&dialogHwnd));
+        RETURN_HR_IF_NULL(E_FAIL, dialogHwnd);
+
+        m_nstc = nstc;
+        m_wslItem = wslItem;
+        m_pollCount = 0;
+        m_timerHwnd = dialogHwnd;
+        m_timerPending = SetTimer(m_timerHwnd, reinterpret_cast<UINT_PTR>(this), s_pollIntervalMs, PollTimerProc) != 0;
+        if (!m_timerPending)
+        {
+            m_timerHwnd = nullptr;
+        }
+
+        return S_OK;
+    }
 
     bool IsHStringNullOrEmpty(winrt::hstring value)
     {
