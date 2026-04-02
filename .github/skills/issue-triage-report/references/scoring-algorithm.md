@@ -137,7 +137,7 @@ Maps GitHub issue label strings to four severity tiers. The scoring engine walks
 
 ```json
 "severityLabels": {
-  "critical": ["regression", "crash", "hang", "data-loss", "security", "P0"],
+  "critical": ["regression", "crash", "hang", "data-loss", "P0"],
   "high":     ["bug", "P1"],
   "medium":   ["performance", "feature proposal", "feature-proposal", "P2"],
   "low":      ["documentation", "enhancement", "P3"]
@@ -146,7 +146,7 @@ Maps GitHub issue label strings to four severity tiers. The scoring engine walks
 
 | Tier | % of `weights.severity` | Points (when severity=10) | When to use |
 |------|-------------------------|---------------------------|-------------|
-| `critical` | 100% | 10 | Regressions, crashes, security, data loss |
+| `critical` | 100% | 10 | Regressions, crashes, data loss |
 | `high` | 80% | 8 | Confirmed bugs |
 | `medium` | 50% | 5 | Performance issues, feature proposals |
 | `low` | 20% | 2 | Docs, enhancements |

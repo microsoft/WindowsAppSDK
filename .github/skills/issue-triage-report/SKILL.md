@@ -194,7 +194,7 @@ Each score includes a confidence value `[confidence:XX]` indicating data reliabi
 
 | Tier | Labels | Score |
 |------|--------|-------|
-| Critical | `regression`, `crash`, `hang`, `data-loss`, `security`, `P0` | 100% |
+| Critical | `regression`, `crash`, `hang`, `data-loss`, `P0` | 100% |
 | High | `bug`, `P1` | 80% |
 | Medium | `performance`, `feature proposal`, `P2` | 50% |
 | Low | `documentation`, `enhancement`, `P3` | 20% |
@@ -264,7 +264,7 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
     "popular_reactions": 5
   },
   "severityLabels": {
-    "critical": ["regression", "crash", "hang", "data-loss", "security", "P0"],
+    "critical": ["regression", "crash", "hang", "data-loss", "P0"],
     "high": ["bug", "P1"],
     "medium": ["performance", "feature proposal", "feature-proposal", "P2"],
     "low": ["documentation", "enhancement", "P3"]

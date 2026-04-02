@@ -21,7 +21,7 @@
   ],
   "maxLabelsPerIssue": 2,
   "severityLabels": {
-    "critical": ["regression", "crash", "hang", "data-loss", "security", "P0"],
+    "critical": ["regression", "crash", "hang", "data-loss", "P0"],
     "high": ["bug", "P1"],
     "medium": ["performance", "feature proposal", "feature-proposal", "P2"],
     "low": ["documentation", "enhancement", "P3"]
