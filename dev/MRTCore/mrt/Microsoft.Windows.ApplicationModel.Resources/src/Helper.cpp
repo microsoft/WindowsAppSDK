@@ -100,5 +100,7 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
         }
     }
 
+    // Return original HRESULT for backward compatibility so callers that
+    // check for specific errors (e.g., ERROR_FILE_NOT_FOUND) are not broken.
     return hr;
 }
