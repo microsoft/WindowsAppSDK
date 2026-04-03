@@ -89,8 +89,7 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
     // Sparse-packaged apps have identity but deploy PRI files as loose files.
     // When the PRI is not found, fall back to unpackaged discovery which also searches for "[modulename].pri".
     // See: https://github.com/microsoft/microsoft-ui-xaml/issues/10856
-    if (isPackaged &&
-        (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)))
+    if (isPackaged && IsResourceNotFound(hr))
     {
         HRESULT hrFallback = GetDefaultPriFileForCurentModule(false, filePath);
         if (SUCCEEDED(hrFallback))
