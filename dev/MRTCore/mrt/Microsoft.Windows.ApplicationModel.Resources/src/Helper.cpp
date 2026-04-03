@@ -85,35 +85,18 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
     // resources.pri is in the parent folder. 
     bool isPackaged = (hr != HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
     hr = GetDefaultPriFileForCurentModule(isPackaged, filePath);
-    if (SUCCEEDED(hr))
-    {
-        return S_OK;
-    }
 
-    // Sparse-packaged apps have package identity (via AddPackageByUriAsync) but
-    // deploy resources as loose files next to the executable rather than through
-    // the package system. Because they have identity, the packaged code path above
-    // passes "resources.pri" to MrmGetFilePathFromName — which only searches for
-    // that exact filename. However, sparse apps may use a custom PRI name matching
-    // their module name (e.g., "MyApp.pri" via ProjectPriFileName).
-    //
-    // The package system cannot resolve the app's original PRI filename for sparse
-    // apps, so we fall back to the unpackaged discovery path which passes nullptr
-    // to MrmGetFilePathFromName. This triggers a broader search that includes both
-    // "resources.pri" and "[modulename].pri" (derived via PathCchRenameExtension
-    // from the process executable name).
-    //
-    // This only runs for apps with identity where "resources.pri" was not found —
-    // fully packaged apps and unpackaged apps are unaffected.
-    // If this fallback also fails, return the original HRESULT so callers that
-    // check for a specific error (e.g., ERROR_FILE_NOT_FOUND) are not broken.
+    // Sparse-packaged apps have identity but deploy PRI files as loose files.
+    // When the PRI is not found, fall back to unpackaged discovery which also
+    // searches for "[modulename].pri".
     // See: https://github.com/microsoft/microsoft-ui-xaml/issues/10856
-    if (isPackaged)
+    if (isPackaged &&
+        (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)))
     {
         HRESULT hrFallback = GetDefaultPriFileForCurentModule(false, filePath);
         if (SUCCEEDED(hrFallback))
         {
-            return S_OK;
+            hr = hrFallback;
         }
     }
 
