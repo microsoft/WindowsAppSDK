@@ -83,6 +83,19 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         SharedProcessList m_instances;
         RedirectionRequestQueue m_redirectionArgs;
+
+        // File activation deduplication (issue #5066).
+        // When Shell opens multiple selected files with a packaged Win32 app,
+        // it launches N processes. Each gets all N files and redirects to the
+        // key owner, producing N identical Activated events. This mechanism
+        // suppresses the duplicate events by fingerprinting file activations.
+        SRWLOCK m_fileActivationDedupLock = SRWLOCK_INIT;
+        size_t m_lastFileActivationFingerprint{ 0 };
+        ULONGLONG m_lastFileActivationTickCount{ 0 };
+        static constexpr ULONGLONG c_fileActivationDedupWindowMs{ 2000 };
+
+        size_t ComputeFileActivationFingerprint(AppLifecycle::AppActivationArguments const& args);
+        bool IsDuplicateFileActivation(AppLifecycle::AppActivationArguments const& args);
     };
 }
 
