@@ -36,6 +36,16 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         TextIntelligence_Insights = 61106039,
 
         // 1.8.7
+        DeploymentManager_DiagnosabilityFix = 61543987,
+        LanguageModel_ProcessingFix = 61200617,
+        ImageDescription_ConcurrencyFix = 61350696,
+        LanguageModel_ContentErrorHandlingFix = 61352166,
+        InputPointerSource_TouchKeyboardInvocationFix = 61456565,
+        ListViewSelector_FixFocusedIndex = 61499680,
+        ModelInitialization_Activities = 61509436,
+        WindowsML_DiagnosabilityFix = 61592144,
+        
+        // 1.8.8
         AppRuntime_Insights = 61555948,
     };
 

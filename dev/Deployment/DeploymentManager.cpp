@@ -18,6 +18,9 @@
 // Bug 61124029: [1.8 servicing] Fixing reset activity data on deployment initialization
 #define WINAPPSDK_CHANGEID_61124029 61124029, WinAppSDK_1_8_6
 
+// Bug 61543987: [1.8 servicing] Deployment exceptions masked as ERROR_UNHANDLED_EXCEPTION; SetLastFailure logging single chars
+#define WINAPPSDK_CHANGEID_61543987 61543987, WinAppSDK_1_8_7
+
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 
@@ -209,9 +212,17 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions, isRepair);
         }
-        catch (winrt::hresult_error const& e)
+        catch (...)
         {
-            const HRESULT hr{ e.code() };
+            const HRESULT hr = []() -> HRESULT {
+                if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+                {
+                    return wil::ResultFromCaughtException();
+                }
+                try { throw; }
+                catch (winrt::hresult_error const& e) { return e.code(); }
+                // Non-winrt::hresult_error exceptions propagate (old behavior)
+            }();
 
             auto packageIdentity{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
             PCWSTR c_packageNamePrefix{ L"microsoft.windowsappruntime." };
@@ -219,7 +230,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             std::wstring release;
             if (CompareStringOrdinal(packageIdentity.Name(), -1, c_packageNamePrefix, -1, TRUE) == CSTR_EQUAL)
             {
-                release =  packageIdentity.Name() + c_packageNamePrefixLength;
+                release = packageIdentity.Name() + c_packageNamePrefixLength;
             }
             else
             {
@@ -242,7 +253,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             THROW_HR_MSG(hr, "PackageFullName=%ls Options: ForceDeployment=%c OnErrorShowUI=%c isRepair:%c",
                          packageFullName.c_str(), deploymentInitializeOptions.ForceDeployment() ? 'Y' : 'N',
-                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N' );
+                         deploymentInitializeOptions.OnErrorShowUI() ? 'Y' : 'N', isRepair ? 'Y' : 'N');
         }
 
         // Success!

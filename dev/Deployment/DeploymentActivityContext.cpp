@@ -5,6 +5,11 @@
 
 #include "DeploymentActivityContext.h"
 
+#include <FrameworkUdk/Containment.h>
+
+// Bug 61543987: [1.8 servicing] Deployment exceptions masked as ERROR_UNHANDLED_EXCEPTION; SetLastFailure logging single chars
+#define WINAPPSDK_CHANGEID_61543987 61543987, WinAppSDK_1_8_7
+
 WindowsAppRuntime::Deployment::Activity::Context& WindowsAppRuntime::Deployment::Activity::Context::Get()
 {
     return g_DeploymentActivityContext;
@@ -37,7 +42,14 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
 
     if (failure.pszFile)
     {
-        m_lastFailure.file = *failure.pszFile;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.file = failure.pszFile;
+        }
+        else
+        {
+            m_lastFailure.file = *failure.pszFile;
+        }
     }
     else
     {
@@ -48,7 +60,14 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = *failure.pszMessage;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.message = failure.pszMessage;
+        }
+        else
+        {
+            m_lastFailure.message = *failure.pszMessage;
+        }
     }
     else
     {
@@ -57,7 +76,14 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
 
     if (failure.pszModule)
     {
-        m_lastFailure.module = *failure.pszModule;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61543987>())
+        {
+            m_lastFailure.module = failure.pszModule;
+        }
+        else
+        {
+            m_lastFailure.module = *failure.pszModule;
+        }
     }
     else
     {
