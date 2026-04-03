@@ -98,9 +98,10 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
         {
             hr = hrFallback;
         }
+        // If the fallback also fails, preserve the original HRESULT (not the
+        // fallback's) for backward compatibility so callers checking for
+        // specific errors (e.g., ERROR_FILE_NOT_FOUND) are not broken.
     }
 
-    // Return original HRESULT for backward compatibility so callers that
-    // check for specific errors (e.g., ERROR_FILE_NOT_FOUND) are not broken.
     return hr;
 }
