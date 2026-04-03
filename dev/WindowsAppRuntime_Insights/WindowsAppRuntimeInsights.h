@@ -16,8 +16,8 @@
 #include <appmodel.h>
 #include <FrameworkUdk/Containment.h>
 
-// Bug 61555948: [1.8.6 servicing] AppRuntime_Insights - Add IsPackagedProcess and IsSelfContained to common insights PartB fields
-#define WINAPPSDK_CHANGEID_61555948 61555948, WinAppSDK_1_8_7
+// Bug 61555948: [1.8.8 servicing] AppRuntime_Insights - Add IsPackagedProcess and IsSelfContained to common insights PartB fields
+#define WINAPPSDK_CHANGEID_61555948 61555948, WinAppSDK_1_8_8
     namespace Microsoft::WindowsAppRuntime::Insights
     {
     enum class TraceLoggingInformationFlags : std::uint32_t
