@@ -21,4 +21,12 @@
 
 #include <winrt/Windows.Storage.Streams.h>
 
+#define VERIFY_THROWS_HR(expression, hr)        \
+            VERIFY_THROWS_SPECIFIC(expression,          \
+                winrt::hresult_error,                   \
+                [&](winrt::hresult_error e) -> bool     \
+                {                                       \
+                    return (e.code() == hr);    \
+                })
+
 #endif //PCH_H
