@@ -13,7 +13,6 @@
 #include "MddWin11.h"
 
 #include <filesystem>
-#include <pathcch.h>
 
 static bool IsHybridDeploy() noexcept
 {
@@ -37,9 +36,13 @@ static void SetBaseDirectoryEnvironmentVariableIfNotSet()
     wchar_t exePath[MAX_PATH]{};
     if (GetModuleFileNameW(nullptr, exePath, ARRAYSIZE(exePath)) > 0)
     {
-        PathCchRemoveFileSpec(exePath, ARRAYSIZE(exePath));
-        PathCchAddBackslashEx(exePath, ARRAYSIZE(exePath), nullptr, nullptr);
-        SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", exePath);
+        // Extract directory from exe path and ensure trailing backslash
+        auto exeDir{ std::filesystem::path(exePath).parent_path().wstring() };
+        if (!exeDir.empty() && exeDir.back() != L'\\')
+        {
+            exeDir += L'\\';
+        }
+        SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", exeDir.c_str());
     }
 }
 
@@ -566,7 +569,13 @@ void FirstTimeInitialization(
             //
             const MddAddPackageDependencyOptions addOptions{};
             THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
+
+            // Remove our temporary path addition (package graph handles DLL search now)
+            RemoveFrameworkFromPath(frameworkPackageInfo->path);
+            dllDirectoryCookie.reset();
         }
+        // else: HybridDeploy keeps the framework path in DLL search order
+        //       since there's no package graph to handle it
 
         // Pass along test information (if necessary)
         if (!g_test_ddlmPackageNamePrefix.empty())
