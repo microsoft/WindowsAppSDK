@@ -14,6 +14,14 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Common
         [global::System.Runtime.CompilerServices.ModuleInitializer]
         internal static void InitializeWindowsAppSDK()
         {
+            // HybridDeploy: set env vars BEFORE Bootstrap so that:
+            // 1. Bootstrap can detect hybrid mode and skip AddPackageDependency
+            // 2. On Win10, catalog loading during DllMain can expand loadFrom env vars
+#if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_HYBRIDDEPLOYSETUP
+            System.Environment.SetEnvironmentVariable("MICROSOFT_WINDOWSAPPRUNTIME_HYBRID_DEPLOY", "1");
+            System.Environment.SetEnvironmentVariable("MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", System.AppContext.BaseDirectory);
+#endif
+
             // Call the AutoInitialize functions, as needed, starting with those initializing the WindowsAppRuntime
 #if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP
             Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS.AutoInitialize.AccessWindowsAppSDK();

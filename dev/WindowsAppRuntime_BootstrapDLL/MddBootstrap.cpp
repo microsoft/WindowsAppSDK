@@ -13,6 +13,49 @@
 #include "MddWin11.h"
 
 #include <filesystem>
+#include <pathcch.h>
+
+static bool IsHybridDeploy() noexcept
+{
+    wchar_t value[2]{};
+    return GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_HYBRID_DEPLOY", value, ARRAYSIZE(value)) > 0;
+}
+
+static void SetFrameworkPathEnvironmentVariable(PCWSTR frameworkPath)
+{
+    SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_FRAMEWORK_PATH", frameworkPath);
+}
+
+// For C++ apps (no C# auto-initializer), set BASE_DIRECTORY to exe dir if not already set
+static void SetBaseDirectoryEnvironmentVariableIfNotSet()
+{
+    wchar_t existing[2]{};
+    if (GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", existing, ARRAYSIZE(existing)) > 0)
+    {
+        return; // Already set by C# auto-initializer
+    }
+    wchar_t exePath[MAX_PATH]{};
+    if (GetModuleFileNameW(nullptr, exePath, ARRAYSIZE(exePath)) > 0)
+    {
+        PathCchRemoveFileSpec(exePath, ARRAYSIZE(exePath));
+        PathCchAddBackslashEx(exePath, ARRAYSIZE(exePath), nullptr, nullptr);
+        SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", exePath);
+    }
+}
+
+// Resolve framework package install path from package full name
+static std::wstring GetFrameworkPackagePath(PCWSTR packageFullName)
+{
+    UINT32 pathLength{ 0 };
+    const auto rc{ GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    if (rc != ERROR_INSUFFICIENT_BUFFER)
+    {
+        THROW_WIN32(rc);
+    }
+    auto path{ std::make_unique<WCHAR[]>(pathLength) };
+    THROW_IF_WIN32_ERROR(GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
+    return std::wstring(path.get());
+}
 
 HRESULT _MddBootstrapInitialize(
     UINT32 majorMinorVersion,
@@ -417,43 +460,68 @@ void FirstTimeInitialization(
     const UINT32 minVersionToUseWin11Support{ 0x00010007 };
     if ((majorMinorVersion >= minVersionToUseWin11Support) && MddCore::Win11::IsSupported())
     {
-        // Add the framework package to the package graph
         const std::wstring frameworkPackageFamilyName{ GetFrameworkPackageFamilyName(majorMinorVersion, packageVersionTag.c_str()) };
         const MddPackageDependencyProcessorArchitectures architectureFilter{};
         const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
         const MddCreatePackageDependencyOptions createOptions{};
         wil::unique_process_heap_string packageDependencyId;
         THROW_IF_FAILED(MddCore::Win11::TryCreatePackageDependency(nullptr, frameworkPackageFamilyName.c_str(), minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
-        //
-        const MddAddPackageDependencyOptions addOptions{};
-        MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
-        wil::unique_process_heap_string packageFullName;
-        THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, &packageFullName));
 
-        // Update the activity context
-        auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
-        activityContext.SetInitializationPackageFullName(packageFullName.get());
-
-        // Pass along test information (if necessary)
-        if (!g_test_frameworkPackageNamePrefix.empty())
+        const bool hybridDeploy{ IsHybridDeploy() };
+        if (hybridDeploy)
         {
-            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackageNamePrefix.empty());
-            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackagePublisherId.empty());
-            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_mainPackageNamePrefix.empty());
+            // HybridDeploy: resolve framework path but do NOT add to package graph.
+            // This lets the SxS manifest loadFrom control which DLLs load from where.
+            wil::unique_process_heap_string packageFullName;
+            THROW_IF_FAILED(MddCore::Win11::GetResolvedPackageFullNameForPackageDependency(packageDependencyId.get(), &packageFullName));
 
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName.c_str());
+            const auto frameworkPath{ GetFrameworkPackagePath(packageFullName.get()) };
+            SetFrameworkPathEnvironmentVariable(frameworkPath.c_str());
+            AddDllDirectory(frameworkPath.c_str());
+
+            // Update the activity context
+            auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
+            activityContext.SetInitializationPackageFullName(packageFullName.get());
+
+            // Track our initialized state (keep packageDependencyId alive for lifetime protection)
+            g_usingWin11Support = UsingWin11Support::Yes;
+            g_packageDependencyId = std::move(packageDependencyId);
+            g_initializationMajorMinorVersion = majorMinorVersion;
+            g_initializationVersionTag = std::move(packageVersionTag);
+            const auto frameworkPackageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.get()) };
+            g_initializationFrameworkPackageVersion.Version = frameworkPackageIdentity.Version().Version;
         }
+        else
+        {
+            // Normal path: add the framework package to the package graph
+            const MddAddPackageDependencyOptions addOptions{};
+            MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
+            wil::unique_process_heap_string packageFullName;
+            THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, &packageFullName));
 
-        // Track our initialized state
-        g_usingWin11Support = UsingWin11Support::Yes;
-        //
-        g_packageDependencyId = std::move(packageDependencyId);
-        g_packageDependencyContext = packageDependencyContext;
-        //
-        g_initializationMajorMinorVersion = majorMinorVersion;
-        g_initializationVersionTag = std::move(packageVersionTag);
-        const auto frameworkPackageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.get()) };
-        g_initializationFrameworkPackageVersion.Version = frameworkPackageIdentity.Version().Version;
+            // Update the activity context
+            auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
+            activityContext.SetInitializationPackageFullName(packageFullName.get());
+
+            // Pass along test information (if necessary)
+            if (!g_test_frameworkPackageNamePrefix.empty())
+            {
+                FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackageNamePrefix.empty());
+                FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackagePublisherId.empty());
+                FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_mainPackageNamePrefix.empty());
+
+                ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName.c_str());
+            }
+
+            // Track our initialized state
+            g_usingWin11Support = UsingWin11Support::Yes;
+            g_packageDependencyId = std::move(packageDependencyId);
+            g_packageDependencyContext = packageDependencyContext;
+            g_initializationMajorMinorVersion = majorMinorVersion;
+            g_initializationVersionTag = std::move(packageVersionTag);
+            const auto frameworkPackageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.get()) };
+            g_initializationFrameworkPackageVersion.Version = frameworkPackageIdentity.Version().Version;
+        }
     }
     else
     {
@@ -469,6 +537,15 @@ void FirstTimeInitialization(
         // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
         wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
 
+        const bool hybridDeploy{ IsHybridDeploy() };
+        if (hybridDeploy)
+        {
+            // HybridDeploy: set env vars BEFORE loading the DLL so that
+            // catalog.cpp can expand %FRAMEWORK_PATH% and %BASE_DIRECTORY% in loadFrom
+            SetFrameworkPathEnvironmentVariable(frameworkPackageInfo->path);
+            SetBaseDirectoryEnvironmentVariableIfNotSet();
+        }
+
         auto windowsAppRuntimeDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppRuntime.dll" };
         wil::unique_hmodule windowsAppRuntimeDll(LoadLibraryEx(windowsAppRuntimeDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
         if (!windowsAppRuntimeDll)
@@ -477,20 +554,19 @@ void FirstTimeInitialization(
             THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppRuntimeDllFilename.c_str());
         }
 
-        // Add the framework package to the package graph
-        const MddPackageDependencyProcessorArchitectures architectureFilter{};
-        const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
-        const MddCreatePackageDependencyOptions createOptions{};
         wil::unique_process_heap_string packageDependencyId;
-        THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, frameworkPackageInfo->packageFamilyName, minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
-        //
-        const MddAddPackageDependencyOptions addOptions{};
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
-        THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
-
-        // Remove our temporary path addition
-        RemoveFrameworkFromPath(frameworkPackageInfo->path);
-        dllDirectoryCookie.reset();
+        if (!hybridDeploy)
+        {
+            // Normal path: add the framework package to the package graph
+            const MddPackageDependencyProcessorArchitectures architectureFilter{};
+            const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+            const MddCreatePackageDependencyOptions createOptions{};
+            THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, frameworkPackageInfo->packageFamilyName, minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
+            //
+            const MddAddPackageDependencyOptions addOptions{};
+            THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
+        }
 
         // Pass along test information (if necessary)
         if (!g_test_ddlmPackageNamePrefix.empty())
