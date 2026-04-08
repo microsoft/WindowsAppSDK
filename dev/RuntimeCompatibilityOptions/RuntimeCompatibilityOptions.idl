@@ -44,6 +44,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         ListViewSelector_FixFocusedIndex = 61499680,
         ModelInitialization_Activities = 61509436,
         WindowsML_DiagnosabilityFix = 61592144,
+        
+        // 1.8.8
+        AppRuntime_Insights = 61555948,
     };
 
     /// Represents a version of the Windows App Runtime.
