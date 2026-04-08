@@ -35,6 +35,7 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\Square150x150Logo.scale-200.png">Square150x150Logo.scale-200.png</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\Square44x44Logo.scale-200.png">Square44x44Logo.scale-200.png</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\Square44x44Logo.targetsize-24_altform-unplated.png">Square44x44Logo.targetsize-24_altform-unplated.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Images\Square44x44Logo.targetsize-48_altform-lightunplated.png">Square44x44Logo.targetsize-48_altform-lightunplated.png</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\StoreLogo.png">StoreLogo.png</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\Wide310x150Logo.scale-200.png">Wide310x150Logo.scale-200.png</ProjectItem>
     </Project>      

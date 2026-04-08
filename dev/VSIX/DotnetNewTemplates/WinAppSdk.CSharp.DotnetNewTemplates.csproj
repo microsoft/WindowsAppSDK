@@ -134,6 +134,23 @@
           PackagePath="content/winui.mvvmapp/gitignore.txt" />
   </ItemGroup>
 
+  <!-- WinUI TabView App template -->
+  <ItemGroup>
+    <None Include="templates\tabview-app\.template.config\**\*.*"
+          Pack="true"
+          PackagePath="content/winui.tabview/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\TabViewApp\**\*.*"
+          Exclude="..\ProjectTemplates\Desktop\CSharp\TabViewApp\bin\**;..\ProjectTemplates\Desktop\CSharp\TabViewApp\obj\**;..\ProjectTemplates\Desktop\CSharp\TabViewApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj;..\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.ico;..\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.png;..\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.vstemplate"
+          Pack="true"
+          PackagePath="content/winui.tabview/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="..\ProjectTemplates\Desktop\CSharp\TabViewApp\Package-managed.appxmanifest"
+          Pack="true"
+          PackagePath="content/winui.tabview/Package.appxmanifest" />
+    <None Include="$(_GitignoreSource)"
+          Pack="true"
+          PackagePath="content/winui.tabview/gitignore.txt" />
+  </ItemGroup>
+
   <!-- WinUI Blank Window item template -->
   <ItemGroup>
     <None Include="templates\item-blank-window\.template.config\**\*.*"
