@@ -113,7 +113,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
     {
-        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_ApplicationData_GetForUnpackaged>())
+        if (WinAppSdk::Containment::IsChangeEnabled<ApplicationData_GetForUnpackaged>())
         {
             _VerifyPublisher(publisher);
             _VerifyProduct(product);
