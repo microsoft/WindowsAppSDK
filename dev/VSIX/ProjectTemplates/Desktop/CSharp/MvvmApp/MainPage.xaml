@@ -12,8 +12,19 @@
         <TextBlock
             Text="{x:Bind ViewModel.Greeting, Mode=OneWay}"
             Style="{StaticResource TitleTextBlockStyle}" />
-        <Button
-            Content="Update"
-            Command="{x:Bind ViewModel.UpdateGreetingCommand}" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+            <Button Command="{x:Bind ViewModel.IncrementCommand}">
+                <FontIcon Glyph="&#xE710;" FontSize="14" />
+            </Button>
+            <TextBlock
+                Text="{x:Bind ViewModel.Counter, Mode=OneWay}"
+                VerticalAlignment="Center"
+                MinWidth="40"
+                TextAlignment="Center"
+                Style="{StaticResource BodyStrongTextBlockStyle}" />
+            <Button Command="{x:Bind ViewModel.DecrementCommand}">
+                <FontIcon Glyph="&#xE738;" FontSize="14" />
+            </Button>
+        </StackPanel>
     </StackPanel>
 </Page>

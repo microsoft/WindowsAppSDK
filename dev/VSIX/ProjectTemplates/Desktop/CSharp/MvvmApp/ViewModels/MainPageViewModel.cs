@@ -13,9 +13,18 @@ public partial class MainPageViewModel : ObservableObject
     [ObservableProperty]
     public partial string Greeting { get; set; } = "Hello, WinUI!";
 
+    [ObservableProperty]
+    public partial int Counter { get; set; }
+
     [RelayCommand]
-    private void UpdateGreeting()
+    private void Increment()
     {
-        Greeting = $"Updated at {DateTime.Now:T}";
+        Counter++;
+    }
+
+    [RelayCommand]
+    private void Decrement()
+    {
+        Counter--;
     }
 }
