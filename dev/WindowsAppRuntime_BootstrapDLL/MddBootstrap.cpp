@@ -473,12 +473,19 @@ void FirstTimeInitialization(
         const bool hybridDeploy{ IsHybridDeploy() };
         if (hybridDeploy)
         {
-            // HybridDeploy: resolve framework path but do NOT add to package graph.
-            // This lets the SxS manifest loadFrom control which DLLs load from where.
+            // HybridDeploy: temporarily add to package graph to resolve the framework path,
+            // then immediately remove so that the package graph stays empty.
+            // An empty package graph lets the SxS manifest loadFrom control DLL loading.
+            const MddAddPackageDependencyOptions addOptions{};
+            MDD_PACKAGEDEPENDENCY_CONTEXT tempContext{};
             wil::unique_process_heap_string packageFullName;
-            THROW_IF_FAILED(MddCore::Win11::GetResolvedPackageFullNameForPackageDependency(packageDependencyId.get(), &packageFullName));
+            THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &tempContext, &packageFullName));
 
             const auto frameworkPath{ GetFrameworkPackagePath(packageFullName.get()) };
+
+            // Remove from package graph immediately — keep it empty for manifest loadFrom
+            MddCore::Win11::RemovePackageDependency(tempContext);
+
             SetFrameworkPathEnvironmentVariable(frameworkPath.c_str());
             AddDllDirectory(frameworkPath.c_str());
 
