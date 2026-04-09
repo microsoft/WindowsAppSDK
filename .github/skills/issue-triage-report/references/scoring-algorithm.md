@@ -1,244 +1,455 @@
-# Issue Highlight Scoring Algorithm
+# ScoringConfig.json – Field-by-Field Guide
 
-This document describes the scoring algorithm used to identify high-priority issues that should be highlighted in the Feature Area Status report.
+This document explains every field in [`ScoringConfig.json`](../scripts/ScoringConfig.json) so you can tune issue highlight scoring without reading the PowerShell source. The config is loaded (and strictly validated) by `Get-ScoringConfig` in [`ReportLib.ps1`](../scripts/ReportLib.ps1).
 
-## Overview
-
-Each open issue receives a score from 0-100 based on weighted factors. Issues with the highest scores per feature area are marked as highlights with descriptive labels indicating why they're important.
-
-## Scoring Factors
-
-### 1. Reactions (Weight: 25 points max)
-
-Community engagement measured by GitHub reactions (👍, ❤️, 🚀, 👀, 🎉, 😕, 😄).
-
-| Reactions | Score |
-|-----------|-------|
-| 0 | 0 |
-| 1-4 | 5 |
-| 5-9 | 10 |
-| 10-19 | 15 |
-| 20-49 | 20 |
-| 50+ | 25 |
-
-**Rationale**: High reaction counts indicate community demand and widespread impact.
-
-**Highlight Label**: `🔥 Hot` when reactions ≥ 10
+> **All fields are required.** The loader throws if any section or field is missing — there are no hidden defaults.
 
 ---
 
-### 2. Age (Weight: 20 points max)
-
-Time since issue was created, with higher scores for older untriaged issues.
-
-| Days Open | Score |
-|-----------|-------|
-| 0-30 | 0 |
-| 31-60 | 5 |
-| 61-90 | 10 |
-| 91-180 | 15 |
-| 181+ | 20 |
-
-**Rationale**: Older issues without resolution deserve attention to prevent backlog growth.
-
-**Highlight Label**: `⏰ Aging` when days > 90 AND has `needs-triage` label
-
----
-
-### 3. Comments (Weight: 15 points max)
-
-Discussion activity measured by comment count.
-
-| Comments | Score |
-|----------|-------|
-| 0 | 0 |
-| 1-2 | 3 |
-| 3-5 | 6 |
-| 6-10 | 10 |
-| 11+ | 15 |
-
-**Recent Activity Bonus**: +5 if commented in last 14 days
-
-**Rationale**: Active discussions indicate ongoing relevance and potential blockers.
-
-**Highlight Label**: `📈 Trending` when comments ≥ 5 AND recent activity (shows the issue is heating up NOW)
-
----
-
-### 4. Severity Labels (Weight: 15 points max)
-
-Priority based on issue labels indicating severity or type.
-
-| Label | Score |
-|-------|-------|
-| `regression` | 15 |
-| `crash`, `hang`, `data-loss` | 12 |
-| `bug` | 8 |
-| `performance` | 6 |
-| `documentation` | 2 |
-| None of above | 0 |
-
-**Rationale**: Regressions and crashes have direct user impact.
-
-**Highlight Labels**:
-- `🐛 Regression` when has `regression` label
-- (Bug severity shown in score, not separate label)
-
----
-
-### 6. Blocker Status (Weight: 10 points max)
-
-Issues that block other work or teams.
-
-| Condition | Score |
-|-----------|-------|
-| Has `blocking` or `blocker` label | 10 |
-| Linked as blocking another issue | 8 |
-| Mentioned in blocking context | 5 |
-| No blocker indicators | 0 |
-
-**Rationale**: Blockers have multiplicative impact on productivity.
-
-**Highlight Label**: `🚧 Blocker` when has blocking indicators
-
----
-
-## Composite Score Calculation
+## File Location
 
 ```
-Total Score = Σ(factor_score × factor_weight / max_factor_weight)
-
-Normalized Score = (Total Score / 100) × 100
+.github/skills/issue-triage-report/scripts/ScoringConfig.json
 ```
 
-### Example Calculation
-
-Issue #2894:
-- Reactions: 25 (score: 24)
-- Age: 120 days (score: 18)
-- Comments: 8 (score: 13)
-- Labels: `bug` (score: 8)
-- Blocker: No (score: 0)
-
-**Total**: 24 + 18 + 13 + 8 + 0 = **63/100**
-
 ---
 
-## Highlight Label Assignment
+## Top-Level Structure
 
-After scoring, assign labels based on the highest-scoring factors:
-
-| Priority | Label | Condition |
-|----------|-------|-----------|
-| 1 | `🐛 Regression` | Has `regression` label |
-| 2 | `🚧 Blocker` | Has blocking indicators |
-| 3 | `🔥 Hot` | Reactions ≥ 10 (all-time popularity) |
-| 4 | `⏰ Aging` | Days > 90 + needs-triage |
-| 5 | `📈 Trending` | Comments ≥ 5 + recent activity (heating up NOW) |
-| 6 | ` Popular` | Feature proposal + reactions ≥ 5 |
-
-**Rule**: Each issue gets **at most 2 labels** (most relevant based on score contribution).
-
----
-
-## Special Cases
-
-### Zero Issues (Celebration)
-
-When a feature area has zero open bugs:
-- Display: `0️⃣🐛🥳`
-- Meaning: Celebrate zero bugs!
-
-### New Area
-
-When a feature area was recently created or has no historical data:
-- Display: `🆕`
-- Skip historical comparisons
-
-### Redirect Area (area-External)
-
-For `area-External` label (issues to redirect to other teams):
-- Display: `N/A` for highlights
-- Note: "Current backlog contains issues for redirection to other teams"
-
----
-
-## Thresholds Configuration
-
-These thresholds can be adjusted in `ScoringConfig.json`:
-
-```json
+```jsonc
 {
-  "weights": {
-    "reactions": 30,
-    "age": 25,
-    "comments": 20,
-    "severity": 15,
-    "blockers": 10
-  },
-  "thresholds": {
-    "hot_reactions": 10,
-    "aging_days": 90,
-    "trending_comments": 5,
-    "trending_days": 14,
-    "popular_reactions": 5
-  },
-  "labelPriority": [
-    "regression",
-    "blocker",
-    "hot",
-    "aging",
-    "trending",
-    "popular"
-  ],
-  "maxLabelsPerIssue": 2
+  "weights":          { ... },   // How much each scoring factor matters (points)
+  "thresholds":       { ... },   // Numeric cutoffs for highlight labels
+  "labelPriority":    [ ... ],   // Order for assigning highlight labels
+  "maxLabelsPerIssue": 2,        // Cap on highlight labels per issue
+  "severityLabels":   { ... }    // Maps GitHub labels → severity tiers
 }
 ```
 
 ---
 
-## Usage in Reports
+## `weights` – Scoring Factor Points
 
-When generating reports:
+Controls how many points each factor can contribute to the 0–100 composite score. The values **must** sum to 100 (or less, if you intentionally disable a factor by setting it to 0).
 
-1. Fetch all open issues per area
-2. Calculate scores for each issue
-3. Sort by score descending
-4. Take top N issues (default: 3)
-5. Assign highlight labels
-6. Format for display
+| Field | Type | Description |
+|-------|------|-------------|
+| `reactions` | int | Max points from GitHub reaction count (👍 ❤️ 🚀 👀 🎉 😕 😄). Higher reaction counts award a larger fraction of this value. |
+| `age` | int | Max points from issue age (days since creation). Older untriaged issues score higher. |
+| `comments` | int | Max points from comment count. More discussion → higher score. |
+| `severity` | int | Max points from severity label matching (see [`severityLabels`](#severitylabels--github-label-→-severity-tier)). |
+| `blockers` | int | Max points for issues with blocking labels (`block`, `blocker`, `blocking`). Set to `0` to disable. |
 
-### Output Example
+### How points are awarded within each factor
 
-```markdown
-| Feature Area | ... | Highlights |
-|--------------|-----|------------|
-| area-Notification | ... | 🔥 [#2894](link) Hot, ⏰ [#3001](link) Aging |
+The scoring engine divides each factor's weight into brackets. For example, with `"reactions": 30`:
+
+| Raw Reactions | % of Weight | Points Awarded |
+|---------------|-------------|----------------|
+| 0 | 0% | 0 |
+| 1–4 | 20% | 6 |
+| 5–9 | 40% | 12 |
+| 10–19 | 60% | 18 |
+| 20–49 | 80% | 24 |
+| 50+ | 100% | 30 |
+
+The same 20/25/40/50/67/75/80/100% bracket pattern applies to `age` and `comments`. Changing the weight value scales all brackets proportionally.
+
+**Severity** uses tier percentages instead (see below).
+
+### Tuning tips
+
+- **Emphasize community signal**: Increase `reactions` and `comments`, decrease `age`.
+- **Prioritize backlog hygiene**: Increase `age`.
+- **Re-enable blocker tracking**: Set `blockers` to a non-zero value (reduce other weights to keep the sum ≤ 100).
+
+---
+
+## `thresholds` – Highlight Label Cutoffs
+
+These values control when an issue earns a highlight label (🌟 Popular, ⏰ Aging, 📈 Trending). They do **not** affect the numeric score — only whether a label badge appears.
+
+```json
+"thresholds": {
+  "aging_days":        90,
+  "trending_comments": 10,
+  "trending_days":     14,
+  "popular_reactions":  5
+}
+```
+
+| Field | Type | Used By | Description |
+|-------|------|---------|-------------|
+| `aging_days` | int | ⏰ Aging | Issue must be open longer than this **and** carry the `needs-triage` label to get the Aging badge. |
+| `trending_comments` | int | 📈 Trending | Minimum comment count required for the Trending badge. |
+| `trending_days` | int | 📈 Trending | Issue must have been updated within this many days **and** meet `trending_comments` to qualify. Ensures "trending" means trending *now*, not historically. |
+| `popular_reactions` | int | 🌟 Popular | Minimum total reactions to earn the Popular badge. |
+
+### Tuning tips
+
+- **Tighter Trending window**: Lower `trending_days` to 7 to surface only very recent activity.
+- **Broader Popular threshold**: Lower `popular_reactions` to 3 if your repo gets fewer reactions.
+- **Stricter Aging**: Raise `aging_days` to 180 if a 90-day backlog is normal.
+
+---
+
+## `labelPriority` – Highlight Label Order
+
+Determines which highlight labels are assigned first when an issue qualifies for more than `maxLabelsPerIssue` labels. Labels earlier in the array win.
+
+```json
+"labelPriority": [
+  "regression",
+  "blocker",
+  "popular",
+  "aging",
+  "trending"
+]
+```
+
+| Position | Internal Name | Display Label | Condition |
+|----------|---------------|---------------|-----------|
+| 1 | `regression` | 🐛 Regression | Issue has a `regression` GitHub label |
+| 2 | `blocker` | 🚧 Blocker | Issue has a label matching `block\|blocker\|blocking` |
+| 3 | `popular` | 🌟 Popular | Reactions ≥ `thresholds.popular_reactions` |
+| 4 | `aging` | ⏰ Aging | Days open > `thresholds.aging_days` AND has `needs-triage` label |
+| 5 | `trending` | 📈 Trending | Comments ≥ `thresholds.trending_comments` AND updated within `thresholds.trending_days` |
+
+### Example
+
+An issue with a `regression` label, 20 reactions, and 15 comments qualifies for Regression, Popular, and Trending. With `maxLabelsPerIssue: 2`, it receives **🐛 Regression** and **🌟 Popular** (positions 1 and 3 beat position 5).
+
+---
+
+## `maxLabelsPerIssue` – Label Cap
+
+```json
+"maxLabelsPerIssue": 2
+```
+
+Maximum number of highlight labels attached to any single issue. After the engine evaluates all conditions (in `labelPriority` order), it keeps only the first N labels. Increase this if you want richer badge detail; decrease to keep reports cleaner.
+
+---
+
+## `severityLabels` – GitHub Label → Severity Tier
+
+Maps GitHub issue label strings to four severity tiers. The scoring engine walks tiers top-to-bottom and awards points based on the **first matching label** it finds.
+
+```json
+"severityLabels": {
+  "critical": ["regression", "crash", "hang", "data-loss", "P0"],
+  "high":     ["bug", "P1"],
+  "medium":   ["performance", "feature proposal", "feature-proposal", "P2"],
+  "low":      ["documentation", "enhancement", "P3"]
+}
+```
+
+| Tier | % of `weights.severity` | Points (when severity=10) | When to use |
+|------|-------------------------|---------------------------|-------------|
+| `critical` | 100% | 10 | Regressions, crashes, data loss |
+| `high` | 80% | 8 | Confirmed bugs |
+| `medium` | 50% | 5 | Performance issues, feature proposals |
+| `low` | 20% | 2 | Docs, enhancements |
+
+### Customization
+
+- **Add a label**: Append it to the appropriate tier array (e.g., add `"memory-leak"` to `critical`).
+- **Reclassify a label**: Move it between tier arrays.
+- **Support custom P-labels**: The arrays already include `P0`–`P3`; add `P4`, `P5`, etc. to `low` if needed.
+- **Order within a tier** doesn't matter — the engine matches the first label found on the issue against all tiers, checking from `critical` down to `low`.
+
+---
+
+## Composite Score Formula
+
+```
+Total = reactions_pts + age_pts + comments_pts + severity_pts + blockers_pts
+      = weights.reactions + weights.age + weights.comments + weights.severity + weights.blockers
+      = 100 max (with current defaults)
+```
+
+### Worked Example
+
+Issue #2894 with 25 reactions, open 120 days, 8 comments, labeled `bug`:
+
+| Factor | Raw | Bracket | Points |
+|--------|-----|---------|--------|
+| Reactions | 25 | 20–49 → 80% | 24/30 |
+| Age | 120 days | 91–180 → 75% | 22/30 |
+| Comments | 8 | 6–10 → 67% | 20/30 |
+| Severity | `bug` | high → 80% | 8/10 |
+| Blockers | — | disabled | 0/0 |
+| **Total** | | | **74/100** |
+
+---
+
+## Confidence Scoring
+
+Each score carries a `[confidence:XX]` value (0–100) indicating data reliability. This is computed at runtime by `Get-ScoreConfidence` and is **not** configurable in `ScoringConfig.json`.
+
+| Factor | Points |
+|--------|--------|
+| Has reactions data | +15 |
+| Has comments data | +15 |
+| Has labels | +15 |
+| Has created date | +15 |
+| Score ≥ 60 (clear priority) | +25 |
+| Score 40–59 | +15 |
+| Score 20–39 | +10 |
+| 3+ factors contributing | +15 |
+| 2 factors contributing | +10 |
+
+```powershell
+# Find high-confidence highlights (80+)
+Select-String -Path report.md -Pattern '\[confidence:[89][0-9]\]'
+
+# Find low-confidence items (below 50)
+Select-String -Path report.md -Pattern '\[confidence:[0-4][0-9]\]'
 ```
 
 ---
 
-## API Data Requirements
+## Validation Rules
 
-To calculate scores, fetch these fields per issue:
+`Get-ScoringConfig` in `ReportLib.ps1` enforces these constraints at load time — if any fail, the script throws immediately:
 
-```json
-{
-  "number": 2894,
-  "title": "...",
-  "createdAt": "2024-01-15T...",
-  "labels": [{"name": "area-Notification"}, {"name": "bug"}],
-  "reactionGroups": [
-    {"content": "THUMBS_UP", "users": {"totalCount": 12}},
-    {"content": "HEART", "users": {"totalCount": 5}}
-  ],
-  "comments": {"totalCount": 8},
-  "author": {"login": "contributor"},
-  "linkedIssues": [...]
+| Rule | Error if violated |
+|------|-------------------|
+| File must be named `ScoringConfig.json` | `ConfigPath must point to ScoringConfig.json` |
+| Top-level sections `weights`, `thresholds`, `maxLabelsPerIssue`, `severityLabels` must all exist | `missing required section: '<name>'` |
+| `weights` must contain: `reactions`, `age`, `comments`, `severity`, `blockers` | `'weights' missing required field: '<name>'` |
+| `thresholds` must contain: `aging_days`, `trending_comments`, `trending_days`, `popular_reactions` | `'thresholds' missing required field: '<name>'` |
+| `severityLabels` must contain: `critical`, `high`, `medium`, `low` | `'severityLabels' missing required level: '<name>'` |
+
+`labelPriority` is the only optional field — if omitted, highlight labels are still assigned by the hardcoded priority in `Get-HighlightLabels`.
+
+---
+
+## Script Architecture & Function Reference
+
+Five scripts implement the scoring system. All scoring-related scripts dot-source `ReportLib.ps1` and load `ScoringConfig.json` through `Get-ScoringConfig`.
+
+```
+ScoringConfig.json
+       │
+       ▼
+ Get-ScoringConfig()          ◄── ReportLib.ps1 (shared library)
+       │
+       ├──► Get-IssueScore()       scores one issue (canonical math)
+       ├──► Get-HighlightLabels()  assigns badge labels
+       └──► Get-ScoreConfidence()  rates data reliability
+              │
+       ┌──────┴──────────────────────────────────┐
+       ▼                                         ▼
+ Get-HighlightScore.ps1                Generate-FeatureAreaReport.ps1
+ (single-issue CLI tool)               (full report pipeline)
+       │                                         │
+       ▼                                         ▼
+ Get-DetailedIssueScore()              Get-HighlightedIssues()
+ Format-ScoreBreakdown()               Format-ReportMarkdown()
+
+ Validate-FeatureAreaReport.ps1        Get-AreaContacts.ps1
+ (live issue counts — no scoring)      (contact lookup — no scoring)
+```
+
+---
+
+### `ReportLib.ps1` — Shared Library
+
+Location: `./scripts/ReportLib.ps1`
+
+All scoring math lives here. Other scripts call these functions — they never duplicate the logic.
+
+#### Core Functions
+
+| Function | Purpose | Config Fields Read |
+|----------|---------|-------------------|
+| `Get-ScoringConfig` | Loads and validates `ScoringConfig.json`. Returns a hashtable consumed by every other function. | All fields (validation only) |
+| `Get-IssueScore` | **Canonical scorer.** Takes one issue + config, returns a hashtable with per-factor scores (`Reactions`, `Age`, `Comments`, `Severity`, `Blockers`), raw values, and `Total`. | `weights.*`, `severityLabels.*` |
+| `Get-HighlightLabels` | Evaluates label conditions and returns up to `maxLabelsPerIssue` badge strings (e.g., `🌟 Popular`). Checks in `labelPriority` order. | `thresholds.*`, `maxLabelsPerIssue` |
+| `Get-ScoreConfidence` | Rates data reliability (0–100) based on data completeness and score magnitude. | None (runtime only) |
+
+#### Helper Functions
+
+| Function | Purpose |
+|----------|---------|
+| `Get-TotalReactions` | Sums `users.totalCount` across all `reactionGroups` on an issue. |
+| `Get-IssueAgeInDays` | Calculates `(UTC now − createdAt)` in whole days. |
+| `Test-HasLabel` | Exact-match check for a single label name on an issue. |
+| `Test-HasLabelMatching` | Regex-match check for a label pattern (e.g., `block\|blocker`). |
+| `Format-IssueLink` | Returns `[#NNN](url)` markdown link. |
+| `Format-Confidence` | Returns `[confidence:XX]` string. |
+| `Get-AreaSuggestionConfidence` | Rates how likely a suggested area label is correct (used outside scoring). |
+
+#### `Get-IssueScore` Return Shape
+
+```powershell
+@{
+    Reactions      = [int]    # Points awarded (0 – weights.reactions)
+    Age            = [int]    # Points awarded (0 – weights.age)
+    Comments       = [int]    # Points awarded (0 – weights.comments)
+    Severity       = [int]    # Points awarded (0 – weights.severity)
+    Blockers       = [int]    # Points awarded (0 – weights.blockers)
+    Total          = [int]    # Sum of above
+    RawReactions   = [int]    # Actual reaction count
+    RawAge         = [int]    # Days since creation
+    RawComments    = [int]    # Actual comment count
+    RawUpdateAgeDays = [int]  # Days since last update
+    SeverityLabel  = [string] # First matching severity label (e.g., "bug")
+    IsBlocker      = [bool]   # True if any label matches block|blocker|blocking
 }
 ```
 
-GitHub CLI command:
-```bash
-gh issue list --repo microsoft/WindowsAppSDK --label "area-Notification" --state open --json number,title,createdAt,labels,reactionGroups,comments,author
+---
+
+### `Get-HighlightScore.ps1` — Single-Issue Scorer
+
+Location: `./scripts/Get-HighlightScore.ps1`
+
+CLI tool that fetches one issue from GitHub and displays its score breakdown.
+
+#### Functions
+
+| Function | Purpose |
+|----------|---------|
+| `Get-DetailedIssueScore` | Wraps `Get-IssueScore` (ReportLib) and adds presentation metadata — reason strings (e.g., `"🌟 Popular (community interest)"`) and `MaxScore` per factor. Does **not** duplicate scoring math. |
+| `Format-ScoreBreakdown` | Renders the visual bar-chart output (`█░`) with factor-by-factor breakdown, total score, confidence, and a priority recommendation (HIGH / MEDIUM / NORMAL / LOW). |
+
+#### Usage
+
+```powershell
+# Quick score
+./scripts/Get-HighlightScore.ps1 -IssueNumber 4651
+
+# Detailed breakdown with visual bars
+./scripts/Get-HighlightScore.ps1 -IssueNumber 4651 -Verbose
+
+# Custom config path
+./scripts/Get-HighlightScore.ps1 -IssueNumber 4651 -ConfigPath .\custom-config.json
 ```
+
+#### Output (Verbose)
+
+```
+═══════════════════════════════════════════════════════════
+  Issue #4651: Example issue title
+═══════════════════════════════════════════════════════════
+
+  SCORE BREAKDOWN:
+  ───────────────────────────────────────────────────────
+  Reactions    [████░░░░░░] 12/30  (raw: 7)
+               └─ 🌟 Popular (community interest)
+  Age          [██████████] 30/30  (raw: 200)
+               └─ ⏰ Aging (needs triage for 200 days)
+  Comments     [████████░░] 20/30  (raw: 8)
+  Severity     [████████░░]  8/10  (raw: bug)
+               └─ 🟠 High: bug
+  ───────────────────────────────────────────────────────
+  TOTAL SCORE: 70 / 100 [confidence:85]
+
+  Recommendation: 🔴 HIGH PRIORITY - Should be highlighted in triage report
+```
+
+---
+
+### `Generate-FeatureAreaReport.ps1` — Report Pipeline
+
+Location: `./scripts/Generate-FeatureAreaReport.ps1`
+
+Generates the full Feature Area Status report by iterating every `area-*` label.
+
+#### Data Flow
+
+```
+1. Get-AllAreaLabels          Fetch all area-* labels from the repo
+       │
+2. Get-IssuesForArea          For each area, fetch open (and optionally closed) issues
+       │
+3. Get-IssueStats             Count totals, needs-triage, proposals, bugs per area
+       │
+4. Get-HighlightedIssues      Score every issue via Get-IssueScore (ReportLib),
+       │                      assign labels via Get-HighlightLabels (ReportLib),
+       │                      sort descending, take top N
+       │
+5. Format-HighlightsMarkdown  Format highlights as "🌟 [#NNN](url) [confidence:XX]"
+       │
+6. Format-ReportMarkdown      Assemble the final markdown table with all areas
+```
+
+#### Functions
+
+| Function | Purpose | Calls from ReportLib |
+|----------|---------|---------------------|
+| `Get-AllAreaLabels` | Discovers `area-*` labels via `Get-RepositoryLabels.ps1` (from the triage-meeting-prep skill). | — |
+| `Get-IssuesForArea` | Fetches issues for one area label using `gh issue list`. | — |
+| `Get-IssueStats` | Counts open, needs-triage, proposals, and bugs from label names. | — |
+| `Get-HighlightedIssues` | Orchestrator: scores all issues, assigns labels, computes confidence, sorts, and returns top N. | `Get-IssueScore`, `Get-HighlightLabels`, `Get-ScoreConfidence` |
+| `Format-HighlightsMarkdown` | Joins highlight entries into a comma-separated markdown string. | — |
+| `Format-ReportMarkdown` | Builds the full markdown table with header, rows, and special-case handling (zero bugs, external area). | — |
+
+#### Usage
+
+```powershell
+# Default markdown report
+./scripts/Generate-FeatureAreaReport.ps1
+
+# JSON output with 5 highlights per area
+./scripts/Generate-FeatureAreaReport.ps1 -OutputFormat json -HighlightCount 5
+
+# Include recently closed issues
+./scripts/Generate-FeatureAreaReport.ps1 -IncludeClosed
+```
+
+---
+
+### `Validate-FeatureAreaReport.ps1` — Live Counts
+
+Location: `./scripts/Validate-FeatureAreaReport.ps1`
+
+Queries live issue counts per area and prints a formatted console table. **Does not use `ScoringConfig.json` or any scoring functions** — it only counts open, needs-triage, proposal, and closed (30-day) issues.
+
+Use this script to sanity-check raw numbers before interpreting scored highlights.
+
+---
+
+### `Get-AreaContacts.ps1` — Contact Lookup
+
+Location: `./scripts/Get-AreaContacts.ps1`
+
+Manages the area → contact mapping. **Does not use `ScoringConfig.json`** — it reads from `area-contacts.json` (user copy at `.user/issue-triage-report/area-contacts.json`, template at `references/area-contacts.json`).
+
+---
+
+## Config → Function Cross-Reference
+
+Quick lookup: which function reads which `ScoringConfig.json` field.
+
+| Config Field | Read By | Effect |
+|---|---|---|
+| `weights.reactions` | `Get-IssueScore` | Max points for reaction count |
+| `weights.age` | `Get-IssueScore` | Max points for issue age |
+| `weights.comments` | `Get-IssueScore` | Max points for comment count |
+| `weights.severity` | `Get-IssueScore` | Max points for severity label match |
+| `weights.blockers` | `Get-IssueScore` | Max points for blocker labels (0 = disabled) |
+| `thresholds.aging_days` | `Get-HighlightLabels` | Minimum days to qualify for ⏰ Aging badge |
+| `thresholds.trending_comments` | `Get-HighlightLabels` | Minimum comments to qualify for 📈 Trending badge |
+| `thresholds.trending_days` | `Get-HighlightLabels` | Maximum days since update to qualify for 📈 Trending badge |
+| `thresholds.popular_reactions` | `Get-HighlightLabels` | Minimum reactions to qualify for 🌟 Popular badge |
+| `labelPriority` | `Get-HighlightLabels` | Order of label assignment when issue qualifies for multiple |
+| `maxLabelsPerIssue` | `Get-HighlightLabels` | Cap on badges per issue |
+| `severityLabels.critical` | `Get-IssueScore` | Labels that earn 100% of `weights.severity` |
+| `severityLabels.high` | `Get-IssueScore` | Labels that earn 80% of `weights.severity` |
+| `severityLabels.medium` | `Get-IssueScore` | Labels that earn 50% of `weights.severity` |
+| `severityLabels.low` | `Get-IssueScore` | Labels that earn 20% of `weights.severity` |
+
+---
+
+## Special Report Indicators
+
+These are not configured in `ScoringConfig.json` but appear in report output:
+
+| Indicator | Meaning |
+|-----------|---------|
+| `0️⃣🐛🥳` | Feature area has zero open bugs |
+| `🆕` | New area with no historical data |
+| `N/A` | `area-External` — issues pending redirection to other teams |
