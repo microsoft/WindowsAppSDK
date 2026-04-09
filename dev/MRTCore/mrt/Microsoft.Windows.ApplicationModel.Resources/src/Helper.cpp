@@ -84,5 +84,19 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
     // GetDefaultPriFileForCurrentPackage will not handle the new case where
     // resources.pri is in the parent folder. 
     bool isPackaged = (hr != HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    return GetDefaultPriFileForCurentModule(isPackaged, filePath);
+    hr = GetDefaultPriFileForCurentModule(isPackaged, filePath);
+
+    // Sparse-packaged apps have identity but deploy PRI files as loose files; fall back to unpackaged discovery which also searches for "[modulename].pri".
+    if (isPackaged && IsResourceNotFound(hr))
+    {
+        HRESULT hrFallback = GetDefaultPriFileForCurentModule(false, filePath);
+        if (SUCCEEDED(hrFallback))
+        {
+            hr = hrFallback;
+        }
+        // If the fallback also fails, preserve the original HRESULT (not the fallback's)
+        // for backward compatibility so callers checking for specific errors (e.g., ERROR_FILE_NOT_FOUND) are not broken.
+    }
+
+    return hr;
 }
