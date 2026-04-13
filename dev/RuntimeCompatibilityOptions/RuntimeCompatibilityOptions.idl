@@ -12,10 +12,37 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     {
         None = 0, /// do not use this value
 
-        // Add real changes here:
-
         // 1.8.3
         OrientedVirtualizingPanel_FixBoundsOverflow = 59890419,
+
+        // 1.8.4
+        StoragePickers_PreserveFileTypeChoicesInsertionOrder = 60245168,
+        StoragePickers_DisplayFileTypeFilterNames = 60245660,
+        StoragePickers_DoNotTruncateExistingFileOnSave = 60257559,
+        FixCreateIconElementRendering = 60408488,
+
+        // 1.8.5
+        InputNonClientPointerSource_PropagateWindowPosChangedMessage = 60326952,
+        XamlRoot_FixGetHostWindowInNestedIslands = 60697780,
+        DeploymentManager_PackageDowngradeFix = 60760194,
+        DwmCoreI_ShutdownManipulationCrash = 60823930,
+        ModelInitialization_Insights = 60909827,
+        ModelInitialization_KnownExceptions = 60910847,
+
+        // 1.8.6
+        DeploymentManager_ActivityCollectionFix = 61124029,
+        AppLifecycle_SharedMemoryRedirectionQueueFix = 60972838,
+        SplitMenuFlyoutItem_Available = 60878987,
+        TextIntelligence_Insights = 61106039,
+
+        // 1.8.7
+        LanguageModel_ProcessingFix = 61200617,
+        ImageDescription_ConcurrencyFix = 61350696,
+        LanguageModel_ContentErrorHandlingFix = 61352166,
+        InputPointerSource_TouchKeyboardInvocationFix = 61456565,
+        ListViewSelector_FixFocusedIndex = 61499680,
+        ModelInitialization_Activities = 61509436,
+        WindowsML_DiagnosabilityFix = 61592144,
     };
 
     /// Represents a version of the Windows App Runtime.
