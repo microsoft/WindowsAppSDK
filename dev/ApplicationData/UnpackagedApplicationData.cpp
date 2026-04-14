@@ -12,7 +12,7 @@
 
 #include "ApplicationDataTelemetry.h"
 
-namespace Microsoft::Windows::Storage
+namespace winrt::Microsoft::Windows::Storage::implementation
 {
     UnpackagedApplicationData::UnpackagedApplicationData(winrt::hstring const& publisher, winrt::hstring const& product) :
         m_publisher(publisher),
@@ -20,6 +20,23 @@ namespace Microsoft::Windows::Storage
         m_localPath(),
         m_temporaryPath()
     {
+    }
+    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetDefault()
+    {
+        // Statics are dispatched via the factory to ApplicationData, not here
+        throw winrt::hresult_not_implemented();
+    }
+    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForUser(winrt::Windows::System::User /*user*/)
+    {
+        throw winrt::hresult_not_implemented();
+    }
+    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForPackageFamily(winrt::hstring const& /*packageFamilyName*/)
+    {
+        throw winrt::hresult_not_implemented();
+    }
+    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForUnpackaged(winrt::hstring const& /*publisher*/, winrt::hstring const& /*product*/)
+    {
+        throw winrt::hresult_not_implemented();
     }
     bool UnpackagedApplicationData::IsMachinePathSupported()
     {
@@ -153,9 +170,8 @@ namespace Microsoft::Windows::Storage
         THROW_IF_WIN32_ERROR(::RegOpenCurrentUser(KEY_READ | KEY_WRITE, currentUserKey.put()));
         auto subKey{ std::format(L"SOFTWARE\\{}\\{}", m_publisher, m_product) };
         auto key{ wil::reg::create_shared_key(currentUserKey.get(), subKey.c_str(), wil::reg::key_access::readwrite) };
-        auto container{ std::make_shared<UnpackagedApplicationDataContainer>(
-            std::move(key), winrt::hstring{}, winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) };
-        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(container);
+        return winrt::make<UnpackagedApplicationDataContainer>(
+            std::move(key), winrt::hstring{}, winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local);
     }
     winrt::Windows::Foundation::IAsyncAction UnpackagedApplicationData::ClearAsync(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality)
     {
@@ -219,7 +235,7 @@ namespace Microsoft::Windows::Storage
 
         co_return;
     }
-    winrt::Windows::Foundation::IAsyncAction UnpackagedApplicationData::ClearPublisherCacheFolderAsync(winrt::hstring folderName)
+    winrt::Windows::Foundation::IAsyncAction UnpackagedApplicationData::ClearPublisherCacheFolderAsync(winrt::hstring /*folderName*/)
     {
         _VerifyNotClosed();
 
@@ -233,14 +249,14 @@ namespace Microsoft::Windows::Storage
         m_localPath.clear();
         m_temporaryPath.clear();
     }
-    winrt::hstring UnpackagedApplicationData::GetPublisherCachePath(winrt::hstring const& folderName)
+    winrt::hstring UnpackagedApplicationData::GetPublisherCachePath(winrt::hstring const& /*folderName*/)
     {
         _VerifyNotClosed();
 
         // ApplicationData.PublisherCacheFolder has no unpackaged equivalent
         throw winrt::hresult_not_implemented();
     }
-    winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::GetPublisherCacheFolder(winrt::hstring const& folderName)
+    winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::GetPublisherCacheFolder(winrt::hstring const& /*folderName*/)
     {
         _VerifyNotClosed();
 
