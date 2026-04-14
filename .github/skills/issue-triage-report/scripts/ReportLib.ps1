@@ -67,11 +67,11 @@ function Get-ScoringConfig {
     # --- Build config hashtable entirely from loaded values (no defaults) ---
     $config = @{
         weights = @{
-            reactions = [int]$loaded.weights.reactions
-            age       = [int]$loaded.weights.age
-            comments  = [int]$loaded.weights.comments
-            severity  = [int]$loaded.weights.severity
-            blockers  = [int]$loaded.weights.blockers
+            reactions = [double]$loaded.weights.reactions
+            age       = [double]$loaded.weights.age
+            comments  = [double]$loaded.weights.comments
+            severity  = [double]$loaded.weights.severity
+            blockers  = [double]$loaded.weights.blockers
         }
         thresholds = @{
             aging_days        = [int]$loaded.thresholds.aging_days

@@ -1,9 +1,9 @@
 {
   "weights": {
-    "reactions": 30,
-    "age": 30,
-    "comments": 30,
-    "severity": 10,
+    "reactions": 0.3,
+    "age": 0.3,
+    "comments": 0.3,
+    "severity": 0.1,
     "blockers": 0
   },
   "thresholds": {
