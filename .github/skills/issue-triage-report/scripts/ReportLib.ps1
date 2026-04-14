@@ -89,10 +89,6 @@ function Get-ScoringConfig {
         }
     }
 
-    if ($loaded.labelPriority) {
-        $config.labelPriority = @($loaded.labelPriority)
-    }
-
     return $config
 }
 

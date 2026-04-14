@@ -12,13 +12,6 @@
     "trending_days": 14,
     "popular_reactions": 5
   },
-  "labelPriority": [
-    "regression",
-    "blocker",
-    "popular",
-    "aging",
-    "trending"
-  ],
   "maxLabelsPerIssue": 2,
   "severityMultipliers": {
     "critical": 1.0,

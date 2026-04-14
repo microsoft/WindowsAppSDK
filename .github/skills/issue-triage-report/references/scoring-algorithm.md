@@ -19,7 +19,6 @@ This document describes the scoring model implemented by:
 {
   "weights": { ... },
   "thresholds": { ... },
-  "labelPriority": [ ... ],      // optional, currently not used for label ordering
   "maxLabelsPerIssue": 2,
   "severityMultipliers": { ... }
 }
@@ -93,8 +92,6 @@ Current implementation in `Get-HighlightLabels` applies labels in fixed order:
 3. `📈 Trending`
 
 Then it trims to `maxLabelsPerIssue`.
-
-`labelPriority` is loaded by `Get-ScoringConfig` but is currently not used to drive ordering in `Get-HighlightLabels`.
 
 ## maxLabelsPerIssue
 
@@ -173,8 +170,6 @@ Computation:
 | Required `thresholds` fields: `aging_days`, `trending_comments`, `trending_days`, `popular_reactions` | `'thresholds' missing required field: '<name>'` |
 | Required `severityMultipliers` levels: `critical`, `high`, `medium`, `low`, `none` | `'severityMultipliers' missing required level: '<name>'` |
 
-`labelPriority` is optional.
-
 ## Script architecture
 
 ```text
@@ -232,7 +227,6 @@ Generate-FeatureAreaReport.ps1
 | `thresholds.popular_reactions` | `Get-HighlightLabels` | Popular badge cutoff |
 | `maxLabelsPerIssue` | `Get-HighlightLabels` | Badge count cap |
 | `severityMultipliers.*` | `Get-IssueScore` | Assessment tier multipliers |
-| `labelPriority` | `Get-ScoringConfig` | Loaded, currently unused by label assignment |
 
 ## Special report indicators
 
