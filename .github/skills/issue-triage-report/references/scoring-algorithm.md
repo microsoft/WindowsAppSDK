@@ -37,8 +37,8 @@ Controls how many points each factor can contribute to the 0–100 composite sco
 | `reactions` | int | Max points from GitHub reaction count (👍 ❤️ 🚀 👀 🎉 😕 😄). Higher reaction counts award a larger fraction of this value. |
 | `age` | int | Max points from issue age (days since creation). Older untriaged issues score higher. |
 | `comments` | int | Max points from comment count. More discussion → higher score. |
-| `severity` | int | Reserved for agent or human assessment integration (Phase 2). Deterministic scripts assign 0 in Phase 1. |
-| `blockers` | int | Reserved for agent or human assessment integration (Phase 2). Deterministic scripts assign 0 in Phase 1. |
+| `severity` | int | Points applied from IssueAssessments severity tier (`critical/high/medium/low/none`) in Phase 2. |
+| `blockers` | int | Points applied when IssueAssessments sets `isBlocker=true` in Phase 2. |
 
 ### How points are awarded within each factor
 
@@ -55,13 +55,27 @@ The scoring engine divides each factor's weight into brackets. For example, with
 
 The same 20/25/40/50/67/75/80/100% bracket pattern applies to `age` and `comments`. Changing the weight value scales all brackets proportionally.
 
-In Phase 1, deterministic scoring does not add points from severity or blockers.
+In Phase 2, severity and blocker points are assessment-driven (IssueAssessments file and/or runtime agent assessments), not label-derived.
 
 ### Tuning tips
 
 - **Emphasize community signal**: Increase `reactions` and `comments`, decrease `age`.
 - **Prioritize backlog hygiene**: Increase `age`.
-- **Prepare for agent overrides**: Keep `severity` and `blockers` configured for Phase 2 even though deterministic scripts keep them at 0 in Phase 1.
+- **Tune assessment impact**: Increase/decrease `severity` and `blockers` to control how strongly assessments influence ranking.
+
+## IssueAssessments Lookup
+
+Before scoring calculations, scripts automatically look for:
+
+```
+.github/skills/issue-triage-report/references/IssueAssessments.json
+```
+
+Behavior:
+
+- File found and valid: severity/blocker can be sourced from file entries.
+- File missing: scripts emit status and continue with fallback behavior.
+- File malformed: scripts emit warning and continue with fallback behavior.
 
 ---
 
@@ -131,11 +145,11 @@ Maximum number of highlight labels attached to any single issue. After the engin
 
 ---
 
-## `severityLabels` – Reserved for Agent Overrides (Phase 2)
+## `severityLabels` – Compatibility Section
 
-Maps GitHub issue label strings to severity tiers for future override workflows.
+Maps GitHub issue label strings to severity tiers for legacy compatibility.
 
-In Phase 1, deterministic scripts do not derive severity from labels. Keep this section configured so Phase 2 can ingest agent assessments without reworking configuration.
+Phase 2 scoring does not derive severity from issue labels; it uses IssueAssessments and/or runtime agent assessments.
 
 ```json
 "severityLabels": {
@@ -169,31 +183,31 @@ Total = reactions_pts + age_pts + comments_pts + severity_pts + blockers_pts
 
 Phase 1 deterministic scripts compute:
 
-Total = reactions_pts + age_pts + comments_pts
+Total = reactions_pts + age_pts + comments_pts + assessed_severity_pts + assessed_blockers_pts
 
-because `severity_pts = 0` and `blockers_pts = 0` until agent override ingestion is added in Phase 2.
+where assessment fields are optional; missing or empty values fall back to default behavior for that field.
 ```
 
 ### Worked Example
 
-Issue #2894 with 25 reactions, open 120 days, 8 comments:
+Issue #2894 with 25 reactions, open 120 days, 8 comments, and IssueAssessments severityTier=`high`:
 
 | Factor | Raw | Bracket | Points |
 |--------|-----|---------|--------|
 | Reactions | 25 | 20–49 → 80% | 24/30 |
 | Age | 120 days | 91–180 → 75% | 22/30 |
 | Comments | 8 | 6–10 → 67% | 20/30 |
-| Severity | — | Phase 1 deterministic (disabled) | 0/10 |
-| Blockers | — | Phase 1 deterministic (disabled) | 0/0 |
-| **Total** | | | **66/100** |
+| Severity | `high` | assessed → 80% | 8/10 |
+| Blockers | `false` | assessed | 0/0 |
+| **Total** | | | **74/100** |
 
 ---
 
 ## Agent Content Assessment
 
-Deterministic scripts in this skill do not compute severity, blocker status, or confidence values. They produce score, score breakdown, and highlight labels only.
+Deterministic scripts compute severity and blocker using IssueAssessments and/or runtime agent assessments when available, with fallback behavior when not available.
 
-If a final report includes annotations such as `[severity:high]`, `[blocker:no]`, and `[confidence:85]`, those values must be assigned by the agent after reviewing title, body, labels, and recent discussion.
+If a final report includes annotations such as `[severity:high]`, `[blocker:no]`, and `[confidence:85]`, those values should align with IssueAssessments when that file is present.
 
 Recommended severity rubric:
 

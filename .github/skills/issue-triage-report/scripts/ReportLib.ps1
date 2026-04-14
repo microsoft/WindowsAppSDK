@@ -267,6 +267,176 @@ function Write-ColoredStatus {
     Write-Host $Message -ForegroundColor $color
 }
 
+function Get-IssueAssessmentsPath {
+    <#
+    .SYNOPSIS
+        Returns the fixed IssueAssessments.json path for this skill.
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ScriptDirectory
+    )
+
+    $skillDir = Split-Path $ScriptDirectory -Parent
+    return (Join-Path $skillDir "references\IssueAssessments.json")
+}
+
+function Get-AgentAssessmentsPath {
+    <#
+    .SYNOPSIS
+        Returns the fixed AgentAssessments.json path for this skill.
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ScriptDirectory
+    )
+
+    $skillDir = Split-Path $ScriptDirectory -Parent
+    return (Join-Path $skillDir "references\AgentAssessments.json")
+}
+
+function Read-IssueAssessments {
+    <#
+    .SYNOPSIS
+        Loads IssueAssessments.json from the fixed skill path.
+
+    .DESCRIPTION
+        Returns an issue-number keyed hashtable. Missing file or malformed data
+        does not terminate execution; the caller can safely fall back.
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ScriptDirectory,
+
+        [switch]$EmitStatus
+    )
+
+    $assessmentsPath = Get-IssueAssessmentsPath -ScriptDirectory $ScriptDirectory
+
+    if (-not (Test-Path -LiteralPath $assessmentsPath -PathType Leaf)) {
+        if ($EmitStatus) {
+            Write-ColoredStatus -Level "Warning" -Message "IssueAssessments.json not found at $assessmentsPath. Using fallback severity/blocker behavior."
+        }
+        return @{}
+    }
+
+    if ($EmitStatus) {
+        Write-ColoredStatus -Level "Info" -Message "IssueAssessments.json found at $assessmentsPath"
+    }
+
+    try {
+        $loaded = Get-Content -LiteralPath $assessmentsPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        Write-Warning "IssueAssessments.json could not be parsed at $assessmentsPath. Using fallback severity/blocker behavior. Error: $_"
+        return @{}
+    }
+
+    if (-not $loaded) {
+        return @{}
+    }
+
+    $hasAssessmentsProperty = $loaded.PSObject.Properties.Name -contains "assessments"
+    if (-not $hasAssessmentsProperty -or -not $loaded.assessments) {
+        Write-Warning "IssueAssessments.json has no 'assessments' object at $assessmentsPath. Using fallback severity/blocker behavior."
+        return @{}
+    }
+
+    $result = @{}
+    foreach ($issueProp in $loaded.assessments.PSObject.Properties) {
+        $entry = @{}
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "severityTier") {
+            $entry.severityTier = $issueProp.Value.severityTier
+        }
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "isBlocker") {
+            $entry.isBlocker = $issueProp.Value.isBlocker
+        }
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "reasoning") {
+            $entry.reasoning = $issueProp.Value.reasoning
+        }
+
+        $result[[string]$issueProp.Name] = $entry
+    }
+
+    return $result
+}
+
+function Read-AgentAssessments {
+    <#
+    .SYNOPSIS
+        Loads AgentAssessments.json from the fixed skill path.
+
+    .DESCRIPTION
+        Returns an issue-number keyed hashtable. Missing file or malformed data
+        does not terminate execution; the caller can safely fall back.
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ScriptDirectory,
+
+        [switch]$EmitStatus
+    )
+
+    $assessmentsPath = Get-AgentAssessmentsPath -ScriptDirectory $ScriptDirectory
+
+    if (-not (Test-Path -LiteralPath $assessmentsPath -PathType Leaf)) {
+        if ($EmitStatus) {
+            Write-ColoredStatus -Level "Warning" -Message "AgentAssessments.json not found at $assessmentsPath. Continuing without runtime agent overrides."
+        }
+        return @{}
+    }
+
+    if ($EmitStatus) {
+        Write-ColoredStatus -Level "Info" -Message "AgentAssessments.json found at $assessmentsPath"
+    }
+
+    try {
+        $loaded = Get-Content -LiteralPath $assessmentsPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        Write-Warning "AgentAssessments.json could not be parsed at $assessmentsPath. Continuing without runtime agent overrides. Error: $_"
+        return @{}
+    }
+
+    if (-not $loaded) {
+        return @{}
+    }
+
+    $hasAssessmentsProperty = $loaded.PSObject.Properties.Name -contains "assessments"
+    if (-not $hasAssessmentsProperty -or -not $loaded.assessments) {
+        Write-Warning "AgentAssessments.json has no 'assessments' object at $assessmentsPath. Continuing without runtime agent overrides."
+        return @{}
+    }
+
+    $result = @{}
+    foreach ($issueProp in $loaded.assessments.PSObject.Properties) {
+        $entry = @{}
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "severityTier") {
+            $entry.severityTier = $issueProp.Value.severityTier
+        }
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "isBlocker") {
+            $entry.isBlocker = $issueProp.Value.isBlocker
+        }
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "reasoning") {
+            $entry.reasoning = $issueProp.Value.reasoning
+        }
+
+        $result[[string]$issueProp.Name] = $entry
+    }
+
+    return $result
+}
+
 function Get-IssueScore {
     <#
     .SYNOPSIS
@@ -287,7 +457,9 @@ function Get-IssueScore {
     #>
     param(
         [object]$Issue,
-        [hashtable]$Config
+        [hashtable]$Config,
+        [hashtable]$IssueAssessments,
+        [hashtable]$AgentAssessments
     )
 
     $weights = $Config.weights
@@ -364,13 +536,97 @@ function Get-IssueScore {
         default { 0 }
     }
 
-    # 4. Severity score (Phase 1): deterministic scripts do not infer severity.
+    # 4-5. Severity and blocker score from assessments only (file and/or agent).
     $score.Severity = 0
     $score.SeverityLabel = ""
-
-    # 5. Blocker score (Phase 1): deterministic scripts do not infer blockers.
     $score.IsBlocker = $false
     $score.Blockers = 0
+
+    $issueKey = $null
+    if ($Issue -and $Issue.PSObject.Properties.Name -contains "number" -and $Issue.number) {
+        $issueKey = [string]$Issue.number
+    }
+
+    $selectedAssessment = $null
+    if ($issueKey -and $AgentAssessments -and $AgentAssessments.ContainsKey($issueKey)) {
+        $selectedAssessment = $AgentAssessments[$issueKey]
+    }
+    elseif ($issueKey -and $IssueAssessments -and $IssueAssessments.ContainsKey($issueKey)) {
+        $selectedAssessment = $IssueAssessments[$issueKey]
+    }
+
+    if ($selectedAssessment) {
+        $hasSeverityTier = $false
+        $severityTier = $null
+        if ($selectedAssessment -is [hashtable]) {
+            if ($selectedAssessment.ContainsKey("severityTier")) {
+                $severityTier = $selectedAssessment["severityTier"]
+                $hasSeverityTier = $true
+            }
+        }
+        elseif ($selectedAssessment.PSObject.Properties.Name -contains "severityTier") {
+            $severityTier = $selectedAssessment.severityTier
+            $hasSeverityTier = $true
+        }
+
+        if ($hasSeverityTier -and -not [string]::IsNullOrWhiteSpace([string]$severityTier)) {
+            $normalizedTier = ([string]$severityTier).ToLowerInvariant()
+            switch ($normalizedTier) {
+                "critical" {
+                    $score.Severity = $weights.severity
+                    $score.SeverityLabel = "critical"
+                }
+                "high" {
+                    $score.Severity = [math]::Floor($weights.severity * 0.8)
+                    $score.SeverityLabel = "high"
+                }
+                "medium" {
+                    $score.Severity = [math]::Floor($weights.severity * 0.5)
+                    $score.SeverityLabel = "medium"
+                }
+                "low" {
+                    $score.Severity = [math]::Floor($weights.severity * 0.2)
+                    $score.SeverityLabel = "low"
+                }
+                "none" {
+                    $score.Severity = 0
+                    $score.SeverityLabel = "none"
+                }
+                default {
+                    Write-Warning "Issue #$issueKey has invalid severityTier '$severityTier' in assessments. Using fallback severity behavior."
+                }
+            }
+        }
+
+        $hasIsBlocker = $false
+        $isBlockerValue = $null
+        if ($selectedAssessment -is [hashtable]) {
+            if ($selectedAssessment.ContainsKey("isBlocker")) {
+                $isBlockerValue = $selectedAssessment["isBlocker"]
+                $hasIsBlocker = $true
+            }
+        }
+        elseif ($selectedAssessment.PSObject.Properties.Name -contains "isBlocker") {
+            $isBlockerValue = $selectedAssessment.isBlocker
+            $hasIsBlocker = $true
+        }
+
+        if ($hasIsBlocker) {
+            if ($isBlockerValue -is [bool]) {
+                $score.IsBlocker = [bool]$isBlockerValue
+            }
+            elseif ($null -eq $isBlockerValue -or [string]::IsNullOrWhiteSpace([string]$isBlockerValue)) {
+                # Empty field: keep fallback value ($false)
+            }
+            else {
+                Write-Warning "Issue #$issueKey has non-boolean isBlocker value '$isBlockerValue' in assessments. Using fallback blocker behavior."
+            }
+        }
+
+        if ($score.IsBlocker -and $weights.blockers -gt 0) {
+            $score.Blockers = $weights.blockers
+        }
+    }
 
     # Calculate total
     $score.Total = [int]$score.Reactions + [int]$score.Age + [int]$score.Comments +

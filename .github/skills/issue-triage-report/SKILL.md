@@ -145,6 +145,11 @@ Retrieve or update the area-to-contact mapping configuration.
    ./scripts/Generate-FeatureAreaReport.ps1 -OutputFormat markdown -HighlightCount 3
    ```
 
+  Before running the command above, have the agent save runtime assessments to:
+  - `./references/AgentAssessments.json`
+
+  This file is loaded automatically at script start and applied as per-run overrides.
+
 3. Run an agent content review for each highlighted issue using title, body, labels, and comments.
 
 4. Add annotation tags in report narrative: `[severity:critical|high|medium|low|none]`, `[blocker:yes|no]`, and optional `[confidence:XX]`.
@@ -182,6 +187,16 @@ Retrieve or update the area-to-contact mapping configuration.
 Issues are scored (0-100) based on multiple factors. See [scoring-algorithm.md](./references/scoring-algorithm.md) for complete details.
 
 The scripts produce deterministic issue scores and highlight labels. Severity and blocker status are agent-assessed annotations in Phase 1 and are not inferred by PowerShell.
+
+In Phase 2, scripts automatically load IssueAssessments from a fixed path before scoring:
+
+- `./references/IssueAssessments.json`
+
+They also load agent-generated runtime overrides from:
+
+- `./references/AgentAssessments.json`
+
+If the file is missing or malformed, scripts emit a status message and continue with fallback behavior.
 
 ## Agent Content Review
 
@@ -227,7 +242,7 @@ Confidence should consider:
 | **Reactions** | 30 | Total reactions (👍, ❤️, 🚀, etc.) indicate community interest |
 | **Age** | 30 | Older untriaged issues get higher priority |
 | **Comments** | 30 | Active discussion indicates importance |
-| **Severity** | 10 | Reserved for agent or human assessment integration (Phase 2); deterministic scripts keep this at 0 in Phase 1 |
+| **Severity** | 10 | Sourced from `IssueAssessments.json` severity tier (`critical/high/medium/low/none`) with fallback when missing |
 
 ### Agent Severity Tiers
 
@@ -321,6 +336,8 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
 }
 ```
 
+`severityLabels` remains in config for compatibility, but Phase 2 severity and blocker scoring is assessment-driven rather than label-derived.
+
 ## Troubleshooting
 
 | Symptom | Solution |
@@ -329,7 +346,7 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
 | `authentication required` | Run `gh auth login` and follow prompts |
 | Rate limit exceeded | Wait or use `--limit` to reduce API calls |
 | Missing area label | Issue may use non-standard label; check label list |
-| Contact not found | Update [area-contacts.md](./references/area-contacts.md) |
+| Contact not found | Update [area-contacts.json](./references/area-contacts.json) |
 
 ## Common Commands Reference
 
@@ -350,5 +367,5 @@ gh issue list --repo microsoft/WindowsAppSDK --state open --limit 1000 --json nu
 ## References
 
 - [Scoring Algorithm Details](./references/scoring-algorithm.md) — Complete scoring methodology
-- [Area Contacts](./references/area-contacts.md) — Feature area ownership mapping
+- [Area Contacts](./references/area-contacts.json) — Feature area ownership mapping
 - [Report Template](./templates/report-template.md) — Customizable output template

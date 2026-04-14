@@ -8,7 +8,8 @@
 .DESCRIPTION
     This script fetches issue details and calculates a priority score (0-100)
     based on deterministic factors including reactions, age, and comments.
-    Severity and blocker annotations are agent-assessed in Phase 1.
+    Severity and blocker values are sourced from IssueAssessments.json
+    (fixed path) and optional runtime agent assessments, with fallback behavior.
 
 .PARAMETER IssueNumber
     The GitHub issue number to analyze.
@@ -52,6 +53,9 @@ if (-not $ConfigPath) {
 }
 $Config = Get-ScoringConfig -ConfigPath $ConfigPath
 
+# Load optional IssueAssessments from fixed path before scoring calculations.
+$IssueAssessments = Read-IssueAssessments -ScriptDirectory $ScriptDir -EmitStatus
+
 function Get-DetailedIssueScore {
     <#
     .SYNOPSIS
@@ -63,10 +67,12 @@ function Get-DetailedIssueScore {
     #>
     param(
         [object]$Issue,
-        [hashtable]$Config
+        [hashtable]$Config,
+        [hashtable]$IssueAssessments,
+        [hashtable]$AgentAssessments
     )
 
-    $score = Get-IssueScore -Issue $issue -Config $Config
+    $score = Get-IssueScore -Issue $issue -Config $Config -IssueAssessments $IssueAssessments -AgentAssessments $AgentAssessments
     $weights = $Config.weights
     $thresholds = $Config.thresholds
 
@@ -97,18 +103,12 @@ function Get-DetailedIssueScore {
     }
 
     if ($score.SeverityLabel) {
-        $severityLabels = $Config.severityLabels
-        if ($severityLabels.critical -contains $score.SeverityLabel) {
-            $breakdown.Severity.Reason = "🔴 Critical: $($score.SeverityLabel)"
-        }
-        elseif ($severityLabels.high -contains $score.SeverityLabel) {
-            $breakdown.Severity.Reason = "🟠 High: $($score.SeverityLabel)"
-        }
-        elseif ($severityLabels.medium -contains $score.SeverityLabel) {
-            $breakdown.Severity.Reason = "🟡 Medium: $($score.SeverityLabel)"
-        }
-        elseif ($severityLabels.low -contains $score.SeverityLabel) {
-            $breakdown.Severity.Reason = "🟢 Low: $($score.SeverityLabel)"
+        switch ($score.SeverityLabel) {
+            "critical" { $breakdown.Severity.Reason = "🔴 Critical (assessment)" }
+            "high"     { $breakdown.Severity.Reason = "🟠 High (assessment)" }
+            "medium"   { $breakdown.Severity.Reason = "🟡 Medium (assessment)" }
+            "low"      { $breakdown.Severity.Reason = "🟢 Low (assessment)" }
+            "none"     { $breakdown.Severity.Reason = "⚪ None (assessment)" }
         }
     }
 
@@ -230,7 +230,7 @@ if ($issue.state -ne "OPEN") {
 }
 
 # Calculate score
-$scoreResult = Get-DetailedIssueScore -Issue $issue -Config $Config
+$scoreResult = Get-DetailedIssueScore -Issue $issue -Config $Config -IssueAssessments $IssueAssessments
 
 # Output
 if ($VerbosePreference -eq "Continue" -or $PSBoundParameters.ContainsKey('Verbose')) {

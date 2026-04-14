@@ -171,13 +171,15 @@ function Get-HighlightedIssues {
     param(
         [array]$Issues,
         [hashtable]$Config,
-        [int]$MaxHighlights
+        [int]$MaxHighlights,
+        [hashtable]$IssueAssessments,
+        [hashtable]$AgentAssessments
     )
 
     $scoredIssues = @()
 
     foreach ($issue in $Issues) {
-        $score = Get-IssueScore -Issue $issue -Config $Config
+        $score = Get-IssueScore -Issue $issue -Config $Config -IssueAssessments $IssueAssessments -AgentAssessments $AgentAssessments
         $labels = Get-HighlightLabels -Issue $issue -Score $score -Config $Config
 
         $scoredIssues += @{
@@ -299,6 +301,12 @@ try {
     Write-Host "Generating Feature Area Status Report for $Repo..." -ForegroundColor Cyan
     Write-Host ""
 
+    # Load optional AgentAssessments from fixed path before scoring calculations.
+    $AgentAssessments = Read-AgentAssessments -ScriptDirectory $ScriptDir -EmitStatus
+
+    # Load optional IssueAssessments from fixed path before scoring calculations.
+    $IssueAssessments = Read-IssueAssessments -ScriptDirectory $ScriptDir -EmitStatus
+
     # Verify GitHub CLI is available and authenticated
     try {
         $null = gh auth status 2>&1
@@ -336,7 +344,7 @@ try {
         $stats = Get-IssueStats -Issues $openIssues -Config $Config
 
         # Get highlights
-        $highlights = Get-HighlightedIssues -Issues $openIssues -Config $Config -MaxHighlights $HighlightCount
+        $highlights = Get-HighlightedIssues -Issues $openIssues -Config $Config -MaxHighlights $HighlightCount -IssueAssessments $IssueAssessments -AgentAssessments $AgentAssessments
         $highlightsFormatted = Format-HighlightsMarkdown -Highlights $highlights -Repository $Repo
 
         # Get contact - use new schema (single contact field)
