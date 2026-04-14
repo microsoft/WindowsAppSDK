@@ -159,9 +159,9 @@ Retrieve or update the area-to-contact mapping configuration.
 ### Workflow 2: Analyze a Specific Feature Area
 
 1. Get area-specific issues:
-   ```powershell
-  gh issue list --repo microsoft/WindowsAppSDK --label "area-Notifications" --state open --json number,title,body,labels,reactionGroups,createdAt,comments
-   ```
+    ```powershell
+    gh issue list --repo microsoft/WindowsAppSDK --label "area-Notifications" --state open --json number,title,body,labels,reactionGroups,createdAt,comments
+    ```
 
 2. Check individual issue scores:
    ```powershell
