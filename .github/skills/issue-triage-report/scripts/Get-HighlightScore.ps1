@@ -7,8 +7,8 @@
 
 .DESCRIPTION
     This script fetches issue details and calculates a priority score (0-100)
-    based on multiple factors including reactions, age, comments, severity,
-    and blocker status.
+    based on deterministic factors including reactions, age, and comments.
+    Severity and blocker annotations are agent-assessed in Phase 1.
 
 .PARAMETER IssueNumber
     The GitHub issue number to analyze.

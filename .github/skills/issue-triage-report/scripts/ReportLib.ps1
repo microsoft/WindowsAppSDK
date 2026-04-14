@@ -364,72 +364,13 @@ function Get-IssueScore {
         default { 0 }
     }
 
-    # 4. Severity score - use configurable severity labels
-    $labelNames = @()
-    if ($Issue.labels) {
-        $labelNames = @($Issue.labels | ForEach-Object { $_.name })
-    }
+    # 4. Severity score (Phase 1): deterministic scripts do not infer severity.
+    $score.Severity = 0
+    $score.SeverityLabel = ""
 
-    # Severity labels must be provided by config (no defaults)
-    if (-not $Config.severityLabels) {
-        throw "Config missing required 'severityLabels'. Ensure ScoringConfig.json is loaded via Get-ScoringConfig."
-    }
-    $severityLabels = $Config.severityLabels
-
-    # Check for critical severity labels (100% of severity weight)
-    $hasCritical = $false
-    foreach ($critLabel in $severityLabels.critical) {
-        if ($labelNames -contains $critLabel) {
-            $score.Severity = $weights.severity
-            $score.SeverityLabel = $critLabel
-            $hasCritical = $true
-            break
-        }
-    }
-
-    if (-not $hasCritical) {
-        # Check for high severity labels (80% of severity weight)
-        $hasHigh = $false
-        foreach ($highLabel in $severityLabels.high) {
-            if ($labelNames -contains $highLabel) {
-                $score.Severity = [math]::Floor($weights.severity * 0.8)
-                $score.SeverityLabel = $highLabel
-                $hasHigh = $true
-                break
-            }
-        }
-
-        if (-not $hasHigh) {
-            # Check for medium severity labels (50% of severity weight)
-            $hasMedium = $false
-            foreach ($medLabel in $severityLabels.medium) {
-                if ($labelNames -contains $medLabel) {
-                    $score.Severity = [math]::Floor($weights.severity * 0.5)
-                    $score.SeverityLabel = $medLabel
-                    $hasMedium = $true
-                    break
-                }
-            }
-
-            if (-not $hasMedium) {
-                # Check for low severity labels (20% of severity weight)
-                foreach ($lowLabel in $severityLabels.low) {
-                    if ($labelNames -contains $lowLabel) {
-                        $score.Severity = [math]::Floor($weights.severity * 0.2)
-                        $score.SeverityLabel = $lowLabel
-                        break
-                    }
-                }
-            }
-        }
-    }
-
-    # 5. Blocker score (only if weight > 0)
-    $hasBlocker = @($labelNames | Where-Object { $_ -match "block" }).Count -gt 0
-    $score.IsBlocker = $hasBlocker
-    if ($hasBlocker -and $weights.blockers -gt 0) {
-        $score.Blockers = $weights.blockers
-    }
+    # 5. Blocker score (Phase 1): deterministic scripts do not infer blockers.
+    $score.IsBlocker = $false
+    $score.Blockers = 0
 
     # Calculate total
     $score.Total = [int]$score.Reactions + [int]$score.Age + [int]$score.Comments +
@@ -474,12 +415,6 @@ function Get-HighlightLabels {
     }
 
     # Check conditions in priority order
-    if ($labelNames -contains "regression") {
-        $labels += "🐛 Regression"
-    }
-    if ($Score.IsBlocker) {
-        $labels += "🚧 Blocker"
-    }
     # Consolidated Popular label (replaces both Hot and old Popular)
     if ($Score.RawReactions -ge $thresholds.popular_reactions) {
         $labels += "🌟 Popular"

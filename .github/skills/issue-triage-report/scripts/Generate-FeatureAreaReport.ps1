@@ -117,7 +117,7 @@ function Get-IssuesForArea {
     $state = if ($GetClosed) { "closed" } else { "open" }
     Write-Verbose "Fetching $state issues for $AreaLabel..."
 
-    $jsonFields = "number,title,createdAt,updatedAt,labels,reactionGroups,comments,author,state"
+    $jsonFields = "number,title,body,createdAt,updatedAt,labels,reactionGroups,comments,author,state"
 
     $issues = gh issue list --repo $Repository --label $AreaLabel --state $state --limit 500 --json $jsonFields 2>$null | ConvertFrom-Json
 

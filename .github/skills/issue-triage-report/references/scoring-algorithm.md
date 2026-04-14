@@ -37,8 +37,8 @@ Controls how many points each factor can contribute to the 0–100 composite sco
 | `reactions` | int | Max points from GitHub reaction count (👍 ❤️ 🚀 👀 🎉 😕 😄). Higher reaction counts award a larger fraction of this value. |
 | `age` | int | Max points from issue age (days since creation). Older untriaged issues score higher. |
 | `comments` | int | Max points from comment count. More discussion → higher score. |
-| `severity` | int | Max points from severity label matching (see [`severityLabels`](#severitylabels--github-label-→-severity-tier)). |
-| `blockers` | int | Max points for issues with blocking labels (`block`, `blocker`, `blocking`). Set to `0` to disable. |
+| `severity` | int | Reserved for agent or human assessment integration (Phase 2). Deterministic scripts assign 0 in Phase 1. |
+| `blockers` | int | Reserved for agent or human assessment integration (Phase 2). Deterministic scripts assign 0 in Phase 1. |
 
 ### How points are awarded within each factor
 
@@ -55,19 +55,19 @@ The scoring engine divides each factor's weight into brackets. For example, with
 
 The same 20/25/40/50/67/75/80/100% bracket pattern applies to `age` and `comments`. Changing the weight value scales all brackets proportionally.
 
-**Severity** uses tier percentages instead (see below).
+In Phase 1, deterministic scoring does not add points from severity or blockers.
 
 ### Tuning tips
 
 - **Emphasize community signal**: Increase `reactions` and `comments`, decrease `age`.
 - **Prioritize backlog hygiene**: Increase `age`.
-- **Re-enable blocker tracking**: Set `blockers` to a non-zero value (reduce other weights to keep the sum ≤ 100).
+- **Prepare for agent overrides**: Keep `severity` and `blockers` configured for Phase 2 even though deterministic scripts keep them at 0 in Phase 1.
 
 ---
 
 ## `thresholds` – Highlight Label Cutoffs
 
-These values control when an issue earns a highlight label (🌟 Popular, ⏰ Aging, 📈 Trending). They do **not** affect the numeric score — only whether a label badge appears.
+These values control when an issue earns a highlight label (🌟 Popular, ⏰ Aging, 📈 Trending). They do **not** affect the numeric score directly — only whether a label badge appears.
 
 ```json
 "thresholds": {
@@ -97,6 +97,8 @@ These values control when an issue earns a highlight label (🌟 Popular, ⏰ Ag
 
 Determines which highlight labels are assigned first when an issue qualifies for more than `maxLabelsPerIssue` labels. Labels earlier in the array win.
 
+In Phase 1, scripts emit only `popular`, `aging`, and `trending` labels. Legacy entries such as `regression` and `blocker` may remain in config for forward compatibility.
+
 ```json
 "labelPriority": [
   "regression",
@@ -109,15 +111,13 @@ Determines which highlight labels are assigned first when an issue qualifies for
 
 | Position | Internal Name | Display Label | Condition |
 |----------|---------------|---------------|-----------|
-| 1 | `regression` | 🐛 Regression | Issue has a `regression` GitHub label |
-| 2 | `blocker` | 🚧 Blocker | Issue has a label matching `block\|blocker\|blocking` |
-| 3 | `popular` | 🌟 Popular | Reactions ≥ `thresholds.popular_reactions` |
-| 4 | `aging` | ⏰ Aging | Days open > `thresholds.aging_days` AND has `needs-triage` label |
-| 5 | `trending` | 📈 Trending | Comments ≥ `thresholds.trending_comments` AND updated within `thresholds.trending_days` |
+| 1 | `popular` | 🌟 Popular | Reactions ≥ `thresholds.popular_reactions` |
+| 2 | `aging` | ⏰ Aging | Days open > `thresholds.aging_days` AND has `needs-triage` label |
+| 3 | `trending` | 📈 Trending | Comments ≥ `thresholds.trending_comments` AND updated within `thresholds.trending_days` |
 
 ### Example
 
-An issue with a `regression` label, 20 reactions, and 15 comments qualifies for Regression, Popular, and Trending. With `maxLabelsPerIssue: 2`, it receives **🐛 Regression** and **🌟 Popular** (positions 1 and 3 beat position 5).
+An issue with 20 reactions, open for 120 days with `needs-triage`, and 15 comments qualifies for Popular, Aging, and Trending. With `maxLabelsPerIssue: 2`, it receives the first two labels by configured priority.
 
 ---
 
@@ -131,9 +131,11 @@ Maximum number of highlight labels attached to any single issue. After the engin
 
 ---
 
-## `severityLabels` – GitHub Label → Severity Tier
+## `severityLabels` – Reserved for Agent Overrides (Phase 2)
 
-Maps GitHub issue label strings to four severity tiers. The scoring engine walks tiers top-to-bottom and awards points based on the **first matching label** it finds.
+Maps GitHub issue label strings to severity tiers for future override workflows.
+
+In Phase 1, deterministic scripts do not derive severity from labels. Keep this section configured so Phase 2 can ingest agent assessments without reworking configuration.
 
 ```json
 "severityLabels": {
@@ -144,12 +146,12 @@ Maps GitHub issue label strings to four severity tiers. The scoring engine walks
 }
 ```
 
-| Tier | % of `weights.severity` | Points (when severity=10) | When to use |
-|------|-------------------------|---------------------------|-------------|
-| `critical` | 100% | 10 | Regressions, crashes, data loss |
-| `high` | 80% | 8 | Confirmed bugs |
-| `medium` | 50% | 5 | Performance issues, feature proposals |
-| `low` | 20% | 2 | Docs, enhancements |
+| Tier | Intended use |
+|------|--------------|
+| `critical` | Regressions, crashes, data loss |
+| `high` | Serious functionality bugs |
+| `medium` | Performance issues, feature proposals |
+| `low` | Docs, enhancements |
 
 ### Customization
 
@@ -164,30 +166,49 @@ Maps GitHub issue label strings to four severity tiers. The scoring engine walks
 
 ```
 Total = reactions_pts + age_pts + comments_pts + severity_pts + blockers_pts
-      = weights.reactions + weights.age + weights.comments + weights.severity + weights.blockers
-      = 100 max (with current defaults)
+
+Phase 1 deterministic scripts compute:
+
+Total = reactions_pts + age_pts + comments_pts
+
+because `severity_pts = 0` and `blockers_pts = 0` until agent override ingestion is added in Phase 2.
 ```
 
 ### Worked Example
 
-Issue #2894 with 25 reactions, open 120 days, 8 comments, labeled `bug`:
+Issue #2894 with 25 reactions, open 120 days, 8 comments:
 
 | Factor | Raw | Bracket | Points |
 |--------|-----|---------|--------|
 | Reactions | 25 | 20–49 → 80% | 24/30 |
 | Age | 120 days | 91–180 → 75% | 22/30 |
 | Comments | 8 | 6–10 → 67% | 20/30 |
-| Severity | `bug` | high → 80% | 8/10 |
-| Blockers | — | disabled | 0/0 |
-| **Total** | | | **74/100** |
+| Severity | — | Phase 1 deterministic (disabled) | 0/10 |
+| Blockers | — | Phase 1 deterministic (disabled) | 0/0 |
+| **Total** | | | **66/100** |
 
 ---
 
-## LLM Confidence Review
+## Agent Content Assessment
 
-Deterministic scripts in this skill no longer compute confidence values. They produce the score, score breakdown, and highlight labels only.
+Deterministic scripts in this skill do not compute severity, blocker status, or confidence values. They produce score, score breakdown, and highlight labels only.
 
-If a final report includes `[confidence:XX]`, that value must be assigned by the agent after reviewing the scored issue, its labels, the issue body, and recent discussion.
+If a final report includes annotations such as `[severity:high]`, `[blocker:no]`, and `[confidence:85]`, those values must be assigned by the agent after reviewing title, body, labels, and recent discussion.
+
+Recommended severity rubric:
+
+| Tier | Meaning |
+|------|---------|
+| `critical` | Crash, data loss, or severe regression with broad impact |
+| `high` | Major scenario broken with limited/no workaround |
+| `medium` | User-visible defect with reasonable workaround |
+| `low` | Minor functional or quality issue |
+| `none` | No clear severity signal in issue content |
+
+Recommended blocker rule:
+
+- Use `[blocker:yes]` only when issue text clearly indicates blocked-by or blocking-release dependency.
+- Otherwise use `[blocker:no]`.
 
 Recommended rubric:
 

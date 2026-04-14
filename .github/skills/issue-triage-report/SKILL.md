@@ -14,7 +14,7 @@ This skill generates comprehensive GitHub Feature Area Status reports that help 
 
 1. **Engineering triage meetings** — Create status reports showing open issues, needs-triage counts, and highlighted issues per feature area.
 
-2. **Priority analysis requests** — Identify which issues should get engineering focus based on multi-factor scoring (reactions, age, severity, blockers).
+2. **Priority analysis requests** — Identify which issues should get engineering focus based on deterministic scoring (reactions, age, comments) plus agent content assessment.
 
 3. **Feature area health checks** — Assess the health of specific areas by analyzing issue distribution, triage backlog, and proposal counts.
 
@@ -145,15 +145,17 @@ Retrieve or update the area-to-contact mapping configuration.
    ./scripts/Generate-FeatureAreaReport.ps1 -OutputFormat markdown -HighlightCount 3
    ```
 
-3. Review highlighted issues and their scores
+3. Run an agent content review for each highlighted issue using title, body, labels, and comments.
 
-4. Copy output to team communication channel (Teams, email, wiki)
+4. Add annotation tags in report narrative: `[severity:critical|high|medium|low|none]`, `[blocker:yes|no]`, and optional `[confidence:XX]`.
+
+5. Copy output to team communication channel (Teams, email, wiki)
 
 ### Workflow 2: Analyze a Specific Feature Area
 
 1. Get area-specific issues:
    ```powershell
-   gh issue list --repo microsoft/WindowsAppSDK --label "area-Notification" --state open --json number,title,labels,reactionGroups,createdAt,comments
+  gh issue list --repo microsoft/WindowsAppSDK --label "area-Notifications" --state open --json number,title,body,labels,reactionGroups,createdAt,comments
    ```
 
 2. Check individual issue scores:
@@ -179,11 +181,27 @@ Retrieve or update the area-to-contact mapping configuration.
 
 Issues are scored (0-100) based on multiple factors. See [scoring-algorithm.md](./references/scoring-algorithm.md) for complete details.
 
-The scripts produce deterministic issue scores and highlight labels. Confidence is assigned by the agent after reviewing the scored issues, not by PowerShell heuristics.
+The scripts produce deterministic issue scores and highlight labels. Severity and blocker status are agent-assessed annotations in Phase 1 and are not inferred by PowerShell.
 
-## LLM Confidence Review
+## Agent Content Review
 
-After generating scores, review each highlighted issue and assign `[confidence:XX]` based on how strong the evidence is that the issue deserves attention in the report.
+After generating scores, review each highlighted issue and assign these annotations based on title, body, labels, and comments:
+
+- `[severity:critical|high|medium|low|none]`
+- `[blocker:yes|no]`
+- `[confidence:XX]`
+
+Use this severity rubric:
+
+| Tier | Meaning |
+|------|---------|
+| `critical` | Crash, data loss, severe regression, or broad user/system impact |
+| `high` | Serious functional break affecting key workflows |
+| `medium` | User-visible defect or limitation with practical workaround |
+| `low` | Minor issue, edge case, docs/polish impact |
+| `none` | No clear severity signal from issue content |
+
+Mark `[blocker:yes]` only when issue content explicitly indicates dependency blocking (for example: "blocked by", "blocking release", "must be fixed before"). Otherwise use `[blocker:no]` and no workaround has been provided.
 
 Use this confidence rubric:
 
@@ -209,16 +227,17 @@ Confidence should consider:
 | **Reactions** | 30 | Total reactions (👍, ❤️, 🚀, etc.) indicate community interest |
 | **Age** | 30 | Older untriaged issues get higher priority |
 | **Comments** | 30 | Active discussion indicates importance |
-| **Severity** | 10 | Labels like `bug`, `regression`, `crash`, `P0`-`P3` increase score |
+| **Severity** | 10 | Reserved for agent or human assessment integration (Phase 2); deterministic scripts keep this at 0 in Phase 1 |
 
-### Severity Label Tiers
+### Agent Severity Tiers
 
-| Tier | Labels | Score |
-|------|--------|-------|
-| Critical | `regression`, `crash`, `hang`, `data-loss`, `P0` | 100% |
-| High | `bug`, `P1` | 80% |
-| Medium | `performance`, `feature proposal`, `P2` | 50% |
-| Low | `documentation`, `enhancement`, `P3` | 20% |
+| Tier | Typical signals |
+|------|-----------------|
+| Critical | Crash, data loss, startup failure, severe regression |
+| High | Core scenario broken, no acceptable workaround |
+| Medium | Degraded functionality, workaround exists |
+| Low | Minor usability/docs/polish issue |
+| None | No clear severity indication in the issue content |
 
 ### Highlight Labels (Output)
 
@@ -228,8 +247,6 @@ The report adds reason labels to highlighted issues:
 |-------|---------|
 | `🌟 Popular` | High reaction count (≥5 reactions) |
 | `⏰ Aging` | Open > 90 days without triage |
-| `🐛 Regression` | Marked as regression or recent breakage |
-| `🚧 Blocker` | Blocking other issues or teams |
 | `📈 Trending` | High comment activity (≥10 comments) |
 
 ## Report Output Format
@@ -245,13 +262,13 @@ The report adds reason labels to highlighted issues:
 
 ### Agent-Reviewed Output
 
-When producing the final narrative report, the agent may append LLM-reviewed confidence values:
+When producing the final narrative report, the agent should append content-review annotations:
 
 ```markdown
 | Feature Area | Area Contact | Open | Triage | Proposals | Closed | Highlights |
 |--------------|--------------|------|--------|-----------|--------|------------|
-| area-Notification | Contact Name | 34 | 8 | 11 | 0 | 🌟 [#2894](link) [confidence:85], ⏰ [#3001](link) [confidence:72] |
-| area-Widgets | Contact Name | 21 | 10 | 4 | 0 | 📈 [#3958](link) [confidence:68] |
+| area-Notification | Contact Name | 34 | 8 | 11 | 0 | 🌟 [#2894](link) [severity:high] [blocker:no] [confidence:85], ⏰ [#3001](link) [severity:medium] [blocker:no] [confidence:72] |
+| area-Widgets | Contact Name | 21 | 10 | 4 | 0 | 📈 [#3958](link) [severity:low] [blocker:no] [confidence:68] |
 ```
 
 ### Special Status Indicators
