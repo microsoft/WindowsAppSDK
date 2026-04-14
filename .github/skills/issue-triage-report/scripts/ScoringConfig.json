@@ -20,10 +20,11 @@
     "trending"
   ],
   "maxLabelsPerIssue": 2,
-  "severityLabels": {
-    "critical": ["regression", "crash", "hang", "data-loss", "P0"],
-    "high": ["bug", "P1"],
-    "medium": ["performance", "feature proposal", "feature-proposal", "P2"],
-    "low": ["documentation", "enhancement", "P3"]
+  "severityMultipliers": {
+    "critical": 1.0,
+    "high": 0.8,
+    "medium": 0.5,
+    "low": 0.2,
+    "none": 0.0
   }
 }

@@ -37,7 +37,7 @@ function Get-ScoringConfig {
     $loaded = Get-Content $ConfigPath -Raw | ConvertFrom-Json
 
     # --- Validate required top-level sections ---
-    foreach ($section in @("weights", "thresholds", "maxLabelsPerIssue", "severityLabels")) {
+    foreach ($section in @("weights", "thresholds", "maxLabelsPerIssue", "severityMultipliers")) {
         if ($null -eq $loaded.$section) {
             throw "ScoringConfig.json missing required section: '$section'"
         }
@@ -57,10 +57,10 @@ function Get-ScoringConfig {
         }
     }
 
-    # --- Validate required severity label levels ---
-    foreach ($level in @("critical", "high", "medium", "low")) {
-        if ($null -eq $loaded.severityLabels.$level) {
-            throw "ScoringConfig.json 'severityLabels' missing required level: '$level'"
+    # --- Validate required severity multiplier levels ---
+    foreach ($level in @("critical", "high", "medium", "low", "none")) {
+        if ($null -eq $loaded.severityMultipliers.$level) {
+            throw "ScoringConfig.json 'severityMultipliers' missing required level: '$level'"
         }
     }
 
@@ -80,11 +80,12 @@ function Get-ScoringConfig {
             popular_reactions = [int]$loaded.thresholds.popular_reactions
         }
         maxLabelsPerIssue = [int]$loaded.maxLabelsPerIssue
-        severityLabels = @{
-            critical = @($loaded.severityLabels.critical)
-            high     = @($loaded.severityLabels.high)
-            medium   = @($loaded.severityLabels.medium)
-            low      = @($loaded.severityLabels.low)
+        severityMultipliers = @{
+            critical = [double]$loaded.severityMultipliers.critical
+            high     = [double]$loaded.severityMultipliers.high
+            medium   = [double]$loaded.severityMultipliers.medium
+            low      = [double]$loaded.severityMultipliers.low
+            none     = [double]$loaded.severityMultipliers.none
         }
     }
 
@@ -552,30 +553,12 @@ function Get-IssueScore {
 
         if ($hasSeverityTier -and -not [string]::IsNullOrWhiteSpace([string]$severityTier)) {
             $normalizedTier = ([string]$severityTier).ToLowerInvariant()
-            switch ($normalizedTier) {
-                "critical" {
-                    $score.Severity = $weights.severity
-                    $score.SeverityLabel = "critical"
-                }
-                "high" {
-                    $score.Severity = [math]::Floor($weights.severity * 0.8)
-                    $score.SeverityLabel = "high"
-                }
-                "medium" {
-                    $score.Severity = [math]::Floor($weights.severity * 0.5)
-                    $score.SeverityLabel = "medium"
-                }
-                "low" {
-                    $score.Severity = [math]::Floor($weights.severity * 0.2)
-                    $score.SeverityLabel = "low"
-                }
-                "none" {
-                    $score.Severity = 0
-                    $score.SeverityLabel = "none"
-                }
-                default {
-                    Write-Warning "Issue #$issueKey has invalid severityTier '$severityTier' in assessments. Using fallback severity behavior."
-                }
+            $severityMultipliers = $Config.severityMultipliers
+            if ($severityMultipliers.ContainsKey($normalizedTier)) {
+                $score.Severity = $weights.severity * $severityMultipliers[$normalizedTier]
+                $score.SeverityLabel = $normalizedTier
+            } else {
+                Write-Warning "Issue #$issueKey has invalid severityTier '$severityTier' in assessments. Using fallback severity behavior."
             }
         }
 
