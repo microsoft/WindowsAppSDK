@@ -184,19 +184,21 @@ Retrieve or update the area-to-contact mapping configuration.
 
 ## Highlight Scoring Algorithm
 
-Issues are scored (0-100) based on multiple factors. See [scoring-algorithm.md](./references/scoring-algorithm.md) for complete details.
+Issues are scored with a raw-weighted composite. See [scoring-algorithm.md](./references/scoring-algorithm.md) for complete details.
 
-The scripts produce deterministic issue scores and highlight labels. Severity and blocker status are agent-assessed annotations in Phase 1 and are not inferred by PowerShell.
+PowerShell computes deterministic score factors and highlight labels. Severity and blocker are assessment-driven inputs.
 
-In Phase 2, scripts automatically load IssueAssessments from a fixed path before scoring:
+Scripts load baseline assessments from:
 
 - `./references/IssueAssessments.json`
 
-They also load agent-generated runtime overrides from:
+They also load runtime agent assessments from:
 
 - `./references/AgentAssessments.json`
 
-If the file is missing or malformed, scripts emit a status message and continue with fallback behavior.
+If both files include the same issue number, `AgentAssessments.json` takes precedence.
+
+If either file is missing or malformed, scripts emit status/warning output and continue with fallback behavior.
 
 ## Agent Content Review
 
@@ -239,10 +241,13 @@ Confidence should consider:
 
 | Factor | Weight | Description |
 |--------|--------|-------------|
-| **Reactions** | 30 | Total reactions (👍, ❤️, 🚀, etc.) indicate community interest |
-| **Age** | 30 | Older untriaged issues get higher priority |
-| **Comments** | 30 | Active discussion indicates importance |
-| **Severity** | 10 | Sourced from `IssueAssessments.json` severity tier (`critical/high/medium/low/none`) with fallback when missing |
+| **Reactions** | `weights.reactions` (default `0.3`) | `floor(weight * totalReactions)` |
+| **Age** | `weights.age` (default `0.3`) | `floor(weight * issueAgeDays)` |
+| **Comments** | `weights.comments` (default `0.3`) | `floor(weight * commentCount)` |
+| **Severity** | `weights.severity` (default `0.1`) | `weight * severityMultipliers[tier]` from assessments (`critical/high/medium/low/none`) |
+| **Blockers** | `weights.blockers` (default `0`) | Adds blocker weight when assessed `isBlocker=true` |
+
+`Total` is an integer sum. If severity or blocker points are fractional, they are truncated when total score is computed.
 
 ### Agent Severity Tiers
 
@@ -315,10 +320,10 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
 ```json
 {
   "weights": {
-    "reactions": 30,
-    "age": 30,
-    "comments": 30,
-    "severity": 10,
+    "reactions": 0.3,
+    "age": 0.3,
+    "comments": 0.3,
+    "severity": 0.1,
     "blockers": 0
   },
   "thresholds": {
@@ -327,16 +332,19 @@ Modify scoring weights in `./scripts/ScoringConfig.json`:
     "trending_days": 14,
     "popular_reactions": 5
   },
-  "severityLabels": {
-    "critical": ["regression", "crash", "hang", "data-loss", "P0"],
-    "high": ["bug", "P1"],
-    "medium": ["performance", "feature proposal", "feature-proposal", "P2"],
-    "low": ["documentation", "enhancement", "P3"]
+  "labelPriority": ["regression", "blocker", "popular", "aging", "trending"],
+  "maxLabelsPerIssue": 2,
+  "severityMultipliers": {
+    "critical": 1.0,
+    "high": 0.8,
+    "medium": 0.5,
+    "low": 0.2,
+    "none": 0.0
   }
 }
 ```
 
-`severityLabels` remains in config for compatibility, but Phase 2 severity and blocker scoring is assessment-driven rather than label-derived.
+`severityMultipliers` maps assessment tiers to the percentage of `weights.severity` that is applied.
 
 ## Troubleshooting
 
