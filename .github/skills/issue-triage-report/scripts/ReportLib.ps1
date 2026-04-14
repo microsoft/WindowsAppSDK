@@ -137,9 +137,15 @@ function Get-AreaContacts {
         if (-not $prop.Value.contact) {
             throw "Area '$($prop.Name)' missing required 'contact' field in: $ContactsPath"
         }
+
+        $notes = $null
+        if ($prop.Value.PSObject.Properties.Name -contains "notes") {
+            $notes = $prop.Value.notes
+        }
+
         $hashtable[$prop.Name] = @{
             contact = $prop.Value.contact
-            notes = $prop.Value.notes
+            notes = $notes
         }
     }
     return $hashtable

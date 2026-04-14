@@ -79,8 +79,8 @@ function Format-ContactsTable {
         $contact = $Contacts[$area]
         $data += [PSCustomObject]@{
             Area = $area
-            PrimaryContact = $contact.primary
-            SecondaryContact = if ($contact.secondary) { $contact.secondary } else { "-" }
+            Contact = $contact.contact
+            Notes = if ($contact.notes) { $contact.notes } else { "-" }
         }
     }
 
@@ -98,9 +98,9 @@ function Format-ContactsList {
 
     foreach ($area in ($Contacts.Keys | Sort-Object)) {
         $contact = $Contacts[$area]
-        $line = "$area : $($contact.primary)"
-        if ($contact.secondary) {
-            $line += ", $($contact.secondary)"
+        $line = "$area : $($contact.contact)"
+        if ($contact.notes) {
+            $line += " (notes: $($contact.notes))"
         }
         [void]$sb.AppendLine($line)
     }
@@ -129,20 +129,20 @@ function Update-AreaContact {
 
     $current = $Contacts[$AreaName]
     if ($current) {
-        Write-Host "Current primary contact: $($current.primary)" -ForegroundColor Cyan
-        if ($current.secondary) {
-            Write-Host "Current secondary contact: $($current.secondary)" -ForegroundColor Cyan
+        Write-Host "Current contact: $($current.contact)" -ForegroundColor Cyan
+        if ($current.notes) {
+            Write-Host "Current notes: $($current.notes)" -ForegroundColor Cyan
         }
     }
 
     Write-Host ""
-    $newPrimary = Read-Host "Enter new primary contact (or press Enter to keep)"
-    $newSecondary = Read-Host "Enter new secondary contact (or press Enter to keep/clear)"
+    $newContact = Read-Host "Enter new contact (or press Enter to keep)"
+    $newNotes = Read-Host "Enter new notes (or press Enter to keep; type CLEAR to remove)"
 
-    if ($newPrimary -or $newSecondary) {
+    if ($newContact -or $newNotes) {
         $Contacts[$AreaName] = @{
-            primary = if ($newPrimary) { $newPrimary } else { $current.primary }
-            secondary = if ($newSecondary) { $newSecondary } elseif ($newSecondary -eq "") { $null } else { $current.secondary }
+            contact = if ($newContact) { $newContact } else { $current.contact }
+            notes = if ($newNotes -eq "CLEAR") { $null } elseif ($newNotes) { $newNotes } else { $current.notes }
         }
 
         # Save to file using .NET for consistent UTF-8 without BOM across PS versions
@@ -180,18 +180,18 @@ if ($Area) {
                 @{ $Area = $contact } | ConvertTo-Json
             }
             "list" {
-                $line = "$Area : $($contact.primary)"
-                if ($contact.secondary) {
-                    $line += ", $($contact.secondary)"
+                $line = "$Area : $($contact.contact)"
+                if ($contact.notes) {
+                    $line += " (notes: $($contact.notes))"
                 }
                 Write-Output $line
             }
             default {
                 Write-Host ""
                 Write-Host "Feature Area: $Area" -ForegroundColor Cyan
-                Write-Host "  Primary Contact: $($contact.primary)" -ForegroundColor Green
-                if ($contact.secondary) {
-                    Write-Host "  Secondary Contact: $($contact.secondary)" -ForegroundColor Green
+                Write-Host "  Contact: $($contact.contact)" -ForegroundColor Green
+                if ($contact.notes) {
+                    Write-Host "  Notes: $($contact.notes)" -ForegroundColor Green
                 }
                 Write-Host ""
             }
