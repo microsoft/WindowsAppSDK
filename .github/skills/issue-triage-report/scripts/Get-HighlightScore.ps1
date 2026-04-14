@@ -130,8 +130,7 @@ function Format-ScoreBreakdown {
     #>
     param(
         [hashtable]$ScoreResult,
-        [object]$Issue,
-        [int]$Confidence = 0
+        [object]$Issue
     )
 
     $sb = [System.Text.StringBuilder]::new()
@@ -176,7 +175,7 @@ function Format-ScoreBreakdown {
     }
 
     [void]$sb.AppendLine("  ───────────────────────────────────────────────────────")
-    [void]$sb.AppendLine("  TOTAL SCORE: $($ScoreResult.TotalScore) / $($ScoreResult.MaxPossible) [confidence:$Confidence]")
+    [void]$sb.AppendLine("  TOTAL SCORE: $($ScoreResult.TotalScore) / $($ScoreResult.MaxPossible)")
     [void]$sb.AppendLine("")
 
     # Highlight recommendation
@@ -233,24 +232,15 @@ if ($issue.state -ne "OPEN") {
 # Calculate score
 $scoreResult = Get-DetailedIssueScore -Issue $issue -Config $Config
 
-# Calculate confidence using shared function
-$confidence = Get-ScoreConfidence -Issue $issue -Score @{
-    Total = $scoreResult.TotalScore
-    Reactions = $scoreResult.Breakdown.Reactions.Score
-    Age = $scoreResult.Breakdown.Age.Score
-    Comments = $scoreResult.Breakdown.Comments.Score
-    Severity = $scoreResult.Breakdown.Severity.Score
-}
-
 # Output
 if ($VerbosePreference -eq "Continue" -or $PSBoundParameters.ContainsKey('Verbose')) {
-    $output = Format-ScoreBreakdown -ScoreResult $scoreResult -Issue $issue -Confidence $confidence
+    $output = Format-ScoreBreakdown -ScoreResult $scoreResult -Issue $issue
     Write-Output $output
 }
 else {
     # Simple output
     Write-Host ""
-    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore)/100 [confidence:$confidence]" -ForegroundColor Green
+    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore)/100" -ForegroundColor Green
     Write-Host ""
 
     # Show top contributing factors

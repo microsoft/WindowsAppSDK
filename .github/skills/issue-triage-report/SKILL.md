@@ -179,7 +179,28 @@ Retrieve or update the area-to-contact mapping configuration.
 
 Issues are scored (0-100) based on multiple factors. See [scoring-algorithm.md](./references/scoring-algorithm.md) for complete details.
 
-Each score includes a confidence value `[confidence:XX]` indicating data reliability (grep-friendly format).
+The scripts produce deterministic issue scores and highlight labels. Confidence is assigned by the agent after reviewing the scored issues, not by PowerShell heuristics.
+
+## LLM Confidence Review
+
+After generating scores, review each highlighted issue and assign `[confidence:XX]` based on how strong the evidence is that the issue deserves attention in the report.
+
+Use this confidence rubric:
+
+| Score | Level | Meaning |
+|-------|-------|---------|
+| **80-100** | High | Multiple strong signals agree: issue content, labels, reactions, age, comments, and recent discussion all support highlighting it |
+| **60-79** | Medium-High | Strong support from the score breakdown and issue details, with only minor ambiguity |
+| **40-59** | Medium | Reasonable highlight candidate, but some evidence is weak, stale, or mixed |
+| **20-39** | Low | The numeric score is carrying most of the case; supporting context is limited or ambiguous |
+| **0-19** | Very Low | The issue surfaced mechanically, but the agent cannot defend highlighting it with the available evidence |
+
+Confidence should consider:
+
+- whether the issue body and comments clearly support the highlight label
+- whether the numeric score is driven by multiple meaningful factors instead of one outlier
+- whether the issue still appears relevant after reading recent discussion
+- whether the highlight reason would be easy to defend in a triage meeting
 
 ### Quick Reference: Score Factors
 
@@ -214,6 +235,17 @@ The report adds reason labels to highlighted issues:
 ## Report Output Format
 
 ### Markdown Table (Default)
+
+```markdown
+| Feature Area | Area Contact | Open | Triage | Proposals | Closed | Highlights |
+|--------------|--------------|------|--------|-----------|--------|------------|
+| area-Notification | Contact Name | 34 | 8 | 11 | 0 | 🌟 [#2894](link), ⏰ [#3001](link) |
+| area-Widgets | Contact Name | 21 | 10 | 4 | 0 | 📈 [#3958](link) |
+```
+
+### Agent-Reviewed Output
+
+When producing the final narrative report, the agent may append LLM-reviewed confidence values:
 
 ```markdown
 | Feature Area | Area Contact | Open | Triage | Proposals | Closed | Highlights |

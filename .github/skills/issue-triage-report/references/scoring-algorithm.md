@@ -183,27 +183,27 @@ Issue #2894 with 25 reactions, open 120 days, 8 comments, labeled `bug`:
 
 ---
 
-## Confidence Scoring
+## LLM Confidence Review
 
-Each score carries a `[confidence:XX]` value (0–100) indicating data reliability. This is computed at runtime by `Get-ScoreConfidence` and is **not** configurable in `ScoringConfig.json`.
+Deterministic scripts in this skill no longer compute confidence values. They produce the score, score breakdown, and highlight labels only.
 
-| Factor | Points |
-|--------|--------|
-| Has reactions data | +15 |
-| Has comments data | +15 |
-| Has labels | +15 |
-| Has created date | +15 |
-| Score ≥ 60 (clear priority) | +25 |
-| Score 40–59 | +15 |
-| Score 20–39 | +10 |
-| 3+ factors contributing | +15 |
-| 2 factors contributing | +10 |
+If a final report includes `[confidence:XX]`, that value must be assigned by the agent after reviewing the scored issue, its labels, the issue body, and recent discussion.
+
+Recommended rubric:
+
+| Score | Level | Meaning |
+|-------|-------|---------|
+| **80-100** | High | Strong textual and scoring evidence supports highlighting the issue |
+| **60-79** | Medium-High | Good support with limited ambiguity |
+| **40-59** | Medium | Plausible highlight, but evidence is mixed or incomplete |
+| **20-39** | Low | Weak supporting context beyond the numeric score |
+| **0-19** | Very Low | The agent cannot confidently defend the highlight |
 
 ```powershell
-# Find high-confidence highlights (80+)
+# Find high-confidence highlights in an agent-reviewed report
 Select-String -Path report.md -Pattern '\[confidence:[89][0-9]\]'
 
-# Find low-confidence items (below 50)
+# Find low-confidence highlights in an agent-reviewed report
 Select-String -Path report.md -Pattern '\[confidence:[0-4][0-9]\]'
 ```
 
@@ -227,7 +227,7 @@ Select-String -Path report.md -Pattern '\[confidence:[0-4][0-9]\]'
 
 ## Script Architecture & Function Reference
 
-Five scripts implement the scoring system. All scoring-related scripts dot-source `ReportLib.ps1` and load `ScoringConfig.json` through `Get-ScoringConfig`.
+The deterministic scoring scripts dot-source `ReportLib.ps1` and load `ScoringConfig.json` through `Get-ScoringConfig`.
 
 ```
 ScoringConfig.json
@@ -236,8 +236,7 @@ ScoringConfig.json
  Get-ScoringConfig()          ◄── ReportLib.ps1 (shared library)
        │
        ├──► Get-IssueScore()       scores one issue (canonical math)
-       ├──► Get-HighlightLabels()  assigns badge labels
-       └──► Get-ScoreConfidence()  rates data reliability
+       └──► Get-HighlightLabels()  assigns badge labels
               │
        ┌──────┴──────────────────────────────────┐
        ▼                                         ▼
@@ -250,6 +249,8 @@ ScoringConfig.json
 
  Validate-FeatureAreaReport.ps1        Get-AreaContacts.ps1
  (live issue counts — no scoring)      (contact lookup — no scoring)
+
+Agent review happens after these scripts run. Confidence is an agent-authored annotation, not part of the PowerShell pipeline.
 ```
 
 ---
@@ -267,7 +268,6 @@ All scoring math lives here. Other scripts call these functions — they never d
 | `Get-ScoringConfig` | Loads and validates `ScoringConfig.json`. Returns a hashtable consumed by every other function. | All fields (validation only) |
 | `Get-IssueScore` | **Canonical scorer.** Takes one issue + config, returns a hashtable with per-factor scores (`Reactions`, `Age`, `Comments`, `Severity`, `Blockers`), raw values, and `Total`. | `weights.*`, `severityLabels.*` |
 | `Get-HighlightLabels` | Evaluates label conditions and returns up to `maxLabelsPerIssue` badge strings (e.g., `🌟 Popular`). Checks in `labelPriority` order. | `thresholds.*`, `maxLabelsPerIssue` |
-| `Get-ScoreConfidence` | Rates data reliability (0–100) based on data completeness and score magnitude. | None (runtime only) |
 
 #### Helper Functions
 
@@ -278,8 +278,6 @@ All scoring math lives here. Other scripts call these functions — they never d
 | `Test-HasLabel` | Exact-match check for a single label name on an issue. |
 | `Test-HasLabelMatching` | Regex-match check for a label pattern (e.g., `block\|blocker`). |
 | `Format-IssueLink` | Returns `[#NNN](url)` markdown link. |
-| `Format-Confidence` | Returns `[confidence:XX]` string. |
-| `Get-AreaSuggestionConfidence` | Rates how likely a suggested area label is correct (used outside scoring). |
 
 #### `Get-IssueScore` Return Shape
 
@@ -313,7 +311,7 @@ CLI tool that fetches one issue from GitHub and displays its score breakdown.
 | Function | Purpose |
 |----------|---------|
 | `Get-DetailedIssueScore` | Wraps `Get-IssueScore` (ReportLib) and adds presentation metadata — reason strings (e.g., `"🌟 Popular (community interest)"`) and `MaxScore` per factor. Does **not** duplicate scoring math. |
-| `Format-ScoreBreakdown` | Renders the visual bar-chart output (`█░`) with factor-by-factor breakdown, total score, confidence, and a priority recommendation (HIGH / MEDIUM / NORMAL / LOW). |
+| `Format-ScoreBreakdown` | Renders the visual bar-chart output (`█░`) with factor-by-factor breakdown, total score, and a priority recommendation (HIGH / MEDIUM / NORMAL / LOW). |
 
 #### Usage
 
@@ -345,7 +343,7 @@ CLI tool that fetches one issue from GitHub and displays its score breakdown.
   Severity     [████████░░]  8/10  (raw: bug)
                └─ 🟠 High: bug
   ───────────────────────────────────────────────────────
-  TOTAL SCORE: 70 / 100 [confidence:85]
+       TOTAL SCORE: 70 / 100
 
   Recommendation: 🔴 HIGH PRIORITY - Should be highlighted in triage report
 ```
@@ -371,7 +369,7 @@ Generates the full Feature Area Status report by iterating every `area-*` label.
        │                      assign labels via Get-HighlightLabels (ReportLib),
        │                      sort descending, take top N
        │
-5. Format-HighlightsMarkdown  Format highlights as "🌟 [#NNN](url) [confidence:XX]"
+5. Format-HighlightsMarkdown  Format highlights as "🌟 [#NNN](url)"
        │
 6. Format-ReportMarkdown      Assemble the final markdown table with all areas
 ```
@@ -383,7 +381,7 @@ Generates the full Feature Area Status report by iterating every `area-*` label.
 | `Get-AllAreaLabels` | Discovers `area-*` labels via `Get-RepositoryLabels.ps1` (from the triage-meeting-prep skill). | — |
 | `Get-IssuesForArea` | Fetches issues for one area label using `gh issue list`. | — |
 | `Get-IssueStats` | Counts open, needs-triage, proposals, and bugs from label names. | — |
-| `Get-HighlightedIssues` | Orchestrator: scores all issues, assigns labels, computes confidence, sorts, and returns top N. | `Get-IssueScore`, `Get-HighlightLabels`, `Get-ScoreConfidence` |
+| `Get-HighlightedIssues` | Orchestrator: scores all issues, assigns labels, sorts, and returns top N. | `Get-IssueScore`, `Get-HighlightLabels` |
 | `Format-HighlightsMarkdown` | Joins highlight entries into a comma-separated markdown string. | — |
 | `Format-ReportMarkdown` | Builds the full markdown table with header, rows, and special-case handling (zero bugs, external area). | — |
 

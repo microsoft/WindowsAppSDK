@@ -179,13 +179,11 @@ function Get-HighlightedIssues {
     foreach ($issue in $Issues) {
         $score = Get-IssueScore -Issue $issue -Config $Config
         $labels = Get-HighlightLabels -Issue $issue -Score $score -Config $Config
-        $confidence = Get-ScoreConfidence -Issue $issue -Score $score
 
         $scoredIssues += @{
             Number = $issue.number
             Title = $issue.title
             Score = $score.Total
-            Confidence = $confidence
             Labels = $labels
             ScoreBreakdown = $score
         }
@@ -197,13 +195,13 @@ function Get-HighlightedIssues {
     return $highlights
 }
 
-# Note: Get-IssueScore, Get-HighlightLabels, and Get-ScoreConfidence are now defined in ReportLib.ps1
-# to provide a single source of truth for scoring logic across the skill.
+# Note: Get-IssueScore and Get-HighlightLabels are defined in ReportLib.ps1
+# to provide a single source of truth for deterministic scoring logic across the skill.
 
 function Format-HighlightsMarkdown {
     <#
     .SYNOPSIS
-        Formats highlighted issues as markdown links with labels and confidence.
+        Formats highlighted issues as markdown links with labels.
     #>
     param(
         [array]$Highlights,
@@ -219,11 +217,10 @@ function Format-HighlightsMarkdown {
         $labelArray = @($h.Labels)
         $label = if ($labelArray.Count -gt 0) { $labelArray[0] } else { "" }
         $link = "[#$($h.Number)](https://github.com/$Repository/issues/$($h.Number))"
-        $confStr = "[confidence:$($h.Confidence)]"
         if ($label) {
-            $parts += "$label $link $confStr"
+            $parts += "$label $link"
         } else {
-            $parts += "$link $confStr"
+            $parts += "$link"
         }
     }
 
