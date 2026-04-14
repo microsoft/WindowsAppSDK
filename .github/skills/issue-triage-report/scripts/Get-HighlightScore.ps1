@@ -6,7 +6,7 @@
     Calculates the highlight score for a specific GitHub issue.
 
 .DESCRIPTION
-    This script fetches issue details and calculates a priority score (0-100)
+    This script fetches issue details and calculates a priority score (unbounded)
     based on deterministic factors including reactions, age, and comments.
     Severity and blocker values are sourced from IssueAssessments.json
     (fixed path) and optional runtime agent assessments, with fallback behavior.
@@ -76,11 +76,18 @@ function Get-DetailedIssueScore {
     $weights = $Config.weights
     $thresholds = $Config.thresholds
 
+    # Benchmarks and recommendation bands for raw-weighted scoring.
+    # These are config-driven so output stays interpretable as weights/thresholds change.
+    $reactionBenchmark = [math]::Max(1, [math]::Floor([double]$weights.reactions * [double]$thresholds.popular_reactions))
+    $ageBenchmark = [math]::Max(1, [math]::Floor([double]$weights.age * [double]$thresholds.aging_days))
+    $commentBenchmark = [math]::Max(1, [math]::Floor([double]$weights.comments * [double]$thresholds.trending_comments))
+    $baselineScore = $reactionBenchmark + $ageBenchmark + $commentBenchmark
+
     # Build breakdown with presentation metadata on top of canonical scores
     $breakdown = @{
-        Reactions = @{ Raw = $score.RawReactions; Score = $score.Reactions; MaxScore = $weights.reactions; Reason = "" }
-        Age       = @{ Raw = $score.RawAge;       Score = $score.Age;       MaxScore = $weights.age;       Reason = "" }
-        Comments  = @{ Raw = $score.RawComments;  Score = $score.Comments;  MaxScore = $weights.comments;  Reason = "" }
+        Reactions = @{ Raw = $score.RawReactions; Score = $score.Reactions; MaxScore = $reactionBenchmark; Reason = "" }
+        Age       = @{ Raw = $score.RawAge;       Score = $score.Age;       MaxScore = $ageBenchmark;      Reason = "" }
+        Comments  = @{ Raw = $score.RawComments;  Score = $score.Comments;  MaxScore = $commentBenchmark;  Reason = "" }
         Severity  = @{ Raw = $score.SeverityLabel; Score = $score.Severity; MaxScore = $weights.severity;  Reason = "" }
         Blockers  = @{ Raw = $score.IsBlocker;    Score = $score.Blockers;  MaxScore = $weights.blockers;  Reason = "" }
     }
@@ -119,7 +126,12 @@ function Get-DetailedIssueScore {
     return @{
         Breakdown = $breakdown
         TotalScore = $score.Total
-        MaxPossible = 100
+        MaxPossible = $baselineScore
+        RecommendationThresholds = @{
+            High = $baselineScore * 4
+            Medium = $baselineScore * 2
+            Normal = $baselineScore
+        }
     }
 }
 
@@ -163,7 +175,8 @@ function Format-ScoreBreakdown {
         # Skip factors with 0 max score (disabled)
         if ($max -eq 0) { continue }
 
-        $bar = "█" * [math]::Floor($score / $max * 10)
+        $barFill = [math]::Min(10, [math]::Floor(($score / $max) * 10))
+        $bar = "█" * $barFill
         $bar = $bar.PadRight(10, "░")
 
         $line = "  {0,-12} [{1}] {2,2}/{3,2}  (raw: {4})" -f $factor, $bar, $score, $max, $raw
@@ -175,18 +188,21 @@ function Format-ScoreBreakdown {
     }
 
     [void]$sb.AppendLine("  ───────────────────────────────────────────────────────")
-    [void]$sb.AppendLine("  TOTAL SCORE: $($ScoreResult.TotalScore) / $($ScoreResult.MaxPossible)")
+    [void]$sb.AppendLine("  TOTAL SCORE: $($ScoreResult.TotalScore) (baseline: $($ScoreResult.MaxPossible))")
+    [void]$sb.AppendLine("")
+    [void]$sb.AppendLine("  Scale: Raw-weighted (unbounded)")
     [void]$sb.AppendLine("")
 
     # Highlight recommendation
     $score = $ScoreResult.TotalScore
-    $recommendation = if ($score -ge 60) {
+    $rec = $ScoreResult.RecommendationThresholds
+    $recommendation = if ($score -ge $rec.High) {
         "🔴 HIGH PRIORITY - Should be highlighted in triage report"
     }
-    elseif ($score -ge 40) {
+    elseif ($score -ge $rec.Medium) {
         "🟡 MEDIUM PRIORITY - Consider for triage discussion"
     }
-    elseif ($score -ge 20) {
+    elseif ($score -ge $rec.Normal) {
         "🟢 NORMAL PRIORITY - Standard backlog item"
     }
     else {
@@ -240,7 +256,7 @@ if ($VerbosePreference -eq "Continue" -or $PSBoundParameters.ContainsKey('Verbos
 else {
     # Simple output
     Write-Host ""
-    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore)/100" -ForegroundColor Green
+    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore) (raw-weighted)" -ForegroundColor Green
     Write-Host ""
 
     # Show top contributing factors

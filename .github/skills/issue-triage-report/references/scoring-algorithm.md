@@ -34,26 +34,23 @@ Controls how many points each factor can contribute to the 0–100 composite sco
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `reactions` | int | Max points from GitHub reaction count (👍 ❤️ 🚀 👀 🎉 😕 😄). Higher reaction counts award a larger fraction of this value. |
-| `age` | int | Max points from issue age (days since creation). Older untriaged issues score higher. |
-| `comments` | int | Max points from comment count. More discussion → higher score. |
+| `reactions` | int | Multiplier applied to total GitHub reactions (👍 ❤️ 🚀 👀 🎉 😕 😄). |
+| `age` | int | Multiplier applied to issue age in days (days since creation). |
+| `comments` | int | Multiplier applied to comment count. |
 | `severity` | int | Points applied from IssueAssessments severity tier (`critical/high/medium/low/none`) in Phase 2. |
 | `blockers` | int | Points applied when IssueAssessments sets `isBlocker=true` in Phase 2. |
 
 ### How points are awarded within each factor
 
-The scoring engine divides each factor's weight into brackets. For example, with `"reactions": 30`:
+For deterministic factors, points are computed directly from raw values:
 
-| Raw Reactions | % of Weight | Points Awarded |
-|---------------|-------------|----------------|
-| 0 | 0% | 0 |
-| 1–4 | 20% | 6 |
-| 5–9 | 40% | 12 |
-| 10–19 | 60% | 18 |
-| 20–49 | 80% | 24 |
-| 50+ | 100% | 30 |
+```
+reactions_pts = floor(weights.reactions * raw_reactions)
+age_pts       = floor(weights.age * raw_age_days)
+comments_pts  = floor(weights.comments * raw_comments)
+```
 
-The same 20/25/40/50/67/75/80/100% bracket pattern applies to `age` and `comments`. Changing the weight value scales all brackets proportionally.
+Changing a weight directly scales the contribution of that raw signal.
 
 In Phase 2, severity and blocker points are assessment-driven (IssueAssessments file and/or runtime agent assessments), not label-derived.
 
@@ -192,14 +189,14 @@ where assessment fields are optional; missing or empty values fall back to defau
 
 Issue #2894 with 25 reactions, open 120 days, 8 comments, and IssueAssessments severityTier=`high`:
 
-| Factor | Raw | Bracket | Points |
+| Factor | Raw | Formula | Points |
 |--------|-----|---------|--------|
-| Reactions | 25 | 20–49 → 80% | 24/30 |
-| Age | 120 days | 91–180 → 75% | 22/30 |
-| Comments | 8 | 6–10 → 67% | 20/30 |
-| Severity | `high` | assessed → 80% | 8/10 |
-| Blockers | `false` | assessed | 0/0 |
-| **Total** | | | **74/100** |
+| Reactions | 25 | floor(30 * 25) | 750 |
+| Age | 120 days | floor(30 * 120) | 3600 |
+| Comments | 8 | floor(30 * 8) | 240 |
+| Severity | `high` | assessed | 8 |
+| Blockers | `false` | assessed | 0 |
+| **Total** | | | **4598** |
 
 ---
 

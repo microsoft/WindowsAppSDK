@@ -484,14 +484,7 @@ function Get-IssueScore {
     $totalReactions = Get-TotalReactions -ReactionGroups $Issue.reactionGroups
     $score.RawReactions = $totalReactions
 
-    $score.Reactions = switch ([int]$totalReactions) {
-        { $_ -ge 50 } { $weights.reactions; break }
-        { $_ -ge 20 } { [math]::Floor($weights.reactions * 0.8); break }
-        { $_ -ge 10 } { [math]::Floor($weights.reactions * 0.6); break }
-        { $_ -ge 5 }  { [math]::Floor($weights.reactions * 0.4); break }
-        { $_ -ge 1 }  { [math]::Floor($weights.reactions * 0.2); break }
-        default { 0 }
-    }
+    $score.Reactions = [math]::Floor([double]$weights.reactions * [double]$totalReactions)
 
     # 2. Age score (use UTC for consistency)
     $ageInDays = Get-IssueAgeInDays -CreatedAt $Issue.createdAt
@@ -509,13 +502,7 @@ function Get-IssueScore {
         $score.RawUpdateAgeDays = [int]::MaxValue
     }
 
-    $score.Age = switch ($ageInDays) {
-        { $_ -ge 181 } { $weights.age; break }
-        { $_ -ge 91 }  { [math]::Floor($weights.age * 0.75); break }
-        { $_ -ge 61 }  { [math]::Floor($weights.age * 0.5); break }
-        { $_ -ge 31 }  { [math]::Floor($weights.age * 0.25); break }
-        default { 0 }
-    }
+    $score.Age = [math]::Floor([double]$weights.age * [double]$ageInDays)
 
     # 3. Comments score
     $commentCount = 0
@@ -528,13 +515,7 @@ function Get-IssueScore {
     }
     $score.RawComments = $commentCount
 
-    $score.Comments = switch ($commentCount) {
-        { $_ -ge 11 } { $weights.comments; break }
-        { $_ -ge 6 }  { [math]::Floor($weights.comments * 0.67); break }
-        { $_ -ge 3 }  { [math]::Floor($weights.comments * 0.4); break }
-        { $_ -ge 1 }  { [math]::Floor($weights.comments * 0.2); break }
-        default { 0 }
-    }
+    $score.Comments = [math]::Floor([double]$weights.comments * [double]$commentCount)
 
     # 4-5. Severity and blocker score from assessments only (file and/or agent).
     $score.Severity = 0
