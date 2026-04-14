@@ -57,11 +57,29 @@ parameters:
   displayName: "Run WindowsAppSDK-CheckApiChanges stage"
   type: boolean
   default: true
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+  values:
+  - 'stable'
+  - 'experimental'
+  - 'preview'
+- name: RunUpdateLibraryJob
+  displayName: "Run the Update Library Variable Group Job"
+  type: boolean
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
+  parameters:
+    PrOrNightly: ''
+- template: AzurePipelinesTemplates\WindowsAppSDK-VersionVariables.yml
+  parameters:
+    PrOrNightly: ''
+    BuildType: ${{ parameters.BuildType }}
 - name: maxParallelForBuildSamplesCompatJob_x64
   value: 20
 - name: maxParallelForBuildSamplesCompatJob_arm64
@@ -177,6 +195,9 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
         IsOfficial: true
+        PrOrNightly: ''
+        BuildType: ${{ parameters.BuildType }}
+        RunUpdateLibraryJob: ${{ parameters.RunUpdateLibraryJob }}
 
     - ${{ if eq( parameters.CheckApiChanges, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self

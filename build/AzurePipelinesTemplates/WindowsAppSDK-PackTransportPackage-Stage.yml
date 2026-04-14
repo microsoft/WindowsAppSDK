@@ -11,6 +11,18 @@ parameters:
 - name: "BuildMockWindowsAppSDK"
   type: boolean
   default: true
+- name: PrOrNightly
+  displayName: "PR or Nightly"
+  type: string
+  default: ''
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+- name: RunUpdateLibraryJob
+  displayName: "Run the Update Library Variable Group Job"
+  type: boolean
+  default: false
 
 stages:
 - stage: Pack
@@ -155,37 +167,10 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          $paddedRevision = '$(versionCounter)'
-          if([int]$(versionCounter) -lt 10)
-          {
-            $paddedRevision = '00' + '$(versionCounter)'
-          }
-          elseif ([int]$(versionCounter) -lt 100)
-          {
-            $paddedRevision = '0' + '$(versionCounter)'
-          }
-          Write-Host "paddedRevision " $paddedRevision
-
-          if ([int]$(versionCounter) -gt 999)
-          {
-            Write-Host "Revision Number limit reach. Please try again the next day"
-            Write-Host "##vso[task.complete result=Failed;]DONE"
-          }
-
           $buildType = '$(channel)'
-          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).$(versionMinDate)'
-          $majorMinorPatchRev = $majorMinorPatchRev + $paddedRevision
-          
-          if ($env:ComponentType)
-          {
-            Write-Host "componentType " $env:ComponentType
-            $majorMinorPatchRev = $majorMinorPatchRev + $env:ComponentType
-          }
-          
-          $version = $majorMinorPatchRev + '-' + $buildType
 
-          # If using release versioning, drop the version suffix, which includes a tag & build stamp.
-          # This should only be done when prepping final release packages.
+          # All builds (PR, Nightly, Official) use Library-based versioning
+          $majorMinorPatch = '$(MajorVersion).$(FoundationMinorVersionResolved).$(FoundationPatchVersionResolved)'
 
           if ('${{ parameters.IsOfficial }}' -eq 'true')
           {
@@ -209,8 +194,37 @@ stages:
             {
               $formattedTag = '-' + $versionTag
             }
+
+            # For stable official builds with no tag: Major.Minor.Patch
+            # For non-stable official builds: Major.Minor.Patch-tag{Revision}
+            $revision = '$(Revision)'
+            if ($buildType -eq "stable" -and [String]::IsNullOrEmpty($formattedTag))
+            {
+              $version = $majorMinorPatch
+            }
+            elseif (-not [String]::IsNullOrEmpty($revision))
+            {
+              $version = $majorMinorPatch + $formattedTag + $revision
+            }
+            else
+            {
+              $version = $majorMinorPatch + $formattedTag
+            }
+
             Write-Host "Using Release Versioning"
-            $version = $majorMinorPatchRev + $formattedTag
+          }
+          else
+          {
+            # PR/Nightly: Major.Minor.Patch-{NugetBuildTypePrefix}{buildType}{Revision}
+            # Uses Library version but does NOT update it. Distinguished by prefix + revision.
+            $versionTag = '$(NugetBuildTypePrefix)' + $buildType
+            $version = $majorMinorPatch + '-' + $versionTag + '$(Revision)'
+          }
+
+          if ($env:ComponentType)
+          {
+            Write-Host "componentType " $env:ComponentType
+            $version = $version + $env:ComponentType
           }
 
           Write-Host 'Component Package Version: ' $version
@@ -262,3 +276,13 @@ stages:
           nuGetFeedType: 'internal'
           #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
           publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+
+- stage: UpdateFoundationLibrary
+  dependsOn: Pack
+  condition: and(succeeded('Pack'), eq(${{ parameters.RunUpdateLibraryJob }}, true))
+  jobs:
+  - template: WindowsAppSDK-UpdateLibrary-Job.yml
+    parameters:
+      jobName: 'UpdateFoundationLibraryJob'
+      BuildType: ${{ parameters.BuildType }}
+      PrOrNightly: ${{ parameters.PrOrNightly }}
