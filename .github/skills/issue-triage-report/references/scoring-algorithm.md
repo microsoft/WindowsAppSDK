@@ -27,7 +27,7 @@ This document describes the scoring model implemented by:
 
 ## weights
 
-`weights` controls how strongly each raw signal contributes.
+`weights` controls how strongly each signal contributes.
 
 | Field | Type | Description |
 |---|---|---|

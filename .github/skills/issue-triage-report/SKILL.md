@@ -46,24 +46,7 @@ The area contacts file maps feature areas to team members. This file is **requir
    cp .github/skills/issue-triage-report/references/area-contacts.json .user/issue-triage-report/area-contacts.json
    ```
 
-3. Edit `.user/issue-triage-report/area-contacts.json` with your team's actual contacts:
-   ```json
-   {
-     "areaContacts": {
-       "area-FeatureName": {
-         "contact": "Contact Name",
-         "notes": "Optional notes"
-       }
-     },
-     "specialAreas": {
-       "triageOnly": ["area-TriageOnlyExample"],
-       "crossFunctional": {
-         "area-CrossTeam": "org/related-repo"
-       }
-     },
-     "lastUpdated": "YYYY-MM"
-   }
-   ```
+3. Edit `.user/issue-triage-report/area-contacts.json` with your team's actual contacts
 
 > **Note**: The `.user/` folder is gitignored, so your team contacts remain private.
 
@@ -179,7 +162,7 @@ Retrieve or update the area-to-contact mapping configuration.
 
 2. Update specific area contact:
    ```powershell
-   ./scripts/Get-AreaContacts.ps1 -Area "area-Notification" -Update
+   ./scripts/Get-AreaContacts.ps1 -Area "area-Notifications" -Update
    ```
 
 ## Highlight Scoring Algorithm
@@ -218,7 +201,7 @@ Use this severity rubric:
 | `low` | Minor issue, edge case, docs/polish impact |
 | `none` | No clear severity signal from issue content |
 
-Mark `[blocker:yes]` only when issue content explicitly indicates dependency blocking (for example: "blocked by", "blocking release", "must be fixed before"). Otherwise use `[blocker:no]` and no workaround has been provided.
+Mark `[blocker:yes]` only when issue content explicitly indicates dependency blocking (for example: "blocked by", "blocking release", "must be fixed before") and no workaround has been provided. Otherwise use `[blocker:no]`.
 
 Use this confidence rubric:
 
@@ -239,25 +222,15 @@ Confidence should consider:
 
 ### Quick Reference: Score Factors
 
-| Factor | Weight | Description |
+| Factor | Weight (between 0 and 1) | Description |
 |--------|--------|-------------|
-| **Reactions** | `weights.reactions` (default `0.3`) | `floor(weight * totalReactions)` |
-| **Age** | `weights.age` (default `0.3`) | `floor(weight * issueAgeDays)` |
-| **Comments** | `weights.comments` (default `0.3`) | `floor(weight * commentCount)` |
-| **Severity** | `weights.severity` (default `0.1`) | `weight * severityMultipliers[tier]` from assessments (`critical/high/medium/low/none`) |
-| **Blockers** | `weights.blockers` (default `0`) | Adds blocker weight when assessed `isBlocker=true` |
+| **Reactions** | `weights.reactions` | `floor(weight * totalReactions)` |
+| **Age** | `weights.age` | `floor(weight * issueAgeDays)` |
+| **Comments** | `weights.comments` | `floor(weight * commentCount)` |
+| **Severity** | `weights.severity` | `weight * severityMultipliers[tier]` from assessments (`critical/high/medium/low/none`) |
+| **Blockers** | `weights.blockers` | Adds blocker weight when assessed `isBlocker=true` |
 
 `Total` is an integer sum. If severity or blocker points are fractional, they are truncated when total score is computed.
-
-### Agent Severity Tiers
-
-| Tier | Typical signals |
-|------|-----------------|
-| Critical | Crash, data loss, startup failure, severe regression |
-| High | Core scenario broken, no acceptable workaround |
-| Medium | Degraded functionality, workaround exists |
-| Low | Minor usability/docs/polish issue |
-| None | No clear severity indication in the issue content |
 
 ### Highlight Labels (Output)
 
@@ -296,7 +269,6 @@ When producing the final narrative report, the agent should append content-revie
 | Indicator | Meaning |
 |-----------|---------|
 | `0️⃣🐛🥳` | Zero bugs — celebrate! |
-| `🆕` | New area (no historical data) |
 | `-` | Data not applicable or unavailable |
 
 ## Configuration
@@ -305,44 +277,9 @@ When producing the final narrative report, the agent should append content-revie
 
 Contact mappings are stored in [area-contacts.json](./references/area-contacts.json). Update this file when team assignments change.
 
-```json
-{
-  "areaContacts": {
-    "area-FeatureName": { "contact": "Contact Name", "notes": "Optional notes" }
-  }
-}
-```
-
 ### Custom Scoring Weights
 
-Modify scoring weights in `./scripts/ScoringConfig.json`:
-
-```json
-{
-  "weights": {
-    "reactions": 0.3,
-    "age": 0.3,
-    "comments": 0.3,
-    "severity": 0.1,
-    "blockers": 0
-  },
-  "thresholds": {
-    "aging_days": 90,
-    "trending_comments": 10,
-    "trending_days": 14,
-    "popular_reactions": 5
-  },
-  "labelPriority": ["regression", "blocker", "popular", "aging", "trending"],
-  "maxLabelsPerIssue": 2,
-  "severityMultipliers": {
-    "critical": 1.0,
-    "high": 0.8,
-    "medium": 0.5,
-    "low": 0.2,
-    "none": 0.0
-  }
-}
-```
+Modify scoring weights in `./scripts/ScoringConfig.json`.
 
 `severityMultipliers` maps assessment tiers to the percentage of `weights.severity` that is applied.
 
