@@ -196,7 +196,7 @@ They also load runtime agent assessments from:
 
 - `./references/AgentAssessments.json`
 
-If both files include the same issue number, `AgentAssessments.json` takes precedence.
+If both files include the same issue number, `IssueAssessments.json` takes precedence.
 
 If either file is missing or malformed, scripts emit status/warning output and continue with fallback behavior.
 

@@ -51,10 +51,10 @@ blockerPts   = (isBlocker and weights.blockers > 0) ? weights.blockers : 0
 
 Severity and blocker values are sourced from JSON assessments, not issue labels.
 
-1. Runtime overrides (highest precedence):
-   - `./references/AgentAssessments.json`
-2. Baseline assessments:
-   - `./references/IssueAssessments.json`
+1. Baseline assessments (highest precedence, human-edited):
+  - `./references/IssueAssessments.json`
+2. Runtime agent assessments:
+  - `./references/AgentAssessments.json`
 
 Both loaders are fail-soft:
 
@@ -62,7 +62,7 @@ Both loaders are fail-soft:
 - Malformed JSON: warning/status, continue.
 - Missing `assessments` object: warning/status, continue.
 
-If both files include the same issue number, `AgentAssessments.json` is used for that issue.
+If both files include the same issue number, `IssueAssessments.json` is used for that issue.
 
 ## thresholds
 

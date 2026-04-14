@@ -530,11 +530,12 @@ function Get-IssueScore {
     }
 
     $selectedAssessment = $null
-    if ($issueKey -and $AgentAssessments -and $AgentAssessments.ContainsKey($issueKey)) {
-        $selectedAssessment = $AgentAssessments[$issueKey]
-    }
-    elseif ($issueKey -and $IssueAssessments -and $IssueAssessments.ContainsKey($issueKey)) {
+    # Human-edited IssueAssessments are authoritative when both sources exist.
+    if ($issueKey -and $IssueAssessments -and $IssueAssessments.ContainsKey($issueKey)) {
         $selectedAssessment = $IssueAssessments[$issueKey]
+    }
+    elseif ($issueKey -and $AgentAssessments -and $AgentAssessments.ContainsKey($issueKey)) {
+        $selectedAssessment = $AgentAssessments[$issueKey]
     }
 
     if ($selectedAssessment) {
