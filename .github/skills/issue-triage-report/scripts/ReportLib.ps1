@@ -315,34 +315,30 @@ function Write-ColoredStatus {
     Write-Host $Message -ForegroundColor $color
 }
 
-function Get-IssueAssessmentsPath {
+function Get-AssessmentsPath {
     <#
     .SYNOPSIS
-        Returns the fixed IssueAssessments.json path for this skill.
+        Returns the fixed assessments file path for this skill.
     #>
     param(
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [string]$ScriptDirectory
-    )
+        [string]$ScriptDirectory,
 
-    $skillDir = Split-Path $ScriptDirectory -Parent
-    return (Join-Path $skillDir "references\IssueAssessments.json")
-}
-
-function Get-AgentAssessmentsPath {
-    <#
-    .SYNOPSIS
-        Returns the fixed AgentAssessments.json path for this skill.
-    #>
-    param(
         [Parameter(Mandatory=$true)]
-        [ValidateNotNullOrEmpty()]
-        [string]$ScriptDirectory
+        [ValidateSet("Issue", "Agent")]
+        [string]$AssessmentType
     )
 
     $skillDir = Split-Path $ScriptDirectory -Parent
-    return (Join-Path $skillDir "references\AgentAssessments.json")
+    $fileName = if ($AssessmentType -eq "Issue") {
+        "IssueAssessments.json"
+    }
+    else {
+        "AgentAssessments.json"
+    }
+
+    return (Join-Path $skillDir (Join-Path "references" $fileName))
 }
 
 function Read-IssueAssessments {
@@ -362,7 +358,7 @@ function Read-IssueAssessments {
         [switch]$EmitStatus
     )
 
-    $assessmentsPath = Get-IssueAssessmentsPath -ScriptDirectory $ScriptDirectory
+    $assessmentsPath = Get-AssessmentsPath -ScriptDirectory $ScriptDirectory -AssessmentType "Issue"
 
     if (-not (Test-Path -LiteralPath $assessmentsPath -PathType Leaf)) {
         if ($EmitStatus) {
@@ -432,7 +428,7 @@ function Read-AgentAssessments {
         [switch]$EmitStatus
     )
 
-    $assessmentsPath = Get-AgentAssessmentsPath -ScriptDirectory $ScriptDirectory
+    $assessmentsPath = Get-AssessmentsPath -ScriptDirectory $ScriptDirectory -AssessmentType "Agent"
 
     if (-not (Test-Path -LiteralPath $assessmentsPath -PathType Leaf)) {
         if ($EmitStatus) {
