@@ -56,6 +56,8 @@
 #include <appmodel.identity.h>
 #include <appmodel.packagegraph.h>
 #include <microsoft.configuration.h>
+#include <microsoft.filesystem.path.h>
+#include <microsoft.foundation.string.h>
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>
 #include <security.user.h>
