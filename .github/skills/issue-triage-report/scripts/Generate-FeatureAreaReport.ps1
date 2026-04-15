@@ -302,10 +302,10 @@ try {
     Write-Host ""
 
     # Load optional AgentAssessments from fixed path before scoring calculations.
-    $AgentAssessments = Read-AgentAssessments -ScriptDirectory $ScriptDir -EmitStatus
+    $AgentAssessments = Read-Assessments -ScriptDirectory $ScriptDir -AssessmentType Agent -EmitStatus
 
     # Load optional IssueAssessments from fixed path before scoring calculations.
-    $IssueAssessments = Read-IssueAssessments -ScriptDirectory $ScriptDir -EmitStatus
+    $IssueAssessments = Read-Assessments -ScriptDirectory $ScriptDir -AssessmentType Issue -EmitStatus
 
     # Verify GitHub CLI is available and authenticated
     try {

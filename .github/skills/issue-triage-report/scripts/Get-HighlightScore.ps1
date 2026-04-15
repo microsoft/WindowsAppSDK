@@ -54,7 +54,7 @@ if (-not $ConfigPath) {
 $Config = Get-ScoringConfig -ConfigPath $ConfigPath
 
 # Load optional IssueAssessments from fixed path before scoring calculations.
-$IssueAssessments = Read-IssueAssessments -ScriptDirectory $ScriptDir -EmitStatus
+$IssueAssessments = Read-Assessments -ScriptDirectory $ScriptDir -AssessmentType Issue -EmitStatus
 
 function Get-DetailedIssueScore {
     <#
