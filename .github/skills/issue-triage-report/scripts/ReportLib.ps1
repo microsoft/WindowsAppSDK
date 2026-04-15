@@ -261,26 +261,6 @@ function Test-HasLabel {
     return $false
 }
 
-function Test-HasLabelMatching {
-    <#
-    .SYNOPSIS
-        Checks if an issue has a label matching a pattern.
-    #>
-    param(
-        [array]$Labels,
-        [string]$Pattern
-    )
-
-    if (-not $Labels) { return $false }
-
-    foreach ($label in $Labels) {
-        if ($label.name -match $Pattern) {
-            return $true
-        }
-    }
-    return $false
-}
-
 function Format-IssueLink {
     <#
     .SYNOPSIS
