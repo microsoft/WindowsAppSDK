@@ -80,7 +80,7 @@ Severity and blocker values (not weights or multipliers) are sourced from JSON a
 
 We use two assessment files here to prevent the agent from overwriting human assessments and to track how an agent scored each issue.
 
-Both loaders are fail-soft:
+Both assessment reads are fail-soft:
 
 - Missing file: warning/status, continue.
 - Malformed JSON: warning/status, continue.
@@ -213,15 +213,14 @@ ScoringConfig.json
         -> Get-HighlightLabels()
 
 Get-HighlightScore.ps1
-    -> Read-IssueAssessments()
-    -> Read-AgentAssessments()
+  -> Read-Assessments(AssessmentType=Issue)
     -> Get-IssueScore()
     -> Get-DetailedIssueScore()
     -> Format-ScoreBreakdown()
 
 Generate-FeatureAreaReport.ps1
-    -> Read-IssueAssessments()
-    -> Read-AgentAssessments()
+  -> Read-Assessments(AssessmentType=Agent)
+  -> Read-Assessments(AssessmentType=Issue)
     -> Get-IssueScore()
     -> Get-HighlightLabels()
     -> Format report output

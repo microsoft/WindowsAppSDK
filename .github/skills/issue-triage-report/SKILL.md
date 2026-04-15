@@ -183,6 +183,8 @@ If both files include the same issue number, `IssueAssessments.json` takes prece
 
 If either file is missing or malformed, scripts emit status/warning output and continue with fallback behavior.
 
+Implementation note: scripts load these files through a single `Read-Assessments` function in `./scripts/ReportLib.ps1` using `-AssessmentType Issue` or `-AssessmentType Agent`.
+
 ## Agent Content Review
 
 After generating scores, review each highlighted issue and assign these annotations based on title, body, labels, and comments:

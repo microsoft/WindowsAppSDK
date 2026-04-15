@@ -321,10 +321,10 @@ function Get-AssessmentsPath {
     return (Join-Path $skillDir (Join-Path "references" $fileName))
 }
 
-function Read-IssueAssessments {
+function Read-Assessments {
     <#
     .SYNOPSIS
-        Loads IssueAssessments.json from the fixed skill path.
+        Loads assessment data from the fixed skill path.
 
     .DESCRIPTION
         Returns an issue-number keyed hashtable. Missing file or malformed data
@@ -335,97 +335,59 @@ function Read-IssueAssessments {
         [ValidateNotNullOrEmpty()]
         [string]$ScriptDirectory,
 
-        [switch]$EmitStatus
-    )
-
-    $assessmentsPath = Get-AssessmentsPath -ScriptDirectory $ScriptDirectory -AssessmentType "Issue"
-
-    if (-not (Test-Path -LiteralPath $assessmentsPath -PathType Leaf)) {
-        if ($EmitStatus) {
-            Write-ColoredStatus -Level "Warning" -Message "IssueAssessments.json not found at $assessmentsPath. Using fallback severity/blocker behavior."
-        }
-        return @{}
-    }
-
-    if ($EmitStatus) {
-        Write-ColoredStatus -Level "Info" -Message "IssueAssessments.json found at $assessmentsPath"
-    }
-
-    try {
-        $loaded = Get-Content -LiteralPath $assessmentsPath -Raw | ConvertFrom-Json
-    }
-    catch {
-        Write-Warning "IssueAssessments.json could not be parsed at $assessmentsPath. Using fallback severity/blocker behavior. Error: $_"
-        return @{}
-    }
-
-    if (-not $loaded) {
-        return @{}
-    }
-
-    $hasAssessmentsProperty = $loaded.PSObject.Properties.Name -contains "assessments"
-    if (-not $hasAssessmentsProperty -or -not $loaded.assessments) {
-        Write-Warning "IssueAssessments.json has no 'assessments' object at $assessmentsPath. Using fallback severity/blocker behavior."
-        return @{}
-    }
-
-    $result = @{}
-    foreach ($issueProp in $loaded.assessments.PSObject.Properties) {
-        $entry = @{}
-
-        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "severityTier") {
-            $entry.severityTier = $issueProp.Value.severityTier
-        }
-
-        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "isBlocker") {
-            $entry.isBlocker = $issueProp.Value.isBlocker
-        }
-
-        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "reasoning") {
-            $entry.reasoning = $issueProp.Value.reasoning
-        }
-
-        $result[[string]$issueProp.Name] = $entry
-    }
-
-    return $result
-}
-
-function Read-AgentAssessments {
-    <#
-    .SYNOPSIS
-        Loads AgentAssessments.json from the fixed skill path.
-
-    .DESCRIPTION
-        Returns an issue-number keyed hashtable. Missing file or malformed data
-        does not terminate execution; the caller can safely fall back.
-    #>
-    param(
         [Parameter(Mandatory=$true)]
-        [ValidateNotNullOrEmpty()]
-        [string]$ScriptDirectory,
+        [ValidateSet("Issue", "Agent")]
+        [string]$AssessmentType,
 
         [switch]$EmitStatus
     )
 
-    $assessmentsPath = Get-AssessmentsPath -ScriptDirectory $ScriptDirectory -AssessmentType "Agent"
+    $assessmentsPath = Get-AssessmentsPath -ScriptDirectory $ScriptDirectory -AssessmentType $AssessmentType
+
+    $missingFileMessage = if ($AssessmentType -eq "Issue") {
+        "IssueAssessments.json not found at $assessmentsPath. Using fallback severity/blocker behavior."
+    }
+    else {
+        "AgentAssessments.json not found at $assessmentsPath. Continuing without runtime agent overrides."
+    }
+
+    $foundFileMessage = if ($AssessmentType -eq "Issue") {
+        "IssueAssessments.json found at $assessmentsPath"
+    }
+    else {
+        "AgentAssessments.json found at $assessmentsPath"
+    }
+
+    $missingAssessmentsPropertyMessage = if ($AssessmentType -eq "Issue") {
+        "IssueAssessments.json has no 'assessments' object at $assessmentsPath. Using fallback severity/blocker behavior."
+    }
+    else {
+        "AgentAssessments.json has no 'assessments' object at $assessmentsPath. Continuing without runtime agent overrides."
+    }
 
     if (-not (Test-Path -LiteralPath $assessmentsPath -PathType Leaf)) {
         if ($EmitStatus) {
-            Write-ColoredStatus -Level "Warning" -Message "AgentAssessments.json not found at $assessmentsPath. Continuing without runtime agent overrides."
+            Write-ColoredStatus -Level "Warning" -Message $missingFileMessage
         }
         return @{}
     }
 
     if ($EmitStatus) {
-        Write-ColoredStatus -Level "Info" -Message "AgentAssessments.json found at $assessmentsPath"
+        Write-ColoredStatus -Level "Info" -Message $foundFileMessage
     }
 
     try {
         $loaded = Get-Content -LiteralPath $assessmentsPath -Raw | ConvertFrom-Json
     }
     catch {
-        Write-Warning "AgentAssessments.json could not be parsed at $assessmentsPath. Continuing without runtime agent overrides. Error: $_"
+        $parseFailureMessage = if ($AssessmentType -eq "Issue") {
+            "IssueAssessments.json could not be parsed at $assessmentsPath. Using fallback severity/blocker behavior. Error: $_"
+        }
+        else {
+            "AgentAssessments.json could not be parsed at $assessmentsPath. Continuing without runtime agent overrides. Error: $_"
+        }
+
+        Write-Warning $parseFailureMessage
         return @{}
     }
 
@@ -435,7 +397,7 @@ function Read-AgentAssessments {
 
     $hasAssessmentsProperty = $loaded.PSObject.Properties.Name -contains "assessments"
     if (-not $hasAssessmentsProperty -or -not $loaded.assessments) {
-        Write-Warning "AgentAssessments.json has no 'assessments' object at $assessmentsPath. Continuing without runtime agent overrides."
+        Write-Warning $missingAssessmentsPropertyMessage
         return @{}
     }
 
