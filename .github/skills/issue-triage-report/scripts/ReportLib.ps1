@@ -1,4 +1,4 @@
-# Copyright (c) Microsoft Corporation.
+﻿# Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
 <#
@@ -37,7 +37,7 @@ function Get-ScoringConfig {
     $loaded = Get-Content $ConfigPath -Raw | ConvertFrom-Json
 
     # --- Validate required top-level sections ---
-    foreach ($section in @("weights", "thresholds", "maxLabelsPerIssue", "severityMultipliers")) {
+    foreach ($section in @("weights", "thresholds", "maxLabelsPerIssue", "rankingCeilings", "recommendationBands", "severityMultipliers")) {
         if ($null -eq $loaded.$section) {
             throw "ScoringConfig.json missing required section: '$section'"
         }
@@ -47,6 +47,20 @@ function Get-ScoringConfig {
     foreach ($field in @("reactions", "age", "comments", "severity", "blockers")) {
         if ($null -eq $loaded.weights.$field) {
             throw "ScoringConfig.json 'weights' missing required field: '$field'"
+        }
+    }
+
+    # --- Validate required recommendationBands fields ---
+    foreach ($field in @("high", "medium", "normal")) {
+        if ($null -eq $loaded.recommendationBands.$field) {
+            throw "ScoringConfig.json 'recommendationBands' missing required field: '$field'"
+        }
+    }
+
+    # --- Validate required rankingCeilings fields ---
+    foreach ($field in @("reactions", "ageDays", "comments")) {
+        if ($null -eq $loaded.rankingCeilings.$field) {
+            throw "ScoringConfig.json 'rankingCeilings' missing required field: '$field'"
         }
     }
 
@@ -62,6 +76,16 @@ function Get-ScoringConfig {
         if ($null -eq $loaded.severityMultipliers.$level) {
             throw "ScoringConfig.json 'severityMultipliers' missing required level: '$level'"
         }
+    }
+
+    $weightSum = [double]$loaded.weights.reactions +
+                 [double]$loaded.weights.age +
+                 [double]$loaded.weights.comments +
+                 [double]$loaded.weights.severity +
+                 [double]$loaded.weights.blockers
+
+    if ([math]::Abs($weightSum - 1.0) -gt 0.0001) {
+        throw "ScoringConfig.json 'weights' must sum to 1.0. Actual sum: $weightSum"
     }
 
     # --- Build config hashtable entirely from loaded values (no defaults) ---
@@ -80,6 +104,16 @@ function Get-ScoringConfig {
             popular_reactions = [int]$loaded.thresholds.popular_reactions
         }
         maxLabelsPerIssue = [int]$loaded.maxLabelsPerIssue
+        rankingCeilings = @{
+            reactions = [double]$loaded.rankingCeilings.reactions
+            ageDays   = [double]$loaded.rankingCeilings.ageDays
+            comments  = [double]$loaded.rankingCeilings.comments
+        }
+        recommendationBands = @{
+            high   = [double]$loaded.recommendationBands.high
+            medium = [double]$loaded.recommendationBands.medium
+            normal = [double]$loaded.recommendationBands.normal
+        }
         severityMultipliers = @{
             critical = [double]$loaded.severityMultipliers.critical
             high     = [double]$loaded.severityMultipliers.high
@@ -188,6 +222,23 @@ function Get-IssueAgeInDays {
     catch {
         return 0
     }
+}
+
+function Get-NormalizedRatio {
+    <#
+    .SYNOPSIS
+        Normalizes a raw metric against a configured ceiling.
+    #>
+    param(
+        [double]$RawValue,
+        [double]$Ceiling
+    )
+
+    if ($Ceiling -le 0) {
+        return 0.0
+    }
+
+    return [math]::Min(1.0, [math]::Max(0.0, ($RawValue / $Ceiling)))
 }
 
 function Test-HasLabel {
@@ -473,15 +524,24 @@ function Get-IssueScore {
         RawAge = 0
         RawComments = 0
         RawUpdateAgeDays = 0
+        ReactionsRank = 0
+        AgeRank = 0
+        CommentsRank = 0
         SeverityLabel = ""
         IsBlocker = $false
     }
 
+    # Normalization ceilings are config-driven reference points for the 0..100 scoring scale.
+    # At or above these raw values a factor earns its full weight × 100 points.
+    $reactionsCeiling = [double]$Config.rankingCeilings.reactions
+    $ageCeilingDays   = [double]$Config.rankingCeilings.ageDays
+    $commentsCeiling  = [double]$Config.rankingCeilings.comments
+
     # 1. Reactions score
     $totalReactions = Get-TotalReactions -ReactionGroups $Issue.reactionGroups
     $score.RawReactions = $totalReactions
-
-    $score.Reactions = [math]::Floor([double]$weights.reactions * [double]$totalReactions)
+    $score.ReactionsRank = Get-NormalizedRatio -RawValue $totalReactions -Ceiling $reactionsCeiling
+    $score.Reactions = [math]::Round(($score.ReactionsRank * $weights.reactions * 100), 1)
 
     # 2. Age score (use UTC for consistency)
     $ageInDays = Get-IssueAgeInDays -CreatedAt $Issue.createdAt
@@ -499,7 +559,8 @@ function Get-IssueScore {
         $score.RawUpdateAgeDays = [int]::MaxValue
     }
 
-    $score.Age = [math]::Floor([double]$weights.age * [double]$ageInDays)
+    $score.AgeRank = Get-NormalizedRatio -RawValue $ageInDays -Ceiling $ageCeilingDays
+    $score.Age = [math]::Round(($score.AgeRank * $weights.age * 100), 1)
 
     # 3. Comments score
     $commentCount = 0
@@ -511,8 +572,8 @@ function Get-IssueScore {
         }
     }
     $score.RawComments = $commentCount
-
-    $score.Comments = [math]::Floor([double]$weights.comments * [double]$commentCount)
+    $score.CommentsRank = Get-NormalizedRatio -RawValue $commentCount -Ceiling $commentsCeiling
+    $score.Comments = [math]::Round(($score.CommentsRank * $weights.comments * 100), 1)
 
     # 4-5. Severity and blocker score from assessments only (file and/or agent).
     $score.Severity = 0
@@ -552,7 +613,7 @@ function Get-IssueScore {
             $normalizedTier = ([string]$severityTier).ToLowerInvariant()
             $severityMultipliers = $Config.severityMultipliers
             if ($severityMultipliers.ContainsKey($normalizedTier)) {
-                $score.Severity = $weights.severity * $severityMultipliers[$normalizedTier]
+                $score.Severity = [math]::Round(($weights.severity * $severityMultipliers[$normalizedTier] * 100), 1)
                 $score.SeverityLabel = $normalizedTier
             } else {
                 Write-Warning "Issue #$issueKey has invalid severityTier '$severityTier' in assessments. Using fallback severity behavior."
@@ -585,13 +646,13 @@ function Get-IssueScore {
         }
 
         if ($score.IsBlocker -and $weights.blockers -gt 0) {
-            $score.Blockers = $weights.blockers
+            $score.Blockers = [math]::Round(($weights.blockers * 100), 1)
         }
     }
 
-    # Calculate total
-    $score.Total = [int]$score.Reactions + [int]$score.Age + [int]$score.Comments +
-                   [int]$score.Severity + [int]$score.Blockers
+    # Calculate total (0..100 normalized composite)
+    $score.Total = [math]::Min(100.0, [math]::Round(($score.Reactions + $score.Age + $score.Comments +
+                   $score.Severity + $score.Blockers), 1))
 
     return $score
 }
@@ -632,7 +693,6 @@ function Get-HighlightLabels {
     }
 
     # Check conditions in priority order
-    # Consolidated Popular label (replaces both Hot and old Popular)
     if ($Score.RawReactions -ge $thresholds.popular_reactions) {
         $labels += "🌟 Popular"
     }

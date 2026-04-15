@@ -13,11 +13,21 @@
     "popular_reactions": 5
   },
   "maxLabelsPerIssue": 2,
+  "rankingCeilings": {
+    "reactions": 10,
+    "ageDays": 365,
+    "comments": 20
+  },
   "severityMultipliers": {
     "critical": 1.0,
     "high": 0.8,
     "medium": 0.5,
     "low": 0.2,
     "none": 0.0
+  },
+  "recommendationBands": {
+    "high": 0.7,
+    "medium": 0.45,
+    "normal": 0.2
   }
 }

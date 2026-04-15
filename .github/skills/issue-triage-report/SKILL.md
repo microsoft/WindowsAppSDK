@@ -167,7 +167,7 @@ Retrieve or update the area-to-contact mapping configuration.
 
 ## Highlight Scoring Algorithm
 
-Issues are scored with a raw-weighted composite. See [scoring-algorithm.md](./references/scoring-algorithm.md) for complete details.
+Issues are scored with a normalized composite on a `0..100` scale. See [scoring-algorithm.md](./references/scoring-algorithm.md) for complete details.
 
 PowerShell computes deterministic score factors and highlight labels. Severity and blocker are assessment-driven inputs.
 
@@ -224,13 +224,17 @@ Confidence should consider:
 
 | Factor | Weight (between 0 and 1) | Description |
 |--------|--------|-------------|
-| **Reactions** | `weights.reactions` | `floor(weight * totalReactions)` |
-| **Age** | `weights.age` | `floor(weight * issueAgeDays)` |
-| **Comments** | `weights.comments` | `floor(weight * commentCount)` |
-| **Severity** | `weights.severity` | `weight * severityMultipliers[tier]` from assessments (`critical/high/medium/low/none`) |
-| **Blockers** | `weights.blockers` | Adds blocker weight when assessed `isBlocker=true` |
+| **Reactions** | `weights.reactions` | `round(min(1, totalReactions / rankingCeilings.reactions) * weight * 100, 1)` |
+| **Age** | `weights.age` | `round(min(1, issueAgeDays / rankingCeilings.ageDays) * weight * 100, 1)` |
+| **Comments** | `weights.comments` | `round(min(1, commentCount / rankingCeilings.comments) * weight * 100, 1)` |
+| **Severity** | `weights.severity` | `round(weight * severityMultipliers[tier] * 100, 1)` from assessments (`critical/high/medium/low/none`) |
+| **Blockers** | `weights.blockers` | Adds `round(weight * 100, 1)` when assessed `isBlocker=true` |
 
-`Total` is an integer sum. If severity or blocker points are fractional, they are truncated when total score is computed.
+`Total = min(100, round(sum of factor points, 1))`.
+
+`rankingCeilings` are independent per-factor scales and do not need to sum to any target.
+
+`recommendationBands` are fixed score-ratio boundaries (`high`, `medium`, `normal`) used to classify recommendations. They are ratio cutoffs, not statistical percentiles.
 
 ### Highlight Labels (Output)
 

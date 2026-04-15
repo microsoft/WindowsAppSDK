@@ -1,4 +1,4 @@
-# Copyright (c) Microsoft Corporation.
+﻿# Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
 <#
@@ -76,37 +76,33 @@ function Get-DetailedIssueScore {
     $weights = $Config.weights
     $thresholds = $Config.thresholds
 
-    # Benchmarks and recommendation bands for raw-weighted scoring.
-    # These are config-driven so output stays interpretable as weights/thresholds change.
-    $reactionBenchmark = [math]::Max(1, [math]::Floor([double]$weights.reactions * [double]$thresholds.popular_reactions))
-    $ageBenchmark = [math]::Max(1, [math]::Floor([double]$weights.age * [double]$thresholds.aging_days))
-    $commentBenchmark = [math]::Max(1, [math]::Floor([double]$weights.comments * [double]$thresholds.trending_comments))
-    $baselineScore = $reactionBenchmark + $ageBenchmark + $commentBenchmark
-
-    # Build breakdown with presentation metadata on top of canonical scores
+    # Build breakdown with presentation metadata on top of canonical scores.
     $breakdown = @{
-        Reactions = @{ Raw = $score.RawReactions; Score = $score.Reactions; MaxScore = $reactionBenchmark; Reason = "" }
-        Age       = @{ Raw = $score.RawAge;       Score = $score.Age;       MaxScore = $ageBenchmark;      Reason = "" }
-        Comments  = @{ Raw = $score.RawComments;  Score = $score.Comments;  MaxScore = $commentBenchmark;  Reason = "" }
-        Severity  = @{ Raw = $score.SeverityLabel; Score = $score.Severity; MaxScore = $weights.severity;  Reason = "" }
-        Blockers  = @{ Raw = $score.IsBlocker;    Score = $score.Blockers;  MaxScore = $weights.blockers;  Reason = "" }
+        Reactions = @{ Raw = $score.RawReactions; Score = $score.Reactions; MaxScore = ([math]::Round($weights.reactions * 100, 1)); Rank = $score.ReactionsRank; Reason = "" }
+        Age       = @{ Raw = $score.RawAge;       Score = $score.Age;       MaxScore = ([math]::Round($weights.age       * 100, 1)); Rank = $score.AgeRank;       Reason = "" }
+        Comments  = @{ Raw = $score.RawComments;  Score = $score.Comments;  MaxScore = ([math]::Round($weights.comments  * 100, 1)); Rank = $score.CommentsRank;  Reason = "" }
+        Severity  = @{ Raw = $score.SeverityLabel; Score = $score.Severity; MaxScore = ([math]::Round($weights.severity  * 100, 1)); Rank = 0;                    Reason = "" }
+        Blockers  = @{ Raw = $score.IsBlocker;    Score = $score.Blockers;  MaxScore = ([math]::Round($weights.blockers  * 100, 1)); Rank = 0;                    Reason = "" }
     }
 
     # Reason strings (presentation only — scoring math lives in Get-IssueScore)
     if ($score.RawReactions -ge $thresholds.popular_reactions) {
-        $breakdown.Reactions.Reason = "🌟 Popular (community interest)"
+        $reactionPercent = [math]::Round(($score.ReactionsRank * 100), 0)
+        $breakdown.Reactions.Reason = "🌟 Popular ($($score.RawReactions) reactions, $reactionPercent% of scoring ceiling)"
     }
 
     $hasNeedsTriage = Test-HasLabel -Labels $Issue.labels -LabelName "needs-triage"
     if ($score.RawAge -gt $thresholds.aging_days -and $hasNeedsTriage) {
-        $breakdown.Age.Reason = "⏰ Aging (needs triage for $($score.RawAge) days)"
+        $agePercent = [math]::Round(($score.AgeRank * 100), 0)
+        $breakdown.Age.Reason = "⏰ Aging (needs triage for $($score.RawAge) days, $agePercent% of scoring ceiling)"
     }
-    elseif ($score.RawAge -gt $thresholds.aging_days) {
+    elseif ($score.RawAge -gt 0) {
         $breakdown.Age.Reason = "Open for $($score.RawAge) days"
     }
 
     if ($score.RawComments -ge $thresholds.trending_comments -and $score.RawUpdateAgeDays -le $thresholds.trending_days) {
-        $breakdown.Comments.Reason = "📈 Trending ($($score.RawComments) comments, updated within $($thresholds.trending_days) days)"
+        $commentPercent = [math]::Round(($score.CommentsRank * 100), 0)
+        $breakdown.Comments.Reason = "📈 Trending ($($score.RawComments) comments, $commentPercent% of scoring ceiling; updated within $($thresholds.trending_days) days)"
     }
 
     if ($score.SeverityLabel) {
@@ -123,14 +119,19 @@ function Get-DetailedIssueScore {
         $breakdown.Blockers.Reason = "🚧 Blocker issue"
     }
 
+    $maxPossible = [math]::Round((
+        $weights.reactions + $weights.age + $weights.comments +
+        $weights.severity + $weights.blockers) * 100, 1)
+    $bands = $Config.recommendationBands
+
     return @{
         Breakdown = $breakdown
         TotalScore = $score.Total
-        MaxPossible = $baselineScore
+        MaxPossible = $maxPossible
         RecommendationThresholds = @{
-            High = $baselineScore * 4
-            Medium = $baselineScore * 2
-            Normal = $baselineScore
+            High   = [math]::Round($maxPossible * $bands.high, 1)
+            Medium = [math]::Round($maxPossible * $bands.medium, 1)
+            Normal = [math]::Round($maxPossible * $bands.normal, 1)
         }
     }
 }
@@ -167,10 +168,11 @@ function Format-ScoreBreakdown {
 
     foreach ($factor in @("Reactions", "Age", "Comments", "Severity", "Blockers")) {
         $data = $breakdown[$factor]
-        $score = $data.Score
-        $max = $data.MaxScore
+        $score = [double]$data.Score
+        $max = [double]$data.MaxScore
         $raw = $data.Raw
         $reason = $data.Reason
+        $rank = [double]$data.Rank
 
         # Skip factors with 0 max score (disabled)
         if ($max -eq 0) { continue }
@@ -179,8 +181,12 @@ function Format-ScoreBreakdown {
         $bar = "█" * $barFill
         $bar = $bar.PadRight(10, "░")
 
-        $line = "  {0,-12} [{1}] {2,2}/{3,2}  (raw: {4})" -f $factor, $bar, $score, $max, $raw
+        $line = "  {0,-12} [{1}] {2}/{3}  (raw: {4})" -f $factor, $bar, $score.ToString('0.0'), $max.ToString('0.0'), $raw
         [void]$sb.AppendLine($line)
+
+        if ($rank -gt 0) {
+            [void]$sb.AppendLine("               ├─ normalized rank: $(([math]::Round(($rank * 100), 0)).ToString('0'))%")
+        }
 
         if ($reason) {
             [void]$sb.AppendLine("               └─ $reason")
@@ -188,9 +194,9 @@ function Format-ScoreBreakdown {
     }
 
     [void]$sb.AppendLine("  ───────────────────────────────────────────────────────")
-    [void]$sb.AppendLine("  TOTAL SCORE: $($ScoreResult.TotalScore) (baseline: $($ScoreResult.MaxPossible))")
+    [void]$sb.AppendLine("  TOTAL SCORE: $($ScoreResult.TotalScore.ToString('0.0')) / $($ScoreResult.MaxPossible.ToString('0.0'))")
     [void]$sb.AppendLine("")
-    [void]$sb.AppendLine("  Scale: Raw-weighted (unbounded)")
+    [void]$sb.AppendLine("  Scale: Normalized composite (0 to $($ScoreResult.MaxPossible) points)")
     [void]$sb.AppendLine("")
 
     # Highlight recommendation
@@ -256,7 +262,7 @@ if ($VerbosePreference -eq "Continue" -or $PSBoundParameters.ContainsKey('Verbos
 else {
     # Simple output
     Write-Host ""
-    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore) (raw-weighted)" -ForegroundColor Green
+    Write-Host "Issue #$($IssueNumber) Score: $($scoreResult.TotalScore.ToString('0.0')) / $($scoreResult.MaxPossible.ToString('0.0')) (normalized)" -ForegroundColor Green
     Write-Host ""
 
     # Show top contributing factors

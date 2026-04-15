@@ -20,30 +20,36 @@ This document describes the scoring model implemented by:
   "weights": { ... },
   "thresholds": { ... },
   "maxLabelsPerIssue": 2,
+  "rankingCeilings": { ... },
+  "recommendationBands": { ... },
   "severityMultipliers": { ... }
 }
 ```
 
 ## weights
 
-`weights` controls how strongly each signal contributes.
+`weights` controls how strongly each signal contributes. All weights must sum to `1.0`.
 
 | Field | Type | Description |
 |---|---|---|
-| `reactions` | double | Multiplier for total GitHub reactions. |
-| `age` | double | Multiplier for issue age in days. |
-| `comments` | double | Multiplier for comment count. |
+| `reactions` | double | Share of total score allocated to reactions. |
+| `age` | double | Share of total score allocated to issue age. |
+| `comments` | double | Share of total score allocated to comment count. |
 | `severity` | double | Base severity points, scaled by `severityMultipliers` tier. |
 | `blockers` | double | Blocker points when assessment sets `isBlocker=true`. |
 
 ### Factor formulas
 
 ```text
-reactionsPts = floor(weights.reactions * rawReactions)
-agePts       = floor(weights.age * rawAgeDays)
-commentsPts  = floor(weights.comments * rawComments)
-severityPts  = weights.severity * severityMultipliers[severityTier]
-blockerPts   = (isBlocker and weights.blockers > 0) ? weights.blockers : 0
+reactionsRank = min(1, max(0, rawReactions / rankingCeilings.reactions))
+ageRank       = min(1, max(0, rawAgeDays   / rankingCeilings.ageDays))
+commentsRank  = min(1, max(0, rawComments  / rankingCeilings.comments))
+
+reactionsPts = round(reactionsRank * weights.reactions * 100, 1)
+agePts       = round(ageRank       * weights.age       * 100, 1)
+commentsPts  = round(commentsRank  * weights.comments  * 100, 1)
+severityPts  = round(weights.severity * severityMultipliers[severityTier] * 100, 1)
+blockerPts   = (isBlocker and weights.blockers > 0) ? round(weights.blockers * 100, 1) : 0
 ```
 
 ## Assessment sources and precedence
@@ -101,6 +107,18 @@ Then it trims to `maxLabelsPerIssue`.
 
 Caps badge count per issue after labels are evaluated.
 
+## rankingCeilings
+
+`rankingCeilings` defines the raw value where each deterministic factor reaches full normalized rank (`1.0`).
+
+| Field | Used by | Meaning |
+|---|---|---|
+| `reactions` | `Get-IssueScore` | Raw reaction count at full reactions rank. |
+| `ageDays` | `Get-IssueScore` | Open age in days at full age rank. |
+| `comments` | `Get-IssueScore` | Comment count at full comments rank. |
+
+Values do not need to sum to anything. They are independent per-factor scales.
+
 ## severityMultipliers
 
 `severityMultipliers` maps assessment tiers to a multiplier applied to `weights.severity`.
@@ -123,19 +141,31 @@ Caps badge count per issue after labels are evaluated.
 | `low` | `weights.severity * 0.2` |
 | `none` | `weights.severity * 0.0` |
 
+## recommendationBands
+
+`recommendationBands` defines fixed score-ratio thresholds used by `Get-HighlightScore.ps1` to classify output priority.
+
+Threshold math:
+
+```text
+highThreshold   = maxPossible * recommendationBands.high
+mediumThreshold = maxPossible * recommendationBands.medium
+normalThreshold = maxPossible * recommendationBands.normal
+```
+
+These are fixed ratio cutoffs, not statistical percentiles.
+
 ## Composite score formula
 
 ```text
-Total = int(reactionsPts) + int(agePts) + int(commentsPts) + int(severityPts) + int(blockerPts)
+Total = min(100, round(reactionsPts + agePts + commentsPts + severityPts + blockerPts, 1))
 ```
 
 Important implementation detail:
 
-- `reactionsPts`, `agePts`, and `commentsPts` are already integer via `floor(...)`.
-- `severityPts` and `blockerPts` are cast to int during total calculation.
-- With default config (`weights.severity = 0.1`, `weights.blockers = 0`), severity and blocker typically contribute `0` to total.
-
-If you want severity/blocker to affect ranking, configure values that survive integer truncation (for example, `weights.severity >= 1` and `weights.blockers >= 1`).
+- `Total` is a normalized composite in the range `0..100`.
+- Deterministic factors (`reactions`, `age`, `comments`) saturate at full credit once they hit their configured ceiling.
+- Severity and blocker contribute directly as weighted points in the same `0..100` scale.
 
 ## Worked example (default config)
 
@@ -151,12 +181,12 @@ Computation:
 
 | Factor | Calculation | Points |
 |---|---|---|
-| Reactions | `floor(0.3 * 25)` | `7` |
-| Age | `floor(0.3 * 120)` | `36` |
-| Comments | `floor(0.3 * 8)` | `2` |
-| Severity | `0.1 * 0.8 = 0.08 -> int(0.08)` | `0` |
+| Reactions | `round(min(1, 25/10) * 0.3 * 100, 1)` | `30.0` |
+| Age | `round(min(1, 120/365) * 0.3 * 100, 1)` | `9.9` |
+| Comments | `round(min(1, 8/20) * 0.3 * 100, 1)` | `12.0` |
+| Severity | `round(0.1 * 0.8 * 100, 1)` | `8.0` |
 | Blockers | `false` | `0` |
-| **Total** | | **45** |
+| **Total** | `min(100, round(sum, 1))` | **59.9** |
 
 ## Validation rules enforced by Get-ScoringConfig
 
@@ -165,10 +195,13 @@ Computation:
 | Rule | Error shape |
 |---|---|
 | File must be named `ScoringConfig.json` | `ConfigPath must point to ScoringConfig.json` |
-| Required sections: `weights`, `thresholds`, `maxLabelsPerIssue`, `severityMultipliers` | `missing required section: '<name>'` |
+| Required sections: `weights`, `thresholds`, `maxLabelsPerIssue`, `rankingCeilings`, `recommendationBands`, `severityMultipliers` | `missing required section: '<name>'` |
 | Required `weights` fields: `reactions`, `age`, `comments`, `severity`, `blockers` | `'weights' missing required field: '<name>'` |
 | Required `thresholds` fields: `aging_days`, `trending_comments`, `trending_days`, `popular_reactions` | `'thresholds' missing required field: '<name>'` |
+| Required `rankingCeilings` fields: `reactions`, `ageDays`, `comments` | `'rankingCeilings' missing required field: '<name>'` |
+| Required `recommendationBands` fields: `high`, `medium`, `normal` | `'recommendationBands' missing required field: '<name>'` |
 | Required `severityMultipliers` levels: `critical`, `high`, `medium`, `low`, `none` | `'severityMultipliers' missing required level: '<name>'` |
+| `weights` must sum to `1.0` | `'weights' must sum to 1.0` |
 
 ## Script architecture
 
@@ -197,16 +230,19 @@ Generate-FeatureAreaReport.ps1
 
 ```powershell
 @{
-    Reactions        = [int]
-    Age              = [int]
-    Comments         = [int]
+  Reactions        = [double]
+  Age              = [double]
+  Comments         = [double]
     Severity         = [double]
     Blockers         = [double]
-    Total            = [int]
+  Total            = [double]
     RawReactions     = [int]
     RawAge           = [int]
     RawComments      = [int]
     RawUpdateAgeDays = [int]
+  ReactionsRank    = [double]
+  AgeRank          = [double]
+  CommentsRank     = [double]
     SeverityLabel    = [string] # normalized assessment tier
     IsBlocker        = [bool]   # assessment-derived
 }
@@ -221,11 +257,17 @@ Generate-FeatureAreaReport.ps1
 | `weights.comments` | `Get-IssueScore` | Comments points multiplier |
 | `weights.severity` | `Get-IssueScore` | Base severity points |
 | `weights.blockers` | `Get-IssueScore` | Blocker points when assessed blocker |
+| `rankingCeilings.reactions` | `Get-IssueScore` | Reactions rank saturation point |
+| `rankingCeilings.ageDays` | `Get-IssueScore` | Age rank saturation point |
+| `rankingCeilings.comments` | `Get-IssueScore` | Comments rank saturation point |
 | `thresholds.aging_days` | `Get-HighlightLabels` | Aging badge cutoff |
 | `thresholds.trending_comments` | `Get-HighlightLabels` | Trending badge comment cutoff |
 | `thresholds.trending_days` | `Get-HighlightLabels` | Trending badge recency cutoff |
 | `thresholds.popular_reactions` | `Get-HighlightLabels` | Popular badge cutoff |
 | `maxLabelsPerIssue` | `Get-HighlightLabels` | Badge count cap |
+| `recommendationBands.high` | `Get-DetailedIssueScore` | High recommendation cutoff ratio |
+| `recommendationBands.medium` | `Get-DetailedIssueScore` | Medium recommendation cutoff ratio |
+| `recommendationBands.normal` | `Get-DetailedIssueScore` | Normal recommendation cutoff ratio |
 | `severityMultipliers.*` | `Get-IssueScore` | Assessment tier multipliers |
 
 ## Special report indicators
