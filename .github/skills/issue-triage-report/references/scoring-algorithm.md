@@ -131,10 +131,19 @@ Computation:
 }
 ```
 
-# Highlight labels
+# Scoring results
 
-## Goals
-* Surface top issues for a feature area based on the highlight criteria below
+## Recommendations
+
+The scoring we use makes it easy to gauge an issue's priority at a glance. `Get-HighlightScore.ps1` also has a more formalized priority output that categories issues based on `recommendationBands`, which are fixed score-ratio thresholds. These are helpful if you want to group several issues by priority level.
+
+Threshold math:
+
+```text
+highThreshold   = maxPossible * recommendationBands.high
+mediumThreshold = maxPossible * recommendationBands.medium
+normalThreshold = maxPossible * recommendationBands.normal
+```
 
 ## Highlight label assignment
 
@@ -156,18 +165,6 @@ We use `thresholds` in `ScoringConfig.json` to determine whether a badge should 
 | `trending_comments` | `📈 Trending` | Minimum comment count. |
 | `trending_days` | `📈 Trending` | Maximum days since `updatedAt`. |
 | `popular_reactions` | `🌟 Popular` | Minimum total reactions. |
-
-## recommendationBands
-
-`recommendationBands` defines fixed score-ratio thresholds used by `Get-HighlightScore.ps1` to classify output priority.
-
-Threshold math:
-
-```text
-highThreshold   = maxPossible * recommendationBands.high
-mediumThreshold = maxPossible * recommendationBands.medium
-normalThreshold = maxPossible * recommendationBands.normal
-```
 
 # ScoringConfig.json
 
@@ -211,7 +208,7 @@ normalThreshold = maxPossible * recommendationBands.normal
 
 ```text
 ScoringConfig.json
-    -> (is used in) Get-ScoringConfig()
+    -> Get-ScoringConfig()
         -> Get-IssueScore()
         -> Get-HighlightLabels()
 
