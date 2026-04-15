@@ -57,6 +57,9 @@
     <None Include="$(_GitignoreSource)"
           Pack="true"
           PackagePath="content/winui.blankapp/gitignore.txt" />
+    <None Include="templates\single-project\ProjectTemplate.sln"
+          Pack="true"
+          PackagePath="content/winui.blankapp/ProjectTemplate.sln" />
   </ItemGroup>
 
   <!-- WinUI NavigationView template -->

@@ -177,6 +177,7 @@
     }
   ],
   "primaryOutputs": [
+    { "path": "ProjectTemplate.sln" },
     { "path": "ProjectTemplate.csproj" }
   ],
   "forms": {
