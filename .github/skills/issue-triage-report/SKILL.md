@@ -131,7 +131,26 @@ Retrieve or update the area-to-contact mapping configuration.
   Before running the command above, have the agent save runtime assessments to:
   - `./references/AgentAssessments.json`
 
-  This file is loaded automatically at script start and applied as per-run overrides.
+   This file is loaded automatically at script start and applied as per-run overrides.
+   Every assessed issue entry must include agent reasoning in the `reasoning` field.
+
+   Required per-issue schema in `assessments`:
+   - `severityTier`: `critical|high|medium|low|none`
+   - `isBlocker`: `true|false`
+   - `reasoning`: short rationale explaining severity/blocker judgment
+
+   Example:
+   ```json
+   {
+      "assessments": {
+         "2894": {
+            "severityTier": "high",
+            "isBlocker": false,
+            "reasoning": "Frequent user impact in notifications flow; clear repro in comments; no confirmed workaround."
+         }
+      }
+   }
+   ```
 
 3. Run an agent content review for each highlighted issue using title, body, labels, and comments.
 
@@ -192,6 +211,8 @@ After generating scores, review each highlighted issue and assign these annotati
 - `[severity:critical|high|medium|low|none]`
 - `[blocker:yes|no]`
 - `[confidence:XX]`
+
+After assigning annotations, persist the same decision to `./references/AgentAssessments.json` and include `reasoning` for every updated issue entry.
 
 Use this severity rubric:
 

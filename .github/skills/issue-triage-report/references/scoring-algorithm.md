@@ -19,7 +19,7 @@ This document describes the scoring model implemented by:
 ```text
 Total = min(100, round(reactionsPts + agePts + commentsPts + severityPts + blockerPts, 1))
 ```
-Total is between 0 and 100 so the value approximates priority and can be compared against other issues. But how do we determine how many points each category should get? We consider weight (how much each factor should contribute to the total) and factor level (how many points should this issue get for this category).
+Total is between 0 and 100 so the value approximates priority and can be compared against other issues. But how do we determine how many points each category should get? We consider weight (how much each factor should contribute to the total) and factor level (how many points should this issue get for the factor).
 
 ```text
 CategoryPoints = weight * FactorLevel
