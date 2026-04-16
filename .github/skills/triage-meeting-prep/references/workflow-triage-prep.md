@@ -42,6 +42,8 @@ Generated-Files/triageMeeting/<YYYY-MM-DD>/
 
 Create the directory structure if it doesn't exist.
 
+> **Migration note**: If you have an existing `Generated Files/triageMeeting/...` directory from a previous run, rename `Generated Files` to `Generated-Files` before proceeding, or pass the legacy path explicitly when calling the scripts (e.g., `-PreviousStatePath "Generated Files/triageMeeting/previous-state.json"`) to preserve diff history and avoid a false first-run.
+
 ---
 
 ## Phase 2: Data Collection
