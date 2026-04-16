@@ -61,6 +61,7 @@ The skill tracks **four critical categories** for each meeting:
 - Access to microsoft/WindowsAppSDK repository
 - Previous triage state file for diff comparison: `Generated-Files/triageMeeting/previous-state.json`
 
+> **Migration note**: If you have an existing `Generated Files/triageMeeting/...` directory from earlier runs, rename `Generated Files` to `Generated-Files` before using this skill, or pass explicit input/output paths to the scripts so you keep prior diff history.
 ### Installing GitHub CLI
 
 ```powershell
