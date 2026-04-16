@@ -282,8 +282,12 @@ if ($WindowsAppSDKVersion -ne "") {
     Write-Step "WindowsAppSDKVersion = $WindowsAppSDKVersion"
 }
 
-if ($OptionalVSIXVersion -ne "") {
-    Write-Step "OptionalVSIXVersion = $OptionalVSIXVersion (overriding VSIX version stamp)"
+if ($OptionalVSIXVersion -eq "") {
+    $now = Get-Date
+    $OptionalVSIXVersion = "99.$($now.ToString('yyyy')).$($now.ToString('MMdd')).$($now.ToString('HHmm'))"
+    Write-Step "OptionalVSIXVersion = $OptionalVSIXVersion (auto-generated from current time)"
+} else {
+    Write-Step "OptionalVSIXVersion = $OptionalVSIXVersion (user-specified)"
 }
 
 #endregion
@@ -428,7 +432,10 @@ function Copy-VsixOutput {
     foreach ($vsix in $vsixFiles) {
         if (-not $seen.ContainsKey($vsix.Name)) {
             $seen[$vsix.Name] = $vsix
-            $dest = Join-Path $OutputDir $vsix.Name
+            # Rename to include version: WindowsAppSDK.Cs.Extension.Dev17.Component.vsix
+            #   -> WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0416.1640.vsix
+            $newName = $vsix.BaseName + ".$OptionalVSIXVersion.vsix"
+            $dest = Join-Path $OutputDir $newName
             Copy-Item $vsix.FullName $dest -Force
             Write-Step "  -> $dest"
         }
