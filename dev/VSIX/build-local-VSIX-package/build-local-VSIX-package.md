@@ -2,9 +2,12 @@
 
 ## TL;NR
 
+```powershell
+.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Component
 ```
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -OptionalVSIXVersion "99.0.0.1" -Deployment Standalone
-```
+
+> **Note**: `-OptionalVSIXVersion` defaults to `99.<yyyy>.<MMdd>.<HHmm>` (e.g., `99.2026.0416.1640`).
+> Output files are named with the version, e.g., `WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0416.1640.vsix`.
 
 ## Overview
 
@@ -50,17 +53,15 @@ dotnet --list-sdks
 ## Quick Start (One-Liner)
 
 ```powershell
-# From the build_solution directory:
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003"
+.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Component
 ```
 
 This will:
 1. Locate MSBuild via vswhere
-2. Create a temporary NuGet config that includes nuget.org
-3. Restore NuGet packages for Standalone deployment
-4. Build the VSIX solution for Standalone deployment
-5. Repeat restore + build for Component deployment
-6. Copy the resulting `.vsix` files to `.\publish\VSIX\`
+2. Auto-generate VSIX version as `99.<yyyy>.<MMdd>.<HHmm>`
+3. Restore NuGet packages using nuget.org
+4. Build the VSIX solution for Component deployment
+5. Copy the versioned `.vsix` files to `.\publish\VSIX\`
 
 ---
 
@@ -69,13 +70,19 @@ This will:
 ### Build with a specific Windows App SDK version
 
 ```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003" -OptionalVSIXVersion "99.0.0.1"
+.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Component
+```
+
+### Override the auto-generated VSIX version
+
+```powershell
+.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -OptionalVSIXVersion "99.2026.0416.1640" -Deployment Component
 ```
 
 ### Build only the Standalone VSIX
 
 ```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003" -OptionalVSIXVersion "99.0.0.1" -Deployment Standalone
+.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Standalone
 ```
 
 ### Build using a local .nupkg file
@@ -201,15 +208,49 @@ dev\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cpp.Extension.Dev
 
 ## Installing the VSIX
 
+### Using the Install Script (Recommended)
+
+```powershell
+# Install both C# and C++ templates (default)
+.\Install-VSIX.ps1
+
+# Install only C# templates
+.\Install-VSIX.ps1 -Language CSharp
+
+# Install only C++ templates
+.\Install-VSIX.ps1 -Language Cpp
+
+# Install from a custom directory
+.\Install-VSIX.ps1 -VsixDir "D:\my-vsix"
+
+# Skip uninstalling conflicting dotnet new templates
+.\Install-VSIX.ps1 -SkipDotnetUninstall
+```
+
+The script defaults to `.\publish\VSIX` and picks the **most recently built**
+`.vsix` file for each language (by file modification time). If multiple versioned
+files exist (e.g. from different builds), it always selects the latest one.
+
+The script will:
+1. Check that Visual Studio is closed (exits if not)
+2. Uninstall conflicting `dotnet new` template packages (if found)
+3. Verify VS installation and prerequisites
+4. Install the VSIX using `VSIXInstaller /force /quiet`
+5. Wait for installation to complete and check logs for errors
+
 ### Via Double-Click
 Simply double-click any `.vsix` file. The VSIX Installer will open and guide
 you through the installation.
 
 ### Via Command Line
 ```powershell
+# Close all VS instances first!
 $vsixInstaller = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\VSIXInstaller.exe"
-& $vsixInstaller "path\to\WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix"
+& $vsixInstaller /force /quiet "path\to\WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0416.1640.vsix"
 ```
+
+> **Important**: Use `Component` VSIX when VS has the extension installed via a workload
+> (e.g., ".NET WinUI app development tools"). Use `Standalone` only for clean VS installs.
 
 ### Verify Installation
 In Visual Studio: **Extensions → Manage Extensions** — look for
@@ -263,6 +304,28 @@ available versions.
 Get-ChildItem -Path "dev\VSIX\BuildOutput" -Recurse -Filter "*.vsix"
 ```
 
+### VSIX install fails: "lower version than required by Visual Studio"
+
+**Cause**: VS bundles a version of this extension via the ".NET WinUI app
+development tools" workload. Your built VSIX version is lower.
+
+**Fix**: The script auto-generates a high version (`99.yyyy.MMdd.HHmm`).
+If you need to override, use `-OptionalVSIXVersion "99.2026.0416.1640"`.
+
+### VSIX install fails: "Uninstall of ... failed" or "Modifications of multiple extensions"
+
+**Cause**: VS's built-in extension was installed as a **Component** (via workload).
+A Standalone VSIX cannot replace a Component extension.
+
+**Fix**: Build with `-Deployment Component`:
+```powershell
+.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Component
+```
+Then install with VS closed:
+```powershell
+& "<VS-path>\Common7\IDE\VSIXInstaller.exe" /force /quiet <path-to-Component.vsix>
+```
+
 ### VSSDK1300: "Could not find a part of the path..."
 
 **Cause**: The VSSDK extracts template ZIP files into deeply nested paths.
@@ -299,6 +362,6 @@ not support long paths even when `LongPathsEnabled` is set.
 | File | Purpose |
 |------|---------|
 | `Build-VSIX.ps1` | Main build script |
+| `Install-VSIX.ps1` | Install/uninstall script for built VSIX |
 | `vsix-nuget.config` | NuGet config with nuget.org source |
-| `investigation_plan.md` | Investigation findings and plan |
-| `local_build_steps.md` | This document |
+| `build-local-VSIX-package.md` | This document |
