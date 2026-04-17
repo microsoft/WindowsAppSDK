@@ -112,6 +112,12 @@ extends:
         publishToInternalFeed: ${{ parameters.PublishDotnetNewTemplatesToInternalFeed }}
         SignOutput: ${{ parameters.SignOutput }}
 
+    - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
+      parameters:
+        pool:
+          type: windows
+        dependsOnStage: 'DotnetNewTemplates_Build'
+
     # NuGet.org publishing is handled by the separate non-OneBranch pipeline:
     # WindowsAppSDK-DotnetNewTemplates-Publish.yml
     # OneBranch agents block outbound internet, so a standalone pipeline with

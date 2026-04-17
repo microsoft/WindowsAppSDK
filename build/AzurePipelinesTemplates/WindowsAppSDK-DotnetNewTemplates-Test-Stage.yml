@@ -3,6 +3,10 @@
 #
 # Stage template: Smoke-test dotnet new templates by scaffolding and building
 # each C# project template and all item templates.
+#
+# This stage runs after DotnetNewTemplates_Build in the main build pipeline
+# (WindowsAppSDK-DotnetNewTemplates.yml). It downloads the .nupkg artifact
+# produced by the build stage and passes it to Test-DotnetNewTemplates.ps1.
 
 parameters:
 - name: pool
@@ -12,6 +16,9 @@ parameters:
 - name: sourceSubdirectory
   type: string
   default: 'WindowsAppSDK'
+- name: dependsOnStage
+  type: string
+  default: 'DotnetNewTemplates_Build'
 - name: platforms
   type: object
   default:
@@ -23,17 +30,22 @@ parameters:
 stages:
 - stage: DotnetNewTemplates_Test
   displayName: 'Smoke-test dotnet new templates'
-  dependsOn: []
+  dependsOn:
+  - ${{ parameters.dependsOnStage }}
   jobs:
   - job: TestDotnetNewTemplates
     displayName: 'Scaffold and build dotnet new templates'
     pool: ${{ parameters.pool }}
     timeoutInMinutes: 60
     variables:
-      templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
-      repoRoot: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}'
+      ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\test-results'
+      templateArtifactDir: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
     steps:
     - checkout: self
+
+    - download: current
+      displayName: 'Download template pack artifact'
+      artifact: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
 
     - task: UseDotNet@2
       displayName: 'Use .NET SDK ${{ parameters.dotnetSdkVersion }}'
@@ -42,128 +54,18 @@ stages:
         version: '${{ parameters.dotnetSdkVersion }}'
 
     - task: PowerShell@2
-      displayName: 'Pack dotnet new templates'
+      displayName: 'Run template smoke tests'
       inputs:
         targetType: inline
-        workingDirectory: '$(repoRoot)'
+        workingDirectory: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}'
         script: |
-          $projectPath = '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
-          if (-not (Test-Path $projectPath)) {
-            throw "Template project not found at $projectPath"
+          $package = Get-ChildItem -Path '$(templateArtifactDir)' -Filter 'Microsoft.WindowsAppSDK*.nupkg' -Recurse | Select-Object -First 1
+          if (-not $package) {
+            throw "No template .nupkg found under '$(templateArtifactDir)'"
           }
-          dotnet pack $projectPath -c Release -o '$(Build.ArtifactStagingDirectory)\templatepack'
-          if ($LASTEXITCODE -ne 0) { throw "dotnet pack failed with exit code $LASTEXITCODE" }
-          $package = Get-ChildItem -Path '$(Build.ArtifactStagingDirectory)\templatepack' -Filter '*.nupkg' | Select-Object -First 1
-          Write-Host "Packed template: $($package.FullName)"
-          Write-Host "##vso[task.setvariable variable=TemplatePackagePath]$($package.FullName)"
-
-    - task: PowerShell@2
-      displayName: 'Install template pack'
-      inputs:
-        targetType: inline
-        workingDirectory: '$(repoRoot)'
-        script: |
-          dotnet new uninstall Microsoft.WindowsAppSDK.WinUI.CSharp.Templates 2>&1 | Out-Null
-          dotnet new install '$(TemplatePackagePath)'
-          if ($LASTEXITCODE -ne 0) { throw "dotnet new install failed with exit code $LASTEXITCODE" }
-          Write-Host "Installed templates:"
-          dotnet new list --tag winui
-
-    - ${{ each platform in parameters.platforms }}:
-      - task: PowerShell@2
-        displayName: 'Test C# blank app (winui) - ${{ platform }}'
-        inputs:
-          targetType: inline
-          workingDirectory: '$(Agent.TempDirectory)'
-          script: |
-            $name = 'SmokeTest_winui_${{ platform }}'
-            $outDir = Join-Path '$(Agent.TempDirectory)' $name
-            dotnet new winui -n $name -o $outDir --force
-            if ($LASTEXITCODE -ne 0) { throw "dotnet new winui failed" }
-            dotnet build (Join-Path $outDir "$name.csproj") -p:Configuration=Debug -p:Platform=${{ platform }} -p:WindowsPackageType=None
-            if ($LASTEXITCODE -ne 0) { throw "Build of winui template failed for ${{ platform }}" }
-            Write-Host "PASS: winui (${{ platform }})"
-
-      - task: PowerShell@2
-        displayName: 'Test C# NavigationView app (winui-navview) - ${{ platform }}'
-        inputs:
-          targetType: inline
-          workingDirectory: '$(Agent.TempDirectory)'
-          script: |
-            $name = 'SmokeTest_navview_${{ platform }}'
-            $outDir = Join-Path '$(Agent.TempDirectory)' $name
-            dotnet new winui-navview -n $name -o $outDir --force
-            if ($LASTEXITCODE -ne 0) { throw "dotnet new winui-navview failed" }
-            dotnet build (Join-Path $outDir "$name.csproj") -p:Configuration=Debug -p:Platform=${{ platform }} -p:WindowsPackageType=None
-            if ($LASTEXITCODE -ne 0) { throw "Build of winui-navview template failed for ${{ platform }}" }
-            Write-Host "PASS: winui-navview (${{ platform }})"
-
-      - task: PowerShell@2
-        displayName: 'Test C# class library (winui-lib) - ${{ platform }}'
-        inputs:
-          targetType: inline
-          workingDirectory: '$(Agent.TempDirectory)'
-          script: |
-            $name = 'SmokeTest_lib_${{ platform }}'
-            $outDir = Join-Path '$(Agent.TempDirectory)' $name
-            dotnet new winui-lib -n $name -o $outDir --force
-            if ($LASTEXITCODE -ne 0) { throw "dotnet new winui-lib failed" }
-            dotnet build (Join-Path $outDir "$name.csproj") -c Debug
-            if ($LASTEXITCODE -ne 0) { throw "Build of winui-lib template failed" }
-            Write-Host "PASS: winui-lib (${{ platform }})"
-
-      - task: PowerShell@2
-        displayName: 'Test C# unit test app (winui-unittest) - ${{ platform }}'
-        inputs:
-          targetType: inline
-          workingDirectory: '$(Agent.TempDirectory)'
-          script: |
-            $name = 'SmokeTest_unittest_${{ platform }}'
-            $outDir = Join-Path '$(Agent.TempDirectory)' $name
-            dotnet new winui-unittest -n $name -o $outDir --force
-            if ($LASTEXITCODE -ne 0) { throw "dotnet new winui-unittest failed" }
-            dotnet build (Join-Path $outDir "$name.csproj") -p:Configuration=Debug -p:Platform=${{ platform }}
-            if ($LASTEXITCODE -ne 0) { throw "Build of winui-unittest template failed for ${{ platform }}" }
-            Write-Host "PASS: winui-unittest (${{ platform }})"
-
-    - task: PowerShell@2
-      displayName: 'Test C# item templates'
-      inputs:
-        targetType: inline
-        workingDirectory: '$(Agent.TempDirectory)'
-        script: |
-          $platform = '${{ parameters.platforms[0] }}'
-          $hostName = 'SmokeTest_ItemHost'
-          $hostPath = Join-Path '$(Agent.TempDirectory)' $hostName
-          dotnet new winui -n $hostName -o $hostPath --force
-          if ($LASTEXITCODE -ne 0) { throw "dotnet new winui (item host) failed" }
-
-          $projectFile = Join-Path $hostPath "$hostName.csproj"
-          $items = @(
-            @{ ShortName = 'winui-page'; Name = 'TestPage' },
-            @{ ShortName = 'winui-window'; Name = 'TestWindow' },
-            @{ ShortName = 'winui-usercontrol'; Name = 'TestUserControl' },
-            @{ ShortName = 'winui-templatedcontrol'; Name = 'TestTemplatedControl' },
-            @{ ShortName = 'winui-resourcedictionary'; Name = 'TestResDict' },
-            @{ ShortName = 'winui-resw'; Name = 'TestStrings' },
-            @{ ShortName = 'winui-dialog'; Name = 'TestDialog' }
-          )
-
-          foreach ($item in $items) {
-            dotnet new $item.ShortName -n $item.Name --project $projectFile --force
-            if ($LASTEXITCODE -ne 0) { throw "dotnet new $($item.ShortName) item failed" }
-            Write-Host "Created item: $($item.ShortName)"
-          }
-
-          dotnet build $projectFile -p:Configuration=Debug -p:Platform=$platform -p:WindowsPackageType=None
-          if ($LASTEXITCODE -ne 0) { throw "Build with all items failed for $platform" }
-          Write-Host "PASS: All item templates scaffolded and built successfully"
-
-    - task: PowerShell@2
-      displayName: 'Uninstall template pack'
-      condition: always()
-      inputs:
-        targetType: inline
-        script: |
-          dotnet new uninstall Microsoft.WindowsAppSDK.WinUI.CSharp.Templates 2>&1 | Out-Null
-          Write-Host "Template pack uninstalled"
+          Write-Host "Using template package: $($package.FullName)"
+          $platforms = '${{ join(',', parameters.platforms) }}' -split ','
+          & '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet\Test-DotnetNewTemplates.ps1' `
+            -PackagePath $package.FullName `
+            -Platforms $platforms `
+            -SkipAppLaunch
