@@ -239,6 +239,54 @@ if (-not $SkipDotnetUninstall) {
 
 #endregion
 
+#region --- Check language-specific prerequisites ---
+
+Write-Banner "Checking Language Prerequisites"
+
+$skippedVsix = @()
+$installableVsix = @()
+
+foreach ($vsix in $toInstall) {
+    if ($vsix.Name -match "\.Cs\.") {
+        # C# Component VSIX requires the '.NET WinUI app development tools' individual component
+        $csCheck = & $vswherePath -latest -requires Microsoft.VisualStudio.Component.WindowsAppSdkSupport.CSharp -property installationPath 2>$null
+        if ($csCheck) {
+            Write-Step "C# prerequisites met (.NET WinUI app development tools found)"
+            $installableVsix += $vsix
+        } else {
+            Write-Err "C# VSIX requires the '.NET WinUI app development tools' component."
+            Write-Err "Open Visual Studio Installer -> Modify -> Individual components -> search and install '.NET WinUI app development tools'."
+            Write-Err "Skipping: $($vsix.Name)"
+            $skippedVsix += $vsix.Name
+        }
+    }
+    elseif ($vsix.Name -match "\.Cpp\.") {
+        # C++ Component VSIX requires the 'C++ WinUI app development tools' individual component
+        $cppCheck = & $vswherePath -latest -requires Microsoft.VisualStudio.Component.WindowsAppSdkSupport.Cpp -property installationPath 2>$null
+        if ($cppCheck) {
+            Write-Step "C++ prerequisites met (C++ WinUI app development tools found)"
+            $installableVsix += $vsix
+        } else {
+            Write-Err "C++ VSIX requires the 'C++ WinUI app development tools' component."
+            Write-Err "Open Visual Studio Installer -> Modify -> Individual components -> search and install 'C++ WinUI app development tools'."
+            Write-Err "Skipping: $($vsix.Name)"
+            $skippedVsix += $vsix.Name
+        }
+    }
+    else {
+        $installableVsix += $vsix
+    }
+}
+
+if ($installableVsix.Count -eq 0) {
+    Write-Err "No VSIX files can be installed due to missing prerequisites."
+    exit 1
+}
+
+$toInstall = $installableVsix
+
+#endregion
+
 #region --- Install VSIX ---
 
 Write-Banner "Installing VSIX Extensions"
@@ -288,7 +336,7 @@ foreach ($vsix in $toInstall) {
 
 Write-Banner "Installation Summary"
 
-if ($failed.Count -eq 0) {
+if ($failed.Count -eq 0 -and $skippedVsix.Count -eq 0) {
     Write-Step "All extensions installed successfully!"
     Write-Host ""
     Write-Step "Next steps:"
@@ -300,12 +348,20 @@ if ($failed.Count -eq 0) {
     Write-Host "  'Windows App SDK C# VS Templates'" -ForegroundColor White
     Write-Host "  'Windows App SDK C++ VS Templates'" -ForegroundColor White
 } else {
-    Write-Err "Some installations failed:"
-    foreach ($f in $failed) { Write-Err "  - $f" }
+    if ($failed.Count -gt 0) {
+        Write-Err "Some installations failed:"
+        foreach ($f in $failed) { Write-Err "  - $f" }
+    }
+    if ($skippedVsix.Count -gt 0) {
+        Write-Warn "Skipped due to missing prerequisites:"
+        foreach ($s in $skippedVsix) { Write-Warn "  - $s" }
+    }
     Write-Host ""
     Write-Warn "Tips:"
     Write-Warn "  - Make sure all VS instances are closed"
     Write-Warn "  - Use Component VSIX if VS has WinUI workload installed"
+    Write-Warn "  - Install '.NET WinUI app development tools' component for C# templates"
+    Write-Warn "  - Install 'C++ WinUI app development tools' component for C++ templates"
     Write-Warn "  - Check logs in: $env:TEMP\dd_VSIXInstaller_*.log"
 }
 
