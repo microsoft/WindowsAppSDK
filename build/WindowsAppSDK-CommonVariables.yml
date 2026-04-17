@@ -19,4 +19,4 @@ variables:
 
   enableTestPass: true
 
-  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe;-:f|**\WindowsAppSDK.Test.NetCore\net**
+  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe;-:f|**\WindowsAppSDK.Test.NetCore\net**;-:f|**\WinAppSDK\**\*.exe;-:f|**\WinAppSDK\**\*.dll
