@@ -359,7 +359,7 @@ function Test-ItemTemplates {
 
 try {
     $repoRoot = (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..')).Path
-    $templateProject = Join-Path -Path $repoRoot -ChildPath 'dev\VSIX\DotnetNewTemplates\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+    $templateProject = Join-Path -Path $repoRoot -ChildPath 'dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
     $tempBase = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath 'DotnetNewTemplateValidation'
     $workingRoot = Join-Path -Path $tempBase -ChildPath ([Guid]::NewGuid().ToString('N'))
 

@@ -139,7 +139,7 @@ $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere
 
 ```powershell
 $repoRoot       = "C:\path\to\WindowsAppSDK"
-$solution       = "$repoRoot\dev\VSIX\WindowsAppSDK.Extension.sln"
+$solution       = "$repoRoot\dev\Templates\VSIX\WindowsAppSDK.Extension.sln"
 $configuration  = "Release"
 $version        = "1.8.260317003"                           # Set your desired version
 $nugetConfig    = "C:\path\to\build_solution\vsix-nuget.config"   # The provided config
@@ -204,10 +204,10 @@ Get-ChildItem -Path $buildOutput -Recurse -Filter "WindowsAppSDK.*.vsix"
 
 Expected output locations:
 ```
-dev\VSIX\BuildOutput\obj\AnyCPURelease\Standalone\WindowsAppSDK.Cs.Extension.Dev17\WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix
-dev\VSIX\BuildOutput\obj\AnyCPURelease\Standalone\WindowsAppSDK.Cpp.Extension.Dev17\WindowsAppSDK.Cpp.Extension.Dev17.Standalone.vsix
-dev\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cs.Extension.Dev17\WindowsAppSDK.Cs.Extension.Dev17.Component.vsix
-dev\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cpp.Extension.Dev17\WindowsAppSDK.Cpp.Extension.Dev17.Component.vsix
+dev\Templates\VSIX\BuildOutput\obj\AnyCPURelease\Standalone\WindowsAppSDK.Cs.Extension.Dev17\WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix
+dev\Templates\VSIX\BuildOutput\obj\AnyCPURelease\Standalone\WindowsAppSDK.Cpp.Extension.Dev17\WindowsAppSDK.Cpp.Extension.Dev17.Standalone.vsix
+dev\Templates\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cs.Extension.Dev17\WindowsAppSDK.Cs.Extension.Dev17.Component.vsix
+dev\Templates\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cpp.Extension.Dev17\WindowsAppSDK.Cpp.Extension.Dev17.Component.vsix
 ```
 
 ---
@@ -314,9 +314,9 @@ available versions.
 
 **Cause**: The VSIX output location depends on the `Deployment` property.
 
-**Fix**: Check `dev\VSIX\BuildOutput\obj\` recursively:
+**Fix**: Check `dev\Templates\VSIX\BuildOutput\obj\` recursively:
 ```powershell
-Get-ChildItem -Path "dev\VSIX\BuildOutput" -Recurse -Filter "*.vsix"
+Get-ChildItem -Path "dev\Templates\VSIX\BuildOutput" -Recurse -Filter "*.vsix"
 ```
 
 ### VSIX install fails: "lower version than required by Visual Studio"

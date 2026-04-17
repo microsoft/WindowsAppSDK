@@ -1,13 +1,13 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31619.372
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.BlankPage", "ItemTemplates\Neutral\CSharp\BlankPage\WinUI.Neutral.Cs.BlankPage.csproj", "{2D9BD73D-5A5E-4113-AEA9-53D059A79A41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.BlankPage", "..\Source\ItemTemplates\Neutral\CSharp\BlankPage\WinUI.Neutral.Cs.BlankPage.csproj", "{2D9BD73D-5A5E-4113-AEA9-53D059A79A41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.UserControl", "ItemTemplates\Neutral\CSharp\UserControl\WinUI.Neutral.Cs.UserControl.csproj", "{F19716E6-41A1-4320-A819-288172CE161C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.UserControl", "..\Source\ItemTemplates\Neutral\CSharp\UserControl\WinUI.Neutral.Cs.UserControl.csproj", "{F19716E6-41A1-4320-A819-288172CE161C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.ContentDialog", "ItemTemplates\Neutral\CSharp\ContentDialog\WinUI.Neutral.Cs.ContentDialog.csproj", "{E5209752-4CE6-413B-B3BE-61E33C106A5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.ContentDialog", "..\Source\ItemTemplates\Neutral\CSharp\ContentDialog\WinUI.Neutral.Cs.ContentDialog.csproj", "{E5209752-4CE6-413B-B3BE-61E33C106A5E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectTemplates", "ProjectTemplates", "{34272930-CFC7-4E33-9DB9-88E82AE2C046}"
 EndProject
@@ -23,21 +23,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CppWinRT", "CppWinRT", "{CD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CppWinRT", "CppWinRT", "{1F0ED7C6-3679-4288-9CEA-7B30437D3FA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.BlankPage", "ItemTemplates\Neutral\CppWinRT\BlankPage\WinUI.Neutral.CppWinRT.BlankPage.csproj", "{1E071372-7CB7-47BC-9BA2-8235F9BB09C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.BlankPage", "..\Source\ItemTemplates\Neutral\CppWinRT\BlankPage\WinUI.Neutral.CppWinRT.BlankPage.csproj", "{1E071372-7CB7-47BC-9BA2-8235F9BB09C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.UserControl", "ItemTemplates\Neutral\CppWinRT\UserControl\WinUI.Neutral.CppWinRT.UserControl.csproj", "{99C19C7C-6472-44F6-89E2-389AB6534F42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.UserControl", "..\Source\ItemTemplates\Neutral\CppWinRT\UserControl\WinUI.Neutral.CppWinRT.UserControl.csproj", "{99C19C7C-6472-44F6-89E2-389AB6534F42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.TemplatedControl", "ItemTemplates\Neutral\CSharp\TemplatedControl\WinUI.Neutral.Cs.TemplatedControl.csproj", "{2C5873D8-E908-41F2-B861-80F95280FBCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.TemplatedControl", "..\Source\ItemTemplates\Neutral\CSharp\TemplatedControl\WinUI.Neutral.Cs.TemplatedControl.csproj", "{2C5873D8-E908-41F2-B861-80F95280FBCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Desktop", "Desktop", "{F27A31A1-917C-4E75-B2A5-EEC55B287150}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CppWinRT", "CppWinRT", "{1A8A7481-2108-496B-802D-39F9C08D86F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.BlankWindow", "ItemTemplates\Desktop\CppWinRT\BlankWindow\WinUI.Desktop.CppWinRT.BlankWindow.csproj", "{81221BE8-00A2-4841-B62C-9E751C298066}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.BlankWindow", "..\Source\ItemTemplates\Desktop\CppWinRT\BlankWindow\WinUI.Desktop.CppWinRT.BlankWindow.csproj", "{81221BE8-00A2-4841-B62C-9E751C298066}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.TemplatedControl", "ItemTemplates\Neutral\CppWinRT\TemplatedControl\WinUI.Neutral.CppWinRT.TemplatedControl.csproj", "{761212D7-B5D2-4629-98C8-88F6A24982BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.TemplatedControl", "..\Source\ItemTemplates\Neutral\CppWinRT\TemplatedControl\WinUI.Neutral.CppWinRT.TemplatedControl.csproj", "{761212D7-B5D2-4629-98C8-88F6A24982BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.BlankWindow", "ItemTemplates\Desktop\CSharp\BlankWindow\WinUI.Desktop.Cs.BlankWindow.csproj", "{9DE11F03-73A8-4DCA-88B3-1623A718DFD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.BlankWindow", "..\Source\ItemTemplates\Desktop\CSharp\BlankWindow\WinUI.Desktop.Cs.BlankWindow.csproj", "{9DE11F03-73A8-4DCA-88B3-1623A718DFD1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Desktop", "Desktop", "{E7C0B105-E6A4-43E4-AC0F-5D4F5CDDC395}"
 EndProject
@@ -45,9 +45,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CppWinRT", "CppWinRT", "{9C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{01EE62F3-3B99-43B0-9E99-29FA871D48E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.ResourceDictionary", "ItemTemplates\Neutral\CppWinRT\ResourceDictionary\WinUI.Neutral.CppWinRT.ResourceDictionary.csproj", "{3F3F0E7F-594F-4006-A3EF-5E5624EF147C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.ResourceDictionary", "..\Source\ItemTemplates\Neutral\CppWinRT\ResourceDictionary\WinUI.Neutral.CppWinRT.ResourceDictionary.csproj", "{3F3F0E7F-594F-4006-A3EF-5E5624EF147C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.ResourceDictionary", "ItemTemplates\Neutral\CSharp\ResourceDictionary\WinUI.Neutral.Cs.ResourceDictionary.csproj", "{C8DA9E71-2F7F-4E7C-8DC7-766FF0F67196}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.ResourceDictionary", "..\Source\ItemTemplates\Neutral\CSharp\ResourceDictionary\WinUI.Neutral.Cs.ResourceDictionary.csproj", "{C8DA9E71-2F7F-4E7C-8DC7-766FF0F67196}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BCBB50CD-2C38-4B27-940B-1FEDD2C6DECE}"
 	ProjectSection(SolutionItems) = preProject
@@ -56,43 +56,43 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		update-package-versions.targets = update-package-versions.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.Resw", "ItemTemplates\Neutral\CppWinRT\Resw\WinUI.Neutral.CppWinRT.Resw.csproj", "{30AB0000-148D-48BE-85DB-70D9F7BDFEC5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.Resw", "..\Source\ItemTemplates\Neutral\CppWinRT\Resw\WinUI.Neutral.CppWinRT.Resw.csproj", "{30AB0000-148D-48BE-85DB-70D9F7BDFEC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.Resw", "ItemTemplates\Neutral\CSharp\Resw\WinUI.Neutral.Cs.Resw.csproj", "{17320A27-C039-4973-95AA-ACB3EFA1D47E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.Resw", "..\Source\ItemTemplates\Neutral\CSharp\Resw\WinUI.Neutral.Cs.Resw.csproj", "{17320A27-C039-4973-95AA-ACB3EFA1D47E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{EC44EE95-8EC9-4EE5-A8A6-E6BE2F32C843}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.ClassLibrary", "ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj", "{33783A04-0CB4-4CE5-A9FE-82E2E7E06D1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.ClassLibrary", "..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj", "{33783A04-0CB4-4CE5-A9FE-82E2E7E06D1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.PackagedApp", "ProjectTemplates\Desktop\CSharp\PackagedApp\WinUI.Desktop.Cs.PackagedApp.csproj", "{938DD23E-270E-488B-AC4C-CA68A545A8F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.PackagedApp", "..\Source\ProjectTemplates\Desktop\CSharp\PackagedApp\WinUI.Desktop.Cs.PackagedApp.csproj", "{938DD23E-270E-488B-AC4C-CA68A545A8F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.PackagedApp", "ProjectTemplates\Desktop\CppWinRT\PackagedApp\WinUI.Desktop.CppWinRT.PackagedApp.csproj", "{80195619-D4CF-4287-BA59-08077486BE1C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.PackagedApp", "..\Source\ProjectTemplates\Desktop\CppWinRT\PackagedApp\WinUI.Desktop.CppWinRT.PackagedApp.csproj", "{80195619-D4CF-4287-BA59-08077486BE1C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Neutral", "Neutral", "{50DEEF87-BC2F-4B45-B97D-B83135F12786}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CppWinRT", "CppWinRT", "{4D266288-D49F-46D4-90E0-667E81D6A433}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.RuntimeComponent", "ProjectTemplates\Neutral\CppWinRT\RuntimeComponent\WinUI.Neutral.CppWinRT.RuntimeComponent.csproj", "{FD33E535-127D-48AC-8788-0F61FA2A251C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.CppWinRT.RuntimeComponent", "..\Source\ProjectTemplates\Neutral\CppWinRT\RuntimeComponent\WinUI.Neutral.CppWinRT.RuntimeComponent.csproj", "{FD33E535-127D-48AC-8788-0F61FA2A251C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.SingleProjectPackagedApp", "ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj", "{D9C038B7-6A62-4945-A030-4AC7597F53CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.SingleProjectPackagedApp", "..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj", "{D9C038B7-6A62-4945-A030-4AC7597F53CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.SingleProjectPackagedApp", "ProjectTemplates\Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj", "{E54D1AD4-E935-479D-8A69-FC073E4DB33D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.SingleProjectPackagedApp", "..\Source\ProjectTemplates\Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj", "{E54D1AD4-E935-479D-8A69-FC073E4DB33D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsAppSDK.Cs.Extension.Dev17", "Extension\Cs\Dev17\WindowsAppSDK.Cs.Extension.Dev17.csproj", "{E700DF09-42A9-4AC7-9855-400029FBFDBE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsAppSDK.Cpp.Extension.Dev17", "Extension\Cpp\Dev17\WindowsAppSDK.Cpp.Extension.Dev17.csproj", "{85E88201-049C-4E42-AE85-DFEEFA7C533C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.UnitTestApp", "ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj", "{45777B9F-9CC1-47D7-BD66-C3C194277902}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.UnitTestApp", "..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj", "{45777B9F-9CC1-47D7-BD66-C3C194277902}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.UnitTestApp", "ProjectTemplates\Desktop\CppWinRT\UnitTestApp\WinUI.Desktop.CppWinRT.UnitTestApp.csproj", "{DFA6B905-57A3-4B31-A74B-25BA2243389F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.UnitTestApp", "..\Source\ProjectTemplates\Desktop\CppWinRT\UnitTestApp\WinUI.Desktop.CppWinRT.UnitTestApp.csproj", "{DFA6B905-57A3-4B31-A74B-25BA2243389F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.TabViewApp", "ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj", "{A1B2C3D4-1111-4A5B-9C8D-1E2F3A4B5C6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.TabViewApp", "..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj", "{A1B2C3D4-1111-4A5B-9C8D-1E2F3A4B5C6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.NavigationApp", "ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.csproj", "{B2C3D4E5-2222-4B6C-AD9E-2F3A4B5C6D7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.NavigationApp", "..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.csproj", "{B2C3D4E5-2222-4B6C-AD9E-2F3A4B5C6D7E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DotnetNewTemplates", "DotnetNewTemplates", "{8EAF0E4D-B0E3-4A21-B0F6-EA69F0215F5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAppSdk.CSharp.DotnetNewTemplates", "DotnetNewTemplates\WinAppSdk.CSharp.DotnetNewTemplates.csproj", "{F9C3BC5E-2E45-4272-A4F1-0F63CFE9A2DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAppSdk.CSharp.DotnetNewTemplates", "..\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj", "{F9C3BC5E-2E45-4272-A4F1-0F63CFE9A2DE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{96699B60-67B5-4186-9FEC-3963ED811FF0}"
 	ProjectSection(SolutionItems) = preProject

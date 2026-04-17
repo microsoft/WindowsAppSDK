@@ -24,7 +24,7 @@ stages:
     pool: ${{ parameters.pool }}
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
-      templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\VSIX\DotnetNewTemplates'
+      templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
     steps:
     - checkout: self
 
