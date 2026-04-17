@@ -24,7 +24,7 @@ stages:
     steps:
     - checkout: self
 
-    - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Steps.yml@WindowsAppSDKConfig
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CheckApiChanges-Steps.yml@WinAppSDK
       parameters:
         # Pattern of the component package
         ComponentPackagePatterns: ['Microsoft.WindowsAppSDK.Foundation*.nupkg']
