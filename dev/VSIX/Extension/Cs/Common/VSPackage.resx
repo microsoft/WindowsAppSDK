@@ -256,7 +256,7 @@
     <value>[{0}] Builds are currently paused while NuGet packages are being installed: {1}. The build will begin once package installation is complete.</value>
   </data>
   <data name="1056" xml:space="preserve">
-    <value>[{0}] NuGet package auto-download is disabled. Unable to install: {1}. To resolve, either enable "Allow NuGet to download missing packages" and "Automatically check for missing packages during build in Visual Studio" in Tools &gt; Options &gt; NuGet Package Manager and restore the solution, or install the packages manually via the NuGet Package Manager.</value>
+    <value>[{0}] NuGet package auto-download is disabled. Unable to install: {1}. To resolve, enable "Allow NuGet to download missing packages" and "Automatically check for missing packages during build in Visual Studio" in Tools &gt; Options &gt; NuGet Package Manager and restore the solution, or install the packages manually via the NuGet Package Manager.</value>
   </data>
   <data name="1057" xml:space="preserve">
     <value>[{0}] NuGet package auto-download is disabled. Unable to install: {1}. Click "Manage NuGet Packages" below to install the required packages manually.</value>
