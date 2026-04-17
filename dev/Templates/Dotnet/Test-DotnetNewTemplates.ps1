@@ -372,6 +372,14 @@ try {
     New-Item -ItemType Directory -Path $nugetFallback -Force | Out-Null
     $env:NUGET_PACKAGES = $nugetFallback
 
+    # Copy repo NuGet.config so scaffolded projects resolve packages from
+    # internal feeds instead of nuget.org (which is blocked on OneBranch agents).
+    $repoNugetConfig = Join-Path -Path $repoRoot -ChildPath 'NuGet.config'
+    if (Test-Path -Path $repoNugetConfig -PathType Leaf) {
+        Copy-Item -Path $repoNugetConfig -Destination (Join-Path -Path $workingRoot -ChildPath 'NuGet.config')
+        Write-Step "Copied NuGet.config to working directory"
+    }
+
     $packageToInstall = Get-TemplatePackagePath -PackagePathOverride $PackagePath -ProjectPath $templateProject -Configuration $Configuration -PackOutputDirectory $PackOutputDirectory -RepoRoot $repoRoot
     Write-Step "Using template package '$packageToInstall'"
 
