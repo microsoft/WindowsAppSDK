@@ -1,11 +1,6 @@
 # Foundation-specific variables (supplements Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK)
 # Only variables that are unique to Foundation or override mono repo defaults belong here.
 variables:
-  # Override mono repo defaults (MajorVersion=0) until WindowsAppSDK-Versions.yml is updated to 2.0
-  # TODO: Remove these overrides once the mono repo Versions template has correct values
-  MajorVersion: 2
-  MinorVersion: 0
-
   channel: 'experimental'
   versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
   version: $[format('{0}.{1}.{2}-{3}.{4}', variables['MajorVersion'], variables['MinorVersion'], variables['PatchVersion'], variables['versionDate'], variables['versionCounter'])]
