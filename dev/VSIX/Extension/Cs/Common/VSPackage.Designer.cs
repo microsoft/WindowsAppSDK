@@ -467,5 +467,59 @@ namespace WindowsAppSDK.Cs.Extension.Dev17 {
                 return ResourceManager.GetString("1054", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WinUI TabView App.
+        /// </summary>
+        internal static string _1055 {
+            get {
+                return ResourceManager.GetString("1055", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Experimental] WinUI TabView App.
+        /// </summary>
+        internal static string _1056 {
+            get {
+                return ResourceManager.GetString("1056", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A project template for creating a WinUI app with a TabView control for tabbed navigation..
+        /// </summary>
+        internal static string _1057 {
+            get {
+                return ResourceManager.GetString("1057", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WinUI Navigation App.
+        /// </summary>
+        internal static string _1059 {
+            get {
+                return ResourceManager.GetString("1059", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Experimental] WinUI Navigation App.
+        /// </summary>
+        internal static string _1060 {
+            get {
+                return ResourceManager.GetString("1060", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A project template for creating a WinUI app with a NavigationView control for page navigation..
+        /// </summary>
+        internal static string _1061 {
+            get {
+                return ResourceManager.GetString("1061", resourceCulture);
+            }
+        }
     }
 }
