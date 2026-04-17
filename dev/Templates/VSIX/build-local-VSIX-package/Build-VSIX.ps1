@@ -191,7 +191,7 @@ if (-not $RepoRoot -or -not (Test-Path $RepoRoot)) {
 Write-Step "Repo root: $RepoRoot"
 
 # Resolve paths
-$vsixDir = Join-Path $RepoRoot "dev\VSIX"
+$vsixDir = Join-Path $RepoRoot "dev\Templates\VSIX"
 $solutionFile = Join-Path $vsixDir "WindowsAppSDK.Extension.sln"
 
 if (-not (Test-Path $solutionFile)) {

@@ -18,11 +18,12 @@
 
     <!-- Useful folder paths -->
     <PropertyGroup>
-        <RepoRoot>$(MSBuildThisFileDirectory)..\..\</RepoRoot>
+        <RepoRoot>$(MSBuildThisFileDirectory)..\..\..\</RepoRoot>
         <VSIXRootDir>$(MSBuildThisFileDirectory)</VSIXRootDir>
         <ExtensionDir>$(VSIXRootDir)Extension\</ExtensionDir>
-        <ItemTemplatesDir>$(VSIXRootDir)ItemTemplates\</ItemTemplatesDir>
-        <ProjectTemplatesDir>$(VSIXRootDir)ProjectTemplates\</ProjectTemplatesDir>
+        <TemplateSourceDir>$(MSBuildThisFileDirectory)..\Source\</TemplateSourceDir>
+        <ItemTemplatesDir>$(TemplateSourceDir)ItemTemplates\</ItemTemplatesDir>
+        <ProjectTemplatesDir>$(TemplateSourceDir)ProjectTemplates\</ProjectTemplatesDir>
     </PropertyGroup>
 
     <PropertyGroup>

@@ -47,11 +47,11 @@
     <None Include="templates\single-project\instructions\**\*.*"
           Pack="true"
           PackagePath="content/winui.blankapp/.github/instructions/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\**\*.*"
-          Exclude="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\bin\**;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\obj\**;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.ico;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.png;..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.vstemplate"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\**\*.*"
+          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.png;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.vstemplate"
           Pack="true"
           PackagePath="content/winui.blankapp/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.blankapp/Package.appxmanifest" />
     <None Include="$(_GitignoreSource)"
@@ -64,11 +64,11 @@
     <None Include="templates\navigation-app\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.navview/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\NavigationApp\**\*.*"
-          Exclude="..\ProjectTemplates\Desktop\CSharp\NavigationApp\bin\**;..\ProjectTemplates\Desktop\CSharp\NavigationApp\obj\**;..\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.csproj;..\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.ico;..\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.png;..\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.vstemplate"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\**\*.*"
+          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.png;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.vstemplate"
           Pack="true"
           PackagePath="content/winui.navview/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.navview/Package.appxmanifest" />
     <None Include="$(_GitignoreSource)"
@@ -81,8 +81,8 @@
     <None Include="templates\class-library\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.classlib/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\ClassLibrary\**\*.*"
-          Exclude="..\ProjectTemplates\Desktop\CSharp\ClassLibrary\bin\**;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\obj\**;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.ico;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.png;..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.vstemplate"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\**\*.*"
+          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.ico;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.png;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.vstemplate"
           Pack="true"
           PackagePath="content/winui.classlib/%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="$(_GitignoreSource)"
@@ -95,11 +95,11 @@
     <None Include="templates\unit-test\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.unittest/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\UnitTestApp\**\*.*"
-          Exclude="..\ProjectTemplates\Desktop\CSharp\UnitTestApp\bin\**;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\obj\**;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.ico;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.png;..\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.vstemplate"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\**\*.*"
+          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.png;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.vstemplate"
           Pack="true"
           PackagePath="content/winui.unittest/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.unittest/Package.appxmanifest" />
     <None Include="$(_GitignoreSource)"
@@ -112,21 +112,21 @@
     <None Include="templates\mvvm-app\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.mvvmapp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\MvvmApp\**\*.*"
-          Exclude="..\ProjectTemplates\Desktop\CSharp\MvvmApp\bin\**;..\ProjectTemplates\Desktop\CSharp\MvvmApp\obj\**"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\**\*.*"
+          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\obj\**"
           Pack="true"
           PackagePath="content/winui.mvvmapp/%(RecursiveDir)%(Filename)%(Extension)" />
     <!-- Reuse Assets, Properties, app.manifest, and Package.appxmanifest from blank app -->
-    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Assets\**\*.*"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Assets\**\*.*"
           Pack="true"
           PackagePath="content/winui.mvvmapp/Assets/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Properties\**\*.*"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Properties\**\*.*"
           Pack="true"
           PackagePath="content/winui.mvvmapp/Properties/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\app.manifest"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\app.manifest"
           Pack="true"
           PackagePath="content/winui.mvvmapp/app.manifest" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.mvvmapp/Package.appxmanifest" />
     <None Include="$(_GitignoreSource)"
@@ -139,11 +139,11 @@
     <None Include="templates\tabview-app\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.tabview/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\TabViewApp\**\*.*"
-          Exclude="..\ProjectTemplates\Desktop\CSharp\TabViewApp\bin\**;..\ProjectTemplates\Desktop\CSharp\TabViewApp\obj\**;..\ProjectTemplates\Desktop\CSharp\TabViewApp\Package-managed.appxmanifest;..\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj;..\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.ico;..\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.png;..\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.vstemplate"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\**\*.*"
+          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.png;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.vstemplate"
           Pack="true"
           PackagePath="content/winui.tabview/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ProjectTemplates\Desktop\CSharp\TabViewApp\Package-managed.appxmanifest"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.tabview/Package.appxmanifest" />
     <None Include="$(_GitignoreSource)"
@@ -156,10 +156,10 @@
     <None Include="templates\item-blank-window\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.item.window/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ItemTemplates\Desktop\CSharp\BlankWindow\BlankWindow.xaml"
+    <None Include="..\Source\ItemTemplates\Desktop\CSharp\BlankWindow\BlankWindow.xaml"
           Pack="true"
           PackagePath="content/winui.item.window/BlankWindow.xaml" />
-    <None Include="..\ItemTemplates\Desktop\CSharp\BlankWindow\BlankWindow.xaml.cs"
+    <None Include="..\Source\ItemTemplates\Desktop\CSharp\BlankWindow\BlankWindow.xaml.cs"
           Pack="true"
           PackagePath="content/winui.item.window/BlankWindow.xaml.cs" />
   </ItemGroup>
@@ -169,10 +169,10 @@
     <None Include="templates\item-blank-page\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.item.page/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\BlankPage\BlankPage.xaml"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\BlankPage\BlankPage.xaml"
           Pack="true"
           PackagePath="content/winui.item.page/BlankPage.xaml" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\BlankPage\BlankPage.xaml.cs"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\BlankPage\BlankPage.xaml.cs"
           Pack="true"
           PackagePath="content/winui.item.page/BlankPage.xaml.cs" />
   </ItemGroup>
@@ -182,10 +182,10 @@
     <None Include="templates\item-user-control\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.item.usercontrol/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\UserControl\UserControl.xaml"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\UserControl\UserControl.xaml"
           Pack="true"
           PackagePath="content/winui.item.usercontrol/UserControl.xaml" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\UserControl\UserControl.xaml.cs"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\UserControl\UserControl.xaml.cs"
           Pack="true"
           PackagePath="content/winui.item.usercontrol/UserControl.xaml.cs" />
   </ItemGroup>
@@ -195,7 +195,7 @@
     <None Include="templates\item-templated-control\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.item.templatedcontrol/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\TemplatedControl\CustomControl.cs"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\TemplatedControl\CustomControl.cs"
           Pack="true"
           PackagePath="content/winui.item.templatedcontrol/CustomControl.cs" />
   </ItemGroup>
@@ -205,7 +205,7 @@
     <None Include="templates\item-resource-dictionary\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.item.resourcedictionary/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\ResourceDictionary\ResourceDictionary.xaml"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\ResourceDictionary\ResourceDictionary.xaml"
           Pack="true"
           PackagePath="content/winui.item.resourcedictionary/ResourceDictionary.xaml" />
   </ItemGroup>
@@ -215,7 +215,7 @@
     <None Include="templates\item-resw\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.item.resw/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\Resw\Resources.resw"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\Resw\Resources.resw"
           Pack="true"
           PackagePath="content/winui.item.resw/Resources.resw" />
   </ItemGroup>
@@ -225,10 +225,10 @@
     <None Include="templates\item-content-dialog\.template.config\**\*.*"
           Pack="true"
           PackagePath="content/winui.item.dialog/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\ContentDialog\ContentDialog.xaml"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\ContentDialog\ContentDialog.xaml"
           Pack="true"
           PackagePath="content/winui.item.dialog/ContentDialog.xaml" />
-    <None Include="..\ItemTemplates\Neutral\CSharp\ContentDialog\ContentDialog.xaml.cs"
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\ContentDialog\ContentDialog.xaml.cs"
           Pack="true"
           PackagePath="content/winui.item.dialog/ContentDialog.xaml.cs" />
   </ItemGroup>

@@ -93,16 +93,16 @@ preferred TFM.
 
 This template pack is built from the
 [WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK) repository under
-`dev/VSIX/DotnetNewTemplates/`. The templates share the same XAML, code-behind,
+`dev/Templates/Dotnet/`. The templates share the same XAML, code-behind,
 and project files as the Visual Studio templates under
-`dev/VSIX/ProjectTemplates/` and `dev/VSIX/ItemTemplates/`, so there is only one
+`dev/Templates/Source/ProjectTemplates/` and `dev/Templates/Source/ItemTemplates/`, so there is only one
 copy to maintain.
 
 ### Local Testing
 
 1. Pack the templates:
    ```shell
-   dotnet pack dev/VSIX/DotnetNewTemplates/WinAppSdk.CSharp.DotnetNewTemplates.csproj -c Release -o localpackages
+   dotnet pack dev/Templates/Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj -c Release -o localpackages
    ```
 2. Uninstall any previous version:
    ```shell

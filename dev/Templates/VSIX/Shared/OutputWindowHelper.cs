@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 // Although the strings are the same in the wizard for both extensions,
 // they are included with both their respective VSPackages.
-// Strings for both extensions can be found in {PathToWindowsAppSDK}\dev\VSIX\Extension\Cs\Common\VSPackage.resx
+// Strings for both extensions can be found in {PathToWindowsAppSDK}\dev\Templates\VSIX\Extension\Cs\Common\VSPackage.resx
 // Wizard strings are numbers 1044 and above.
 #if CSHARP_EXTENSION
 using Resources = WindowsAppSDK.Cs.Extension.Dev17.VSPackage;
