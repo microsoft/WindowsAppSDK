@@ -22,7 +22,7 @@ jobs:
     parameters:
       GitAction: ${{ parameters.GitAction }}
       ResourceFilePath: |
-        dev\VSIX\Extension\Cpp\Common\VSPackage.resx
-        dev\VSIX\Extension\Cs\Common\VSPackage.resx
+        dev\Templates\VSIX\Extension\Cpp\Common\VSPackage.resx
+        dev\Templates\VSIX\Extension\Cs\Common\VSPackage.resx
         dev\Interop\StoragePickers\Strings\StoragePickers.resw
       teamId: $(TdBuildTeamIDVSIX)

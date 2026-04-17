@@ -1,0 +1,47 @@
+{
+  "icon": "icon.png",
+  "requiredComponents": [
+    {
+      "id": "Microsoft.VisualStudio.Workload.ManagedDesktop",
+      "hostId": "vs",
+      "componentType": "setupComponent"
+    }
+  ],
+  "symbolInfo": [
+    {
+      "id": "dotnetVersion",
+      "name": {
+        "text": "Framework"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "targetPlatformMinVersion",
+      "name": {
+        "text": "Target Platform Minimum Version"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDn",
+      "name": {
+        "text": "Publisher Distinguished Name"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDisplay",
+      "name": {
+        "text": "Publisher Display Name"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "UseLatestWindowsAppSDK",
+      "name": {
+        "text": "Use latest Windows App SDK version"
+      },
+      "isVisible": "true"
+    }
+  ]
+}

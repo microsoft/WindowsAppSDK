@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": ["Windows", "WinUI", "Item", "Control"],
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl",
+  "name": "WinUI Templated Control (Item)",
+  "shortName": ["winui-templatedcontrol", "winui3-templatedcontrol"],
+  "sourceName": "CustomControl",
+  "defaultName": "CustomControl",
+  "description": "Adds a WinUI 3 templated control with a code-behind skeleton.",
+  "preferNameDirectory": false,
+  "symbols": {
+    "rootNamespace": {
+      "type": "bind",
+      "binding": "msbuild:RootNamespace",
+      "replaces": "$rootnamespace$",
+      "defaultValue": "AppNamespace",
+      "description": "Namespace for the generated item."
+    },
+    "safeItemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "safe_name",
+      "replaces": "$safeitemname$"
+    },
+    "itemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$itemname$"
+    },
+    "fileInputName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$fileinputname$"
+    }
+  },
+  "constraints": {
+    "winuiProject": {
+      "type": "project-capability",
+      "args": "CSharp & Msix"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "CustomControl.cs" }
+  ],
+  "forms": {
+    "safe_name": {
+      "identifier": "safe_name"
+    },
+    "identity": {
+      "identifier": "identity"
+    }
+  }
+}
