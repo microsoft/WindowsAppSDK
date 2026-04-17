@@ -35,7 +35,7 @@ stages:
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       - name: foundationRepoPath
         value: ""
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WinAppSDK
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion

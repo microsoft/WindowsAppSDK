@@ -41,7 +41,7 @@ stages:
     variables:
       WindowsAppSDKPackageVersion: $[ stageDependencies.Pack.NugetPackage.outputs['SetVersion.packageVersion'] ]
     steps:
-    - template: AzurePipelinesTemplates/WindowsAppSDK-PublishToMaestro-Steps.yml@WindowsAppSDKConfig
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishToMaestro-Steps.yml@WinAppSDK
       parameters:
         NuGetArtifactNames:
         - 'TransportPackage'
