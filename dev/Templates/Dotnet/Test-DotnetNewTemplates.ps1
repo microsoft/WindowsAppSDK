@@ -119,6 +119,11 @@ function Invoke-DotnetCommand {
 
     Push-Location -Path $WorkingDirectory
     try {
+        # Temporarily allow stderr from native commands to avoid treating
+        # non-fatal messages (e.g. dotnet template update checks) as
+        # terminating errors. Real failures are caught via $LASTEXITCODE.
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
         if ($CaptureOutput.IsPresent) {
             $output = & $dotnetPath @Arguments 2>&1
         }
@@ -126,6 +131,7 @@ function Invoke-DotnetCommand {
             & $dotnetPath @Arguments 2>&1 | ForEach-Object { Write-Host $_ }
         }
         $exitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
     }
     finally {
         Pop-Location
