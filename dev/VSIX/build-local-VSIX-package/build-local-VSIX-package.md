@@ -3,7 +3,13 @@
 ## TL;NR
 
 ```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Component
+# 1. Build.
+.\Build-VSIX.ps1 -Deployment Component
+
+# 2. Install.
+.\Install-VSIX.ps1
+
+# 3. Open Visual Studio -> File -> New -> Project -> search "WinUI"
 ```
 
 > **Note**: `-OptionalVSIXVersion` defaults to `99.<yyyy>.<MMdd>.<HHmm>` (e.g., `99.2026.0416.1640`).
@@ -220,6 +226,9 @@ dev\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cpp.Extension.Dev
 # Install only C++ templates
 .\Install-VSIX.ps1 -Language Cpp
 
+# Install a specific VSIX file by path
+.\Install-VSIX.ps1 -VsixPath ".\publish\VSIX\WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0417.1426.vsix"
+
 # Install from a custom directory
 .\Install-VSIX.ps1 -VsixDir "D:\my-vsix"
 
@@ -230,6 +239,12 @@ dev\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cpp.Extension.Dev
 The script defaults to `.\publish\VSIX` and picks the **most recently built**
 `.vsix` file for each language (by file modification time). If multiple versioned
 files exist (e.g. from different builds), it always selects the latest one.
+
+> **Warning**: The auto-selection does not distinguish between Standalone and
+> Component VSIX files — it picks whichever has the newest timestamp. If you have
+> both types in the publish folder, use `-VsixPath` to explicitly select the
+> correct one. Most VS installations with the WinUI workload require the
+> **Component** version.
 
 The script will:
 1. Check that Visual Studio is closed (exits if not)
