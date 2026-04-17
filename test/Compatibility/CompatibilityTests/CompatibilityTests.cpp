@@ -89,6 +89,7 @@ namespace Test::CompatibilityTests
 
         TEST_METHOD(VerifyNoMatchingPatchLevelBehavior)
         {
+            // TODO: Remove when MajorVersion and MinorVersion in AssemblyInfo.h are updated to match real release versions instead of dev defaults (0.0)
             // Skip when MajorVersion=0 (dev-loop default) — PatchLevel {0,8,3} matches major=0
             if (WINDOWSAPPSDK_RELEASE_MAJOR == 0)
             {
