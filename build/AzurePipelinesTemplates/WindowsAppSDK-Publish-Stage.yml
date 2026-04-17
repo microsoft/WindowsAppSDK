@@ -39,7 +39,7 @@ stages:
       isCustom: true
       name: 'ProjectReunionESPool-2022' # This job is purely for ES, hence this custom pool
     variables:
-      WindowsAppSDKPackageVersion: $[ stageDependencies.Pack.NugetPackage.outputs['SetVersion.packageVersion'] ]
+      WindowsAppSDKPackageVersion: $[ stageDependencies.Pack.NugetPackage.outputs['DetermineNugetPackageVersion.WindowsAppSDKFormattedVersion'] ]
     steps:
     - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishToMaestro-Steps.yml@WinAppSDK
       parameters:
