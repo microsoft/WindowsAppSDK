@@ -122,6 +122,11 @@ namespace WindowsAppSDK.TemplateUtilities
         public void ProjectFinishedGenerating(Project project)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            if (project == null)
+            {
+                return;
+            }
+
             _project = project;
             Guid _projectGuid = GetProjectGuid(project);
 
