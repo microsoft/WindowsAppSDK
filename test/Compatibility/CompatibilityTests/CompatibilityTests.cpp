@@ -89,6 +89,13 @@ namespace Test::CompatibilityTests
 
         TEST_METHOD(VerifyNoMatchingPatchLevelBehavior)
         {
+            // Skip when MajorVersion=0 (dev-loop default) — PatchLevel {0,8,3} matches major=0
+            if (WINDOWSAPPSDK_RELEASE_MAJOR == 0)
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Skipped: WINDOWSAPPSDK_RELEASE_MAJOR is 0 (dev default); test patch levels conflict with major=0");
+                return;
+            }
+
             WEX::Logging::Log::Comment(WEX::Common::String(L"Setting RuntimeCompatibilityOptions with no matching patch level"));
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
             options.PatchLevel1({ 0, 8, 3 });
