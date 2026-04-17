@@ -373,9 +373,10 @@ try {
     $env:NUGET_PACKAGES = $nugetFallback
 
     # Generate a NuGet.config so scaffolded projects resolve packages from
-    # internal feeds. The repo's NuGet.config has relative local-source paths
-    # (tools/nuget, localpackages) that don't exist under the temp directory,
-    # so we extract only the remote feeds and add nuget.org as fallback.
+    # internal feeds only. The repo's NuGet.config has relative local-source
+    # paths (tools/nuget, localpackages) that don't exist under the temp
+    # directory, and nuget.org is blocked by OneBranch network isolation.
+    # We extract only the remote (https) feeds from the repo config.
     $repoNugetConfig = Join-Path -Path $repoRoot -ChildPath 'NuGet.config'
     $workNugetConfig = Join-Path -Path $workingRoot -ChildPath 'NuGet.config'
     if (Test-Path -Path $repoNugetConfig -PathType Leaf) {
@@ -392,7 +393,6 @@ try {
         foreach ($src in $remoteSources) {
             $configLines += '    <add key="{0}" value="{1}" />' -f $src.key, $src.value
         }
-        $configLines += '    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />'
         $configLines += @(
             '  </packageSources>'
             '</configuration>'
