@@ -132,7 +132,7 @@ steps:
   #  continueOnError: true
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
     parameters:
       FolderPath: '$(build.SourcesDirectory)\BuildOutput'
       UseMinimatch: true
