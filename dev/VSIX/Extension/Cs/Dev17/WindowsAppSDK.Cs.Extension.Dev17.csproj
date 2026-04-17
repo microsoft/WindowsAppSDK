@@ -164,6 +164,20 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj">
+      <Project>{A1B2C3D4-1111-4A5B-9C8D-1E2F3A4B5C6D}</Project>
+      <Name>WinUI.Desktop.Cs.TabViewApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.csproj">
+      <Project>{B2C3D4E5-2222-4B6C-AD9E-2F3A4B5C6D7E}</Project>
+      <Name>WinUI.Desktop.Cs.NavigationApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx">

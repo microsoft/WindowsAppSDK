@@ -252,4 +252,22 @@
   <data name="1054" xml:space="preserve">
     <value>No output information available.</value>
   </data>
+  <data name="1055" xml:space="preserve">
+    <value>WinUI TabView App</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Experimental] WinUI TabView App</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>A project template for creating a WinUI app with a TabView control for tabbed navigation.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>WinUI Navigation App</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Experimental] WinUI Navigation App</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>A project template for creating a WinUI app with a NavigationView control for page navigation.</value>
+  </data>
 </root>
