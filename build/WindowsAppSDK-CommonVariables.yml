@@ -5,7 +5,7 @@ variables:
   versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
   version: $[format('{0}.{1}.{2}-{3}.{4}', variables['MajorVersion'], variables['MinorVersion'], variables['PatchVersion'], variables['versionDate'], variables['versionCounter'])]
 
-  REPOROOT: $(Build.SourcesDirectory)
+  # REPOROOT is provided by the shared template (as RepoRoot — ADO variables are case-insensitive)
   OUTPUTROOT: $(REPOROOT)\out
 
   # Foundation defers to the global default LKG compiler version (unlike Closed which pins a specific LKG).
