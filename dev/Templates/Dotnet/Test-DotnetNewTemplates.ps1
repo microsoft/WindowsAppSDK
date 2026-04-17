@@ -372,12 +372,33 @@ try {
     New-Item -ItemType Directory -Path $nugetFallback -Force | Out-Null
     $env:NUGET_PACKAGES = $nugetFallback
 
-    # Copy repo NuGet.config so scaffolded projects resolve packages from
-    # internal feeds instead of nuget.org (which is blocked on OneBranch agents).
+    # Generate a NuGet.config so scaffolded projects resolve packages from
+    # internal feeds. The repo's NuGet.config has relative local-source paths
+    # (tools/nuget, localpackages) that don't exist under the temp directory,
+    # so we extract only the remote feeds and add nuget.org as fallback.
     $repoNugetConfig = Join-Path -Path $repoRoot -ChildPath 'NuGet.config'
+    $workNugetConfig = Join-Path -Path $workingRoot -ChildPath 'NuGet.config'
     if (Test-Path -Path $repoNugetConfig -PathType Leaf) {
-        Copy-Item -Path $repoNugetConfig -Destination (Join-Path -Path $workingRoot -ChildPath 'NuGet.config')
-        Write-Step "Copied NuGet.config to working directory"
+        [xml]$srcConfig = Get-Content -Path $repoNugetConfig
+        $remoteSources = $srcConfig.configuration.packageSources.add |
+            Where-Object { $_.value -match '^https?://' }
+
+        $configLines = @(
+            '<?xml version="1.0" encoding="utf-8"?>'
+            '<configuration>'
+            '  <packageSources>'
+            '    <clear />'
+        )
+        foreach ($src in $remoteSources) {
+            $configLines += '    <add key="{0}" value="{1}" />' -f $src.key, $src.value
+        }
+        $configLines += '    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />'
+        $configLines += @(
+            '  </packageSources>'
+            '</configuration>'
+        )
+        $configLines | Set-Content -Path $workNugetConfig -Encoding UTF8
+        Write-Step "Generated NuGet.config with remote feeds in working directory"
     }
 
     $packageToInstall = Get-TemplatePackagePath -PackagePathOverride $PackagePath -ProjectPath $templateProject -Configuration $Configuration -PackOutputDirectory $PackOutputDirectory -RepoRoot $repoRoot
