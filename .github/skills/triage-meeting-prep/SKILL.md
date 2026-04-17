@@ -59,7 +59,9 @@ The skill tracks **four critical categories** for each meeting:
 
 - **GitHub CLI (gh)** installed and authenticated (`gh auth login`)
 - Access to microsoft/WindowsAppSDK repository
-- Previous triage state file for diff comparison: `Generated Files/triageMeeting/previous-state.json`
+- Previous triage state file for diff comparison: `Generated-Files/triageMeeting/previous-state.json`
+
+> **Migration note**: If you have an existing `Generated Files/triageMeeting/...` directory from earlier runs, rename `Generated Files` to `Generated-Files` before using this skill, or pass explicit input/output paths to the scripts so you keep prior diff history.
 
 ### Installing GitHub CLI
 
@@ -75,7 +77,7 @@ gh auth login
 
 ### Workflow: Generate Triage Meeting Summary
 
-1. **Load previous triage state** from `Generated Files/triageMeeting/previous-state.json`
+1. **Load previous triage state** from `Generated-Files/triageMeeting/previous-state.json`
 2. **Fetch current Needs-Triage issues** using the scripts:
    ```powershell
    # Get all issues needing triage (no area label)
@@ -164,14 +166,14 @@ Saves the current triage state for future comparisons.
 
 ## Output Structure
 
-All outputs are saved to `Generated Files/triageMeeting/<date>/`:
+All outputs are saved to `Generated-Files/triageMeeting/<date>/`:
 
 | File | Purpose |
 |------|---------|
 | `summary.md` | Main meeting document with tables linking to individual reviews |
 | `previous-state.json` | State snapshot for next diff (auto-generated) |
 
-Individual issue reviews are saved to `Generated Files/issueReview/<issue-number>/`:
+Individual issue reviews are saved to `Generated-Files/issueReview/<issue-number>/`:
 
 | File | Purpose |
 |------|---------|
