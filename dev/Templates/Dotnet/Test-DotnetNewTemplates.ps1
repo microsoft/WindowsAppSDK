@@ -195,7 +195,7 @@ function Install-TemplatePack {
     )
 
     Remove-StaleTemplateEnginePackage -PackagePath $PackageToInstall
-    Invoke-DotnetCommand -Arguments @('new', 'install', $PackageToInstall) -WorkingDirectory $RepoRoot -Description 'install template pack'
+    Invoke-DotnetCommand -Arguments @('new', 'install', $PackageToInstall, '--no-update-check') -WorkingDirectory $RepoRoot -Description 'install template pack'
 }
 
 function Remove-StaleTemplateEnginePackage {
