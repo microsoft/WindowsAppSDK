@@ -372,6 +372,13 @@ try {
     New-Item -ItemType Directory -Path $nugetFallback -Force | Out-Null
     $env:NUGET_PACKAGES = $nugetFallback
 
+    # Suppress the dotnet new template update check. On OneBranch agents the
+    # check fails because external NuGet feeds are blocked, and the resulting
+    # stderr output causes PowerShell's StrictMode to treat it as a
+    # terminating error.
+    $env:DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER = 'true'
+    $env:DOTNET_NEW_CHECK_UPDATE_ENABLED = 'false'
+
     # Generate a NuGet.config so scaffolded projects resolve packages from
     # internal feeds only. The repo's NuGet.config has relative local-source
     # paths (tools/nuget, localpackages) that don't exist under the temp
@@ -444,6 +451,9 @@ finally {
     else {
         Remove-Item Env:NUGET_PACKAGES -ErrorAction SilentlyContinue
     }
+
+    Remove-Item Env:DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER -ErrorAction SilentlyContinue
+    Remove-Item Env:DOTNET_NEW_CHECK_UPDATE_ENABLED -ErrorAction SilentlyContinue
 
     if (-not $KeepWorkingDirectory.IsPresent -and (Test-Path -Path $workingRoot)) {
         Write-Step "Cleaning up '$workingRoot'"
