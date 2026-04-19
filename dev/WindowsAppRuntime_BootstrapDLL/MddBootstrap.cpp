@@ -488,6 +488,7 @@ void FirstTimeInitialization(
 
             SetFrameworkPathEnvironmentVariable(frameworkPath.c_str());
             AddDllDirectory(frameworkPath.c_str());
+            SetBaseDirectoryEnvironmentVariableIfNotSet();
 
             // Update the activity context
             auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
