@@ -159,7 +159,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -177,7 +177,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -195,7 +195,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -213,7 +213,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -231,7 +231,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
@@ -249,7 +249,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>

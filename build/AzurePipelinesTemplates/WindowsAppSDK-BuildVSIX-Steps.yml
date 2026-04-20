@@ -2,9 +2,6 @@ parameters:
 - name: SignOutput
   type: boolean
   default: false
-- name: IsOneBranch
-  type: boolean
-  default: true
 - name: IsOfficial
   type: boolean
   default: false 
@@ -196,11 +193,10 @@ steps:
       codeSignPattern: |
         **/WindowsAppSDK.*.Extension.*.dll
         
-- ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
-    parameters:
-      SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
-      IsOfficial: ${{ parameters.IsOfficial }}
+- template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
+  parameters:
+    SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+    IsOfficial: ${{ parameters.IsOfficial }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
@@ -234,8 +230,3 @@ steps:
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if ne(parameters.IsOneBranch, 'true') }}:
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'
