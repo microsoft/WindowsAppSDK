@@ -131,9 +131,9 @@ function Invoke-DotnetCommand {
             & $dotnetPath @Arguments 2>&1 | ForEach-Object { Write-Host $_ }
         }
         $exitCode = $LASTEXITCODE
-        $ErrorActionPreference = $savedEAP
     }
     finally {
+        $ErrorActionPreference = $savedEAP
         Pop-Location
     }
 
@@ -284,7 +284,7 @@ function New-ProjectFromTemplate {
         New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
     }
 
-    Invoke-DotnetCommand -Arguments @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force') -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
+    Invoke-DotnetCommand -Arguments @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force', '--no-update-check') -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
 }
 
 function Test-WinUiProjectTemplate {
@@ -354,7 +354,7 @@ function Test-ItemTemplates {
     )
 
     foreach ($item in $itemTemplates) {
-        $args = @('new', $item.ShortName, '-n', $item.Name, '--project', $projectFile, '--force')
+        $args = @('new', $item.ShortName, '-n', $item.Name, '--project', $projectFile, '--force', '--no-update-check')
         Invoke-DotnetCommand -Arguments $args -WorkingDirectory $hostPath -Description "create item template $($item.ShortName)"
         Add-Result -Template $item.ShortName -Platform $Platform -Step 'add item' -Status 'Succeeded' -Path $projectFile
     }
@@ -378,12 +378,8 @@ try {
     New-Item -ItemType Directory -Path $nugetFallback -Force | Out-Null
     $env:NUGET_PACKAGES = $nugetFallback
 
-    # Suppress the dotnet new template update check. On OneBranch agents the
-    # check fails because external NuGet feeds are blocked, and the resulting
-    # stderr output causes PowerShell's StrictMode to treat it as a
-    # terminating error.
+    # Disable the MSBuild server to avoid lingering processes on CI agents.
     $env:DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER = 'true'
-    $env:DOTNET_NEW_CHECK_UPDATE_ENABLED = 'false'
 
     # Generate a NuGet.config so scaffolded projects resolve packages from
     # internal feeds only. The repo's NuGet.config has relative local-source
@@ -397,6 +393,10 @@ try {
         $remoteSources = $srcConfig.configuration.packageSources.add |
             Where-Object { $_.value -match '^https?://' }
 
+        if (-not $remoteSources) {
+            throw "No remote (https) NuGet sources found in $repoNugetConfig."
+        }
+
         $configLines = @(
             '<?xml version="1.0" encoding="utf-8"?>'
             '<configuration>'
@@ -408,6 +408,12 @@ try {
         }
         $configLines += @(
             '  </packageSources>'
+            '  <disabledPackageSources>'
+            '    <clear />'
+            '  </disabledPackageSources>'
+            '  <fallbackPackageFolders>'
+            '    <clear />'
+            '  </fallbackPackageFolders>'
             '</configuration>'
         )
         $configLines | Set-Content -Path $workNugetConfig -Encoding UTF8
@@ -459,7 +465,6 @@ finally {
     }
 
     Remove-Item Env:DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER -ErrorAction SilentlyContinue
-    Remove-Item Env:DOTNET_NEW_CHECK_UPDATE_ENABLED -ErrorAction SilentlyContinue
 
     if (-not $KeepWorkingDirectory.IsPresent -and (Test-Path -Path $workingRoot)) {
         Write-Step "Cleaning up '$workingRoot'"
