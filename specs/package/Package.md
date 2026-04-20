@@ -202,7 +202,7 @@ string GetResourcesPri()
 ### 4.1.2. C++ Example
 
 ```c++
-std::wstring GetResourcesPri(PCWSTR packageFullName)
+std::wstring GetResourcesPri()
 {
     GetPackageFilePathOptions options{};
     wil::unique_process_heap_string absoluteFilename;
@@ -259,7 +259,7 @@ std::wstring GetResourcesPri(PCWSTR packageFullName)
     }
     else if (!absoluteFilename)
     {
-        wprintf(L"ERROR: resources.pri not found for %ls\n", hr, packageFullName);
+        wprintf(L"ERROR: resources.pri not found for %ls\n", packageFullName);
         THROW_WIN32_ERROR(ERROR_FILE_NOT_FOUND);
     }
     return std::wstring{ absoluteFilename.get() };
@@ -309,7 +309,7 @@ std::wstring GetResourcesPri(PCWSTR packageFullName)
     }
     else if (!absoluteFilename)
     {
-        wprintf(L"ERROR: resources.pri not found for %ls\n", hr, packageFullName);
+        wprintf(L"ERROR: resources.pri not found for %ls\n", packageFullName);
         THROW_WIN32_ERROR(ERROR_FILE_NOT_FOUND);
     }
     return std::wstring{ absoluteFilename.get() };
@@ -353,7 +353,7 @@ std::wstring GetXamlWinMD()
     }
     else if (!absoluteFilename)
     {
-        wprintf(L"ERROR: Microsoft.UI.Xaml.winmd not found\n", hr);
+        wprintf(L"ERROR: Microsoft.UI.Xaml.winmd not found\n");
         THROW_WIN32_ERROR(ERROR_FILE_NOT_FOUND);
     }
     return std::wstring{ absoluteFilename.get() };
@@ -363,7 +363,7 @@ std::wstring GetXamlWinMD()
 ## 4.5. Get a file path in the current process' package graph with options
 
 Locate `Microsoft.UI.Xaml.winmd` in the current process' package graph but ignore Mutable locations,
-Resource and Resource packages and HostRuntime dependencies.
+Resource packages and HostRuntime dependencies.
 
 ### 4.5.1. C# Example
 
@@ -376,7 +376,7 @@ string GetXamlWinMD()
                   GetPackageFilePathOptions.SearchMachineExternalPath |
                   GetPackageFilePathOptions.SearchUserExternalPath |
                   GetPackageFilePathOptions.SearchMainPackages |
-                  GetPackageFilePathOptions.SearchFrameworkPath |
+                  GetPackageFilePathOptions.SearchFrameworkPackages |
                   GetPackageFilePathOptions.SearchOptionalPath;
     var absoluteFilename = PackageGraph.GetFilePath("Microsoft.UI.Xaml.winmd", options);
     if (absoluteFilename == null)
@@ -397,7 +397,7 @@ std::wstring GetXamlWinMD()
                                        GetPackageFilePathOptions_SearchMachineExternalPath |
                                        GetPackageFilePathOptions_SearchUserExternalPath |
                                        GetPackageFilePathOptions_SearchMainPackages |
-                                       GetPackageFilePathOptions_SearchFrameworkPath |
+                                       GetPackageFilePathOptions_SearchFrameworkPackages |
                                        GetPackageFilePathOptions_SearchOptionalPath };
     wil::unique_process_heap_string absoluteFilename;
     const HRESULT hr{ GetPackageFilePathInPackageGraph(
@@ -409,7 +409,7 @@ std::wstring GetXamlWinMD()
     }
     else if (!absoluteFilename)
     {
-        wprintf(L"ERROR: Microsoft.UI.Xaml.winmd not found\n", hr);
+        wprintf(L"ERROR: Microsoft.UI.Xaml.winmd not found\n");
         THROW_WIN32_ERROR(ERROR_FILE_NOT_FOUND);
     }
     return std::wstring{ absoluteFilename.get() };
@@ -431,6 +431,21 @@ namespace Microsoft.Windows.ApplicationModel
 {
     [contractversion(1)]
     apicontract PackageRuntimeContract{};
+
+    /// Features can be queried if currently available/enabled.
+    /// @see Package.IsPackageFeatureSupported()
+    [contract(PackageRuntimeContract, 1)]
+    enum PackageFeature
+    {
+        /// Package Mutable path.
+        /// @see PackagePathType_Mutable
+        PackagePath_Mutable          = 1,
+
+        /// Package ExternalLocation path.
+        /// @see PackagePathType_MachineExternal
+        /// @see PackagePathType_UserExternal
+        PackagePath_ExternalLocation = 2,
+    };
 
     /// Options for GetFilePath*()
     /// @see Package.GetFilePath
@@ -508,6 +523,9 @@ namespace Microsoft.Windows.ApplicationModel
     [contract(PackageRuntimeContract, 1)]
     runtimeclass Package
     {
+        /// Return true if feature is supported on the current system.
+        static Boolean IsFeatureSupported(PackageFeature feature);
+
         /// Return the absolute path to the file in the current process' package. This uses the
         /// current process' package identity, or fails with HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE)
         /// if the process lacks package identity.

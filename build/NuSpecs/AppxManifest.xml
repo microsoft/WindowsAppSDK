@@ -48,6 +48,7 @@
 
         <!-- Package -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Package" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageGraph" ThreadingModel="both" />
 
         <!-- WinAppSDK Deployment -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />

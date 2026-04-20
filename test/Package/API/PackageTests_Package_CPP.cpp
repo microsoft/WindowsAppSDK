@@ -10,7 +10,6 @@
 namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
-namespace TD = ::Test::Diagnostics;
 
 namespace Test::Package::Tests
 {

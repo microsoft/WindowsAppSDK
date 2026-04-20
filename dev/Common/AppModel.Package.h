@@ -116,18 +116,10 @@ namespace details
 
     inline void initialize()
     {
-        wil::unique_hmodule dll;
-        if (::ExportLoader::Load(L"api-ms-win-appmodel-runtime-l1-1-3.dll", wil::out_param(dll)))
-        {
-            return;
-        }
+        wil::unique_hmodule dll{ ::ExportLoader::Load(L"api-ms-win-appmodel-runtime-l1-1-3.dll") };
         if (dll)
         {
-            GetPackagePathByFullName2Function getPackagePathByFullName2{};
-            if (FAILED(::ExportLoader::GetFunctionIfExists<GetPackagePathByFullName2Function>(dll.get(), "GetPackagePathByFullName2", &getPackagePathByFullName2)))
-            {
-                return;
-            }
+            auto getPackagePathByFullName2{ ::ExportLoader::GetFunctionIfExists<GetPackagePathByFullName2Function>(dll.get(), "GetPackagePathByFullName2", &getPackagePathByFullName2) };
             if (getPackagePathByFullName2)
             {
                 g_dll_apiset_appmodel_runtime_1_3 = std::move(dll);
@@ -149,9 +141,9 @@ namespace details
         //   * PackagePathType_Install is available since Win8
         //   * PackagePathType_Mutable is available since 19H1
         //   * PackagePathType_Effective is available since 19H1
-        //   * PackagePathType_MachineExternalLocation is available since 20H1
-        //   * PackagePathType_UserExternalLocation is available since 20H1
-        //   * PackagePathType_EffectiveExternalLocation is available since 20H1
+        //   * PackagePathType_MachineExternal is available since 20H1
+        //   * PackagePathType_UserExternal is available since 20H1
+        //   * PackagePathType_EffectiveExternal is available since 20H1
         // GetPackagePathByFullName() is available since Win8
         // GetPackagePathByFullName2() is available since 19H1 (though not all PackagePathType values were supported that early)
         //
@@ -164,14 +156,14 @@ namespace details
             std::call_once(g_onceFlag, initialize);
             RETURN_HR_IF_NULL(E_NOTIMPL, g_getPackagePathByFullName2);
 
-            RETURN_IF_FAILED(g_getPackagePathByFullName2(packageFullName, packagePathType, pathLength, path));
+            RETURN_IF_WIN32_ERROR(g_getPackagePathByFullName2(packageFullName, packagePathType, pathLength, path));
         }
         else if ((packagePathType == PackagePathType_Install) || (packagePathType == PackagePathType_Effective))
         {
             // Only Install location is supported by the current system
             // Effective is thus equivalent to Install
             // Either way, rock it old school...
-            RETURN_IF_FAILED(::GetPackagePathByFullName(packageFullName, pathLength, path));
+            RETURN_IF_WIN32_ERROR(::GetPackagePathByFullName(packageFullName, pathLength, path));
         }
         else
         {
@@ -220,8 +212,8 @@ inline Tstring GetPath(_In_ PCWSTR packageFullName, PackagePathType packagePathT
 
     // It's bigger than a breadbox. Allocate memory
     std::unique_ptr<WCHAR[]> pathBuffer{ std::make_unique<WCHAR[]>(pathLength) };
-    THROW_IF_WIN32_ERROR_MSG(details::GetPackagePathByFullName2IfSupported(packageFullName, packagePathType, &pathLength, pathBuffer.get()),
-                             "PackageFullName=%ls PackagePathType=%d", packageFullName ? packageFullName : L"<null>", static_cast<int>(packagePathType));
+    THROW_IF_FAILED_MSG(details::GetPackagePathByFullName2IfSupported(packageFullName, packagePathType, &pathLength, pathBuffer.get()),
+                        "PackageFullName=%ls PackagePathType=%d", packageFullName ? packageFullName : L"<null>", static_cast<int>(packagePathType));
     return details::MakeFromPCWSTR<Tstring>(pathBuffer.get());
 }
 
@@ -285,6 +277,10 @@ inline std::filesystem::path GetAbsoluteFilename(
     PackagePathType packageType)
 {
     const auto path{ ::AppModel::Package::GetPath<std::wstring>(packageFullName, packageType) };
+    if (path.empty())
+    {
+        return path;
+    }
     std::filesystem::path pathName{ path };
     pathName /= filename;
     return std::filesystem::absolute(pathName);

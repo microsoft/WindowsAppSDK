@@ -8,7 +8,6 @@
 namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
-namespace TD = ::Test::Diagnostics;
 
 static const winrt::hstring null_hstring;
 

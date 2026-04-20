@@ -30,7 +30,7 @@ namespace Microsoft.Windows.ApplicationModel
     [flags]
     enum GetFilePathOptions
     {
-        /// Default behavior
+        /// Default behavior (search all paths, package types and dependencies).
         None = 0,
 
         /// Include the package's Install path in the file search order
