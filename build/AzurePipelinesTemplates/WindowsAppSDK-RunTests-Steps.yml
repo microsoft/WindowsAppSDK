@@ -228,16 +228,16 @@ steps:
         -Configuration "${{ parameters.buildConfiguration }}"
         -Test
         -List
-        -wprProfilePath "$(Build.SourcesDirectory)\WindowsAppSDKConfig\src\test\AppModelProviders.wprp"
+        -wprProfilePath "$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK\src\test\AppModelProviders.wprp"
         -callingStage "${{ parameters.callingStage }}"
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WinAppSDK
     parameters:
       WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
       xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
       TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
       BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
-      CheckoutPath: '$(Build.SourcesDirectory)\WindowsAppSDKConfig'
+      CheckoutPath: '$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK'
 
   - task: PublishTestResults@2
     displayName: 'Publish test results'

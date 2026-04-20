@@ -53,7 +53,7 @@ steps:
     failOnAlert: false #changed true to false, temporary workaround for component governance blocking pipeline due to low .NET version
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
     parameters:
       FolderPath: '$(build.SourcesDirectory)\BuildOutput'
       UseMinimatch: true

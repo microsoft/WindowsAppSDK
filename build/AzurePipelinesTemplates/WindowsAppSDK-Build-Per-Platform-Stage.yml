@@ -63,7 +63,7 @@ stages:
         value: '$(build.SourcesDirectory)\APIScanTarget'
       - name: ob_sdl_apiscan_symbolsFolder
         value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WinAppSDK
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
@@ -142,7 +142,7 @@ stages:
         value: '$(build.SourcesDirectory)\APIScanTarget'
       - name: ob_sdl_apiscan_symbolsFolder
         value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WinAppSDK
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
