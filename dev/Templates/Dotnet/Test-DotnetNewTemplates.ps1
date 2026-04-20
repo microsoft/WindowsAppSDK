@@ -119,6 +119,11 @@ function Invoke-DotnetCommand {
 
     Push-Location -Path $WorkingDirectory
     try {
+        # Temporarily allow stderr from native commands to avoid treating
+        # non-fatal messages (e.g. dotnet template update checks) as
+        # terminating errors. Real failures are caught via $LASTEXITCODE.
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
         if ($CaptureOutput.IsPresent) {
             $output = & $dotnetPath @Arguments 2>&1
         }
@@ -126,6 +131,7 @@ function Invoke-DotnetCommand {
             & $dotnetPath @Arguments 2>&1 | ForEach-Object { Write-Host $_ }
         }
         $exitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
     }
     finally {
         Pop-Location
@@ -372,6 +378,42 @@ try {
     New-Item -ItemType Directory -Path $nugetFallback -Force | Out-Null
     $env:NUGET_PACKAGES = $nugetFallback
 
+    # Suppress the dotnet new template update check. On OneBranch agents the
+    # check fails because external NuGet feeds are blocked, and the resulting
+    # stderr output causes PowerShell's StrictMode to treat it as a
+    # terminating error.
+    $env:DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER = 'true'
+    $env:DOTNET_NEW_CHECK_UPDATE_ENABLED = 'false'
+
+    # Generate a NuGet.config so scaffolded projects resolve packages from
+    # internal feeds only. The repo's NuGet.config has relative local-source
+    # paths (tools/nuget, localpackages) that don't exist under the temp
+    # directory, and nuget.org is blocked by OneBranch network isolation.
+    # We extract only the remote (https) feeds from the repo config.
+    $repoNugetConfig = Join-Path -Path $repoRoot -ChildPath 'NuGet.config'
+    $workNugetConfig = Join-Path -Path $workingRoot -ChildPath 'NuGet.config'
+    if (Test-Path -Path $repoNugetConfig -PathType Leaf) {
+        [xml]$srcConfig = Get-Content -Path $repoNugetConfig
+        $remoteSources = $srcConfig.configuration.packageSources.add |
+            Where-Object { $_.value -match '^https?://' }
+
+        $configLines = @(
+            '<?xml version="1.0" encoding="utf-8"?>'
+            '<configuration>'
+            '  <packageSources>'
+            '    <clear />'
+        )
+        foreach ($src in $remoteSources) {
+            $configLines += '    <add key="{0}" value="{1}" />' -f $src.key, $src.value
+        }
+        $configLines += @(
+            '  </packageSources>'
+            '</configuration>'
+        )
+        $configLines | Set-Content -Path $workNugetConfig -Encoding UTF8
+        Write-Step "Generated NuGet.config with remote feeds in working directory"
+    }
+
     $packageToInstall = Get-TemplatePackagePath -PackagePathOverride $PackagePath -ProjectPath $templateProject -Configuration $Configuration -PackOutputDirectory $PackOutputDirectory -RepoRoot $repoRoot
     Write-Step "Using template package '$packageToInstall'"
 
@@ -415,6 +457,9 @@ finally {
     else {
         Remove-Item Env:NUGET_PACKAGES -ErrorAction SilentlyContinue
     }
+
+    Remove-Item Env:DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER -ErrorAction SilentlyContinue
+    Remove-Item Env:DOTNET_NEW_CHECK_UPDATE_ENABLED -ErrorAction SilentlyContinue
 
     if (-not $KeepWorkingDirectory.IsPresent -and (Test-Path -Path $workingRoot)) {
         Write-Step "Cleaning up '$workingRoot'"

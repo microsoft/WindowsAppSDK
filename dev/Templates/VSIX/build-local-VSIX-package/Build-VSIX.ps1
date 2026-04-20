@@ -181,7 +181,7 @@ if (-not $scriptDir) { $scriptDir = (Get-Location).Path }
 
 # Resolve repo root
 if ($RepoRoot -eq "") {
-    $RepoRoot = Join-Path $scriptDir "..\..\..\"
+    $RepoRoot = Join-Path $scriptDir "..\..\..\..\"
 }
 $RepoRoot = (Resolve-Path $RepoRoot -ErrorAction SilentlyContinue).Path
 if (-not $RepoRoot -or -not (Test-Path $RepoRoot)) {

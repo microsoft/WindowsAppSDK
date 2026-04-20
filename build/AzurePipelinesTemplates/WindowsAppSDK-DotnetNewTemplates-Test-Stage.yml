@@ -53,10 +53,14 @@ stages:
         packageType: sdk
         version: '${{ parameters.dotnetSdkVersion }}'
 
+    - task: NuGetAuthenticate@1
+      displayName: 'Authenticate NuGet feeds'
+
     - task: PowerShell@2
       displayName: 'Run template smoke tests'
       inputs:
         targetType: inline
+        failOnStderr: false
         workingDirectory: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}'
         script: |
           $package = Get-ChildItem -Path '$(templateArtifactDir)' -Filter 'Microsoft.WindowsAppSDK*.nupkg' -Recurse | Select-Object -First 1
