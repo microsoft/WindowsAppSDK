@@ -31,7 +31,7 @@ steps:
   displayName: "Convert VersionDetails To PackageConfig"
   inputs:
     filePath: '$(REPOROOT)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(REPOROOT)\eng\Version.Details.xml' -packageConfigPath '$(REPOROOT)\build\packages.config'
+    arguments: -versionDetailsPath '$(REPOROOT)\eng\Version.Dependencies.props' -packageConfigPath '$(REPOROOT)\build\packages.config'
 
 - task: NuGetCommand@2
   displayName: RestoreNuGetPackages

@@ -76,6 +76,20 @@ if ([string]::IsNullOrEmpty($ComponentPackageVersion))
     Write-Host "Updating ComponentPackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in eng\Version.Dependencies.props: $ComponentPackageVersion"
 }
 
+# Build a lookup of internal package versions from Directory.Packages.props for nuspec dependency updates.
+$dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
+$dppContent = Get-Content -Path $dppPath -Raw
+$internalPackageVersions = @{}
+foreach ($m in [regex]::Matches($dppContent, 'Include="([^"]+)"\s+Version="\$\(\[MSBuild\]::ValueOrDefault\(''\$\(WindowsAppSDKVersionPinned\)'',\s*''([^'']+)''\)\)"')) {
+    $internalPackageVersions[$m.Groups[1].Value] = $m.Groups[2].Value
+}
+# Also add external packages (simple Version="x.y.z" pattern)
+foreach ($m in [regex]::Matches($dppContent, 'Include="([^"]+)"\s+Version="([^$"][^"]*)"')) {
+    if (-not $internalPackageVersions.ContainsKey($m.Groups[1].Value)) {
+        $internalPackageVersions[$m.Groups[1].Value] = $m.Groups[2].Value
+    }
+}
+
 $configurationForMrtAndAnyCPU = "Release"
 $MRTSourcesDirectory = "dev\MRTCore"
 
@@ -567,17 +581,16 @@ Try {
         [xml]$publicNuspec = Get-Content -Path $nuspecPath
         $publicNuspec.package.metadata.version = $ComponentPackageVersion
 
-        # Update dependency versions in the nuspec
+        # Update dependency versions in the nuspec from Directory.Packages.props (CPM)
         foreach ($dependency in $publicNuspec.package.metadata.dependencies.dependency)
         {
-            $buildDependency = $versionDetailsPath.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
-            if (-not($buildDependency))
+            if (-not $internalPackageVersions.ContainsKey($dependency.Id))
             {
-                write-host "ERROR: NuGet package dependency $($dependency.Id) not found."
+                write-host "ERROR: NuGet package dependency $($dependency.Id) not found in Directory.Packages.props."
                 exit 1
             }
 
-            $_dependencyMinVersion = $buildDependency.Version
+            $_dependencyMinVersion = $internalPackageVersions[$dependency.Id]
             $_numericVersion = $_dependencyMinVersion -replace '[-+].*$', ''  # Remove suffix
             $_parsedVersion = [System.Version]$_numericVersion
             $_dependencyMaxVersion = "$($_parsedVersion.Major + 1).0.0"
