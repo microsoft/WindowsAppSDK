@@ -1,7 +1,7 @@
 <!-- Copyright (c) Microsoft Corporation. Licensed under the MIT License. -->
 <!--
-    RestoreInternalPackages.proj - Generates packages.config from @(InternalPackage)
-    items defined in Directory.Packages.props and sets pipeline variables.
+    RestoreInternalPackages.proj - Generates packages.config from internal
+    PackageVersion items (IsInternal="true") in Directory.Packages.props.
 
     Usage:
       msbuild build\RestoreInternalPackages.proj /t:GeneratePackagesConfig
@@ -9,7 +9,7 @@
 -->
 <Project DefaultTargets="GeneratePackagesConfig" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- Import Directory.Packages.props for @(InternalPackage) items with Version metadata -->
+  <!-- Import Directory.Packages.props for PackageVersion items with IsInternal metadata -->
   <Import Project="$(MSBuildThisFileDirectory)..\Directory.Packages.props" />
 
   <PropertyGroup>
@@ -17,28 +17,29 @@
   </PropertyGroup>
 
   <Target Name="GeneratePackagesConfig">
-    <!-- Write packages.config header -->
+    <!-- Filter to only internal packages -->
+    <ItemGroup>
+      <_InternalPackage Include="@(PackageVersion)" Condition="'%(PackageVersion.IsInternal)' == 'true'" />
+    </ItemGroup>
+
+    <!-- Write packages.config -->
     <WriteLinesToFile File="$(PackagesConfigPath)" Lines='&lt;?xml version="1.0" encoding="utf-8"?&gt;' Overwrite="true" />
     <WriteLinesToFile File="$(PackagesConfigPath)" Lines="&lt;packages&gt;" Overwrite="false" />
-
-    <!-- Write each internal package entry (batched over @(InternalPackage)) -->
     <WriteLinesToFile File="$(PackagesConfigPath)"
-      Lines='  &lt;package id="%(InternalPackage.Identity)" version="%(InternalPackage.Version)" targetFramework="native" /&gt;'
+      Lines='  &lt;package id="%(_InternalPackage.Identity)" version="%(_InternalPackage.Version)" targetFramework="native" /&gt;'
       Overwrite="false" />
-
-    <!-- Write footer -->
     <WriteLinesToFile File="$(PackagesConfigPath)" Lines="&lt;/packages&gt;" Overwrite="false" />
 
     <Message Importance="High" Text="Generated $(PackagesConfigPath)" />
-    <Message Importance="High" Text="  %(InternalPackage.Identity) = %(InternalPackage.Version)" />
+    <Message Importance="High" Text="  %(_InternalPackage.Identity) = %(_InternalPackage.Version)" />
 
-    <!-- Set pipeline variables for AppLicensing (used by downstream copy tasks) -->
+    <!-- Pipeline variables for AppLicensing (used by downstream copy tasks) -->
     <Message Importance="High"
-      Text="##vso[task.setvariable variable=AppLicensingInternalPackageName]%(InternalPackage.Identity)"
-      Condition="'%(InternalPackage.Identity)' == 'Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage'" />
+      Text="##vso[task.setvariable variable=AppLicensingInternalPackageName]%(_InternalPackage.Identity)"
+      Condition="'%(_InternalPackage.Identity)' == 'Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage'" />
     <Message Importance="High"
-      Text="##vso[task.setvariable variable=AppLicensingInternalPackageVersion]%(InternalPackage.Version)"
-      Condition="'%(InternalPackage.Identity)' == 'Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage'" />
+      Text="##vso[task.setvariable variable=AppLicensingInternalPackageVersion]%(_InternalPackage.Version)"
+      Condition="'%(_InternalPackage.Identity)' == 'Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage'" />
   </Target>
 
 </Project>

@@ -18,24 +18,13 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
-  <!-- Internal WinAppSDK packages -->
+  <!-- Internal WinAppSDK packages — IsInternal metadata is used by build/RestoreInternalPackages.proj -->
   <ItemGroup Label="Internal WinAppSDK Packages">
-    <PackageVersion Include="Microsoft.WindowsAppSDK.Base" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.260323000-dev.experimental9'))" />
-    <PackageVersion Include="Microsoft.FrameworkUdk" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))" />
-    <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))" />
-    <PackageVersion Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.10-experimental'))" />
-    <PackageVersion Include="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '1.7.0-main.20241009.0'))" />
-  </ItemGroup>
-
-  <!-- Internal package list for RestoreInternalPackages.proj.
-       Version uses the same fallback as PackageVersion above; WindowsAppSDKVersionPinned overrides in mono-build.
-       Add/remove entries here when internal dependencies change. -->
-  <ItemGroup Label="Internal Package Restore Map">
-    <InternalPackage Include="Microsoft.WindowsAppSDK.Base" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.260323000-dev.experimental9'))" />
-    <InternalPackage Include="Microsoft.FrameworkUdk" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))" />
-    <InternalPackage Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))" />
-    <InternalPackage Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.10-experimental'))" />
-    <InternalPackage Include="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '1.7.0-main.20241009.0'))" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK.Base" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.260323000-dev.experimental9'))" IsInternal="true" />
+    <PackageVersion Include="Microsoft.FrameworkUdk" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))" IsInternal="true" />
+    <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))" IsInternal="true" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.10-experimental'))" IsInternal="true" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '1.7.0-main.20241009.0'))" IsInternal="true" />
   </ItemGroup>
 
   <!-- Build tooling and SDK -->
