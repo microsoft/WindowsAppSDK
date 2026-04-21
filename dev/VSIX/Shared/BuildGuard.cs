@@ -60,13 +60,10 @@ namespace WindowsAppSDK.TemplateUtilities
             _solutionBuildManager5 = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager5;
             if (_solutionBuildManager5 != null)
             {
-                if (_solutionBuildManager5 != null)
-                {
-                    _solutionBuildManager5.AdviseUpdateSolutionEvents4(this, out _adviseCookie4);
-                    _isAdvised4 = true;
-                    _isBlocking = true;
-                    _infoBarShown = false;
-                }
+                _solutionBuildManager5.AdviseUpdateSolutionEvents4(this, out _adviseCookie4);
+                _isAdvised4 = true;
+                _isBlocking = true;
+                _infoBarShown = false;
             }
         }
 
