@@ -155,26 +155,14 @@ extends:
                 Unless none of the servicing changes have containment, Foundation MUST include the RuntimeCompatibilityChange
                 enum values associated with this servicing release before kicking off this official build.
     
-    - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+    # Foundation Build + Pack stages
+    - template: AzurePipelinesTemplates/Foundation-Build-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
-        runApiScan: ${{ parameters.runStaticAnalysis }}
-        runPREFast: false
-        testMatrix: ${{ variables.PipelineTests }}
-    
-    - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
-      - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
-        parameters:
-          SignOutput: ${{ parameters.SignOutput }}
-          runApiScan: false
-          runPREFast: true
-          testMatrix: ${{ variables.PipelineTests }}
-
-    - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
-      parameters:
-        SignOutput: ${{ parameters.SignOutput }}
-        PublishPackage: true
         IsOfficial: true
+        runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
+        PublishPackage: true
+        testMatrix: ${{ variables.PipelineTests }}
 
     - ${{ if eq( parameters.CheckApiChanges, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self

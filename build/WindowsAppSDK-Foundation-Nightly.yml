@@ -143,25 +143,13 @@ extends:
         break: false
 
     stages:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+    # Foundation Build + Pack stages
+    - template: AzurePipelinesTemplates/Foundation-Build-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
-        runApiScan: ${{ parameters.runStaticAnalysis }}
-        runPREFast: false
-        testMatrix: ${{ variables.PipelineTests }}
-    
-    - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
-      - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
-        parameters:
-          SignOutput: ${{ parameters.SignOutput }}
-          runApiScan: false
-          runPREFast: true
-          testMatrix: ${{ variables.PipelineTests }}
-
-    - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
-      parameters:
-        SignOutput: ${{ parameters.SignOutput }}
+        runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
         PublishPackage: true
+        testMatrix: ${{ variables.PipelineTests }}
 
     - ${{ if eq( parameters.CheckApiChanges, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self

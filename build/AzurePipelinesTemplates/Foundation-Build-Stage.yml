@@ -1,0 +1,82 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# Foundation Build Stage Template — Reusable stages for building Foundation + MRT Core
+# and packaging the transport + component NuGet packages.
+#
+# Emits the following stages:
+#   Build_AnyCPU   — AnyCPU build (Bootstrap.Net) + copyright verification
+#   Build_x64      — x64 Foundation + MRT build
+#   Build_x86      — x86 Foundation + MRT build
+#   Build_arm64    — arm64 Foundation + MRT build
+#   Pack           — Downloads all build artifacts, packs transport + component NuGet
+#
+# Optionally also emits PREfast stages when runStaticAnalysis is true:
+#   PREfast_AnyCPU — PREfast analysis (AnyCPU)
+#   PREfast_x64    — PREfast analysis (x64)
+#
+# Usage (mono-build):
+#   - template: build/AzurePipelinesTemplates/Foundation-Build-Stage.yml@WindowsAppSDKFoundation
+#     parameters:
+#       SignOutput: true
+#       BuildType: ${{ parameters.BuildType }}
+#
+# Usage (per-component pipeline):
+#   - template: AzurePipelinesTemplates/Foundation-Build-Stage.yml
+#     parameters:
+#       SignOutput: false
+#       runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
+#
+# See: CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md Section 6.12.5
+
+parameters:
+  - name: SignOutput
+    type: boolean
+    default: false
+  - name: IsOfficial
+    type: boolean
+    default: false
+  - name: BuildType
+    type: string
+    default: 'experimental'
+  - name: runStaticAnalysis
+    type: boolean
+    default: true
+  - name: PublishPackage
+    type: boolean
+    default: false
+  - name: testMatrix
+    type: string
+    default: ''
+
+stages:
+  #───────────────────────────────────────────────────────────────────────────
+  # Build stages — Foundation + MRT Core (all platforms + AnyCPU)
+  #───────────────────────────────────────────────────────────────────────────
+  - template: WindowsAppSDK-Build-Stage.yml
+    parameters:
+      SignOutput: ${{ parameters.SignOutput }}
+      runApiScan: ${{ parameters.runStaticAnalysis }}
+      runPREfast: false
+      testMatrix: ${{ parameters.testMatrix }}
+
+  #───────────────────────────────────────────────────────────────────────────
+  # PREfast stages (conditional — only when runStaticAnalysis is true)
+  #───────────────────────────────────────────────────────────────────────────
+  - ${{ if eq(parameters.runStaticAnalysis, true) }}:
+    - template: WindowsAppSDK-Build-Stage.yml
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        runApiScan: false
+        runPREfast: true
+        testMatrix: ${{ parameters.testMatrix }}
+
+  #───────────────────────────────────────────────────────────────────────────
+  # Pack stage — assembles transport + component NuGet packages
+  # Depends on all build stages completing.
+  #───────────────────────────────────────────────────────────────────────────
+  - template: WindowsAppSDK-PackTransportPackage-Stage.yml
+    parameters:
+      SignOutput: ${{ parameters.SignOutput }}
+      IsOfficial: ${{ parameters.IsOfficial }}
+      PublishPackage: ${{ parameters.PublishPackage }}
