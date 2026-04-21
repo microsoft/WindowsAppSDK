@@ -69,7 +69,7 @@ steps:
   name: ConvertVersionDetailsToPackageConfig
   displayName: "Convert VersionDetails To PackageConfig"
   inputs:
-    filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
+    filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\Scripts\GeneratePackagesConfigFromCPM.ps1'
     arguments: -directoryPackagesPropsPath '$(Build.SourcesDirectory)\$(foundationRepoPath)Directory.Packages.props' -packageConfigPath '$(Build.SourcesDirectory)\$(foundationRepoPath)build\packages.config'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
