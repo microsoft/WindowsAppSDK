@@ -70,7 +70,7 @@ steps:
   displayName: "Convert VersionDetails To PackageConfig"
   inputs:
     filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\Version.Dependencies.props' -packageConfigPath '$(Build.SourcesDirectory)\$(foundationRepoPath)build\packages.config'
+    arguments: -directoryPackagesPropsPath '$(Build.SourcesDirectory)\$(foundationRepoPath)Directory.Packages.props' -packageConfigPath '$(Build.SourcesDirectory)\$(foundationRepoPath)build\packages.config'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: NuGetCommand@2

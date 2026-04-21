@@ -1,6 +1,6 @@
 Param(
     [Parameter(Position=0)]
-    [string]$versionDetailsPath = "",
+    [string]$directoryPackagesPropsPath = "",
     [Parameter(Position=1)]
     [string]$packageConfigPath = ""
 )
@@ -10,12 +10,7 @@ $ErrorActionPreference = 'Stop'
 
 # Read internal package versions from Directory.Packages.props (CPM).
 # Internal packages use ValueOrDefault - extract the fallback version via regex.
-# The parameter versionDetailsPath is kept for backward compat; we locate
-# Directory.Packages.props relative to the repo root (two levels up from eng/).
-$engDir = Split-Path $versionDetailsPath -Parent
-$repoRoot = Split-Path $engDir -Parent
-$dppPath = Join-Path $repoRoot 'Directory.Packages.props'
-$dppContent = Get-Content -Path $dppPath -Raw
+$dppContent = Get-Content -Path $directoryPackagesPropsPath -Raw
 
 # Internal packages to include in packages.config (transport + component packages)
 $internalPackageNames = @(
