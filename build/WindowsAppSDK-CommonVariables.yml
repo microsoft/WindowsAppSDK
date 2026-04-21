@@ -3,7 +3,8 @@
 variables:
   channel: 'experimental'
   versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
-  version: $[format('{0}.{1}.{2}-{3}.{4}', variables['MajorVersion'], variables['MinorVersion'], variables['PatchVersion'], variables['versionDate'], variables['versionCounter'])]
+  # Build number format — uses shared version variables from WindowsAppSDK-Versions.yml
+  version: $[format('{0}.{1}.{2}-{3}.{4}', variables['MajorVersion'], variables['MinorVersion'], variables['PatchVersion'], variables['DateSuffix'], variables['Revision'])]
 
   # REPOROOT is provided by the shared template (as RepoRoot — ADO variables are case-insensitive)
   OUTPUTROOT: $(REPOROOT)\out
