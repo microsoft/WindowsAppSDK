@@ -25,25 +25,27 @@ static void SetFrameworkPathEnvironmentVariable(PCWSTR frameworkPath)
     SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_FRAMEWORK_PATH", frameworkPath);
 }
 
-// For C++ apps (no C# auto-initializer), set BASE_DIRECTORY to exe dir if not already set
-static void SetBaseDirectoryEnvironmentVariableIfNotSet()
+// Validate BASE_DIRECTORY is set non-empty. Hybrid deploy's SxS manifest uses
+// %MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY% in loadFrom to locate pinned
+// component DLLs. The env var must be set before MddBootstrapInitialize so the
+// OS loader can expand it when DLLs are resolved.
+//
+// The WinAppSDK auto-initializer sets this automatically for C++/C# apps. Manual
+// callers (Rust/Python/Node bindings, or apps with WindowsAppSdkBootstrapInitialize=false)
+// must set it themselves. Fails explicitly to surface misuse early instead of
+// silently continuing to cryptic DLL-load failures later.
+static void VerifyBaseDirectoryEnvironmentVariableIsSet()
 {
     wchar_t existing[2]{};
-    if (GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", existing, ARRAYSIZE(existing)) > 0)
-    {
-        return; // Already set by C# auto-initializer
-    }
-    wchar_t exePath[MAX_PATH]{};
-    if (GetModuleFileNameW(nullptr, exePath, ARRAYSIZE(exePath)) > 0)
-    {
-        // Extract directory from exe path and ensure trailing backslash
-        auto exeDir{ std::filesystem::path(exePath).parent_path().wstring() };
-        if (!exeDir.empty() && exeDir.back() != L'\\')
-        {
-            exeDir += L'\\';
-        }
-        SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", exeDir.c_str());
-    }
+    const DWORD chars{ GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY",
+                                               existing, ARRAYSIZE(existing)) };
+    // chars == 0 covers both "not set" (ERROR_ENVVAR_NOT_FOUND) and "set to empty string".
+    // Both are invalid for hybrid deploy.
+    THROW_HR_IF_MSG(E_INVALIDARG, chars == 0,
+        "Hybrid deploy requires MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY to be set "
+        "to a non-empty directory path (with trailing backslash) before "
+        "MddBootstrapInitialize. The WinAppSDK auto-initializer sets this for "
+        "C++/C# apps; manual callers must set it themselves.");
 }
 
 // Resolve framework package install path from package full name
@@ -378,8 +380,11 @@ void VerifyInitializationIsCompatible(
     // g_lifetimeManager is optional. Don't check it
     // g_endTheLifetimeManagerEvent is optional. Don't check it
     // g_windowsAppRuntimeDll is only relevant if not delegating to OS APIs
-    FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId == nullptr);
-    FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext == nullptr);
+    // In hybrid deploy the package dependency is created and immediately removed,
+    // so g_packageDependencyId / g_packageDependencyContext are intentionally null.
+    const bool hybridDeploy{ IsHybridDeploy() };
+    FAIL_FAST_HR_IF(E_UNEXPECTED, !hybridDeploy && g_packageDependencyId == nullptr);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, !hybridDeploy && g_packageDependencyContext == nullptr);
     FAIL_FAST_HR_IF(E_UNEXPECTED, (g_usingWin11Support == UsingWin11Support::No) && (g_windowsAppRuntimeDll == nullptr));
 
     // Verify the parameter(s)
@@ -473,6 +478,10 @@ void FirstTimeInitialization(
         const bool hybridDeploy{ IsHybridDeploy() };
         if (hybridDeploy)
         {
+            // Validate caller contract: BASE_DIRECTORY must be set before Bootstrap runs
+            // (auto-initializer handles this; manual callers must set it themselves).
+            VerifyBaseDirectoryEnvironmentVariableIsSet();
+
             // HybridDeploy: temporarily add to package graph to resolve the framework path,
             // then immediately remove so that the package graph stays empty.
             // An empty package graph lets the SxS manifest loadFrom control DLL loading.
@@ -488,15 +497,15 @@ void FirstTimeInitialization(
 
             SetFrameworkPathEnvironmentVariable(frameworkPath.c_str());
             AddDllDirectory(frameworkPath.c_str());
-            SetBaseDirectoryEnvironmentVariableIfNotSet();
 
             // Update the activity context
             auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
             activityContext.SetInitializationPackageFullName(packageFullName.get());
 
-            // Track our initialized state (keep packageDependencyId alive for lifetime protection)
+            // Track our initialized state. In hybrid mode we intentionally do NOT store
+            // packageDependencyId or packageDependencyContext: the graph membership has
+            // already been removed and the OS-side descriptor is process-lifetime (auto-cleaning).
             g_usingWin11Support = UsingWin11Support::Yes;
-            g_packageDependencyId = std::move(packageDependencyId);
             g_initializationMajorMinorVersion = majorMinorVersion;
             g_initializationVersionTag = std::move(packageVersionTag);
             const auto frameworkPackageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.get()) };
@@ -551,10 +560,13 @@ void FirstTimeInitialization(
         const bool hybridDeploy{ IsHybridDeploy() };
         if (hybridDeploy)
         {
-            // HybridDeploy: set env vars BEFORE loading the DLL so that
-            // catalog.cpp can expand %FRAMEWORK_PATH% and %BASE_DIRECTORY% in loadFrom
+            // Validate caller contract: BASE_DIRECTORY must be set before Bootstrap runs
+            // (auto-initializer handles this; manual callers must set it themselves).
+            VerifyBaseDirectoryEnvironmentVariableIsSet();
+
+            // HybridDeploy: set FRAMEWORK_PATH before loading the DLL so that
+            // catalog.cpp can expand %FRAMEWORK_PATH% and %BASE_DIRECTORY% in loadFrom.
             SetFrameworkPathEnvironmentVariable(frameworkPackageInfo->path);
-            SetBaseDirectoryEnvironmentVariableIfNotSet();
         }
 
         auto windowsAppRuntimeDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppRuntime.dll" };
@@ -582,8 +594,15 @@ void FirstTimeInitialization(
             RemoveFrameworkFromPath(frameworkPackageInfo->path);
             dllDirectoryCookie.reset();
         }
-        // else: HybridDeploy keeps the framework path in DLL search order
-        //       since there's no package graph to handle it
+        else
+        {
+            // HybridDeploy: no package graph to handle DLL search, so keep both the
+            // PATH entry (not removed above) and the DllDirectory for process lifetime.
+            // Release the RAII cookie so it isn't revoked when this function returns.
+            // SxS manifest handles most DLL resolution; DllDirectory covers callers that
+            // use LOAD_LIBRARY_SEARCH_USER_DIRS (which bypasses PATH).
+            dllDirectoryCookie.release();
+        }
 
         // Pass along test information (if necessary)
         if (!g_test_ddlmPackageNamePrefix.empty())
