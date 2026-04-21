@@ -2,8 +2,6 @@
 # Only variables that are unique to Foundation or override mono repo defaults belong here.
 variables:
   channel: 'experimental'
-  versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
-  version: $[format('{0}.{1}.{2}-{3}.{4}', variables['MajorVersion'], variables['MinorVersion'], variables['PatchVersion'], variables['versionDate'], variables['versionCounter'])]
 
   # REPOROOT is provided by the shared template (as RepoRoot — ADO variables are case-insensitive)
   OUTPUTROOT: $(REPOROOT)\out

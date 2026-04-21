@@ -65,12 +65,12 @@ steps:
 
 # Future: this stage only requires a the app licensing internal package, but is downloading all transport packages
 # used for aggregation consider refactoring for efficiency.
-- task: PowerShell@2
-  name: ConvertVersionDetailsToPackageConfig
-  displayName: "Convert VersionDetails To PackageConfig"
+- task: MSBuild@1
+  name: GeneratePackagesConfig
+  displayName: "Generate packages.config from CPM"
   inputs:
-    filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\$(foundationRepoPath)build\packages.config'
+    solution: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\RestoreWinAppSDKDependencies.proj'
+    msbuildArguments: '/t:GeneratePackagesConfig'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: NuGetCommand@2

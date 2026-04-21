@@ -26,12 +26,12 @@ steps:
 
   # Copy MSIX license installation header into the correct source location.
   # Restore transport package dependencies. This is only enbaled in release-signed builds.
-- task: PowerShell@2
-  name: ConvertVersionDetailsToPackageConfig
-  displayName: "Convert VersionDetails To PackageConfig"
+- task: MSBuild@1
+  name: GeneratePackagesConfig
+  displayName: "Generate packages.config from CPM"
   inputs:
-    filePath: '$(REPOROOT)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(REPOROOT)\eng\Version.Details.xml' -packageConfigPath '$(REPOROOT)\build\packages.config'
+    solution: '$(REPOROOT)\build\RestoreWinAppSDKDependencies.proj'
+    msbuildArguments: '/t:GeneratePackagesConfig'
 
 - task: NuGetCommand@2
   displayName: RestoreNuGetPackages
