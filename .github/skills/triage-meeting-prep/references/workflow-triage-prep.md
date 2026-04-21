@@ -37,10 +37,12 @@ Display this message to the user and pause:
 ### Step 1.2: Determine Output Directory
 
 ```
-Generated Files/triageMeeting/<YYYY-MM-DD>/
+Generated-Files/triageMeeting/<YYYY-MM-DD>/
 ```
 
 Create the directory structure if it doesn't exist.
+
+> **Migration note**: If you have an existing `Generated Files/triageMeeting/...` directory from a previous run, rename `Generated Files` to `Generated-Files` before proceeding, or pass the legacy path explicitly when calling the scripts (e.g., `-PreviousStatePath "Generated Files/triageMeeting/previous-state.json"`) to preserve diff history and avoid a false first-run.
 
 ---
 
@@ -110,7 +112,7 @@ For individual issue details (comments, timeline):
 
 Check for previous state file:
 ```
-Generated Files/triageMeeting/previous-state.json
+Generated-Files/triageMeeting/previous-state.json
 ```
 
 **Previous state schema:**
@@ -123,7 +125,7 @@ Generated Files/triageMeeting/previous-state.json
       "firstSeen": "2025-01-17T10:00:00Z",
       "weeksPending": 1,
       "lastSuggestedAction": "Add area-Packaging label",
-      "reviewPath": "Generated Files/issueReview/12345/overview.md"
+      "reviewPath": "Generated-Files/issueReview/12345/overview.md"
     }
   },
   "closedIssues": {
@@ -148,7 +150,7 @@ For issues that likely contain visual evidence, if needed you can use:
 
 Extract attachments to:
 ```
-Generated Files/triageMeeting/<YYYY-MM-DD>/attachments/<issue-number>/
+Generated-Files/triageMeeting/<YYYY-MM-DD>/attachments/<issue-number>/
 ```
 
 ---
@@ -247,7 +249,7 @@ For each **no-area issue** (new or older):
 
 1. **Check if review exists:**
    ```
-   if NOT exists("Generated Files/issueReview/<issue-number>/overview.md"):
+   if NOT exists("Generated-Files/issueReview/<issue-number>/overview.md"):
      → Run Get-IssueDetails.ps1 and analyze
    ```
 
@@ -257,10 +259,10 @@ For each **no-area issue** (new or older):
    ```
 
 3. **Classify the area label using LLM reasoning** (see "Area Classification" below)
-
+   
 4. **Generate review files:**
-   - `Generated Files/issueReview/<issue-number>/overview.md`
-   - `Generated Files/issueReview/<issue-number>/implementation-plan.md`
+   - `Generated-Files/issueReview/<issue-number>/overview.md`
+   - `Generated-Files/issueReview/<issue-number>/implementation-plan.md`
 
 5. **Extract the "Suggested Actions" section from overview.md**, which includes:
    - Label recommendations (Add/Remove) — with area classification from step 3
@@ -514,12 +516,12 @@ Create `action-items.md` with all consolidated actions for easy reference.
 
 Create `previous-state.json` with current snapshot:
 ```
-Generated Files/triageMeeting/previous-state.json
+Generated-Files/triageMeeting/previous-state.json
 ```
 
 Also create a dated backup:
 ```
-Generated Files/triageMeeting/<YYYY-MM-DD>/state-snapshot.json
+Generated-Files/triageMeeting/<YYYY-MM-DD>/state-snapshot.json
 ```
 
 ---
