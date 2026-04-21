@@ -30,7 +30,7 @@ steps:
   name: GeneratePackagesConfig
   displayName: "Generate packages.config from CPM"
   inputs:
-    solution: '$(REPOROOT)\build\RestoreInternalPackages.proj'
+    solution: '$(REPOROOT)\build\RestoreWinAppSDKDependencies.proj'
     msbuildArguments: '/t:GeneratePackagesConfig'
 
 - task: NuGetCommand@2

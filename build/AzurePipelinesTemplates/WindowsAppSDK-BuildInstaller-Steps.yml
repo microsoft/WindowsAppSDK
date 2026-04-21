@@ -69,7 +69,7 @@ steps:
   name: GeneratePackagesConfig
   displayName: "Generate packages.config from CPM"
   inputs:
-    solution: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\RestoreInternalPackages.proj'
+    solution: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\RestoreWinAppSDKDependencies.proj'
     msbuildArguments: '/t:GeneratePackagesConfig'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
