@@ -50,7 +50,7 @@
 
   <!-- Runtime dependencies -->
   <ItemGroup Label="Runtime Dependencies">
-    <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.961.33" />
+    <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
     <PackageVersion Include="Microsoft.Telemetry.Inbox.Native" Version="10.0.19041.1-191206-1406.vb-release.x86fre" />
     <PackageVersion Include="Microsoft.WindowsAppSDK.Protobuf" Version="3.21.12" />
   </ItemGroup>
