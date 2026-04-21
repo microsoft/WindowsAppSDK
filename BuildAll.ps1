@@ -59,21 +59,21 @@ if ($Clean)
     Exit
 }
 
-# Find the Version Value provided by WindowsAppSDKConfig in Version.Details.xml
-# The version field of Microsoft.WindowsAppSDK.Version is the value provided byWindowsAppSDKConfig
-[xml]$versionDetailsPath = Get-Content -Path "$env:Build_SourcesDirectory\eng\Version.Details.xml"
-$versionFromConfig = $versionDetailsPath.Dependencies.ToolsetDependencies.Dependency | Where-Object { $_.Name -eq "Microsoft.WindowsAppSDK.Version" }
+# Find the Version Value from eng\Version.Dependencies.props (CPM)
+# MicrosoftWindowsAppSDKVersionPackageVersion is the pipeline version metadata property.
+[xml]$versionDepsProps = Get-Content -Path "$env:Build_SourcesDirectory\eng\Version.Dependencies.props"
+$versionFromProps = $versionDepsProps.Project.PropertyGroup.MicrosoftWindowsAppSDKVersionPackageVersion
 if ([string]::IsNullOrEmpty($PackageVersion))
 {
-    $PackageVersion = $versionFromConfig.Version;
-    Write-Host "Updating PackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $PackageVersion"
+    $PackageVersion = $versionFromProps;
+    Write-Host "Updating PackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in eng\Version.Dependencies.props: $PackageVersion"
 }
 
 if ([string]::IsNullOrEmpty($ComponentPackageVersion))
 {
-    Write-Host $versionFromConfig.Version
-    $ComponentPackageVersion = $versionFromConfig.Version;
-    Write-Host "Updating ComponentPackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $ComponentPackageVersion"
+    Write-Host $versionFromProps
+    $ComponentPackageVersion = $versionFromProps;
+    Write-Host "Updating ComponentPackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in eng\Version.Dependencies.props: $ComponentPackageVersion"
 }
 
 $configurationForMrtAndAnyCPU = "Release"
