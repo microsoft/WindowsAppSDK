@@ -2,8 +2,8 @@
 <!-- Version properties consumed by MSBuild projects (.vcxproj/.csproj).
      Sources versions from Directory.Packages.props (CPM) at the repo root.
 
-     Internal packages: use $(WindowsAppSDKVersionPinned) when set (mono-build),
-     otherwise empty (CPM handles resolution via floating versions in Directory.Packages.props).
+     Internal packages: hardcoded fallback versions matching Directory.Packages.props,
+     overridden by $(WindowsAppSDKVersionPinned) when set (mono-build).
 
      External packages: parse from Directory.Packages.props XML directly.
 
@@ -26,17 +26,24 @@
     <MicrosoftWindowsAppSDKVersionPackageVersion>1.8.0</MicrosoftWindowsAppSDKVersionPackageVersion>
 
     <!-- ═══════════════════════════════════════════════════════════════════
-         Internal packages: all share $(WindowsAppSDKVersionPinned) in mono-build.
-         In CI/PR, these resolve via CPM ValueOrDefault in Directory.Packages.props -
-         the properties below are only used by scripts/nuspecs, not by NuGet restore.
+         Internal packages: hardcoded fallback versions matching
+         Directory.Packages.props ValueOrDefault entries.
+         In mono-build, $(WindowsAppSDKVersionPinned) overrides these.
          ═══════════════════════════════════════════════════════════════════ -->
-    <_InternalPkgVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', ''))</_InternalPkgVersion>
+    <MicrosoftFrameworkUdkPackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftFrameworkUdkPackageVersion>
+    <MicrosoftFrameworkUdkPackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.0-experimental-27300.1857.260302-0806.0</MicrosoftFrameworkUdkPackageVersion>
 
-    <MicrosoftFrameworkUdkPackageVersion>$(_InternalPkgVersion)</MicrosoftFrameworkUdkPackageVersion>
-    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$(_InternalPkgVersion)</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
-    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$(_InternalPkgVersion)</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
-    <MicrosoftWindowsAppSDKBasePackageVersion>$(_InternalPkgVersion)</MicrosoftWindowsAppSDKBasePackageVersion>
-    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$(_InternalPkgVersion)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
+    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.0-experimental-27300.1857.260302-0806.0</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
+
+    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">1.7.0-main.20241009.0</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
+
+    <MicrosoftWindowsAppSDKBasePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftWindowsAppSDKBasePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.260323000-dev.experimental9</MicrosoftWindowsAppSDKBasePackageVersion>
+
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.10-experimental</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
 
     <!-- ═══════════════════════════════════════════════════════════════════
          External packages: parse from Directory.Packages.props XML.
