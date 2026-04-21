@@ -36,10 +36,12 @@ The skill tracks **four critical categories** for each meeting:
 
 | Category | Description | Action Required |
 |----------|-------------|-----------------|
-| 🔥 **Hot Issues** | ≥5 increased activity (comments + reactions) | May need priority attention |
+| 🌟 **Popular Issues** | ≥5 reactions (community interest) | May need priority attention |
 | 🆕 **Created This Week** | Issues created since last weekly triage | Review + assign area |
 | ⏳ **Older Pending** | Older issues still without area labels | Follow up — why no action? |
-| ✅ **Closed (need reply)** | Closed issues with customer follow-up | Draft reply with confidence level |
+| ✅ **Closed (need reply)** | Closed issues with customer follow-up | Draft reply with `[confidence:XX]` |
+
+All suggestions include confidence scoring in `[confidence:XX]` format for easy filtering.
 
 ## When to Use This Skill
 
@@ -89,9 +91,14 @@ gh auth login
 3. **Categorize issues by creation date**:
    - 🆕 **Created This Week** — `createdAt` ≥ last weekly triage date
    - ⏳ **Older Pending** — `createdAt` < last weekly triage date
-4. **For each no-area issue**, analyze using `Get-IssueDetails.ps1`:
+4. **Fetch area label definitions** for classification:
+   ```powershell
+   ./.github/skills/triage-meeting-prep/scripts/Get-RepositoryLabels.ps1 -Filter "area-*" -OutputFormat json
+   ```
+5. **For each no-area issue**, analyze using `Get-IssueDetails.ps1`:
    - Run: `./Get-IssueDetails.ps1 -IssueNumber <number> -OutputFormat summary`
    - Review the issue body, comments, and labels
+   - **Classify the area label** by reasoning about the issue content against the area label definitions (see workflow for confidence rubric)
 5. **Generate summary report** with links to each issue's `overview.md`
 6. **Save current state** for next diff comparison
 
@@ -180,7 +187,7 @@ Individual issue reviews are saved to `Generated-Files/issueReview/<issue-number
 | `overview.md` | Full issue analysis with scores and suggested actions (linked from summary) |
 | `implementation-plan.md` | Technical implementation details (if applicable) |
 
-> **Key Output**: The `summary.md` includes the **Suggested Actions** section extracted from each issue's `overview.md`.
+> **Key Output**: The `summary.md` includes the **Suggested Actions** section extracted from each issue's `overview.md`, with `[confidence:XX]` scores.
 
 ## Detailed Workflow
 
@@ -190,7 +197,7 @@ See [workflow-triage-prep.md](./references/workflow-triage-prep.md) for the comp
 
 | Category | Definition | Action Needed |
 |----------|------------|---------------|
-| 🔥 **Hot Issues** | ≥5 combined new comments + reactions since last triage | May need priority attention |
+| 🌟 **Popular Issues** | ≥5 reactions (community interest) | May need priority attention |
 | 🆕 **Created This Week** | `createdAt` is after last weekly triage date | Use `Get-IssueDetails.ps1` + assign area |
 | ⏳ **Older Pending** | Created before this week, still no area label | Follow up — why not actioned? |
 | ✅ **Resolved** | In previous state, NOT in current | Acknowledge (got area label or closed) |
@@ -201,6 +208,26 @@ See [workflow-triage-prep.md](./references/workflow-triage-prep.md) for the comp
 ## Summary.md Format
 
 See [template-summary.md](./templates/template-summary.md) for the full template structure.
+
+## Area Classification (LLM-Based)
+
+Issues without an `area-*` label are classified by the agent using LLM reasoning — **not** keyword matching. The agent:
+
+1. Fetches area label definitions via `Get-RepositoryLabels.ps1 -Filter "area-*"`
+2. Reads the issue title, body, and comments from `Get-IssueDetails.ps1`
+3. Reasons about the best area match and assigns a confidence score
+
+**Confidence scale:**
+
+| Score | Level | Meaning |
+|-------|-------|---------|
+| **80–100** | High | Issue explicitly names the component; maps to exactly one area |
+| **60–79** | Medium-High | Strong signals (stack traces, API names) point to one area |
+| **40–59** | Medium | Reasonable match, but 2+ areas are plausible |
+| **20–39** | Low | Weak signal; best guess |
+| **0–19** | Very Low | No clear signal; vague or multi-area |
+
+See [workflow-triage-prep.md](./references/workflow-triage-prep.md) for the full confidence rubric and adjusters.
 
 ## Action Item Types
 
