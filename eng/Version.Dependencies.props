@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Version.Dependencies.props - Rewritten for Central Package Management (CPM).
-    
-    Previously: Generated from Version.Details.xml + Version.Dependencies.xml via regex at MSBuild time.
-    Now: Hardcoded versions matching Directory.Packages.props (CPM).
-    
-    These MSBuild properties are consumed by .vcxproj files and packages.config for NuGet restore.
-    Property names follow the Maestro convention: PackageName.Replace(".", "") + "PackageVersion" or "Version".
+<!-- Version properties consumed by MSBuild projects (.vcxproj/.csproj).
+     Sources versions from Directory.Packages.props (CPM) at the repo root.
 
-    TODO: When all .vcxproj projects are migrated to SDK-style, this file can be deleted entirely.
-    Version source of truth is now Directory.Packages.props (CPM).
--->
+     Internal packages: use $(WindowsAppSDKVersionPinned) when set (mono-build),
+     otherwise empty (CPM handles resolution via floating versions in Directory.Packages.props).
+
+     External packages: parse from Directory.Packages.props XML directly.
+
+     Replaces the old Version.Details.xml + Version.Dependencies.xml + Maestro regex parsing.
+
+     TODO: When all .vcxproj projects are migrated to SDK-style, this file can be deleted entirely.
+     Version source of truth is now Directory.Packages.props (CPM). -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <!-- ================================================================
-         Internal WinAppSDK packages (from Version.Details.xml ProductDependencies)
-         Versions match Directory.Packages.props internal package entries.
-         In mono-build, these are overridden by WindowsAppSDKVersionPinned.
-         ================================================================ -->
-    <MicrosoftFrameworkUdkPackageVersion>2.0.0-experimental-27300.1857.260302-0806.0</MicrosoftFrameworkUdkPackageVersion>
-    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>2.0.0-experimental-27300.1857.260302-0806.0</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
-    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>1.7.0-main.20241009.0</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
-    <MicrosoftWindowsAppSDKBasePackageVersion>2.0.260323000-dev.experimental9</MicrosoftWindowsAppSDKBasePackageVersion>
-    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>2.0.10-experimental</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+    <!-- Read Directory.Packages.props from the repo root for external package versions -->
+    <DirectoryPackagesPropsPath Condition="'$(DirectoryPackagesPropsPath)' == ''">$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)..\'))</DirectoryPackagesPropsPath>
+    <DirectoryPackagesPropsXml Condition="Exists('$(DirectoryPackagesPropsPath)')">$([System.IO.File]::ReadAllText("$(DirectoryPackagesPropsPath)"))</DirectoryPackagesPropsXml>
 
-    <!-- CsWinRT dependency metadata (from Version.Details.xml ToolsetDependencies) -->
+    <!-- CsWinRT target framework dependencies (not NuGet packages; toolchain values) -->
     <CsWinRTDependencyDotNetCoreRuntimePackageVersion>6.0.33</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
     <CsWinRTDependencyDotNetCoreSdkPackageVersion>6.0.425</CsWinRTDependencyDotNetCoreSdkPackageVersion>
     <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>38</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
@@ -32,24 +25,35 @@
     <!-- WindowsAppSDK.Version (pipeline version metadata) -->
     <MicrosoftWindowsAppSDKVersionPackageVersion>1.8.0</MicrosoftWindowsAppSDKVersionPackageVersion>
 
-    <!-- CsWinRT -->
-    <MicrosoftWindowsCsWinRTPackageVersion>2.1.1</MicrosoftWindowsCsWinRTPackageVersion>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Internal packages: all share $(WindowsAppSDKVersionPinned) in mono-build.
+         In CI/PR, these resolve via CPM ValueOrDefault in Directory.Packages.props -
+         the properties below are only used by scripts/nuspecs, not by NuGet restore.
+         ═══════════════════════════════════════════════════════════════════ -->
+    <_InternalPkgVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', ''))</_InternalPkgVersion>
 
-    <!-- ================================================================
-         Toolset packages (from Version.Dependencies.xml)
-         Versions match Directory.Packages.props external package entries.
-         ================================================================ -->
-    <MicrosoftBuildTasksGitVersion>1.1.1</MicrosoftBuildTasksGitVersion>
-    <MicrosoftSourceLinkCommonVersion>1.1.1</MicrosoftSourceLinkCommonVersion>
-    <MicrosoftSourceLinkGitHubVersion>1.1.1</MicrosoftSourceLinkGitHubVersion>
-    <MicrosoftTaefVersion>10.95.240918004</MicrosoftTaefVersion>
-    <MicrosoftTelemetryInboxNativeVersion>10.0.19041.1-191206-1406.vb-release.x86fre</MicrosoftTelemetryInboxNativeVersion>
-    <MicrosoftWebWebView2Version>1.0.961.33</MicrosoftWebWebView2Version>
-    <MicrosoftWindowsAppSDKProtobufVersion>3.21.12</MicrosoftWindowsAppSDKProtobufVersion>
-    <MicrosoftWindowsAppSDKVersion>1.6.250408002</MicrosoftWindowsAppSDKVersion>
-    <MicrosoftWindowsCppWinRTVersion>2.0.230706.1</MicrosoftWindowsCppWinRTVersion>
-    <MicrosoftWindowsImplementationLibraryVersion>1.0.240803.1</MicrosoftWindowsImplementationLibraryVersion>
-    <MicrosoftWindowsSDKBuildToolsMSIXVersion>1.7.20250829.1</MicrosoftWindowsSDKBuildToolsMSIXVersion>
-    <MicrosoftWindowsSDKBuildToolsVersion>10.0.26100.4654</MicrosoftWindowsSDKBuildToolsVersion>
+    <MicrosoftFrameworkUdkPackageVersion>$(_InternalPkgVersion)</MicrosoftFrameworkUdkPackageVersion>
+    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$(_InternalPkgVersion)</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$(_InternalPkgVersion)</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKBasePackageVersion>$(_InternalPkgVersion)</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$(_InternalPkgVersion)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         External packages: parse from Directory.Packages.props XML.
+         These have pinned versions that don't change between build types.
+         ═══════════════════════════════════════════════════════════════════ -->
+    <MicrosoftWindowsCsWinRTPackageVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Windows.CsWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCsWinRTPackageVersion>
+    <MicrosoftBuildTasksGitVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Build.Tasks.Git"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftBuildTasksGitVersion>
+    <MicrosoftSourceLinkCommonVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.SourceLink.Common"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftSourceLinkCommonVersion>
+    <MicrosoftSourceLinkGitHubVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.SourceLink.GitHub"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftSourceLinkGitHubVersion>
+    <MicrosoftTaefVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Taef"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftTaefVersion>
+    <MicrosoftTelemetryInboxNativeVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Telemetry.Inbox.Native"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftTelemetryInboxNativeVersion>
+    <MicrosoftWebWebView2Version Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Web.WebView2"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWebWebView2Version>
+    <MicrosoftWindowsAppSDKProtobufVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.WindowsAppSDK.Protobuf"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKProtobufVersion>
+    <MicrosoftWindowsAppSDKVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.WindowsAppSDK"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKVersion>
+    <MicrosoftWindowsCppWinRTVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Windows.CppWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCppWinRTVersion>
+    <MicrosoftWindowsImplementationLibraryVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Windows.ImplementationLibrary"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsImplementationLibraryVersion>
+    <MicrosoftWindowsSDKBuildToolsMSIXVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Windows.SDK.BuildTools.MSIX"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsSDKBuildToolsMSIXVersion>
+    <MicrosoftWindowsSDKBuildToolsVersion Condition="'$(DirectoryPackagesPropsXml)' != ''">$([System.Text.RegularExpressions.Regex]::Match($(DirectoryPackagesPropsXml), 'Include="Microsoft.Windows.SDK.BuildTools"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsSDKBuildToolsVersion>
   </PropertyGroup>
 </Project>
