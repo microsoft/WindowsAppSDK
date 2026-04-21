@@ -8,35 +8,44 @@ Param(
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
-# Read internal package versions from eng\Version.Dependencies.props (CPM).
-# The parameter is still called versionDetailsPath for backward compatibility with
-# pipeline YAML that passes it, but we now read Version.Dependencies.props from the
-# same eng\ directory.
+# Read internal package versions from Directory.Packages.props (CPM).
+# Internal packages use ValueOrDefault - extract the fallback version via regex.
+# The parameter versionDetailsPath is kept for backward compat; we locate
+# Directory.Packages.props relative to the repo root (two levels up from eng/).
 $engDir = Split-Path $versionDetailsPath -Parent
-$versionDepsPropsPath = Join-Path $engDir 'Version.Dependencies.props'
-[xml]$propsXml = Get-Content -Path $versionDepsPropsPath
+$repoRoot = Split-Path $engDir -Parent
+$dppPath = Join-Path $repoRoot 'Directory.Packages.props'
+$dppContent = Get-Content -Path $dppPath -Raw
 
-# Extract internal package name->version pairs from the PropertyGroup
-$internalPackages = @{
-    'Microsoft.FrameworkUdk' = $propsXml.Project.PropertyGroup.MicrosoftFrameworkUdkPackageVersion
-    'Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage' = $propsXml.Project.PropertyGroup.MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion
-    'Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage' = $propsXml.Project.PropertyGroup.MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion
-    'Microsoft.WindowsAppSDK.Base' = $propsXml.Project.PropertyGroup.MicrosoftWindowsAppSDKBasePackageVersion
-    'Microsoft.WindowsAppSDK.InteractiveExperiences' = $propsXml.Project.PropertyGroup.MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion
-}
+# Internal packages to include in packages.config (transport + component packages)
+$internalPackageNames = @(
+    'Microsoft.FrameworkUdk',
+    'Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage',
+    'Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage',
+    'Microsoft.WindowsAppSDK.Base',
+    'Microsoft.WindowsAppSDK.InteractiveExperiences'
+)
 
 $packagesText = @"
 <?xml version="1.0" encoding="utf-8"?>
 <packages>
-        <!-- Transport packages - versions from eng/Version.Dependencies.props (CPM) -->
+        <!-- Transport packages - versions from Directory.Packages.props (CPM) -->
 
 "@
-foreach ($entry in $internalPackages.GetEnumerator())
+foreach ($name in $internalPackageNames)
 {
-    $name = $entry.Key
-    $ver = $entry.Value
-    Write-Host "id: " $name
-    Write-Host "ver: " $ver
+    # Extract fallback version from ValueOrDefault('$(WindowsAppSDKVersionPinned)', '<version>')
+    $escapedName = [regex]::Escape($name)
+    $match = [regex]::Match($dppContent, "Include=""$escapedName""\s+Version=""\`$\(\[MSBuild\]::ValueOrDefault\('[^']*',\s*'([^']+)'\)\)""")
+    if ($match.Success) {
+        $ver = $match.Groups[1].Value
+    } else {
+        Write-Host "WARNING: Could not find version for $name in Directory.Packages.props"
+        continue
+    }
+
+    Write-Host "id:  $name"
+    Write-Host "ver: $ver"
 
     if ($name -eq "Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage")
     {
