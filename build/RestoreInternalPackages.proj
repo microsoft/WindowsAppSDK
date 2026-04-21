@@ -1,0 +1,53 @@
+<!-- Copyright (c) Microsoft Corporation. Licensed under the MIT License. -->
+<!--
+    RestoreInternalPackages.proj — Generates packages.config from CPM version properties
+    and sets pipeline variables for downstream consumption.
+
+    Version properties (e.g., MicrosoftFrameworkUdkPackageVersion) are resolved by MSBuild
+    from eng/Version.Dependencies.props (imported via Directory.Build.props).
+
+    Usage:
+      msbuild build\RestoreInternalPackages.proj /t:GeneratePackagesConfig
+      nuget restore build\packages.config -PackagesDirectory packages -ConfigFile NuGet.config
+
+    The generated packages.config restores internal transport packages to the local
+    packages/ directory, matching the $(NugetPackageDirectory) path that .vcxproj files
+    expect for Import paths like:
+      $(NugetPackageDirectory)\Microsoft.FrameworkUdk.$(MicrosoftFrameworkUdkPackageVersion)\...
+-->
+<Project DefaultTargets="GeneratePackagesConfig" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Import Version.Dependencies.props for version properties -->
+  <Import Project="$(MSBuildThisFileDirectory)..\eng\Version.Dependencies.props" />
+
+  <PropertyGroup>
+    <PackagesConfigPath Condition="'$(PackagesConfigPath)' == ''">$(MSBuildThisFileDirectory)packages.config</PackagesConfigPath>
+  </PropertyGroup>
+
+  <Target Name="GeneratePackagesConfig">
+    <PropertyGroup>
+      <_PackagesConfigContent><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <!-- Internal WinAppSDK transport packages — versions from eng/Version.Dependencies.props (CPM) -->
+  <package id="Microsoft.FrameworkUdk" version="$(MicrosoftFrameworkUdkPackageVersion)" targetFramework="native" />
+  <package id="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" version="$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)" targetFramework="native" />
+  <package id="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" version="$(MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion)" targetFramework="native" />
+  <package id="Microsoft.WindowsAppSDK.Base" version="$(MicrosoftWindowsAppSDKBasePackageVersion)" targetFramework="native" />
+  <package id="Microsoft.WindowsAppSDK.InteractiveExperiences" version="$(MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion)" targetFramework="native" />
+</packages>]]></_PackagesConfigContent>
+    </PropertyGroup>
+
+    <WriteLinesToFile File="$(PackagesConfigPath)" Lines="$(_PackagesConfigContent)" Overwrite="true" />
+    <Message Importance="High" Text="Generated $(PackagesConfigPath)" />
+    <Message Importance="High" Text="  Microsoft.FrameworkUdk = $(MicrosoftFrameworkUdkPackageVersion)" />
+    <Message Importance="High" Text="  Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage = $(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)" />
+    <Message Importance="High" Text="  Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage = $(MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion)" />
+    <Message Importance="High" Text="  Microsoft.WindowsAppSDK.Base = $(MicrosoftWindowsAppSDKBasePackageVersion)" />
+    <Message Importance="High" Text="  Microsoft.WindowsAppSDK.InteractiveExperiences = $(MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion)" />
+
+    <!-- Set pipeline variables for downstream tasks (AppLicensing headers/licenses copy) -->
+    <Message Importance="High" Text="##vso[task.setvariable variable=AppLicensingInternalPackageName]Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" />
+    <Message Importance="High" Text="##vso[task.setvariable variable=AppLicensingInternalPackageVersion]$(MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion)" />
+  </Target>
+
+</Project>

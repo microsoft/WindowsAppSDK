@@ -26,12 +26,12 @@ steps:
 
   # Copy MSIX license installation header into the correct source location.
   # Restore transport package dependencies. This is only enbaled in release-signed builds.
-- task: PowerShell@2
+- task: MSBuild@1
   name: GeneratePackagesConfig
   displayName: "Generate packages.config from CPM"
   inputs:
-    filePath: '$(REPOROOT)\build\Scripts\GeneratePackagesConfigFromCPM.ps1'
-    arguments: -directoryPackagesPropsPath '$(REPOROOT)\Directory.Packages.props' -packageConfigPath '$(REPOROOT)\build\packages.config'
+    solution: '$(REPOROOT)\build\RestoreInternalPackages.proj'
+    msbuildArguments: '/t:GeneratePackagesConfig'
 
 - task: NuGetCommand@2
   displayName: RestoreNuGetPackages
