@@ -178,6 +178,13 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.csproj">
+      <Project>{C3D4E5F6-3333-4C7D-BE0F-3A4B5C6D7E8F}</Project>
+      <Name>WinUI.Desktop.Cs.MvvmApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx">
