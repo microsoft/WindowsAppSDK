@@ -534,11 +534,11 @@ function Test-SemVer
 function Get-TAEFPackageVersion
 {
     $root = Get-ProjectRoot
-    $filename = Join-Path $root 'eng'
-    $filename = Join-Path $filename 'Version.Dependencies.xml'
-    $xml = [xml](Get-Content $filename -EA:Stop)
-    $taef = $xml.SelectSingleNode("/Dependencies/Dependency[@Name='Microsoft.Taef']")
-    return $taef.Version
+    $dppPath = Join-Path $root 'Directory.Packages.props'
+    $dppContent = Get-Content $dppPath -Raw -EA:Stop
+    $match = [regex]::Match($dppContent, 'Include="Microsoft.Taef"\s+Version="([^"]+)"')
+    if (-not $match.Success) { throw "Microsoft.Taef version not found in Directory.Packages.props" }
+    return $match.Groups[1].Value
 }
 
 function Get-VSWhereOffline
