@@ -8,6 +8,9 @@ parameters:
     default: 'experimental'
 
 variables:
+  _useBuildOutputFromPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
+  _useBuildOutputFromBuildId: $[coalesce(variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
+
   channel: '${{ parameters.BuildType }}'
 
   # Set at queue time to skip Build/Pack stages and reuse artifacts from another build.
