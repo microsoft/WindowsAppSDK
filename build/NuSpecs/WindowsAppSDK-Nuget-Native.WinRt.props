@@ -97,6 +97,12 @@
       <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(_FoundationRuntimesFrameworkFolder)\Microsoft.WindowsAppRuntime.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
+    <Reference Include="Microsoft.Windows.Graphics.Capture.winmd"
+      Condition="Exists('$(_FoundationMetadataFolder)\Microsoft.Windows.Graphics.Capture.winmd')">
+      <HintPath>$(_FoundationMetadataFolder)\Microsoft.Windows.Graphics.Capture.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(_FoundationRuntimesFrameworkFolder)\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
 
 </Project>

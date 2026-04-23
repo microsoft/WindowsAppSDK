@@ -50,6 +50,7 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
+#include <winrt/Windows.Graphics.Capture.h>
 
 #include <MsixDynamicDependency.h>
 
