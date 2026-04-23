@@ -10,6 +10,11 @@ parameters:
 variables:
   channel: '${{ parameters.BuildType }}'
 
+  # Set at queue time to skip Build/Pack stages and reuse artifacts from another build.
+  # Must be defined (even as empty) so the eq(variables['useBuildOutputFromBuildId'],'')
+  # conditions in Build-Stage.yml and PackTransportPackage-Stage.yml evaluate correctly.
+  useBuildOutputFromBuildId: ''
+
   # REPOROOT is provided by the shared template (as RepoRoot — ADO variables are case-insensitive)
   OUTPUTROOT: $(REPOROOT)\out
 
