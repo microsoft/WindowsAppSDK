@@ -44,26 +44,13 @@ else
 $lifetimemanager_clsid_uuid = New-Guid
 $lifetimemanager_clsid_guid = Convert-Guid $lifetimemanager_clsid_uuid
 
-# Generate the json file
-$content_json=@"
-{
-    "LIBID": "1BF712E5-41ED-46a5-8402-2D40725F691E",
-    "DataStore": {
-        "CLSID": {
-            "UUID": "D1AD16C7-EC59-4765-BF95-9A243EB00507"
-        }
-    },
-    "LifetimeManager": {
-        "CLSID": {
-            "UUID": "$lifetimemanager_clsid_uuid",
-            "GUID": "$lifetimemanager_clsid_guid"
-        }
-    }
-}
-"@
-$file_json = Join-Path $Path 'DynamicDependency-Override.json'
-Write-Output "Writing $file_json..."
-"$content_json" | Out-File $file_json -Encoding utf8
+# Replace the GUID in the appxfragment.xml
+$appxfragment_path = 'build\NuSpecs\ddlm.appxfragment'
+$appxfragment_overrides_path = Join-Path $Path 'ddlm.appxfragment'
+$appxfragment = Get-Content $appxfragment_path
+$appxfragment = $appxfragment.Replace('$(DynDep.LifetimeManager.CLSID.UUID)', "$lifetimemanager_clsid_uuid")
+Write-Output "Writing $appxfragment_overrides_path..."
+Set-Content -Value $appxfragment $appxfragment_overrides_path
 
 # Generate the header file
 $content_h=@"
