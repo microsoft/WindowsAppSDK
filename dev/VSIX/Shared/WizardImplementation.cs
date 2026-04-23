@@ -3,18 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Resources;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
 using Microsoft.VisualStudio.Threading;
 using NuGet.VisualStudio;
+
 
 // Although the strings are the same in the wizard for both extensions,
 // they are included with both their respective VSPackages.
@@ -34,7 +38,7 @@ namespace WindowsAppSDK.TemplateUtilities
         InfoBar
     }
 
-    public partial class NuGetPackageInstaller : IWizard
+    public partial class NuGetPackageInstaller : IWizard, IVsSolutionEvents
     {
         internal static Guid SolutionVCProjectGuid = new Guid("8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942");
         private Project _project;
@@ -42,7 +46,13 @@ namespace WindowsAppSDK.TemplateUtilities
         private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
+        private IVsInfoBarUIFactory _infoBarUIFactory;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
+        private static BuildGuard s_buildGuard = new BuildGuard();
+        private static volatile bool s_installationComplete;
+        private IVsSolution _solution;
+        private uint _solutionEventsCookie;
+        private bool _packageRestoreEnabled = true;
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -60,6 +70,12 @@ namespace WindowsAppSDK.TemplateUtilities
                 System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
             }
 
+            _infoBarUIFactory = ServiceProvider.GlobalProvider.GetService(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
+            if (_infoBarUIFactory == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsInfoBarUIFactory service.");
+            }
+
             if (_componentModel != null)
             {
                 _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
@@ -68,18 +84,72 @@ namespace WindowsAppSDK.TemplateUtilities
                     _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
                 }
             }
+
             // Assuming package list is passed via a custom parameter in the .vstemplate file
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
                 _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
+            }
+
+            if (_nuGetPackages != null && _nuGetPackages.Any())
+            {
+                _packageRestoreEnabled = IsNuGetPackageRestoreEnabled();
+
+                if (!_packageRestoreEnabled)
+                {
+                    LogError("NuGet package restore is disabled. Skipping automatic package installation.");
+                    return;
+                }
+
+                if (s_installationComplete)
+                {
+                    s_buildGuard = new BuildGuard();
+                    s_installationComplete = false;
+                }
+
+                s_buildGuard.SetReleaseCondition(() => s_installationComplete);
+
+                _solution = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolution)) as IVsSolution;
+                if (_solution != null)
+                {
+                    _solution.AdviseSolutionEvents(this, out _solutionEventsCookie);
+                }
+
+                s_buildGuard.DisableBuilds();
             }
         }
 
         public void ProjectFinishedGenerating(Project project)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            if (project == null)
+            {
+                return;
+            }
+
             _project = project;
             Guid _projectGuid = GetProjectGuid(project);
+
+            if (_nuGetPackages != null && _nuGetPackages.Any())
+            {
+                var projectName = _project?.Name ?? "Unknown Project";
+                var packageNames = string.Join(", ", _nuGetPackages);
+                s_buildGuard.SetInfoBarMessage(string.Format(Resources._1055, projectName, packageNames));
+            }
+
+            if (!_packageRestoreEnabled && _nuGetPackages != null && _nuGetPackages.Any())
+            {
+                // Write C# package references to the project so that auto-download can install packages
+                // after project generation completes.
+                if (!_projectGuid.Equals(SolutionVCProjectGuid))
+                {
+                    AddPackageReferencesToProject();
+                }
+
+                _ = DisplayInfoBarAsync(GetRestoreDisabledMessage());
+                return;
+            }
+
             if (_projectGuid.Equals(SolutionVCProjectGuid))
             {
                 ThreadHelper.JoinableTaskFactory.Run(async () =>
@@ -96,36 +166,55 @@ namespace WindowsAppSDK.TemplateUtilities
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 int canceled = 0; // Initialize as not canceled
 
-                // Start the package installation task but do not await it here
-                var installationTask = StartInstallationAsync();
-
-                // Start the threaded wait dialog
-                if (_waitDialog != null)
+                try
                 {
-                    _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
+                    // Start the package installation task but do not await it here
+                    var installationTask = StartInstallationAsync();
+
+                    // Start the threaded wait dialog
+                    if (_waitDialog != null)
+                    {
+                        _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
+                    }
+
+                    // Now await the installation task to complete
+                    await installationTask;
+
+                    // Once the installation is complete, end the wait dialog
+                    if (_waitDialog != null)
+                    {
+                        _waitDialog.EndWaitDialog(out canceled);
+                    }
+
+                    // If _waitDialog is null, canceled remains 0 (not canceled)
+                    // Check if the process was canceled before proceeding
+                    if (canceled == 0) // If not canceled, finalize the process
+                    {
+                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                        SaveAllProjects();
+                    }
                 }
-
-                // Now await the installation task to complete
-                await installationTask;
-
-                // Once the installation is complete, end the wait dialog
-                if (_waitDialog != null)
+                finally
                 {
-                    _waitDialog.EndWaitDialog(out canceled);
-                }
-
-                // If _waitDialog is null, canceled remains 0 (not canceled)
-                // Check if the process was canceled before proceeding
-                if (canceled == 0) // If not canceled, finalize the process
-                {
+                    s_installationComplete = true;
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    SaveAllProjects();
+                    UnadviseSolutionEvents();
+                    s_buildGuard.EnableBuilds();
                 }
             });
         }
 
         private async Task StartInstallationAsync()
         {
+            if (!_packageRestoreEnabled)
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                LogError("NuGet package restore is disabled. Skipping package installation.");
+                var packageNames = string.Join(", ", _nuGetPackages);
+                _failedPackageExceptions[packageNames] = new InvalidOperationException("NuGet package restore is disabled.");
+                return;
+            }
+
             if (_componentModel == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -158,6 +247,15 @@ namespace WindowsAppSDK.TemplateUtilities
                 catch (Exception ex)
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                    if (IsNuGetRestoreDisabledException(ex))
+                    {
+                        LogError($"NuGet restore is disabled. Error: {ex.Message}");
+                        AddPackageReferencesToProject();
+                        _ = DisplayInfoBarAsync(GetRestoreDisabledMessage());
+                        return;
+                    }
+
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                     _failedPackageExceptions[packageId] = ex;
                 }
@@ -165,11 +263,23 @@ namespace WindowsAppSDK.TemplateUtilities
 
             if (_failedPackageExceptions.Count > 0)
             {
-                // Build error message in the requested format
-                var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                LogError(errorMessage);
-                _ = DisplayInfoBarAsync(errorMessage);
+
+                bool isRestoreDisabled = _failedPackageExceptions.Values
+                    .Any(e => IsNuGetRestoreDisabledException(e));
+
+                if (isRestoreDisabled)
+                {
+                    AddPackageReferencesToProject();
+                    _ = DisplayInfoBarAsync(GetRestoreDisabledMessage());
+                }
+                else
+                {
+                    // Build error message in the requested format
+                    var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
+                    LogError(errorMessage);
+                    _ = DisplayInfoBarAsync(errorMessage);
+                }
             }
         }
 
@@ -187,8 +297,23 @@ namespace WindowsAppSDK.TemplateUtilities
             Guid _projectGuid = GetProjectGuid(_project);
             if (_projectGuid.Equals(SolutionVCProjectGuid))
             {
+                // For C++ projects, installation is synchronous so builds are already
+                // re-enabled by the finally block. Dispose as a safety net.
+                UnadviseSolutionEvents();
+                s_buildGuard.Dispose();
+
                 if (_failedPackageExceptions.Count > 0)
                 {
+                    bool isRestoreDisabled = _failedPackageExceptions.Values
+                        .Any(ex => IsNuGetRestoreDisabledException(ex));
+
+                    if (isRestoreDisabled)
+                    {
+                        _ = DisplayInfoBarAsync(GetRestoreDisabledMessage());
+                        ShowOutputWindow(CreateDetailedErrorMessage());
+                        return;
+                    }
+
                     var errorMessage = CreateErrorMessage(ErrorMessageFormat.MessageBox);
                     LogError(errorMessage);
 
@@ -206,10 +331,205 @@ namespace WindowsAppSDK.TemplateUtilities
             }
         }
 
+        private string GetRestoreDisabledMessage()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var projectName = _project?.Name ?? "Unknown Project";
+            var packageNames = string.Join(", ", _nuGetPackages);
+
+            // C++ projects can't use PackageReference, so they need manual install
+            // via the NuGet Package Manager. C# projects can re-enable auto-download
+            // and restore the solution.
+            return GetProjectGuid(_project).Equals(SolutionVCProjectGuid)
+                ? string.Format(Resources._1057, projectName, packageNames)
+                : string.Format(Resources._1056, projectName, packageNames);
+        }
+
         private void ShowOutputWindow(string errorMessage)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             OutputWindowHelper.ShowMessageInOutputWindow(errorMessage);
+        }
+
+        private void AddPackageReferencesToProject()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            try
+            {
+                if (_project == null || _nuGetPackages == null)
+                {
+                    return;
+                }
+
+                string projectPath = _project.FullName;
+                if (!File.Exists(projectPath))
+                {
+                    return;
+                }
+
+                var doc = XDocument.Load(projectPath);
+                XNamespace ns = doc.Root.GetDefaultNamespace();
+
+                var itemGroup = doc.Root.Elements(ns + "ItemGroup")
+                    .FirstOrDefault(ig => ig.Elements(ns + "PackageReference").Any());
+
+                if (itemGroup == null)
+                {
+                    itemGroup = new XElement(ns + "ItemGroup");
+                    doc.Root.Add(itemGroup);
+                }
+
+                foreach (var packageId in _nuGetPackages)
+                {
+                    bool alreadyExists = itemGroup.Elements(ns + "PackageReference")
+                        .Any(e => string.Equals(
+                            (string)e.Attribute("Include"), packageId, StringComparison.OrdinalIgnoreCase));
+
+                    if (!alreadyExists)
+                    {
+                        itemGroup.Add(new XElement(ns + "PackageReference",
+                            new XAttribute("Include", packageId),
+                            new XAttribute("Version", "*")));
+                    }
+                }
+
+                doc.Save(projectPath);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to add package references to project file: {ex.Message}");
+            }
+        }
+
+        // NuGet package restore is enabled by default, so only return false if we can confirm it is disabled in
+        // the user's config.
+        private static bool IsNuGetPackageRestoreEnabled()
+        {
+            try
+            {
+                string configPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "NuGet",
+                    "NuGet.Config");
+
+                // If no NuGet.config is provided, package restore is enabled by default
+                if (!File.Exists(configPath))
+                {
+                    System.Diagnostics.Debug.WriteLine($"NuGet.Config not found at: {configPath}. Assuming package restore is enabled.");
+                    return true;
+                }
+
+                // If package restore is not disabled, then it is enabled by default
+                var doc = XDocument.Load(configPath);
+                var packageRestore = doc.Descendants("packageRestore").FirstOrDefault();
+                if (packageRestore == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("No packageRestore section found in NuGet.Config. Assuming enabled.");
+                    return true;
+                }
+
+                var enabledElement = packageRestore.Elements("add")
+                    .FirstOrDefault(e => string.Equals(
+                        (string)e.Attribute("key"), "enabled", StringComparison.OrdinalIgnoreCase));
+
+                if (enabledElement != null)
+                {
+                    string value = (string)enabledElement.Attribute("value");
+
+                    // Only explicit disabling of package restore should return false.
+                    if (string.Equals(value, "False", StringComparison.OrdinalIgnoreCase))
+                    {
+                        System.Diagnostics.Debug.WriteLine("NuGet package restore is explicitly disabled in NuGet.Config.");
+                        return false;
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine("NuGet package restore is enabled (no explicit disable found).");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error reading NuGet.Config: {ex.Message}. Assuming package restore is enabled.");
+                return true;
+            }
+        }
+
+        private static bool IsNuGetRestoreDisabledException(Exception ex)
+        {
+            for (var current = ex; current != null; current = current.InnerException)
+            {
+                if (current.Message != null &&
+                    (current.Message.IndexOf("NuGet restore is currently disabled", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     current.Message.IndexOf("package restore is disabled", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     current.Message.IndexOf("EnableNuGetPackageRestore", StringComparison.OrdinalIgnoreCase) >= 0))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void UnadviseSolutionEvents()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_solution != null && _solutionEventsCookie != 0)
+            {
+                _solution.UnadviseSolutionEvents(_solutionEventsCookie);
+                _solutionEventsCookie = 0;
+            }
+        }
+
+        public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
         }
 
         private void SaveAllProjects()
@@ -385,39 +705,62 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private async Task DisplayInfoBarAsync(string errorMessage)
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            var infoBar = CreateNuGetInfoBar(errorMessage);
-            var infoBarUi = CreateInfoBarUI(infoBar);
-
-            // Write detailed error message to output window
-            var detailedErrorMessage = CreateDetailedErrorMessage();
-            ShowOutputWindow(detailedErrorMessage);
-
-            if (infoBarUi == null)
+            try
             {
-                LogError("Could not create InfoBar UI element. Logged error message to output window.");
-                return;
-            }
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var infoBar = CreateNuGetInfoBar(errorMessage);
+                var infoBarUi = CreateInfoBarUI(infoBar);
 
-            infoBarUi.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
+                // Write detailed error message to output window
+                var detailedErrorMessage = CreateDetailedErrorMessage();
+                ShowOutputWindow(detailedErrorMessage);
+
+                if (infoBarUi == null)
+                {
+                    ShowOutputWindow("[InfoBar] Failed: Could not create InfoBar UI element.");
+                    return;
+                }
+
+                infoBarUi.Advise(new NuGetInfoBarUIEvents(detailedErrorMessage), out uint _);
+
+                // The main window InfoBar host may not be available immediately
+                // during template wizard execution while VS transitions from the
+                // New Project dialog. Retry briefly while the main window initializes.
+                for (int retry = 0; retry < 5; retry++)
+                {
+                    if (TryAddInfoBarToMainWindow(infoBarUi))
+                    {
+                        return;
+                    }
+
+                    await Task.Delay(1000);
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowOutputWindow($"[InfoBar] Exception: {ex.Message}");
+            }
+        }
+
+        private bool TryAddInfoBarToMainWindow(IVsInfoBarUIElement infoBarUi)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             IVsShell shell = ServiceProvider.GlobalProvider.GetService(typeof(SVsShell)) as IVsShell;
             if (shell == null)
             {
-                LogError("Could not obtain IVsShell service");
-                return;
+                return false;
             }
 
-            // Get the main window's InfoBar host using VSSPROPID_MainWindowInfoBarHost
-            object infoBarHostObj;
-            int hr = shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out infoBarHostObj);
-            if (!(infoBarHostObj is IVsInfoBarHost infoBarHost))
+            shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out object infoBarHostObj);
+            if (infoBarHostObj is IVsInfoBarHost infoBarHost)
             {
-                LogError("Could not obtain IVsInfoBarHost service");
-                return;
+                infoBarHost.AddInfoBar(infoBarUi);
+                return true;
             }
 
-            infoBarHost.AddInfoBar(infoBarUi);
+            return false;
         }
 
         private IVsInfoBarUIElement CreateInfoBarUI(IVsInfoBar infoBar)
@@ -429,14 +772,13 @@ namespace WindowsAppSDK.TemplateUtilities
                 return null;
             }
 
-            IVsInfoBarUIFactory infoBarUIFactory = ServiceProvider.GlobalProvider.GetService(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
-            if (infoBarUIFactory == null)
+            if (_infoBarUIFactory == null)
             {
                 LogError("Could not obtain IVsInfoBarUIFactory service");
                 return null;
             }
 
-            return infoBarUIFactory.CreateInfoBar(infoBar);
+            return _infoBarUIFactory.CreateInfoBar(infoBar);
         }
 
         private IVsInfoBar CreateNuGetInfoBar(string message)
