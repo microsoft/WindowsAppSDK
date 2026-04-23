@@ -25,4 +25,7 @@
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(WindowsSDKBuildToolsVersion)" Condition=" '$(WindowsSDKBuildToolsVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(WILVersion)" Condition=" '$(WILVersion)' != '' " />
   </ItemGroup>
+  <PropertyGroup>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
 </Project>

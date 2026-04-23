@@ -6,7 +6,6 @@ parameters:
   BinaryCompatSwitch: ''
   testLocale: ''
   SamplesArtifactName: ''
-  IsOneBranch: false
   callingStage: ''
 
 steps:
@@ -117,37 +116,19 @@ steps:
         Write-Host ${{ parameters.buildPlatform }}, ${{ parameters.buildConfiguration }}, $isPlatformX86, $isReleaseConfig, 'callingStage: ${{ parameters.callingStage }}'
   - ${{  if ne(parameters.samplesArtifactName, '') }}:
     - ${{ each featureAreas in parameters.sampleFeatureAreasList }}:
-      - ${{ if parameters.IsOneBranch }}:
-        - ${{ each artifactNameSuffix in featureAreas.value }}:
-          # If we are downloading for Release config, omit the *debug* specific stuff to save time and storage.
-          # If we are running for x86 platform, then don't download Sample app artifacts, as we currently don't build Samples for x86.
-          - task: DownloadPipelineArtifact@2
-            condition: and(and(succeeded(), ne(variables['isPlatformX86'], 'true')), eq(variables['IsReleaseConfig'], 'true'))
-            displayName: 'Download Release ${{ parameters.SamplesArtifactName }}_${{ artifactNameSuffix }}'
-            inputs:
-              source: specific
-              runVersion: specific
-              project: $(System.TeamProjectId)
-              pipeline: $(_useBuildOutputFromPipeline)
-              pipelineId: $(_useBuildOutputFromBuildId)
-              artifactName: ${{ parameters.SamplesArtifactName }}_${{ artifactNameSuffix }}
-              targetPath: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples'
-              patterns: |
-                **
-                !**/*binlog
-                !**/*debug*/**/*
-      - ${{ if not( parameters.IsOneBranch ) }}:
+      - ${{ each artifactNameSuffix in featureAreas.value }}:
+        # If we are downloading for Release config, omit the *debug* specific stuff to save time and storage.
+        # If we are running for x86 platform, then don't download Sample app artifacts, as we currently don't build Samples for x86.
         - task: DownloadPipelineArtifact@2
-          # It is currently by design to _not_ test Sample apps when platform=x86 or config=Debug.
           condition: and(and(succeeded(), ne(variables['isPlatformX86'], 'true')), eq(variables['IsReleaseConfig'], 'true'))
-          displayName: 'Download Release ${{ parameters.SamplesArtifactName }}_${{ featureAreas.key }}'
+          displayName: 'Download Release ${{ parameters.SamplesArtifactName }}_${{ artifactNameSuffix }}'
           inputs:
             source: specific
             runVersion: specific
             project: $(System.TeamProjectId)
             pipeline: $(_useBuildOutputFromPipeline)
             pipelineId: $(_useBuildOutputFromBuildId)
-            artifactName: ${{ parameters.SamplesArtifactName }}_${{ featureAreas.key }}
+            artifactName: ${{ parameters.SamplesArtifactName }}_${{ artifactNameSuffix }}
             targetPath: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples'
             patterns: |
               **
@@ -163,9 +144,14 @@ steps:
           Write-Host "##vso[task.setvariable variable=SAMPLES_ROOT_PATH;isOutput=true]$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples"
           Write-Host "##vso[task.setvariable variable=SAMPLES_ROOT_PATH;]$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples"
 
+  - task: NuGetAuthenticate@1
+    displayName: "NuGet authenticate for VSTest platform install"
+
   - task: VisualStudioTestPlatformInstaller@1
     inputs:
       versionSelector: latestStable
+      packageFeedSelector: customFeed
+      customFeed: "https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json"
 
   - task: PowerShell@2
     displayName: Add test locale to User Language List
