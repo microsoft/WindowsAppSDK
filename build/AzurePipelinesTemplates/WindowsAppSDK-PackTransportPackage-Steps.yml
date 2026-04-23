@@ -1,0 +1,163 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# Pack Transport Package Steps — Reusable steps for packaging Foundation NuGet.
+#
+# Downloads all Foundation + MRT build artifacts, stages files, determines version,
+# packs transport + component NuGet packages, signs, and publishes.
+#
+# Used by:
+#   - WindowsAppSDK-PackTransportPackage-Stage.yml (per-component pipeline Pack stage)
+#   - Foundation-Build-Stage.yml (monobuild PackFoundation job)
+
+parameters:
+  - name: SignOutput
+    type: boolean
+    default: false
+  - name: IsOfficial
+    type: boolean
+    default: false
+  - name: PublishPackage
+    type: boolean
+    default: false
+  # Artifact download configuration — per-component pipeline uses specific pipeline/build,
+  # monobuild uses 'current' run since build jobs are in the same stage.
+  - name: downloadSource
+    type: string
+    default: 'specific'  # 'specific' for per-component, 'current' for monobuild
+  # Artifact name prefix — per-component uses FoundationBinaries_release/MrtBinaries_release,
+  # monobuild uses Build-Foundation/Build-MRT naming convention.
+  - name: foundationArtifactPrefix
+    type: string
+    default: 'FoundationBinaries_release'
+  - name: mrtArtifactPrefix
+    type: string
+    default: 'MrtBinaries_release'
+
+steps:
+  - ${{ if eq(parameters.downloadSource, 'specific') }}:
+    - checkout: WinAppSDK
+      fetchDepth: 1
+  - task: NuGetAuthenticate@1
+
+  # ── Download Foundation build artifacts ──
+  - ${{ each platform in split('x64;x86;arm64', ';') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Foundation ${{ platform }}'
+      inputs:
+        ${{ if eq(parameters.downloadSource, 'specific') }}:
+          source: specific
+          runVersion: specific
+          project: $(System.TeamProjectId)
+          pipeline: $(_useBuildOutputFromPipeline)
+          pipelineId: $(_useBuildOutputFromBuildId)
+        ${{ else }}:
+          source: current
+        artifactName: "${{ parameters.foundationArtifactPrefix }}_${{ platform }}"
+        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download Foundation anycpu'
+    inputs:
+      ${{ if eq(parameters.downloadSource, 'specific') }}:
+        source: specific
+        runVersion: specific
+        project: $(System.TeamProjectId)
+        pipeline: $(_useBuildOutputFromPipeline)
+        pipelineId: $(_useBuildOutputFromBuildId)
+      ${{ else }}:
+        source: current
+      artifactName: "${{ parameters.foundationArtifactPrefix }}_anycpu"
+      targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+
+  # ── Download MRT build artifacts ──
+  - ${{ each platform in split('x64;x86;arm64', ';') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download MRT ${{ platform }}'
+      inputs:
+        ${{ if eq(parameters.downloadSource, 'specific') }}:
+          source: specific
+          runVersion: specific
+          project: $(System.TeamProjectId)
+          pipeline: $(_useBuildOutputFromPipeline)
+          pipelineId: $(_useBuildOutputFromBuildId)
+        ${{ else }}:
+          source: current
+        artifactName: "${{ parameters.mrtArtifactPrefix }}_${{ platform }}"
+        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+
+  # ── Stage files + symbols ──
+  - task: PowerShell@2
+    name: StageFiles
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
+
+  - task: CopyFiles@2
+    displayName: 'Copy symbols to artifact staging directory'
+    condition: always()
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\BuildOutput\FullNuget
+      contents: |
+        **\*.pdb
+      targetFolder: $(Build.ArtifactStagingDirectory)\symbols
+
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@WinAppSDK
+    parameters:
+      SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      IsOfficial: ${{ parameters.IsOfficial }}
+
+  # ── Determine version + pack NuGet ──
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-DetermineVersion-Steps.yml@WinAppSDK
+    parameters:
+      IsOfficial: ${{ parameters.IsOfficial }}
+
+  - task: PowerShell@2
+    name: SetVersion
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(WindowsAppSDKFormattedVersion)'
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+
+  - task: PowerShell@2
+    name: PackNuget
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKFormattedVersion)" -ComponentPackageVersion "$(WindowsAppSDKFormattedVersion)" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
+
+  # ── Sign ──
+  - ${{ if eq(parameters.SignOutput, 'true') }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
+      parameters:
+        FolderPath: $(build.artifactStagingDirectory)\FullNuget
+        Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+        KeyCode: 'CP-401405'
+        UseMinimatch: true
+
+  # ── Stage output ──
+  - task: CopyFiles@2
+    displayName: MoveToOutputDirectory
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
+      TargetFolder: '$(ob_outputDirectory)\NugetContent'
+
+  - task: CopyFiles@2
+    displayName: MoveToOutputDirectory
+    inputs:
+      SourceFolder: '$(build.artifactStagingDirectory)\FullNuget'
+      TargetFolder: '$(ob_outputDirectory)'
+
+  # ── Publish to feed ──
+  - ${{ if eq(parameters.PublishPackage, 'true') }}:
+    - task: NuGetCommand@2
+      displayName: 'NuGet push to ProjectReunion.nuget.internal'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(ob_outputDirectory)\*.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'

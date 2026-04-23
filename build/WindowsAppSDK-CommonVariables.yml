@@ -1,20 +1,44 @@
 # Foundation-specific variables (supplements Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK)
+# Used by both per-component pipelines and Foundation-Build-Stage.yml (monobuild).
 # Only variables that are unique to Foundation or override mono repo defaults belong here.
+
+parameters:
+  - name: BuildType
+    type: string
+    default: 'experimental'
+
 variables:
-  channel: 'experimental'
+  channel: '${{ parameters.BuildType }}'
+
+  # Set at queue time to skip Build/Pack stages and reuse artifacts from another build.
+  # Must be defined (even as empty) so the eq(variables['useBuildOutputFromBuildId'],'')
+  # conditions in Build-Stage.yml and PackTransportPackage-Stage.yml evaluate correctly.
+  useBuildOutputFromBuildId: ''
 
   # REPOROOT is provided by the shared template (as RepoRoot — ADO variables are case-insensitive)
   OUTPUTROOT: $(REPOROOT)\out
 
   # Foundation defers to the global default LKG compiler version (unlike Closed which pins a specific LKG).
   # Empty strings override the Closed-specific values from the mono repo CommonVariables.
-  # https://dev.azure.com/microsoft/OS/_git/UndockedES?path=/Pipelines/Config/CompilerToolsSettings.json
   compilerOverridePackageName: ""
   compilerOverridePackageVersion: ""
   compilerOverrideNupkgVersion: ""
 
+  # SDL settings
+  ob_sdl_msbuildOverride: true
   ob_sdl_prefast_runDuring: 'Guardian'
+  ob_sdl_checkCompliantCompilerWarnings: true
+  ob_sdl_apiscan_enabled: false
+  ob_sdl_prefast_enabled: false
+  # BinSkim exclusions. Glob patterns use forward slashes because BinSkim normalizes paths
+  # to forward slashes before matching (error output like
+  # "File: out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-*.dll" confirms this).
+  # Mixing backslashes silently fails to match. Excluded:
+  #   - NuGet package contents (**/packages/**)
+  #   - Test NetCore reference DLLs shipped with the .NET runtime (api-ms-win-core-*.dll)
+  #   - The @WinAppSDK monorepo checkout (tool binaries like pdbcopy.exe, pgort140.dll)
+  ob_sdl_binskim_scannerParameters: '+:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/WinAppSDK/**/*.exe;-:f|**/WinAppSDK/**/*.dll'
 
   enableTestPass: true
 
-  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe;-:f|**\WindowsAppSDK.Test.NetCore\net**;-:f|**\WinAppSDK\**\*.exe;-:f|**\WinAppSDK\**\*.dll
+  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/WinAppSDK/**/*.exe;-:f|**/WinAppSDK/**/*.dll
