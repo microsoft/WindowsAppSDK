@@ -15,9 +15,9 @@ parameters:
 stages:
 - stage: ${{ iif(parameters.runPREfast, 'PREfast_AnyCPU', 'Build_AnyCPU') }}
   # Skip the build job if we are reusing the output of a previous build.
-  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  # foundationUseBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+    eq(variables['foundationUseBuildOutputFromBuildId'],'')
   dependsOn: []
   jobs:
   - job: VerifyCopyrightHeaders

@@ -9,19 +9,19 @@ parameters:
 
 variables:
   # Foundation per-component pipeline artifact download variables.
-  # Renamed from _useBuildOutputFrom* to avoid collision with the monobuild's
+  # These are Foundation-specific to avoid collision with the monobuild's
   # identically-named variables (which have a different coalesce chain).
   # In the monobuild, Foundation-Build-Stage.yml uses the monobuild's _useBuildOutputFromBuildId
   # (defined in WindowsAppSDK-CommonVariables.yml@WinAppSDK) which includes useBuildOutput_BuildId.
-  _foundationBuildOutputPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
-  _foundationBuildOutputBuildId: $[coalesce(variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
+  _foundationBuildOutputPipeline: $[coalesce(variables.foundationUseBuildOutputFromPipeline, variables['System.DefinitionId'] )]
+  _foundationBuildOutputBuildId: $[coalesce(variables.foundationUseBuildOutputFromBuildId, variables['Build.BuildId'] )]
 
   channel: '${{ parameters.BuildType }}'
 
   # Set at queue time to skip Build/Pack stages and reuse artifacts from another build.
-  # Must be defined (even as empty) so the eq(variables['useBuildOutputFromBuildId'],'')
+  # Must be defined (even as empty) so the eq(variables['foundationUseBuildOutputFromBuildId'],'')
   # conditions in Build-Stage.yml and PackTransportPackage-Stage.yml evaluate correctly.
-  useBuildOutputFromBuildId: ''
+  foundationUseBuildOutputFromBuildId: ''
 
   # REPOROOT is provided by the shared template (as RepoRoot — ADO variables are case-insensitive)
   OUTPUTROOT: $(REPOROOT)\out
