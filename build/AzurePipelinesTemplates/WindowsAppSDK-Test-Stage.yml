@@ -7,9 +7,10 @@ parameters:
   default: ''
 
 stages:
-- stage: Test_x86
-  dependsOn: Build_x86
-  condition: not(failed())
+# ExtractMatrix stages always run (no skip condition) so the test matrix
+# is available even when Build stages are skipped via foundationUseBuildOutputFromBuildId.
+- stage: ExtractMatrix_x86
+  dependsOn: []
   jobs:
   - job: ExtractMatrix
     pool:
@@ -30,15 +31,9 @@ stages:
         Write-Host "##vso[task.setvariable variable=filteredTestMatrix;isOutput=true]$matrixJson"
       name: filterByPlatformStep
       displayName: "Extract matrix filtering by x86"
-  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
-    parameters:
-      jobName: PipelineTests
-      testMatrix: $[ dependencies.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ]
-      buildPlatform: x86
 
-- stage: Test_x64
-  dependsOn: Build_x64
-  condition: not(failed())
+- stage: ExtractMatrix_x64
+  dependsOn: []
   jobs:
   - job: ExtractMatrix
     pool:
@@ -59,16 +54,10 @@ stages:
         Write-Host "##vso[task.setvariable variable=filteredTestMatrix;isOutput=true]$matrixJson"
       name: filterByPlatformStep
       displayName: "Extract matrix filtering by x64"
-  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
-    parameters:
-      jobName: PipelineTests
-      testMatrix: $[ dependencies.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ]
-      buildPlatform: x64
 
 - ${{ if eq(parameters.TestOnArm64, true)}}:
-  - stage: Test_arm64
-    dependsOn: Build_arm64
-    condition: not(failed())
+  - stage: ExtractMatrix_arm64
+    dependsOn: []
     jobs:
     - job: ExtractMatrix
       pool:
@@ -89,8 +78,40 @@ stages:
           Write-Host "##vso[task.setvariable variable=filteredTestMatrix;isOutput=true]$matrixJson"
         name: filterByPlatformStep
         displayName: "Extract matrix filtering by arm64"
+
+- stage: Test_x86
+  dependsOn:
+  - Build_x86
+  - ExtractMatrix_x86
+  condition: not(failed())
+  jobs:
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
+    parameters:
+      jobName: PipelineTests
+      testMatrix: $[ stageDependencies.ExtractMatrix_x86.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ]
+      buildPlatform: x86
+
+- stage: Test_x64
+  dependsOn:
+  - Build_x64
+  - ExtractMatrix_x64
+  condition: not(failed())
+  jobs:
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
+    parameters:
+      jobName: PipelineTests
+      testMatrix: $[ stageDependencies.ExtractMatrix_x64.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ]
+      buildPlatform: x64
+
+- ${{ if eq(parameters.TestOnArm64, true)}}:
+  - stage: Test_arm64
+    dependsOn:
+    - Build_arm64
+    - ExtractMatrix_arm64
+    condition: not(failed())
+    jobs:
     - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
       parameters:
         jobName: PipelineTests
-        testMatrix: $[ dependencies.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ]
+        testMatrix: $[ stageDependencies.ExtractMatrix_arm64.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ]
         buildPlatform: arm64

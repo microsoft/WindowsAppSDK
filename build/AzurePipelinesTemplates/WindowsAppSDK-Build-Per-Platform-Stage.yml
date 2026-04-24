@@ -18,9 +18,9 @@ parameters:
 stages:
 - stage: ${{ format(iif(parameters.runPREfast, 'PREfast_{0}', 'Build_{0}'), parameters.buildPlatform) }}
   # Skip the build job if we are reusing the output of a previous build.
-  # foundationUseBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
-    eq(variables['foundationUseBuildOutputFromBuildId'],'')
+    eq(variables['useBuildOutputFromBuildId'],'')
   dependsOn: []
   jobs:
   - job: BuildFoundation
@@ -177,28 +177,3 @@ stages:
         SignOutput: ${{ parameters.SignOutput }}
         runPREfast : ${{ parameters.runPREfast }}
         runApiScan : ${{ parameters.runApiScan }}
-
-  # Only run the test matrix extraction job in Build_{buildPlatform} job. The PREfast_{buildPlatform} job don't have the following test stages, don't need this job.
-  - ${{ if not(parameters.runPREfast) }}:
-    - job: ExtractMatrix
-      pool:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
-      steps:
-      - powershell: |
-          $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
-          $targetPlatform = "${{ parameters.buildPlatform }}"
-          $filteredMatrix = @{}
-          foreach ($entry in $testMatrix.PSObject.Properties) {
-            if ($entry.Value.buildPlatform -eq $targetPlatform) {
-                $filteredMatrix[$entry.Name] = $entry.Value
-            }
-          }
-          $matrixJson = $filteredMatrix | ConvertTo-Json -Compress
-          Write-Host "##vso[task.setvariable variable=filteredTestMatrix;isOutput=true]$matrixJson"
-        name: filterByPlatformStep
-        displayName: "Extract matrix as json value filtering by build platform"
-      - script: echo $(filterByPlatformStep.filteredTestMatrix)
-        name: echoMatrix
-        displayName: "Echo filtered matrix"
