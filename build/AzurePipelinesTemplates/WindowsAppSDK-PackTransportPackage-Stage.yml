@@ -20,6 +20,9 @@ stages:
     - Build_x64
     - Build_arm64
   condition:
+    # not(failed()) instead of succeeded() so Pack runs when Build stages are
+    # skipped via foundationUseBuildOutputFromBuildId (skipped != succeeded).
+    # Artifacts are downloaded from the previous build via _foundationBuildOutputBuildId.
     not(failed())
   jobs:
   - job: NugetPackage
