@@ -30,6 +30,10 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
       ob_sdl_prefast_enabled: false
+      # Default to empty so $(WindowsAppSDKVersionPinned) resolves to empty string
+      # rather than being treated as a PowerShell command invocation.
+      # In the monobuild, DetermineVersion-Steps sets this via env var when a local feed exists.
+      WindowsAppSDKVersionPinned: ''
     steps:
     - template: WindowsAppSDK-PackTransportPackage-Steps.yml
       parameters:
