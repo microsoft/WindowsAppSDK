@@ -20,11 +20,6 @@ parameters:
   - name: PublishPackage
     type: boolean
     default: false
-  # Artifact download configuration — per-component pipeline uses specific pipeline/build,
-  # monobuild uses 'current' run since build jobs are in the same stage.
-  - name: downloadSource
-    type: string
-    default: 'specific'  # 'specific' for per-component, 'current' for monobuild
   # Artifact name prefix — per-component uses FoundationBinaries_release/MrtBinaries_release,
   # monobuild uses Build-Foundation/Build-MRT naming convention.
   - name: foundationArtifactPrefix
@@ -35,38 +30,32 @@ parameters:
     default: 'MrtBinaries_release'
 
 steps:
-  - ${{ if eq(parameters.downloadSource, 'specific') }}:
-    - checkout: WinAppSDK
-      fetchDepth: 1
   - task: NuGetAuthenticate@1
 
   # ── Download Foundation build artifacts ──
+  # Always uses source: specific with _foundationBuildOutputBuildId.
+  # The coalesce on that variable resolves to Build.BuildId (current run)
+  # when no override is set, making this equivalent to source: current.
   - ${{ each platform in split('x64;x86;arm64', ';') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation ${{ platform }}'
       inputs:
-        ${{ if eq(parameters.downloadSource, 'specific') }}:
-          source: specific
-          runVersion: specific
-          project: $(System.TeamProjectId)
-          pipeline: $(_foundationBuildOutputPipeline)
-          pipelineId: $(_foundationBuildOutputBuildId)
-        ${{ else }}:
-          source: current
+        source: specific
+        runVersion: specific
+        project: $(System.TeamProjectId)
+        pipeline: $(_foundationBuildOutputPipeline)
+        pipelineId: $(_foundationBuildOutputBuildId)
         artifactName: "${{ parameters.foundationArtifactPrefix }}_${{ platform }}"
         targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation anycpu'
     inputs:
-      ${{ if eq(parameters.downloadSource, 'specific') }}:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_foundationBuildOutputPipeline)
-        pipelineId: $(_foundationBuildOutputBuildId)
-      ${{ else }}:
-        source: current
+      source: specific
+      runVersion: specific
+      project: $(System.TeamProjectId)
+      pipeline: $(_foundationBuildOutputPipeline)
+      pipelineId: $(_foundationBuildOutputBuildId)
       artifactName: "${{ parameters.foundationArtifactPrefix }}_anycpu"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
@@ -75,14 +64,11 @@ steps:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download MRT ${{ platform }}'
       inputs:
-        ${{ if eq(parameters.downloadSource, 'specific') }}:
-          source: specific
-          runVersion: specific
-          project: $(System.TeamProjectId)
-          pipeline: $(_foundationBuildOutputPipeline)
-          pipelineId: $(_foundationBuildOutputBuildId)
-        ${{ else }}:
-          source: current
+        source: specific
+        runVersion: specific
+        project: $(System.TeamProjectId)
+        pipeline: $(_foundationBuildOutputPipeline)
+        pipelineId: $(_foundationBuildOutputBuildId)
         artifactName: "${{ parameters.mrtArtifactPrefix }}_${{ platform }}"
         targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
