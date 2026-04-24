@@ -93,7 +93,10 @@ if ($Clean)
 # Find the Version Value from Directory.Packages.props (CPM)
 # MicrosoftWindowsAppSDKVersionPackageVersion is the pipeline version metadata property.
 [xml]$dppXml = Get-Content -Path "$env:Build_SourcesDirectory\Directory.Packages.props"
-$versionFromProps = ($dppXml.Project.PropertyGroup | Where-Object { $_.MicrosoftWindowsAppSDKVersionPackageVersion }).MicrosoftWindowsAppSDKVersionPackageVersion
+$ns = New-Object System.Xml.XmlNamespaceManager($dppXml.NameTable)
+$ns.AddNamespace("ms", "http://schemas.microsoft.com/developer/msbuild/2003")
+$versionNode = $dppXml.SelectSingleNode("//ms:MicrosoftWindowsAppSDKVersionPackageVersion", $ns)
+$versionFromProps = if ($versionNode) { $versionNode.InnerText } else { $null }
 if ([string]::IsNullOrEmpty($PackageVersion))
 {
     $PackageVersion = $versionFromProps;
