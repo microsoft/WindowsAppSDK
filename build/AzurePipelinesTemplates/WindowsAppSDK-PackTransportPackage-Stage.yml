@@ -20,7 +20,7 @@ stages:
     - Build_x64
     - Build_arm64
   condition:
-    and(succeeded(), eq(variables['foundationUseBuildOutputFromBuildId'],''))
+    not(failed())
   jobs:
   - job: NugetPackage
     pool:
