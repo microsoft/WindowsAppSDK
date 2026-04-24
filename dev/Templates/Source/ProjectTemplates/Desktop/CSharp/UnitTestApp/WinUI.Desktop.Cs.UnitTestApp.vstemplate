@@ -6,6 +6,7 @@
     <Icon>WinUI.Desktop.Cs.UnitTestApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.UnitTestApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+    <SortOrder>70</SortOrder>
     <ProjectType>CSharp</ProjectType>
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>UnitTestApp</DefaultName>

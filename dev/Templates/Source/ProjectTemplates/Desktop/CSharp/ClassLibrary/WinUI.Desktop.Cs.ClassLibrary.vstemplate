@@ -6,6 +6,7 @@
     <Icon>WinUI.Desktop.Cs.ClassLibrary.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.ClassLibrary</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+    <SortOrder>60</SortOrder>
     <ProjectType>CSharp</ProjectType>
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>ClassLibrary</DefaultName>

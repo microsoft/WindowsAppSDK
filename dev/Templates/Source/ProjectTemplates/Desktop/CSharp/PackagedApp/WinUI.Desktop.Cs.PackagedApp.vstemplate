@@ -6,6 +6,7 @@
     <Icon>WinUI.Desktop.Cs.PackagedApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.PackagedApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+    <SortOrder>50</SortOrder>
     <ProjectType>CSharp</ProjectType>
     <CreateNewFolder>false</CreateNewFolder>
     <DefaultName>App</DefaultName>

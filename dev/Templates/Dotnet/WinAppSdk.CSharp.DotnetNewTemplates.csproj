@@ -113,20 +113,10 @@
           Pack="true"
           PackagePath="content/winui.mvvmapp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\**\*.*"
-          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\obj\**"
+          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.png;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.vstemplate"
           Pack="true"
           PackagePath="content/winui.mvvmapp/%(RecursiveDir)%(Filename)%(Extension)" />
-    <!-- Reuse Assets, Properties, app.manifest, and Package.appxmanifest from blank app -->
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Assets\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.mvvmapp/Assets/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Properties\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.mvvmapp/Properties/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\app.manifest"
-          Pack="true"
-          PackagePath="content/winui.mvvmapp/app.manifest" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
+    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\Package-managed.appxmanifest"
           Pack="true"
           PackagePath="content/winui.mvvmapp/Package.appxmanifest" />
     <None Include="$(_GitignoreSource)"

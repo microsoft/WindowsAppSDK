@@ -6,6 +6,7 @@
     <Icon>WinUI.Desktop.Cs.NavigationApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.NavigationApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+    <SortOrder>20</SortOrder>
     <ProjectType>CSharp</ProjectType>
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>App</DefaultName>

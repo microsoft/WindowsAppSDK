@@ -6,6 +6,7 @@
     <Icon>WinUI.Desktop.Cs.TabViewApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.TabViewApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+    <SortOrder>30</SortOrder>
     <ProjectType>CSharp</ProjectType>
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>App</DefaultName>
