@@ -35,6 +35,9 @@ stages:
       # In the monobuild, DetermineVersion-Steps sets this via env var when a local feed exists.
       WindowsAppSDKVersionPinned: ''
     steps:
+    # WinAppSDK checkout needed for NuGetLicense files referenced by BuildAll.ps1
+    - checkout: WinAppSDK
+      fetchDepth: 1
     - template: WindowsAppSDK-PackTransportPackage-Steps.yml
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
