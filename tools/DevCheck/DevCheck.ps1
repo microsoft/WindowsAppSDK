@@ -522,10 +522,12 @@ function Get-TAEFPackageVersion
 {
     $root = Get-ProjectRoot
     $dppPath = Join-Path $root 'Directory.Packages.props'
-    $dppContent = Get-Content $dppPath -Raw -EA:Stop
-    $match = [regex]::Match($dppContent, 'Include="Microsoft.Taef"\s+Version="([^"]+)"')
-    if (-not $match.Success) { throw "Microsoft.Taef version not found in Directory.Packages.props" }
-    return $match.Groups[1].Value
+    [xml]$dppXml = [xml](Get-Content $dppPath -EA:Stop)
+    $ns = New-Object System.Xml.XmlNamespaceManager($dppXml.NameTable)
+    $ns.AddNamespace("ms", "http://schemas.microsoft.com/developer/msbuild/2003")
+    $node = $dppXml.SelectSingleNode("//ms:MicrosoftTaefVersion", $ns)
+    if (-not $node) { throw "MicrosoftTaefVersion property not found in Directory.Packages.props" }
+    return $node.InnerText
 }
 
 function Get-VSWhereOffline
