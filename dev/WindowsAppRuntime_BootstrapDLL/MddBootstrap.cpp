@@ -14,6 +14,32 @@
 
 #include <filesystem>
 
+// Publish the framework package's install directory via env var.
+// WinUI's LoadLibraryAbs consults this when a sibling DLL is not next to
+// Microsoft.UI.Xaml.dll (the hybrid case, where Microsoft.UI.Xaml.dll is
+// pinned in the app's bin dir while siblings remain in the framework).
+// In non-hybrid apps the env var is still set but WinUI's primary path
+// (muxPath) succeeds first and this fallback never fires.
+static void SetFrameworkPathEnvironmentVariable(PCWSTR frameworkPath)
+{
+    SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_FRAMEWORK_PATH", frameworkPath);
+}
+
+// Resolve a framework package's install path from its full name (Win11 path
+// receives only a full name from MddCore::Win11::AddPackageDependency).
+static std::wstring GetFrameworkPackagePath(PCWSTR packageFullName)
+{
+    UINT32 pathLength{ 0 };
+    const auto rc{ GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    if (rc != ERROR_INSUFFICIENT_BUFFER)
+    {
+        THROW_WIN32(rc);
+    }
+    auto path{ std::make_unique<WCHAR[]>(pathLength) };
+    THROW_IF_WIN32_ERROR(GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
+    return std::wstring(path.get());
+}
+
 HRESULT _MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -430,6 +456,9 @@ void FirstTimeInitialization(
         wil::unique_process_heap_string packageFullName;
         THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, &packageFullName));
 
+        // Publish framework path for WinUI's sibling-DLL fallback (see helper comment).
+        SetFrameworkPathEnvironmentVariable(GetFrameworkPackagePath(packageFullName.get()).c_str());
+
         // Update the activity context
         auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
         activityContext.SetInitializationPackageFullName(packageFullName.get());
@@ -487,6 +516,9 @@ void FirstTimeInitialization(
         const MddAddPackageDependencyOptions addOptions{};
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
         THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
+
+        // Publish framework path for WinUI's sibling-DLL fallback (see helper comment).
+        SetFrameworkPathEnvironmentVariable(frameworkPackageInfo->path);
 
         // Remove our temporary path addition
         RemoveFrameworkFromPath(frameworkPackageInfo->path);
