@@ -9,7 +9,7 @@ parameters:
 
 variables:
   _useBuildOutputFromPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
-  _useBuildOutputFromBuildId: $[coalesce(variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
+  _useBuildOutputFromBuildId: $[coalesce(variables['useBuildOutput_BuildId'], variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
 
   channel: '${{ parameters.BuildType }}'
 
