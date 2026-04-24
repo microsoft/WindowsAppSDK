@@ -1,0 +1,228 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include "pch.h"
+
+#include <package_runtime.h>
+
+#include <IsWindowsVersion.h>
+
+namespace TD = ::Test::Diagnostics;
+namespace TB = ::Test::Bootstrap;
+namespace TP = ::Test::Packages;
+
+namespace Test::Package::Tests
+{
+    const auto Main_PackageFullName{ ::TP::WindowsAppRuntimeMain::c_PackageFullName };
+    const auto Framework_PackageFullName{ ::TP::WindowsAppRuntimeFramework::c_PackageFullName };
+    const auto Mutable_PackageFullName{ ::TP::Mutable::c_packageFullName };
+    const auto UserExternal_PackageFullName{ ::TP::UserExternal::c_packageFullName };
+    const auto MachineExternal_PackageFullName{ ::TP::MachineExternal::c_packageFullName };
+
+    class PackageTests_Package_CPP
+    {
+    public:
+        BEGIN_TEST_CLASS(PackageTests_Package_CPP)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
+        END_TEST_CLASS()
+
+    public:
+        TEST_CLASS_SETUP(ClassSetup)
+        {
+            ::TB::Setup();
+
+            if (IsExternalLocationSupported())
+            {
+                RemovePackage_MachineExternal();
+                RemovePackage_UserExternal();
+            }
+            if (IsMutableLocationSupported())
+            {
+                RemovePackage_Mutable();
+            }
+
+            if (IsMutableLocationSupported())
+            {
+                AddPackage_Mutable();
+            }
+            if (IsExternalLocationSupported())
+            {
+                AddPackage_UserExternal();
+                StagePackage_MachineExternal();
+                AddPackage_MachineExternal();
+            }
+
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassCleanup)
+        {
+            ::TB::Cleanup();
+
+            if (IsExternalLocationSupported())
+            {
+                RemovePackage_MachineExternal();
+                RemovePackage_UserExternal();
+            }
+            if (IsMutableLocationSupported())
+            {
+                RemovePackage_Mutable();
+            }
+
+            return true;
+        }
+
+        TEST_METHOD(GetPackageFilePath_InvalidParameter)
+        {
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR noFileName{};
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            const auto options{ GetPackageFilePathOptions_None };
+            VERIFY_ARE_EQUAL(E_INVALIDARG, ::GetPackageFilePath(packageFullName, noFileName, options, wil::out_param(absoluteFilename)));
+        }
+
+        TEST_METHOD(GetPackageFilePath_NullPackageFullName_UnpackagedProcess_NoPackage)
+        {
+            PCWSTR noPackageFullName{};
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_None };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), ::GetPackageFilePath(noPackageFullName, fileName, options, wil::out_param(absoluteFilename)));
+        }
+
+        TEST_METHOD(GetPackageFilePath_NoSuchPackage)
+        {
+            PCWSTR packageFullName{ L"Does.Not.Exist_1.2.3.4_neutral__1234567890abc" };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_None };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"Actual:%ls", !absoluteFilename ? L"<null>" : absoluteFilename.get()));
+        }
+
+        TEST_METHOD(GetPackageFilePath)
+        {
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_None };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            // GetPackageFilePath() w/o specifying Search*Path == SearchEffectivePath but we don't have any matching pacakges
+            // with Mutable or External locations so we'll resolve the Install path
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            const std::filesystem::path actual{ !absoluteFilename ? L"<null>" : absoluteFilename.get() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
+        }
+
+        TEST_METHOD(GetPackageFilePath_InstallPath)
+        {
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()});
+        }
+
+        TEST_METHOD(GetPackageFilePath_MutablePath)
+        {
+            PCWSTR packageFullName{ Mutable_PackageFullName };
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchMutablePath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            std::filesystem::path expected;
+            if (IsMutableLocationSupported())
+            {
+                VERIFY_IS_NOT_NULL(absoluteFilename);
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Mutable);
+            }
+            else
+            {
+                VERIFY_IS_NULL(absoluteFilename);
+            }
+            const std::filesystem::path actual{ absoluteFilename.get() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
+        }
+
+        TEST_METHOD(GetPackageFilePath_MachineExternalPath)
+        {
+            PCWSTR packageFullName{ MachineExternal_PackageFullName };
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchMachineExternalPath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            std::filesystem::path expected;
+            if (IsExternalLocationSupported())
+            {
+                VERIFY_IS_NOT_NULL(absoluteFilename);
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_MachineExternal);
+            }
+            else
+            {
+                VERIFY_IS_NULL(absoluteFilename);
+            }
+            const std::filesystem::path actual{ absoluteFilename.get() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
+        }
+
+        TEST_METHOD(GetPackageFilePath_UserExternalPath)
+        {
+            PCWSTR packageFullName{ UserExternal_PackageFullName };
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchUserExternalPath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            std::filesystem::path expected;
+            if (IsExternalLocationSupported())
+            {
+                VERIFY_IS_NOT_NULL(absoluteFilename);
+                expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_UserExternal);
+            }
+            else
+            {
+                VERIFY_IS_NULL(absoluteFilename);
+            }
+            const std::filesystem::path actual{ absoluteFilename.get() };
+            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
+        }
+
+        TEST_METHOD(GetPackageFilePath_FilterPackageType_Main_NoMatch)
+        {
+            PCWSTR packageFullName{ Main_PackageFullName };
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchFrameworkPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
+        }
+
+        TEST_METHOD(GetPackageFilePath_FilterPackageType_Framework_NoMatch)
+        {
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchMainPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePath(packageFullName, fileName, options, wil::out_param(absoluteFilename)));
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
+        }
+    };
+}

@@ -343,7 +343,7 @@ namespace PickerCommon {
             return;
         }
 
-        for (size_t i = 0; i < value.size(); i++)
+        for (std::uint32_t i = 0; i < value.size(); i++)
         {
             if (value[i] == L'\0')
             {
@@ -366,7 +366,7 @@ namespace PickerCommon {
                 PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
         }
 
-        for (size_t i = 1; i < filter.size(); i++)
+        for (std::uint32_t i = 1; i < filter.size(); i++)
         {
             if (filter[i] == L'.' || filter[i] == L'*' || filter[i] == L'?')
             {
