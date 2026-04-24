@@ -8,7 +8,7 @@
     <IsPackable>true</IsPackable>
     <PackageType>Template</PackageType>
     <PackageId>Microsoft.WindowsAppSDK.WinUI.CSharp.Templates</PackageId>
-    <Version>0.0.3-alpha</Version>
+    <Version>0.0.4-alpha</Version>
     <Title>WinUI 3 C# Templates</Title>
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
