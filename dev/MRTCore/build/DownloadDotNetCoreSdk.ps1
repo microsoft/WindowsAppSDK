@@ -10,9 +10,9 @@ $ErrorActionPreference = 'Stop'
 $dotnetInstallScript = "$env:TEMP\dotnet-install.ps1"
 
 $repoInstallDir  = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\.dotnet")
-$filename = "$PSScriptRoot\..\..\..\eng\Version.Dependencies.props"
+$filename = "$PSScriptRoot\..\..\..\Directory.Packages.props"
 $xml = [xml](Get-Content $filename -EA:Stop)
-$dotNotSdkVersion = $xml.Project.PropertyGroup.CsWinRTDependencyDotNetCoreSdkPackageVersion
+$dotNotSdkVersion = ($xml.Project.PropertyGroup | Where-Object { $_.CsWinRTDependencyDotNetCoreSdkPackageVersion }).CsWinRTDependencyDotNetCoreSdkPackageVersion
 $dotNotSdkVersionLkg = if (-not $skipLKG) { $dotNotSdkVersion }
 
 if ($version -ne "")

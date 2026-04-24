@@ -25,9 +25,6 @@
 .PARAMETER CheckAll
     Check all. If not specified this is set to true if all other -Check... options are false
 
-.PARAMETER CheckDependencies
-    Verify dependencies in projects (*proj, packages.config, eng\Version.*.props) match defined dependencies (eng\Version.*.xml)
-
 .PARAMETER CheckDeveloperMode
     Check developer mode
 
@@ -115,9 +112,6 @@
 .PARAMETER StopTAEFService
     Stop the TAEF service
 
-.PARAMETER SyncDependencies
-    Update dependencies (*proj, packages.config, eng\Version.*.props) to match defined dependencies (eng\Version.*.xml)
-
 .PARAMETER UserSettings
     Load settings file
 
@@ -135,8 +129,6 @@ Param(
     [SecureString]$CertPassword=$null,
 
     [Switch]$CheckAll=$false,
-
-    [Switch]$CheckDependencies=$false,
 
     [Switch]$CheckDeveloperMode=$false,
 
@@ -200,8 +192,6 @@ Param(
 
     [Switch]$StopTAEFService=$false,
 
-    [Switch]$SyncDependencies=$false,
-
     [Switch]$UserSettings=$true,
 
     [String]$UserSettingsFile='DevCheck-UserSettings.ps1',
@@ -228,9 +218,6 @@ $global:vswhere_url = ''
 
 #--------------------------------------
 # Overrideable via settings files
-
-# Paths to scan by -CheckDependencies and -SyncDependencies
-$global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 
 # Windows SDKs to check/install by -CheckWindowsSDK and -InstallWindowsSDK
 $global:windows_sdks = (('10.0.17763.0', 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'),
@@ -1464,344 +1451,6 @@ function Stop-TAEFService
     }
 }
 
-function Get-DependencyVersions
-{
-    # Dependencies are defined in Version.Details.xml
-    #   - Automagically updated by Maestro
-    # Dependencies are defined in Version.Dependencies.xml
-    #   - Manually updated by human beings
-    # Return the pair of lists
-    $dependencies = @{ Automagic=$null; Manual=$null }
-
-    $root = Get-ProjectRoot
-    $path = Join-Path $root 'eng'
-
-    # Parse the Version.Details.xml dependencies
-    $versionDetailsFileName = Join-Path $path 'Version.Details.xml'
-    Write-Host "Reading $($versionDetailsFileName)..."
-    $automagicXml = [xml](Get-Content $versionDetailsFileName -EA:Stop)
-    $automagicVersions = [ordered]@{}
-    ForEach ($dependency in $automagicXml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
-    {
-        $name = $dependency.Name
-        $version = $dependency.Version
-        $automagicVersions.Add($name, $version)
-    }
-    ForEach ($dependency in $automagicXml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
-    {
-        $name = $dependency.Name
-        $version = $dependency.Version
-        $automagicVersions.Add($name, $version)
-    }
-    $dependencies.Automagic = $automagicVersions
-
-    # Parse The Version.Dependencies.xml dependencies
-    $versionDependenciesFileName = Join-Path $path 'Version.Dependencies.xml'
-    Write-Host "Reading $($versionDependenciesFileName)..."
-    $manualXml = [xml](Get-Content $versionDependenciesFileName -EA:Stop)
-    # Parse the Version.Dependencies.xml dependencies
-    $manualVersions = [ordered]@{}
-    ForEach ($dependency in $manualXml.SelectNodes("/Dependencies/Dependency"))
-    {
-        $name = $dependency.Name
-        $version = $dependency.Version
-        $manualVersions.Add($name, $version)
-    }
-    $dependencies.Manual = $manualVersions
-
-    if ($Verbose -eq $true)
-    {
-        ForEach ($list in @($dependencies.AutoMagic, $dependencies.Manual))
-        {
-            ForEach ($name in $list.Keys)
-            {
-                Write-Verbose "...$($name) = $($list[$name])"
-            }
-        }
-    }
-
-    return $dependencies
-}
-
-function Test-PackagesConfig
-{
-    param(
-        [string] $filename,
-        $versions
-    )
-
-    Write-Verbose "Scanning $filename"
-    $xml = [xml](Get-Content $filename -EA:Stop)
-    $changed = $false
-
-    $packageCount = $xml.SelectNodes("//*[local-name()='package']").Count
-    if ($packageCount -gt 0)
-    {
-        ForEach ($package in $xml.packages.package)
-        {
-            $name = $package.id
-            $version = $package.version
-
-            if (-not($versions.Contains($name)))
-            {
-                Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
-                $global:issues++
-            }
-            elseif ($version -ne $versions[$name])
-            {
-                if ($SyncDependencies -eq $true)
-                {
-                    Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
-                    $package.version = $versions[$name]
-                    $changed = $true
-                }
-                else
-                {
-                    $expected = $versions[$name]
-                    Write-Host "ERROR: Unknown version $name=$version (not $expected) in $filename. Run DevCheck -SyncDepedencies to update" -ForegroundColor Red -BackgroundColor Black
-                    $global:issues++
-                }
-            }
-
-            if (-not($package.HasAttribute("targetFramework")))
-            {
-                Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
-                $global:issues++
-            }
-            else
-            {
-                $targetFramework = $package.targetFramework
-                if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
-                {
-                    Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
-                    $global:issues++
-                }
-            }
-
-        }
-    }
-
-    if ($changed -eq $true)
-    {
-        $xml.Save($filename)
-
-        # Save() doesn't add a newline at the end-of-file
-        # No newline at end-of-file makes git, GitHub diff and other tools cranky
-        # Make sure they're not cranky
-        $content = Get-Content $filename -EA:Stop -Encoding utf8
-        Set-Content -Path $filename -Value $content -Force -Encoding utf8
-    }
-}
-
-function Test-VcxProj
-{
-    param(
-        [string] $filename,
-        $versions
-    )
-
-    Write-Verbose "Scanning $filename"
-    $xml = [xml](Get-Content $filename -EA:Stop)
-    $changed = $false
-    ForEach ($package in $xml.project.import.project)
-    {
-        Write-Verbose "TODO scan packages/dependencies in .vcxproj"
-    }
-}
-
-function Build-Dependencies
-{
-    param(
-        [HashTable]$in
-    )
-
-    $automagic = $in["Automagic"]
-    $manual = $in["Manual"]
-
-    $output = @"
-<?xml version="1.0" encoding="utf-8"?>
-<!-- DO NOT EDIT!!! This is a generated file! See Version.Details.xml for more details -->
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <VersionDetailsXmlFilename>`$(MSBuildThisFileDirectory)Version.Details.xml</VersionDetailsXmlFilename>
-    <VersionDetailsXml>`$([System.IO.File]::ReadAllText(`"`$(VersionDetailsXmlFilename)`"))</VersionDetailsXml>
-    <VersionDependenciesXmlFilename>`$(MSBuildThisFileDirectory)Version.Dependencies.xml</VersionDependenciesXmlFilename>
-    <VersionDependenciesXml>`$([System.IO.File]::ReadAllText("`$(VersionDependenciesXmlFilename)"))</VersionDependenciesXml>
-
-"@
-
-    $output = $output + "    <!-- Dependencies: Maestro -->`r`n"
-    $lines = @{}
-    ForEach ($name in $automagic.Keys)
-    {
-        # NOTE: Create macros per name.Replace(".","").Append("PackageVersion")=value
-        $macro = $name.Replace(".","") + "PackageVersion"
-        $value = $automagic[$name]
-        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
-
-    }
-    $sortedLines = $lines.Keys | Sort-Object
-    $output = $output + [String]::Join("", $sortedLines)
-
-    $output = $output + "`r`n"
-    $output = $output + "    <!-- Dependencies: Manual -->`r`n"
-    $lines = @{}
-    ForEach ($name in $manual.Keys)
-    {
-        # NOTE: Create macros per name.Replace(".","").Append("Version")=value
-        $macro = $name.Replace(".","") + "Version"
-        $value = $manual[$name]
-        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDependenciesXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
-    }
-    $sortedLines = $lines.Keys | Sort-Object
-    $output = $output + [String]::Join("", $sortedLines)
-
-    $output = $output + @"
-
-"@
-
-    $output = $output + @"
-  </PropertyGroup>
-</Project>
-"@
-
-    return $output
-}
-
-function CheckAndSync-Dependencies
-{
-    param(
-        [HashTable]$in
-    )
-
-    $automagic = $in["Automagic"]
-    $manual = $in["Manual"]
-
-    $expected = Build-Dependencies @{ Automagic=$automagic; Manual=$manual }
-
-    $root = Get-ProjectRoot
-    $path = Join-Path $root 'eng'
-    $filename = Join-Path $path 'Version.Dependencies.props'
-    Write-Host "Reading $($filename)..."
-    if (-not(Test-Path -Path $filename -PathType Leaf))
-    {
-        if ($SyncDependencies -eq $false)
-        {
-            Write-Host "ERROR: $filename not found. Create with 'DevCheck -SyncDependencies'" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
-            return
-        }
-    }
-    else
-    {
-        $content = Get-Content $filename -EA:Stop -Raw
-        if ($content.TrimEnd() -eq $expected.TrimEnd()) # Ignore trailing whitespace
-        {
-            Write-Host "Verify $($filename)...OK"
-            return
-        }
-        elseif ($SyncDependencies -eq $false)
-        {
-            Write-Host "ERROR: $($filename) out of date. Update with 'DevCheck -SyncDependencies'" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
-        }
-    }
-
-    if ($SyncDependencies -eq $true)
-    {
-        Write-Host "Updating $($filename)..."
-        Set-Content -Path $filename -Value $expected -Force
-    }
-}
-
-function Test-Dependencies
-{
-    # Get version information for dependencies
-    $fatal_errors = 0
-    $dependencies = Get-DependencyVersions
-    if ([string]::IsNullOrEmpty($dependencies))
-    {
-        $global:issues++
-        $fatal_errors++
-    }
-    $automagic = $dependencies.Automagic
-    $manual = $dependencies.Manual
-    if ([string]::IsNullOrEmpty($automagic))
-    {
-        $global:issues++
-        $fatal_errors++
-    }
-
-    # Merge the lists
-    $versions = [ordered]@{}
-    ForEach ($name in $automagic.Keys)
-    {
-        if ($versions.Contains($name))
-        {
-            Write-Host "ERROR: Dependency defined multiple times ($name)" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
-            $fatal_errors++
-        }
-        else
-        {
-            $value = $automagic[$name]
-            $versions.Add($name, $value)
-        }
-    }
-    ForEach ($name in $manual.Keys)
-    {
-        if ($versions.Contains($name))
-        {
-            Write-Host "ERROR: Dependency defined multiple times ($name)" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
-            $fatal_errors++
-        }
-        else
-        {
-            $value = $manual[$name]
-            $versions.Add($name, $value)
-        }
-    }
-    Write-Host "$($versions.Count) dependencies detected"
-
-    # Fatal errors detected?
-    if ($fatal_errors++ -gt 0)
-    {
-        return
-    }
-
-    # Check Version.Dependencies.props
-    $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
-
-    # Scan for references - packages.config
-    $root = Get-ProjectRoot
-    $files = 0
-    ForEach ($subtree in $global:dependency_paths)
-    {
-        $path = Join-Path $root $subtree
-        Write-Host "Scanning packages.config..."
-        ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
-        {
-            $null = Test-PackagesConfig $file.FullName $versions
-            $files++
-        }
-    }
-    Write-Host "Scanned $($files) packages.config"
-
-    $files = 0
-    ForEach ($subtree in $global:dependency_paths)
-    {
-        $path = Join-Path $root $subtree
-        Write-Host "Scanning *.vcxproj..."
-        ForEach ($file in (Get-ChildItem -Path $path -Recurse -File '*.vcxproj'))
-        {
-            $null = Test-VcxProj $file.FullName $versions
-            $files++
-        }
-    }
-    Write-Host "Scanned $($files) *.vcxproj"
-}
-
 function Get-DeveloperMode
 {
     $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
@@ -2031,15 +1680,10 @@ $remove_any = ($RemoveAll -eq $true) -or ($RemoveTaefService -eq $true) -or ($Re
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
     ($CheckVCLibs -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckWindowsSDK -eq $false) -And
-    ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
     ($CheckNugetExe -eq $false) -And ($NugetExeUpdate -eq $false) -And
     ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
 {
     $CheckAll = $true
-}
-if ($SyncDependencies -eq $true)
-{
-    $CheckDependencies = $true
 }
 if ($FixAll -eq $true)
 {
@@ -2165,11 +1809,6 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
             $test = Start-TAEFService
         }
     }
-}
-
-if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
-{
-    $null = Test-Dependencies
 }
 
 if (($CheckAll -ne $false) -Or ($CheckDeveloperMode -ne $false))

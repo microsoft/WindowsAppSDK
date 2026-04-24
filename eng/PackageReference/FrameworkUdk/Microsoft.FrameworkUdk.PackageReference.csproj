@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <!-- This csproj facilitates restoring internal dependencies. Versions come from eng/Version.Dependencies.props (CPM). -->
+  <!-- This csproj facilitates restoring internal dependencies. Versions come from Directory.Packages.props (CPM). -->
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
