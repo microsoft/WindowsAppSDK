@@ -44,4 +44,10 @@ variables:
 
   enableTestPass: true
 
+  # BinSkim analyzeTargetGlob for Foundation builds.
+  # Includes all EXEs/DLLs (+:f|**.exe, +:f|**.dll) then excludes:
+  #   - NuGet package contents restored during build (**/packages/**)
+  #   - .NET runtime reference DLLs in test projects (**/WindowsAppSDK.Test.NetCore/**)
+  #   - Tool binaries from the @WinAppSDK monorepo checkout (pdbcopy.exe, pgort140.dll, etc.)
+  #     which are pre-built and not built from source in this repo
   BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/WinAppSDK/**/*.exe;-:f|**/WinAppSDK/**/*.dll
