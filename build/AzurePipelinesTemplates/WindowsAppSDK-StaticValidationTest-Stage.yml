@@ -30,11 +30,7 @@ stages:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation'
       inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_foundationBuildOutputPipeline)
-        pipelineId: $(_foundationBuildOutputBuildId)
+        source: current
         artifactName: "TransportPackage"
         targetPath: $(System.ArtifactsDirectory)
 
