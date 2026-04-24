@@ -8,8 +8,13 @@ parameters:
     default: 'experimental'
 
 variables:
-  _useBuildOutputFromPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
-  _useBuildOutputFromBuildId: $[coalesce(variables['useBuildOutput_BuildId'], variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
+  # Foundation per-component pipeline artifact download variables.
+  # Renamed from _useBuildOutputFrom* to avoid collision with the monobuild's
+  # identically-named variables (which have a different coalesce chain).
+  # In the monobuild, Foundation-Build-Stage.yml uses the monobuild's _useBuildOutputFromBuildId
+  # (defined in WindowsAppSDK-CommonVariables.yml@WinAppSDK) which includes useBuildOutput_BuildId.
+  _foundationBuildOutputPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
+  _foundationBuildOutputBuildId: $[coalesce(variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
 
   channel: '${{ parameters.BuildType }}'
 

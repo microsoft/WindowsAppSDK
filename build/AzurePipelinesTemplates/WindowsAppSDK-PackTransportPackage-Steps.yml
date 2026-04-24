@@ -49,8 +49,8 @@ steps:
           source: specific
           runVersion: specific
           project: $(System.TeamProjectId)
-          pipeline: $(_useBuildOutputFromPipeline)
-          pipelineId: $(_useBuildOutputFromBuildId)
+          pipeline: $(_foundationBuildOutputPipeline)
+          pipelineId: $(_foundationBuildOutputBuildId)
         ${{ else }}:
           source: current
         artifactName: "${{ parameters.foundationArtifactPrefix }}_${{ platform }}"
@@ -63,8 +63,8 @@ steps:
         source: specific
         runVersion: specific
         project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
+        pipeline: $(_foundationBuildOutputPipeline)
+        pipelineId: $(_foundationBuildOutputBuildId)
       ${{ else }}:
         source: current
       artifactName: "${{ parameters.foundationArtifactPrefix }}_anycpu"
@@ -79,8 +79,8 @@ steps:
           source: specific
           runVersion: specific
           project: $(System.TeamProjectId)
-          pipeline: $(_useBuildOutputFromPipeline)
-          pipelineId: $(_useBuildOutputFromBuildId)
+          pipeline: $(_foundationBuildOutputPipeline)
+          pipelineId: $(_foundationBuildOutputBuildId)
         ${{ else }}:
           source: current
         artifactName: "${{ parameters.mrtArtifactPrefix }}_${{ platform }}"
