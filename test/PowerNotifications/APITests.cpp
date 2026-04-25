@@ -231,5 +231,19 @@ namespace Test::PowerNotifications
             VERIFY_IS_NOT_NULL(token);
             PowerManager::SystemSuspendStatusChanged(token);
         }
+
+        TEST_METHOD(SystemSuspendStatusChanged2Callback)
+        {
+            // Test registration and verify event args are passed correctly
+            auto token = PowerManager::SystemSuspendStatusChanged2([&](const auto&, const auto& args) {
+                // Verify we can access the Status property
+                auto status = args.Status();
+                VERIFY_IS_TRUE(status == SystemSuspendStatus::Entering || 
+                              status == SystemSuspendStatus::AutoResume || 
+                              status == SystemSuspendStatus::ManualResume);
+            });
+            VERIFY_IS_NOT_NULL(token);
+            PowerManager::SystemSuspendStatusChanged2(token);
+        }
     };
 }
