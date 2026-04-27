@@ -7,6 +7,11 @@ Unit tests for the Windows App SDK Visual Studio project template wizard and UI 
 - .NET 8.0 SDK (target framework: `net8.0-windows10.0.19041.0`)
 - No Visual Studio installation required
 
+> **Note:** While the VSIX extension and template projects require Visual Studio /
+> `msbuild` to build (they depend on VSSDK targets not available in the `dotnet` CLI),
+> the unit test project uses the SDK-style format and can be built and run with
+> `dotnet test` independently.
+
 ## Running Tests
 
 ```powershell

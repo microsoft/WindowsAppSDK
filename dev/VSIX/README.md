@@ -76,12 +76,24 @@ The unit test project compiles the same shared wizard source files used by the e
 
 ## Building
 
-The VSIX extensions are built as part of the main Windows App SDK solution:
+The VSIX extensions require the Visual Studio SDK (VSSDK) build targets and must be
+built with Visual Studio or `msbuild` from a VS Developer Command Prompt.
+**`dotnet build` is not supported** — the template and extension projects import
+`$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets`, which is only available when the
+VS SDK workload is installed. Building with `dotnet` CLI will produce MSB4019 errors
+because `$(VSToolsPath)` resolves to the .NET SDK directory, which does not contain
+the VSSDK targets.
 
 ```powershell
-# Build from repository root
+# Build from repository root (uses msbuild)
 .\BuildAll.ps1
+
+# Or build the VSIX solution directly from a VS Developer Command Prompt
+msbuild dev\VSIX\WindowsAppSDK.Extension.sln
 ```
+
+> **Note:** Unit tests can still be run with `dotnet test` — the test project does
+> not depend on VSSDK targets. See the [Tests README](Tests/README.md) for details.
 
 ## Key Components
 
