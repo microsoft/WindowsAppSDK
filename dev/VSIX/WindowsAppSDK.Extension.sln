@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31619.372
@@ -51,6 +51,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		default-package-versions.props = default-package-versions.props
 		Directory.Build.props = Directory.Build.props
+		README.md = README.md
 		update-package-versions.targets = update-package-versions.targets
 	EndProjectSection
 EndProject
@@ -88,6 +89,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{96699B
 	ProjectSection(SolutionItems) = preProject
 		Shared\WizardImplementation.cs = Shared\WizardImplementation.cs
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A1B2C3D4-E5F6-4A7B-8C9D-0E1F2A3B4C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Tests\README.md = Tests\README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsAppSDK.VSIX.UnitTests", "Tests\WindowsAppSDK.VSIX.UnitTests\WindowsAppSDK.VSIX.UnitTests.csproj", "{B5A6C7D8-E9F0-4A1B-2C3D-4E5F6A7B8C9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -183,6 +191,10 @@ Global
 		{DFA6B905-57A3-4B31-A74B-25BA2243389F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFA6B905-57A3-4B31-A74B-25BA2243389F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFA6B905-57A3-4B31-A74B-25BA2243389F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5A6C7D8-E9F0-4A1B-2C3D-4E5F6A7B8C9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5A6C7D8-E9F0-4A1B-2C3D-4E5F6A7B8C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5A6C7D8-E9F0-4A1B-2C3D-4E5F6A7B8C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5A6C7D8-E9F0-4A1B-2C3D-4E5F6A7B8C9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -220,6 +232,7 @@ Global
 		{45777B9F-9CC1-47D7-BD66-C3C194277902} = {EC44EE95-8EC9-4EE5-A8A6-E6BE2F32C843}
 		{DFA6B905-57A3-4B31-A74B-25BA2243389F} = {1A8A7481-2108-496B-802D-39F9C08D86F3}
 		{96699B60-67B5-4186-9FEC-3963ED811FF0} = {50DEEF87-BC2F-4B45-B97D-B83135F12786}
+		{B5A6C7D8-E9F0-4A1B-2C3D-4E5F6A7B8C9D} = {A1B2C3D4-E5F6-4A7B-8C9D-0E1F2A3B4C5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A417E325-71BD-4C29-94F8-F21FB3F5C392}

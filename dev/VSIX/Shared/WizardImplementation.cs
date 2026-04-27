@@ -44,6 +44,9 @@ namespace WindowsAppSDK.TemplateUtilities
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
 
+        // Replaceable in unit tests to avoid blocking MessageBox popups.
+        internal static Func<string, string, MessageBoxButtons, MessageBoxIcon, DialogResult> ShowMessageBox = MessageBox.Show;
+
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -192,7 +195,7 @@ namespace WindowsAppSDK.TemplateUtilities
                     var errorMessage = CreateErrorMessage(ErrorMessageFormat.MessageBox);
                     LogError(errorMessage);
 
-                    var result = MessageBox.Show(
+                    var result = ShowMessageBox(
                     errorMessage,
                     Resources._1046,
                     MessageBoxButtons.OK,
