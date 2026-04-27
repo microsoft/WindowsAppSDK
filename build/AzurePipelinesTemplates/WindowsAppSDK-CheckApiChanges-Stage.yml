@@ -37,6 +37,6 @@ stages:
           source: specific
           runVersion: specific
           project: $(System.TeamProjectId)
-          pipeline: $(_useBuildOutputFromPipeline)
-          pipelineId: $(_useBuildOutputFromBuildId)
+          pipeline: $(_foundationBuildOutputPipeline)
+          pipelineId: $(_foundationBuildOutputBuildId)
           artifactName: 'TransportPackage'

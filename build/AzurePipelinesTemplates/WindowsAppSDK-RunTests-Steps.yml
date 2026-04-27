@@ -23,8 +23,8 @@ steps:
       source: specific
       runVersion: specific
       project: $(System.TeamProjectId)
-      pipeline: $(_useBuildOutputFromPipeline)
-      pipelineId: $(_useBuildOutputFromBuildId)
+      pipeline: $(_foundationBuildOutputPipeline)
+      pipelineId: $(_foundationBuildOutputBuildId)
       artifactName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
@@ -34,8 +34,8 @@ steps:
       source: specific
       runVersion: specific
       project: $(System.TeamProjectId)
-      pipeline: $(_useBuildOutputFromPipeline)
-      pipelineId: $(_useBuildOutputFromBuildId)
+      pipeline: $(_foundationBuildOutputPipeline)
+      pipelineId: $(_foundationBuildOutputBuildId)
       artifactName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
@@ -126,8 +126,8 @@ steps:
             source: specific
             runVersion: specific
             project: $(System.TeamProjectId)
-            pipeline: $(_useBuildOutputFromPipeline)
-            pipelineId: $(_useBuildOutputFromBuildId)
+            pipeline: $(_foundationBuildOutputPipeline)
+            pipelineId: $(_foundationBuildOutputBuildId)
             artifactName: ${{ parameters.SamplesArtifactName }}_${{ artifactNameSuffix }}
             targetPath: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples'
             patterns: |

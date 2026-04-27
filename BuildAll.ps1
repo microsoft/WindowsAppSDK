@@ -9,6 +9,9 @@ Configuration: Comma delimited string of configurations to run.
 AzureBuildStep: Only used by the pipeline to perform tasks such as signing in between the steps
 OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
+WindowsAppSDKVersionPinned: Mono-build pinned version for internal Microsoft.WindowsAppSDK.*
+    packages. When set, internal package versions in nuspec dependencies are rewritten
+    to this value instead of the ValueOrDefault fallbacks from Directory.Packages.props.
 Clean: Performs a clean on BuildOutput, Obj, and build\override
 
 Note about building in different environments.
@@ -26,6 +29,11 @@ Param(
     [string]$OutputDirectory = (Split-Path $MyInvocation.MyCommand.Path) + "\BuildOutput",
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
+    # When running in the monobuild, the pipeline passes a pinned version string that
+    # overrides the ValueOrDefault fallback versions in Directory.Packages.props for
+    # all internal WindowsAppSDK packages. This PowerShell script cannot evaluate
+    # MSBuild property expressions, so the pinned value must be supplied explicitly.
+    [string]$WindowsAppSDKVersionPinned = "",
     [switch]$Clean = $false
 )
 
@@ -33,6 +41,7 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
+
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
 $ComponentBasePath = "BuildOutput/ComponentNuget"
@@ -59,35 +68,78 @@ if ($Clean)
     Exit
 }
 
-# Find the Version Value from eng\Version.Dependencies.props (CPM)
+# Find the Version Value from Directory.Packages.props (CPM)
 # MicrosoftWindowsAppSDKVersionPackageVersion is the pipeline version metadata property.
-[xml]$versionDepsProps = Get-Content -Path "$env:Build_SourcesDirectory\eng\Version.Dependencies.props"
-$versionFromProps = $versionDepsProps.Project.PropertyGroup.MicrosoftWindowsAppSDKVersionPackageVersion
+[xml]$dppXml = Get-Content -Path "$env:Build_SourcesDirectory\Directory.Packages.props"
+$ns = New-Object System.Xml.XmlNamespaceManager($dppXml.NameTable)
+$ns.AddNamespace("ms", "http://schemas.microsoft.com/developer/msbuild/2003")
+$versionNode = $dppXml.SelectSingleNode("//ms:MicrosoftWindowsAppSDKVersionPackageVersion", $ns)
+$versionFromProps = if ($versionNode) { $versionNode.InnerText } else { $null }
 if ([string]::IsNullOrEmpty($PackageVersion))
 {
     $PackageVersion = $versionFromProps;
-    Write-Host "Updating PackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in eng\Version.Dependencies.props: $PackageVersion"
+    Write-Host "Updating PackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in Directory.Packages.props: $PackageVersion"
 }
 
 if ([string]::IsNullOrEmpty($ComponentPackageVersion))
 {
     Write-Host $versionFromProps
     $ComponentPackageVersion = $versionFromProps;
-    Write-Host "Updating ComponentPackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in eng\Version.Dependencies.props: $ComponentPackageVersion"
+    Write-Host "Updating ComponentPackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in Directory.Packages.props: $ComponentPackageVersion"
 }
 
-# Build a lookup of internal package versions from Directory.Packages.props for nuspec dependency updates.
+# Build a lookup of package versions from Directory.Packages.props for nuspec dependency updates.
+# The XML defines properties in PropertyGroups and references them in PackageVersion items.
+# Internal packages have IsInternal="true" metadata; when -WindowsAppSDKVersionPinned is set,
+# those use the pinned version (matching MSBuild behavior).
 $dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
-$dppContent = Get-Content -Path $dppPath -Raw
-$internalPackageVersions = @{}
-foreach ($m in [regex]::Matches($dppContent, 'Include="([^"]+)"\s+Version="\$\(\[MSBuild\]::ValueOrDefault\(''\$\(WindowsAppSDKVersionPinned\)'',\s*''([^'']+)''\)\)"')) {
-    $internalPackageVersions[$m.Groups[1].Value] = $m.Groups[2].Value
-}
-# Also add external packages (simple Version="x.y.z" pattern)
-foreach ($m in [regex]::Matches($dppContent, 'Include="([^"]+)"\s+Version="([^$"][^"]*)"')) {
-    if (-not $internalPackageVersions.ContainsKey($m.Groups[1].Value)) {
-        $internalPackageVersions[$m.Groups[1].Value] = $m.Groups[2].Value
+[xml]$dppXmlForVersions = [xml](Get-Content -Path $dppPath -Raw)
+
+# First, build a property lookup from all PropertyGroups.
+# Properties may contain ValueOrDefault expressions — extract the fallback value,
+# or use the pinned version when WindowsAppSDKVersionPinned is set.
+$msbuildProps = @{}
+$vodPattern = [regex]"ValueOrDefault\([^,]+,\s*'([^']+)'\)"
+foreach ($pg in $dppXmlForVersions.Project.PropertyGroup) {
+    foreach ($prop in $pg.ChildNodes) {
+        if ($prop.NodeType -eq 'Element' -and -not [string]::IsNullOrEmpty($prop.InnerText)) {
+            $value = $prop.InnerText
+            $vodMatch = $vodPattern.Match($value)
+            if ($vodMatch.Success) {
+                if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+                    $value = $WindowsAppSDKVersionPinned
+                } else {
+                    $value = $vodMatch.Groups[1].Value
+                }
+            }
+            $msbuildProps[$prop.Name] = $value
+        }
     }
+}
+
+# Then resolve PackageVersion items
+$internalPackageVersions = @{}
+foreach ($ig in $dppXmlForVersions.Project.ItemGroup) {
+    foreach ($pv in $ig.SelectNodes("*[local-name()='PackageVersion']")) {
+        $pkgName = $pv.GetAttribute("Include")
+        $versionExpr = $pv.GetAttribute("Version")
+
+        # Resolve $(PropertyName) references
+        $resolved = $versionExpr
+        if ($versionExpr -match '\$\(') {
+            foreach ($propMatch in [regex]::Matches($versionExpr, '\$\(([^)]+)\)')) {
+                $propName = $propMatch.Groups[1].Value
+                if ($msbuildProps.ContainsKey($propName)) {
+                    $resolved = $msbuildProps[$propName]
+                }
+            }
+        }
+
+        $internalPackageVersions[$pkgName] = $resolved
+    }
+}
+if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+    Write-Host "Pinned internal WindowsAppSDK packages to version '$WindowsAppSDKVersionPinned' for nuspec dependency rewriting."
 }
 
 $configurationForMrtAndAnyCPU = "Release"

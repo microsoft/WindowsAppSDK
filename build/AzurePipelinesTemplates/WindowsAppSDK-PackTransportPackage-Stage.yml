@@ -20,176 +20,31 @@ stages:
     - Build_x64
     - Build_arm64
   condition:
-    and(succeeded(), eq(variables['useBuildOutputFromBuildId'],''))
+    # not(failed()) instead of succeeded() so Pack runs when Build stages are
+    # skipped via foundationUseBuildOutputFromBuildId (skipped != succeeded).
+    # Artifacts are downloaded from the previous build via _foundationBuildOutputBuildId.
+    not(failed())
   jobs:
   - job: NugetPackage
     pool:
-      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
     timeoutInMinutes: 120
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
-      ob_sdl_prefast_enabled: false    # We currently do not build native code in this job.  
+      ob_sdl_prefast_enabled: false
+      # Default to empty so $(WindowsAppSDKVersionPinned) resolves to empty string
+      # rather than being treated as a PowerShell command invocation.
+      # In the monobuild, DetermineVersion-Steps sets this via env var when a local feed exists.
+      WindowsAppSDKVersionPinned: ''
     steps:
+    # WinAppSDK checkout needed for NuGetLicense files referenced by BuildAll.ps1
     - checkout: WinAppSDK
       fetchDepth: 1
-    - task: NuGetAuthenticate@1
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Foundation x64'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_release_x64"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Foundation x86'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_release_x86"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Foundation arm64'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_release_arm64"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Foundation anycpu'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_release_anycpu"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download MRT x64'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "MrtBinaries_release_x64"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download MRT x86'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "MrtBinaries_release_x86"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download MRT arm64'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "MrtBinaries_release_arm64"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: PowerShell@2
-      name: StageFiles
-      inputs:
-        filePath: 'BuildAll.ps1'
-        arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
-
-    - task: CopyFiles@2
-      displayName: 'Copy symbols to artifact staging directory'
-      condition: always()
-      inputs:
-        sourceFolder: $(Build.SourcesDirectory)\BuildOutput\FullNuget
-        contents: |
-          **\*.pdb
-        targetFolder: $(Build.ArtifactStagingDirectory)\symbols
-
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@WinAppSDK
+    - template: WindowsAppSDK-PackTransportPackage-Steps.yml
       parameters:
-        SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+        SignOutput: ${{ parameters.SignOutput }}
         IsOfficial: ${{ parameters.IsOfficial }}
-
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-DetermineVersion-Steps.yml@WinAppSDK
-      parameters:
-        IsOfficial: ${{ parameters.IsOfficial }}
-
-    - task: PowerShell@2
-      name: SetVersion
-      displayName: Update metapackage version
-      inputs:
-        targetType: 'inline'
-        script: |
-          $packageVersion = '$(WindowsAppSDKFormattedVersion)'
-          [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
-          $publicNuspec.package.metadata.version = $packageVersion
-          Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
-
-    - task: PowerShell@2
-      name: PackNuget
-      inputs:
-        filePath: 'BuildAll.ps1'
-        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKFormattedVersion)" -ComponentPackageVersion "$(WindowsAppSDKFormattedVersion)"
-
-    # Disable building MockWindowsAppSDK until we can consider the public vs private scenario
-    # - ${{ if eq(parameters.BuildMockWindowsAppSDK, 'true') }}:
-    #   - task: PowerShell@2
-    #     name: BuildMock
-    #     inputs:
-    #       filePath: 'BuildAll.ps1'
-    #       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKFormattedVersion)"
-
-    - ${{ if eq(parameters.SignOutput, 'true') }}:
-      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
-        parameters:
-          FolderPath: $(build.artifactStagingDirectory)\FullNuget
-          Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
-          KeyCode: 'CP-401405'
-          UseMinimatch: true
-
-    - task: CopyFiles@2
-      displayName: MoveToOutputDirectory
-      inputs:
-        SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
-        TargetFolder: '$(ob_outputDirectory)\NugetContent'
-
-    - task: CopyFiles@2
-      displayName: MoveToOutputDirectory
-      inputs:
-        SourceFolder: '$(build.artifactStagingDirectory)\FullNuget'
-        TargetFolder: '$(ob_outputDirectory)'
-
-    - ${{ if eq(parameters.PublishPackage, 'true') }}:
-      # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-      - task: NuGetCommand@2
-        displayName: 'NuGet push to ProjectReunion.nuget.internal'
-        inputs:
-          command: 'push'
-          packagesToPush: '$(ob_outputDirectory)\*.nupkg'
-          verbosityPush: 'Detailed'
-          nuGetFeedType: 'internal'
-          #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
-          publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+        PublishPackage: ${{ parameters.PublishPackage }}
+        foundationArtifactPrefix: 'FoundationBinaries_release'
+        mrtArtifactPrefix: 'MrtBinaries_release'

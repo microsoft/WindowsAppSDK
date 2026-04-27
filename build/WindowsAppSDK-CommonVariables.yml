@@ -1,20 +1,53 @@
 # Foundation-specific variables (supplements Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK)
+# Used by both per-component pipelines and Foundation-Build-Stage.yml (monobuild).
 # Only variables that are unique to Foundation or override mono repo defaults belong here.
+
+parameters:
+  - name: BuildType
+    type: string
+    default: 'experimental'
+
 variables:
-  channel: 'experimental'
+  # Foundation per-component pipeline artifact download variables.
+  # These are Foundation-specific to avoid collision with the monobuild's
+  # identically-named variables (which have a different coalesce chain).
+  # In the monobuild, Foundation-Build-Stage.yml uses the monobuild's _useBuildOutputFromBuildId
+  # (defined in WindowsAppSDK-CommonVariables.yml@WinAppSDK) which includes useBuildOutput_BuildId.
+  _foundationBuildOutputPipeline: $[coalesce(variables.foundationUseBuildOutputFromPipeline, variables['System.DefinitionId'] )]
+  _foundationBuildOutputBuildId: $[coalesce(variables.foundationUseBuildOutputFromBuildId, variables['Build.BuildId'] )]
+
+  channel: '${{ parameters.BuildType }}'
 
   # REPOROOT is provided by the shared template (as RepoRoot — ADO variables are case-insensitive)
   OUTPUTROOT: $(REPOROOT)\out
 
   # Foundation defers to the global default LKG compiler version (unlike Closed which pins a specific LKG).
   # Empty strings override the Closed-specific values from the mono repo CommonVariables.
-  # https://dev.azure.com/microsoft/OS/_git/UndockedES?path=/Pipelines/Config/CompilerToolsSettings.json
   compilerOverridePackageName: ""
   compilerOverridePackageVersion: ""
   compilerOverrideNupkgVersion: ""
 
+  # SDL settings
+  ob_sdl_msbuildOverride: true
   ob_sdl_prefast_runDuring: 'Guardian'
+  ob_sdl_checkCompliantCompilerWarnings: true
+  ob_sdl_apiscan_enabled: false
+  ob_sdl_prefast_enabled: false
+  # BinSkim exclusions. Glob patterns use forward slashes because BinSkim normalizes paths
+  # to forward slashes before matching (error output like
+  # "File: out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-*.dll" confirms this).
+  # Mixing backslashes silently fails to match. Excluded:
+  #   - NuGet package contents (**/packages/**)
+  #   - Test NetCore reference DLLs shipped with the .NET runtime (api-ms-win-core-*.dll)
+  #   - The @WinAppSDK monorepo checkout (tool binaries like pdbcopy.exe, pgort140.dll)
+  ob_sdl_binskim_scannerParameters: '+:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/WinAppSDK/**/*.exe;-:f|**/WinAppSDK/**/*.dll'
 
   enableTestPass: true
 
-  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe;-:f|**\WindowsAppSDK.Test.NetCore\net**;-:f|**\WinAppSDK\**\*.exe;-:f|**\WinAppSDK\**\*.dll
+  # BinSkim analyzeTargetGlob for Foundation builds.
+  # Includes all EXEs/DLLs (+:f|**.exe, +:f|**.dll) then excludes:
+  #   - NuGet package contents restored during build (**/packages/**)
+  #   - .NET runtime reference DLLs in test projects (**/WindowsAppSDK.Test.NetCore/**)
+  #   - Tool binaries from the @WinAppSDK monorepo checkout (pdbcopy.exe, pgort140.dll, etc.)
+  #     which are pre-built and not built from source in this repo
+  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/WinAppSDK/**/*.exe;-:f|**/WinAppSDK/**/*.dll

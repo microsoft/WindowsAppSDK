@@ -1,16 +1,16 @@
 <!-- Copyright (c) Microsoft Corporation. Licensed under the MIT License. -->
 <!--
-    Central Package Management (CPM) for the WindowsAppSDK Foundation component.
+    Central Package Management (CPM) + version properties for the WindowsAppSDK Foundation component.
 
-    This is a standalone GitHub repo (microsoft/WindowsAppSDK) that builds independently.
-    When consumed by the WinAppSDK monobuild, $(WindowsAppSDKVersionPinned) overrides internal
-    package versions to align with the mono-build's computed version.
+    This file is the SINGLE SOURCE OF TRUTH for all package versions:
+    - CPM PackageVersion items for SDK-style project restore
+    - MSBuild properties (e.g. $(MicrosoftTaefVersion)) for non-SDK .vcxproj Import paths
 
-    Internal WinAppSDK packages use ValueOrDefault to support both scenarios:
-    - Per-component builds: WindowsAppSDKVersionPinned is NOT set -> uses fallback version (latest from feed)
-    - Mono-build: pipeline passes /p:WindowsAppSDKVersionPinned=<exact-version>
+    Imported explicitly by Directory.Build.props so non-SDK .vcxproj projects pick up the
+    properties. SDK-style projects auto-import this file via NuGet CPM conventions.
 
-    External packages are pinned to exact versions.
+    Mono-build override: when $(WindowsAppSDKVersionPinned) is set, all internal WinAppSDK
+    package versions are pinned to that value instead of their fallback defaults.
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
@@ -18,41 +18,98 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
-  <!-- Internal WinAppSDK packages — IsInternal metadata is used by build/RestoreInternalPackages.proj -->
-  <ItemGroup Label="Internal WinAppSDK Packages">
-    <PackageVersion Include="Microsoft.WindowsAppSDK.Base" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.260323000-dev.experimental9'))" IsInternal="true" />
-    <PackageVersion Include="Microsoft.FrameworkUdk" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))" IsInternal="true" />
-    <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))" IsInternal="true" />
-    <PackageVersion Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.10-experimental'))" IsInternal="true" />
-    <PackageVersion Include="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '1.7.0-main.20241009.0'))" IsInternal="true" />
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       Version properties: defined ONCE here, consumed by both CPM items
+       (below) and .vcxproj Import paths like:
+         $(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\...
+
+       Internal packages use $(WindowsAppSDKVersionPinned) when set (mono-build),
+       otherwise fall back to the hardcoded default.
+       ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Pipeline version metadata -->
+  <PropertyGroup Label="Version Metadata">
+    <MicrosoftWindowsAppSDKVersionPackageVersion>1.8.0</MicrosoftWindowsAppSDKVersionPackageVersion>
+  </PropertyGroup>
+
+  <!-- CsWinRT target framework dependencies (not NuGet packages; toolchain values) -->
+  <PropertyGroup Label="CsWinRT Toolchain">
+    <CsWinRTDependencyDotNetCoreRuntimePackageVersion>6.0.33</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
+    <CsWinRTDependencyDotNetCoreSdkPackageVersion>6.0.425</CsWinRTDependencyDotNetCoreSdkPackageVersion>
+    <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>38</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
+  </PropertyGroup>
+
+  <!-- WindowsAppSDK package version properties.
+       These properties are consumed by .vcxproj path-based Import statements
+       (e.g. $(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\...)
+       and by eng/PackageReference/*.csproj PackageDownload items.
+       ValueOrDefault resolves to $(WindowsAppSDKVersionPinned) when set (mono-build),
+       otherwise falls back to the pinned version literal. -->
+  <PropertyGroup Label="WindowsAppSDK Package Version Properties">
+    <MicrosoftWindowsAppSDKBasePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.260323000-dev.experimental9'))</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftFrameworkUdkPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))</MicrosoftFrameworkUdkPackageVersion>
+    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.10-experimental'))</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '1.7.0-main.20241009.0'))</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
+  </PropertyGroup>
+
+  <!-- External package versions -->
+  <PropertyGroup Label="External Package Versions">
+    <MicrosoftWindowsSDKBuildToolsVersion>10.0.26100.4654</MicrosoftWindowsSDKBuildToolsVersion>
+    <MicrosoftWindowsSDKBuildToolsMSIXVersion>1.7.20250829.1</MicrosoftWindowsSDKBuildToolsMSIXVersion>
+    <MicrosoftWindowsCppWinRTVersion>2.0.230706.1</MicrosoftWindowsCppWinRTVersion>
+    <MicrosoftWindowsCsWinRTPackageVersion>2.1.1</MicrosoftWindowsCsWinRTPackageVersion>
+    <MicrosoftWindowsImplementationLibraryVersion>1.0.240803.1</MicrosoftWindowsImplementationLibraryVersion>
+    <MicrosoftBuildTasksGitVersion>1.1.1</MicrosoftBuildTasksGitVersion>
+    <MicrosoftSourceLinkCommonVersion>1.1.1</MicrosoftSourceLinkCommonVersion>
+    <MicrosoftSourceLinkGitHubVersion>1.1.1</MicrosoftSourceLinkGitHubVersion>
+    <MicrosoftTaefVersion>10.95.240918004</MicrosoftTaefVersion>
+    <MicrosoftWebWebView2Version>1.0.2903.40</MicrosoftWebWebView2Version>
+    <MicrosoftTelemetryInboxNativeVersion>10.0.19041.1-191206-1406.vb-release.x86fre</MicrosoftTelemetryInboxNativeVersion>
+    <MicrosoftWindowsAppSDKProtobufVersion>3.21.12</MicrosoftWindowsAppSDKProtobufVersion>
+    <MicrosoftWindowsAppSDKVersion>1.6.250408002</MicrosoftWindowsAppSDKVersion>
+  </PropertyGroup>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CPM PackageVersion items: reference the properties above.
+       Each version is defined exactly once (in the PropertyGroups).
+       ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- WindowsAppSDK packages — IsInternal metadata is used by build/RestoreInternalPackages.proj -->
+  <ItemGroup Label="WindowsAppSDK Packages">
+    <PackageVersion Include="Microsoft.WindowsAppSDK.Base" Version="$(MicrosoftWindowsAppSDKBasePackageVersion)" IsInternal="true" />
+    <PackageVersion Include="Microsoft.FrameworkUdk" Version="$(MicrosoftFrameworkUdkPackageVersion)" IsInternal="true" />
+    <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)" IsInternal="true" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="$(MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion)" IsInternal="true" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="$(MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion)" IsInternal="true" />
   </ItemGroup>
 
   <!-- Build tooling and SDK -->
   <ItemGroup Label="Build Tools and SDK">
-    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
-    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.20250829.1" />
-    <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="2.0.230706.1" />
-    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.1.1" />
-    <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="1.0.240803.1" />
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(MicrosoftWindowsSDKBuildToolsVersion)" />
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="$(MicrosoftWindowsSDKBuildToolsMSIXVersion)" />
+    <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(MicrosoftWindowsCppWinRTVersion)" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(MicrosoftWindowsImplementationLibraryVersion)" />
   </ItemGroup>
 
   <!-- Source link -->
   <ItemGroup Label="Source Link">
-    <PackageVersion Include="Microsoft.Build.Tasks.Git" Version="1.1.1" />
-    <PackageVersion Include="Microsoft.SourceLink.Common" Version="1.1.1" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageVersion Include="Microsoft.Build.Tasks.Git" Version="$(MicrosoftBuildTasksGitVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
   </ItemGroup>
 
   <!-- Test frameworks -->
   <ItemGroup Label="Test Frameworks">
-    <PackageVersion Include="Microsoft.Taef" Version="10.95.240918004" />
+    <PackageVersion Include="Microsoft.Taef" Version="$(MicrosoftTaefVersion)" />
   </ItemGroup>
 
   <!-- Runtime dependencies -->
   <ItemGroup Label="Runtime Dependencies">
-    <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
-    <PackageVersion Include="Microsoft.Telemetry.Inbox.Native" Version="10.0.19041.1-191206-1406.vb-release.x86fre" />
-    <PackageVersion Include="Microsoft.WindowsAppSDK.Protobuf" Version="3.21.12" />
+    <PackageVersion Include="Microsoft.Web.WebView2" Version="$(MicrosoftWebWebView2Version)" />
+    <PackageVersion Include="Microsoft.Telemetry.Inbox.Native" Version="$(MicrosoftTelemetryInboxNativeVersion)" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK.Protobuf" Version="$(MicrosoftWindowsAppSDKProtobufVersion)" />
   </ItemGroup>
 
   <!-- VS extension tooling (VSIX stage) -->
@@ -70,6 +127,6 @@
 
   <!-- Self-reference for compat tests -->
   <ItemGroup Label="Self-Reference">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.6.250408002" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="$(MicrosoftWindowsAppSDKVersion)" />
   </ItemGroup>
 </Project>

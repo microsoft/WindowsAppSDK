@@ -137,6 +137,8 @@ extends:
         SignOutput: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+      parameters:
+        testMatrix: ${{ variables.PipelineTests }}
 
     - ${{ if eq( parameters.BuildSampleApps, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
