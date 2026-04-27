@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WindowsAppSDK.VSIX.UnitTests</RootNamespace>
+    <AssemblyName>WindowsAppSDK.VSIX.UnitTests</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Match the C# extension compilation constant for shared wizard source -->
+    <DefineConstants>$(DefineConstants);CSHARP_EXTENSION</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Test framework packages -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
+    <PackageReference Include="Moq" />
+  </ItemGroup>
+
+  <!-- VS SDK packages for types used by the wizard code -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.SDK" />
+    <PackageReference Include="NuGet.VisualStudio" />
+    <!-- Need threading assembly at runtime for JoinableTaskContext in test setup -->
+    <PackageReference Include="Microsoft.VisualStudio.Threading" />
+  </ItemGroup>
+
+  <!-- Link shared wizard source files (same as extension projects) -->
+  <ItemGroup>
+    <Compile Include="$(SharedDir)WizardImplementation.cs" Link="SharedSource\WizardImplementation.cs" />
+    <Compile Include="$(SharedDir)WizardInfoBarEvents.cs" Link="SharedSource\WizardInfoBarEvents.cs" />
+    <Compile Include="$(SharedDir)OutputWindowHelper.cs" Link="SharedSource\OutputWindowHelper.cs" />
+  </ItemGroup>
+
+  <!-- Link VSPackage resource files for C# extension (provides Resources._1044 etc.) -->
+  <ItemGroup>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx" Link="Resources\VSPackage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>VSPackage.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>WindowsAppSDK.Cs.Extension.Dev17</CustomToolNamespace>
+      <!-- Force resource name to match what VSPackage.Designer.cs expects -->
+      <LogicalName>WindowsAppSDK.Cs.Extension.Resources.VSPackage.resources</LogicalName>
+    </EmbeddedResource>
+    <Compile Include="$(ExtensionDir)Cs\Common\VSPackage.Designer.cs" Link="Resources\VSPackage.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>VSPackage.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

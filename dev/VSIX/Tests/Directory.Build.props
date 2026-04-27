@@ -1,0 +1,29 @@
+<Project>
+  <!--
+    Override the VSIX Directory.Build.props for test projects.
+    Test projects don't need VSIX-specific build settings.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <VSIXBuild>false</VSIXBuild>
+    <DeployExtension>false</DeployExtension>
+    <EnableDefaultNoneItems>true</EnableDefaultNoneItems>
+    <!--
+      Suppress VS threading analyzer warnings in test projects:
+      VSSDK005: Avoid instantiating JoinableTaskContext (test setup creates its own)
+      VSTHRD002: Synchronous waits on tasks (tests block synchronously by design)
+      VSTHRD010: Accessing members on the main thread (tests use mocks/COM interop,
+                 not the VS UI thread, so ThrowIfNotOnUIThread() would fail at runtime)
+    -->
+    <NoWarn>$(NoWarn);VSSDK005;VSTHRD002;VSTHRD010</NoWarn>
+  </PropertyGroup>
+
+  <!-- Useful folder paths (match VSIX conventions) -->
+  <PropertyGroup>
+    <RepoRoot>$(MSBuildThisFileDirectory)..\..\..\</RepoRoot>
+    <VSIXRootDir>$(MSBuildThisFileDirectory)..\</VSIXRootDir>
+    <SharedDir>$(VSIXRootDir)Shared\</SharedDir>
+    <ExtensionDir>$(VSIXRootDir)Extension\</ExtensionDir>
+    <ProjectTemplatesDir>$(VSIXRootDir)ProjectTemplates\</ProjectTemplatesDir>
+  </PropertyGroup>
+</Project>
