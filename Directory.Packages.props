@@ -39,22 +39,18 @@
     <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>38</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
   </PropertyGroup>
 
-  <!-- WindowsAppSDK package versions -->
-  <PropertyGroup Label="WindowsAppSDK Package Versions">
-    <MicrosoftWindowsAppSDKBasePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftWindowsAppSDKBasePackageVersion>
-    <MicrosoftWindowsAppSDKBasePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.260323000-dev.experimental9</MicrosoftWindowsAppSDKBasePackageVersion>
-
-    <MicrosoftFrameworkUdkPackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftFrameworkUdkPackageVersion>
-    <MicrosoftFrameworkUdkPackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.0-experimental-27300.1857.260302-0806.0</MicrosoftFrameworkUdkPackageVersion>
-
-    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
-    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.0-experimental-27300.1857.260302-0806.0</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
-
-    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
-    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.10-experimental</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
-
-    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
-    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">1.7.0-main.20241009.0</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
+  <!-- WindowsAppSDK package version properties.
+       These properties are consumed by .vcxproj path-based Import statements
+       (e.g. $(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\...)
+       and by eng/PackageReference/*.csproj PackageDownload items.
+       ValueOrDefault resolves to $(WindowsAppSDKVersionPinned) when set (mono-build),
+       otherwise falls back to the pinned version literal. -->
+  <PropertyGroup Label="WindowsAppSDK Package Version Properties">
+    <MicrosoftWindowsAppSDKBasePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.260323000-dev.experimental9'))</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftFrameworkUdkPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))</MicrosoftFrameworkUdkPackageVersion>
+    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.10-experimental'))</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '1.7.0-main.20241009.0'))</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
   </PropertyGroup>
 
   <!-- External package versions -->

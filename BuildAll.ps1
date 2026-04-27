@@ -95,12 +95,24 @@ if ([string]::IsNullOrEmpty($ComponentPackageVersion))
 $dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
 [xml]$dppXmlForVersions = [xml](Get-Content -Path $dppPath -Raw)
 
-# First, build a property lookup from all PropertyGroups
+# First, build a property lookup from all PropertyGroups.
+# Properties may contain ValueOrDefault expressions — extract the fallback value,
+# or use the pinned version when WindowsAppSDKVersionPinned is set.
 $msbuildProps = @{}
+$vodPattern = [regex]"ValueOrDefault\([^,]+,\s*'([^']+)'\)"
 foreach ($pg in $dppXmlForVersions.Project.PropertyGroup) {
     foreach ($prop in $pg.ChildNodes) {
         if ($prop.NodeType -eq 'Element' -and -not [string]::IsNullOrEmpty($prop.InnerText)) {
-            $msbuildProps[$prop.Name] = $prop.InnerText
+            $value = $prop.InnerText
+            $vodMatch = $vodPattern.Match($value)
+            if ($vodMatch.Success) {
+                if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+                    $value = $WindowsAppSDKVersionPinned
+                } else {
+                    $value = $vodMatch.Groups[1].Value
+                }
+            }
+            $msbuildProps[$prop.Name] = $value
         }
     }
 }
@@ -111,20 +123,16 @@ foreach ($ig in $dppXmlForVersions.Project.ItemGroup) {
     foreach ($pv in $ig.SelectNodes("*[local-name()='PackageVersion']")) {
         $pkgName = $pv.GetAttribute("Include")
         $versionExpr = $pv.GetAttribute("Version")
-        $isInternal = $pv.GetAttribute("IsInternal") -eq "true"
 
         # Resolve $(PropertyName) references
         $resolved = $versionExpr
-        foreach ($propMatch in [regex]::Matches($versionExpr, '\$\(([^)]+)\)')) {
-            $propName = $propMatch.Groups[1].Value
-            if ($msbuildProps.ContainsKey($propName)) {
-                $resolved = $msbuildProps[$propName]
+        if ($versionExpr -match '\$\(') {
+            foreach ($propMatch in [regex]::Matches($versionExpr, '\$\(([^)]+)\)')) {
+                $propName = $propMatch.Groups[1].Value
+                if ($msbuildProps.ContainsKey($propName)) {
+                    $resolved = $msbuildProps[$propName]
+                }
             }
-        }
-
-        # For internal packages, override with pinned version when set
-        if ($isInternal -and -not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
-            $resolved = $WindowsAppSDKVersionPinned
         }
 
         $internalPackageVersions[$pkgName] = $resolved
