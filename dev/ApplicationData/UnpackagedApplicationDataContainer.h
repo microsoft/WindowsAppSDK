@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "M.W.S.ApplicationDataContainer.h"
+#include "Microsoft.Windows.Storage.ApplicationDataContainer.g.h"
 
-namespace Microsoft::Windows::Storage
+namespace winrt::Microsoft::Windows::Storage::implementation
 {
-    struct UnpackagedApplicationDataContainer
+    struct UnpackagedApplicationDataContainer : ApplicationDataContainerT<UnpackagedApplicationDataContainer>
     {
         UnpackagedApplicationDataContainer() = default;
         UnpackagedApplicationDataContainer(wil::shared_hkey key, winrt::hstring const& name, winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality);
