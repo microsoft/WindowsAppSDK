@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,7 +25,12 @@ namespace WindowsAppSDK.VSIX.UnitTests
             var actionItem = new Mock<IVsInfoBarActionItem>();
 
             // Act — null infoBarUIElement should not throw
+            // Expected behavior: logs "Hyperlink not found" via OutputWindowHelper and returns early
             events.OnActionItemClicked(null, actionItem.Object);
+
+            // Assert — If we reach here without exception, the null check worked correctly.
+            // Note: Verifying the OutputWindowHelper call would require refactoring to inject
+            // a testable logging abstraction or mocking ServiceProvider.GlobalProvider.
         }
 
         [TestMethod]
@@ -35,7 +41,10 @@ namespace WindowsAppSDK.VSIX.UnitTests
             var element = new Mock<IVsInfoBarUIElement>();
 
             // Act — null actionItem should not throw
+            // Expected behavior: logs "Hyperlink not found" via OutputWindowHelper and returns early
             events.OnActionItemClicked(element.Object, null);
+
+            // Assert — If we reach here without exception, the null check worked correctly.
         }
 
         [TestMethod]
@@ -44,8 +53,11 @@ namespace WindowsAppSDK.VSIX.UnitTests
             // Arrange
             var events = new NuGetInfoBarUIEvents("test error details");
 
-            // Act — both null should not throw
+            // Act — both parameters null should not throw
+            // Expected behavior: logs "Hyperlink not found" via OutputWindowHelper and returns early
             events.OnActionItemClicked(null, null);
+
+            // Assert — If we reach here without exception, the null check worked correctly.
         }
 
         [TestMethod]
