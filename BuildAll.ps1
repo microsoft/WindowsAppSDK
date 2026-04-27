@@ -10,14 +10,8 @@ AzureBuildStep: Only used by the pipeline to perform tasks such as signing in be
 OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
 WindowsAppSDKVersionPinned: Mono-build pinned version for internal Microsoft.WindowsAppSDK.*
-    packages. When set, this value is used as the resolved value of the
-    $(WindowsAppSDKVersionPinned) MSBuild property in Directory.Packages.props so that
-    (a) the nuspec dependency rewriter here picks the pinned version instead of the
-    ValueOrDefault fallbacks, and (b) any msbuild.exe / nuget.exe invoked by this
-    script inherits it as an environment variable and resolves the same version at
-    restore time. In the monobuild the ADO job already sets WindowsAppSDKVersionPinned
-    as a job variable, so passing this parameter is only strictly necessary when the
-    script is invoked standalone (e.g., from the aggregator or a dev box).
+    packages. When set, internal package versions in nuspec dependencies are rewritten
+    to this value instead of the ValueOrDefault fallbacks from Directory.Packages.props.
 Clean: Performs a clean on BuildOutput, Obj, and build\override
 
 Note about building in different environments.
@@ -48,22 +42,6 @@ $ErrorActionPreference = 'Stop'
 
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 
-# Propagate the pinned version to the process environment so that any msbuild.exe
-# or nuget.exe launched below picks it up as the $(WindowsAppSDKVersionPinned)
-# MSBuild property during restore. MSBuild auto-imports env vars as properties.
-# In the monobuild this env var is usually already set by the ADO job variable,
-# but setting it here keeps standalone/local invocations consistent with pipeline
-# behavior (single source of truth: the script parameter).
-if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned))
-{
-    $env:WindowsAppSDKVersionPinned = $WindowsAppSDKVersionPinned
-}
-elseif (-not [string]::IsNullOrEmpty($env:WindowsAppSDKVersionPinned))
-{
-    # No param supplied but env var is set (pipeline job variable) — adopt it so
-    # the nuspec dependency rewriter below uses the same value MSBuild sees.
-    $WindowsAppSDKVersionPinned = $env:WindowsAppSDKVersionPinned
-}
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
 $ComponentBasePath = "BuildOutput/ComponentNuget"
