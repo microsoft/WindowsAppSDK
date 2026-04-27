@@ -39,8 +39,8 @@
     <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>38</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
   </PropertyGroup>
 
-  <!-- Internal WinAppSDK package versions -->
-  <PropertyGroup Label="Internal Package Versions">
+  <!-- WindowsAppSDK package versions -->
+  <PropertyGroup Label="WindowsAppSDK Package Versions">
     <MicrosoftWindowsAppSDKBasePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' != ''">$(WindowsAppSDKVersionPinned)</MicrosoftWindowsAppSDKBasePackageVersion>
     <MicrosoftWindowsAppSDKBasePackageVersion Condition="'$(WindowsAppSDKVersionPinned)' == ''">2.0.260323000-dev.experimental9</MicrosoftWindowsAppSDKBasePackageVersion>
 
@@ -79,8 +79,8 @@
        Each version is defined exactly once (in the PropertyGroups).
        ═══════════════════════════════════════════════════════════════════════ -->
 
-  <!-- Internal WinAppSDK packages — IsInternal metadata is used by build/RestoreInternalPackages.proj -->
-  <ItemGroup Label="Internal WinAppSDK Packages">
+  <!-- WindowsAppSDK packages — IsInternal metadata is used by build/RestoreInternalPackages.proj -->
+  <ItemGroup Label="WindowsAppSDK Packages">
     <PackageVersion Include="Microsoft.WindowsAppSDK.Base" Version="$(MicrosoftWindowsAppSDKBasePackageVersion)" IsInternal="true" />
     <PackageVersion Include="Microsoft.FrameworkUdk" Version="$(MicrosoftFrameworkUdkPackageVersion)" IsInternal="true" />
     <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)" IsInternal="true" />
