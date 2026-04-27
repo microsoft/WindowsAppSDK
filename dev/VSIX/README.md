@@ -6,20 +6,31 @@ This directory contains the Visual Studio extensions (VSIX) for Windows App SDK,
 
 ```
 dev/VSIX/
-├── Extension/          # VSIX extension packages
-│   ├── Cs/            # C# extension
-│   └── Cpp/           # C++ extension
-├── ProjectTemplates/  # Visual Studio project templates
-│   ├── Desktop/       # Desktop app templates (C#, C++)
-│   └── Neutral/       # Platform-neutral templates
-├── ItemTemplates/     # Visual Studio item templates
-│   ├── Desktop/       # Desktop-specific items
-│   └── Neutral/       # Platform-neutral items
-├── Shared/            # Shared code used by wizards and extensions
-│   ├── WizardImplementation.cs  # Main wizard logic
-│   ├── WizardInfoBarEvents.cs   # InfoBar event handlers
-│   └── OutputWindowHelper.cs    # Output window utilities
-└── Tests/             # Unit tests for VSIX components
+├── Extension/                      # VSIX extension packages
+│   ├── Cs/                         # C# extension
+│   │   ├── Common/                 # Localized VSPackage resource files
+│   │   └── Dev17/                  # VS 2022 extension project & manifests
+│   └── Cpp/                        # C++ extension
+│       ├── Common/                 # Localized VSPackage resource files
+│       └── Dev17/                  # VS 2022 extension project, manifests & NuGetPackageList.cs
+├── ProjectTemplates/               # Visual Studio project templates
+│   ├── Desktop/                    # Desktop app templates
+│   │   ├── CSharp/                 # SingleProjectPackagedApp, PackagedApp, ClassLibrary, UnitTestApp
+│   │   └── CppWinRT/              # SingleProjectPackagedApp, PackagedApp, UnitTestApp
+│   └── Neutral/                    # Platform-neutral templates
+│       └── CppWinRT/              # RuntimeComponent
+├── ItemTemplates/                  # Visual Studio item templates
+│   ├── Desktop/                    # Desktop-specific items
+│   │   ├── CSharp/                # BlankWindow
+│   │   └── CppWinRT/             # BlankWindow
+│   └── Neutral/                    # Platform-neutral items
+│       ├── CSharp/                # BlankPage, UserControl, TemplatedControl, ResourceDictionary, Resw
+│       └── CppWinRT/             # BlankPage, UserControl, TemplatedControl, ResourceDictionary, Resw
+├── Shared/                         # Shared code used by wizards and extensions
+│   ├── WizardImplementation.cs     # Main wizard logic (NuGetPackageInstaller)
+│   ├── WizardInfoBarEvents.cs      # InfoBar event handlers (NuGetInfoBarUIEvents)
+│   └── OutputWindowHelper.cs       # Output window utilities
+└── Tests/                          # Unit tests for VSIX components
     └── WindowsAppSDK.VSIX.UnitTests/
 ```
 
@@ -27,48 +38,41 @@ dev/VSIX/
 
 ### Unit Tests
 
-The `Tests/WindowsAppSDK.VSIX.UnitTests` project contains comprehensive unit tests for the VSIX wizard and UI components.
+The `Tests/WindowsAppSDK.VSIX.UnitTests` project contains unit tests for the VSIX wizard and UI components, targeting `net8.0-windows10.0.19041.0`.
 
-#### Test Categories
+#### Test Classes
 
-1. **WizardInfoBarEventsTests** - Tests for InfoBar hyperlink handling
-   - Null parameter handling and defensive programming
-   - Action context routing (ManageNuGetPackages, SeeErrorDetails)
-   - VS service integration (DTE commands, Output window)
+1. **NuGetPackageInstallerTests** (20 tests) — Package parsing, `ProjectFinishedGenerating` behavior, NuGet installation failures, happy-path installation, `ShouldAddProjectItem`, and template-specific package count verification.
 
-2. **Other test files** - (Add as implemented)
+2. **WizardInfoBarEventsTests** (9 tests) — Null parameter handling, `OnClosed`, constructor storage, `SeeErrorDetails` / `ManageNuGetPackages` hyperlink routing, unknown action context, and non-hyperlink action items.
+
+3. **ErrorMessageTests** (8 tests) — `CreateErrorMessage` for InfoBar and MessageBox formats (single/multiple packages, null project fallback, format differences) and `CreateDetailedErrorMessage` content/structure.
 
 #### Running Tests
 
 ```powershell
-# Run all tests
-dotnet test Tests\WindowsAppSDK.VSIX.UnitTests\WindowsAppSDK.VSIX.UnitTests.csproj
+# Run all VSIX unit tests
+dotnet test dev\VSIX\Tests\WindowsAppSDK.VSIX.UnitTests\WindowsAppSDK.VSIX.UnitTests.csproj
 
-# Run specific test class
-dotnet test --filter "FullyQualifiedName~WizardInfoBarEventsTests"
+# Run a specific test class
+dotnet test dev\VSIX\Tests\WindowsAppSDK.VSIX.UnitTests\WindowsAppSDK.VSIX.UnitTests.csproj --filter "FullyQualifiedName~NuGetPackageInstallerTests"
 ```
 
 ### Test Infrastructure
 
 The tests use:
-- **MSTest** - Test framework
-- **Moq** - Mocking framework for VS interfaces
-- **VsTestBase** - Base class that configures ThreadHelper for UI thread simulation
+- **MSTest** — Test framework
+- **Moq** — Mocking framework for VS SDK interfaces
+- **VsTestBase** — Abstract base class that pins culture to `en-US` and configures `ThreadHelper` via reflection so `ThrowIfNotOnUIThread()` passes in tests
 
 Key helper classes:
-- `VsTestBase` - Configures test environment for VS SDK types
-- `MockServiceSetup` - Creates mock VS services and projects
+- `VsTestBase` — Configures `JoinableTaskContext` with the test thread as the main thread
+- `MockServiceSetup` — Creates mock `IComponentModel`, `EnvDTE.Project` instances (C# and C++), and provides reflection helpers (`SetPrivateField`, `GetPrivateField`, `InvokePrivateMethod`)
+- `TemplateTestData` — Defines NuGet package lists and `TemplateInfo` metadata for all shipped project templates
 
-### Testing VS Integration
+### Shared Source Linking
 
-Due to the complexity of mocking `ServiceProvider.GlobalProvider`, integration tests verify:
-- **Code path correctness** - Ensures the right methods are called based on action contexts
-- **Defensive error handling** - Validates graceful handling of null services
-- **Command documentation** - Documents expected DTE command GUIDs and IDs
-
-For full verification of VS service calls, consider:
-1. Integration tests with real VS services (requires VS test host)
-2. Dependency injection refactoring to make VS services mockable
+The unit test project compiles the same shared wizard source files used by the extension projects (`WizardImplementation.cs`, `WizardInfoBarEvents.cs`, `OutputWindowHelper.cs`) with the `CSHARP_EXTENSION` constant defined. It also links the C# extension's `VSPackage.resx` and `VSPackage.Designer.cs` for resource string access.
 
 ## Building
 
@@ -83,22 +87,22 @@ The VSIX extensions are built as part of the main Windows App SDK solution:
 
 ### Wizard Implementation
 
-`Shared/WizardImplementation.cs` implements the VS project wizard that:
-- Detects project type (C# vs C++)
-- Installs required NuGet packages
-- Displays InfoBars for errors with actionable hyperlinks
+`Shared/WizardImplementation.cs` implements the `NuGetPackageInstaller` VS project wizard (`IWizard`) that:
+- Parses the `$NuGetPackages$` replacement parameter to determine required packages
+- Detects project type (C++ via `SolutionVCProjectGuid` vs C#)
+- For C++ projects, installs NuGet packages immediately in `ProjectFinishedGenerating`
+- For C# projects, defers installation until `SolutionRestoreFinished`
+- Constructs error messages (`CreateErrorMessage`, `CreateDetailedErrorMessage`) and displays them via InfoBar or MessageBox
 
 ### InfoBar Events
 
-`Shared/WizardInfoBarEvents.cs` handles user interactions with InfoBar hyperlinks:
-- **ManageNuGetPackages** - Opens NuGet Package Manager
-  - Command: `{25fd982b-8cae-4cbd-a440-e03ffccde106}`, ID: `0x100`
-  - Reference: [Invoke Manage NuGet Packages Dialog Programmatically](https://devblogs.microsoft.com/dotnet/invoke-manage-nuget-packages-dialog-programmatically/)
-- **SeeErrorDetails** - Shows detailed error information in Output window
+`Shared/WizardInfoBarEvents.cs` implements `NuGetInfoBarUIEvents` (`IVsInfoBarUIEvents`) to handle user interactions with InfoBar hyperlinks:
+- **ManageNuGetPackages** — Opens NuGet Package Manager via DTE command `{25fd982b-8cae-4cbd-a440-e03ffccde106}`, ID `0x100`
+- **SeeErrorDetails** — Writes detailed error information to the VS Output window
 
 ### Output Window Helper
 
-`Shared/OutputWindowHelper.cs` provides utilities for writing messages to the VS Output window with proper pane activation and formatting.
+`Shared/OutputWindowHelper.cs` provides `ShowMessageInOutputWindow` for writing messages to the VS Output window with proper pane creation, activation, and formatting.
 
 ## Design Principles
 

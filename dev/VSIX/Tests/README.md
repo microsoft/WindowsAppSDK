@@ -1,71 +1,51 @@
-# VSIX Template Tests
+# VSIX Unit Tests
 
-Unit and integration tests for the Windows App SDK Visual Studio project templates.
+Unit tests for the Windows App SDK Visual Studio project template wizard and UI components.
 
 ## Prerequisites
 
-### Unit Tests
-- .NET Framework 4.7.2 developer pack
+- .NET 8.0 SDK (target framework: `net8.0-windows10.0.19041.0`)
 - No Visual Studio installation required
-
-### Integration Tests
-- Visual Studio 2022 (Enterprise, Professional, or Community)
-- Windows App SDK VSIX installed in the VS experimental instance
-- Set `VSIX_TEST_DEVENV_PATH` env var if VS is not in a standard location
 
 ## Running Tests
 
-### Unit Tests (fast, no VS required)
 ```powershell
-cd dev\VSIX\Tests
-dotnet test WindowsAppSDK.VSIX.UnitTests --verbosity normal
+# Run all VSIX unit tests
+dotnet test dev\VSIX\Tests\WindowsAppSDK.VSIX.UnitTests\WindowsAppSDK.VSIX.UnitTests.csproj --verbosity normal
+
+# Run a specific test class
+dotnet test dev\VSIX\Tests\WindowsAppSDK.VSIX.UnitTests\WindowsAppSDK.VSIX.UnitTests.csproj --filter "FullyQualifiedName~NuGetPackageInstallerTests"
 ```
 
-### Integration Tests (slow, requires VS)
-```powershell
-cd dev\VSIX\Tests
-dotnet test WindowsAppSDK.VSIX.IntegrationTests --filter "TestCategory=Integration" --verbosity normal
-```
+## Test Coverage (37 tests)
 
-### All Tests
-```powershell
-cd dev\VSIX
-dotnet test WindowsAppSDK.Extension.sln --verbosity normal
-```
-
-## Test Coverage
-
-### Unit Tests (89 tests)
 | Area | Tests | Description |
 |------|-------|-------------|
-| AddPackageReferences | 9 | SDK-style and legacy .csproj package reference insertion, null/error handling |
-| BuildGuard | 31 | Build blocking/enabling lifecycle, Dispose, shell property changes, update solution callbacks |
-| NuGetPackageInstaller | 18 | Package parsing, ProjectFinishedGenerating, StartInstallation, failure handling |
-| NuGetRestoreDetection | 11 | Exception message matching for disabled NuGet restore scenarios |
-| ErrorMessages | 8 | CreateErrorMessage (InfoBar/MessageBox), CreateDetailedErrorMessage formats |
-| WizardInfoBarEvents | 9 | Hyperlink routing, null handling, unknown action context, constructor |
-| ShouldAddProjectItem | 1 | Always returns true |
-| Template Package Counts | 2 | Correct package count per template type |
+| NuGetPackageInstaller | 20 | Package parsing (standard, empty, C++, unit-test, null), `ProjectFinishedGenerating` (C++ immediate install, C# deferred, project ref storage), installation failures (exception catch, partial failure, null component model / installer / project), happy path (all succeed, `RunFinished` no failures / with failures), `ShouldAddProjectItem`, and template-specific package counts |
+| WizardInfoBarEvents | 9 | Null parameter handling (null element, null action item, both null), `OnClosed`, constructor storage, `SeeErrorDetails` routing, `ManageNuGetPackages` routing, unknown action context, non-hyperlink action item |
+| ErrorMessages | 8 | `CreateErrorMessage` for InfoBar (single/multiple packages, null project fallback) and MessageBox formats, InfoBar vs MessageBox difference, `CreateDetailedErrorMessage` (exception type/message, multiple packages, manual-install instruction) |
 
-### Integration Tests (11 tests)
-| Template | Language | Scenario |
-|----------|----------|----------|
-| SingleProjectPackagedApp | C# | Instantiate → NuGet → Build → Verify .exe |
-| ClassLibrary | C# | Instantiate → NuGet → Build → Verify .dll (PE check) |
-| UnitTestApp | C# | Instantiate → NuGet → Build → Verify test .dll |
-| PackagedApp | C# | Instantiate ProjectGroup → NuGet → Build → Verify .exe |
-| SingleProjectPackagedApp | C++ | Instantiate → NuGet → Build → Verify .exe |
-| UnitTestApp | C++ | Instantiate → NuGet → Build → Verify .dll |
-| PackagedApp | C++ | Instantiate ProjectGroup → NuGet → Build → Verify .exe |
-| RuntimeComponent | C++ | Instantiate → NuGet → Build → Verify .dll + .winmd |
-| NuGet Failure (C#) | C# | Empty NuGet feed → Verify wizard error handling |
-| NuGet Failure (C++) | C++ | Empty NuGet feed → Verify wizard error handling |
+## Project Structure
+
+```
+Tests/
+├── Directory.Build.props                       # Overrides VSIX build props for test projects
+└── WindowsAppSDK.VSIX.UnitTests/
+    ├── WindowsAppSDK.VSIX.UnitTests.csproj     # SDK-style project (net8.0-windows)
+    ├── NuGetPackageInstallerTests.cs            # Tests for NuGetPackageInstaller wizard
+    ├── WizardInfoBarEventsTests.cs              # Tests for NuGetInfoBarUIEvents
+    ├── ErrorMessageTests.cs                     # Tests for error message construction
+    └── TestHelpers/
+        ├── VsTestBase.cs                       # Base class: ThreadHelper + culture setup
+        ├── MockServiceSetup.cs                 # Mock factory: IComponentModel, EnvDTE.Project, reflection helpers
+        └── TemplateTestData.cs                 # NuGet package lists and TemplateInfo for all templates
+```
 
 ## Architecture Notes
 
-- **Unit tests** compile the shared wizard source (`WizardImplementation.cs`, etc.) with `CSHARP_EXTENSION` defined
-- **ThreadHelper** is configured via reflection to treat the test thread as the UI thread
-- **StartInstallationAsync** is called directly via reflection, bypassing `JoinableTaskFactory.Run` which requires a VS message pump
-- **Error paths** that call `SwitchToMainThreadAsync` are tested for invocation but not full error message display (requires VS message pump)
-- **Integration tests** use `EnvDTE` COM automation with a controlled VS experimental instance
-- **NuGet failure tests** use an isolated `NuGet.config` with `<clear />` and an empty local feed
+- **Shared source linking** — Unit tests compile the same shared wizard source files (`WizardImplementation.cs`, `WizardInfoBarEvents.cs`, `OutputWindowHelper.cs`) with the `CSHARP_EXTENSION` constant defined, matching the C# extension project.
+- **VSPackage resources** — The C# extension's `VSPackage.resx` and `VSPackage.Designer.cs` are linked into the test project so that resource strings (e.g., `Resources._1044`) resolve at runtime.
+- **ThreadHelper configuration** — `VsTestBase` creates a `JoinableTaskContext` with the test thread as the main thread and sets it on `ThreadHelper` via reflection so `ThrowIfNotOnUIThread()` passes.
+- **StartInstallationAsync** — Called directly via reflection, bypassing the `JoinableTaskFactory.Run` wrapper in `ProjectFinishedGenerating` which requires a VS message pump.
+- **Error paths** that call `SwitchToMainThreadAsync` are tested for invocation but not full error message display (requires a VS message pump).
+- **MessageBox interception** — `NuGetPackageInstaller.ShowMessageBox` is a replaceable `Func<>` field, allowing tests to capture and verify MessageBox content without blocking UI.
