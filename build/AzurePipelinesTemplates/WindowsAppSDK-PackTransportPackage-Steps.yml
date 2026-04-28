@@ -84,20 +84,35 @@ steps:
   # In monobuild context, BuildAll.ps1 expects NuGetLicense files at the
   # `WinAppSDK\Build\WindowsAppSDK\NuGetLicense` relative path (per-component
   # pattern). The monobuild has them at `Build\WindowsAppSDK\NuGetLicense`
-  # because the WinAppSDK monorepo IS at $(Build.SourcesDirectory). Mirror
-  # them to the expected path so BuildAll.ps1 finds them unchanged.
+  # because the WinAppSDK monorepo IS at $(Build.SourcesDirectory). Ensure
+  # the directory exists at the expected path so BuildAll.ps1 finds them.
   - ${{ if parameters.IsMonobuild }}:
     - task: PowerShell@2
       displayName: 'Mirror NuGetLicense files to BuildAll.ps1-expected path (monobuild)'
       inputs:
         targetType: 'inline'
         script: |
-          $src = Join-Path $env:BUILD_SOURCESDIRECTORY 'Build\WindowsAppSDK\NuGetLicense'
-          $dst = Join-Path $env:BUILD_SOURCESDIRECTORY 'WinAppSDK\Build\WindowsAppSDK\NuGetLicense'
-          if (-not (Test-Path $src)) { throw "Source NuGetLicense path not found: $src" }
-          New-Item -ItemType Directory -Force -Path (Split-Path $dst -Parent) | Out-Null
-          Copy-Item -Recurse -Force $src $dst
-          Write-Host "Mirrored $src -> $dst"
+          $base = $env:BUILD_SOURCESDIRECTORY
+          $candidates = @(
+            (Join-Path $base 'WinAppSDK\Build\WindowsAppSDK\NuGetLicense'),
+            (Join-Path $base 'Build\WindowsAppSDK\NuGetLicense')
+          )
+          $src = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $src) {
+            Write-Host "Searching for NuGetLicense under $base..."
+            Get-ChildItem -Path $base -Recurse -Filter 'license.txt' -ErrorAction SilentlyContinue |
+              Select-Object -First 10 | ForEach-Object { Write-Host "  Found: $($_.FullName)" }
+            throw "NuGetLicense path not found in any candidate location"
+          }
+          Write-Host "Found NuGetLicense source: $src"
+          $dst = Join-Path $base 'WinAppSDK\Build\WindowsAppSDK\NuGetLicense'
+          if ($src -ne $dst) {
+            New-Item -ItemType Directory -Force -Path (Split-Path $dst -Parent) | Out-Null
+            Copy-Item -Recurse -Force $src $dst
+            Write-Host "Mirrored $src -> $dst"
+          } else {
+            Write-Host "NuGetLicense already at expected path"
+          }
 
   - task: PowerShell@2
     name: StageFiles
