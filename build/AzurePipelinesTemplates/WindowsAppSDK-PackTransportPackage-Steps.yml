@@ -36,7 +36,7 @@ steps:
   # Always uses source: specific with _foundationBuildOutputBuildId.
   # The coalesce on that variable resolves to Build.BuildId (current run)
   # when no override is set, making this equivalent to source: current.
-  - ${{ each platform in split('x64;x86;arm64', ';') }}:
+  - ${{ each platform in split('x64;x86;arm64;anycpu', ';') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation ${{ platform }}'
       inputs:
@@ -47,17 +47,6 @@ steps:
         pipelineId: $(_foundationBuildOutputBuildId)
         artifactName: "${{ parameters.foundationArtifactPrefix }}_${{ platform }}"
         targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download Foundation anycpu'
-    inputs:
-      source: specific
-      runVersion: specific
-      project: $(System.TeamProjectId)
-      pipeline: $(_foundationBuildOutputPipeline)
-      pipelineId: $(_foundationBuildOutputBuildId)
-      artifactName: "${{ parameters.foundationArtifactPrefix }}_anycpu"
-      targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   # ── Download MRT build artifacts ──
   - ${{ each platform in split('x64;x86;arm64', ';') }}:
@@ -140,7 +129,7 @@ steps:
   # ── Publish to feed ──
   - ${{ if eq(parameters.PublishPackage, 'true') }}:
     - task: NuGetCommand@2
-      displayName: 'NuGet push to ProjectReunion.nuget.internal'
+      displayName: 'NuGet push to Project.Reunion.nuget.internal'
       inputs:
         command: 'push'
         packagesToPush: '$(ob_outputDirectory)\*.nupkg'
