@@ -54,7 +54,10 @@ steps:
         pipeline: $(_foundationBuildOutputPipeline)
         pipelineId: $(_foundationBuildOutputBuildId)
         artifactName: "${{ parameters.foundationArtifactPrefix }}_${{ platform }}"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+        ${{ if parameters.IsMonobuild }}:
+          targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
+        ${{ else }}:
+          targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation anycpu'
@@ -65,7 +68,10 @@ steps:
       pipeline: $(_foundationBuildOutputPipeline)
       pipelineId: $(_foundationBuildOutputBuildId)
       artifactName: "${{ parameters.foundationArtifactPrefix }}_anycpu"
-      targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+      ${{ if parameters.IsMonobuild }}:
+        targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
+      ${{ else }}:
+        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   # ── Download MRT build artifacts ──
   - ${{ each platform in split('x64;x86;arm64', ';') }}:
@@ -78,7 +84,10 @@ steps:
         pipeline: $(_foundationBuildOutputPipeline)
         pipelineId: $(_foundationBuildOutputBuildId)
         artifactName: "${{ parameters.mrtArtifactPrefix }}_${{ platform }}"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+        ${{ if parameters.IsMonobuild }}:
+          targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
+        ${{ else }}:
+          targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   # ── Stage files + symbols ──
   # In monobuild context:
