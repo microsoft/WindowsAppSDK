@@ -59,20 +59,10 @@ steps:
     failOnAlert: false #changed true to false, temporary workaround for component governance blocking pipeline due to low .NET version
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - ${{ if parameters.IsMonobuild }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@self
-      parameters:
-        FolderPath: '$(build.SourcesDirectory)\BuildOutput'
-        UseMinimatch: true
-        Pattern: |
-          **/*.winmd
-          **/*.dll
-          **/*.exe
-        KeyCode: 'CP-230012'
-        displayName: 'Authenticode CodeSign Binaries'
-  - ${{ else }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
-      parameters:
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
+    parameters:
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
         FolderPath: '$(build.SourcesDirectory)\BuildOutput'
         UseMinimatch: true
         Pattern: |

@@ -235,17 +235,10 @@ steps:
         -wprProfilePath "$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK\src\test\AppModelProviders.wprp"
         -callingStage "${{ parameters.callingStage }}"
 
-  - ${{ if eq(parameters.IsMonobuild, 'true') }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@self
-      parameters:
-        WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
-        xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
-        TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
-        BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
-        CheckoutPath: '$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK'
-  - ${{ else }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WinAppSDK
-      parameters:
+  - template: WindowsAppSDK-ConvertWttLogToXUnit-Wrapper.yml
+    parameters:
+      IsMonobuild: ${{ eq(parameters.IsMonobuild, 'true') }}
+      InnerParams:
         WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
         xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
         TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'

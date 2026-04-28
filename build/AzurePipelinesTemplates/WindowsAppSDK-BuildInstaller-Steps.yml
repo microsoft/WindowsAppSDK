@@ -294,30 +294,19 @@ steps:
     failOnAlert: false
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
-- ${{ if parameters.IsMonobuild }}:
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@self
-    parameters:
-      SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
-      IsOfficial: ${{ parameters.IsOfficial }}
-      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
-- ${{ else }}:
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@WinAppSDK
-    parameters:
+- template: WindowsAppSDK-PublishSymbol-Wrapper.yml
+  parameters:
+    IsMonobuild: ${{ parameters.IsMonobuild }}
+    InnerParams:
       SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
       condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - ${{ if parameters.IsMonobuild }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@self
-      parameters:
-        FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
-        Pattern: WindowsAppRuntimeInstall*.exe
-        UseMinimatch: true
-        KeyCode: 'CP-230012'
-  - ${{ else }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
-      parameters:
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
+    parameters:
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
         FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
         Pattern: WindowsAppRuntimeInstall*.exe
         UseMinimatch: true
