@@ -103,16 +103,21 @@ steps:
   - task: PowerShell@2
     name: StageFiles
     inputs:
-      filePath: 'BuildAll.ps1'
       ${{ if parameters.IsMonobuild }}:
+        filePath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildAll.ps1'
         workingDirectory: '$(Build.SourcesDirectory)\WindowsAppSDK'
+      ${{ else }}:
+        filePath: 'BuildAll.ps1'
       arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
 
   - task: CopyFiles@2
     displayName: 'Copy symbols to artifact staging directory'
     condition: always()
     inputs:
-      sourceFolder: $(Build.SourcesDirectory)\BuildOutput\FullNuget
+      ${{ if parameters.IsMonobuild }}:
+        sourceFolder: $(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput\FullNuget
+      ${{ else }}:
+        sourceFolder: $(Build.SourcesDirectory)\BuildOutput\FullNuget
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
@@ -136,18 +141,27 @@ steps:
     displayName: Update metapackage version
     inputs:
       targetType: 'inline'
-      script: |
-        $packageVersion = '$(WindowsAppSDKFormattedVersion)'
-        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
-        $publicNuspec.package.metadata.version = $packageVersion
-        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+      ${{ if parameters.IsMonobuild }}:
+        script: |
+          $packageVersion = '$(WindowsAppSDKFormattedVersion)'
+          [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\WindowsAppSDK\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+          $publicNuspec.package.metadata.version = $packageVersion
+          Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\WindowsAppSDK\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+      ${{ else }}:
+        script: |
+          $packageVersion = '$(WindowsAppSDKFormattedVersion)'
+          [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+          $publicNuspec.package.metadata.version = $packageVersion
+          Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
 
   - task: PowerShell@2
     name: PackNuget
     inputs:
-      filePath: 'BuildAll.ps1'
       ${{ if parameters.IsMonobuild }}:
+        filePath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildAll.ps1'
         workingDirectory: '$(Build.SourcesDirectory)\WindowsAppSDK'
+      ${{ else }}:
+        filePath: 'BuildAll.ps1'
       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKFormattedVersion)" -ComponentPackageVersion "$(WindowsAppSDKFormattedVersion)" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
 
   # ── Sign ──
@@ -165,7 +179,10 @@ steps:
   - task: CopyFiles@2
     displayName: MoveToOutputDirectory
     inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
+      ${{ if parameters.IsMonobuild }}:
+        SourceFolder: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput\FullNuget'
+      ${{ else }}:
+        SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
       TargetFolder: '$(ob_outputDirectory)\NugetContent'
 
   - task: CopyFiles@2
