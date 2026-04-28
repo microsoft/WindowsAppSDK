@@ -7,6 +7,10 @@ parameters:
   testLocale: ''
   SamplesArtifactName: ''
   callingStage: ''
+  # When 'true', this template is being invoked from the monobuild context where
+  # the WindowsAppSDK monorepo IS the self repo. ConvertWttLogToXUnit-Steps is
+  # invoked WITHOUT the @WinAppSDK suffix.
+  IsMonobuild: 'false'
 
 steps:
   - task: powershell@2
@@ -231,13 +235,15 @@ steps:
         -wprProfilePath "$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK\src\test\AppModelProviders.wprp"
         -callingStage "${{ parameters.callingStage }}"
 
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WinAppSDK
+  - template: WindowsAppSDK-ConvertWttLogToXUnit-Wrapper.yml
     parameters:
-      WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
-      xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
-      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
-      BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
-      CheckoutPath: '$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK'
+      IsMonobuild: ${{ eq(parameters.IsMonobuild, 'true') }}
+      InnerParams:
+        WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
+        xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
+        TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
+        BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
+        CheckoutPath: '$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK'
 
   - task: PublishTestResults@2
     displayName: 'Publish test results'

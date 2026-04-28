@@ -11,6 +11,12 @@ parameters:
 - name: UseCurrentBuild
   type: boolean
   default: false 
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. PublishSymbol-Steps and
+# EsrpCodeSigning-Steps are invoked WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
+  type: boolean
+  default: false
 
 steps:
 - task: PowerShell@2
@@ -288,19 +294,23 @@ steps:
     failOnAlert: false
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
-- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@WinAppSDK
+- template: WindowsAppSDK-PublishSymbol-Wrapper.yml
   parameters:
-    SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
-    IsOfficial: ${{ parameters.IsOfficial }}
-    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+    IsMonobuild: ${{ parameters.IsMonobuild }}
+    InnerParams:
+      SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
+      IsOfficial: ${{ parameters.IsOfficial }}
+      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
-      Pattern: WindowsAppRuntimeInstall*.exe
-      UseMinimatch: true
-      KeyCode: 'CP-230012'
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
+        Pattern: WindowsAppRuntimeInstall*.exe
+        UseMinimatch: true
+        KeyCode: 'CP-230012'
 
 - task: CopyFiles@2
   displayName: 'Publish Installer'
