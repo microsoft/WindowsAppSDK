@@ -5,6 +5,12 @@ parameters:
 - name: runPREfast
   type: boolean
   default: false
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. EsrpCodeSigning-Steps is invoked
+# WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
+  type: boolean
+  default: false
 
 steps:
 - task: NuGetAuthenticate@1
@@ -53,16 +59,28 @@ steps:
     failOnAlert: false #changed true to false, temporary workaround for component governance blocking pipeline due to low .NET version
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
-    parameters:
-      FolderPath: '$(build.SourcesDirectory)\BuildOutput'
-      UseMinimatch: true
-      Pattern: |
-        **/*.winmd
-        **/*.dll
-        **/*.exe
-      KeyCode: 'CP-230012'
-      displayName: 'Authenticode CodeSign Binaries'
+  - ${{ if parameters.IsMonobuild }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml
+      parameters:
+        FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+        UseMinimatch: true
+        Pattern: |
+          **/*.winmd
+          **/*.dll
+          **/*.exe
+        KeyCode: 'CP-230012'
+        displayName: 'Authenticode CodeSign Binaries'
+  - ${{ else }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
+      parameters:
+        FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+        UseMinimatch: true
+        Pattern: |
+          **/*.winmd
+          **/*.dll
+          **/*.exe
+        KeyCode: 'CP-230012'
+        displayName: 'Authenticode CodeSign Binaries'
 
 # Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
 # so the CopyFiles below are to move all the vPack files to the right locations

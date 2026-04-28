@@ -28,6 +28,14 @@ parameters:
   - name: mrtArtifactPrefix
     type: string
     default: 'MrtBinaries_release'
+  # When true, this template is being invoked from the monobuild context where
+  # the WindowsAppSDK monorepo IS the self repo. Shared templates (PublishSymbol,
+  # DetermineVersion, EsrpCodeSigning) are invoked WITHOUT @WinAppSDK suffix.
+  # When false (default, per-component pipeline context), shared templates are
+  # invoked via @WinAppSDK to reach the monobuild repo as a cross-repo resource.
+  - name: IsMonobuild
+    type: boolean
+    default: false
 
 steps:
   - task: NuGetAuthenticate@1
@@ -88,15 +96,26 @@ steps:
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
 
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@WinAppSDK
-    parameters:
-      SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-      IsOfficial: ${{ parameters.IsOfficial }}
+  - ${{ if parameters.IsMonobuild }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml
+      parameters:
+        SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+        IsOfficial: ${{ parameters.IsOfficial }}
+  - ${{ else }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@WinAppSDK
+      parameters:
+        SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+        IsOfficial: ${{ parameters.IsOfficial }}
 
   # ── Determine version + pack NuGet ──
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-DetermineVersion-Steps.yml@WinAppSDK
-    parameters:
-      IsOfficial: ${{ parameters.IsOfficial }}
+  - ${{ if parameters.IsMonobuild }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-DetermineVersion-Steps.yml
+      parameters:
+        IsOfficial: ${{ parameters.IsOfficial }}
+  - ${{ else }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-DetermineVersion-Steps.yml@WinAppSDK
+      parameters:
+        IsOfficial: ${{ parameters.IsOfficial }}
 
   - task: PowerShell@2
     name: SetVersion
@@ -117,12 +136,20 @@ steps:
 
   # ── Sign ──
   - ${{ if eq(parameters.SignOutput, 'true') }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
-      parameters:
-        FolderPath: $(build.artifactStagingDirectory)\FullNuget
-        Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
-        KeyCode: 'CP-401405'
-        UseMinimatch: true
+    - ${{ if parameters.IsMonobuild }}:
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml
+        parameters:
+          FolderPath: $(build.artifactStagingDirectory)\FullNuget
+          Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+          KeyCode: 'CP-401405'
+          UseMinimatch: true
+    - ${{ else }}:
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
+        parameters:
+          FolderPath: $(build.artifactStagingDirectory)\FullNuget
+          Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+          KeyCode: 'CP-401405'
+          UseMinimatch: true
 
   # ── Stage output ──
   - task: CopyFiles@2
