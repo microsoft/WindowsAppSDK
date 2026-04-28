@@ -81,6 +81,24 @@ steps:
         targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   # ── Stage files + symbols ──
+  # In monobuild context, BuildAll.ps1 expects NuGetLicense files at the
+  # `WinAppSDK\Build\WindowsAppSDK\NuGetLicense` relative path (per-component
+  # pattern). The monobuild has them at `Build\WindowsAppSDK\NuGetLicense`
+  # because the WinAppSDK monorepo IS at $(Build.SourcesDirectory). Mirror
+  # them to the expected path so BuildAll.ps1 finds them unchanged.
+  - ${{ if parameters.IsMonobuild }}:
+    - task: PowerShell@2
+      displayName: 'Mirror NuGetLicense files to BuildAll.ps1-expected path (monobuild)'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $src = Join-Path $env:BUILD_SOURCESDIRECTORY 'Build\WindowsAppSDK\NuGetLicense'
+          $dst = Join-Path $env:BUILD_SOURCESDIRECTORY 'WinAppSDK\Build\WindowsAppSDK\NuGetLicense'
+          if (-not (Test-Path $src)) { throw "Source NuGetLicense path not found: $src" }
+          New-Item -ItemType Directory -Force -Path (Split-Path $dst -Parent) | Out-Null
+          Copy-Item -Recurse -Force $src $dst
+          Write-Host "Mirrored $src -> $dst"
+
   - task: PowerShell@2
     name: StageFiles
     inputs:
