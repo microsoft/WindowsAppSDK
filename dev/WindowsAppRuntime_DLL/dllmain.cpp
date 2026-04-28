@@ -65,15 +65,49 @@ static HRESULT DetoursShutdown()
     return S_OK;
 }
 
+// ====== TEMPORARY DIAGNOSTIC LOGGING (remove before final merge) ======
+static void DiagLogFrameworkDllMain(PCWSTR phase, HMODULE selfHmodule) noexcept
+{
+    WCHAR temp[MAX_PATH]{};
+    const DWORD chars{ ::GetEnvironmentVariableW(L"TEMP", temp, ARRAYSIZE(temp)) };
+    if (chars == 0 || chars >= ARRAYSIZE(temp)) return;
+    std::wstring path{ temp };
+    path += L"\\preload-debug.log";
+    HANDLE h{ ::CreateFileW(path.c_str(), FILE_APPEND_DATA,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+        OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
+    if (h == INVALID_HANDLE_VALUE) return;
+    SYSTEMTIME st{};
+    ::GetSystemTime(&st);
+    WCHAR selfPath[MAX_PATH * 2]{};
+    ::GetModuleFileNameW(selfHmodule, selfPath, ARRAYSIZE(selfPath));
+    WCHAR line[2048]{};
+    swprintf_s(line, L"[%02u:%02u:%02u.%03u tid=%lu] FrameworkDLL.DllMain %ls: hmod=0x%p path='%ls'\r\n",
+        st.wHour, st.wMinute, st.wSecond, st.wMilliseconds,
+        ::GetCurrentThreadId(), phase, selfHmodule, selfPath);
+    char narrow[4096]{};
+    int n = ::WideCharToMultiByte(CP_UTF8, 0, line, -1, narrow, sizeof(narrow), nullptr, nullptr);
+    if (n > 0)
+    {
+        ::SetFilePointer(h, 0, nullptr, FILE_END);
+        DWORD written{};
+        ::WriteFile(h, narrow, static_cast<DWORD>(n - 1), &written, nullptr);
+    }
+    ::CloseHandle(h);
+}
+// ====== END DIAGNOSTIC ======
+
 BOOL APIENTRY DllMain(HMODULE hmodule, DWORD  reason, LPVOID reserved)
 {
     switch (reason)
     {
     case DLL_PROCESS_ATTACH:
     {
+        DiagLogFrameworkDllMain(L"DLL_PROCESS_ATTACH begin", hmodule);
         DisableThreadLibraryCalls(hmodule);
         FAIL_FAST_IF_FAILED(MddWin11Initialize());
         FAIL_FAST_IF_FAILED(DetoursInitialize());
+        DiagLogFrameworkDllMain(L"DLL_PROCESS_ATTACH end (after DetoursInitialize)", hmodule);
         break;
     }
     case DLL_PROCESS_DETACH:
