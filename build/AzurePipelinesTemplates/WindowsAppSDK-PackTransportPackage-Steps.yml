@@ -83,35 +83,32 @@ steps:
   # ── Stage files + symbols ──
   # In monobuild context, BuildAll.ps1 expects NuGetLicense files at the
   # `WinAppSDK\Build\WindowsAppSDK\NuGetLicense` relative path (per-component
-  # pattern). The monobuild has them at `Build\WindowsAppSDK\NuGetLicense`
-  # because the WinAppSDK monorepo IS at $(Build.SourcesDirectory). Ensure
-  # the directory exists at the expected path so BuildAll.ps1 finds them.
+  # pattern). The monobuild repo (OS/WinAppSDK) owns these files, but the Pack
+  # job's working tree at $(Build.SourcesDirectory) is the Foundation repo.
+  # Fetch the license files directly from the monobuild repo via the ADO Git
+  # REST API (no checkout needed — avoids OneBranch's path-conflict behavior
+  # when both `self` and an alias target paths under s/).
   - ${{ if parameters.IsMonobuild }}:
     - task: PowerShell@2
-      displayName: 'Mirror NuGetLicense files to BuildAll.ps1-expected path (monobuild)'
+      displayName: 'Fetch NuGetLicense files from monobuild repo (REST API)'
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
         targetType: 'inline'
         script: |
-          $base = $env:BUILD_SOURCESDIRECTORY
-          $candidates = @(
-            (Join-Path $base 'WinAppSDK\Build\WindowsAppSDK\NuGetLicense'),
-            (Join-Path $base 'Build\WindowsAppSDK\NuGetLicense')
-          )
-          $src = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
-          if (-not $src) {
-            Write-Host "Searching for NuGetLicense under $base..."
-            Get-ChildItem -Path $base -Recurse -Filter 'license.txt' -ErrorAction SilentlyContinue |
-              Select-Object -First 10 | ForEach-Object { Write-Host "  Found: $($_.FullName)" }
-            throw "NuGetLicense path not found in any candidate location"
-          }
-          Write-Host "Found NuGetLicense source: $src"
-          $dst = Join-Path $base 'WinAppSDK\Build\WindowsAppSDK\NuGetLicense'
-          if ($src -ne $dst) {
-            New-Item -ItemType Directory -Force -Path (Split-Path $dst -Parent) | Out-Null
-            Copy-Item -Recurse -Force $src $dst
-            Write-Host "Mirrored $src -> $dst"
-          } else {
-            Write-Host "NuGetLicense already at expected path"
+          $dstRoot = Join-Path $env:BUILD_SOURCESDIRECTORY 'WinAppSDK\Build\WindowsAppSDK\NuGetLicense'
+          $apiBase = "$($env:SYSTEM_COLLECTIONURI.TrimEnd('/'))/$($env:SYSTEM_TEAMPROJECTID)/_apis/git/repositories/WinAppSDK/items"
+          $headers = @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" }
+          foreach ($channel in @('preview','release')) {
+            $dstDir = Join-Path $dstRoot $channel
+            New-Item -ItemType Directory -Force -Path $dstDir | Out-Null
+            $dst = Join-Path $dstDir 'license.txt'
+            $url = "$apiBase`?path=/Build/WindowsAppSDK/NuGetLicense/$channel/license.txt&versionDescriptor.version=release/dev/monobuild&versionDescriptor.versionType=branch&api-version=7.1"
+            Write-Host "Fetching $channel/license.txt from monobuild..."
+            Invoke-WebRequest -Uri $url -Headers $headers -OutFile $dst -UseBasicParsing
+            $size = (Get-Item $dst).Length
+            if ($size -lt 100) { throw "Downloaded file too small ($size bytes), likely an error response: $(Get-Content $dst -Raw)" }
+            Write-Host "  -> $dst ($size bytes)"
           }
 
   - task: PowerShell@2
