@@ -97,7 +97,7 @@ steps:
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
 
   - ${{ if parameters.IsMonobuild }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@self
       parameters:
         SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
         IsOfficial: ${{ parameters.IsOfficial }}
@@ -109,7 +109,7 @@ steps:
 
   # ── Determine version + pack NuGet ──
   - ${{ if parameters.IsMonobuild }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-DetermineVersion-Steps.yml
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-DetermineVersion-Steps.yml@self
       parameters:
         IsOfficial: ${{ parameters.IsOfficial }}
   - ${{ else }}:
@@ -137,7 +137,7 @@ steps:
   # ── Sign ──
   - ${{ if eq(parameters.SignOutput, 'true') }}:
     - ${{ if parameters.IsMonobuild }}:
-      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@self
         parameters:
           FolderPath: $(build.artifactStagingDirectory)\FullNuget
           Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'

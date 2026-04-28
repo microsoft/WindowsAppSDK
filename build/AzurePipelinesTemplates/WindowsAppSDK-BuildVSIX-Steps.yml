@@ -200,7 +200,7 @@ steps:
         **/WindowsAppSDK.*.Extension.*.dll
         
 - ${{ if parameters.IsMonobuild }}:
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-PublishSymbol-Steps.yml@self
     parameters:
       SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}

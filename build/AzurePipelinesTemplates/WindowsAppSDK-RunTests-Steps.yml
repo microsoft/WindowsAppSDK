@@ -236,7 +236,7 @@ steps:
         -callingStage "${{ parameters.callingStage }}"
 
   - ${{ if eq(parameters.IsMonobuild, 'true') }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@self
       parameters:
         WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
         xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'

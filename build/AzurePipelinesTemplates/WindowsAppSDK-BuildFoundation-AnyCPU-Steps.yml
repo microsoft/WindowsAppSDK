@@ -60,7 +60,7 @@ steps:
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - ${{ if parameters.IsMonobuild }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@self
       parameters:
         FolderPath: '$(build.SourcesDirectory)\BuildOutput'
         UseMinimatch: true
