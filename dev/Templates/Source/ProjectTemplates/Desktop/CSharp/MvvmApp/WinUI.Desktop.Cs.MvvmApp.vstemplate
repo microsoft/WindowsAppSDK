@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name ID="1033" Package="FIXME-PACKAGEGUID" />
-    <Description ID="1035" Package="FIXME-PACKAGEGUID" />
+    <Name ID="1062" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1064" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Desktop.Cs.MvvmApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.MvvmApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>

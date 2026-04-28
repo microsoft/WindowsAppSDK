@@ -270,4 +270,13 @@
   <data name="1061" xml:space="preserve">
     <value>A project template for creating a WinUI app with a NavigationView control for page navigation.</value>
   </data>
+  <data name="1062" xml:space="preserve">
+    <value>WinUI MVVM App</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Experimental] WinUI MVVM App</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>A project template for creating a WinUI app structured with the MVVM pattern using the CommunityToolkit.Mvvm package.</value>
+  </data>
 </root>

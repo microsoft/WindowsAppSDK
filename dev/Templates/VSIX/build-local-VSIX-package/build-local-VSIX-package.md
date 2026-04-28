@@ -1,382 +1,244 @@
-# Windows App SDK VSIX — Local Build Guide
+# Windows App SDK VSIX — Local Build & Test Guide
 
-## TL;NR
+The fast inner-loop guide for building and testing the WinUI Templates VSIX on
+a developer machine that already has Visual Studio 2022 and / or 2026 with the
+WinUI workload installed.
+
+## TL;DR
 
 ```powershell
-# 1. Build.
-.\Build-VSIX.ps1 -Deployment Component
+# Build + install the LocalDev VSIX into every VS 17+ instance on the machine.
+# No admin required. No setup.exe modify. No workload removal.
+.\build-install-localdev-vsix.ps1
 
-# 2. Install.
-.\Install-VSIX.ps1
-
-# 3. Open Visual Studio -> File -> New -> Project -> search "WinUI"
+# Then in Visual Studio: File -> New -> Project -> filter C# -> search "WinUI"
 ```
 
-> **Note**: `-OptionalVSIXVersion` defaults to `99.<yyyy>.<MMdd>.<HHmm>` (e.g., `99.2026.0416.1640`).
-> Output files are named with the version, e.g., `WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0416.1640.vsix`.
-
-## Overview
-
-This guide describes how to build the Windows App SDK Visual Studio extension
-(VSIX) packages locally, without running the full Azure Pipelines build that
-takes several hours.
-
-The build produces up to **4 VSIX files**:
-
-| VSIX | Description |
-|------|-------------|
-| `WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix` | C# project/item templates (standalone install) |
-| `WindowsAppSDK.Cs.Extension.Dev17.Component.vsix` | C# project/item templates (VS component install) |
-| `WindowsAppSDK.Cpp.Extension.Dev17.Standalone.vsix` | C++/WinRT project/item templates (standalone install) |
-| `WindowsAppSDK.Cpp.Extension.Dev17.Component.vsix` | C++/WinRT project/item templates (VS component install) |
+That single command rebuilds your local source, installs to `%LOCALAPPDATA%`,
+and refreshes the template cache. Do it after every code change you want to
+see in real VS.
 
 ---
 
-## Prerequisites
+## Why LocalDev is the only locally installable flavor
+
+The build can produce three flavors. **Only LocalDev is meant to be installed
+on a developer box.** The other two are build-only artifacts.
+
+| Flavor | `<Installation AllUsers>` | Extension Id | Locally installable? | Purpose |
+|---|---|---|---|---|
+| **LocalDev** ★ | `false` (per-user) | `Microsoft.WindowsAppSDK.Cs.Dev17.LocalDev` | **Yes — no admin** | Fast dev loop. Coexists peacefully with the workload-shipped per-machine copy. |
+| Standalone | `true` (per-machine) | `Microsoft.WindowsAppSDK.Cs.Dev17` | **No** | Build-only artifact (e.g. for the VS Marketplace pipeline). On any machine that already has the WinUI workload, VSIXInstaller cannot install it because the same Id is owned by 5+ workload components. |
+| Component | `true` (per-machine, `IsProductComponent`) | `Microsoft.WindowsAppSDK.Cs.Dev17` | **No** | Build-only artifact for the VS Installer build pipeline (gets picked up as part of the WinUI workload component). |
+
+> If you really need to test the per-machine install path, do it inside a clean
+> VM that does **not** have the WinUI workload installed. Don't try to
+> side-load Standalone or Component on a workload-equipped machine — the
+> "Uninstall failed; please uninstall all of the following components"
+> failure cascade is documented in [investigation.md](investigation.md).
+
+---
+
+## Prerequisites (one-time)
 
 | Requirement | Details |
 |-------------|---------|
-| **Visual Studio 2022 (17.0+)** or later | Required for MSBuild and VSSDK targets |
+| **Visual Studio 2022 (17.0+)** or **2026** | Required for MSBuild and VSSDK targets |
 | **Workloads** | `.NET desktop development` + `Visual Studio extension development` |
-| **.NET 8 SDK** | Needed by the `DotnetNewTemplates` project (targets net8.0) |
-| **Internet access** | To restore NuGet packages from nuget.org (or a local nupkg) |
+| **.NET 8 SDK** | Needed by the `WinAppSdk.CSharp.DotnetNewTemplates` project |
+| **Internet access** | To restore NuGet packages from nuget.org |
 
-### How to Check Prerequisites
+Quick checks:
 
 ```powershell
-# Check Visual Studio installation
 & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -format json
-
-# Check .NET SDKs
 dotnet --list-sdks
-
-# Check MSBuild availability
-& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe"
 ```
 
 ---
 
-## Quick Start (One-Liner)
+## Inner loop: build + install + reinstall
+
+The recommended one-shot orchestrator:
 
 ```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Component
+# Build LocalDev for both C# and C++; install into every VS 17+ instance.
+.\build-install-localdev-vsix.ps1
+
+# Reinstall after a code change (uninstalls old per-user copy first):
+.\build-install-localdev-vsix.ps1 -UninstallFirst
+
+# Skip the build step (reuse the latest .vsix in publish\VSIX):
+.\build-install-localdev-vsix.ps1 -SkipBuild
+
+# Limit to one language:
+.\build-install-localdev-vsix.ps1 -Language CSharp
+
+# Limit to one VS major version:
+.\build-install-localdev-vsix.ps1 -VsVersionRange '[17.0,18.0)'   # VS 2022 only
+.\build-install-localdev-vsix.ps1 -VsVersionRange '[18.0,19.0)'   # VS 2026 only
 ```
 
-This will:
-1. Locate MSBuild via vswhere
-2. Auto-generate VSIX version as `99.<yyyy>.<MMdd>.<HHmm>`
-3. Restore NuGet packages using nuget.org
-4. Build the VSIX solution for Component deployment
-5. Copy the versioned `.vsix` files to `.\publish\VSIX\`
+Or run the steps separately (same result):
+
+```powershell
+.\Build-VSIX.ps1                 # default = -Deployment LocalDev
+.\Install-LocalDev-VSIX.ps1
+```
+
+### What the install script does
+1. Refuses to run while any `devenv.exe` is open (templates are cached at
+   startup).
+2. `vswhere` discovers all VS 17+ instances.
+3. `VSIXInstaller /quiet /instanceIds:<id>` per (VSIX, instance) pair. **No
+   `/admin`, no elevation.** Output goes to
+   `%LOCALAPPDATA%\Microsoft\VisualStudio\<edhive>\Extensions\<guid>\`.
+4. `devenv /UpdateConfiguration` per instance to refresh
+   `ProjectTemplatesCache`, `ItemTemplatesCache`, `ComponentModelCache`.
+
+### What it deliberately does NOT do
+- No `setup.exe modify` (never touches VS Setup state).
+- No removal of workload components.
+- No deletion of files under Program Files.
+- No admin elevation.
+
+### Uninstall the LocalDev copy
+
+```powershell
+& "<VSPath>\Common7\IDE\VSIXInstaller.exe" /uninstall:Microsoft.WindowsAppSDK.Cs.Dev17.LocalDev /quiet
+& "<VSPath>\Common7\IDE\VSIXInstaller.exe" /uninstall:Microsoft.WindowsAppSDK.Cpp.Dev17.LocalDev /quiet
+```
+
+The workload-shipped per-machine copy is never touched and is reactivated
+automatically once the LocalDev copy is gone.
+
+### Verifying in Visual Studio
+
+1. Launch Visual Studio (any installed VS 17+ instance).
+2. File → New → Project. Filter Language=C#, search "WinUI". Expect these
+   seven project templates in this order:
+
+   | # | Template | SortOrder |
+   |---|---|---|
+   | 1 | WinUI Blank App | 10 |
+   | 2 | WinUI Navigation App | 20 |
+   | 3 | WinUI TabView App | 30 |
+   | 4 | WinUI MVVM App | 40 |
+   | 5 | WinUI Blank App (Packaged WAP) | 50 |
+   | 6 | WinUI Class Library | 60 |
+   | 7 | WinUI Unit Test App | 70 |
+
+3. (Optional) Confirm VS picked up your local build, not the workload copy:
+   Extensions → Manage Extensions → Installed → look for
+   **"Windows App SDK C# VS Templates (LocalDev)"** — the `(LocalDev)`
+   suffix is on the VSIX `<DisplayName>` and proves the per-user copy is
+   active. The workload copy ("Windows App SDK C# VS Templates", no suffix)
+   may also appear; that's fine — the higher-version per-user LocalDev
+   registration shadows it for File → New → Project.
 
 ---
 
-## Usage Examples
+## Build-only flavors (Standalone, Component)
 
-### Build with a specific Windows App SDK version
-
-```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Component
-```
-
-### Override the auto-generated VSIX version
+Use these only when you need an artifact for signing / publishing / pipeline
+parity. **They cannot be installed locally on a workload-equipped machine.**
 
 ```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -OptionalVSIXVersion "99.2026.0416.1640" -Deployment Component
+# Build the Standalone artifact only:
+.\Build-VSIX.ps1 -Deployment Standalone
+
+# Build the Component artifact only:
+.\Build-VSIX.ps1 -Deployment Component
+
+# Build both:
+.\Build-VSIX.ps1 -Deployment Both
+
+# Build with a specific Windows App SDK version:
+.\Build-VSIX.ps1 -Deployment Standalone -WindowsAppSDKVersion "1.8.260317003"
+
+# Build using a local .nupkg directory (auto-extracts the WindowsAppSDK version
+# from the embedded .nuspec):
+.\Build-VSIX.ps1 -Deployment Standalone -NupkgSourceDir "C:\my-packages"
+
+# Override the auto-generated VSIX version (default is 99.<yyyy>.<MMdd>.<HHmm>):
+.\Build-VSIX.ps1 -Deployment Standalone -OptionalVSIXVersion "99.2026.0428.1640"
 ```
 
-### Build only the Standalone VSIX
-
-```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Standalone
-```
-
-### Build using a local .nupkg file
-
-```powershell
-# Place your Microsoft.WindowsAppSDK.*.nupkg in a directory
-.\Build-VSIX.ps1 -NupkgSourceDir "C:\my-packages"
-```
-
-The script will:
-- Automatically extract the version from the nupkg's embedded `.nuspec`
-- Add the directory as a NuGet package source
-
-### Build with experimental features enabled
-
-```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003" -EnableExperimentalVSIXFeatures
-```
-
-### Specify a custom output directory
-
-```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003" -OutputDir "D:\vsix-output"
-```
-
-### Point to a non-default repo location
-
-```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003" -RepoRoot "C:\repos\WindowsAppSDK"
-```
+The output `.vsix` files land in `.\publish\VSIX\` named with the version, e.g.
+`WindowsAppSDK.Cs.Extension.Dev17.Standalone.99.2026.0428.1640.vsix`.
 
 ---
 
-## Manual Build Steps
+## File reference
 
-If you prefer to run the commands manually (or need to debug issues), here are
-the exact MSBuild invocations the script performs:
-
-### Step 1: Find MSBuild
-
-```powershell
-$msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
-    -latest -requires Microsoft.Component.MSBuild `
-    -find "MSBuild\**\Bin\MSBuild.exe" | Select-Object -First 1
-```
-
-### Step 2: Set Variables
-
-```powershell
-$repoRoot       = "C:\path\to\WindowsAppSDK"
-$solution       = "$repoRoot\dev\Templates\VSIX\WindowsAppSDK.Extension.sln"
-$configuration  = "Release"
-$version        = "1.8.260317003"                           # Set your desired version
-$nugetConfig    = "C:\path\to\build_solution\vsix-nuget.config"   # The provided config
-$buildOutput    = "C:\tmp\vsixbo\"                            # Short path to avoid MAX_PATH
-```
-
-### Step 3: Restore + Build Standalone
-
-```powershell
-# Restore
-& $msbuild $solution /t:restore `
-    /p:Configuration=$configuration `
-    "/p:Platform=Any CPU" `
-    /p:Deployment=Standalone `
-    /p:WindowsAppSDKVersion=$version `
-    /p:RestoreConfigFile=$nugetConfig `
-    /p:BuildOutput=$buildOutput `
-    /p:EnableExperimentalVSIXFeatures=false `
-    /verbosity:minimal /nologo
-
-# Build
-& $msbuild $solution `
-    /p:Configuration=$configuration `
-    "/p:Platform=Any CPU" `
-    /p:Deployment=Standalone `
-    /p:WindowsAppSDKVersion=$version `
-    /p:BuildOutput=$buildOutput `
-    /p:EnableExperimentalVSIXFeatures=false `
-    /verbosity:minimal /nologo
-```
-
-### Step 4: Restore + Build Component
-
-```powershell
-# Restore
-& $msbuild $solution /t:restore `
-    /p:Configuration=$configuration `
-    "/p:Platform=Any CPU" `
-    /p:Deployment=Component `
-    /p:WindowsAppSDKVersion=$version `
-    /p:RestoreConfigFile=$nugetConfig `
-    /p:BuildOutput=$buildOutput `
-    /p:EnableExperimentalVSIXFeatures=false `
-    /verbosity:minimal /nologo
-
-# Build
-& $msbuild $solution `
-    /p:Configuration=$configuration `
-    "/p:Platform=Any CPU" `
-    /p:Deployment=Component `
-    /p:WindowsAppSDKVersion=$version `
-    /p:BuildOutput=$buildOutput `
-    /p:EnableExperimentalVSIXFeatures=false `
-    /verbosity:minimal /nologo
-```
-
-### Step 5: Collect Output
-
-```powershell
-Get-ChildItem -Path $buildOutput -Recurse -Filter "WindowsAppSDK.*.vsix"
-```
-
-Expected output locations:
-```
-dev\Templates\VSIX\BuildOutput\obj\AnyCPURelease\Standalone\WindowsAppSDK.Cs.Extension.Dev17\WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix
-dev\Templates\VSIX\BuildOutput\obj\AnyCPURelease\Standalone\WindowsAppSDK.Cpp.Extension.Dev17\WindowsAppSDK.Cpp.Extension.Dev17.Standalone.vsix
-dev\Templates\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cs.Extension.Dev17\WindowsAppSDK.Cs.Extension.Dev17.Component.vsix
-dev\Templates\VSIX\BuildOutput\obj\AnyCPURelease\Component\WindowsAppSDK.Cpp.Extension.Dev17\WindowsAppSDK.Cpp.Extension.Dev17.Component.vsix
-```
-
----
-
-## Installing the VSIX
-
-### Using the Install Script (Recommended)
-
-```powershell
-# Install both C# and C++ templates (default)
-.\Install-VSIX.ps1
-
-# Install only C# templates
-.\Install-VSIX.ps1 -Language CSharp
-
-# Install only C++ templates
-.\Install-VSIX.ps1 -Language Cpp
-
-# Install a specific VSIX file by path
-.\Install-VSIX.ps1 -VsixPath ".\publish\VSIX\WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0417.1426.vsix"
-
-# Install from a custom directory
-.\Install-VSIX.ps1 -VsixDir "D:\my-vsix"
-
-# Skip uninstalling conflicting dotnet new templates
-.\Install-VSIX.ps1 -SkipDotnetUninstall
-```
-
-The script defaults to `.\publish\VSIX` and picks the **most recently built**
-`.vsix` file for each language (by file modification time). If multiple versioned
-files exist (e.g. from different builds), it always selects the latest one.
-
-> **Warning**: The auto-selection does not distinguish between Standalone and
-> Component VSIX files — it picks whichever has the newest timestamp. If you have
-> both types in the publish folder, use `-VsixPath` to explicitly select the
-> correct one. Most VS installations with the WinUI workload require the
-> **Component** version.
-
-The script will:
-1. Check that Visual Studio is closed (exits if not)
-2. Uninstall conflicting `dotnet new` template packages (if found)
-3. Verify VS installation and prerequisites
-4. Install the VSIX using `VSIXInstaller /force /quiet`
-5. Wait for installation to complete and check logs for errors
-
-### Via Double-Click
-Simply double-click any `.vsix` file. The VSIX Installer will open and guide
-you through the installation.
-
-### Via Command Line
-```powershell
-# Close all VS instances first!
-$vsixInstaller = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\VSIXInstaller.exe"
-& $vsixInstaller /force /quiet "path\to\WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0416.1640.vsix"
-```
-
-> **Important**: Use `Component` VSIX when VS has the extension installed via a workload
-> (e.g., ".NET WinUI app development tools"). Use `Standalone` only for clean VS installs.
-
-### Verify Installation
-In Visual Studio: **Extensions → Manage Extensions** — look for
-"Windows App SDK C# VS Templates" or "Windows App SDK C++ VS Templates".
+| File | Purpose |
+|------|---------|
+| `Build-VSIX.ps1` | Builds VSIXes. Default `-Deployment LocalDev`. |
+| `Install-LocalDev-VSIX.ps1` | Per-user install of the LocalDev VSIX into VS 17+ instances. No admin. |
+| `build-install-localdev-vsix.ps1` | One-shot orchestrator: Build-VSIX (LocalDev) + Install-LocalDev-VSIX. |
+| `vsix-nuget.config` | NuGet config the build script passes via `/p:RestoreConfigFile`. |
+| `investigation.md` | Historical findings about why per-machine install is broken on workload-equipped machines. Read this before trying to "fix" Standalone install. |
 
 ---
 
 ## Troubleshooting
 
+### Visual Studio shows the old templates after rebuild
+
+You launched VS while it had the old per-user extension cached. Either:
+
+- close VS, run `.\build-install-localdev-vsix.ps1 -UninstallFirst`, then
+  relaunch VS, OR
+- open Tools → Get Tools and Features (or `devenv /UpdateConfiguration` from a
+  shell) to force the template cache rebuild.
+
+### "Visual Studio is running" error from the install script
+
+Per-user VSIX installs only take effect on the next VS startup, so the script
+refuses to run while any `devenv.exe` exists. Close all VS instances and
+re-run.
+
 ### NuGet restore fails with "Unable to find version..."
 
-**Cause**: The root `NuGet.config` in the WindowsAppSDK repo uses `<clear/>`
-and only has Microsoft internal feeds. Public packages can't be resolved.
+The repo's root `NuGet.config` uses `<clear/>` and points at Microsoft
+internal feeds only. `Build-VSIX.ps1` works around this by passing
+`vsix-nuget.config` via `/p:RestoreConfigFile`. If you're invoking MSBuild
+yourself, use the same parameter.
 
-**Fix**: The `Build-VSIX.ps1` script handles this by passing a custom
-`vsix-nuget.config` via `/p:RestoreConfigFile`. If running manually, make sure
-you use the same parameter.
+### `Microsoft.VsSDK.targets was not found`
 
-### "The imported project ... Microsoft.VsSDK.targets was not found"
+Open Visual Studio Installer → Modify → check the **Visual Studio extension
+development** workload.
 
-**Cause**: The VS SDK workload is not installed.
+### `DotnetNewTemplates` fails to build
 
-**Fix**: Open Visual Studio Installer → Modify → check
-**Visual Studio extension development** workload.
+The `WinAppSdk.CSharp.DotnetNewTemplates.csproj` targets `net8.0`. Install the
+[.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
 
-### DotnetNewTemplates build fails
+### `VSSDK1300: Could not find a part of the path...`
 
-**Cause**: The `WinAppSdk.CSharp.DotnetNewTemplates.csproj` targets `net8.0`.
-
-**Fix**: Install the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+The VSSDK extracts template ZIPs into deeply nested paths and the .NET
+Framework APIs it uses do not honor `LongPathsEnabled`. `Build-VSIX.ps1`
+already redirects build output to `C:\tmp\vsixbo\` to keep paths short. If
+you're invoking MSBuild yourself, pass `/p:BuildOutput=C:\tmp\vsixbo\`.
 
 ### "Version 1.0.0-preview1 of package Microsoft.WindowsAppSDK not found"
 
-**Cause**: No `-WindowsAppSDKVersion` was specified, and the default
-`1.0.0-preview1` in `Directory.Build.props` doesn't exist on nuget.org.
+You ran `Build-VSIX.ps1` without `-WindowsAppSDKVersion` or `-NupkgSourceDir`,
+so the build fell back to the placeholder version baked into
+`Directory.Build.props`. The VSIX file still builds and installs (the inner
+templates carry token placeholders that are rewritten at template-instantiation
+time), but `dotnet new`-style restore against the published nupkg won't work.
+Pass a real version when you need package-realistic testing:
 
-**Fix**: Pass a real version:
 ```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003"
+.\Build-VSIX.ps1 -Deployment LocalDev -WindowsAppSDKVersion "1.8.260317003"
 ```
 
-Check [nuget.org](https://www.nuget.org/packages/Microsoft.WindowsAppSDK/) for
-available versions.
+### Want to install the Standalone or Component VSIX locally
 
-### Build succeeds but no .vsix files in output
-
-**Cause**: The VSIX output location depends on the `Deployment` property.
-
-**Fix**: Check `dev\Templates\VSIX\BuildOutput\obj\` recursively:
-```powershell
-Get-ChildItem -Path "dev\Templates\VSIX\BuildOutput" -Recurse -Filter "*.vsix"
-```
-
-### VSIX install fails: "lower version than required by Visual Studio"
-
-**Cause**: VS bundles a version of this extension via the ".NET WinUI app
-development tools" workload. Your built VSIX version is lower.
-
-**Fix**: The script auto-generates a high version (`99.yyyy.MMdd.HHmm`).
-If you need to override, use `-OptionalVSIXVersion "99.2026.0416.1640"`.
-
-### VSIX install fails: "Uninstall of ... failed" or "Modifications of multiple extensions"
-
-**Cause**: VS's built-in extension was installed as a **Component** (via workload).
-A Standalone VSIX cannot replace a Component extension.
-
-**Fix**: Build with `-Deployment Component`:
-```powershell
-.\Build-VSIX.ps1 -WindowsAppSDKVersion "2.0.0-preview2" -Deployment Component
-```
-Then install with VS closed:
-```powershell
-& "<VS-path>\Common7\IDE\VSIXInstaller.exe" /force /quiet <path-to-Component.vsix>
-```
-
-### VSSDK1300: "Could not find a part of the path..."
-
-**Cause**: The VSSDK extracts template ZIP files into deeply nested paths.
-When the repo is in a deep directory, the combined path exceeds Windows'
-260-character MAX_PATH limit. The .NET Framework APIs used by the VSSDK do
-not support long paths even when `LongPathsEnabled` is set.
-
-**Fix**: The `Build-VSIX.ps1` script automatically redirects build output to
-`C:\tmp\vsixbo\` to keep paths short. If running manually, pass:
-```powershell
-/p:BuildOutput=C:\tmp\vsixbo\
-```
-
----
-
-## How This Maps to the Pipeline
-
-| Pipeline Step | Local Equivalent |
-|---------------|-----------------|
-| `DownloadPipelineArtifact@2` (get nupkg) | `-NupkgSourceDir` parameter or nuget.org |
-| `Extract WindowsAppSDKVersion` (PowerShell) | `-WindowsAppSDKVersion` parameter or auto-extract from nupkg |
-| `VSBuild /t:restore` (Standalone) | `MSBuild /t:restore /p:Deployment=Standalone ...` |
-| `VSBuild` build (Standalone) | `MSBuild /p:Deployment=Standalone ...` |
-| `VSBuild /t:restore` (Component) | `MSBuild /t:restore /p:Deployment=Component ...` |
-| `VSBuild /p:Deployment=Component` | `MSBuild /p:Deployment=Component ...` |
-| `CopyFiles@2` (stage output) | Script copies `.vsix` to output dir |
-| Signing steps | **Skipped** (local builds are unsigned) |
-| SDL analysis steps | **Skipped** (not needed for local builds) |
-
----
-
-## File Reference
-
-| File | Purpose |
-|------|---------|
-| `Build-VSIX.ps1` | Main build script |
-| `Install-VSIX.ps1` | Install/uninstall script for built VSIX |
-| `vsix-nuget.config` | NuGet config with nuget.org source |
-| `build-local-VSIX-package.md` | This document |
+Don't. They share an extension Id with the workload-shipped copy and
+VSIXInstaller refuses to side-load over a workload-managed extension. See
+[investigation.md](investigation.md) for the gory details. Use the LocalDev
+flavor for local testing, or test inside a clean VM without the WinUI
+workload.

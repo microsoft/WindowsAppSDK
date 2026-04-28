@@ -19,10 +19,19 @@
     Build configuration. Default: Release.
 
 .PARAMETER Deployment
-    Which deployment type(s) to build.
-    "Standalone"  - Build only the standalone VSIX
-    "Component"   - Build only the component VSIX
-    "Both"        - Build both (default)
+    Which deployment type(s) to build. Default: "LocalDev".
+    "LocalDev"   - Per-user (AllUsers=false) VSIX with a distinct extension
+                   Id (...Dev17.LocalDev). The ONLY flavor that is locally
+                   installable on a developer machine - install with
+                   .\Install-LocalDev-VSIX.ps1 (no admin required).
+    "Standalone" - Per-machine (AllUsers=true) VSIX. BUILD-ONLY locally;
+                   not installable on a machine that already has the WinUI
+                   workload (the workload owns the same extension Id and
+                   blocks side-loading). Build this when you need an
+                   artifact to ship / sign / publish.
+    "Component"  - Per-machine VSIX flagged IsProductComponent. BUILD-ONLY
+                   locally; consumed by the VS Installer build pipeline.
+    "Both"       - Build Standalone + Component (no LocalDev).
 
 .PARAMETER EnableExperimentalVSIXFeatures
     When set, marks the VSIX as experimental (adds .Experimental suffix, sets Preview=true).
@@ -41,13 +50,16 @@
     Skip NuGet restore (useful if you've already restored).
 
 .EXAMPLE
-    .\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003"
+    .\Build-VSIX.ps1
+    # Build the LocalDev VSIX (default). Then install with .\Install-LocalDev-VSIX.ps1
 
 .EXAMPLE
     .\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003" -Deployment Standalone
+    # Build a Standalone VSIX artifact (build-only; not installable locally)
 
 .EXAMPLE
     .\Build-VSIX.ps1 -NupkgSourceDir "C:\packages" -Deployment Both
+    # Build the Standalone + Component artifacts (build-only)
 #>
 
 [CmdletBinding()]
@@ -57,8 +69,8 @@ param(
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Release",
 
-    [ValidateSet("Standalone", "Component", "Both")]
-    [string]$Deployment = "Both",
+    [ValidateSet("Standalone", "Component", "LocalDev", "Both")]
+    [string]$Deployment = "LocalDev",
 
     [switch]$EnableExperimentalVSIXFeatures,
 
@@ -486,14 +498,20 @@ if ($outputVsix.Count -gt 0) {
         $sizeMB = [math]::Round($v.Length / 1MB, 2)
         Write-Host "  $($v.Name)  ($sizeMB MB)" -ForegroundColor White
     }
-    Write-Host ""
-    Write-Step "To install in Visual Studio, double-click the .vsix file or run:"
-    Write-Host "  VSIXInstaller.exe <path-to-vsix>" -ForegroundColor White
 } else {
     Write-Warn "No .vsix files found in $OutputDir."
     Write-Warn "Check the build output above for errors."
 }
 
 Write-Host ""
+if ($Deployment -eq "LocalDev") {
+    Write-Step "Next step: install per-user with no admin required:"
+    Write-Host "  .\Install-LocalDev-VSIX.ps1" -ForegroundColor White
+    Write-Host ""
+} else {
+    Write-Step "Build-only flavor produced. To install on a developer machine,"
+    Write-Step "build the LocalDev flavor instead and run Install-LocalDev-VSIX.ps1."
+    Write-Host ""
+}
 
 #endregion

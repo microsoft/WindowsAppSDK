@@ -1,9 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    LocalDev flavor of the Standalone manifest.
+
+    TWO DIFFERENCES FROM Standalone\source.extension.vsixmanifest:
+
+        1. <Identity Id="...Dev17.LocalDev">  (Standalone uses "...Dev17")
+        2. <Installation AllUsers="false">     (Standalone uses "true")
+
+    Why the Id is different
+    =======================
+    On a machine that already has the WinUI workload installed, the
+    per-machine Microsoft.WindowsAppSDK.Cs.Dev17 extension is owned by 5+
+    workload components. VSIXInstaller, when installing a VSIX with the
+    same Id, tries to UNINSTALL the existing one first as part of its
+    upgrade path - and fails because workload-managed extensions cannot be
+    uninstalled by VSIXInstaller. By giving the LocalDev VSIX a distinct
+    Id, VSIXInstaller treats it as a brand-new extension and never
+    attempts to touch the workload copy. The two extensions coexist on
+    disk without interfering.
+
+    What the user sees in File / New / Project
+    ==========================================
+    Both the workload-shipped extension and the LocalDev extension
+    register their project/item templates with VS. VS de-duplicates
+    templates by their inner per-template GUID (the &lt;TemplateID&gt; in each
+    .vstemplate file; those GUIDs are identical because both VSIX builds
+    include the same TemplateProjectOutputGroup). When two registrations
+    target the same template GUID, VS picks the highest-priority one.
+    Per-user extensions (LocalDev) outrank per-machine extensions
+    (workload), so the LocalDev templates are what the user actually sees.
+
+    Why per-user (AllUsers="false")
+    ===============================
+    No admin required. Installs to
+        %LOCALAPPDATA%\Microsoft\VisualStudio\<edhive>\Extensions\<guid>\
+    Trivial to uninstall (delete folder or VSIXInstaller /uninstall).
+
+    Also note: this manifest does NOT reference ExtensionPack.vsext (see
+    the csproj condition '$(Deployment)'=='Standalone'), so the bundled
+    Microsoft.SingleProjectMSIXPackagingTools.Dev17 dependency is NOT
+    pulled in. That sidesteps the ".NET WinUI app development tools / .NET
+    MAUI for Windows / C++ WinUI app development tools" prerequisite
+    cascade on machines that don't have those workloads.
+-->
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="Microsoft.WindowsAppSDK.Cs.Dev17" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
-        <DisplayName>Windows App SDK C# VS Templates</DisplayName>
-        <Description xml:space="preserve">The Microsoft Windows App SDK Visual Studio extension adds C# project and item templates to support building Windows apps and components in VS 2022-2026.</Description>
+        <Identity Id="Microsoft.WindowsAppSDK.Cs.Dev17.LocalDev" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
+        <DisplayName>Windows App SDK C# VS Templates (LocalDev)</DisplayName>
+        <Description xml:space="preserve">[LocalDev build] The Microsoft Windows App SDK Visual Studio extension adds C# project and item templates to support building Windows apps and components in VS 2022-2026. This is a per-user dev-loop build that shadows any workload-shipped copy on the same machine.</Description>
         <MoreInfo>https://github.com/microsoft/WindowsAppSDK/</MoreInfo>
         <License>LICENSE</License>
         <GettingStartedGuide>https://github.com/microsoft/WindowsAppSDK/</GettingStartedGuide>
@@ -12,7 +56,7 @@
         <PreviewImage>WindowsAppSDK.png</PreviewImage>
         <Tags>WindowsAppSDK, WinAppSDK, WinUI, XAML, C#, Managed</Tags>
     </Metadata>
-    <Installation AllUsers="true">
+    <Installation AllUsers="false">
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 19.0)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
