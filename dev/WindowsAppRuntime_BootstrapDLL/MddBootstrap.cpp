@@ -604,7 +604,12 @@ void FirstTimeInitialization(
         // search priority. See helper comment for rationale. No framework
         // fallback here — package graph + later PInvoke will load framework if
         // app dir has no pinned copy.
-        EnsureFoundationDllLoaded(nullptr);
+        //
+        // CRITICAL: store the returned hmod into g_windowsAppRuntimeDll. Without
+        // this, the wil::unique_hmodule destructor would free the DLL immediately
+        // after the call, undoing the pre-load. (Win10 path does the same store
+        // a few lines lower, just for the framework load.)
+        g_windowsAppRuntimeDll = EnsureFoundationDllLoaded(nullptr);
         DiagSnapshotMicrosoftWindowsAppRuntimeDll(L"FirstTimeInitialization.afterPreload.snapshot");
 
         // Add the framework package to the package graph
