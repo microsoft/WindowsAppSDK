@@ -2,8 +2,14 @@
 #                                  Foundation MonoBuild Test Pipeline                                                               #
 #####################################################################################################################################
 #                                                                                                                                   #
-# Test pipeline that consumes Foundation build artifacts produced by the WinAppSDK MonoBuild and runs the full Foundation test      #
-# matrix (TAEF tests, sample app build/test, static validation) against them.                                                       #
+# Test pipeline that consumes Foundation build artifacts produced by the WinAppSDK MonoBuild and runs the Foundation TAEF test    #
+# matrix against them.                                                                                                              #
+#                                                                                                                                   #
+# Scope                                                                                                                             #
+#   - Test stages only (Test_x86, Test_x64, Test_arm64).                                                                            #
+#   - Pack, StaticValidationTest, BuildAndTestSampleApps are NOT included; Pack already ran in the parent monobuild's Foundation   #
+#     stage and the other two depend on Pack outputs in the same run. Those will return as a follow-up once they're adapted to     #
+#     consume `Component-Foundation-Final` from the parent monobuild instead of the current run's Pack stage.                       #
 #                                                                                                                                   #
 # Trigger contract                                                                                                                  #
 #   - All triggers are configured in the ADO pipeline UI (Build Completion / Pipeline Resource trigger), not in this YAML.          #
@@ -13,9 +19,7 @@
 # Artifact reuse contract                                                                                                           #
 #   - Sets `foundationUseBuildOutputFromPipeline` / `foundationUseBuildOutputFromBuildId` to point at the parent monobuild run.     #
 #   - WindowsAppSDK-CommonVariables.yml coalesces these into `_foundationBuildOutputPipeline`/`_foundationBuildOutputBuildId`,      #
-#     which the Pack steps and RunTests steps use as the artifact source.                                                           #
-#   - The same `foundationUseBuildOutputFromBuildId` setting causes per-platform Build_* stages to skip via their existing skip     #
-#     condition, so this pipeline only runs Pack/Test/StaticValidation/SampleApps against the parent's binaries.                    #
+#     which the RunTests step template consumes to download FoundationBinaries_release_*/MrtBinaries_release_* artifacts.           #
 #                                                                                                                                   #
 # Tag-back contract (see CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md §8.3)                                                   #
 #   - On overall success, tags the parent monobuild with `FoundationTestSucceeded`.                                                #
@@ -41,14 +45,6 @@ parameters:
     displayName: 'Source monobuild Build Id (run id of the producing build) - required'
     type: string
     default: ''
-  - name: BuildSampleApps
-    displayName: 'Run Build Sample Apps stages'
-    type: boolean
-    default: true
-  - name: TestSampleApps
-    displayName: 'Test launch of sample apps in the TestSampleApps stages'
-    type: boolean
-    default: true
   - name: TestOnArm64
     displayName: 'Run tests on arm64'
     type: boolean
@@ -62,15 +58,11 @@ variables:
   - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
   - template: WindowsAppSDK-CommonVariables.yml
   - group: WinAppSDK-Foundation-Build-Variables
-  - name: maxParallelForBuildSamplesCompatJob_x64
-    value: 20
-  - name: maxParallelForBuildSamplesCompatJob_arm64
-    value: 20
 
-  # ── Reuse contract: pull binaries + transport packages from the triggering monobuild run ───────────────────────────────────────
+  # ── Reuse contract: pull binaries + transport packages from the source monobuild run ───────────────────────────────
   # Foundation's WindowsAppSDK-CommonVariables.yml coalesces these into _foundationBuildOutputPipeline / _foundationBuildOutputBuildId,
-  # which the Pack and RunTests step templates already consume. Setting `foundationUseBuildOutputFromBuildId` also causes the
-  # per-platform Build_*/PREfast_* stages to skip via their own `condition:` guards.
+  # which the RunTests step template already consumes to download FoundationBinaries_release_<plat>/MrtBinaries_release_<plat> from
+  # the parent monobuild run.
   - name: foundationUseBuildOutputFromPipeline
     value: ${{ parameters.sourcePipelineId }}
   - name: foundationUseBuildOutputFromBuildId
@@ -128,45 +120,24 @@ extends:
         break: false
 
     stages:
-      # ── Build_*/PREfast_* stages from Foundation-PR.yml ─────────────────────────────────────────────────────────────────────────
-      # These stages are defined inside WindowsAppSDK-Build-Stage.yml. Each one's outer `condition:` is
-      # `eq(variables['foundationUseBuildOutputFromBuildId'],'')`, so all per-platform build jobs skip
-      # automatically when that variable is set (which we do above). They are kept in the pipeline so that
-      # downstream stages keep their `dependsOn` references valid; ADO treats skipped stages as satisfied
-      # for `not(failed())` conditions used by Pack/Test.
-      - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
-        parameters:
-          SignOutput: false
-          runApiScan: false
-          runPREFast: false
-          testMatrix: ${{ variables.PipelineTests }}
-
-      # ── Pack: re-pack TransportPackage from monobuild's per-platform binaries ───────────────────────────────────────────────────
-      # WindowsAppSDK-PackTransportPackage-Steps.yml downloads from $(_foundationBuildOutputPipeline) / $(_foundationBuildOutputBuildId)
-      # using the default `FoundationBinaries_release` / `MrtBinaries_release` prefixes (case-insensitive match on
-      # the monobuild's `FoundationBinaries_Release_*` / `MrtBinaries_Release_*` artifacts).
-      - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
-        parameters:
-          SignOutput: false
-          PublishPackage: false
-
-      - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
-        parameters:
-          SignOutput: false
-
+      # ── Test stages only ───────────────────────────────────────────────────────────────────────────────────────────────────────
+      # Test_<plat> downloads FoundationBinaries_release_<plat> / MrtBinaries_release_<plat> from the parent monobuild run
+      # via $(_foundationBuildOutputPipeline) / $(_foundationBuildOutputBuildId) and runs the TAEF test matrix.
+      # buildStageDependencies_* are passed empty so Test_* don't try to reference non-existent Build_* stages.
+      #
+      # Pack, StaticValidationTest, BuildAndTestSampleApps are intentionally NOT included here:
+      #   - Pack already ran in the parent monobuild's Foundation stage; re-running it would be duplicate work.
+      #   - StaticValidationTest currently consumes the in-pipeline TransportPackage artifact (Pack output).
+      #   - BuildAndTestSampleApps reads stageDependencies.Pack.NugetPackage outputs.
+      # Both will be re-introduced in a follow-up that adapts those stages to consume `Component-Foundation-Final`
+      # from the parent monobuild run instead of the current run's Pack stage.
       - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
         parameters:
           testMatrix: ${{ variables.PipelineTests }}
           TestOnArm64: ${{ parameters.TestOnArm64 }}
-
-      - ${{ if eq(parameters.BuildSampleApps, true) }}:
-        - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
-          parameters:
-            TestSampleApps: ${{ parameters.TestSampleApps }}
-            TestOnArm64: ${{ parameters.TestOnArm64 }}
-            runStaticAnalysis: false
-            maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
-            maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}
+          buildStageDependencies_x86: []
+          buildStageDependencies_x64: []
+          buildStageDependencies_arm64: []
 
       # ── Tag the parent monobuild ───────────────────────────────────────────────────────────────────────────────────────────────
       # Two stages, one each for success / failure paths. The shared $(System.AccessToken) belongs to the
@@ -175,18 +146,10 @@ extends:
         displayName: 'Tag parent build: FoundationTestSucceeded'
         condition: succeeded()
         dependsOn:
-          - Pack
-          - StaticValidationTest
           - Test_x86
           - Test_x64
           - ${{ if eq(parameters.TestOnArm64, true) }}:
             - Test_arm64
-          - ${{ if eq(parameters.BuildSampleApps, true) }}:
-            - BuildSampleApps_x64
-            - BuildSampleApps_arm64
-            - ${{ if eq(parameters.TestSampleApps, true) }}:
-              - TestSampleApps_x64
-              - TestSampleApps_arm64
         jobs:
           - job: TagSucceeded
             displayName: 'PUT FoundationTestSucceeded on parent monobuild'
@@ -217,18 +180,10 @@ extends:
         displayName: 'Tag parent build: FoundationTestFailed'
         condition: failed()
         dependsOn:
-          - Pack
-          - StaticValidationTest
           - Test_x86
           - Test_x64
           - ${{ if eq(parameters.TestOnArm64, true) }}:
             - Test_arm64
-          - ${{ if eq(parameters.BuildSampleApps, true) }}:
-            - BuildSampleApps_x64
-            - BuildSampleApps_arm64
-            - ${{ if eq(parameters.TestSampleApps, true) }}:
-              - TestSampleApps_x64
-              - TestSampleApps_arm64
         jobs:
           - job: TagFailed
             displayName: 'PUT FoundationTestFailed on parent monobuild'
