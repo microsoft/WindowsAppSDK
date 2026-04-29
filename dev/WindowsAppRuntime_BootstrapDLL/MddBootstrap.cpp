@@ -14,57 +14,6 @@
 
 #include <filesystem>
 
-// ====== TEMPORARY DIAGNOSTIC LOGGING (remove before final merge) ======
-// Writes to %TEMP%\preload-debug.log to diagnose pinned-DLL pre-load behavior.
-// All entries are append-only and tagged with a phase label.
-static void DiagWrite(PCWSTR phase, PCWSTR detail) noexcept
-{
-    WCHAR temp[MAX_PATH]{};
-    const DWORD chars{ ::GetEnvironmentVariableW(L"TEMP", temp, ARRAYSIZE(temp)) };
-    if (chars == 0 || chars >= ARRAYSIZE(temp)) return;
-    std::wstring path{ temp };
-    path += L"\\preload-debug.log";
-    HANDLE h{ ::CreateFileW(path.c_str(), FILE_APPEND_DATA,
-        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
-        OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
-    if (h == INVALID_HANDLE_VALUE) return;
-    SYSTEMTIME st{};
-    ::GetSystemTime(&st);
-    WCHAR line[2048]{};
-    swprintf_s(line, L"[%02u:%02u:%02u.%03u tid=%lu] %ls: %ls\r\n",
-        st.wHour, st.wMinute, st.wSecond, st.wMilliseconds,
-        ::GetCurrentThreadId(), phase, detail ? detail : L"");
-    char narrow[4096]{};
-    int n = ::WideCharToMultiByte(CP_UTF8, 0, line, -1, narrow, sizeof(narrow), nullptr, nullptr);
-    if (n > 0)
-    {
-        ::SetFilePointer(h, 0, nullptr, FILE_END);
-        DWORD written{};
-        ::WriteFile(h, narrow, static_cast<DWORD>(n - 1), &written, nullptr);
-    }
-    ::CloseHandle(h);
-}
-
-static void DiagSnapshotMicrosoftWindowsAppRuntimeDll(PCWSTR phase) noexcept
-{
-    // Enumerate all currently-loaded modules whose name matches Microsoft.WindowsAppRuntime.dll.
-    HMODULE byName{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
-    if (!byName)
-    {
-        DiagWrite(phase, L"GetModuleHandle('Microsoft.WindowsAppRuntime.dll') = NULL (not loaded)");
-        return;
-    }
-    WCHAR p[MAX_PATH * 2]{};
-    ::GetModuleFileNameW(byName, p, ARRAYSIZE(p));
-    std::wstring m{ L"GetModuleHandle by name returned hmod=" };
-    WCHAR buf[64]{};
-    swprintf_s(buf, L"0x%p, file=", byName);
-    m += buf;
-    m += p;
-    DiagWrite(phase, m.c_str());
-}
-// ====== END DIAGNOSTIC ======
-
 // Publish the framework package's install directory via env var.
 // WinUI's LoadLibraryAbs consults this when a sibling DLL is not next to
 // Microsoft.UI.Xaml.dll (the hybrid case, where Microsoft.UI.Xaml.dll is
@@ -98,58 +47,22 @@ static void SetFrameworkPathEnvironmentVariable(PCWSTR frameworkPath)
 // the package graph, so callers may pass nullptr to skip the fallback.
 static wil::unique_hmodule EnsureFoundationDllLoaded(PCWSTR frameworkPath) noexcept
 {
-    DiagWrite(L"EnsureFoundationDllLoaded.entry",
-        frameworkPath ? frameworkPath : L"(null framework path = Win11 mode)");
-    DiagSnapshotMicrosoftWindowsAppRuntimeDll(L"EnsureFoundationDllLoaded.entry.snapshot");
-
     // 1. Prefer the pinned copy in app dir.
     WCHAR baseDir[MAX_PATH]{};
     const DWORD chars{ ::GetEnvironmentVariableW(
         L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir, ARRAYSIZE(baseDir)) };
-    {
-        WCHAR m[2048]{};
-        swprintf_s(m, L"BASE_DIRECTORY chars=%lu value='%ls'", chars, chars > 0 ? baseDir : L"");
-        DiagWrite(L"EnsureFoundationDllLoaded", m);
-    }
     if (chars > 0 && chars < ARRAYSIZE(baseDir))
     {
         std::wstring pinned{ baseDir };
         pinned += L"Microsoft.WindowsAppRuntime.dll";
-        DWORD attrs{ ::GetFileAttributesW(pinned.c_str()) };
-        {
-            WCHAR m[2048]{};
-            swprintf_s(m, L"GetFileAttributes('%ls') = 0x%08lX", pinned.c_str(), attrs);
-            DiagWrite(L"EnsureFoundationDllLoaded", m);
-        }
-        if (attrs != INVALID_FILE_ATTRIBUTES)
+        if (::GetFileAttributesW(pinned.c_str()) != INVALID_FILE_ATTRIBUTES)
         {
             wil::unique_hmodule hmod{ ::LoadLibraryExW(pinned.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
-            const DWORD lastError{ ::GetLastError() };
-            {
-                WCHAR m[2048]{};
-                swprintf_s(m, L"LoadLibraryExW(pinned='%ls') hmod=0x%p lastError=%lu",
-                    pinned.c_str(), hmod.get(), lastError);
-                DiagWrite(L"EnsureFoundationDllLoaded", m);
-            }
             if (hmod)
             {
-                WCHAR resolved[MAX_PATH * 2]{};
-                ::GetModuleFileNameW(hmod.get(), resolved, ARRAYSIZE(resolved));
-                WCHAR m[2048]{};
-                swprintf_s(m, L"LoadLibraryExW SUCCESS, resolved actual path = '%ls'", resolved);
-                DiagWrite(L"EnsureFoundationDllLoaded.success", m);
                 return hmod;
             }
-            DiagWrite(L"EnsureFoundationDllLoaded.warn", L"LoadLibraryExW(pinned) returned NULL");
         }
-        else
-        {
-            DiagWrite(L"EnsureFoundationDllLoaded", L"pinned file does not exist, skipping");
-        }
-    }
-    else
-    {
-        DiagWrite(L"EnsureFoundationDllLoaded", L"BASE_DIRECTORY env var empty/missing, skipping pinned attempt");
     }
 
     // 2. Fall back to the framework copy.
@@ -157,22 +70,11 @@ static wil::unique_hmodule EnsureFoundationDllLoaded(PCWSTR frameworkPath) noexc
     {
         std::wstring framework{ frameworkPath };
         framework += L"\\Microsoft.WindowsAppRuntime.dll";
-        DiagWrite(L"EnsureFoundationDllLoaded.fallback", framework.c_str());
-        wil::unique_hmodule hmod{ ::LoadLibraryExW(framework.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
-        if (hmod)
-        {
-            WCHAR resolved[MAX_PATH * 2]{};
-            ::GetModuleFileNameW(hmod.get(), resolved, ARRAYSIZE(resolved));
-            WCHAR m[2048]{};
-            swprintf_s(m, L"framework fallback SUCCESS, resolved = '%ls'", resolved);
-            DiagWrite(L"EnsureFoundationDllLoaded.fallback.success", m);
-        }
-        return hmod;
+        return wil::unique_hmodule{ ::LoadLibraryExW(framework.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
     }
 
     // 3. No fallback available; caller is responsible for ensuring the DLL
     // gets loaded later (e.g. Win11 path relies on package graph + later PInvoke).
-    DiagWrite(L"EnsureFoundationDllLoaded.exit", L"no fallback, returning empty");
     return wil::unique_hmodule{};
 }
 
@@ -580,9 +482,6 @@ void FirstTimeInitialization(
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion)
 {
-    DiagWrite(L"FirstTimeInitialization.entry", L"---- begin ----");
-    DiagSnapshotMicrosoftWindowsAppRuntimeDll(L"FirstTimeInitialization.entry.snapshot");
-
     // Sanity check we're not already initialized
     // g_lifetimeManager is optional. Don't check it
     // g_endTheLifetimeManagerEvent is optional. Don't check it
@@ -597,8 +496,6 @@ void FirstTimeInitialization(
     const UINT32 minVersionToUseWin11Support{ 0x00010007 };
     if ((majorMinorVersion >= minVersionToUseWin11Support) && MddCore::Win11::IsSupported())
     {
-        DiagWrite(L"FirstTimeInitialization", L"taking Win11 path");
-
         // HybridDeploy: pre-load the pinned Microsoft.WindowsAppRuntime.dll from
         // app dir if present, BEFORE Win11::AddPackageDependency raises framework
         // search priority. See helper comment for rationale. No framework
@@ -610,7 +507,6 @@ void FirstTimeInitialization(
         // after the call, undoing the pre-load. (Win10 path does the same store
         // a few lines lower, just for the framework load.)
         g_windowsAppRuntimeDll = EnsureFoundationDllLoaded(nullptr);
-        DiagSnapshotMicrosoftWindowsAppRuntimeDll(L"FirstTimeInitialization.afterPreload.snapshot");
 
         // Add the framework package to the package graph
         const std::wstring frameworkPackageFamilyName{ GetFrameworkPackageFamilyName(majorMinorVersion, packageVersionTag.c_str()) };
