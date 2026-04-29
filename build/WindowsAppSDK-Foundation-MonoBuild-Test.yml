@@ -27,9 +27,6 @@
 
 name: $(pipelineName)
 
-trigger: none
-pr: none
-
 parameters:
   - name: BuildSampleApps
     displayName: 'Run Build Sample Apps stages'
