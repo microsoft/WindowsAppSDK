@@ -32,7 +32,7 @@
 
 # Build run name shows the locked source pipeline label + build id so it's obvious
 # which parent run each test run is paired with.
-name: '${{ parameters.sourcePipeline }}-${{ parameters.sourceBuildId }}'
+name: '${{ parameters.sourcePipeline }} #${{ parameters.sourceBuildId }} (def $(sourcePipelineId))'
 
 parameters:
   # Source pipeline is locked to known definitions and mapped below to the numeric
