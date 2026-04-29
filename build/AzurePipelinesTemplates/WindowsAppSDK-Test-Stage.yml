@@ -9,6 +9,9 @@ parameters:
 # consumed standalone (e.g. WindowsAppSDK-Foundation-MonoBuild-Test.yml runs Test stages only and
 # pulls binaries from a parent monobuild run via _foundationBuildOutputBuildId, with no Build_*
 # stages in the same pipeline).
+#
+# Typically, either all platforms are using their default values, or all platforms receive the
+# empty list from the caller. Mixing the two scenarios is untested/unsupported.
 - name: buildStageDependencies_x86
   type: object
   default:
