@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        The dotnet-new template pack project is included in the VSIX solution
+        but does not need (and must not inherit) the repo-root
+        Directory.Build.props which requires a test certificate.
+
+        Import the VSIX Directory.Build.props for CPM and shared settings.
+    -->
+    <Import Project="$(MSBuildThisFileDirectory)..\VSIX\Directory.Build.props" />
+</Project>

@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": ["Windows", "WinUI", "Desktop", "MVVM"],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.MvvmApp",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.MvvmApp",
+  "name": "WinUI MVVM App",
+  "shortName": ["winui-mvvm", "winui3-mvvm"],
+  "sourceName": "ProjectTemplate",
+  "defaultName": "WinUIMvvmApp",
+  "description": "Creates a WinUI 3 desktop app with MVVM pattern using CommunityToolkit.Mvvm.",
+  "preferNameDirectory": true,
+  "constraints": {
+    "windows-only": {
+      "type": "os",
+      "args": "Windows"
+    },
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": [ "[8.0,)" ]
+    }
+  },
+  "symbols": {
+    "safeProjectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "safe_name",
+      "replaces": "$safeprojectname$"
+    },
+    "projectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$projectname$"
+    },
+    "cliVersion": {
+      "type": "bind",
+      "binding": "host:dotnet-cli-version",
+      "defaultValue": "10.0.100"
+    },
+    "autoDetectedTfm": {
+      "type": "generated",
+      "generator": "regex",
+      "datatype": "string",
+      "parameters": {
+        "source": "cliVersion",
+        "steps": [
+          {
+            "regex": "^(\\d+)\\..*$",
+            "replacement": "net${1}.0"
+          }
+        ]
+      }
+    },
+    "dotnetVersion": {
+      "type": "parameter",
+      "datatype": "choice",
+      "description": "Base target framework moniker (TFM) for the WinUI project. Defaults to the installed SDK version.",
+      "choices": [
+        { "choice": "net8.0", "description": "Target .NET 8" },
+        { "choice": "net9.0", "description": "Target .NET 9" },
+        { "choice": "net10.0", "description": "Target .NET 10" }
+      ]
+    },
+    "resolvedDotnetVersion": {
+      "type": "generated",
+      "generator": "coalesce",
+      "parameters": {
+        "sourceVariableName": "dotnetVersion",
+        "fallbackVariableName": "autoDetectedTfm"
+      },
+      "replaces": "$DotNetVersion$"
+    },
+    "targetPlatformMinVersion":{
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$targetplatformminversion$",
+      "defaultValue": "10.0.17763.0",
+      "description": "Minimum supported Windows version."
+    },
+    "publisherDn": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisherDistinguishedName$",
+      "defaultValue": "CN=AppPublisher",
+      "description": "Publisher distinguished name used inside Package.appxmanifest."
+    },
+    "publisherDisplay": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisher$",
+      "defaultValue": "AppPublisher",
+      "description": "Publisher display name shown in the manifest and Settings page."
+    },
+    "guid9": {
+      "type": "generated",
+      "generator": "guid",
+      "parameters": {
+        "format": "D"
+      },
+      "replaces": "$guid9$"
+    },
+    "UseLatestWindowsAppSDK":{
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true"
+    },
+    "windowsAppSdkVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$WindowsAppSdkVersion$",
+      "defaultValue": "1.8.260317003",
+      "description": "Version of the Microsoft.WindowsAppSDK NuGet package."
+    },
+    "windowsSdkBuildToolsVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$WindowsSdkBuildToolsVersion$",
+      "defaultValue": "10.0.26100.7705",
+      "description": "Version of the Microsoft.Windows.SDK.BuildTools NuGet package."
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "replacements": [
+            {
+              "before": "$targetnametoken$",
+              "after": "{{safeProjectName}}"
+            },
+            {
+              "before": "$targetentrypoint$",
+              "after": "{{safeProjectName}}.App"
+            }
+          ]
+        }
+      ],
+      "rename": {
+        "gitignore.txt": ".gitignore"
+      }
+    }
+  ],
+  "primaryOutputs": [
+    { "path": "ProjectTemplate.csproj" }
+  ],
+  "forms": {
+    "safe_name": {
+      "identifier": "safe_name"
+    },
+    "identity": {
+      "identifier": "identity"
+    }
+  },
+  "postActions": [
+    {
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "description": "Update Microsoft.WindowsAppSDK to the latest stable version.",
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.WindowsAppSDK"
+      },
+      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" }]
+    },
+    {
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "description": "Update Microsoft.Windows.SDK.BuildTools to the latest stable version.",
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools"
+      },
+      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" }]
+    },
+    {
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "description": "Update CommunityToolkit.Mvvm to the latest stable version.",
+      "args": {
+        "referenceType": "package",
+        "reference": "CommunityToolkit.Mvvm"
+      },
+      "manualInstructions": [{ "text": "Run 'dotnet add package CommunityToolkit.Mvvm'" }]
+    },
+    {
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [{ "text": "Run 'dotnet restore'" }]
+    }
+  ]
+}

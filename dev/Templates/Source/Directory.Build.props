@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        The Source (ItemTemplates / ProjectTemplates) projects are built as part
+        of the VSIX solution located in ..\VSIX\. They need the same MSBuild
+        properties that the VSIX Directory.Build.props provides (output paths,
+        CPM, package versions, etc.) and must NOT inherit the repo-root
+        Directory.Build.props which requires a test certificate that is
+        irrelevant to template packaging.
+
+        Import the VSIX Directory.Build.props so all projects in the solution
+        share a single source of truth.
+    -->
+    <Import Project="$(MSBuildThisFileDirectory)..\VSIX\Directory.Build.props" />
+</Project>
