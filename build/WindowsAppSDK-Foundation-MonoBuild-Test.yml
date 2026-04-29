@@ -30,13 +30,22 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-name: $(pipelineName)
+# Build run name shows the source pipeline + build id so it's obvious which monobuild run
+# each test run is paired with. Examples:
+#   FoundationTest - Nightly #4567 (def 190463)
+#   FoundationTest - Official #890 (def 189940)
+name: 'FoundationTest - ${{ parameters.sourcePipelineName }} #${{ parameters.sourceBuildId }} (def ${{ parameters.sourcePipelineId }})'
 
 parameters:
-  # Source monobuild pipeline definition + run id. Free text so this pipeline works against
-  # any current or future monobuild definition (Nightly = 190463, Official = TBD, 189940, ...).
-  # The Build Completion trigger configured in the ADO UI auto-fills these from the triggering run;
-  # for manual queues, paste the values from the source build's URL (`buildId=...&definitionId=...`).
+  # Source monobuild pipeline metadata. The Build Completion trigger configured in the ADO UI
+  # auto-fills sourcePipelineId / sourceBuildId from the triggering run; sourcePipelineName is a
+  # free-text label for the run name only (not used for any artifact resolution).
+  # For manual queues, paste the values from the source build's URL (`buildId=...&definitionId=...`)
+  # and pick a label that makes sense in the runs list.
+  - name: sourcePipelineName
+    displayName: 'Source monobuild pipeline name (e.g. Nightly, Official) - free text label for the run name'
+    type: string
+    default: 'Nightly'
   - name: sourcePipelineId
     displayName: 'Source monobuild pipeline definition id (e.g. 190463 = Nightly)'
     type: string
