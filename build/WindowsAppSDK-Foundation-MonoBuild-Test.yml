@@ -65,9 +65,11 @@ variables:
     - name: sourcePipelineId
       value: '189940'
   - template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
-    parameters:
-      PrOrNightly: 'pr'
+  # Note: WindowsAppSDK-Versions.yml is intentionally NOT included here. The test pipeline does
+  # not pack/version anything (it consumes binaries from the parent monobuild run), and the
+  # computed version variables (pipelineName, DateAndCounterSuffix, WindowsAppSDKVersion, ...)
+  # are not consumed in the test path. Pulling Versions in would also burn a counter increment
+  # on the WinAppSDK-0-Versions Variable Group every test-pipeline run for no reason.
   - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
   - template: WindowsAppSDK-CommonVariables.yml
   - group: WinAppSDK-Foundation-Build-Variables
