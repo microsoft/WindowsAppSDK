@@ -36,8 +36,8 @@ steps:
   # Always uses source: specific with _foundationBuildOutputBuildId.
   # The coalesce on that variable resolves to Build.BuildId (current run)
   # when no override is set, making this equivalent to source: current.
-  # Artifact names match the per-component Foundation build (FoundationBinaries_Release_<plat>,
-  # FoundationBinaries_release_anycpu) and the monobuild's Foundation-Build-Stage.yml.
+  # Artifact names follow the monobuild spec (Mono-Build-Pipeline-Migration.md §6.3):
+  # Build-Foundation-<plat>-Release for native and AnyCPU, Build-Foundation-MRT-<plat>-Release for MRT.
   - ${{ each platform in split('x64;x86;arm64;anycpu', ';') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation ${{ platform }}'
@@ -47,7 +47,7 @@ steps:
         project: $(System.TeamProjectId)
         pipeline: $(_foundationBuildOutputPipeline)
         pipelineId: $(_foundationBuildOutputBuildId)
-        artifactName: "FoundationBinaries_release_${{ platform }}"
+        artifactName: "Build-Foundation-${{ platform }}-Release"
         ${{ if parameters.IsMonobuild }}:
           targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
         ${{ else }}:
@@ -63,7 +63,7 @@ steps:
         project: $(System.TeamProjectId)
         pipeline: $(_foundationBuildOutputPipeline)
         pipelineId: $(_foundationBuildOutputBuildId)
-        artifactName: "MrtBinaries_release_${{ platform }}"
+        artifactName: "Build-Foundation-MRT-${{ platform }}-Release"
         ${{ if parameters.IsMonobuild }}:
           targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
         ${{ else }}:

@@ -51,9 +51,9 @@ stages:
         value: '-|**\Release\**;-|**\packages\**'
       - name: ob_artifactBaseName
         ${{ if parameters.runPREfast }}:
-          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+          value: "Build-Foundation-$(buildPlatform)-$(buildConfiguration)-PREfast"
         ${{ else }}:
-          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+          value: "Build-Foundation-$(buildPlatform)-$(buildConfiguration)"
       - name: ob_sdl_apiscan_enabled
         ${{ if parameters.runApiScan }}:
           value: true
@@ -130,9 +130,9 @@ stages:
         value: default
       - name: ob_artifactBaseName
         ${{ if parameters.runPREfast }}:
-          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+          value: "Build-Foundation-MRT-$(buildPlatform)-$(buildConfiguration)-PREfast"
         ${{ else }}:
-          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+          value: "Build-Foundation-MRT-$(buildPlatform)-$(buildConfiguration)"
       - name: ob_sdl_apiscan_enabled
         ${{ if parameters.runApiScan }}:
           value: true

@@ -19,7 +19,7 @@
 # Artifact reuse contract                                                                                                           #
 #   - Sets `foundationUseBuildOutputFromPipeline` / `foundationUseBuildOutputFromBuildId` to point at the parent monobuild run.     #
 #   - WindowsAppSDK-CommonVariables.yml coalesces these into `_foundationBuildOutputPipeline`/`_foundationBuildOutputBuildId`,      #
-#     which the RunTests step template consumes to download FoundationBinaries_release_*/MrtBinaries_release_* artifacts.           #
+#     which the RunTests step template consumes to download Build-Foundation-<plat>-Release/Build-Foundation-MRT-<plat>-Release artifacts. #
 #                                                                                                                                   #
 # Tag-back contract (see CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md §8.3)                                                   #
 #   - On overall success, tags the parent monobuild with `TestSucceeded_Foundation`.                                                #
@@ -74,7 +74,7 @@ variables:
 
   # ── Reuse contract: pull binaries + transport packages from the source monobuild run ───────────────────────────────
   # Foundation's WindowsAppSDK-CommonVariables.yml coalesces these into _foundationBuildOutputPipeline / _foundationBuildOutputBuildId,
-  # which the RunTests step template already consumes to download FoundationBinaries_release_<plat>/MrtBinaries_release_<plat> from
+  # which the RunTests step template already consumes to download Build-Foundation-<plat>-Release/Build-Foundation-MRT-<plat>-Release from
   # the parent monobuild run.
   - name: foundationUseBuildOutputFromPipeline
     value: $(sourcePipelineId)
@@ -140,7 +140,7 @@ extends:
 
     stages:
       # ── Test stages only ───────────────────────────────────────────────────────────────────────────────────────────────────────
-      # Test_<plat> downloads FoundationBinaries_release_<plat> / MrtBinaries_release_<plat> from the parent monobuild run
+      # Test_<plat> downloads Build-Foundation-<plat>-Release / Build-Foundation-MRT-<plat>-Release from the parent monobuild run
       # via $(_foundationBuildOutputPipeline) / $(_foundationBuildOutputBuildId) and runs the TAEF test matrix.
       # buildStageDependencies_* are passed empty so Test_* don't try to reference non-existent Build_* stages.
       #

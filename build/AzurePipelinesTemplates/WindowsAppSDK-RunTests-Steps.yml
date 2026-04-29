@@ -29,7 +29,7 @@ steps:
       project: $(System.TeamProjectId)
       pipeline: $(_foundationBuildOutputPipeline)
       pipelineId: $(_foundationBuildOutputBuildId)
-      artifactName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+      artifactName: "Build-Foundation-$(buildPlatform)-$(buildConfiguration)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: DownloadPipelineArtifact@2
@@ -40,7 +40,7 @@ steps:
       project: $(System.TeamProjectId)
       pipeline: $(_foundationBuildOutputPipeline)
       pipelineId: $(_foundationBuildOutputBuildId)
-      artifactName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+      artifactName: "Build-Foundation-MRT-$(buildPlatform)-$(buildConfiguration)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: CopyFiles@2
