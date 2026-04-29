@@ -136,37 +136,9 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj">
-      <Project>{33783A04-0CB4-4CE5-A9FE-82E2E7E06D1F}</Project>
-      <Name>WinUI.Desktop.Cs.ClassLibrary</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\PackagedApp\WinUI.Desktop.Cs.PackagedApp.csproj">
-      <Project>{938DD23E-270E-488B-AC4C-CA68A545A8F2}</Project>
-      <Name>WinUI.Desktop.Cs.PackagedApp</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
     <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj">
       <Project>{D9C038B7-6A62-4945-A030-4AC7597F53CA}</Project>
       <Name>WinUI.Desktop.Cs.SingleProjectPackagedApp</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj">
-      <Project>{45777B9F-9CC1-47D7-BD66-C3C194277902}</Project>
-      <Name>WinUI.Desktop.Cs.UnitTestApp</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj">
-      <Project>{A1B2C3D4-1111-4A5B-9C8D-1E2F3A4B5C6D}</Project>
-      <Name>WinUI.Desktop.Cs.TabViewApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
@@ -178,9 +150,37 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj">
+      <Project>{A1B2C3D4-1111-4A5B-9C8D-1E2F3A4B5C6D}</Project>
+      <Name>WinUI.Desktop.Cs.TabViewApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
     <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.csproj">
       <Project>{C3D4E5F6-3333-4C7D-BE0F-3A4B5C6D7E8F}</Project>
       <Name>WinUI.Desktop.Cs.MvvmApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\PackagedApp\WinUI.Desktop.Cs.PackagedApp.csproj">
+      <Project>{938DD23E-270E-488B-AC4C-CA68A545A8F2}</Project>
+      <Name>WinUI.Desktop.Cs.PackagedApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj">
+      <Project>{33783A04-0CB4-4CE5-A9FE-82E2E7E06D1F}</Project>
+      <Name>WinUI.Desktop.Cs.ClassLibrary</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj">
+      <Project>{45777B9F-9CC1-47D7-BD66-C3C194277902}</Project>
+      <Name>WinUI.Desktop.Cs.UnitTestApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
