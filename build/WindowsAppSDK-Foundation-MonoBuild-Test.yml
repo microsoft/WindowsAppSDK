@@ -1,0 +1,254 @@
+#####################################################################################################################################
+#                                  Foundation MonoBuild Test Pipeline                                                               #
+#####################################################################################################################################
+#                                                                                                                                   #
+# Test pipeline that consumes Foundation build artifacts produced by the WinAppSDK MonoBuild and runs the full Foundation test      #
+# matrix (TAEF tests, sample app build/test, static validation) against them.                                                       #
+#                                                                                                                                   #
+# Trigger contract                                                                                                                  #
+#   - Configured from the ADO pipeline UI (Build Completion / Pipeline Resource trigger), not in this YAML.                         #
+#   - Source pipeline is declared as a `pipelines` resource so we can reference $(resources.pipeline.monobuild.runID).              #
+#                                                                                                                                   #
+# Artifact reuse contract                                                                                                           #
+#   - Sets `foundationUseBuildOutputFromPipeline` / `foundationUseBuildOutputFromBuildId` to point at the parent monobuild run.     #
+#   - WindowsAppSDK-CommonVariables.yml coalesces these into `_foundationBuildOutputPipeline`/`_foundationBuildOutputBuildId`,      #
+#     which the Pack steps and RunTests steps use as the artifact source.                                                           #
+#   - The same `foundationUseBuildOutputFromBuildId` setting causes per-platform Build_* stages to skip via their existing skip     #
+#     condition, so this pipeline only runs Pack/Test/StaticValidation/SampleApps against the parent's binaries.                    #
+#                                                                                                                                   #
+# Tag-back contract (see CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md §8.3)                                                   #
+#   - On overall success, tags the parent monobuild with `FoundationTestSucceeded`.                                                #
+#   - On any failure, tags the parent monobuild with `FoundationTestFailed` (enables fast-fail in the monobuild's TestGate stage).  #
+#                                                                                                                                   #
+#####################################################################################################################################
+
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+name: $(pipelineName)
+
+trigger: none
+pr: none
+
+parameters:
+  - name: BuildSampleApps
+    displayName: 'Run Build Sample Apps stages'
+    type: boolean
+    default: true
+  - name: TestSampleApps
+    displayName: 'Test launch of sample apps in the TestSampleApps stages'
+    type: boolean
+    default: true
+  - name: TestOnArm64
+    displayName: 'Run tests on arm64'
+    type: boolean
+    default: true
+
+variables:
+  - template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
+    parameters:
+      PrOrNightly: 'pr'
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
+  - template: WindowsAppSDK-CommonVariables.yml
+  - group: WinAppSDK-Foundation-Build-Variables
+  - name: maxParallelForBuildSamplesCompatJob_x64
+    value: 20
+  - name: maxParallelForBuildSamplesCompatJob_arm64
+    value: 20
+
+  # ── Reuse contract: pull binaries + transport packages from the triggering monobuild run ───────────────────────────────────────
+  # Foundation's WindowsAppSDK-CommonVariables.yml coalesces these into _foundationBuildOutputPipeline / _foundationBuildOutputBuildId,
+  # which the Pack and RunTests step templates already consume. Setting `foundationUseBuildOutputFromBuildId` also causes the
+  # per-platform Build_*/PREfast_* stages to skip via their own `condition:` guards.
+  - name: foundationUseBuildOutputFromPipeline
+    value: $(resources.pipeline.monobuild.pipelineID)
+  - name: foundationUseBuildOutputFromBuildId
+    value: $(resources.pipeline.monobuild.runID)
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    - repository: WinAppSDK
+      type: git
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'WinAppSDK-Github'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
+
+  pipelines:
+    # The monobuild run whose artifacts we test. The trigger is configured in the ADO pipeline UI;
+    # we only need the resource declaration so we can reference $(resources.pipeline.monobuild.runID)
+    # / .pipelineID in the variables block above.
+    - pipeline: monobuild
+      source: WinAppSDK-MonoBuild-Nightly
+      project: OS
+
+extends:
+  template: v2/Microsoft.NonOfficial.yml@templates
+  parameters:
+    featureFlags:
+      EnableCDPxPAT: false
+      WindowsHostVersion:
+        Version: 2022
+        Network: R1
+
+    platform:
+      name: 'windows_undocked'
+
+    cloudvault:
+      enabled: false
+
+    globalSdl:
+      tsa:
+        enabled: $(TsaEnabled)
+      isNativeCode: false
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
+      psscriptanalyzer:
+        enable: true
+        break: true
+      binskim:
+        # Test pipeline does not produce binaries — only consumes monobuild artifacts and runs tests.
+        enabled: false
+        break: false
+      prefast:
+        enabled: false
+        break: false
+      apiscan:
+        enabled: false
+        break: false
+
+    stages:
+      # ── Build_*/PREfast_* stages from Foundation-PR.yml ─────────────────────────────────────────────────────────────────────────
+      # These stages are defined inside WindowsAppSDK-Build-Stage.yml. Each one's outer `condition:` is
+      # `eq(variables['foundationUseBuildOutputFromBuildId'],'')`, so all per-platform build jobs skip
+      # automatically when that variable is set (which we do above). They are kept in the pipeline so that
+      # downstream stages keep their `dependsOn` references valid; ADO treats skipped stages as satisfied
+      # for `not(failed())` conditions used by Pack/Test.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+        parameters:
+          SignOutput: false
+          runApiScan: false
+          runPREFast: false
+          testMatrix: ${{ variables.PipelineTests }}
+
+      # ── Pack: re-pack TransportPackage from monobuild's per-platform binaries ───────────────────────────────────────────────────
+      # WindowsAppSDK-PackTransportPackage-Steps.yml downloads from $(_foundationBuildOutputPipeline) / $(_foundationBuildOutputBuildId)
+      # using the default `FoundationBinaries_release` / `MrtBinaries_release` prefixes (case-insensitive match on
+      # the monobuild's `FoundationBinaries_Release_*` / `MrtBinaries_Release_*` artifacts).
+      - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
+        parameters:
+          SignOutput: false
+          PublishPackage: false
+
+      - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
+        parameters:
+          SignOutput: false
+
+      - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+        parameters:
+          testMatrix: ${{ variables.PipelineTests }}
+          TestOnArm64: ${{ parameters.TestOnArm64 }}
+
+      - ${{ if eq(parameters.BuildSampleApps, true) }}:
+        - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
+          parameters:
+            TestSampleApps: ${{ parameters.TestSampleApps }}
+            TestOnArm64: ${{ parameters.TestOnArm64 }}
+            runStaticAnalysis: false
+            maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
+            maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}
+
+      # ── Tag the parent monobuild ───────────────────────────────────────────────────────────────────────────────────────────────
+      # Two stages, one each for success / failure paths. The shared $(System.AccessToken) belongs to the
+      # test pipeline's Project Build Service identity, which has Tag permission on builds in the same project.
+      - stage: TagFoundationTestSucceeded
+        displayName: 'Tag parent build: FoundationTestSucceeded'
+        condition: succeeded()
+        dependsOn:
+          - Pack
+          - StaticValidationTest
+          - Test_x86
+          - Test_x64
+          - ${{ if eq(parameters.TestOnArm64, true) }}:
+            - Test_arm64
+          - ${{ if eq(parameters.BuildSampleApps, true) }}:
+            - BuildSampleApps_x64
+            - BuildSampleApps_arm64
+            - ${{ if eq(parameters.TestSampleApps, true) }}:
+              - TestSampleApps_x64
+              - TestSampleApps_arm64
+        jobs:
+          - job: TagSucceeded
+            displayName: 'PUT FoundationTestSucceeded on parent monobuild'
+            pool:
+              type: windows
+              isCustom: true
+              name: 'ProjectReunionESPool-2022'
+            steps:
+              - checkout: none
+              - task: PowerShell@2
+                displayName: 'Tag $(resources.pipeline.monobuild.runID) with FoundationTestSucceeded'
+                env:
+                  SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+                inputs:
+                  targetType: inline
+                  script: |
+                    Set-StrictMode -Version 2.0
+                    $ErrorActionPreference = 'Stop'
+                    $parentBuildId = '$(resources.pipeline.monobuild.runID)'
+                    $tag = 'FoundationTestSucceeded'
+                    $uri = "$(System.CollectionUri)$(System.TeamProject)/_apis/build/builds/$parentBuildId/tags/$tag" + '?api-version=7.1'
+                    Write-Host "PUT $uri"
+                    $headers = @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" }
+                    Invoke-RestMethod -Uri $uri -Method Put -Headers $headers | Out-Null
+                    Write-Host "Tagged build $parentBuildId with $tag"
+
+      - stage: TagFoundationTestFailed
+        displayName: 'Tag parent build: FoundationTestFailed'
+        condition: failed()
+        dependsOn:
+          - Pack
+          - StaticValidationTest
+          - Test_x86
+          - Test_x64
+          - ${{ if eq(parameters.TestOnArm64, true) }}:
+            - Test_arm64
+          - ${{ if eq(parameters.BuildSampleApps, true) }}:
+            - BuildSampleApps_x64
+            - BuildSampleApps_arm64
+            - ${{ if eq(parameters.TestSampleApps, true) }}:
+              - TestSampleApps_x64
+              - TestSampleApps_arm64
+        jobs:
+          - job: TagFailed
+            displayName: 'PUT FoundationTestFailed on parent monobuild'
+            pool:
+              type: windows
+              isCustom: true
+              name: 'ProjectReunionESPool-2022'
+            steps:
+              - checkout: none
+              - task: PowerShell@2
+                displayName: 'Tag $(resources.pipeline.monobuild.runID) with FoundationTestFailed'
+                env:
+                  SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+                inputs:
+                  targetType: inline
+                  script: |
+                    Set-StrictMode -Version 2.0
+                    $ErrorActionPreference = 'Stop'
+                    $parentBuildId = '$(resources.pipeline.monobuild.runID)'
+                    $tag = 'FoundationTestFailed'
+                    $uri = "$(System.CollectionUri)$(System.TeamProject)/_apis/build/builds/$parentBuildId/tags/$tag" + '?api-version=7.1'
+                    Write-Host "PUT $uri"
+                    $headers = @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" }
+                    Invoke-RestMethod -Uri $uri -Method Put -Headers $headers | Out-Null
+                    Write-Host "Tagged build $parentBuildId with $tag"
