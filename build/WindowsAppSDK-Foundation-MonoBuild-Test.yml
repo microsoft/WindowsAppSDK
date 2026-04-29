@@ -30,26 +30,21 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# Build run name shows the source pipeline + build id so it's obvious which monobuild run
-# each test run is paired with. Examples:
-#   FoundationTest - Nightly #4567 (def 190463)
-#   FoundationTest - Official #890 (def 189940)
-name: 'FoundationTest - ${{ parameters.sourcePipelineName }} #${{ parameters.sourceBuildId }} (def ${{ parameters.sourcePipelineId }})'
+# Build run name shows the locked source pipeline label + build id so it's obvious
+# which parent run each test run is paired with.
+name: 'FoundationTest - ${{ parameters.sourcePipeline }} #${{ parameters.sourceBuildId }} (def $(sourcePipelineId))'
 
 parameters:
-  # Source monobuild pipeline metadata. The Build Completion trigger configured in the ADO UI
-  # auto-fills sourcePipelineId / sourceBuildId from the triggering run; sourcePipelineName is a
-  # free-text label for the run name only (not used for any artifact resolution).
-  # For manual queues, paste the values from the source build's URL (`buildId=...&definitionId=...`)
-  # and pick a label that makes sense in the runs list.
-  - name: sourcePipelineName
-    displayName: 'Source monobuild pipeline name (e.g. Nightly, Official) - free text label for the run name'
+  # Source pipeline is locked to known definitions and mapped below to the numeric
+  # definition id used by artifact download and tag-back.
+  - name: sourcePipeline
+    displayName: 'Source pipeline'
     type: string
-    default: 'Nightly'
-  - name: sourcePipelineId
-    displayName: 'Source monobuild pipeline definition id (e.g. 190463 = Nightly)'
-    type: string
-    default: '190463'
+    default: 'Monobuild-Nightly'
+    values:
+      - 'Monobuild-Nightly'
+      - 'Monobuild-Official'
+      - 'Foundation-PR'
   - name: sourceBuildId
     displayName: 'Source monobuild Build Id (run id of the producing build) - required'
     type: string
@@ -60,6 +55,15 @@ parameters:
     default: true
 
 variables:
+  - ${{ if eq(parameters.sourcePipeline, 'Monobuild-Nightly') }}:
+    - name: sourcePipelineId
+      value: '190463'
+  - ${{ if eq(parameters.sourcePipeline, 'Monobuild-Official') }}:
+    - name: sourcePipelineId
+      value: '190464'
+  - ${{ if eq(parameters.sourcePipeline, 'Foundation-PR') }}:
+    - name: sourcePipelineId
+      value: '189940'
   - template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
   - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
     parameters:
@@ -73,7 +77,7 @@ variables:
   # which the RunTests step template already consumes to download FoundationBinaries_release_<plat>/MrtBinaries_release_<plat> from
   # the parent monobuild run.
   - name: foundationUseBuildOutputFromPipeline
-    value: ${{ parameters.sourcePipelineId }}
+    value: $(sourcePipelineId)
   - name: foundationUseBuildOutputFromBuildId
     value: ${{ parameters.sourceBuildId }}
 
