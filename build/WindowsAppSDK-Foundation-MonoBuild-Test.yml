@@ -87,6 +87,12 @@ resources:
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
+    # TODO: Pinned to the WASDK monobuild dev branch while the monobuild contract is
+    # still in flight. Once the trigger flow lands on release/main and we're ready to
+    # consume monobuild templates from the same branch the parent run is executing on,
+    # switch this to a queue-time parameter (or pass it through the trigger POST body
+    # alongside resources.repositories.self.refName) so the test pipeline picks up the
+    # exact monobuild commit that produced its input artifacts.
     - repository: WinAppSDK
       type: git
       name: OS/WinAppSDK
