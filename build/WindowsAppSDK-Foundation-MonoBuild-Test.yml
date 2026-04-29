@@ -22,7 +22,7 @@
 #     which the RunTests step template consumes to download FoundationBinaries_release_*/MrtBinaries_release_* artifacts.           #
 #                                                                                                                                   #
 # Tag-back contract (see CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md §8.3)                                                   #
-#   - On overall success, tags the parent monobuild with `FoundationTestSucceeded`.                                                #
+#   - On overall success, tags the parent monobuild with `TestSucceeded_Foundation`.                                                #
 #   - On failure, no tag is added; TestGate falls through to its timeout / manual-override path when the success tag is absent.    #
 #                                                                                                                                   #
 #####################################################################################################################################
@@ -160,7 +160,7 @@ extends:
 
       # ── Tag the parent monobuild on success ───────────────────────────────────────────────────────────────────────────────────
       # Delegated to the shared monorepo template so every component uses the same
-      # tag-back contract (`<componentName>TestSucceeded`). See
+      # tag-back contract (`TestSucceeded_<componentName>`). See
       # Build/WindowsAppSDK/AzurePipelinesTemplates/WinAppSDK-TagTestResult-Stage.yml.
       - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WinAppSDK-TagTestResult-Stage.yml@WinAppSDK
         parameters:
