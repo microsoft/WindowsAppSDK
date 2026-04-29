@@ -46,5 +46,3 @@ stages:
         SignOutput: ${{ parameters.SignOutput }}
         IsOfficial: ${{ parameters.IsOfficial }}
         PublishPackage: ${{ parameters.PublishPackage }}
-        foundationArtifactPrefix: 'FoundationBinaries_release'
-        mrtArtifactPrefix: 'MrtBinaries_release'
