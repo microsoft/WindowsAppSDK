@@ -23,7 +23,7 @@
 #                                                                                                                                   #
 # Tag-back contract (see CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md §8.3)                                                   #
 #   - On overall success, tags the parent monobuild with `FoundationTestSucceeded`.                                                #
-#   - On any failure, tags the parent monobuild with `FoundationTestFailed` (enables fast-fail in the monobuild's TestGate stage).  #
+#   - On failure, no tag is added; TestGate falls through to its timeout / manual-override path when the success tag is absent.    #
 #                                                                                                                                   #
 #####################################################################################################################################
 
@@ -152,20 +152,21 @@ extends:
           buildStageDependencies_x64: []
           buildStageDependencies_arm64: []
 
-      # ── Tag the parent monobuild ───────────────────────────────────────────────────────────────────────────────────────────────
-      # Single stage with two steps gated on succeeded()/failed(). The shared $(System.AccessToken) belongs to the
-      # test pipeline's Project Build Service identity, which has Tag permission on builds in the same project.
-      - stage: TagFoundationTestResult
-        displayName: 'Tag parent build: FoundationTest result'
-        condition: not(canceled())
+      # ── Tag the parent monobuild on success ───────────────────────────────────────────────────────────────────────────────────
+      # Only emit the success tag. Absence of FoundationTestSucceeded indicates failure (or no test run); TestGate's
+      # poll/timeout + manual-override path handles that case. The shared $(System.AccessToken) belongs to the test
+      # pipeline's Project Build Service identity, which has Tag permission on builds in the same project.
+      - stage: TagFoundationTestSucceeded
+        displayName: 'Tag parent build: FoundationTestSucceeded'
+        condition: succeeded()
         dependsOn:
           - Test_x86
           - Test_x64
           - ${{ if eq(parameters.TestOnArm64, true) }}:
             - Test_arm64
         jobs:
-          - job: TagResult
-            displayName: 'PUT FoundationTest{Succeeded|Failed} on parent monobuild'
+          - job: TagSucceeded
+            displayName: 'PUT FoundationTestSucceeded on parent monobuild'
             pool:
               type: windows
               isCustom: true
@@ -174,7 +175,6 @@ extends:
               - checkout: none
               - task: PowerShell@2
                 displayName: 'Tag ${{ parameters.sourceBuildId }} with FoundationTestSucceeded'
-                condition: succeeded()
                 env:
                   SYSTEM_ACCESSTOKEN: $(System.AccessToken)
                 inputs:
@@ -184,23 +184,6 @@ extends:
                     $ErrorActionPreference = 'Stop'
                     $parentBuildId = '${{ parameters.sourceBuildId }}'
                     $tag = 'FoundationTestSucceeded'
-                    $uri = "$(System.CollectionUri)$(System.TeamProject)/_apis/build/builds/$parentBuildId/tags/$tag" + '?api-version=7.1'
-                    Write-Host "PUT $uri"
-                    $headers = @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" }
-                    Invoke-RestMethod -Uri $uri -Method Put -Headers $headers | Out-Null
-                    Write-Host "Tagged build $parentBuildId with $tag"
-              - task: PowerShell@2
-                displayName: 'Tag ${{ parameters.sourceBuildId }} with FoundationTestFailed'
-                condition: failed()
-                env:
-                  SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-                inputs:
-                  targetType: inline
-                  script: |
-                    Set-StrictMode -Version 2.0
-                    $ErrorActionPreference = 'Stop'
-                    $parentBuildId = '${{ parameters.sourceBuildId }}'
-                    $tag = 'FoundationTestFailed'
                     $uri = "$(System.CollectionUri)$(System.TeamProject)/_apis/build/builds/$parentBuildId/tags/$tag" + '?api-version=7.1'
                     Write-Host "PUT $uri"
                     $headers = @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" }
