@@ -6,8 +6,9 @@
 # matrix (TAEF tests, sample app build/test, static validation) against them.                                                       #
 #                                                                                                                                   #
 # Trigger contract                                                                                                                  #
-#   - Configured from the ADO pipeline UI (Build Completion / Pipeline Resource trigger), not in this YAML.                         #
-#   - Source pipeline is declared as a `pipelines` resource so we can reference $(resources.pipeline.monobuild.runID).              #
+#   - All triggers are configured in the ADO pipeline UI (Build Completion / Pipeline Resource trigger), not in this YAML.          #
+#   - Source pipeline + run id are passed as queue-time parameters (`sourcePipelineId` / `sourceBuildId`) so any monobuild          #
+#     definition (Nightly, future Official, 189940, ...) can feed this pipeline without YAML edits.                                 #
 #                                                                                                                                   #
 # Artifact reuse contract                                                                                                           #
 #   - Sets `foundationUseBuildOutputFromPipeline` / `foundationUseBuildOutputFromBuildId` to point at the parent monobuild run.     #
@@ -28,6 +29,18 @@
 name: $(pipelineName)
 
 parameters:
+  # Source monobuild pipeline definition + run id. Free text so this pipeline works against
+  # any current or future monobuild definition (Nightly = 190463, Official = TBD, 189940, ...).
+  # The Build Completion trigger configured in the ADO UI auto-fills these from the triggering run;
+  # for manual queues, paste the values from the source build's URL (`buildId=...&definitionId=...`).
+  - name: sourcePipelineId
+    displayName: 'Source monobuild pipeline definition id (e.g. 190463 = Nightly)'
+    type: string
+    default: '190463'
+  - name: sourceBuildId
+    displayName: 'Source monobuild Build Id (run id of the producing build) - required'
+    type: string
+    default: ''
   - name: BuildSampleApps
     displayName: 'Run Build Sample Apps stages'
     type: boolean
@@ -59,9 +72,9 @@ variables:
   # which the Pack and RunTests step templates already consume. Setting `foundationUseBuildOutputFromBuildId` also causes the
   # per-platform Build_*/PREfast_* stages to skip via their own `condition:` guards.
   - name: foundationUseBuildOutputFromPipeline
-    value: $(resources.pipeline.monobuild.pipelineID)
+    value: ${{ parameters.sourcePipelineId }}
   - name: foundationUseBuildOutputFromBuildId
-    value: $(resources.pipeline.monobuild.runID)
+    value: ${{ parameters.sourceBuildId }}
 
 resources:
   repositories:
@@ -78,14 +91,6 @@ resources:
       endpoint: 'WinAppSDK-Github'
       name: microsoft/WindowsAppSDK-Samples
       ref: $(SamplesBranch)
-
-  pipelines:
-    # The monobuild run whose artifacts we test. The trigger is configured in the ADO pipeline UI;
-    # we only need the resource declaration so we can reference $(resources.pipeline.monobuild.runID)
-    # / .pipelineID in the variables block above.
-    - pipeline: monobuild
-      source: WinAppSDK-MonoBuild-Nightly
-      project: OS
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates
@@ -192,7 +197,7 @@ extends:
             steps:
               - checkout: none
               - task: PowerShell@2
-                displayName: 'Tag $(resources.pipeline.monobuild.runID) with FoundationTestSucceeded'
+                displayName: 'Tag ${{ parameters.sourceBuildId }} with FoundationTestSucceeded'
                 env:
                   SYSTEM_ACCESSTOKEN: $(System.AccessToken)
                 inputs:
@@ -200,7 +205,7 @@ extends:
                   script: |
                     Set-StrictMode -Version 2.0
                     $ErrorActionPreference = 'Stop'
-                    $parentBuildId = '$(resources.pipeline.monobuild.runID)'
+                    $parentBuildId = '${{ parameters.sourceBuildId }}'
                     $tag = 'FoundationTestSucceeded'
                     $uri = "$(System.CollectionUri)$(System.TeamProject)/_apis/build/builds/$parentBuildId/tags/$tag" + '?api-version=7.1'
                     Write-Host "PUT $uri"
@@ -234,7 +239,7 @@ extends:
             steps:
               - checkout: none
               - task: PowerShell@2
-                displayName: 'Tag $(resources.pipeline.monobuild.runID) with FoundationTestFailed'
+                displayName: 'Tag ${{ parameters.sourceBuildId }} with FoundationTestFailed'
                 env:
                   SYSTEM_ACCESSTOKEN: $(System.AccessToken)
                 inputs:
@@ -242,7 +247,7 @@ extends:
                   script: |
                     Set-StrictMode -Version 2.0
                     $ErrorActionPreference = 'Stop'
-                    $parentBuildId = '$(resources.pipeline.monobuild.runID)'
+                    $parentBuildId = '${{ parameters.sourceBuildId }}'
                     $tag = 'FoundationTestFailed'
                     $uri = "$(System.CollectionUri)$(System.TeamProject)/_apis/build/builds/$parentBuildId/tags/$tag" + '?api-version=7.1'
                     Write-Host "PUT $uri"
