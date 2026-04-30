@@ -44,6 +44,13 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         ModelInitialization_Activities = 61509436,
         WindowsML_DiagnosabilityFix = 61592144,
         InputPointerSource_PointerCancelCrashFix = 61821866,
+
+        // 1.8.8
+        ItemTemplateWrapper_RecyclePoolLeak = 61574370,
+        Popup_WindowedPopupOverrideScale = 61884734,
+        RTB_CancelRenderOnTreeLeave = 61936248,
+        PackageManager_FixCrash = 62044301,
+        ModelInitialization_GetReadyStateNotReadyFix = 62056256,
     };
 
     /// Represents a version of the Windows App Runtime.
