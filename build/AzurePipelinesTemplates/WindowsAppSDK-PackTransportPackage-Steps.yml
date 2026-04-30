@@ -20,14 +20,6 @@ parameters:
   - name: PublishPackage
     type: boolean
     default: false
-  # Artifact name prefix — per-component uses FoundationBinaries_release/MrtBinaries_release,
-  # monobuild uses Build-Foundation/Build-MRT naming convention.
-  - name: foundationArtifactPrefix
-    type: string
-    default: 'FoundationBinaries_release'
-  - name: mrtArtifactPrefix
-    type: string
-    default: 'MrtBinaries_release'
   # When true, this template is being invoked from the monobuild context where
   # the WindowsAppSDK monorepo IS the self repo. Shared templates (PublishSymbol,
   # DetermineVersion, EsrpCodeSigning) are invoked WITHOUT @WinAppSDK suffix.
@@ -44,6 +36,8 @@ steps:
   # Always uses source: specific with _foundationBuildOutputBuildId.
   # The coalesce on that variable resolves to Build.BuildId (current run)
   # when no override is set, making this equivalent to source: current.
+  # Artifact names follow the monobuild spec (Mono-Build-Pipeline-Migration.md §6.3):
+  # Build-Foundation-<plat>-Release for native and AnyCPU, Build-Foundation-MRT-<plat>-Release for MRT.
   - ${{ each platform in split('x64;x86;arm64;anycpu', ';') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation ${{ platform }}'
@@ -53,7 +47,7 @@ steps:
         project: $(System.TeamProjectId)
         pipeline: $(_foundationBuildOutputPipeline)
         pipelineId: $(_foundationBuildOutputBuildId)
-        artifactName: "${{ parameters.foundationArtifactPrefix }}_${{ platform }}"
+        artifactName: "Build-Foundation-${{ platform }}-Release"
         ${{ if parameters.IsMonobuild }}:
           targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
         ${{ else }}:
@@ -69,7 +63,7 @@ steps:
         project: $(System.TeamProjectId)
         pipeline: $(_foundationBuildOutputPipeline)
         pipelineId: $(_foundationBuildOutputBuildId)
-        artifactName: "${{ parameters.mrtArtifactPrefix }}_${{ platform }}"
+        artifactName: "Build-Foundation-MRT-${{ platform }}-Release"
         ${{ if parameters.IsMonobuild }}:
           targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
         ${{ else }}:

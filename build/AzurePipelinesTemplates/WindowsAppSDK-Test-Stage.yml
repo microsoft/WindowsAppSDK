@@ -5,6 +5,25 @@ parameters:
 - name: testMatrix
   type: object
   default: ''
+# Build stage names that each Test_<plat> stage must wait on. Empty list when this template is
+# consumed standalone (e.g. WindowsAppSDK-Foundation-MonoBuild-Test.yml runs Test stages only and
+# pulls binaries from a parent monobuild run via _foundationBuildOutputBuildId, with no Build_*
+# stages in the same pipeline).
+#
+# Typically, either all platforms are using their default values, or all platforms receive the
+# empty list from the caller. Mixing the two scenarios is untested/unsupported.
+- name: buildStageDependencies_x86
+  type: object
+  default:
+  - Build_x86
+- name: buildStageDependencies_x64
+  type: object
+  default:
+  - Build_x64
+- name: buildStageDependencies_arm64
+  type: object
+  default:
+  - Build_arm64
 
 stages:
 # ExtractMatrix stages always run (no skip condition) so the test matrix
@@ -81,7 +100,8 @@ stages:
 
 - stage: Test_x86
   dependsOn:
-  - Build_x86
+  - ${{ each dep in parameters.buildStageDependencies_x86 }}:
+    - ${{ dep }}
   - ExtractMatrix_x86
   condition: not(failed())
   jobs:
@@ -93,7 +113,8 @@ stages:
 
 - stage: Test_x64
   dependsOn:
-  - Build_x64
+  - ${{ each dep in parameters.buildStageDependencies_x64 }}:
+    - ${{ dep }}
   - ExtractMatrix_x64
   condition: not(failed())
   jobs:
@@ -106,7 +127,8 @@ stages:
 - ${{ if eq(parameters.TestOnArm64, true)}}:
   - stage: Test_arm64
     dependsOn:
-    - Build_arm64
+    - ${{ each dep in parameters.buildStageDependencies_arm64 }}:
+      - ${{ dep }}
     - ExtractMatrix_arm64
     condition: not(failed())
     jobs:
