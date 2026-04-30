@@ -46,10 +46,10 @@
        ValueOrDefault resolves to $(WindowsAppSDKVersionPinned) when set (mono-build),
        otherwise falls back to the pinned version literal. -->
   <PropertyGroup Label="WindowsAppSDK Package Version Properties">
-    <MicrosoftWindowsAppSDKBasePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.260323000-dev.experimental9'))</MicrosoftWindowsAppSDKBasePackageVersion>
-    <MicrosoftFrameworkUdkPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))</MicrosoftFrameworkUdkPackageVersion>
-    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.0-experimental-27300.1857.260302-0806.0'))</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
-    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.10-experimental'))</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+    <MicrosoftWindowsAppSDKBasePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.3-dev.experimental1'))</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftFrameworkUdkPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-27300.1866.260419-1600.1'))</MicrosoftFrameworkUdkPackageVersion>
+    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-27300.1866.260419-1600.1'))</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-Rolling.20260419.2'))</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
     <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '1.7.0-main.20241009.0'))</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
   </PropertyGroup>
 
