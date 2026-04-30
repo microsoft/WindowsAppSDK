@@ -50,7 +50,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         Popup_WindowedPopupOverrideScale = 61884734,
         RTB_CancelRenderOnTreeLeave = 61936248,
         PackageManager_FixCrash = 62044301,
-        ModelInitialization_GetReadyStateNotReadyFix = 62056256,
+        ModelInitialization_GetReadyStateAvailabilityGuard = 62056256,
     };
 
     /// Represents a version of the Windows App Runtime.
