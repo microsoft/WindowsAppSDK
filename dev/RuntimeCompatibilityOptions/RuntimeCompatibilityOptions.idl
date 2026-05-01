@@ -46,7 +46,6 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         InputPointerSource_PointerCancelCrashFix = 61821866,
 
         // 1.8.8
-        ItemTemplateWrapper_RecyclePoolLeak = 61574370,
         Popup_WindowedPopupOverrideScale = 61884734,
         RTB_CancelRenderOnTreeLeave = 61936248,
         PackageManager_FixCrash = 62044301,
