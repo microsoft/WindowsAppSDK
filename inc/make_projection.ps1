@@ -480,16 +480,19 @@ $scriptPath   = Join-Path $incDir   'make_projection.ps1'
 $testDir      = Join-Path $incDir   'test'
 $testScript   = Join-Path $testDir  'test.ps1'
 $testIgnore   = Join-Path $testDir  '.gitignore'
+$licensePath  = Join-Path $repoRoot 'LICENSE'
 
 if (-not (Test-Path $readmePath))   { throw "Source README not found: $readmePath" }
 if (-not (Test-Path $scriptPath))   { throw "Source script not found: $scriptPath" }
 if (-not (Test-Path $testScript))   { throw "Source test script not found: $testScript" }
+if (-not (Test-Path $licensePath))  { throw "Source LICENSE not found: $licensePath" }
 
-# Capture script + readme + test content NOW, before we touch the working tree.
+# Capture script + readme + test + LICENSE content NOW, before we touch the working tree.
 $savedReadme     = Get-Content -Raw -LiteralPath $readmePath
 $savedScript     = Get-Content -Raw -LiteralPath $scriptPath
 $savedTestScript = Get-Content -Raw -LiteralPath $testScript
 $savedTestIgnore = if (Test-Path $testIgnore) { Get-Content -Raw -LiteralPath $testIgnore } else { ".packages/`n" }
+$savedLicense    = [System.IO.File]::ReadAllBytes($licensePath)
 
 if (-not $NoCommit) {
     $dirty = & $gitExe -C $repoRoot status --porcelain
@@ -646,7 +649,10 @@ try {
     # ------------------------------------------------------------------
     Write-Step "Creating orphan branch release/$Version"
     if ($Force -and $existing) {
-        Invoke-Native $gitExe -C $repoRoot branch -D "release/$Version"
+        # Note: pass args as array; bare "-D" would otherwise bind to
+        # PowerShell's common -Debug parameter on Invoke-Native.
+        $delArgs = @('-C', $repoRoot, 'branch', '-D', "release/$Version")
+        Invoke-Native $gitExe @delArgs
     }
     Invoke-Native $gitExe -C $repoRoot checkout --orphan "release/$Version"
 
@@ -658,6 +664,10 @@ try {
     New-Item -ItemType Directory -Force -Path $incDir | Out-Null
     Copy-Item -Path (Join-Path $stagingIncDir '*') -Destination $incDir -Recurse -Force
 
+    # Place LICENSE at the repo root so consumers of the orphan release
+    # branch see the project's MIT license alongside the inc/ tree.
+    [System.IO.File]::WriteAllBytes($licensePath, $savedLicense)
+
     # Stamp copyright headers if the repo's helper still happens to be
     # accessible (it won't be, on a fresh orphan -- so this is best-
     # effort and silently skipped).
@@ -667,7 +677,7 @@ try {
         & $verifier -fix | Out-Null
     }
 
-    Invoke-Native $gitExe -C $repoRoot add inc/
+    Invoke-Native $gitExe -C $repoRoot add inc/ LICENSE
     Invoke-Native $gitExe -C $repoRoot commit -m "AbiWinRT projection headers for Microsoft.WindowsAppSDK $Version"
 
     if (-not $SkipTest) {
