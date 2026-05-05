@@ -1,8 +1,8 @@
 # Component Versioning Across Channels
 
 > **Status:** Interim policy. Active until the WindowsAppSDK monobuild
-> ([`OS/WinAppSDK`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK)
-> branch `release/dev/monobuild`) cuts over and the unified
+> ([`OS/WinAppSDK`](https://microsoft.visualstudio.com/OS/_git/WinAppSDK)
+> branch `release/main`) cuts over and the unified
 > `WindowsAppSDKVersionPinned` versioning scheme is in production for every
 > channel.
 >
@@ -117,7 +117,7 @@ enforce this yet; developers must.
    This is the pattern used on earlier release branches ("trivial to
    annotate `version.json` to add a fixed height baseline") and the pattern
    shipped for WinML in
-   [PR #15417125 *Fix 2.0 nerdbank versioning*](https://dev.azure.com/microsoft/OS/_git/WinAppSDK/pullrequest/15417125)
+   [PR #15417125 *Fix 2.0 nerdbank versioning*](https://microsoft.visualstudio.com/OS/_git/WinAppSDK/pullrequest/15417125)
    to recover from the `2.0.325-experimental` > `2.0.300` collision.
 
 2. **Stable on a given Minor is always "newer" than Experimental on that
@@ -161,13 +161,14 @@ enforce this yet; developers must.
 ## 5. Long-term: the `WindowsAppSDKVersionPinned` unified scheme
 
 The monobuild on
-[`OS/WinAppSDK` `release/dev/monobuild`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?version=GBrelease/dev/monobuild)
+[`OS/WinAppSDK` `release/main`](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?version=GBrelease/main)
 removes the race condition by construction. Authoritative references:
 
-- [`CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?path=/CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md&version=GBrelease/dev/monobuild)
-  §9.2 *Internal package versioning*
-- [`Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?path=/Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml&version=GBrelease/dev/monobuild)
-- [`Src/Components/WindowsAppSDKAggregator/docs/Coding-Guidelines/Dependencies.md`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?path=/Src/Components/WindowsAppSDKAggregator/docs/Coding-Guidelines/Dependencies.md&version=GBrelease/dev/monobuild)
+- [`CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md` §9 *Version Management*](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?path=/CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md&version=GBrelease/main&_a=preview&anchor=9.-version-management)
+  (the unified versioning strategy, including the
+  `WindowsAppSDKVersionPinned` mechanism)
+- [`Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml`](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?path=/Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml&version=GBrelease/main)
+- [`Src/Components/WindowsAppSDKAggregator/docs/Coding-Guidelines/Dependencies.md`](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?path=/Src/Components/WindowsAppSDKAggregator/docs/Coding-Guidelines/Dependencies.md&version=GBrelease/main)
 
 ### 5.1 One version, stamped centrally
 
@@ -262,10 +263,10 @@ Apr 23 2026):
 - [`specs/Deployment/WindowsAppSDKVersioning.md`](../../specs/Deployment/WindowsAppSDKVersioning.md) — Major/Minor/Patch policy.
 - [`specs/Deployment/MSIXPackageVersioning.md`](../../specs/Deployment/MSIXPackageVersioning.md) — MSIX package versioning.
 - [`specs/VersionInfo/VersionInfo.md`](../../specs/VersionInfo/VersionInfo.md) — runtime version-info APIs.
-- [PR #15417125 *Fix 2.0 nerdbank versioning*](https://dev.azure.com/microsoft/OS/_git/WinAppSDK/pullrequest/15417125) — WinML baseline-bump implementation.
-- Monobuild docs on `OS/WinAppSDK` `release/dev/monobuild`:
-  - [`CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?path=/CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md&version=GBrelease/dev/monobuild) §9.2
-  - [`Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?path=/Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml&version=GBrelease/dev/monobuild)
-  - [`Src/Components/WindowsAppSDKAggregator/docs/Coding-Guidelines/Dependencies.md`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?path=/Src/Components/WindowsAppSDKAggregator/docs/Coding-Guidelines/Dependencies.md&version=GBrelease/dev/monobuild)
-  - [`CopilotBrain/Docs/WASDK-Branching-Patterns-and-Release-Flows.md`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?path=/CopilotBrain/Docs/WASDK-Branching-Patterns-and-Release-Flows.md&version=GBrelease/dev/monobuild)
-  - [`CopilotBrain/Docs/Maestro-Anti-Patterns-Pitfalls.md`](https://dev.azure.com/microsoft/OS/_git/WinAppSDK?path=/CopilotBrain/Docs/Maestro-Anti-Patterns-Pitfalls.md&version=GBrelease/dev/monobuild)
+- [PR #15417125 *Fix 2.0 nerdbank versioning*](https://microsoft.visualstudio.com/OS/_git/WinAppSDK/pullrequest/15417125) — WinML baseline-bump implementation.
+- Monobuild docs on `OS/WinAppSDK` `release/main`:
+  - [`CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md` §9 *Version Management*](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?path=/CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md&version=GBrelease/main&_a=preview&anchor=9.-version-management)
+  - [`Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml`](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?path=/Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml&version=GBrelease/main)
+  - [`Src/Components/WindowsAppSDKAggregator/docs/Coding-Guidelines/Dependencies.md`](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?path=/Src/Components/WindowsAppSDKAggregator/docs/Coding-Guidelines/Dependencies.md&version=GBrelease/main)
+  - [`CopilotBrain/Docs/WASDK-Branching-Patterns-and-Release-Flows.md`](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?path=/CopilotBrain/Docs/WASDK-Branching-Patterns-and-Release-Flows.md&version=GBrelease/main)
+  - [`CopilotBrain/Docs/Maestro-Anti-Patterns-Pitfalls.md`](https://microsoft.visualstudio.com/OS/_git/WinAppSDK?path=/CopilotBrain/Docs/Maestro-Anti-Patterns-Pitfalls.md&version=GBrelease/main)
