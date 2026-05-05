@@ -230,7 +230,18 @@ For each issue still pending:
 
 ## Phase 4: Generate Issue Reviews
 
-### Step 4.1: Analyze All No-Area Issues
+### Step 4.1: Fetch Area Label Definitions
+
+Before analyzing issues, fetch the current area labels and their descriptions from the repository:
+
+```powershell
+# Get all area-* labels with descriptions
+./.github/skills/triage-meeting-prep/scripts/Get-RepositoryLabels.ps1 -Filter "area-*" -OutputFormat json
+```
+
+This provides the complete list of valid area labels the agent can assign. **Keep this label list in context** — it is the source of truth for area classification throughout Phase 4.
+
+### Step 4.2: Analyze All No-Area Issues
 
 **Review ALL issues without area labels.** Each issue needs analysis for the summary.
 
@@ -246,19 +257,60 @@ For each **no-area issue** (new or older):
    ```powershell
    ./Get-IssueDetails.ps1 -IssueNumber <number> -OutputFormat summary
    ```
+
+3. **Classify the area label using LLM reasoning** (see "Area Classification" below)
    
-3. **Generate review files:**
+4. **Generate review files:**
    - `Generated-Files/issueReview/<issue-number>/overview.md`
    - `Generated-Files/issueReview/<issue-number>/implementation-plan.md`
 
-4. **Extract the "Suggested Actions" section from overview.md**, which includes:
-   - Label recommendations (Add/Remove)
+5. **Extract the "Suggested Actions" section from overview.md**, which includes:
+   - Label recommendations (Add/Remove) — with area classification from step 3
    - Clarifying questions (if Clarity < 50)
    - Similar issues found
    - Potential assignees
    - Documentation check results
 
 **Optimization:** Run analysis in parallel for up to 5 issues at a time.
+
+### Area Classification (LLM Reasoning)
+
+For each issue without an `area-*` label, classify it by reasoning about the issue content against the area label definitions fetched in Step 4.1.
+
+**Inputs for classification:**
+- Issue title, body, and comments (from `Get-IssueDetails.ps1`)
+- Area label names and descriptions (from `Get-RepositoryLabels.ps1 -Filter "area-*"`)
+- Codebase context (use `grep_search`, `semantic_search` on `dev/` directories if needed)
+
+**Classification output format:**
+```
+area-<Name> [confidence:XX]
+```
+
+**Confidence rubric for area classification:**
+
+| Score | Level | Criteria |
+|-------|-------|----------|
+| **80–100** | High | Issue explicitly names the component or API surface; maps to exactly one area with no ambiguity |
+| **60–79** | Medium-High | Strong technical signals (stack traces, file paths, API names) point to one area; minor overlap possible |
+| **40–59** | Medium | Reasonable match based on topic, but issue could plausibly belong to 2+ areas |
+| **20–39** | Low | Weak signal; classification is a best guess based on general topic |
+| **0–19** | Very Low | No clear technical signal; issue is vague, off-topic, or spans multiple areas equally |
+
+**Confidence adjusters:**
+- Issue mentions specific API or class name from the area: **+20**
+- Stack trace or file path points to `dev/<AreaComponent>/`: **+20**
+- Issue title directly references the area topic: **+15**
+- Codebase search confirms the component: **+10**
+- Issue could plausibly belong to 2+ areas: **−15**
+- Issue is a general question with no technical detail: **−20**
+- Issue is about tooling/build/infra rather than a specific SDK feature: **−10**
+
+**Rules:**
+- Always suggest the **single best area**, even at low confidence
+- If confidence < 40, note the ambiguity and list alternative candidate areas
+- Format: `Suggested: area-Notifications [confidence:75]`
+- If alternatives exist: `Alternatives: area-AppLifecycle [confidence:35], area-Packaging [confidence:30]`
 
 ### Step 4.2: Extract Action Items for Summary
 
@@ -398,7 +450,7 @@ Now draft the reply using research findings:
    - Documentation links
    - Technical context from code analysis
 
-4. **Assign confidence level (0-100)**:
+4. **Assign confidence level (0-100)** using `[confidence:XX]` format:
    - **80-100**: Clear response backed by research
    - **60-79**: Good draft, research supports it
    - **40-59**: Limited research, needs team input
@@ -418,6 +470,28 @@ Now draft the reply using research findings:
 - Customer frustration level high: -15
 - Requires team decision to reopen: -20
 - Research inconclusive: -25
+
+**Confidence output format**: `[confidence:XX]` — grep-friendly for filtering.
+
+```bash
+# Find high-confidence suggestions (80+)
+grep "\[confidence:[89][0-9]\]" summary.md
+
+# Find low-confidence items needing review
+grep "\[confidence:[0-3][0-9]\]" summary.md
+```
+
+```powershell
+# Find high-confidence suggestions (80+)
+Select-String -Path summary.md -Pattern '\[confidence:[89][0-9]\]'
+
+# Find low-confidence items needing review
+Select-String -Path summary.md -Pattern '\[confidence:[0-3][0-9]\]'
+
+# List all items with confidence, sorted by value
+Get-Content summary.md | Select-String '\[confidence:(\d+)\]' | 
+    ForEach-Object { $_.Line }
+```
 
 ---
 

@@ -274,6 +274,11 @@ Try {
             new-item -path "$ComponentBasePath\build\native" -itemtype "directory"
         }
 
+        if(-not (test-path "$ComponentBasePath\build\cmake"))
+        {
+            new-item -path "$ComponentBasePath\build\cmake" -itemtype "directory"
+        }
+
         # Copy WindowsAppRuntime.sln files
         foreach($configurationToRun in $configuration.Split(","))
         {
@@ -475,6 +480,7 @@ Try {
         }
 
         Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
+        Copy-Item -Path "$nuSpecsPath\microsoft.windowsappsdk.foundation-config.cmake" -Destination "$ComponentBasePath\build\cmake\microsoft.windowsappsdk.foundation-config.cmake"
 
         # Populate Intellisense files
         $IntellisensePath = "$PSScriptRoot\build\NuSpecs\Intellisense"
