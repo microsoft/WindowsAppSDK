@@ -52,6 +52,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         ModelInitialization_GetReadyStateAvailabilityGuard = 62056256,
         LanguageModelInsights_GetPartialResultLatency = 62083654,
         UIAffinityReleaseQueue_PauseDispatchDuringCleanup = 62097119,
+        PackageDependency_ResolveDynamically = 62052877,
     };
 
     /// Represents a version of the Windows App Runtime.
