@@ -150,11 +150,14 @@ enforce this yet; developers must.
 
 ### 4.3 Rules for release management
 
-- **Stagger experimental and stable/servicing aggregate releases by
-  approximately 2 weeks.** Do not ship them simultaneously. Staggering gives
-  component teams a predictable window in which only one channel is moving,
-  removing the race condition that produces the `2.0.325-experimental` vs
-  `2.0.300` class of bug.
+- **Stable / servicing RC builds always precede experimental RC builds**
+  when both are scheduled on the same day (or close together). Component
+  owners may rely on that sequencing as a hard guarantee when computing
+  their component versions: if their component participates in both an
+  experimental and a stable/servicing aggregate release in the same
+  window, the stable/servicing build will be the *earlier* one, so any
+  per-channel counter advances applied for the experimental build cannot
+  retroactively cause the stable build to ship a lower component version.
 
 ---
 
@@ -239,8 +242,9 @@ Apr 23 2026):
 - ✅ Do not encode release channel semantics into SemVer numeric fields.
 - ✅ Component versions must monotonically increase across all channels.
 - ✅ Manual coordination is required until monobuild.
-- ✅ Stagger experimental and stable/servicing aggregate releases by
-  ~2 weeks.
+- ✅ When experimental and stable/servicing aggregate RC builds are
+  scheduled close together, **stable/servicing always builds first** so
+  component owners have a predictable sequencing to plan against.
 - ✅ The `WindowsAppSDKVersionPinned` monobuild scheme is the definitive
   long-term solution.
 
@@ -253,7 +257,7 @@ Apr 23 2026):
 | Component teams               | Implement and document the §4.1 monotonic-versioning rules for your component; baseline-bump release branches at creation. |
 | Component versioning lead     | Own the cross-component versioning story; communicate this guideline to all component teams.                 |
 | Aggregator team               | Implement the §4.2 pre-publish downgrade check.                                                              |
-| Release management            | Enforce the §4.3 ~2-week stagger between experimental and stable/servicing aggregate releases.               |
+| Release management            | Enforce the §4.3 sequencing rule: stable/servicing aggregate RC builds always precede experimental RC builds when scheduled close together. |
 | Monobuild team                | Land `WindowsAppSDKVersionPinned` in production; deprecate this interim guideline once the cutover is complete. |
 
 ---
