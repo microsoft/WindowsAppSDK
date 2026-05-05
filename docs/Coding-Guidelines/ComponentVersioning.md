@@ -229,6 +229,53 @@ The `Singleton` package's existing `Major + 8000` offset (used to keep
 monotonicity across the 1.x → 2.x transition) is the same mechanical idea
 as the per-component baseline bumps in §4.1, applied once, centrally.
 
+### 5.4 Floating release symbols for runtime compatibility checks
+
+Component code that needs to gate behavior on "the WindowsAppSDK release
+this change shipped in" — for example, runtime compatibility shims,
+`TerminalVelocity`-style change-ID checks, or feature-availability
+guards — has historically required the contributor to *anticipate* the
+exact version their change would land in (for example, hardcoding
+`2.1.0` into a check at the time the PR is authored). That anticipation
+is fragile: the actual release version is determined by the aggregator at
+build time, not by the contributor at PR time.
+
+After the monobuild cutover, the recommended pattern is to declare a
+**floating release symbol** alongside the change-ID and let the monobuild
+resolve it to a concrete version at build time:
+
+```cpp
+// Contributor authors this — no version anticipated, just a milestone alias.
+#define WINAPPSDK_CHANGEID_12345678 12345678, WinAppSDK_2_Servicing
+```
+
+The monobuild then defines the milestone alias (for example,
+`WinAppSDK_2_Servicing`) at the top of the build to resolve to the
+concrete release version that build is producing — for example,
+`2.1.0` — and propagates that definition to every component being
+compiled. Build-time resolution looks like:
+
+| Build context                         | `WinAppSDK_2_Servicing` resolves to |
+| ------------------------------------- | ----------------------------------- |
+| Aggregator official build for 2.1.0   | `2.1.0`                             |
+| Aggregator official build for 2.1.1   | `2.1.1`                             |
+| Pre-release / dev / nightly           | the in-flight version for that run  |
+
+**Why this matters for cross-channel monotonicity.** Contributors no
+longer need to predict which aggregate version their change will appear
+in, which means change-ID gating no longer races against the aggregator's
+version assignment. The version a change lights up in is a property of
+the build that contains it — exactly like the package version stamping in
+§5.1 — so the same "central stamping" guarantee that eliminates the
+component-package-downgrade race in §5.3 also eliminates the
+contributor-anticipated-version mismatch for runtime compatibility checks.
+
+A small set of well-known milestone aliases (e.g. `WinAppSDK_2_Servicing`,
+`WinAppSDK_2_Next`, `WinAppSDK_2_Experimental`) is preferred over
+ad-hoc literals so the aggregator has a closed set of symbols to define.
+The exact catalog of aliases will be defined alongside the monobuild
+rollout.
+
 ---
 
 ## 6. Decisions captured
