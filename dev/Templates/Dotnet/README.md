@@ -21,6 +21,8 @@ dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
 
 ### Project Templates
 
+Get below list via `dotnet new list winui`
+
 | Short Name        | Description                                                              |
 |-------------------|--------------------------------------------------------------------------|
 | `winui`           | Minimal WinUI 3 blank app with single-project MSIX packaging. Start here if unsure |
@@ -30,7 +32,7 @@ dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
 | `winui-lib`       | WinUI 3 class library for sharing UI components                          |
 | `winui-unittest`  | WinUI 3 packaged test app configured for MSTest                          |
 
-> Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
+Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
 ### Item Templates
 
@@ -49,19 +51,20 @@ inside a WinUI project folder or when `--project` points to one.
 
 ## Quick Start
 
-### Create a new WinUI 3 app
+### Quickstart a new WinUI 3 APP
 
 ```powershell
-dotnet new winui -n MyApp
-cd MyApp
-
-# Detect platform once per session.
-# $env:PROCESSOR_ARCHITECTURE returns AMD64 on x64 boxes; MSBuild expects x64.
+# Detect platform (once per session).
 $arch = $env:PROCESSOR_ARCHITECTURE
 $Platform = if ($arch -eq 'AMD64') { 'x64' } else { $arch }
 
+# create
+dotnet new winui -n MyApp
+cd MyApp
+
+# build or run
 dotnet build -c Debug -p:Platform=$Platform
-dotnet run -c Debug -p:Platform=$Platform   # launches with package identity
+dotnet run -c Debug -p:Platform=$Platform
 ```
 
 `dotnet run` registers a loose-layout MSIX, gives the app package identity,
