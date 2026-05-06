@@ -39,12 +39,10 @@ static void SetFrameworkPathEnvironmentVariable(PCWSTR frameworkPath)
 // OS DLL search order entirely, making this race-free regardless of how the
 // package graph is later configured.
 //
-// Falls back to the framework copy when no pinned copy exists in app dir
-// (non-hybrid builds, or hybrid scenarios where Foundation is not the pinned
-// component, e.g. hybrid-WinUI). The framework fallback is required for the
-// Win10 path which must have this DLL loaded before calling MddTryCreate /
-// MddAddPackageDependency. On Win11 the framework load happens later via
-// the package graph, so callers may pass nullptr to skip the fallback.
+// Loads APP_DIR pin if present; otherwise falls back to framework path.
+// Framework fallback is what runs the DLL's DllMain → URFW always-on detour
+// installs. Pass nullptr only if you'll re-invoke with framework path later
+// (Win11 path does this around AddPackageDependency).
 static wil::unique_hmodule EnsureFoundationDllLoaded(PCWSTR frameworkPath) noexcept
 {
     // 1. Prefer the pinned copy in app dir.
@@ -496,16 +494,9 @@ void FirstTimeInitialization(
     const UINT32 minVersionToUseWin11Support{ 0x00010007 };
     if ((majorMinorVersion >= minVersionToUseWin11Support) && MddCore::Win11::IsSupported())
     {
-        // HybridDeploy: pre-load the pinned Microsoft.WindowsAppRuntime.dll from
-        // app dir if present, BEFORE Win11::AddPackageDependency raises framework
-        // search priority. See helper comment for rationale. No framework
-        // fallback here — package graph + later PInvoke will load framework if
-        // app dir has no pinned copy.
-        //
-        // CRITICAL: store the returned hmod into g_windowsAppRuntimeDll. Without
-        // this, the wil::unique_hmodule destructor would free the DLL immediately
-        // after the call, undoing the pre-load. (Win10 path does the same store
-        // a few lines lower, just for the framework load.)
+        // Try APP_DIR pin first (before AddPackageDependency raises framework
+        // search priority). Framework fallback below covers the null case.
+        // Capture into g_windowsAppRuntimeDll or unique_hmodule frees it.
         g_windowsAppRuntimeDll = EnsureFoundationDllLoaded(nullptr);
 
         // Add the framework package to the package graph
@@ -523,6 +514,13 @@ void FirstTimeInitialization(
 
         // Publish framework path for WinUI's sibling-DLL fallback (see helper comment).
         SetFrameworkPathEnvironmentVariable(GetFrameworkPackagePath(packageFullName.get()).c_str());
+
+        // Framework fallback when APP_DIR had no pin — runs DllMain → URFW
+        // detour. Without this, non-Foundation hybrid apps lose routing.
+        if (!g_windowsAppRuntimeDll)
+        {
+            g_windowsAppRuntimeDll = EnsureFoundationDllLoaded(GetFrameworkPackagePath(packageFullName.get()).c_str());
+        }
 
         // Update the activity context
         auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
