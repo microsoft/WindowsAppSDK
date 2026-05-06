@@ -54,12 +54,10 @@ inside a WinUI project folder or when `--project` points to one.
 ### Quickstart a new WinUI 3 APP
 
 ```powershell
-# create
 dotnet new winui -n MyApp
 cd MyApp
 
-# build or run
-dotnet build
+# dotnet build
 dotnet run
 ```
 
