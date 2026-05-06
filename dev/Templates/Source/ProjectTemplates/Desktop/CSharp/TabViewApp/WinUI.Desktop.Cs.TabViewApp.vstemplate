@@ -60,7 +60,7 @@
       </Folder>
     </Project>      
     <CustomParameters>
-      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.SDK.BuildTools"/>
+      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.SDK.BuildTools;Microsoft.Windows.SDK.BuildTools.WinApp"/>
     </CustomParameters>
   </TemplateContent>
   <WizardExtension>
