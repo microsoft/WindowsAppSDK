@@ -4,8 +4,12 @@ Official WinUI 3 project and item templates for the
 [Windows App SDK](https://learn.microsoft.com/windows/apps/windows-app-sdk/),
 designed for use with the .NET CLI (`dotnet new`). This template pack provides
 the same starting points available in Visual Studio — blank apps, navigation
-views, class libraries, unit test projects, and common WinUI UI items — right
-from the command line.
+views, MVVM scaffolding, tab-view shells, class libraries, unit test projects,
+and common WinUI UI items — right from the command line.
+
+`dotnet run` launches the generated app with full MSIX package identity, so
+features that require it (notifications, background tasks, Windows AI APIs,
+etc.) work the same as they would in a Visual Studio F5 deploy.
 
 ## Installation
 
@@ -17,25 +21,28 @@ dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
 
 ### Project Templates
 
-| Short Name       | Description                                              |
-|------------------|----------------------------------------------------------|
-| `winui`          | WinUI 3 blank app with single-project MSIX packaging     |
-| `winui-mvvm`     | WinUI 3 MVVM app with CommunityToolkit.Mvvm               |
-| `winui-navview`  | WinUI 3 NavigationView starter app                       |
-| `winui-lib`      | WinUI 3 class library for sharing UI components          |
-| `winui-unittest` | WinUI 3 packaged test app configured for MSTest          |
+| Short Name        | Description                                                              |
+|-------------------|--------------------------------------------------------------------------|
+| `winui`           | Minimal WinUI 3 blank app with single-project MSIX packaging. Start here if unsure |
+| `winui-mvvm`      | WinUI 3 MVVM app using `CommunityToolkit.Mvvm`                           |
+| `winui-navview`   | WinUI 3 NavigationView starter app with single-project MSIX packaging    |
+| `winui-tabview`   | WinUI 3 TabView starter app with single-project MSIX packaging           |
+| `winui-lib`       | WinUI 3 class library for sharing UI components                          |
+| `winui-unittest`  | WinUI 3 packaged test app configured for MSTest                          |
+
+> Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
 ### Item Templates
 
-| Short Name                 | Description                        |
-|----------------------------|------------------------------------|
-| `winui-page`               | Blank WinUI 3 Page                 |
-| `winui-window`             | Blank WinUI 3 Window               |
-| `winui-usercontrol`        | WinUI 3 UserControl                |
-| `winui-templatedcontrol`   | WinUI 3 templated control |
-| `winui-resourcedictionary` | WinUI 3 ResourceDictionary         |
-| `winui-resw`               | RESW resource file                 |
-| `winui-dialog`             | WinUI 3 ContentDialog              |
+| Short Name                 | Description                                              |
+|----------------------------|----------------------------------------------------------|
+| `winui-page`               | WinUI 3 Page (XAML + code-behind)                        |
+| `winui-window`             | WinUI 3 Window (XAML + code-behind)                      |
+| `winui-usercontrol`        | WinUI 3 UserControl (XAML + code-behind)                 |
+| `winui-templatedcontrol`   | WinUI 3 templated control                                |
+| `winui-resourcedictionary` | WinUI 3 ResourceDictionary                               |
+| `winui-resw`               | RESW resources file for localized strings                |
+| `winui-dialog`             | WinUI 3 ContentDialog (XAML + code-behind)               |
 
 Item templates are context-aware and only surface when `dotnet new` is executed
 inside a WinUI project folder or when `--project` points to one.
@@ -44,43 +51,77 @@ inside a WinUI project folder or when `--project` points to one.
 
 ### Create a new WinUI 3 app
 
-```shell
+```powershell
 dotnet new winui -n MyApp
 cd MyApp
-dotnet build -p:Platform=x64
-dotnet run -c Debug -p:Platform=x64
+
+# Detect platform once per session.
+# $env:PROCESSOR_ARCHITECTURE returns AMD64 on x64 boxes; MSBuild expects x64.
+$arch = $env:PROCESSOR_ARCHITECTURE
+$Platform = if ($arch -eq 'AMD64') { 'x64' } else { $arch }
+
+dotnet build -c Debug -p:Platform=$Platform
+dotnet run -c Debug -p:Platform=$Platform   # launches with package identity
 ```
+
+`dotnet run` registers a loose-layout MSIX, gives the app package identity,
+and launches it via AUMID activation — equivalent to F5 in Visual Studio.
 
 ### Add items to an existing project
 
-```shell
-dotnet new winui-page -n SettingsPage --project .\MyApp.csproj
-dotnet new winui-usercontrol -n ProfileCard --project .\MyApp.csproj
-dotnet new winui-window -n SecondaryWindow --project .\MyApp.csproj
+```powershell
+dotnet new winui-page         -n SettingsPage      --project .\MyApp.csproj
+dotnet new winui-usercontrol  -n ProfileCard       --project .\MyApp.csproj
+dotnet new winui-window       -n SecondaryWindow   --project .\MyApp.csproj
+dotnet new winui-dialog       -n ConfirmDialog     --project .\MyApp.csproj
 ```
 
 ### Choosing a Target Framework
 
-By default, templates automatically detect your installed .NET SDK version and
-set the target framework accordingly. For example, if you have .NET 10 SDK
-installed, the TFM will be `net10.0-windows10.0.26100.0`.
-
-To target a specific .NET version instead, pass `--dotnet-version`:
+Generated projects target `net{N}.0-windows10.0.26100.0`, where `{N}` is
+selected at scaffold time via `--dotnet-version`:
 
 ```shell
-dotnet new winui --dotnet-version net8.0 -n MyApp
+dotnet new winui --dotnet-version net8.0  -n MyApp
+dotnet new winui --dotnet-version net9.0  -n MyApp
+dotnet new winui --dotnet-version net10.0 -n MyApp
 ```
 
-You can also edit the generated `.csproj` afterward and change
-`<TargetFramework>` (and any related `<RuntimeIdentifiers>` entries) to your
-preferred TFM.
+Supported choices: `net8.0`, `net9.0`, `net10.0`. If you omit
+`--dotnet-version`, most templates default to `net10.0`; `winui-mvvm` matches
+your installed .NET SDK. You can also edit `<TargetFramework>` (and any
+related `<RuntimeIdentifiers>`) in the generated `.csproj` afterward.
+
+### Customizing `dotnet run` behavior
+
+Set any of these MSBuild properties inside a `<PropertyGroup>` in the
+generated `.csproj` to tweak how `dotnet run` launches the app:
+
+| Property                       | Default | Effect                                                                                         |
+|--------------------------------|---------|------------------------------------------------------------------------------------------------|
+| `EnableWinAppRunSupport`       | `true`  | Set to `false` to disable the packaged-launch integration and run unpackaged instead           |
+| `WinAppRunUseExecutionAlias`   | `false` | For console apps — launches via `uap5:ExecutionAlias` so stdin/stdout stay in the terminal     |
+| `WinAppRunNoLaunch`            | `false` | Register the package but don't launch (useful when attaching a different debugger first)       |
+| `WinAppRunDebugOutput`         | `false` | Capture `OutputDebugString` and crash dumps; cannot be combined with another debugger          |
+| `WinAppLaunchArgs`             | (empty) | Arguments passed to the app on launch (e.g. `--my-flag value`)                                 |
+
+These properties are provided by the
+[`Microsoft.Windows.SDK.BuildTools.WinApp`](https://www.nuget.org/packages/Microsoft.Windows.SDK.BuildTools.WinApp)
+NuGet package, which is referenced automatically by the project templates.
+
+### AI agent instructions
+
+The `winui` blank app template also unpacks an `AGENTS.md` plus a
+`.github/instructions/` set so AI coding agents (GitHub Copilot, Claude Code,
+etc.) follow the project's WinUI / accessibility / testing conventions out of
+the box. Remove or edit them if they don't fit your project.
 
 ## Prerequisites
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or later
+- [.NET SDK](https://dotnet.microsoft.com/download) — `net8.0`, `net9.0`, or `net10.0`
 - Windows 10 version 1809 (build 17763) or later
-- [Windows App SDK](https://learn.microsoft.com/windows/apps/windows-app-sdk/)
-  workload
+- **Developer Mode enabled** — required for `dotnet run` to register the loose-layout package.
+  Settings → System → For developers → Developer Mode → On.
 
 ## Resources
 
@@ -95,8 +136,8 @@ This template pack is built from the
 [WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK) repository under
 `dev/Templates/Dotnet/`. The templates share the same XAML, code-behind,
 and project files as the Visual Studio templates under
-`dev/Templates/Source/ProjectTemplates/` and `dev/Templates/Source/ItemTemplates/`, so there is only one
-copy to maintain.
+`dev/Templates/Source/ProjectTemplates/` and
+`dev/Templates/Source/ItemTemplates/`, so there is only one copy to maintain.
 
 ### Local Testing
 
@@ -113,9 +154,16 @@ copy to maintain.
    dotnet new install ./localpackages/Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.<version>.nupkg
    ```
 
+For an automated end-to-end run that scaffolds, builds, and (optionally)
+launches every template, use the included script:
+
+```powershell
+.\dev\Templates\Dotnet\Test-DotnetNewTemplates.ps1                      # full run
+.\dev\Templates\Dotnet\Test-DotnetNewTemplates.ps1 -SkipAppLaunch       # CI-friendly
+```
+
 ### Validation Checklist
 
-- Run `dotnet pack` locally and `dotnet new install` to verify each template scaffolds and builds.
-- Run `dotnet new list | findstr winui` to confirm all templates are registered.
-- Build generated projects for x64, x86, and ARM64 in Visual Studio or VS Code.
-- Test packaged deployments on Windows 10 version 1809 or later.
+- `dotnet new list | findstr winui` lists all expected templates.
+- Each template scaffolds and `dotnet build -c Debug -p:Platform=$Platform` succeeds.
+- `dotnet run` on a project template launches the app and `Get-AppxPackage *<AppName>*` shows it as `IsDevelopmentMode = True`.
