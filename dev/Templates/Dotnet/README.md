@@ -54,17 +54,13 @@ inside a WinUI project folder or when `--project` points to one.
 ### Quickstart a new WinUI 3 APP
 
 ```powershell
-# Detect platform (once per session).
-$arch = $env:PROCESSOR_ARCHITECTURE
-$Platform = if ($arch -eq 'AMD64') { 'x64' } else { $arch }
-
 # create
 dotnet new winui -n MyApp
 cd MyApp
 
 # build or run
-dotnet build -c Debug -p:Platform=$Platform
-dotnet run -c Debug -p:Platform=$Platform
+dotnet build
+dotnet run
 ```
 
 `dotnet run` registers a loose-layout MSIX, gives the app package identity,
@@ -92,8 +88,8 @@ dotnet new winui --dotnet-version net10.0 -n MyApp
 
 Supported choices: `net8.0`, `net9.0`, `net10.0`. If you omit
 `--dotnet-version`, most templates default to `net10.0`; `winui-mvvm` matches
-your installed .NET SDK. You can also edit `<TargetFramework>` (and any
-related `<RuntimeIdentifiers>`) in the generated `.csproj` afterward.
+your installed .NET SDK. You can also edit `<TargetFramework>` in the
+generated `.csproj` afterward.
 
 ### Customizing `dotnet run` behavior
 
@@ -168,5 +164,5 @@ launches every template, use the included script:
 ### Validation Checklist
 
 - `dotnet new list | findstr winui` lists all expected templates.
-- Each template scaffolds and `dotnet build -c Debug -p:Platform=$Platform` succeeds.
+- Each template scaffolds and `dotnet build` succeeds.
 - `dotnet run` on a project template launches the app and `Get-AppxPackage *<AppName>*` shows it as `IsDevelopmentMode = True`.
