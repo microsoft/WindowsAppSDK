@@ -85,13 +85,22 @@ $AreaContacts = Get-AreaContacts -ContactsPath $ContactsPath
 function Get-AllAreaLabels {
     <#
     .SYNOPSIS
-        Fetches all labels starting with "area-" from the repository.
+        Fetches all labels starting with "area-" from the repository
+        using Get-RepositoryLabels.ps1 as the single source of truth.
     #>
     param([string]$Repository)
 
-    Write-Verbose "Fetching area labels from $Repository..."
-    $labels = gh label list --repo $Repository --search "area-" --json name --limit 100 | ConvertFrom-Json
-    return $labels | ForEach-Object { $_.name } | Sort-Object
+    Write-Verbose "Fetching area labels from $Repository via Get-RepositoryLabels.ps1..."
+    $SkillsRoot = Split-Path $SkillDir -Parent
+    $LabelsScript = Join-Path $SkillsRoot "triage-meeting-prep\scripts\Get-RepositoryLabels.ps1"
+
+    if (-not (Test-Path $LabelsScript)) {
+        Write-Error "Get-RepositoryLabels.ps1 not found at: $LabelsScript"
+        exit 1
+    }
+
+    $labels = & $LabelsScript -Repository $Repository -Filter "area-*" -OutputFormat json | ConvertFrom-Json
+    return @($labels | ForEach-Object { $_.name } | Sort-Object)
 }
 
 function Get-IssuesForArea {
@@ -108,7 +117,7 @@ function Get-IssuesForArea {
     $state = if ($GetClosed) { "closed" } else { "open" }
     Write-Verbose "Fetching $state issues for $AreaLabel..."
 
-    $jsonFields = "number,title,createdAt,updatedAt,labels,reactionGroups,comments,author,state"
+    $jsonFields = "number,title,body,createdAt,updatedAt,labels,reactionGroups,comments,author,state"
 
     $issues = gh issue list --repo $Repository --label $AreaLabel --state $state --limit 500 --json $jsonFields 2>$null | ConvertFrom-Json
 
@@ -162,13 +171,15 @@ function Get-HighlightedIssues {
     param(
         [array]$Issues,
         [hashtable]$Config,
-        [int]$MaxHighlights
+        [int]$MaxHighlights,
+        [hashtable]$IssueAssessments,
+        [hashtable]$AgentAssessments
     )
 
     $scoredIssues = @()
 
     foreach ($issue in $Issues) {
-        $score = Get-IssueScore -Issue $issue -Config $Config
+        $score = Get-IssueScore -Issue $issue -Config $Config -IssueAssessments $IssueAssessments -AgentAssessments $AgentAssessments
         $labels = Get-HighlightLabels -Issue $issue -Score $score -Config $Config
 
         $scoredIssues += @{
@@ -186,8 +197,8 @@ function Get-HighlightedIssues {
     return $highlights
 }
 
-# Note: Get-IssueScore and Get-HighlightLabels are now defined in ReportLib.ps1
-# to provide a single source of truth for scoring logic across the skill.
+# Note: Get-IssueScore and Get-HighlightLabels are defined in ReportLib.ps1
+# to provide a single source of truth for deterministic scoring logic across the skill.
 
 function Format-HighlightsMarkdown {
     <#
@@ -211,7 +222,7 @@ function Format-HighlightsMarkdown {
         if ($label) {
             $parts += "$label $link"
         } else {
-            $parts += $link
+            $parts += "$link"
         }
     }
 
@@ -290,6 +301,12 @@ try {
     Write-Host "Generating Feature Area Status Report for $Repo..." -ForegroundColor Cyan
     Write-Host ""
 
+    # Load optional AgentAssessments from fixed path before scoring calculations.
+    $AgentAssessments = Read-Assessments -ScriptDirectory $ScriptDir -AssessmentType Agent -EmitStatus
+
+    # Load optional IssueAssessments from fixed path before scoring calculations.
+    $IssueAssessments = Read-Assessments -ScriptDirectory $ScriptDir -AssessmentType Issue -EmitStatus
+
     # Verify GitHub CLI is available and authenticated
     try {
         $null = gh auth status 2>&1
@@ -317,9 +334,9 @@ try {
             $closedIssues = Get-IssuesForArea -Repository $Repo -AreaLabel $areaLabel -GetClosed
             # Filter to last 30 days
             $thirtyDaysAgo = (Get-Date).AddDays(-30)
-            $recentlyClosed = $closedIssues | Where-Object {
+            $recentlyClosed = @($closedIssues | Where-Object {
                 [datetime]$_.updatedAt -gt $thirtyDaysAgo
-            }
+            })
             $closedCount = $recentlyClosed.Count
         }
 
@@ -327,13 +344,13 @@ try {
         $stats = Get-IssueStats -Issues $openIssues -Config $Config
 
         # Get highlights
-        $highlights = Get-HighlightedIssues -Issues $openIssues -Config $Config -MaxHighlights $HighlightCount
+        $highlights = Get-HighlightedIssues -Issues $openIssues -Config $Config -MaxHighlights $HighlightCount -IssueAssessments $IssueAssessments -AgentAssessments $AgentAssessments
         $highlightsFormatted = Format-HighlightsMarkdown -Highlights $highlights -Repository $Repo
 
-        # Get contact
+        # Get contact - use new schema (single contact field)
         $contact = if ($AreaContacts[$areaLabel]) {
             $c = $AreaContacts[$areaLabel]
-            if ($c.secondary) { "$($c.primary), $($c.secondary)" } else { $c.primary }
+            if ($c.contact) { $c.contact } else { "TBD" }
         } else {
             "TBD"
         }
