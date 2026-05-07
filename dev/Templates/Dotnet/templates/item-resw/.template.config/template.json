@@ -40,6 +40,15 @@
       "args": "CSharp & Msix"
     }
   },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "copyOnly": [ "**/*.resw" ]
+        }
+      ]
+    }
+  ],
   "primaryOutputs": [
     { "path": "Resources.resw" }
   ],
