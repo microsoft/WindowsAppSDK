@@ -188,6 +188,9 @@
     <None Include="..\Source\ItemTemplates\Neutral\CSharp\TemplatedControl\CustomControl.cs"
           Pack="true"
           PackagePath="content/winui.item.templatedcontrol/CustomControl.cs" />
+    <None Include="..\Source\ItemTemplates\Neutral\CSharp\TemplatedControl\Themes\Generic.xaml"
+          Pack="true"
+          PackagePath="content/winui.item.templatedcontrol/Themes/Generic.xaml" />
   </ItemGroup>
 
   <!-- WinUI Resource Dictionary item template -->
