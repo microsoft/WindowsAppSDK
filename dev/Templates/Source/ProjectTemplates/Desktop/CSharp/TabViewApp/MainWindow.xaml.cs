@@ -16,11 +16,6 @@ public sealed partial class MainWindow : Window
     {
         InitializeComponent();
 
-        // Extend content into the title bar and use the TabView's
-        // drag region so the tab strip acts as the title bar area.
-        ExtendsContentIntoTitleBar = true;
-        SetTitleBar(CustomDragRegion);
-        AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
         AppWindow.SetIcon("Assets/AppIcon.ico");
 
         // Add a few default tabs on startup.
