@@ -161,6 +161,7 @@ launches every template, use the included script:
 
 ### Validation Checklist
 
-- `dotnet new list | findstr winui` lists all expected templates.
-- Each template scaffolds and `dotnet build` succeeds.
-- `dotnet run` on a project template launches the app and `Get-AppxPackage *<AppName>*` shows it as `IsDevelopmentMode = True`.
+- Run `dotnet pack` locally and `dotnet new install` to verify the local build.
+- Run `dotnet new winui` to review and confirm all templates are registered.
+- Build generated projects for x64, x86, and ARM64 in Visual Studio or `dotnet build`.
+- Test packaged deployments on Windows 10 version 1809 or later.
