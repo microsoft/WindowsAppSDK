@@ -28,6 +28,9 @@
                         Source="/Assets/AppIcon.ico" />
                 </Grid>
             </TabView.TabStripHeader>
+            <TabView.TabStripFooter>
+                <Grid x:Name="CustomDragRegion" />
+            </TabView.TabStripFooter>
         </TabView>
     </Grid>
 </Window>
