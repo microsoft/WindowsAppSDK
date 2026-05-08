@@ -49,7 +49,6 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
-- template: WindowsAppSDK-CommonVariables.yml
   parameters:
     PrOrNightly: 'devtest'
 - template: AzurePipelinesTemplates\WindowsAppSDK-VersionVariables.yml
