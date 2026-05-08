@@ -268,7 +268,6 @@ stages:
     - ${{ if eq(parameters.PublishPackage, 'true') }}:
       # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
       - task: NuGetCommand@2
-        name: PublishNuget
         displayName: 'NuGet push to ProjectReunion.nuget.internal'
         inputs:
           command: 'push'
@@ -279,8 +278,8 @@ stages:
           publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
 - stage: UpdateFoundationLibrary
-  dependsOn: PublishNuget
-  condition: and(succeeded('PublishNuget'), eq(${{ parameters.RunUpdateLibraryJob }}, true))
+  dependsOn: Pack
+  condition: and(succeeded('Pack'), eq(${{ parameters.RunUpdateLibraryJob }}, true))
   jobs:
   - template: WindowsAppSDK-UpdateLibrary-Job.yml
     parameters:
