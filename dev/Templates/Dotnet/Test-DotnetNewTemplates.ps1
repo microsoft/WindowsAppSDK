@@ -430,7 +430,12 @@ try {
         @{ ShortName = 'winui'; Kind = 'App' },
         @{ ShortName = 'winui-navview'; Kind = 'App' },
         @{ ShortName = 'winui-lib'; Kind = 'Library' },
-        @{ ShortName = 'winui-unittest'; Kind = 'Test' }
+        # winui-unittest is a self-hosted packaged test runner: tests run
+        # from inside UnitTestApp.OnLaunched (which sets DispatcherQueue and
+        # acquires package identity) via UnitTestClient.Run(), not via
+        # `dotnet test`. Validate it as an App so we still confirm the
+        # template builds cleanly.
+        @{ ShortName = 'winui-unittest'; Kind = 'App' }
     )
 
     foreach ($template in $projectTemplates) {

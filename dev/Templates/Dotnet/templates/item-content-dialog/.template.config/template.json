@@ -55,6 +55,14 @@
         "value": "ContentDialogButtonClickEventArgs"
       },
       "replaces": "__WINUI_CONTENT_DIALOG_BUTTON_CLICK_EVENT_ARGS__"
+    },
+    "defaultContentDialogStyleResourceKey": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": {
+        "value": "DefaultContentDialogStyle"
+      },
+      "replaces": "__WINUI_DEFAULT_CONTENT_DIALOG_STYLE__"
     }
   },
   "constraints": {

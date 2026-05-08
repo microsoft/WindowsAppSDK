@@ -342,7 +342,8 @@ Alternatives:
 | Using `Windows.UI.Xaml` namespace | Use `Microsoft.UI.Xaml` for WinUI 3 |
 | Calling `Window.Current` | Not available in WinUI 3 -- pass window reference explicitly |
 | Using `CoreDispatcher` | Use `DispatcherQueue` instead |
-| `REGDB_E_CLASSNOTREG` error | Ensure Developer Mode is enabled; re-register the MSIX package with `Add-AppxPackage -Register` |
+| `REGDB_E_CLASSNOTREG` error | Ensure Developer Mode is enabled, then re-register: run `winapp unregister` followed by `dotnet run` (or `winapp run <build-output>`) to refresh the loose-layout registration |
+| Stale package state after manifest changes | Run `winapp unregister`, then `dotnet run` -- using `winapp run --clean` additionally wipes `LocalState`/settings to test first-run behavior |
 | XAML Designer crashes | Clean & rebuild; ensure platform matches (x64 vs AnyCPU) |
 | `{Binding}` not updating | Switch to `x:Bind` with `Mode=OneWay` or `Mode=TwoWay` |
 

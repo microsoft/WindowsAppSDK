@@ -20,13 +20,38 @@ public sealed partial class MainWindow : Window
         // drag region so the tab strip acts as the title bar area.
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(CustomDragRegion);
-        AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
         AppWindow.SetIcon("Assets/AppIcon.ico");
+
+        // Reserve space at the right edge of the tab strip for the system
+        // caption buttons, scaled to the current DPI so they don't overlap
+        // tabs on high-DPI displays.
+        AppWindow.Changed += OnAppWindowChanged;
+        UpdateCaptionButtonInset();
 
         // Add a few default tabs on startup.
         AddTab("Home", typeof(HomePage));
         AddTab("About", typeof(AboutPage));
         TabControl.SelectedIndex = 0;
+    }
+
+    private void OnAppWindowChanged(AppWindow sender, AppWindowChangedEventArgs args)
+    {
+        if (args.DidSizeChange || args.DidPositionChange)
+        {
+            UpdateCaptionButtonInset();
+        }
+    }
+
+    private void UpdateCaptionButtonInset()
+    {
+        // RightInset is in physical pixels; convert to DIPs.
+        double scale = (Content as FrameworkElement)?.XamlRoot?.RasterizationScale ?? 1.0;
+        if (scale <= 0)
+        {
+            scale = 1.0;
+        }
+
+        CustomDragRegion.MinWidth = AppWindow.TitleBar.RightInset / scale;
     }
 
     /// <summary>

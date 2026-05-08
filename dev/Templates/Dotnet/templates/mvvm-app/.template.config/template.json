@@ -122,6 +122,13 @@
       "replaces": "$WindowsSdkBuildToolsVersion$",
       "defaultValue": "10.0.26100.7705",
       "description": "Version of the Microsoft.Windows.SDK.BuildTools NuGet package."
+    },
+    "windowsSdkBuildToolsWinAppVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
+      "defaultValue": "0.3.1",
+      "description": "Version of the Microsoft.Windows.SDK.BuildTools.WinApp NuGet package, which adds `dotnet run` support for packaged WinUI apps via the winapp CLI."
     }
   },
   "sources": [
@@ -176,6 +183,16 @@
         "reference": "Microsoft.Windows.SDK.BuildTools"
       },
       "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" }]
+    },
+    {
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "description": "Update Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version (enables `dotnet run` for packaged WinUI apps).",
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools.WinApp"
+      },
+      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" }]
     },
     {
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
