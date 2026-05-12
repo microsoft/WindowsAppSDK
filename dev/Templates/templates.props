@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <!--
+        Declarative manifest of WinUI templates.
+
+        Single source of truth consumed by:
+            - dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj
+              (packs the dotnet-new NuGet)
+            - dev\Templates\VSIX\Extension\Cs\Dev17\WindowsAppSDK.Cs.Extension.Dev17.csproj
+              (builds the Visual Studio VSIX)
+
+        Adding a new template should only require adding one row here.
+
+        Item types:
+            ProjectTemplate            A whole-project template that ships in
+                                       BOTH the dotnet-new NuGet and the VSIX.
+            VsixOnlyProjectTemplate    A whole-project template that ships in
+                                       the VSIX only (typically because it
+                                       isn't usable from the CLI, e.g.
+                                       .wapproj-based packaging).
+            ItemTemplate               A single-file (or small-file-group)
+                                       template exposed by VS's "Add New
+                                       Item" dialog. Ships in the VSIX only.
+
+        Metadata defaults are in ItemDefinitionGroup; per-row metadata
+        overrides only what differs.
+
+        ProjectTemplate / VsixOnlyProjectTemplate metadata:
+            Identity              Logical name. For shared templates this MUST
+                                  be the dotnet-new short name (e.g.
+                                  winui.navview) since it doubles as the
+                                  content/<id>/ subfolder. For VSIX-only the
+                                  name only needs to be unique.
+            BaseName              File-name stem of the Source-side .csproj /
+                                  .ico / .png / .vstemplate.
+            SourceDir             Absolute path to the template's source tree.
+            DotnetConfigDir       Path to the dotnet-new template folder
+                                  containing .template.config\. (Only used
+                                  for ProjectTemplate.)
+            RenameManifestFrom    Optional. Source-side manifest filename to
+                                  repack as the reserved Package.appxmanifest.
+                                  Empty when the template has no manifest.
+
+        ItemTemplate metadata:
+            Identity              dotnet-new short name (e.g. winui.item.page).
+                                  Doubles as the content/<id>/ subfolder.
+            BaseName              File-name stem of the Source-side .csproj /
+                                  .ico / .vstemplate.
+            SourceDir             Absolute path to the template's source tree.
+            DotnetConfigDir       Path to the dotnet-new template folder
+                                  containing .template.config\.
+    -->
+
+    <ItemDefinitionGroup>
+        <ProjectTemplate>
+            <RenameManifestFrom></RenameManifestFrom>
+        </ProjectTemplate>
+        <VsixOnlyProjectTemplate>
+            <RenameManifestFrom></RenameManifestFrom>
+        </VsixOnlyProjectTemplate>
+    </ItemDefinitionGroup>
+
+    <ItemGroup>
+        <ProjectTemplate Include="winui.blankapp">
+            <BaseName>WinUI.Desktop.Cs.SingleProjectPackagedApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\single-project</DotnetConfigDir>
+            <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
+        </ProjectTemplate>
+
+        <ProjectTemplate Include="winui.navview">
+            <BaseName>WinUI.Desktop.Cs.NavigationApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\NavigationApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\navigation-app</DotnetConfigDir>
+            <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
+        </ProjectTemplate>
+
+        <ProjectTemplate Include="winui.classlib">
+            <BaseName>WinUI.Desktop.Cs.ClassLibrary</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\ClassLibrary</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\class-library</DotnetConfigDir>
+            <!-- Class library has no Package.appxmanifest; RenameManifestFrom intentionally unset. -->
+        </ProjectTemplate>
+
+        <ProjectTemplate Include="winui.unittest">
+            <BaseName>WinUI.Desktop.Cs.UnitTestApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\UnitTestApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\unit-test</DotnetConfigDir>
+            <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
+        </ProjectTemplate>
+
+        <ProjectTemplate Include="winui.mvvmapp">
+            <BaseName>WinUI.Desktop.Cs.MvvmApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\MvvmApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\mvvm-app</DotnetConfigDir>
+            <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
+        </ProjectTemplate>
+
+        <ProjectTemplate Include="winui.tabview">
+            <BaseName>WinUI.Desktop.Cs.TabViewApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\TabViewApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\tabview-app</DotnetConfigDir>
+            <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
+        </ProjectTemplate>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!--
+            The two-project (.csproj + .wapproj) packaged WinUI template ships
+            in the VSIX only. dotnet-new users get the equivalent functionality
+            from winui.blankapp (single-project packaging), which produces an
+            MSIX without the .wapproj indirection.
+        -->
+        <VsixOnlyProjectTemplate Include="WinUI.Desktop.Cs.PackagedApp">
+            <BaseName>WinUI.Desktop.Cs.PackagedApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\PackagedApp</SourceDir>
+        </VsixOnlyProjectTemplate>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ItemTemplate Include="winui.item.window">
+            <BaseName>WinUI.Desktop.Cs.BlankWindow</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Desktop\CSharp\BlankWindow</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-blank-window</DotnetConfigDir>
+        </ItemTemplate>
+
+        <ItemTemplate Include="winui.item.page">
+            <BaseName>WinUI.Neutral.Cs.BlankPage</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Neutral\CSharp\BlankPage</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-blank-page</DotnetConfigDir>
+        </ItemTemplate>
+
+        <ItemTemplate Include="winui.item.dialog">
+            <BaseName>WinUI.Neutral.Cs.ContentDialog</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Neutral\CSharp\ContentDialog</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-content-dialog</DotnetConfigDir>
+        </ItemTemplate>
+
+        <ItemTemplate Include="winui.item.resourcedictionary">
+            <BaseName>WinUI.Neutral.Cs.ResourceDictionary</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Neutral\CSharp\ResourceDictionary</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-resource-dictionary</DotnetConfigDir>
+        </ItemTemplate>
+
+        <ItemTemplate Include="winui.item.resw">
+            <BaseName>WinUI.Neutral.Cs.Resw</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Neutral\CSharp\Resw</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-resw</DotnetConfigDir>
+        </ItemTemplate>
+
+        <ItemTemplate Include="winui.item.templatedcontrol">
+            <BaseName>WinUI.Neutral.Cs.TemplatedControl</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Neutral\CSharp\TemplatedControl</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-templated-control</DotnetConfigDir>
+        </ItemTemplate>
+
+        <ItemTemplate Include="winui.item.usercontrol">
+            <BaseName>WinUI.Neutral.Cs.UserControl</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Neutral\CSharp\UserControl</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-user-control</DotnetConfigDir>
+        </ItemTemplate>
+    </ItemGroup>
+</Project>
