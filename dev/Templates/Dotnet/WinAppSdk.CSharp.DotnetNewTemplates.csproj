@@ -182,21 +182,24 @@ ExpandedItems = output.ToArray();
   <Target Name="_ExpandProjectTemplatePackItems"
           BeforeTargets="_GetPackageFiles;GenerateNuspec">
     <!--
-        Pack the project templates declared as @(ProjectTemplate). Each one
-        gets the shared .gitignore copy. @(VsixOnlyProjectTemplate) is
-        intentionally not consumed here.
+        Pack the project templates declared as @(ProjectTemplate) (shared
+        with VSIX) plus @(DotnetNewOnlyProjectTemplate) (dotnet-new exclusive).
+        Each one gets the shared .gitignore copy. @(VsixOnlyProjectTemplate)
+        is intentionally not consumed here.
     -->
-    <ExpandProjectTemplatePackItems Templates="@(ProjectTemplate)"
+    <ExpandProjectTemplatePackItems Templates="@(ProjectTemplate);@(DotnetNewOnlyProjectTemplate)"
                                     GitignoreSource="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(_GitignoreSource)'))">
       <Output TaskParameter="ExpandedItems" ItemName="None" />
     </ExpandProjectTemplatePackItems>
 
     <!--
-        Pack the item templates declared as @(ItemTemplate). Item templates
-        don't ship a .gitignore (their content is added into an existing
-        project, which already has one).
+        Pack the item templates declared as @(ItemTemplate) (shared with
+        VSIX) plus @(DotnetNewOnlyItemTemplate) (dotnet-new exclusive).
+        Item templates don't ship a .gitignore (their content is added into
+        an existing project, which already has one).
+        @(VsixOnlyItemTemplate) is intentionally not consumed here.
     -->
-    <ExpandProjectTemplatePackItems Templates="@(ItemTemplate)">
+    <ExpandProjectTemplatePackItems Templates="@(ItemTemplate);@(DotnetNewOnlyItemTemplate)">
       <Output TaskParameter="ExpandedItems" ItemName="None" />
     </ExpandProjectTemplatePackItems>
   </Target>

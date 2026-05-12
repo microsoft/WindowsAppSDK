@@ -12,20 +12,35 @@
         Adding a new template should only require adding one row here.
 
         Item types:
-            ProjectTemplate            A whole-project template that ships in
-                                       BOTH the dotnet-new NuGet and the VSIX.
-            VsixOnlyProjectTemplate    A whole-project template that ships in
-                                       the VSIX only (typically because it
-                                       isn't usable from the CLI, e.g.
-                                       .wapproj-based packaging).
-            ItemTemplate               A single-file (or small-file-group)
-                                       template exposed by VS's "Add New
-                                       Item" dialog. Ships in the VSIX only.
+            ProjectTemplate                  A whole-project template that
+                                             ships in BOTH the dotnet-new
+                                             NuGet and the VSIX.
+            VsixOnlyProjectTemplate          A whole-project template that
+                                             ships in the VSIX only (e.g.
+                                             .wapproj-based packaging which
+                                             isn't usable from the CLI).
+            DotnetNewOnlyProjectTemplate     A whole-project template that
+                                             ships in the dotnet-new NuGet
+                                             only. Reserved framework slot;
+                                             no instances today.
+            ItemTemplate                     A single-file (or small-file-
+                                             group) template exposed by VS's
+                                             "Add New Item" dialog. Ships
+                                             in BOTH the dotnet-new NuGet
+                                             and the VSIX.
+            VsixOnlyItemTemplate             An item template that ships in
+                                             the VSIX only. Reserved
+                                             framework slot; no instances
+                                             today.
+            DotnetNewOnlyItemTemplate        An item template that ships in
+                                             the dotnet-new NuGet only.
+                                             Reserved framework slot; no
+                                             instances today.
 
         Metadata defaults are in ItemDefinitionGroup; per-row metadata
         overrides only what differs.
 
-        ProjectTemplate / VsixOnlyProjectTemplate metadata:
+        ProjectTemplate / VsixOnlyProjectTemplate / DotnetNewOnlyProjectTemplate metadata:
             Identity              Logical name. For shared templates this MUST
                                   be the dotnet-new short name (e.g.
                                   winui.navview) since it doubles as the
@@ -41,14 +56,18 @@
                                   repack as the reserved Package.appxmanifest.
                                   Empty when the template has no manifest.
 
-        ItemTemplate metadata:
-            Identity              dotnet-new short name (e.g. winui.item.page).
-                                  Doubles as the content/<id>/ subfolder.
+        ItemTemplate / VsixOnlyItemTemplate / DotnetNewOnlyItemTemplate metadata:
+            Identity              For templates that ship to dotnet-new this
+                                  MUST be the dotnet-new short name (e.g.
+                                  winui.item.page) since it doubles as the
+                                  content/<id>/ subfolder. For VSIX-only
+                                  the name only needs to be unique.
             BaseName              File-name stem of the Source-side .csproj /
                                   .ico / .vstemplate.
             SourceDir             Absolute path to the template's source tree.
             DotnetConfigDir       Path to the dotnet-new template folder
-                                  containing .template.config\.
+                                  containing .template.config\. (Only used
+                                  for ItemTemplate and DotnetNewOnlyItemTemplate.)
     -->
 
     <ItemDefinitionGroup>
@@ -58,6 +77,13 @@
         <VsixOnlyProjectTemplate>
             <RenameManifestFrom></RenameManifestFrom>
         </VsixOnlyProjectTemplate>
+        <DotnetNewOnlyProjectTemplate>
+            <RenameManifestFrom></RenameManifestFrom>
+        </DotnetNewOnlyProjectTemplate>
+        <!--
+            ItemTemplate variants share the same metadata shape; no
+            per-variant defaults are needed today.
+        -->
     </ItemDefinitionGroup>
 
     <ItemGroup>
@@ -118,6 +144,20 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!--
+            Reserved framework slot for dotnet-new-only project templates.
+            No instances today. Example shape (uncomment and adapt when needed):
+
+            <DotnetNewOnlyProjectTemplate Include="winui.someclicentric">
+                <BaseName>WinUI.Desktop.Cs.SomeCliCentric</BaseName>
+                <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\SomeCliCentric</SourceDir>
+                <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\some-cli-centric</DotnetConfigDir>
+                <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
+            </DotnetNewOnlyProjectTemplate>
+        -->
+    </ItemGroup>
+
+    <ItemGroup>
         <ItemTemplate Include="winui.item.window">
             <BaseName>WinUI.Desktop.Cs.BlankWindow</BaseName>
             <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Desktop\CSharp\BlankWindow</SourceDir>
@@ -159,5 +199,30 @@
             <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Neutral\CSharp\UserControl</SourceDir>
             <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-user-control</DotnetConfigDir>
         </ItemTemplate>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!--
+            Reserved framework slot for VSIX-only item templates.
+            No instances today. Example shape (uncomment and adapt when needed):
+
+            <VsixOnlyItemTemplate Include="WinUI.Desktop.Cs.SomeVsOnlyItem">
+                <BaseName>WinUI.Desktop.Cs.SomeVsOnlyItem</BaseName>
+                <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Desktop\CSharp\SomeVsOnlyItem</SourceDir>
+            </VsixOnlyItemTemplate>
+        -->
+    </ItemGroup>
+
+    <ItemGroup>
+        <!--
+            Reserved framework slot for dotnet-new-only item templates.
+            No instances today. Example shape (uncomment and adapt when needed):
+
+            <DotnetNewOnlyItemTemplate Include="winui.item.someclionly">
+                <BaseName>WinUI.Neutral.Cs.SomeCliOnlyItem</BaseName>
+                <SourceDir>$(MSBuildThisFileDirectory)Source\ItemTemplates\Neutral\CSharp\SomeCliOnlyItem</SourceDir>
+                <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\item-some-cli-only</DotnetConfigDir>
+            </DotnetNewOnlyItemTemplate>
+        -->
     </ItemGroup>
 </Project>

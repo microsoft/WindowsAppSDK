@@ -99,7 +99,11 @@
 
         * @(ProjectTemplate) and @(VsixOnlyProjectTemplate)
                             -> ProjectTemplates/ subfolder of the VSIX.
-        * @(ItemTemplate)   -> ItemTemplates/ subfolder of the VSIX.
+        * @(ItemTemplate) and @(VsixOnlyItemTemplate)
+                            -> ItemTemplates/ subfolder of the VSIX.
+
+      @(DotnetNewOnlyProjectTemplate) / @(DotnetNewOnlyItemTemplate) are
+      intentionally not consumed here.
 
       The <Project> GUID hint is intentionally omitted; MSBuild resolves
       ProjectReference targets by path, and the GUID was historically only
@@ -114,7 +118,7 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
 
-    <ProjectReference Include="@(ItemTemplate->'%(SourceDir)\%(BaseName).csproj')">
+    <ProjectReference Include="@(ItemTemplate->'%(SourceDir)\%(BaseName).csproj');@(VsixOnlyItemTemplate->'%(SourceDir)\%(BaseName).csproj')">
       <Name>%(BaseName)</Name>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
