@@ -1,11 +1,6 @@
 ﻿<Project ToolsVersion="Current">
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <!--
-      Declarative template manifest (single source of truth shared with the
-      dotnet-new template pack). Provides @(ProjectTemplate) and
-      @(ItemTemplate) items used below to generate the ProjectReferences
-      that the VSIX consumes.
-  -->
+  <!-- Shared template manifest. Provides the @(ProjectTemplate) / @(ItemTemplate) family of items used below. -->
   <Import Project="..\..\..\..\templates.props" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -94,21 +89,14 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <!--
-      ProjectReferences for the WinUI templates. Derived entirely from the
-      declarative manifest at ..\..\..\..\templates.props:
-
-        * @(ProjectTemplate) and @(VsixOnlyProjectTemplate)
-                            -> ProjectTemplates/ subfolder of the VSIX.
-        * @(ItemTemplate) and @(VsixOnlyItemTemplate)
-                            -> ItemTemplates/ subfolder of the VSIX.
-
-      @(DotnetNewOnlyProjectTemplate) / @(DotnetNewOnlyItemTemplate) are
-      intentionally not consumed here.
+      ProjectReferences for the WinUI templates, derived from ..\..\..\..\templates.props:
+          @(ProjectTemplate) + @(VsixOnlyProjectTemplate)  -> ProjectTemplates/ in the VSIX
+          @(ItemTemplate)    + @(VsixOnlyItemTemplate)     -> ItemTemplates/    in the VSIX
+      @(DotnetNewOnlyProjectTemplate) / @(DotnetNewOnlyItemTemplate) are intentionally skipped.
 
       The <Project> GUID hint is intentionally omitted; MSBuild resolves
-      ProjectReference targets by path, and the GUID was historically only
-      a hint for the legacy Solution Explorer. Adding a new template no
-      longer requires editing this file.
+      ProjectReferences by path, and the GUID was historically only a hint
+      for the legacy Solution Explorer.
   -->
   <ItemGroup>
     <ProjectReference Include="@(ProjectTemplate->'%(SourceDir)\%(BaseName).csproj');@(VsixOnlyProjectTemplate->'%(SourceDir)\%(BaseName).csproj')">

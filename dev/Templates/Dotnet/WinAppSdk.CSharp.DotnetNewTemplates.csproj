@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!--
-      The declarative list of project templates and their per-template
-      metadata lives in ..\templates.props. This csproj only encodes the
-      generic packaging rules.
+      Declarative list of templates and their metadata. This csproj only
+      encodes the generic packaging rules.
   -->
   <Import Project="..\templates.props" />
 
@@ -31,14 +30,6 @@
     <PackageReleaseNotes>See https://github.com/microsoft/WindowsAppSDK/releases for release notes.</PackageReleaseNotes>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
-    <!--
-        MSB5029 ("wildcard enumerates all files on the drive") is a static
-        safety check that fires before target-level batching resolves
-        %(ProjectTemplate.SourceDir) inside _ExpandProjectTemplatePackItems.
-        Demote it to an informational message; the runtime expansion produces
-        fully-qualified paths per template (verified via DiagTemplates).
-    -->
-    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB5029</MSBuildWarningsAsMessages>
     <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\localpackages'))</PackageOutputPath>
   </PropertyGroup>
 
@@ -52,18 +43,18 @@
   </PropertyGroup>
 
   <!--
-      ExpandProjectTemplatePackItems: an inline C# MSBuild task that takes the
-      declarative @(ProjectTemplate) list (declared in ..\templates.props) and
-      emits the concrete files-to-pack along with their PackagePath metadata.
+      ExpandProjectTemplatePackItems: inline C# MSBuild task that walks the
+      declarative @(ProjectTemplate) / @(ItemTemplate) lists (from
+      ..\templates.props) and emits <None Pack="true" PackagePath="..." />
+      items consumed by NuGet's Pack target.
 
-      Why a task instead of a batched <ItemGroup>:
-        MSBuild applies a static MSB5029 ("wildcard enumerates whole drive")
-        check to Include attributes that contain wildcards. The check runs
-        BEFORE target-level batching or in-target properties resolve, so any
-        Include of the form "%(ProjectTemplate.SourceDir)\**\*.*" is rejected
-        even though batching would produce fully-qualified paths at run time.
-        A real MSBuild task is opaque to that static check; the enumeration
-        happens via System.IO at task execution time.
+      Why a task instead of a batched <ItemGroup>: MSBuild's static MSB5029
+      check ("wildcard enumerates whole drive") inspects <None Include>
+      patterns before target batching resolves %(...) metadata, so an
+      Include of "%(ProjectTemplate.SourceDir)\**\*.*" is rejected even
+      though batching would produce per-template paths at run time. A real
+      task is opaque to that check; enumeration happens via System.IO at
+      execution time.
   -->
   <UsingTask TaskName="ExpandProjectTemplatePackItems"
              TaskFactory="RoslynCodeTaskFactory"
@@ -76,7 +67,6 @@
     <Task>
       <Using Namespace="System" />
       <Using Namespace="System.IO" />
-      <Using Namespace="System.Linq" />
       <Using Namespace="System.Collections.Generic" />
       <Using Namespace="Microsoft.Build.Framework" />
       <Using Namespace="Microsoft.Build.Utilities" />
@@ -85,6 +75,7 @@
 var output = new List<ITaskItem>();
 var commonExcludeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "bin", "obj" };
 
+// Add one file -> one packed entry. Sets Pack/PackagePath so NuGet picks it up.
 void Emit(string sourcePath, string packagePath)
 {
     var item = new TaskItem(sourcePath);
@@ -93,41 +84,45 @@ void Emit(string sourcePath, string packagePath)
     output.Add(item);
 }
 
+// Recursively pack every file under fromDir into toRelRoot, optionally skipping
+// files whose path relative to fromDir matches `skipRelative`.
+void EmitTree(string fromDir, string toRelRoot, Func<string, bool> skipRelative = null)
+{
+    if (!Directory.Exists(fromDir)) { return; }
+    foreach (var file in Directory.EnumerateFiles(fromDir, "*", SearchOption.AllDirectories))
+    {
+        string rel = file.Substring(fromDir.Length).TrimStart('\\', '/');
+        if (skipRelative != null && skipRelative(rel)) { continue; }
+        Emit(file, toRelRoot + "/" + rel.Replace('\\', '/'));
+    }
+}
+
 foreach (var t in Templates)
 {
-    string id = t.ItemSpec;
     string srcDir = t.GetMetadata("SourceDir");
     string configDir = t.GetMetadata("DotnetConfigDir");
     string baseName = t.GetMetadata("BaseName");
     string renameFrom = t.GetMetadata("RenameManifestFrom");
-    string contentRoot = "content/" + id;
+    string contentRoot = "content/" + t.ItemSpec;
 
-    // 1. Source tree, excluding bin/obj, the VSIX-only sidecar files, and (if set) the
-    //    Source-named manifest (which is re-emitted below under the canonical name).
-    if (Directory.Exists(srcDir))
+    // Files in the Source tree that are VSIX-only sidecars (excluded from the dotnet-new pack).
+    // The Source-named manifest, if any, is excluded here and re-emitted under the reserved name below.
+    var sidecars = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
-        var perTemplateExclude = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            baseName + ".csproj",
-            baseName + ".ico",
-            baseName + ".png",
-            baseName + ".vstemplate",
-        };
-        if (!string.IsNullOrEmpty(renameFrom)) { perTemplateExclude.Add(renameFrom); }
+        baseName + ".csproj",
+        baseName + ".ico",
+        baseName + ".png",
+        baseName + ".vstemplate",
+    };
+    if (!string.IsNullOrEmpty(renameFrom)) { sidecars.Add(renameFrom); }
 
-        foreach (var file in Directory.EnumerateFiles(srcDir, "*", SearchOption.AllDirectories))
-        {
-            string rel = file.Substring(srcDir.Length).TrimStart('\\', '/');
-            // Skip any file under a top-level bin\ or obj\ directory.
-            int sep = rel.IndexOfAny(new[] { '\\', '/' });
-            string topDir = sep < 0 ? string.Empty : rel.Substring(0, sep);
-            if (commonExcludeNames.Contains(topDir)) { continue; }
-            // Skip sidecar files in the template root.
-            if (sep < 0 && perTemplateExclude.Contains(rel)) { continue; }
-
-            Emit(file, contentRoot + "/" + rel.Replace('\\', '/'));
-        }
-    }
+    // 1. Template source tree, minus bin/obj and the VSIX-only sidecars.
+    EmitTree(srcDir, contentRoot, rel =>
+    {
+        var parts = rel.Split(new[] { '\\', '/' }, 2);
+        return commonExcludeNames.Contains(parts[0])
+            || (parts.Length == 1 && sidecars.Contains(parts[0]));
+    });
 
     // 2. Source-named manifest -> reserved Package.appxmanifest, if requested.
     if (!string.IsNullOrEmpty(renameFrom))
@@ -140,15 +135,7 @@ foreach (var t in Templates)
     }
 
     // 3. dotnet-new template configuration.
-    string configRoot = Path.Combine(configDir, ".template.config");
-    if (Directory.Exists(configRoot))
-    {
-        foreach (var file in Directory.EnumerateFiles(configRoot, "*", SearchOption.AllDirectories))
-        {
-            string rel = file.Substring(configDir.Length).TrimStart('\\', '/');
-            Emit(file, contentRoot + "/" + rel.Replace('\\', '/'));
-        }
-    }
+    EmitTree(Path.Combine(configDir, ".template.config"), contentRoot + "/.template.config");
 
     // 4. Optional companion assets (Agents.md, instructions/**).
     string agentsPath = Path.Combine(configDir, "Agents.md");
@@ -156,15 +143,7 @@ foreach (var t in Templates)
     {
         Emit(agentsPath, contentRoot + "/AGENTS.md");
     }
-    string instructionsDir = Path.Combine(configDir, "instructions");
-    if (Directory.Exists(instructionsDir))
-    {
-        foreach (var file in Directory.EnumerateFiles(instructionsDir, "*", SearchOption.AllDirectories))
-        {
-            string rel = file.Substring(instructionsDir.Length).TrimStart('\\', '/');
-            Emit(file, contentRoot + "/.github/instructions/" + rel.Replace('\\', '/'));
-        }
-    }
+    EmitTree(Path.Combine(configDir, "instructions"), contentRoot + "/.github/instructions");
 
     // 5. Shared .gitignore (one copy per template).
     if (!string.IsNullOrEmpty(GitignoreSource) && File.Exists(GitignoreSource))
@@ -181,24 +160,13 @@ ExpandedItems = output.ToArray();
 
   <Target Name="_ExpandProjectTemplatePackItems"
           BeforeTargets="_GetPackageFiles;GenerateNuspec">
-    <!--
-        Pack the project templates declared as @(ProjectTemplate) (shared
-        with VSIX) plus @(DotnetNewOnlyProjectTemplate) (dotnet-new exclusive).
-        Each one gets the shared .gitignore copy. @(VsixOnlyProjectTemplate)
-        is intentionally not consumed here.
-    -->
+    <!-- Project templates: shared + dotnet-new-only. Each gets a copy of the shared .gitignore. -->
     <ExpandProjectTemplatePackItems Templates="@(ProjectTemplate);@(DotnetNewOnlyProjectTemplate)"
                                     GitignoreSource="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(_GitignoreSource)'))">
       <Output TaskParameter="ExpandedItems" ItemName="None" />
     </ExpandProjectTemplatePackItems>
 
-    <!--
-        Pack the item templates declared as @(ItemTemplate) (shared with
-        VSIX) plus @(DotnetNewOnlyItemTemplate) (dotnet-new exclusive).
-        Item templates don't ship a .gitignore (their content is added into
-        an existing project, which already has one).
-        @(VsixOnlyItemTemplate) is intentionally not consumed here.
-    -->
+    <!-- Item templates: shared + dotnet-new-only. No .gitignore (the host project already has one). -->
     <ExpandProjectTemplatePackItems Templates="@(ItemTemplate);@(DotnetNewOnlyItemTemplate)">
       <Output TaskParameter="ExpandedItems" ItemName="None" />
     </ExpandProjectTemplatePackItems>
