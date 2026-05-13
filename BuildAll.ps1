@@ -1,4 +1,4 @@
-<#
+﻿<#
 This script is to build the Foundation transport package that will be used to generate the windows app sdk package.
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
 

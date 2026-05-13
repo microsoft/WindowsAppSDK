@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Installs the locally-built LocalDev (per-user, AllUsers="false") Windows
     App SDK Templates VSIX into Visual Studio 2022 and/or 2026.

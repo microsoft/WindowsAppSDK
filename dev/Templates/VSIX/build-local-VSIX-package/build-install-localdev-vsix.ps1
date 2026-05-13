@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     End-to-end LocalDev (per-user, AllUsers="false") build + install for the
     Windows App SDK Templates VSIX.

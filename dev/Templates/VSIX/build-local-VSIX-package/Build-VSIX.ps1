@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Builds the Windows App SDK VSIX extension packages locally.
 
