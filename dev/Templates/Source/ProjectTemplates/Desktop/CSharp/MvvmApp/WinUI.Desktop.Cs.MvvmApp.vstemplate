@@ -6,7 +6,6 @@
     <Icon>WinUI.Desktop.Cs.MvvmApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.MvvmApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
-    <SortOrder>40</SortOrder>
     <ProjectType>CSharp</ProjectType>
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>App</DefaultName>

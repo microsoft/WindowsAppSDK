@@ -343,15 +343,14 @@ if (-not $failed) {
     Write-Host '  1. Launch Visual Studio (any installed VS 17+ instance).'    -ForegroundColor White
     Write-Host '  2. File -> New -> Project.'                                  -ForegroundColor White
     Write-Host '  3. Filter Language=C#, Search "WinUI".'                      -ForegroundColor White
-    Write-Host '  4. You should see the 7 project templates with SortOrder'    -ForegroundColor White
-    Write-Host '     10 -> 70:'                                                 -ForegroundColor White
-    Write-Host '       1) Blank App                  (10)'                      -ForegroundColor White
-    Write-Host '       2) NavigationView App         (20)'                      -ForegroundColor White
-    Write-Host '       3) TabView App                (30)'                      -ForegroundColor White
-    Write-Host '       4) MVVM App                   (40)'                      -ForegroundColor White
-    Write-Host '       5) Blank App (Packaged WAP)   (50)'                      -ForegroundColor White
-    Write-Host '       6) Class Library              (60)'                      -ForegroundColor White
-    Write-Host '       7) Unit Test App              (70)'                      -ForegroundColor White
+    Write-Host '  4. You should see the 7 project templates:'                  -ForegroundColor White
+    Write-Host '       1) Blank App'                                            -ForegroundColor White
+    Write-Host '       2) NavigationView App'                                   -ForegroundColor White
+    Write-Host '       3) TabView App'                                          -ForegroundColor White
+    Write-Host '       4) MVVM App'                                             -ForegroundColor White
+    Write-Host '       5) Blank App (Packaged WAP)'                             -ForegroundColor White
+    Write-Host '       6) Class Library'                                        -ForegroundColor White
+    Write-Host '       7) Unit Test App'                                        -ForegroundColor White
     Write-Host ''
     Write-Step 'To uninstall later (no admin needed):'
     Write-Host '  .\Install-LocalDev-VSIX.ps1 -UninstallFirst'                  -ForegroundColor White

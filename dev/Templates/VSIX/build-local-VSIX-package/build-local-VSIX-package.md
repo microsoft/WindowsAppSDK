@@ -116,17 +116,17 @@ automatically once the LocalDev copy is gone.
 
 1. Launch Visual Studio (any installed VS 17+ instance).
 2. File → New → Project. Filter Language=C#, search "WinUI". Expect these
-   seven project templates in this order:
+   seven project templates:
 
-   | # | Template | SortOrder |
-   |---|---|---|
-   | 1 | WinUI Blank App | 10 |
-   | 2 | WinUI Navigation App | 20 |
-   | 3 | WinUI TabView App | 30 |
-   | 4 | WinUI MVVM App | 40 |
-   | 5 | WinUI Blank App (Packaged WAP) | 50 |
-   | 6 | WinUI Class Library | 60 |
-   | 7 | WinUI Unit Test App | 70 |
+   | # | Template |
+   |---|---|
+   | 1 | WinUI Blank App |
+   | 2 | WinUI Navigation App |
+   | 3 | WinUI TabView App |
+   | 4 | WinUI MVVM App |
+   | 5 | WinUI Blank App (Packaged WAP) |
+   | 6 | WinUI Class Library |
+   | 7 | WinUI Unit Test App |
 
 3. (Optional) Confirm VS picked up your local build, not the workload copy:
    Extensions → Manage Extensions → Installed → look for
