@@ -1,4 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <!--
+      Declarative list of templates and their metadata. This csproj only
+      encodes the generic packaging rules.
+  -->
+  <Import Project="..\templates.props" />
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>false</ImplicitUsings>
@@ -36,193 +42,133 @@
     <_GitignoreSource>templates\gitignore.txt</_GitignoreSource>
   </PropertyGroup>
 
-  <!-- WinUI Blank App template -->
-  <ItemGroup>
-    <None Include="templates\single-project\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.blankapp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="templates\single-project\Agents.md"
-          Pack="true"
-          PackagePath="content/winui.blankapp/AGENTS.md" />
-    <None Include="templates\single-project\instructions\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.blankapp/.github/instructions/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\**\*.*"
-          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.png;..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.vstemplate"
-          Pack="true"
-          PackagePath="content/winui.blankapp/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\Package-managed.appxmanifest"
-          Pack="true"
-          PackagePath="content/winui.blankapp/Package.appxmanifest" />
-    <None Include="$(_GitignoreSource)"
-          Pack="true"
-          PackagePath="content/winui.blankapp/gitignore.txt" />
-  </ItemGroup>
+  <!--
+      ExpandProjectTemplatePackItems: inline C# MSBuild task that walks the
+      declarative @(ProjectTemplate) / @(ItemTemplate) lists (from
+      ..\templates.props) and emits <None Pack="true" PackagePath="..." />
+      items consumed by NuGet's Pack target.
 
-  <!-- WinUI NavigationView template -->
-  <ItemGroup>
-    <None Include="templates\navigation-app\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.navview/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\**\*.*"
-          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.png;..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\WinUI.Desktop.Cs.NavigationApp.vstemplate"
-          Pack="true"
-          PackagePath="content/winui.navview/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\NavigationApp\Package-managed.appxmanifest"
-          Pack="true"
-          PackagePath="content/winui.navview/Package.appxmanifest" />
-    <None Include="$(_GitignoreSource)"
-          Pack="true"
-          PackagePath="content/winui.navview/gitignore.txt" />
-  </ItemGroup>
+      Why a task instead of a batched <ItemGroup>: MSBuild's static MSB5029
+      check ("wildcard enumerates whole drive") inspects <None Include>
+      patterns before target batching resolves %(...) metadata, so an
+      Include of "%(ProjectTemplate.SourceDir)\**\*.*" is rejected even
+      though batching would produce per-template paths at run time. A real
+      task is opaque to that check; enumeration happens via System.IO at
+      execution time.
+  -->
+  <UsingTask TaskName="ExpandProjectTemplatePackItems"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Templates ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <GitignoreSource ParameterType="System.String" Required="false" />
+      <ExpandedItems ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="Microsoft.Build.Framework" />
+      <Using Namespace="Microsoft.Build.Utilities" />
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+var output = new List<ITaskItem>();
+var commonExcludeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "bin", "obj" };
 
-  <!-- WinUI Class Library template -->
-  <ItemGroup>
-    <None Include="templates\class-library\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.classlib/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\**\*.*"
-          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.ico;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.png;..\Source\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.vstemplate"
-          Pack="true"
-          PackagePath="content/winui.classlib/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="$(_GitignoreSource)"
-          Pack="true"
-          PackagePath="content/winui.classlib/gitignore.txt" />
-  </ItemGroup>
+// Add one file -> one packed entry. Sets Pack/PackagePath so NuGet picks it up.
+void Emit(string sourcePath, string packagePath)
+{
+    var item = new TaskItem(sourcePath);
+    item.SetMetadata("Pack", "true");
+    item.SetMetadata("PackagePath", packagePath);
+    output.Add(item);
+}
 
-  <!-- WinUI Unit Test template -->
-  <ItemGroup>
-    <None Include="templates\unit-test\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.unittest/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\**\*.*"
-          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.png;..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.vstemplate"
-          Pack="true"
-          PackagePath="content/winui.unittest/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\UnitTestApp\Package-managed.appxmanifest"
-          Pack="true"
-          PackagePath="content/winui.unittest/Package.appxmanifest" />
-    <None Include="$(_GitignoreSource)"
-          Pack="true"
-          PackagePath="content/winui.unittest/gitignore.txt" />
-  </ItemGroup>
+// Recursively pack every file under fromDir into toRelRoot, optionally skipping
+// files whose path relative to fromDir matches `skipRelative`.
+void EmitTree(string fromDir, string toRelRoot, Func<string, bool> skipRelative = null)
+{
+    if (!Directory.Exists(fromDir)) { return; }
+    foreach (var file in Directory.EnumerateFiles(fromDir, "*", SearchOption.AllDirectories))
+    {
+        string rel = file.Substring(fromDir.Length).TrimStart('\\', '/');
+        if (skipRelative != null && skipRelative(rel)) { continue; }
+        Emit(file, toRelRoot + "/" + rel.Replace('\\', '/'));
+    }
+}
 
-  <!-- WinUI MVVM App template -->
-  <ItemGroup>
-    <None Include="templates\mvvm-app\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.mvvmapp/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\**\*.*"
-          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.png;..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\WinUI.Desktop.Cs.MvvmApp.vstemplate"
-          Pack="true"
-          PackagePath="content/winui.mvvmapp/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\MvvmApp\Package-managed.appxmanifest"
-          Pack="true"
-          PackagePath="content/winui.mvvmapp/Package.appxmanifest" />
-    <None Include="$(_GitignoreSource)"
-          Pack="true"
-          PackagePath="content/winui.mvvmapp/gitignore.txt" />
-  </ItemGroup>
+foreach (var t in Templates)
+{
+    string srcDir = t.GetMetadata("SourceDir");
+    string configDir = t.GetMetadata("DotnetConfigDir");
+    string baseName = t.GetMetadata("BaseName");
+    string renameFrom = t.GetMetadata("RenameManifestFrom");
+    string contentRoot = "content/" + t.ItemSpec;
 
-  <!-- WinUI TabView App template -->
-  <ItemGroup>
-    <None Include="templates\tabview-app\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.tabview/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\**\*.*"
-          Exclude="..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\bin\**;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\obj\**;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\Package-managed.appxmanifest;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.csproj;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.ico;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.png;..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\WinUI.Desktop.Cs.TabViewApp.vstemplate"
-          Pack="true"
-          PackagePath="content/winui.tabview/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ProjectTemplates\Desktop\CSharp\TabViewApp\Package-managed.appxmanifest"
-          Pack="true"
-          PackagePath="content/winui.tabview/Package.appxmanifest" />
-    <None Include="$(_GitignoreSource)"
-          Pack="true"
-          PackagePath="content/winui.tabview/gitignore.txt" />
-  </ItemGroup>
+    // Files in the Source tree that are VSIX-only sidecars (excluded from the dotnet-new pack).
+    // The Source-named manifest, if any, is excluded here and re-emitted under the reserved name below.
+    var sidecars = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        baseName + ".csproj",
+        baseName + ".ico",
+        baseName + ".png",
+        baseName + ".vstemplate",
+    };
+    if (!string.IsNullOrEmpty(renameFrom)) { sidecars.Add(renameFrom); }
 
-  <!-- WinUI Blank Window item template -->
-  <ItemGroup>
-    <None Include="templates\item-blank-window\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.item.window/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ItemTemplates\Desktop\CSharp\BlankWindow\BlankWindow.xaml"
-          Pack="true"
-          PackagePath="content/winui.item.window/BlankWindow.xaml" />
-    <None Include="..\Source\ItemTemplates\Desktop\CSharp\BlankWindow\BlankWindow.xaml.cs"
-          Pack="true"
-          PackagePath="content/winui.item.window/BlankWindow.xaml.cs" />
-  </ItemGroup>
+    // 1. Template source tree, minus bin/obj and the VSIX-only sidecars.
+    EmitTree(srcDir, contentRoot, rel =>
+    {
+        var parts = rel.Split(new[] { '\\', '/' }, 2);
+        return commonExcludeNames.Contains(parts[0])
+            || (parts.Length == 1 && sidecars.Contains(parts[0]));
+    });
 
-  <!-- WinUI Blank Page item template -->
-  <ItemGroup>
-    <None Include="templates\item-blank-page\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.item.page/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\BlankPage\BlankPage.xaml"
-          Pack="true"
-          PackagePath="content/winui.item.page/BlankPage.xaml" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\BlankPage\BlankPage.xaml.cs"
-          Pack="true"
-          PackagePath="content/winui.item.page/BlankPage.xaml.cs" />
-  </ItemGroup>
+    // 2. Source-named manifest -> reserved Package.appxmanifest, if requested.
+    if (!string.IsNullOrEmpty(renameFrom))
+    {
+        string manifestPath = Path.Combine(srcDir, renameFrom);
+        if (File.Exists(manifestPath))
+        {
+            Emit(manifestPath, contentRoot + "/Package.appxmanifest");
+        }
+    }
 
-  <!-- WinUI User Control item template -->
-  <ItemGroup>
-    <None Include="templates\item-user-control\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.item.usercontrol/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\UserControl\UserControl.xaml"
-          Pack="true"
-          PackagePath="content/winui.item.usercontrol/UserControl.xaml" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\UserControl\UserControl.xaml.cs"
-          Pack="true"
-          PackagePath="content/winui.item.usercontrol/UserControl.xaml.cs" />
-  </ItemGroup>
+    // 3. dotnet-new template configuration.
+    EmitTree(Path.Combine(configDir, ".template.config"), contentRoot + "/.template.config");
 
-  <!-- WinUI Templated Control item template -->
-  <ItemGroup>
-    <None Include="templates\item-templated-control\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.item.templatedcontrol/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\TemplatedControl\CustomControl.cs"
-          Pack="true"
-          PackagePath="content/winui.item.templatedcontrol/CustomControl.cs" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\TemplatedControl\Themes\Generic.xaml"
-          Pack="true"
-          PackagePath="content/winui.item.templatedcontrol/Themes/Generic.xaml" />
-  </ItemGroup>
+    // 4. Optional companion assets (Agents.md, instructions/**).
+    string agentsPath = Path.Combine(configDir, "Agents.md");
+    if (File.Exists(agentsPath))
+    {
+        Emit(agentsPath, contentRoot + "/AGENTS.md");
+    }
+    EmitTree(Path.Combine(configDir, "instructions"), contentRoot + "/.github/instructions");
 
-  <!-- WinUI Resource Dictionary item template -->
-  <ItemGroup>
-    <None Include="templates\item-resource-dictionary\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.item.resourcedictionary/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\ResourceDictionary\ResourceDictionary.xaml"
-          Pack="true"
-          PackagePath="content/winui.item.resourcedictionary/ResourceDictionary.xaml" />
-  </ItemGroup>
+    // 5. Shared .gitignore (one copy per template).
+    if (!string.IsNullOrEmpty(GitignoreSource) && File.Exists(GitignoreSource))
+    {
+        Emit(GitignoreSource, contentRoot + "/gitignore.txt");
+    }
+}
 
-  <!-- WinUI RESW item template -->
-  <ItemGroup>
-    <None Include="templates\item-resw\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.item.resw/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\Resw\Resources.resw"
-          Pack="true"
-          PackagePath="content/winui.item.resw/Resources.resw" />
-  </ItemGroup>
+ExpandedItems = output.ToArray();
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
 
-  <!-- WinUI Content Dialog item template -->
-  <ItemGroup>
-    <None Include="templates\item-content-dialog\.template.config\**\*.*"
-          Pack="true"
-          PackagePath="content/winui.item.dialog/.template.config/%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\ContentDialog\ContentDialog.xaml"
-          Pack="true"
-          PackagePath="content/winui.item.dialog/ContentDialog.xaml" />
-    <None Include="..\Source\ItemTemplates\Neutral\CSharp\ContentDialog\ContentDialog.xaml.cs"
-          Pack="true"
-          PackagePath="content/winui.item.dialog/ContentDialog.xaml.cs" />
-  </ItemGroup>
+  <Target Name="_ExpandProjectTemplatePackItems"
+          BeforeTargets="_GetPackageFiles;GenerateNuspec">
+    <!-- Project templates: shared + dotnet-new-only. Each gets a copy of the shared .gitignore. -->
+    <ExpandProjectTemplatePackItems Templates="@(ProjectTemplate);@(DotnetNewOnlyProjectTemplate)"
+                                    GitignoreSource="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(_GitignoreSource)'))">
+      <Output TaskParameter="ExpandedItems" ItemName="None" />
+    </ExpandProjectTemplatePackItems>
+
+    <!-- Item templates: shared + dotnet-new-only. No .gitignore (the host project already has one). -->
+    <ExpandProjectTemplatePackItems Templates="@(ItemTemplate);@(DotnetNewOnlyItemTemplate)">
+      <Output TaskParameter="ExpandedItems" ItemName="None" />
+    </ExpandProjectTemplatePackItems>
+  </Target>
 </Project>
