@@ -90,16 +90,30 @@ shape:
 | `DotnetConfigDir` | Absolute path to `Dotnet/templates/<short-name>/`. | When ships to dotnet-new |
 | `RenameManifestFrom` | Source-side manifest filename, typically `Package-managed.appxmanifest`. Packed as `Package.appxmanifest`. | Packaged WinUI app templates only |
 
-### 5. Verify
+### 5. Local build for tests
 
-```pwsh
-# dotnet-new NuGet (inspect produced .nupkg under localpackages\)
-dotnet pack dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj -c Debug
+1. dotnet new template:
 
-# VSIX (install produced .vsix into a VS Experimental instance)
-msbuild dev\Templates\VSIX\WindowsAppSDK.Extension.sln /t:Restore
-msbuild dev\Templates\VSIX\WindowsAppSDK.Extension.sln /p:Configuration=Debug
-```
+    TL;DR
+    ```pwsh
+    # dotnet-new NuGet (inspect produced .nupkg under localpackages\)
+    dotnet pack dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj -c Debug
+    
+    # dotnet new uninstall Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
+    
+    dotnet new install localpackages\Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg
+    ```
+
+    read details in [build-local-VSIX-package.md](.\VSIX\build-local-VSIX-package\build-local-VSIX-package.md)
+
+2. VSIX
+
+    TL;DR
+    ```pwsh
+    dev\Templates\VSIX\build-local-VSIX-package\build-install-localdev-vsix.ps1
+    ```
+
+    read details in [build-local-VSIX-package.md](.\VSIX\build-local-VSIX-package\build-local-VSIX-package.md)
 
 ---
 
