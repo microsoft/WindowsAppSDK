@@ -125,13 +125,22 @@ foreach (var t in Templates)
     });
 
     // 2. Source-named manifest -> reserved Package.appxmanifest, if requested.
+    // An empty/unset RenameManifestFrom means the template has no manifest (e.g. class library)
+    // and is allowed. A non-empty value MUST resolve to a real file -- otherwise it's almost
+    // certainly a typo in templates.props that would silently ship a manifest-less template.
     if (!string.IsNullOrEmpty(renameFrom))
     {
         string manifestPath = Path.Combine(srcDir, renameFrom);
-        if (File.Exists(manifestPath))
+        if (!File.Exists(manifestPath))
         {
-            Emit(manifestPath, contentRoot + "/Package.appxmanifest");
+            Log.LogError(
+                "Template '{0}': RenameManifestFrom='{1}' but '{2}' does not exist. " +
+                "Fix the filename in templates.props, add the manifest under SourceDir, " +
+                "or clear RenameManifestFrom if this template has no manifest.",
+                t.ItemSpec, renameFrom, manifestPath);
+            continue;
         }
+        Emit(manifestPath, contentRoot + "/Package.appxmanifest");
     }
 
     // 3. dotnet-new template configuration.
