@@ -466,7 +466,7 @@ if ($Deployment -eq "Both") {
 }
 
 foreach ($deploy in $deployments) {
-    Write-Banner "Building VSIX — $deploy"
+    Write-Banner "Building VSIX - $deploy"
 
     if (-not $SkipRestore) {
         Invoke-MSBuildRestore -DeploymentType $deploy
