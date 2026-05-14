@@ -6,8 +6,8 @@
     "language": "C#",
     "type": "item"
   },
-  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy",
-  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl.Legacy",
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.UserControl",
   "name": "WinUI User Control (Item)",
   "shortName": ["winui-usercontrol", "winui3-usercontrol"],
   "sourceName": "UserControl",
