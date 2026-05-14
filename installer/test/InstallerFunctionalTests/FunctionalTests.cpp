@@ -41,12 +41,23 @@ namespace WindowsAppRuntimeInstallerTests
         TEST_METHOD_SETUP(MethodInit)
         {
             RemoveAllPackages();
+            if (!VerifyAllPackagesRemoved())
+            {
+                Log::Error(L"TEST SETUP BLOCKED: Failed to remove pre-existing packages. "
+                    L"This is a setup environment error, not a test failure. "
+                    L"Packages may be in use by another process.");
+                return false;
+            }
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
             RemoveAllPackages();
+            if (!VerifyAllPackagesRemoved())
+            {
+                Log::Warning(L"Cleanup: some packages could not be removed. They may be in use.");
+            }
             return true;
         }
 
