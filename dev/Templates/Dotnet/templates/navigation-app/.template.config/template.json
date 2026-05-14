@@ -12,7 +12,7 @@
   "shortName": ["winui-navview", "winui3-navview"],
   "sourceName": "ProjectTemplate",
   "defaultName": "WinUINavApp",
-  "description": "Creates a WinUI 3 NavigationView starter app with single-project MSIX packaging.",
+  "description": "Creates a WinUI 3 NavigationView starter app with MSIX packaging.",
   "preferNameDirectory": true,
   "symbols": {
     "safeProjectName": {

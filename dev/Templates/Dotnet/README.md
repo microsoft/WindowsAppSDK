@@ -25,10 +25,10 @@ Get below list via `dotnet new list winui`
 
 | Short Name        | Description                                                              |
 |-------------------|--------------------------------------------------------------------------|
-| `winui`           | Minimal WinUI 3 blank app with single-project MSIX packaging. Start here if unsure |
+| `winui`           | Minimal WinUI 3 blank app with MSIX packaging. Start here if unsure |
 | `winui-mvvm`      | WinUI 3 MVVM app using `CommunityToolkit.Mvvm`                           |
-| `winui-navview`   | WinUI 3 NavigationView starter app with single-project MSIX packaging    |
-| `winui-tabview`   | WinUI 3 TabView starter app with single-project MSIX packaging           |
+| `winui-navview`   | WinUI 3 NavigationView starter app with MSIX packaging    |
+| `winui-tabview`   | WinUI 3 TabView starter app with MSIX packaging           |
 | `winui-lib`       | WinUI 3 class library for sharing UI components                          |
 | `winui-unittest`  | WinUI 3 packaged test app configured for MSTest                          |
 

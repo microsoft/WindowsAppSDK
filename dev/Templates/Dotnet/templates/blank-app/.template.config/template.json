@@ -12,7 +12,7 @@
   "shortName": ["winui", "winui3", "wasdk-single"],
   "sourceName": "ProjectTemplate",
   "defaultName": "WinUIApp",
-  "description": "Creates a WinUI 3 desktop app with single-project MSIX packaging.",
+  "description": "Creates a blank WinUI 3 desktop app with MSIX packaging.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {

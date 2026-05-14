@@ -12,7 +12,7 @@
   "shortName": ["winui-tabview", "winui3-tabview"],
   "sourceName": "ProjectTemplate",
   "defaultName": "WinUITabApp",
-  "description": "Creates a WinUI 3 TabView starter app with single-project MSIX packaging.",
+  "description": "Creates a WinUI 3 TabView starter app with MSIX packaging.",
   "preferNameDirectory": true,
   "symbols": {
     "safeProjectName": {

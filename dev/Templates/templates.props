@@ -62,7 +62,7 @@
         <ProjectTemplate Include="winui.blankapp">
             <BaseName>WinUI.Desktop.Cs.SingleProjectPackagedApp</BaseName>
             <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp</SourceDir>
-            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\single-project</DotnetConfigDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\blank-app</DotnetConfigDir>
             <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
         </ProjectTemplate>
 
