@@ -55,7 +55,7 @@
         </ItemGroup>
     </Target>
 
-    <Target Name="RemoveVCLibsFrameworkPackageDependencies" BeforeTargets="_ConvertItems" AfterTargets="GetInstalledSDKLocations" Condition="'$(MSBuildProjectExtension)'=='.wapproj'">
+    <Target Name="RemoveVCLibsFrameworkPackageDependencies" BeforeTargets="_ConvertItems" AfterTargets="GetInstalledSDKLocations" Condition="'$(MSBuildProjectExtension)'=='.wapproj' and '$(WindowsAppSDKAggregatePackage)'=='true'">
         <ItemGroup>
             <!-- Remove VCLibs references made by DesktopBridge _ResolveVCLibDependencies -->
             <FrameworkSdkPackage Remove="@(FrameworkPackageDependencies)"/>
