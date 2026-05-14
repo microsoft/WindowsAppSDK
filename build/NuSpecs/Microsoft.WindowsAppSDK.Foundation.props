@@ -8,6 +8,16 @@
     <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
   </PropertyGroup>
 
+  <!-- When Foundation is referenced without the aggregator meta-package
+       (e.g. in Foundation pipeline sample builds), prevent SelfContained from defaulting.
+       Without the meta-package, there's no framework MSIX to extract DLLs from,
+       so SelfContained would leave the app with missing runtime DLLs.
+       Foundation.props runs before Base.targets imports SelfContained.targets,
+       so setting SelfContained=false here suppresses the default and the side-effect imports. -->
+  <PropertyGroup Condition="'$(MicrosoftWindowsAppSDKPackageDir)' == '' and '$(WindowsAppSDKSelfContained)' == ''">
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+  </PropertyGroup>
+
   <ItemGroup>
      <!-- This ItemGroup is for items to be included only in the component package
           as it is removed in the other one. -->
