@@ -37,7 +37,7 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
 
     if (failure.pszFile)
     {
-        m_lastFailure.file = *failure.pszFile;
+        m_lastFailure.file = failure.pszFile;
     }
     else
     {
@@ -48,7 +48,7 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
 
     if (failure.pszMessage)
     {
-        m_lastFailure.message = *failure.pszMessage;
+        m_lastFailure.message = failure.pszMessage;
     }
     else
     {
@@ -57,7 +57,7 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
 
     if (failure.pszModule)
     {
-        m_lastFailure.module = *failure.pszModule;
+        m_lastFailure.module = failure.pszModule;
     }
     else
     {
