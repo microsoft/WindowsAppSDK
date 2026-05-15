@@ -173,16 +173,14 @@ We replaced it with an **inline C# MSBuild task** —
 `ExpandProjectTemplatePackItems` in
 [`WinAppSdk.CSharp.DotnetNewTemplates.csproj`](Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj).
 It takes `@(ProjectTemplate)` (or `@(ItemTemplate)`, etc.) and per
-template performs the same five-step packing recipe:
+template performs the same four-step packing recipe:
 
 1. Pack everything under `SourceDir`, minus `bin/`, `obj/`, and the
    per-template sidecars (`.csproj` / `.ico` / `.png` / `.vstemplate`).
 2. If `RenameManifestFrom` is set, re-pack that manifest under the
    reserved name `Package.appxmanifest`.
 3. Pack everything under `DotnetConfigDir/.template.config/`.
-4. Pack optional companion assets: `Agents.md` → `AGENTS.md`, and
-   `instructions/**` → `.github/instructions/**`.
-5. Pack a copy of the shared `.gitignore` (project templates only).
+4. Pack a copy of the shared `.gitignore` (project templates only).
 
 ### Why a C# task and not a pure-MSBuild `<None Include="...">` with batching
 
@@ -312,14 +310,6 @@ to verify templates don't bit-rot. A file literally named
 the template *project itself* as a real app, breaking that build. The
 Source tree therefore uses a non-reserved name and the pack task
 renames it back to `Package.appxmanifest` in the produced template.
-
-**Q. My template needs companion files (e.g. an `AGENTS.md` or
-`.github/instructions/**`).**
-
-Drop them under `Dotnet/templates/<short-name>/` next to `.template.config/` 
-(in files/folders named `Agents.md` and `instructions/` respectively). 
-
-The pack task will wire them up.
 
 **Q. I want to add a C++/WinRT template.**
 

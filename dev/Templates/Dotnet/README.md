@@ -106,13 +106,6 @@ These properties are provided by the
 [`Microsoft.Windows.SDK.BuildTools.WinApp`](https://www.nuget.org/packages/Microsoft.Windows.SDK.BuildTools.WinApp)
 NuGet package, which is referenced automatically by the project templates.
 
-### AI agent instructions
-
-The `winui` blank app template also unpacks an `AGENTS.md` plus a
-`.github/instructions/` set so AI coding agents (GitHub Copilot, Claude Code,
-etc.) follow the project's WinUI / accessibility / testing conventions out of
-the box. Remove or edit them if they don't fit your project.
-
 ## Prerequisites
 
 - [.NET SDK](https://dotnet.microsoft.com/download) — `net8.0`, `net9.0`, or `net10.0`
