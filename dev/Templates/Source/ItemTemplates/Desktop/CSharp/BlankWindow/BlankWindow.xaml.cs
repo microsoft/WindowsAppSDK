@@ -19,7 +19,8 @@ using Microsoft.UI.Xaml.Navigation;
 namespace $rootnamespace$;
 
 /// <summary>
-/// An empty window that can be used on its own or navigated to within a Frame.
+/// An empty top-level window that can be activated on its own (e.g. as a
+/// secondary window of the app).
 /// </summary>
 public sealed partial class $safeitemname$ : Window
 {

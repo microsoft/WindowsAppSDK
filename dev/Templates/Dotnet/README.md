@@ -155,6 +155,6 @@ launches every template, use the included script:
 ### Validation Checklist
 
 - Run `dotnet pack` locally and `dotnet new install` to verify the local build.
-- Run `dotnet new winui` to review and confirm all templates are registered.
+- Run `dotnet new list winui` to review and confirm all templates are registered.
 - Build generated projects for x64, x86, and ARM64 in Visual Studio or `dotnet build`.
 - Test packaged deployments on Windows 10 version 1809 or later.
