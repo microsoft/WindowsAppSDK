@@ -230,6 +230,7 @@ For the full list of existing `PowerManager` members see
 [Microsoft.Windows.System.Power.PowerManager](https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.windows.system.power.powermanager?view=windows-app-sdk-1.7).
 
 # API Details
+```
 namespace Microsoft.Windows.System.Power
 {
     [contractversion(3)]
