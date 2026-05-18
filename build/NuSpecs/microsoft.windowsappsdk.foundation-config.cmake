@@ -10,9 +10,8 @@
     This package defines the following CMake targets:
 
         * Microsoft.WindowsAppSDK.Foundation - A target representing the C++/WinRT projection, headers and libraries of
-            the Windows App SDK Foundation APIs. This does not include the necessary runtime components to use the
-            Windows App SDK, and is intended to be used by library authors who want to consume the Windows App SDK
-            Foundation APIs.
+          the Windows App SDK Foundation APIs. This target does not have any deployment-mode-specific behavior, 
+          however it does forward-declare two variant targets (Foundation_Framework and Foundation_SelfContained) that the wasdk_link_component_variant() helper populates based on the consumer's WindowsAppSDKSelfContained property.
 
         * Microsoft.WindowsAppSDK.Foundation_Framework - A target representing the Windows App SDK Foundation APIs for
             framework-dependent deployment scenarios. Auto-initialization behavior is controlled by target properties
@@ -77,6 +76,17 @@ block(SCOPE_FOR VARIABLES)
         INTERFACE
             ${PACKAGE_LOCATION}/include
     )
+
+    # Forward-declare deployment-mode variant targets adjacent to the basic target.
+    # Populated further below; this declaration lets wasdk_link_component_variant() enforce
+    # the contract that both variants exist at configure time.
+    add_library(Microsoft.WindowsAppSDK.Foundation_Framework INTERFACE)
+    add_library(Microsoft.WindowsAppSDK.Foundation_SelfContained INTERFACE)
+
+    # Basic target as variant selector
+    # Resolves to _Framework or _SelfContained based on the consumer's WindowsAppSDKSelfContained
+    # property at generation time.
+    wasdk_link_component_variant(Foundation)
 
     #[[====================================================================================================================
         Target: Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
@@ -217,7 +227,7 @@ block(SCOPE_FOR VARIABLES)
             IMPORTED_LOCATION "${FRAMEWORK_DLLS}"
     )
 
-    add_library(Microsoft.WindowsAppSDK.Foundation_SelfContained INTERFACE)
+    # _SelfContained interface target was forward-declared near the basic target above.
 
     wasdk_transform_appxfragment(
         Microsoft.WindowsAppSDK.Foundation_SelfContained
@@ -271,7 +281,7 @@ block(SCOPE_FOR VARIABLES)
 
         If the Runtime package is not found, _Framework is not available.
     ====================================================================================================================]]#
-    add_library(Microsoft.WindowsAppSDK.Foundation_Framework INTERFACE)
+    # _Framework interface target was forward-declared near the basic target above.
 
     target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
         INTERFACE
@@ -360,7 +370,6 @@ block(SCOPE_FOR VARIABLES)
 
             wasdk_generate_appx_manifest(
                 TARGET <target>
-                OUTPUT <output-path>
                 IDENTITY_NAME <name>
                 IDENTITY_PUBLISHER <publisher>
                 IDENTITY_VERSION <version>
@@ -381,8 +390,8 @@ block(SCOPE_FOR VARIABLES)
         if(NOT APPX_TARGET)
             message(FATAL_ERROR "wasdk_generate_appx_manifest: TARGET is required")
         endif()
-        if(NOT APPX_OUTPUT)
-            set(APPX_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml")
+        if(NOT TARGET ${APPX_TARGET})
+            message(FATAL_ERROR "wasdk_generate_appx_manifest: '${APPX_TARGET}' is not a CMake target.")
         endif()
         if(NOT APPX_IDENTITY_NAME OR NOT APPX_IDENTITY_PUBLISHER OR NOT APPX_IDENTITY_VERSION)
             message(FATAL_ERROR "wasdk_generate_appx_manifest: IDENTITY_NAME, IDENTITY_PUBLISHER, and IDENTITY_VERSION are required")
@@ -407,14 +416,26 @@ block(SCOPE_FOR VARIABLES)
             set(_PROC_ARCH "x64")
         endif()
 
-        # Build the PackageDependency section if framework info is available
+        # Inject the framework PackageDependency only for framework-dependent apps. Self-contained
+        # apps bundle the runtime DLLs and must NOT declare a framework dependency in their manifest
+        # (it would force the framework to install on the target machine, defeating self-contained
+        # deployment).
+        get_target_property(_APPX_SELFCONTAINED ${APPX_TARGET} WindowsAppSDKSelfContained)
+        if(_APPX_SELFCONTAINED STREQUAL "_APPX_SELFCONTAINED-NOTFOUND")
+            set(_APPX_SELFCONTAINED FALSE)
+        endif()
         set(_PACKAGE_DEPENDENCY "")
-        if(DEFINED WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME)
+        if(NOT _APPX_SELFCONTAINED AND DEFINED WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME)
             set(_PACKAGE_DEPENDENCY "    <PackageDependency Name=\"${WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME}\" MinVersion=\"${WINDOWSAPPSDK_FRAMEWORK_MIN_VERSION}\" Publisher=\"${WINDOWSAPPSDK_FRAMEWORK_PUBLISHER}\" />\n")
         endif()
 
-        # Generate the manifest
-        file(WRITE "${APPX_OUTPUT}"
+        # Generate the manifest directly into the target's per-config output directory.
+        # file(GENERATE) runs at the generate phase (after configure, before build) and supports
+        # generator expressions in OUTPUT — so this writes the manifest straight next to the exe
+        # for every configuration the target is built in.
+        file(GENERATE
+            OUTPUT "$<TARGET_FILE_DIR:${APPX_TARGET}>/AppxManifest.xml"
+            CONTENT
 "<?xml version=\"1.0\" encoding=\"utf-8\"?>
 <Package xmlns=\"http://schemas.microsoft.com/appx/manifest/foundation/windows10\"
          xmlns:uap=\"http://schemas.microsoft.com/appx/manifest/uap/windows10\"
@@ -448,11 +469,7 @@ ${_PACKAGE_DEPENDENCY}  </Dependencies>
     <rescap:Capability Name=\"runFullTrust\" />
   </Capabilities>
 </Package>
-")
-
-        # Copy manifest + logo to output directory post-build
-        add_custom_command(TARGET ${APPX_TARGET} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${APPX_OUTPUT}" $<TARGET_FILE_DIR:${APPX_TARGET}>
+"
         )
     endfunction()
 
