@@ -41,9 +41,25 @@ Get-ChildItem -Recurse Directory.Packages.props -Path $SampleRepoRoot | foreach-
 
     foreach ($nugetPackageToVersion in $packagesToUpdateTable.GetEnumerator())
     {
-        $newVersionString = 'PackageVersion Include="' + $nugetPackageToVersion.Key + '" Version="' + $nugetPackageToVersion.Value + '"'
-        $oldVersionString = 'PackageVersion Include="' + $nugetPackageToVersion.Key + '" Version="[-.0-9a-zA-Z]*"'
-        $content = $content -replace $oldVersionString, $newVersionString
+        $packageId = $nugetPackageToVersion.Key
+        $packageVersion = $nugetPackageToVersion.Value
+        $newVersionString = 'PackageVersion Include="' + $packageId + '" Version="' + $packageVersion + '"'
+        $oldVersionPattern = 'PackageVersion Include="' + [regex]::Escape($packageId) + '" Version="[-.0-9a-zA-Z]*"'
+
+        if ($content -match $oldVersionPattern)
+        {
+            $content = $content -replace $oldVersionPattern, $newVersionString
+        }
+        else
+        {
+            # Missing entry: insert into the first ItemGroup. Ensures transitive
+            # Foundation dependencies (e.g. Microsoft.WindowsAppSDK.Base) get a
+            # centrally-managed PackageVersion matching Foundation; otherwise NuGet
+            # sees a downgrade and SamplesCompatTest fails with NU1605.
+            $insertion = "`r`n    <" + $newVersionString + ' />'
+            $content = [regex]::Replace($content, '(<ItemGroup[^>]*>)', '$1' + $insertion, 1)
+            Write-Host "Inserted PackageVersion for $packageId ($packageVersion) into $($_.FullName)"
+        }
     }
 
     Set-Content -Path $_.FullName -Value $content
