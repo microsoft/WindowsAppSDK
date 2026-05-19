@@ -146,13 +146,17 @@ foreach (var t in Templates)
     // 3. dotnet-new template configuration.
     EmitTree(Path.Combine(configDir, ".template.config"), contentRoot + "/.template.config");
 
-    // 4. Optional companion assets (Agents.md, instructions/**).
-    string agentsPath = Path.Combine(configDir, "Agents.md");
-    if (File.Exists(agentsPath))
+    // 4. Optional README. Lives next to .template.config in DotnetConfigDir so it
+    // ships to the generated project root (one short, neutral document per template).
+    // Kept deliberately small: project layout, build/run commands, links to docs.
+    // Anything more opinionated (style rules, agent instructions, perf checklists)
+    // belongs on Learn or in the consumer's own .github/ -- not silently seeded
+    // into every new project.
+    string readmePath = Path.Combine(configDir, "README.md");
+    if (File.Exists(readmePath))
     {
-        Emit(agentsPath, contentRoot + "/AGENTS.md");
+        Emit(readmePath, contentRoot + "/README.md");
     }
-    EmitTree(Path.Combine(configDir, "instructions"), contentRoot + "/.github/instructions");
 
     // 5. Shared .gitignore (one copy per template).
     if (!string.IsNullOrEmpty(GitignoreSource) && File.Exists(GitignoreSource))
