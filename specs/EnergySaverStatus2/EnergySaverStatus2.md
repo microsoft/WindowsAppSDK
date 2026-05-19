@@ -4,7 +4,7 @@
 
 The existing `Microsoft.Windows.System.Power.PowerManager.EnergySaverStatus` property reports
 only two states: `Off` and `On`. 
-Starting with the Windows Germanium release, Windows 11, 24H2, the [Energy Saver](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/energy-saver)
+Starting with the [Windows 11, 24H2]() release, the [Energy Saver](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/energy-saver)
 feature was updated to support three distinct operating modes: **Off**, **Standard**, and
 **High Savings** which are now visible to users in the Windows Settings app.
 
@@ -17,7 +17,7 @@ This spec introduces `EnergySaverStatus2`, a new enum and associated APIs on
 states. The legacy `EnergySaverStatus` API is unchanged for backward compatibility.
 
 > **Minimum OS requirement:** These APIs require a Windows 11, 24H2 build. On earlier OS versions,
-> `IsEnergySaverStatus2Supported` returns `false` and `EnergySaverStatus2` returns `Unknown`.
+> `EnergySaverStatus2` returns `Unknown`.
 
 # Conceptual pages 
 
@@ -36,8 +36,7 @@ with varying levels of optimization:
 Use `PowerManager.EnergySaverStatus2` to read the current state and subscribe to
 `PowerManager.EnergySaverStatus2Changed` to respond to transitions at runtime.
 
-Always call `PowerManager.IsEnergySaverStatus2Supported()` first if your app targets systems
-that may run on OS versions earlier than Germanium. On unsupported systems, the property
+On unsupported systems, the property
 returns `Unknown` and the changed event is never raised.
 
 # API Pages
@@ -57,58 +56,39 @@ background operations entirely.
 ### Example – Reading the current status (C#)
 
 ```csharp
+/*
+Example: An app or service that periodically sends a heartbeat (ping/pong)
+to a server to maintain connectivity and monitor health. The interval can
+be adjusted based on the system's energy saver level to reduce power/battery usage
+*/
+
 using Microsoft.Windows.System.Power;
 
+// Default heartbeat interval (Normal operation)
+TimeSpan heartbeatInterval = TimeSpan.FromSeconds(10);
+
 EnergySaverStatus2 status = PowerManager.EnergySaverStatus2;
+
 switch (status)
 {
     case EnergySaverStatus2.Off:
-        // Normal operation
+        // Normal operation: maintain default heartbeat interval (e.g., 10 sec)
         break;
     case EnergySaverStatus2.Standard:
-        // Reduce background activity
+        // Moderate savings: reduce background network activity
+        // (e.g., increase heartbeat interval to reduce frequency)
+        heartbeatInterval = TimeSpan.FromSeconds(20);
         break;
     case EnergySaverStatus2.HighSavings:
-        // Pause background activity
+        // Aggressive savings: reduce ping/pong traffic to the server by ~50%+
+        // (e.g., double or triple the interval between heartbeats to conserve power)
+        heartbeatInterval = TimeSpan.FromSeconds(30);
         break;
-    case EnergySaverStatus2.Unknown:
     default:
         // API not supported on this OS build
         break;
 }
 ```
-
-### Example – Reading the current status (C++/WinRT)
-
-```cpp
-#include <winrt/Microsoft.Windows.System.Power.h>
-
-using namespace winrt::Microsoft::Windows::System::Power;
-
-EnergySaverStatus2 status = PowerManager::EnergySaverStatus2();
-switch (status)
-{
-    case EnergySaverStatus2::Off:
-        // Normal operation
-        break;
-    case EnergySaverStatus2::Standard:
-        // Reduce background activity
-        break;
-    case EnergySaverStatus2::HighSavings:
-        // Pause background activity
-        break;
-    case EnergySaverStatus2::Unknown:
-    default:
-        // API not supported on this OS build
-        break;
-}
-```
-
-### Remarks
-
-- Returns `Unknown` if `IsEnergySaverStatus2Supported()` returns `false`.
-
----
 
 ## PowerManager.EnergySaverStatus2Changed event
 
@@ -150,44 +130,6 @@ private static void OnEnergySaverStatus2Changed(object sender, object e)
 // Unsubscribe when done
 PowerManager.EnergySaverStatus2Changed -= OnEnergySaverStatus2Changed;
 ```
-
-### Remarks
-
-- The event is never raised on OS builds where `IsEnergySaverStatus2Supported()` returns `false`.
-- 
----
-
-## PowerManager.IsEnergySaverStatus2Supported method
-
-Returns a value indicating whether the current OS supports `EnergySaverStatus2`.
-
-```csharp
-public static bool IsEnergySaverStatus2Supported();
-```
-
- On unsupported builds, the property returns
-`Unknown` and the event is never raised.
-
-### Example (C#)
-
-```csharp
-using Microsoft.Windows.System.Power;
-
-if (!PowerManager.IsEnergySaverStatus2Supported())
-{
-    // Fall back to legacy EnergySaverStatus
-    return;
-}
-
-EnergySaverStatus2 status = PowerManager.EnergySaverStatus2;
-```
-
-### Remarks
-
-- Calling this method is optional. You can use `EnergySaverStatus2` without it; if the feature is
-  unsupported the property safely returns `Unknown`.
-  
----
 
 ## EnergySaverStatus2 enum
 
@@ -259,18 +201,10 @@ namespace Microsoft.Windows.System.Power
     static runtimeclass PowerManager
     {
         // ... existing members (unchanged) ...
-
-        /// Gets the current Energy Saver v2 status for the device.
+ 
         [contract(PowerNotificationsContract, 3)]
-        static EnergySaverStatus2 EnergySaverStatus2{ get; };
-
-        /// Occurs when the EnergySaverStatus2 value changes.
-        [contract(PowerNotificationsContract, 3)]
-        static event Windows.Foundation.EventHandler<Object> EnergySaverStatus2Changed;
-
-        /// Returns true if this OS build supports EnergySaverStatus2; false otherwise.
-        [contract(PowerNotificationsContract, 3)]
-        static Boolean IsEnergySaverStatus2Supported();
+        static EnergySaverStatus2 EnergySaverStatus2{ get; }; // Gets the current Energy Saver v2 status for the device.
+        static event Windows.Foundation.EventHandler<Object> EnergySaverStatus2Changed; // Occurs when the EnergySaverStatus2 value changes.
     };
 }
 ```
