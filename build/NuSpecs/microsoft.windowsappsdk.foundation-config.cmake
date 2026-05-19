@@ -50,7 +50,7 @@ if(CMAKE_VERSION VERSION_LESS 3.31)
     message(FATAL_ERROR "Microsoft.WindowsAppSDK.Foundation requires at least CMake 3.31, but CMake ${CMAKE_VERSION} is in use.")
 endif()
 
-
+find_package(Microsoft.WindowsAppSDK.Base CONFIG REQUIRED)
 find_package(Microsoft.WindowsAppSDK.InteractiveExperiences CONFIG REQUIRED)
 
 block(SCOPE_FOR VARIABLES)
