@@ -146,7 +146,15 @@ foreach (var t in Templates)
     // 3. dotnet-new template configuration.
     EmitTree(Path.Combine(configDir, ".template.config"), contentRoot + "/.template.config");
 
-    // 4. Shared .gitignore (one copy per template).
+    // 4. Optional companion assets (Agents.md, instructions/**).
+    string agentsPath = Path.Combine(configDir, "Agents.md");
+    if (File.Exists(agentsPath))
+    {
+        Emit(agentsPath, contentRoot + "/AGENTS.md");
+    }
+    EmitTree(Path.Combine(configDir, "instructions"), contentRoot + "/.github/instructions");
+
+    // 5. Shared .gitignore (one copy per template).
     if (!string.IsNullOrEmpty(GitignoreSource) && File.Exists(GitignoreSource))
     {
         Emit(GitignoreSource, contentRoot + "/gitignore.txt");
