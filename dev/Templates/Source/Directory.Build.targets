@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+      Per-template README handling for VSIX source projects.
+
+      Each VSIX template source .csproj that wants to ship a README declares:
+
+        <PropertyGroup>
+          <TemplateReadme>...\README.md</TemplateReadme>
+        </PropertyGroup>
+
+      At build time, _GenerateMergedReadme reads the per-template outline,
+      substitutes ####FileName.md#### markers with the named files from
+      .\TemplateReadmeSections\ verbatim, and writes the merged README
+      under IntermediateOutputPath. The auto-included Content item below
+      picks it up so it can ship inside the template's .zip (the
+      .vstemplate must also list README.md as a ProjectItem).
+
+      There is no fallback chain and no shape/channel inference (the
+      placeholder IS the filename). VSIX outlines name section files with
+      the channel suffix baked in (e.g. ####BuildAndRun.app.vsix.md####).
+  -->
+
+  <PropertyGroup>
+    <SectionsDir Condition="'$(SectionsDir)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)TemplateReadmeSections'))</SectionsDir>
+    <MergedReadmePath Condition="'$(MergedReadmePath)' == ''">$(IntermediateOutputPath)README.md</MergedReadmePath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TemplateReadme)' != ''">
+    <Content Include="$(MergedReadmePath)">
+      <Link>README.md</Link>
+    </Content>
+  </ItemGroup>
+
+  <UsingTask TaskName="GenerateMergedReadme"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <TemplateReadme ParameterType="System.String" Required="true" />
+      <SectionsDir ParameterType="System.String" Required="true" />
+      <OutputPath ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+if (!File.Exists(TemplateReadme))
+{
+    Log.LogError("Per-template README outline '{0}' does not exist.", TemplateReadme);
+    return false;
+}
+
+string outline = File.ReadAllText(TemplateReadme);
+var placeholderPattern = new Regex(@"####([A-Za-z0-9._\-]+\.md)####");
+bool hadMissing = false;
+string merged = placeholderPattern.Replace(outline, m =>
+{
+    string fileName = m.Groups[1].Value;
+    string sectionPath = Path.Combine(SectionsDir, fileName);
+    if (!File.Exists(sectionPath))
+    {
+        Log.LogError(
+            "Outline '{0}' references section file '{1}' but '{2}' does not exist.",
+            TemplateReadme, fileName, sectionPath);
+        hadMissing = true;
+        return m.Value;
+    }
+    return File.ReadAllText(sectionPath).TrimEnd();
+});
+if (hadMissing) { return false; }
+
+// Collapse 3+ consecutive newlines down to a single blank-line separator
+// and normalize trailing whitespace.
+merged = Regex.Replace(merged, @"(\r?\n){3,}", "\n\n").TrimEnd() + "\n";
+
+// Any unresolved ####...#### markers left over indicate a malformed placeholder
+// in the outline -- fail loudly so we never ship a README with literal markers.
+var leftovers = Regex.Matches(merged, "####[^#]+####");
+if (leftovers.Count > 0)
+{
+    var names = new HashSet<string>(StringComparer.Ordinal);
+    foreach (Match m in leftovers) { names.Add(m.Value); }
+    Log.LogError(
+        "Merged README still contains unresolved markers: {0}. " +
+        "Placeholders must have the form ####FileName.md#### where FileName.md is a real file in '{1}'.",
+        string.Join(", ", names), SectionsDir);
+    return false;
+}
+
+Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
+
+// Skip rewriting unchanged content so we don't churn the file's timestamp on every build.
+if (!File.Exists(OutputPath) || File.ReadAllText(OutputPath) != merged)
+{
+    File.WriteAllText(OutputPath, merged);
+}
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="_GenerateMergedReadme"
+          Condition="'$(TemplateReadme)' != ''"
+          BeforeTargets="BeforeBuild;PrepareForBuild"
+          Inputs="$(TemplateReadme);$(SectionsDir)\*.md"
+          Outputs="$(MergedReadmePath)">
+    <GenerateMergedReadme TemplateReadme="$(TemplateReadme)"
+                         SectionsDir="$(SectionsDir)"
+                         OutputPath="$(MergedReadmePath)" />
+  </Target>
+</Project>

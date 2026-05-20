@@ -17,11 +17,11 @@ A blank WinUI 3 desktop app packaged as MSIX, built on the Windows App SDK.
 
 ####Prerequisites.md####
 
-####BuildAndRun.app.dotnet.md####
+####BuildAndRun.app.vsix.md####
 
-####CommonNextSteps.app.dotnet.md####
+####CommonNextSteps.app.vsix.md####
 
-####PublishGuide.app.dotnet.md####
+####PublishGuide.app.vsix.md####
 
 ####AppArchitectureGuide.md####
 
@@ -39,4 +39,4 @@ A blank WinUI 3 desktop app packaged as MSIX, built on the Windows App SDK.
 
 ---
 
-####FrameworkFooter.dotnet.md####
+####FrameworkFooter.vsix.md####

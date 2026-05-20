@@ -43,6 +43,23 @@
   </PropertyGroup>
 
   <!--
+      Per-template READMEs are assembled at pack time. Each template that
+      wants to ship a README drops a README.md outline next to its
+      .template.config\ folder. Markers of the form ####FileName.md#### in
+      that outline name a file in ..\Source\TemplateReadmeSections\
+      verbatim; the merge task reads that file and substitutes it. There
+      is no fallback chain and no shape/channel inference (the placeholder
+      IS the filename), which lets a reader of the outline pinpoint the
+      section file immediately. Channel-specific outlines (e.g. VSIX
+      twins) name section files with the channel suffix baked in
+      (e.g. ####BuildAndRun.app.vsix.md####).
+      See dev\Templates\Dotnet\templates\blank-app\README.md.
+  -->
+  <PropertyGroup>
+    <_SectionsDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\Source\TemplateReadmeSections'))</_SectionsDir>
+  </PropertyGroup>
+
+  <!--
       ExpandProjectTemplatePackItems: inline C# MSBuild task that walks the
       declarative @(ProjectTemplate) / @(ItemTemplate) lists (from
       ..\templates.props) and emits <None Pack="true" PackagePath="..." />
@@ -62,12 +79,16 @@
     <ParameterGroup>
       <Templates ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
       <GitignoreSource ParameterType="System.String" Required="false" />
+      <SectionsDir ParameterType="System.String" Required="false" />
+      <MergedReadmeDir ParameterType="System.String" Required="false" />
       <ExpandedItems ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
     </ParameterGroup>
     <Task>
       <Using Namespace="System" />
       <Using Namespace="System.IO" />
       <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.Text" />
+      <Using Namespace="System.Text.RegularExpressions" />
       <Using Namespace="Microsoft.Build.Framework" />
       <Using Namespace="Microsoft.Build.Utilities" />
       <Code Type="Fragment" Language="cs">
@@ -146,16 +167,69 @@ foreach (var t in Templates)
     // 3. dotnet-new template configuration.
     EmitTree(Path.Combine(configDir, ".template.config"), contentRoot + "/.template.config");
 
-    // 4. Optional README. Lives next to .template.config in DotnetConfigDir so it
-    // ships to the generated project root (one short, neutral document per template).
-    // Kept deliberately small: project layout, build/run commands, links to docs.
-    // Anything more opinionated (style rules, agent instructions, perf checklists)
-    // belongs on Learn or in the consumer's own .github/ -- not silently seeded
-    // into every new project.
-    string readmePath = Path.Combine(configDir, "README.md");
-    if (File.Exists(readmePath))
+    // 4. Per-template README. Each template that wants to ship a README
+    // drops a README.md outline next to its .template.config\ folder. The
+    // outline mixes inline prose (title, intro, project layout) with
+    // ####FileName.md#### markers that name section files in
+    // ..\Source\TemplateReadmeSections\ verbatim. Any unresolved marker
+    // -- or a marker that names a file that does not exist -- fails the
+    // build.
+    string templateReadme = Path.Combine(configDir, "README.md");
+    if (File.Exists(templateReadme))
     {
-        Emit(readmePath, contentRoot + "/README.md");
+        if (string.IsNullOrEmpty(MergedReadmeDir))
+        {
+            Log.LogError("MergedReadmeDir is required when any template ships a README.md outline.");
+            continue;
+        }
+        if (string.IsNullOrEmpty(SectionsDir))
+        {
+            Log.LogError("SectionsDir is required when any template ships a README.md outline.");
+            continue;
+        }
+
+        string outline = File.ReadAllText(templateReadme);
+        var placeholderPattern = new Regex(@"####([A-Za-z0-9._\-]+\.md)####");
+        bool hadMissing = false;
+        string mergedContent = placeholderPattern.Replace(outline, m =>
+        {
+            string fileName = m.Groups[1].Value;
+            string sectionPath = Path.Combine(SectionsDir, fileName);
+            if (!File.Exists(sectionPath))
+            {
+                Log.LogError(
+                    "Template '{0}': outline '{1}' references section file '{2}' but '{3}' does not exist.",
+                    t.ItemSpec, templateReadme, fileName, sectionPath);
+                hadMissing = true;
+                return m.Value;
+            }
+            return File.ReadAllText(sectionPath).TrimEnd();
+        });
+        if (hadMissing) { continue; }
+
+        // Collapse 3+ consecutive newlines down to a single blank-line separator
+        // and normalize trailing whitespace.
+        mergedContent = Regex.Replace(mergedContent, @"(\r?\n){3,}", "\n\n").TrimEnd() + "\n";
+
+        // Any unresolved ####...#### markers left over indicate a malformed placeholder
+        // in the outline -- fail loudly so we never ship a README with literal markers.
+        var leftovers = Regex.Matches(mergedContent, "####[^#]+####");
+        if (leftovers.Count > 0)
+        {
+            var names = new HashSet<string>(StringComparer.Ordinal);
+            foreach (Match m in leftovers) { names.Add(m.Value); }
+            Log.LogError(
+                "Template '{0}': merged README still contains unresolved markers: {1}. " +
+                "Placeholders must have the form ####FileName.md#### where FileName.md is a real file in '{2}'.",
+                t.ItemSpec, string.Join(", ", names), SectionsDir);
+            continue;
+        }
+
+        string mergedDir = Path.Combine(MergedReadmeDir, t.ItemSpec);
+        Directory.CreateDirectory(mergedDir);
+        string mergedPath = Path.Combine(mergedDir, "README.md");
+        File.WriteAllText(mergedPath, mergedContent);
+        Emit(mergedPath, contentRoot + "/README.md");
     }
 
     // 5. Shared .gitignore (one copy per template).
@@ -175,7 +249,9 @@ ExpandedItems = output.ToArray();
           BeforeTargets="_GetPackageFiles;GenerateNuspec">
     <!-- Project templates: shared + dotnet-new-only. Each gets a copy of the shared .gitignore. -->
     <ExpandProjectTemplatePackItems Templates="@(ProjectTemplate);@(DotnetNewOnlyProjectTemplate)"
-                                    GitignoreSource="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(_GitignoreSource)'))">
+                                    GitignoreSource="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(_GitignoreSource)'))"
+                                    SectionsDir="$(_SectionsDir)"
+                                    MergedReadmeDir="$(IntermediateOutputPath)merged-readmes\">
       <Output TaskParameter="ExpandedItems" ItemName="None" />
     </ExpandProjectTemplatePackItems>
 
