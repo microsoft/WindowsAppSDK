@@ -128,12 +128,15 @@ foreach (var t in Templates)
 
     // Files in the Source tree that are VSIX-only sidecars (excluded from the dotnet-new pack).
     // The Source-named manifest, if any, is excluded here and re-emitted under the reserved name below.
+    // README.md is excluded here too: when the template ships one it is the outline
+    // (####...#### markers), and step 4 below re-emits the merged version to the same path.
     var sidecars = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         baseName + ".csproj",
         baseName + ".ico",
         baseName + ".png",
         baseName + ".vstemplate",
+        "README.md",
     };
     if (!string.IsNullOrEmpty(renameFrom)) { sidecars.Add(renameFrom); }
 

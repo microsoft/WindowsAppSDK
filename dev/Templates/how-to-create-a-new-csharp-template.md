@@ -133,9 +133,10 @@ ships in the produced template:
   packed as `content/<short-name>/README.md`.
 - **VSIX**: merged by `_GenerateMergedReadme`
   (in [`Source/Directory.Build.targets`](Source/Directory.Build.targets))
-  into `$(IntermediateOutputPath)README.md`, auto-included as a
-  `<Content Link="README.md" />` item, and shipped inside the
-  `.vstemplate` zip.
+  directly next to the `.vstemplate` (i.e. into
+  `$(MSBuildProjectDirectory)\README.md`) so the VS SDK packs it
+  into the project-template `.zip`. The generated file is `.gitignore`d
+  and removed by `Clean`.
 
 For VSIX templates, the `.vstemplate` must also list the README so VS
 copies it into the user's new project:
@@ -336,7 +337,7 @@ without consulting resolver code.
 | Channel    | Task                                                                  | Where it lives                                                                                                                              | Output                                                                                                                                                       |
 | ---------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | dotnet-new | `ExpandProjectTemplatePackItems` (step 4 of its packing recipe)       | [`Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj`](Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj)                                    | Merged file written under `$(IntermediateOutputPath)merged-readmes/<short-name>/README.md` and packed as `content/<short-name>/README.md`.                   |
-| VSIX       | `GenerateMergedReadme` (invoked by `_GenerateMergedReadme` target)    | [`Source/Directory.Build.targets`](Source/Directory.Build.targets) (auto-imported by `Microsoft.Common.targets` for every Source twin csproj) | Merged file written to `$(IntermediateOutputPath)README.md` and auto-included as `<Content Link="README.md" />` so the `.vstemplate` zip picks it up.        |
+| VSIX       | `GenerateMergedReadme` (invoked by `_GenerateMergedReadme` target)    | [`Source/Directory.Build.targets`](Source/Directory.Build.targets) (auto-imported by `Microsoft.Common.targets` for every Source twin csproj) | Merged file written to `$(MSBuildProjectDirectory)\README.md` (next to the `.vstemplate`, `.gitignore`d) so the VS SDK's `CreateProjectTemplateZipFile` task picks it up via the `.vstemplate`'s `<ProjectItem>README.md</ProjectItem>` reference. |
 
 Both tasks are deliberately a **single** `Regex.Replace` pass over the
 outline: read outline → for each `####File.md####` match, substitute

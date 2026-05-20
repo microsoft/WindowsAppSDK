@@ -400,3 +400,8 @@ build/override/
 # WindowsAppSDK specific files
 Microsoft.WinUI.AppX.targets
 !dev/vsix/**/*.pubxml
+
+# Per-template merged READMEs (generated at build time by
+# dev/Templates/Source/Directory.Build.targets next to the .vstemplate
+# so the VS SDK can pack them into the project-template .zip).
+dev/Templates/Source/ProjectTemplates/Desktop/CSharp/*/README.md

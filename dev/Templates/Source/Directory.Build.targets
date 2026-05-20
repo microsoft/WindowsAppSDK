@@ -12,9 +12,10 @@
       At build time, _GenerateMergedReadme reads the per-template outline,
       substitutes ####FileName.md#### markers with the named files from
       .\TemplateReadmeSections\ verbatim, and writes the merged README
-      under IntermediateOutputPath. The auto-included Content item below
-      picks it up so it can ship inside the template's .zip (the
-      .vstemplate must also list README.md as a ProjectItem).
+      directly next to the .vstemplate (i.e. into $(MSBuildProjectDirectory)).
+      That on-disk location is what the VS SDK's CreateProjectTemplateZipFile
+      task expects when it resolves each ProjectItem listed in .vstemplate;
+      the generated file is .gitignored so it never sneaks into a commit.
 
       There is no fallback chain and no shape/channel inference (the
       placeholder IS the filename). VSIX outlines name section files with
@@ -23,14 +24,8 @@
 
   <PropertyGroup>
     <SectionsDir Condition="'$(SectionsDir)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)TemplateReadmeSections'))</SectionsDir>
-    <MergedReadmePath Condition="'$(MergedReadmePath)' == ''">$(IntermediateOutputPath)README.md</MergedReadmePath>
+    <MergedReadmePath Condition="'$(MergedReadmePath)' == ''">$(MSBuildProjectDirectory)\README.md</MergedReadmePath>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(TemplateReadme)' != ''">
-    <Content Include="$(MergedReadmePath)">
-      <Link>README.md</Link>
-    </Content>
-  </ItemGroup>
 
   <UsingTask TaskName="GenerateMergedReadme"
              TaskFactory="RoslynCodeTaskFactory"
@@ -110,5 +105,11 @@ if (!File.Exists(OutputPath) || File.ReadAllText(OutputPath) != merged)
     <GenerateMergedReadme TemplateReadme="$(TemplateReadme)"
                          SectionsDir="$(SectionsDir)"
                          OutputPath="$(MergedReadmePath)" />
+  </Target>
+
+  <Target Name="_CleanMergedReadme"
+          Condition="'$(TemplateReadme)' != ''"
+          AfterTargets="Clean">
+    <Delete Files="$(MergedReadmePath)" Condition="Exists('$(MergedReadmePath)')" />
   </Target>
 </Project>
