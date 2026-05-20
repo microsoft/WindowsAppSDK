@@ -203,7 +203,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             // Notify the app that the redirection request is here.
             m_activatedEvent(*this, args);
-            activity.RedrectionActivatedEvent(id);
+            activity.RedirectionActivatedEvent(id);
 
             std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
