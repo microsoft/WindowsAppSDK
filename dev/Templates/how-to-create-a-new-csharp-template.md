@@ -485,3 +485,20 @@ For C++ templates, add the template content under
 and a corresponding `<Asset>` to the C++ vsixmanifest. 
 
 There is no dotnet-new pack for C++/WinRT templates yet.
+
+---
+
+## Validating VSIX builds
+
+Before submitting changes, validate that all VSIX templates build successfully and include the required `README.md` files. Use the provided PowerShell script:
+
+```
+pwsh dev/Templates/Source/Validate-VSIXBuilds.ps1
+```
+
+This script:
+- Builds all VSIX templates in `Release` configuration.
+- Checks for `VSSDK1016` errors during packaging.
+- Verifies that `README.md` files are generated for all project templates.
+
+If the script reports any failures, resolve them before submitting your changes.
