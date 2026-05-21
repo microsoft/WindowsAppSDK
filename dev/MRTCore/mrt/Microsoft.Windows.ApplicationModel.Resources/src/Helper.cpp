@@ -1,8 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
 #include "frameworkudk\ResourceManager.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug PLACEHOLDER: Fix sparse-packaged apps unable to discover module-specific PRI files
+#define WINAPPSDK_CHANGEID_62382643 62382643, WinAppSDK_2_1_1
 
 bool IsResourceNotFound(HRESULT hr)
 {
@@ -87,7 +91,8 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
     hr = GetDefaultPriFileForCurentModule(isPackaged, filePath);
 
     // Sparse-packaged apps have identity but deploy PRI files as loose files; fall back to unpackaged discovery which also searches for "[modulename].pri".
-    if (isPackaged && IsResourceNotFound(hr))
+    if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62382643>() &&
+        isPackaged && IsResourceNotFound(hr))
     {
         HRESULT hrFallback = GetDefaultPriFileForCurentModule(false, filePath);
         if (SUCCEEDED(hrFallback))
