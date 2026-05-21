@@ -1,10 +1,6 @@
 ## Build
 
-```powershell
-dotnet build
-```
+- `dotnet build` — compile.
+- No `dotnet run`: a class library has no entry point. Reference it from a WinUI 3 app or unit test project (`dotnet new winui-unittest`).
 
-There is no `dotnet run` for a class library — it has no entry point. To
-exercise it, reference it from a WinUI 3 desktop app project (see
-**Consume the library** below) or from a WinUI 3 unit test project
-(`dotnet new winui-unittest`).
+For more, see [Class libraries](https://learn.microsoft.com/dotnet/standard/class-libraries).

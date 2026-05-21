@@ -27,11 +27,11 @@
     <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
     <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
-    <!-- README assembly inputs. The per-template VSIX outline lives under
-         dev\Templates\VSIX\templates\Desktop\CSharp\SingleProjectPackagedApp\README.md
-         by convention. The merged result is picked up via Content/Link and the
-         README.md ProjectItem in the .vstemplate. See Source\Directory.Build.targets. -->
-    <TemplateReadme>$(MSBuildThisFileDirectory)..\..\..\..\..\VSIX\templates\Desktop\CSharp\SingleProjectPackagedApp\README.md</TemplateReadme>
+    <!-- AGENTS.md assembly inputs. The per-template VSIX outline lives under
+         dev\Templates\VSIX\templates\Desktop\CSharp\SingleProjectPackagedApp\AGENTS.md
+         by convention. The merged result is picked up via the AGENTS.md ProjectItem
+         in the .vstemplate. See Source\Directory.Build.targets. -->
+    <TemplateReadme>$(MSBuildThisFileDirectory)..\..\..\..\..\VSIX\templates\Desktop\CSharp\SingleProjectPackagedApp\AGENTS.md</TemplateReadme>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

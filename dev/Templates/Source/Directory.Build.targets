@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!--
-      Per-template README handling for VSIX source projects.
+      Per-template AGENTS.md handling for VSIX source projects.
 
-      Each VSIX template source .csproj that wants to ship a README declares:
+      Each VSIX template source .csproj that wants to ship an AGENTS.md declares:
 
         <PropertyGroup>
-          <TemplateReadme>...\README.md</TemplateReadme>
+          <TemplateReadme>...\AGENTS.md</TemplateReadme>
         </PropertyGroup>
 
       At build time, _GenerateMergedReadme reads the per-template outline,
       substitutes ####FileName.md#### markers with the named files from
-      .\TemplateReadmeSections\ verbatim, and writes the merged README
+      .\TemplateReadmeSections\ verbatim, and writes the merged AGENTS.md
       directly next to the .vstemplate (i.e. into $(MSBuildProjectDirectory)).
       That on-disk location is what the VS SDK's CreateProjectTemplateZipFile
       task expects when it resolves each ProjectItem listed in .vstemplate;
@@ -24,7 +24,7 @@
 
   <PropertyGroup>
     <SectionsDir Condition="'$(SectionsDir)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)TemplateReadmeSections'))</SectionsDir>
-    <MergedReadmePath Condition="'$(MergedReadmePath)' == ''">$(MSBuildProjectDirectory)\README.md</MergedReadmePath>
+    <MergedReadmePath Condition="'$(MergedReadmePath)' == ''">$(MSBuildProjectDirectory)\AGENTS.md</MergedReadmePath>
   </PropertyGroup>
 
   <UsingTask TaskName="GenerateMergedReadme"

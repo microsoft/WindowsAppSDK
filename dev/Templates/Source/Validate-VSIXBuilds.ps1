@@ -8,13 +8,13 @@ $projects = @(
     "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/UnitTestApp/WinUI.Desktop.Cs.UnitTestApp.csproj",
     "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/PackagedApp/WinUI.Desktop.Cs.PackagedApp.csproj"
 )
-$readmes = @(
-    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/SingleProjectPackagedApp/README.md",
-    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/NavigationApp/README.md",
-    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/MvvmApp/README.md",
-    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/TabViewApp/README.md",
-    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/ClassLibrary/README.md",
-    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/UnitTestApp/README.md"
+$agents = @(
+    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/SingleProjectPackagedApp/AGENTS.md",
+    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/NavigationApp/AGENTS.md",
+    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/MvvmApp/AGENTS.md",
+    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/TabViewApp/AGENTS.md",
+    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/ClassLibrary/AGENTS.md",
+    "dev/Templates/Source/ProjectTemplates/Desktop/CSharp/UnitTestApp/AGENTS.md"
 )
 
 $results = @()
@@ -22,7 +22,7 @@ $overallPass = $true
 $firstFailure = ""
 
 foreach ($proj in $projects) {
-    Write-Host "Building $proj..."
+    Write-Host "Building $proj using Visual Studio MSBuild..."
     $output = & $msbuild $proj /t:Build /p:Configuration=Release /v:minimal /nologo 2>&1
     $exitCode = $LASTEXITCODE
     $vssdkMatch = $false
@@ -49,13 +49,13 @@ foreach ($proj in $projects) {
     }
 }
 
-foreach ($readme in $readmes) {
-    if (-not (Test-Path $readme)) {
+foreach ($agentsFile in $agents) {
+    if (-not (Test-Path $agentsFile)) {
         if ($overallPass) {
             $overallPass = $false
-            $firstFailure = "README not found: $readme"
+            $firstFailure = "AGENTS.md not found: $agentsFile"
         }
-        Write-Host "README missing: $readme"
+        Write-Host "AGENTS.md missing: $agentsFile"
     }
 }
 

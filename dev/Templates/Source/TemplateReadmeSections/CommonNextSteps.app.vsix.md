@@ -1,10 +1,7 @@
 ## Common next steps
 
-- **Add an item**: in Solution Explorer, *Add → New Item → WinUI* gives
-  you pages, windows, user controls, templated controls, content
-  dialogs, resource dictionaries, and `.resw` files.
-- **Add a unit test project**: *Add → New Project → WinUI 3 Unit Test
-  Project* drops an MSTest test container alongside the app.
-- **Update the SDK**: open *Manage NuGet Packages*, switch to the
-  *Updates* tab, and update **Microsoft.WindowsAppSDK** to the latest
-  version (or edit the `<PackageReference>` directly).
+- **Add items**: Use *Add → New Item → WinUI* for pages, windows, controls, and resources.
+- **Add unit tests**: Use *Add → New Project → WinUI 3 Unit Test Project*.
+- **Update the SDK**: Use *Manage NuGet Packages → Updates* or edit `<PackageReference>` directly.
+
+For more, see [WinUI 3 Documentation](https://learn.microsoft.com/windows/apps/winui/winui3/).

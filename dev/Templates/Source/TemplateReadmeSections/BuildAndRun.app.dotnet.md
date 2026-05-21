@@ -1,21 +1,7 @@
 ## Build and run
 
-```powershell
-dotnet build
-dotnet run
-```
+- `dotnet build` — compile.
+- `dotnet run` — registers a loose-layout MSIX, gives the app package identity, and launches via AUMID activation. No `Add-AppxPackage` / `MakeAppx` / `SignTool` step needed.
+- If the loose-layout registration drifts after editing `Package.appxmanifest` (symptom: `REGDB_E_CLASSNOTREG`), run `winapp unregister` then `dotnet run`.
 
-`dotnet run` is the equivalent of F5 in Visual Studio: it registers a
-loose-layout MSIX, gives the app package identity, and launches it via
-AUMID activation. No `Add-AppxPackage`, `MakeAppx`, or `SignTool` step is
-needed.
-
-The packaged-launch integration comes from
-[`Microsoft.Windows.SDK.BuildTools.WinApp`](https://www.nuget.org/packages/Microsoft.Windows.SDK.BuildTools.WinApp).
-See its package page for the full set of `WinAppRun*` MSBuild properties
-(opt-out, console alias, no-launch, debug output, launch args).
-
-If the loose-layout registration drifts after editing
-`Package.appxmanifest` (a common symptom is `REGDB_E_CLASSNOTREG` at
-startup), running `winapp unregister` followed by `dotnet run` refreshes
-it.
+For the full set of `WinAppRun*` MSBuild properties, see [`Microsoft.Windows.SDK.BuildTools.WinApp`](https://www.nuget.org/packages/Microsoft.Windows.SDK.BuildTools.WinApp).

@@ -43,8 +43,8 @@
   </PropertyGroup>
 
   <!--
-      Per-template READMEs are assembled at pack time. Each template that
-      wants to ship a README drops a README.md outline next to its
+      Per-template AGENTS.md files are assembled at pack time. Each template
+      that wants to ship one drops an AGENTS.md outline next to its
       .template.config\ folder. Markers of the form ####FileName.md#### in
       that outline name a file in ..\Source\TemplateReadmeSections\
       verbatim; the merge task reads that file and substitutes it. There
@@ -53,7 +53,7 @@
       section file immediately. Channel-specific outlines (e.g. VSIX
       twins) name section files with the channel suffix baked in
       (e.g. ####BuildAndRun.app.vsix.md####).
-      See dev\Templates\Dotnet\templates\blank-app\README.md.
+      See dev\Templates\Dotnet\templates\blank-app\AGENTS.md.
   -->
   <PropertyGroup>
     <_SectionsDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\Source\TemplateReadmeSections'))</_SectionsDir>
@@ -128,7 +128,7 @@ foreach (var t in Templates)
 
     // Files in the Source tree that are VSIX-only sidecars (excluded from the dotnet-new pack).
     // The Source-named manifest, if any, is excluded here and re-emitted under the reserved name below.
-    // README.md is excluded here too: when the template ships one it is the outline
+    // AGENTS.md is excluded here too: when the template ships one it is the outline
     // (####...#### markers), and step 4 below re-emits the merged version to the same path.
     var sidecars = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -136,7 +136,7 @@ foreach (var t in Templates)
         baseName + ".ico",
         baseName + ".png",
         baseName + ".vstemplate",
-        "README.md",
+        "AGENTS.md",
     };
     if (!string.IsNullOrEmpty(renameFrom)) { sidecars.Add(renameFrom); }
 
@@ -170,24 +170,24 @@ foreach (var t in Templates)
     // 3. dotnet-new template configuration.
     EmitTree(Path.Combine(configDir, ".template.config"), contentRoot + "/.template.config");
 
-    // 4. Per-template README. Each template that wants to ship a README
-    // drops a README.md outline next to its .template.config\ folder. The
+    // 4. Per-template AGENTS.md. Each template that wants to ship one
+    // drops an AGENTS.md outline next to its .template.config\ folder. The
     // outline mixes inline prose (title, intro, project layout) with
     // ####FileName.md#### markers that name section files in
     // ..\Source\TemplateReadmeSections\ verbatim. Any unresolved marker
     // -- or a marker that names a file that does not exist -- fails the
     // build.
-    string templateReadme = Path.Combine(configDir, "README.md");
+    string templateReadme = Path.Combine(configDir, "AGENTS.md");
     if (File.Exists(templateReadme))
     {
         if (string.IsNullOrEmpty(MergedReadmeDir))
         {
-            Log.LogError("MergedReadmeDir is required when any template ships a README.md outline.");
+            Log.LogError("MergedReadmeDir is required when any template ships an AGENTS.md outline.");
             continue;
         }
         if (string.IsNullOrEmpty(SectionsDir))
         {
-            Log.LogError("SectionsDir is required when any template ships a README.md outline.");
+            Log.LogError("SectionsDir is required when any template ships an AGENTS.md outline.");
             continue;
         }
 
@@ -215,14 +215,14 @@ foreach (var t in Templates)
         mergedContent = Regex.Replace(mergedContent, @"(\r?\n){3,}", "\n\n").TrimEnd() + "\n";
 
         // Any unresolved ####...#### markers left over indicate a malformed placeholder
-        // in the outline -- fail loudly so we never ship a README with literal markers.
+        // in the outline -- fail loudly so we never ship an AGENTS.md with literal markers.
         var leftovers = Regex.Matches(mergedContent, "####[^#]+####");
         if (leftovers.Count > 0)
         {
             var names = new HashSet<string>(StringComparer.Ordinal);
             foreach (Match m in leftovers) { names.Add(m.Value); }
             Log.LogError(
-                "Template '{0}': merged README still contains unresolved markers: {1}. " +
+                "Template '{0}': merged AGENTS.md still contains unresolved markers: {1}. " +
                 "Placeholders must have the form ####FileName.md#### where FileName.md is a real file in '{2}'.",
                 t.ItemSpec, string.Join(", ", names), SectionsDir);
             continue;
@@ -230,9 +230,9 @@ foreach (var t in Templates)
 
         string mergedDir = Path.Combine(MergedReadmeDir, t.ItemSpec);
         Directory.CreateDirectory(mergedDir);
-        string mergedPath = Path.Combine(mergedDir, "README.md");
+        string mergedPath = Path.Combine(mergedDir, "AGENTS.md");
         File.WriteAllText(mergedPath, mergedContent);
-        Emit(mergedPath, contentRoot + "/README.md");
+        Emit(mergedPath, contentRoot + "/AGENTS.md");
     }
 
     // 5. Shared .gitignore (one copy per template).
