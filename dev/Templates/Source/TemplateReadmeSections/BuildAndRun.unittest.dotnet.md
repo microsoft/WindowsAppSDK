@@ -1,8 +1,6 @@
 ## Build and run tests
 
-- `dotnet test` — builds the test container, registers it as a loose-layout MSIX, runs MSTest, reports results to the CLI.
-- Subset by name: `dotnet test --filter "FullyQualifiedName~MyTestClass"`.
-- Subset by trait: decorate with `[TestCategory("Smoke")]`, run `dotnet test --filter "TestCategory=Smoke"`.
-- Verbose: `dotnet test -v normal` (or `detailed`).
+- `dotnet test` — builds the test container, registers it as a loose-layout MSIX, runs MSTest.
+- Filter: `dotnet test --filter "FullyQualifiedName~MyTestClass"` or `... "TestCategory=Smoke"`.
 
-For the full filter syntax, see [Filter MSTest tests](https://learn.microsoft.com/dotnet/core/testing/selective-unit-tests).
+See [Filter MSTest tests](https://learn.microsoft.com/dotnet/core/testing/selective-unit-tests).

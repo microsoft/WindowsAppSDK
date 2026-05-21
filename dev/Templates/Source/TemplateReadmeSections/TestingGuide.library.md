@@ -1,9 +1,8 @@
 ## Testing guide
 
-- Add a unit test project alongside: `dotnet new winui-unittest -n MyLibrary.Tests`.
-- Reference the library: `dotnet add reference ../MyLibrary/MyLibrary.csproj`.
-- MSTest's `[TestClass]` / `[TestMethod]` handles both pure types and types that touch XAML (tests run inside an MSIX, so dependency-property and `INotifyPropertyChanged` plumbing works).
-- Mock dependencies with [Moq](https://github.com/devlooped/moq) or [NSubstitute](https://nsubstitute.github.io/).
-- For NuGet-shipped libraries, catch accidental API breaks with [Microsoft.DotNet.ApiCompat.Tool](https://www.nuget.org/packages/Microsoft.DotNet.ApiCompat.Tool).
+- Companion test template: `dotnet new winui-unittest -n MyLibrary.Tests`, then `dotnet add reference ../MyLibrary/MyLibrary.csproj`.
+- Tests run inside an MSIX, so dependency-property and `INotifyPropertyChanged` plumbing works in test cases.
+- API-break detection: [Microsoft.DotNet.ApiCompat.Tool](https://www.nuget.org/packages/Microsoft.DotNet.ApiCompat.Tool).
+- Mocking: [Moq](https://github.com/devlooped/moq), [NSubstitute](https://nsubstitute.github.io/).
 
-For more, see [Unit testing with MSTest](https://learn.microsoft.com/dotnet/core/testing/unit-testing-mstest-intro).
+See [Unit testing with MSTest](https://learn.microsoft.com/dotnet/core/testing/unit-testing-mstest-intro).
