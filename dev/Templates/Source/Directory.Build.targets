@@ -99,7 +99,7 @@ if (!File.Exists(OutputPath) || File.ReadAllText(OutputPath) != merged)
 
   <Target Name="_GenerateMergedReadme"
           Condition="'$(TemplateReadme)' != ''"
-          BeforeTargets="BeforeBuild;PrepareForBuild"
+      BeforeTargets="BeforeBuild;PrepareForBuild;ZipProjects"
           Inputs="$(TemplateReadme);$(SectionsDir)\*.md"
           Outputs="$(MergedReadmePath)">
     <GenerateMergedReadme TemplateReadme="$(TemplateReadme)"
