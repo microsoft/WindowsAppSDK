@@ -16,6 +16,10 @@ This spec introduces `EnergySaverStatus2`, a new enum and associated APIs on
 `Microsoft.Windows.System.Power.PowerManager`, that accurately reflects all three energy saver
 states. The legacy `EnergySaverStatus` API is unchanged for backward compatibility.
 
+> ⚠️ **Deprecation notice:** `PowerManager.EnergySaverStatus`, `PowerManager.EnergySaverStatusChanged`,
+> and the `EnergySaverStatus` enum are deprecated. Use `PowerManager.EnergySaverStatus2`,
+> `PowerManager.EnergySaverStatus2Changed`, and the `EnergySaverStatus2` enum instead.
+
 > **Minimum OS requirement:** These APIs require a Windows 11, 24H2 build. On earlier OS versions,
 > `EnergySaverStatus2` returns `Unknown`.
 
@@ -156,6 +160,9 @@ public enum EnergySaverStatus2
 
 - `EnergySaverStatus2` may be extended with additional values in future OS releases. Your code
   should handle unknown enum values gracefully (for example, with a `default` case in a `switch`).
+- The legacy `EnergySaverStatus` enum, `PowerManager.EnergySaverStatus` property, and
+  `PowerManager.EnergySaverStatusChanged` event are deprecated. Migrate to `EnergySaverStatus2`,
+  `PowerManager.EnergySaverStatus2`, and `PowerManager.EnergySaverStatus2Changed`.
 - The enum values map to the legacy `EnergySaverStatus` as follows:
 
 | `EnergySaverStatus2` | Legacy `EnergySaverStatus` |
@@ -213,7 +220,11 @@ namespace Microsoft.Windows.System.Power
 
 ## Legacy API compatibility and mapping
 
-The legacy `EnergySaverStatus` has a known limitation: when Energy Saver is active in **Standard**
+> ⚠️ **Deprecation notice:** `PowerManager.EnergySaverStatus`, `PowerManager.EnergySaverStatusChanged`,
+> and the `EnergySaverStatus` enum are deprecated. Use `PowerManager.EnergySaverStatus2`,
+> `PowerManager.EnergySaverStatus2Changed`, and the `EnergySaverStatus2` enum instead.
+
+The legacy `EnergySaverStatus` has a known limitation:when Energy Saver is active in **Standard**
 mode (battery above 20%), it reports `Off`, meaning apps using the legacy API cannot distinguish
 "Energy Saver Standard active" from "Energy Saver disabled". `EnergySaverStatus2` fixes this.
 
