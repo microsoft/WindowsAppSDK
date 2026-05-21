@@ -6,7 +6,7 @@
 #include <FrameworkUdk/Containment.h>
 
 // Bug PLACEHOLDER: Fix sparse-packaged apps unable to discover module-specific PRI files
-#define WINAPPSDK_CHANGEID_62382643 62382643, WinAppSDK_2_1_1
+#define WINAPPSDK_CHANGEID_62382643 62382643, WinAppSDK_2_1_5
 
 bool IsResourceNotFound(HRESULT hr)
 {
