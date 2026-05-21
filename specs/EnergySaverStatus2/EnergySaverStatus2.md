@@ -224,7 +224,7 @@ namespace Microsoft.Windows.System.Power
 > and the `EnergySaverStatus` enum are deprecated. Use `PowerManager.EnergySaverStatus2`,
 > `PowerManager.EnergySaverStatus2Changed`, and the `EnergySaverStatus2` enum instead.
 
-The legacy `EnergySaverStatus` has a known limitation:when Energy Saver is active in **Standard**
+The legacy `EnergySaverStatus` has a known limitation: when Energy Saver is active in **Standard**
 mode (battery above 20%), it reports `Off`, meaning apps using the legacy API cannot distinguish
 "Energy Saver Standard active" from "Energy Saver disabled". `EnergySaverStatus2` fixes this.
 
