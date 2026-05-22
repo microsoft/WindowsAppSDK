@@ -24,7 +24,32 @@
         <SolutionDir Condition="!Exists('$(SolutionDir)')">$(MSBuildThisFileDirectory)</SolutionDir>
         <BuildOutput Condition="'$(BuildOutput)' == ''">$(SolutionDir)BuildOutput\</BuildOutput>
         <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\$(Deployment)\</BuildOutputRoot>
-        <BaseIntermediateOutputPath>$(BuildOutputRoot)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    </PropertyGroup>
+
+    <!--
+        Use a short alias for the project's intermediate / output folder segment
+        instead of $(MSBuildProjectName). The VSSDK GenerateTemplatesManifest task
+        extracts every vstemplate .zip to
+            $(IntermediateOutputPath)$(TargetFramework)\{Project|Item}Templates\<Lang>\<Locale>\<TemplateName>\...
+        which, combined with the deeply nested template asset paths (e.g.
+        Assets\Square44x44Logo.targetsize-48_altform-lightunplated.png) easily
+        exceeds the Windows MAX_PATH (260) limit on CI agents (repo root
+        C:\__w\1\s\WindowsAppSDK\). When that happens the task aborts mid-stream
+        with "VSSDK1300: An error occurred while attempting to extract the
+        vstemplate zip files." and only reports the first file that overflowed,
+        even though many additional files are silently dropped.
+
+        Replacing the ~32-char project name with a 4-5 char alias saves ~27
+        characters per path, giving generous headroom for future template assets.
+        Only the two long-named Dev17 VSIX projects need shortening; everything
+        else continues to use $(MSBuildProjectName) for diagnosability.
+    -->
+    <PropertyGroup>
+        <_VsixProjectFolderAlias>$(MSBuildProjectName)</_VsixProjectFolderAlias>
+        <_VsixProjectFolderAlias Condition="'$(MSBuildProjectName)' == 'WindowsAppSDK.Cpp.Extension.Dev17'">Cpp17</_VsixProjectFolderAlias>
+        <_VsixProjectFolderAlias Condition="'$(MSBuildProjectName)' == 'WindowsAppSDK.Cs.Extension.Dev17'">Cs17</_VsixProjectFolderAlias>
+
+        <BaseIntermediateOutputPath>$(BuildOutputRoot)$(_VsixProjectFolderAlias)\</BaseIntermediateOutputPath>
         <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
         <OutputPath>$(IntermediateOutputPath)</OutputPath>
         <OutDir>$(OutputPath)</OutDir>
