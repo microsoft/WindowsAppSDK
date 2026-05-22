@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "frameworkudk\ResourceManager.h"
 #include <FrameworkUdk/Containment.h>
+#include <AppModel.Identity.IsPackagedProcess.h>
 
 // Bug 62382643: Fix sparse-packaged apps unable to discover module-specific PRI files
 #define WINAPPSDK_CHANGEID_62382643 62382643, WinAppSDK_2_1_5
@@ -91,6 +92,7 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
 
     if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62382643>())
     {
+        isPackaged = AppModel::Identity::IsPackagedProcess();
         hr = GetDefaultPriFileForCurentModule(isPackaged, filePath);
 
         // Sparse-packaged apps have identity but deploy PRI files as loose files;
