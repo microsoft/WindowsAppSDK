@@ -27,22 +27,13 @@
     </PropertyGroup>
 
     <!--
-        Use a short alias for the project's intermediate / output folder segment
-        instead of $(MSBuildProjectName). The VSSDK GenerateTemplatesManifest task
-        extracts every vstemplate .zip to
-            $(IntermediateOutputPath)$(TargetFramework)\{Project|Item}Templates\<Lang>\<Locale>\<TemplateName>\...
-        which, combined with the deeply nested template asset paths (e.g.
-        Assets\Square44x44Logo.targetsize-48_altform-lightunplated.png) easily
-        exceeds the Windows MAX_PATH (260) limit on CI agents (repo root
-        C:\__w\1\s\WindowsAppSDK\). When that happens the task aborts mid-stream
-        with "VSSDK1300: An error occurred while attempting to extract the
-        vstemplate zip files." and only reports the first file that overflowed,
-        even though many additional files are silently dropped.
-
-        Replacing the ~32-char project name with a 4-5 char alias saves ~27
-        characters per path, giving generous headroom for future template assets.
-        Only the two long-named Dev17 VSIX projects need shortening; everything
-        else continues to use $(MSBuildProjectName) for diagnosability.
+        Shorten the project's output folder segment to stay under Windows
+        MAX_PATH (260) on CI. VSSDK's GenerateTemplatesManifest extracts every
+        vstemplate .zip under $(IntermediateOutputPath)$(TargetFramework)\...,
+        which combined with the ~32-char Dev17 project names and deep template
+        asset paths overflows on CI (repo root C:\__w\1\s\WindowsAppSDK\) and
+        aborts with VSSDK1300. Cpp17/Cs17 save ~27 chars per path; other
+        projects keep $(MSBuildProjectName) for diagnosability.
     -->
     <PropertyGroup>
         <_VsixProjectFolderAlias>$(MSBuildProjectName)</_VsixProjectFolderAlias>
