@@ -2,9 +2,19 @@
 #                                       Templates PR Validation Pipeline                                                            #
 #####################################################################################################################################
 #
-# Lightweight PR validation that ensures the dotnet new template package
-# (dev/Templates/Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj) still
-# builds when files under dev/Templates/** change in a pull request.
+# PR validation for changes under dev/Templates/**.
+#
+# Reuses the build/pack + smoke-test logic from the main dotnet-new
+# templates pipeline (WindowsAppSDK-DotnetNewTemplates.yml) by extending
+# the same OneBranch non-official 1ES template and including the same
+# two stage templates:
+#   * WindowsAppSDK-DotnetNewTemplates-Stages.yml      (Build + Pack)
+#   * WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml  (Smoke-test)
+#
+# PR builds are stamped with a '.pr.<PR#>.<BuildId>' version suffix so
+# the produced .nupkg can never collide with the canonical alpha
+# packages produced by the main build pipeline. Nothing is signed and
+# nothing is published to any feed for PR runs.
 #
 # Trigger configuration:
 #   * CI / PR triggers are configured in the Azure DevOps UI on this
@@ -16,12 +26,17 @@
 #       - Branch filters:  Include refs/heads/main
 #                          Include refs/heads/release/*
 #       - Path filters:    Include dev/Templates/**
-#
-# OneBranch / 1ES compliance: extends the non-official 1ES template,
-# matching the pattern used by other ProjectReunion PR pipelines.
 #####################################################################################################################################
 
 trigger: none
+
+# TODO: keep TemplatesBaseVersion in sync with the <Version> in
+# dev/Templates/Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj.
+# If/when that csproj is refactored to use <VersionPrefix>+<VersionSuffix>,
+# this pipeline can switch to only overriding the suffix instead.
+variables:
+  TemplatesBaseVersion: '0.0.5-alpha'
+  PrPackageVersion: '$(TemplatesBaseVersion).pr.$(System.PullRequest.PullRequestNumber).$(Build.BuildId)'
 
 name: TemplatesPR-$(Date:yyyyMMdd)$(Rev:.r)
 
@@ -47,6 +62,9 @@ extends:
     cloudvault:
       enabled: false
 
+    # PR validation does not gate on heavy SDL tools. The main build
+    # pipeline (WindowsAppSDK-DotnetNewTemplates.yml) remains responsible
+    # for full SDL coverage on canonical builds.
     globalSdl:
       tsa:
         enabled: false
@@ -61,29 +79,21 @@ extends:
         enabled: false
 
     stages:
-      - stage: BuildTemplates
-        displayName: 'Build templates package'
-        jobs:
-          - job: DotnetBuild
-            displayName: 'dotnet build (net8.0 templates package)'
-            pool:
-              type: windows
-            variables:
-              ob_outputDirectory: '$(Build.SourcesDirectory)/out'
-            steps:
-              - checkout: self
-                fetchDepth: 1
-                displayName: 'Checkout WindowsAppSDK (shallow)'
+      # Build + pack the dotnet-new templates NuGet using the same stage
+      # template the main pipeline uses, but with signing/publishing off
+      # and the package version stamped with the PR number + build id.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
+        parameters:
+          pool:
+            type: windows
+          publishToInternalFeed: false
+          SignOutput: false
+          PackageVersionOverride: '$(PrPackageVersion)'
 
-              - task: UseDotNet@2
-                displayName: 'Install .NET 8 SDK'
-                inputs:
-                  packageType: sdk
-                  version: 8.x
-
-              - script: dotnet --info
-                displayName: 'dotnet --info (diagnostic)'
-
-              - script: dotnet build dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj --configuration Release
-                displayName: 'dotnet build WinAppSdk.CSharp.DotnetNewTemplates.csproj'
-                workingDirectory: $(Build.SourcesDirectory)
+      # Smoke-test: scaffold every template from the freshly built pack
+      # and ensure each one still builds with dotnet build.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
+        parameters:
+          pool:
+            type: windows
+          dependsOnStage: 'DotnetNewTemplates_Build'

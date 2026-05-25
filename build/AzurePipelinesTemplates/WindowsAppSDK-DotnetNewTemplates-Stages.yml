@@ -12,6 +12,14 @@ parameters:
 - name: SignOutput
   type: boolean
   default: false
+# When set to a non-empty SemVer-compatible string, overrides the <Version>
+# defined in WinAppSdk.CSharp.DotnetNewTemplates.csproj at pack time via
+# /p:Version=<value>. Used by the PR validation pipeline to stamp builds
+# with a '.pr.<PR#>.<BuildId>' suffix so they don't collide with the
+# canonical alpha versions produced by the main build pipeline.
+- name: PackageVersionOverride
+  type: string
+  default: ''
 
 stages:
 - stage: DotnetNewTemplates_Build
@@ -25,6 +33,11 @@ stages:
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
       templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
+      # Conditionally inject /p:Version=... only when an override is supplied.
+      ${{ if ne(parameters.PackageVersionOverride, '') }}:
+        packVersionArg: '/p:Version=${{ parameters.PackageVersionOverride }}'
+      ${{ else }}:
+        packVersionArg: ''
     steps:
     - checkout: self
 
@@ -87,7 +100,7 @@ stages:
       inputs:
         command: 'pack'
         packagesToPack: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
-        arguments: '--configuration Release --no-restore --no-build /p:WindowsAppSDKBuildPipeline=1'
+        arguments: '--configuration Release --no-restore --no-build /p:WindowsAppSDKBuildPipeline=1 $(packVersionArg)'
         outputDir: '$(ob_outputDirectory)'
         workingDirectory: '$(templateProjectDir)'
 
