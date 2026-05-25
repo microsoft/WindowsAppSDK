@@ -1,40 +1,25 @@
-#####################################################################################################################################
-#                                       Templates PR Validation Pipeline                                                            #
-#####################################################################################################################################
+# Templates PR Validation Pipeline
 #
 # PR validation for changes under dev/Templates/**.
+# Reuses the build/pack + smoke-test stages from the main pipeline
+# (WindowsAppSDK-DotnetNewTemplates.yml). Nothing is signed; nothing is
+# published. PR builds get a 'pr.<PR#>.<BuildId>' version suffix so they
+# can't collide with canonical packages.
 #
-# Reuses the build/pack + smoke-test logic from the main dotnet-new
-# templates pipeline (WindowsAppSDK-DotnetNewTemplates.yml) by extending
-# the same OneBranch non-official 1ES template and including the same
-# two stage templates:
-#   * WindowsAppSDK-DotnetNewTemplates-Stages.yml      (Build + Pack)
-#   * WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml  (Smoke-test)
-#
-# PR builds are stamped with a '.pr.<PR#>.<BuildId>' version suffix so
-# the produced .nupkg can never collide with the canonical alpha
-# packages produced by the main build pipeline. Nothing is signed and
-# nothing is published to any feed for PR runs.
-#
-# Trigger configuration:
-#   * CI / PR triggers are configured in the Azure DevOps UI on this
-#     pipeline (Edit pipeline -> Triggers), NOT in this YAML, to match
-#     the convention used by WindowsAppSDK-Foundation-PR.yml.
-#   * Configure UI -> Pull request validation:
-#       - Override the YAML pull request trigger from here: ON
-#       - Enable pull request validation:                   ON
-#       - Branch filters:  Include refs/heads/main
-#                          Include refs/heads/release/*
-#       - Path filters:    Include dev/Templates/**
-#####################################################################################################################################
+# Triggers are configured in the Azure DevOps UI (Edit pipeline -> Triggers),
+# NOT in this YAML -- matches the WindowsAppSDK-Foundation-PR.yml convention.
+# In the UI, under Pull request validation:
+#   - Override the YAML pull request trigger from here: ON
+#   - Enable pull request validation:                   ON
+#   - Branch filters:  Include refs/heads/main
+#                      Include refs/heads/release/*
+#   - Path filters:    Include dev/Templates/**
 
 trigger: none
 
-# The base package version is the <Version> in
-# dev/Templates/Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj
-# (single source of truth). This pipeline only contributes the PR-tagged
-# suffix below; the stages template reads the base version from the
-# csproj at runtime and concatenates the two.
+# Suffix appended to the csproj <Version> at pack time so PR builds don't
+# collide with canonical packages. The base version stays in the csproj
+# (see PackageVersionSuffix in WindowsAppSDK-DotnetNewTemplates-Stages.yml).
 variables:
   PrPackageVersionSuffix: 'pr.$(System.PullRequest.PullRequestNumber).$(Build.BuildId)'
 
@@ -62,9 +47,8 @@ extends:
     cloudvault:
       enabled: false
 
-    # PR validation does not gate on heavy SDL tools. The main build
-    # pipeline (WindowsAppSDK-DotnetNewTemplates.yml) remains responsible
-    # for full SDL coverage on canonical builds.
+    # Skip heavy SDL tools for PR validation; the main pipeline
+    # (WindowsAppSDK-DotnetNewTemplates.yml) covers them on canonical builds.
     globalSdl:
       tsa:
         enabled: false
@@ -79,9 +63,8 @@ extends:
         enabled: false
 
     stages:
-      # Build + pack the dotnet-new templates NuGet using the same stage
-      # template the main pipeline uses, but with signing/publishing off
-      # and the package version stamped with the PR number + build id.
+      # Build + pack the templates NuGet. Signing/publishing off; the
+      # package version is stamped with the PR number + build id.
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
         parameters:
           pool:
@@ -90,8 +73,7 @@ extends:
           SignOutput: false
           PackageVersionSuffix: '$(PrPackageVersionSuffix)'
 
-      # Smoke-test: scaffold every template from the freshly built pack
-      # and ensure each one still builds with dotnet build.
+      # Smoke-test: scaffold every template from the pack and dotnet build each.
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
         parameters:
           pool:

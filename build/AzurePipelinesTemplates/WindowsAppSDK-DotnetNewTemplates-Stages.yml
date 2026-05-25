@@ -12,16 +12,9 @@ parameters:
 - name: SignOutput
   type: boolean
   default: false
-# When non-empty, the produced .nupkg version becomes
-#   <csproj Version>[<sep>]<PackageVersionSuffix>
-# where <sep> is '.' if the csproj <Version> already contains a prerelease
-# tag (e.g. '0.0.5-alpha' -> '0.0.5-alpha.<suffix>') or '-' otherwise
-# (e.g. '1.2.3' -> '1.2.3-<suffix>'). Both forms remain SemVer-valid.
-# Used by the PR validation pipeline to stamp builds with e.g.
-#   'pr.<PR#>.<BuildId>'
-# so PR .nupkgs cannot collide with the canonical alpha packages produced
-# by the main build pipeline. The base <Version> stays as the single
-# source of truth in the csproj.
+# Optional suffix appended to the csproj <Version> at pack time.
+# Example: suffix 'pr.42.123' on base '0.0.5-alpha' -> '0.0.5-alpha.pr.42.123'.
+# Used by PR builds so their .nupkgs don't collide with canonical packages.
 - name: PackageVersionSuffix
   type: string
   default: ''
@@ -38,9 +31,8 @@ stages:
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
       templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
-      # PackVersionArg is set at runtime by the "Compute package version"
-      # step below when PackageVersionSuffix is non-empty; otherwise it
-      # stays empty and the pack task uses the csproj <Version> as-is.
+      # Filled in by the "Compute package version" step when a suffix is
+      # supplied; empty otherwise, so pack uses the csproj <Version> as-is.
       PackVersionArg: ''
     steps:
     - checkout: self
@@ -108,7 +100,7 @@ stages:
           script: |
             $csprojPath = Join-Path '$(templateProjectDir)' 'WinAppSdk.CSharp.DotnetNewTemplates.csproj'
             [xml]$csproj = Get-Content -LiteralPath $csprojPath
-            # PropertyGroup may be a single node or an array; pick the first one that defines <Version>.
+            # Pick the first <Version> (csproj can have multiple PropertyGroup blocks).
             $versionNode = Select-Xml -Xml $csproj -XPath '/Project/PropertyGroup/Version' | Select-Object -First 1
             if (-not $versionNode) {
               throw "No <Version> element found in $csprojPath"
@@ -118,8 +110,7 @@ stages:
             if ([string]::IsNullOrWhiteSpace($baseVersion)) {
               throw "csproj <Version> is empty in $csprojPath"
             }
-            # If the base already has a SemVer prerelease tag (contains '-'),
-            # extend it with '.'; otherwise introduce the prerelease with '-'.
+            # '-' starts a SemVer prerelease tag; '.' extends an existing one.
             $separator = if ($baseVersion -match '-') { '.' } else { '-' }
             $fullVersion = "$baseVersion$separator$suffix"
             Write-Host "csproj <Version>:        $baseVersion"
