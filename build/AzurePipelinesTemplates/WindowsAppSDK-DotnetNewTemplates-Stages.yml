@@ -12,12 +12,17 @@ parameters:
 - name: SignOutput
   type: boolean
   default: false
-# When set to a non-empty SemVer-compatible string, overrides the <Version>
-# defined in WinAppSdk.CSharp.DotnetNewTemplates.csproj at pack time via
-# /p:Version=<value>. Used by the PR validation pipeline to stamp builds
-# with a '.pr.<PR#>.<BuildId>' suffix so they don't collide with the
-# canonical alpha versions produced by the main build pipeline.
-- name: PackageVersionOverride
+# When non-empty, the produced .nupkg version becomes
+#   <csproj Version>[<sep>]<PackageVersionSuffix>
+# where <sep> is '.' if the csproj <Version> already contains a prerelease
+# tag (e.g. '0.0.5-alpha' -> '0.0.5-alpha.<suffix>') or '-' otherwise
+# (e.g. '1.2.3' -> '1.2.3-<suffix>'). Both forms remain SemVer-valid.
+# Used by the PR validation pipeline to stamp builds with e.g.
+#   'pr.<PR#>.<BuildId>'
+# so PR .nupkgs cannot collide with the canonical alpha packages produced
+# by the main build pipeline. The base <Version> stays as the single
+# source of truth in the csproj.
+- name: PackageVersionSuffix
   type: string
   default: ''
 
@@ -33,11 +38,10 @@ stages:
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
       templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
-      # Conditionally inject /p:Version=... only when an override is supplied.
-      ${{ if ne(parameters.PackageVersionOverride, '') }}:
-        packVersionArg: '/p:Version=${{ parameters.PackageVersionOverride }}'
-      ${{ else }}:
-        packVersionArg: ''
+      # PackVersionArg is set at runtime by the "Compute package version"
+      # step below when PackageVersionSuffix is non-empty; otherwise it
+      # stays empty and the pack task uses the csproj <Version> as-is.
+      PackVersionArg: ''
     steps:
     - checkout: self
 
@@ -95,12 +99,40 @@ stages:
         projects: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
         workingDirectory: '$(templateProjectDir)'
 
+    - ${{ if ne(parameters.PackageVersionSuffix, '') }}:
+      - task: PowerShell@2
+        displayName: 'Compute package version (csproj <Version> + suffix)'
+        inputs:
+          targetType: inline
+          workingDirectory: '$(templateProjectDir)'
+          script: |
+            $csprojPath = Join-Path '$(templateProjectDir)' 'WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+            [xml]$csproj = Get-Content -LiteralPath $csprojPath
+            # PropertyGroup may be a single node or an array; pick the first one that defines <Version>.
+            $versionNode = Select-Xml -Xml $csproj -XPath '/Project/PropertyGroup/Version' | Select-Object -First 1
+            if (-not $versionNode) {
+              throw "No <Version> element found in $csprojPath"
+            }
+            $baseVersion = $versionNode.Node.InnerText.Trim()
+            $suffix = '${{ parameters.PackageVersionSuffix }}'
+            if ([string]::IsNullOrWhiteSpace($baseVersion)) {
+              throw "csproj <Version> is empty in $csprojPath"
+            }
+            # If the base already has a SemVer prerelease tag (contains '-'),
+            # extend it with '.'; otherwise introduce the prerelease with '-'.
+            $separator = if ($baseVersion -match '-') { '.' } else { '-' }
+            $fullVersion = "$baseVersion$separator$suffix"
+            Write-Host "csproj <Version>:        $baseVersion"
+            Write-Host "PackageVersionSuffix:    $suffix"
+            Write-Host "Computed package version: $fullVersion"
+            Write-Host "##vso[task.setvariable variable=PackVersionArg]/p:Version=$fullVersion"
+
     - task: DotNetCoreCLI@2
       displayName: 'Pack dotnet new templates'
       inputs:
         command: 'pack'
         packagesToPack: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
-        arguments: '--configuration Release --no-restore --no-build /p:WindowsAppSDKBuildPipeline=1 $(packVersionArg)'
+        arguments: '--configuration Release --no-restore --no-build /p:WindowsAppSDKBuildPipeline=1 $(PackVersionArg)'
         outputDir: '$(ob_outputDirectory)'
         workingDirectory: '$(templateProjectDir)'
 

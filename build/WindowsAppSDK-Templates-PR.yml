@@ -30,13 +30,13 @@
 
 trigger: none
 
-# TODO: keep TemplatesBaseVersion in sync with the <Version> in
-# dev/Templates/Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj.
-# If/when that csproj is refactored to use <VersionPrefix>+<VersionSuffix>,
-# this pipeline can switch to only overriding the suffix instead.
+# The base package version is the <Version> in
+# dev/Templates/Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj
+# (single source of truth). This pipeline only contributes the PR-tagged
+# suffix below; the stages template reads the base version from the
+# csproj at runtime and concatenates the two.
 variables:
-  TemplatesBaseVersion: '0.0.5-alpha'
-  PrPackageVersion: '$(TemplatesBaseVersion).pr.$(System.PullRequest.PullRequestNumber).$(Build.BuildId)'
+  PrPackageVersionSuffix: 'pr.$(System.PullRequest.PullRequestNumber).$(Build.BuildId)'
 
 name: TemplatesPR-$(Date:yyyyMMdd)$(Rev:.r)
 
@@ -88,7 +88,7 @@ extends:
             type: windows
           publishToInternalFeed: false
           SignOutput: false
-          PackageVersionOverride: '$(PrPackageVersion)'
+          PackageVersionSuffix: '$(PrPackageVersionSuffix)'
 
       # Smoke-test: scaffold every template from the freshly built pack
       # and ensure each one still builds with dotnet build.
