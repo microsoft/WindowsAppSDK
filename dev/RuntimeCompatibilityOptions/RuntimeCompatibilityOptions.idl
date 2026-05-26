@@ -28,9 +28,6 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsML_FrameworkEpEnumeration = 62100797,
         WindowsML_EpSelectionMode = 62100876,
         UniformGridLayout_GetItemsPerLineDivideByZero = 62147120,
-
-        // 2.1.5
-        MRTCore_SparsePackagedPriFallback = 62382643,
     };
 
     /// Represents a version of the Windows App Runtime.
