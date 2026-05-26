@@ -16,6 +16,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         // 1.7.1
         // ...
+
+        // 2.0-experimental
+        MRTCore_SparsePackagedPriFallback = 62382643,
     };
 
     /// Represents a version of the Windows App Runtime.
