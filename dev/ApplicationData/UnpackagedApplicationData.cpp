@@ -21,20 +21,20 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         m_temporaryPath()
     {
     }
+    // The following functions are not implemented for the UnpackagedApplicationData implementation of ApplicationDataT
     winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetDefault()
     {
-        // Statics are dispatched via the factory to ApplicationData, not here
         throw winrt::hresult_not_implemented();
     }
-    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForUser(winrt::Windows::System::User /*user*/)
+    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForUser([[maybe_unused]] winrt::Windows::System::User user)
     {
         throw winrt::hresult_not_implemented();
     }
-    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForPackageFamily(winrt::hstring const& /*packageFamilyName*/)
+    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForPackageFamily([[maybe_unused]] winrt::hstring const& packageFamilyName)
     {
         throw winrt::hresult_not_implemented();
     }
-    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForUnpackaged(winrt::hstring const& /*publisher*/, winrt::hstring const& /*product*/)
+    winrt::Microsoft::Windows::Storage::ApplicationData UnpackagedApplicationData::GetForUnpackaged([[maybe_unused]] winrt::hstring const& publisher, [[maybe_unused]] winrt::hstring const& product)
     {
         throw winrt::hresult_not_implemented();
     }
@@ -235,7 +235,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
 
         co_return;
     }
-    winrt::Windows::Foundation::IAsyncAction UnpackagedApplicationData::ClearPublisherCacheFolderAsync(winrt::hstring /*folderName*/)
+    winrt::Windows::Foundation::IAsyncAction UnpackagedApplicationData::ClearPublisherCacheFolderAsync([[maybe_unused]] winrt::hstring folderName)
     {
         _VerifyNotClosed();
 
@@ -249,14 +249,14 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         m_localPath.clear();
         m_temporaryPath.clear();
     }
-    winrt::hstring UnpackagedApplicationData::GetPublisherCachePath(winrt::hstring const& /*folderName*/)
+    winrt::hstring UnpackagedApplicationData::GetPublisherCachePath([[maybe_unused]] winrt::hstring const& folderName)
     {
         _VerifyNotClosed();
 
         // ApplicationData.PublisherCacheFolder has no unpackaged equivalent
         throw winrt::hresult_not_implemented();
     }
-    winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::GetPublisherCacheFolder(winrt::hstring const& /*folderName*/)
+    winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::GetPublisherCacheFolder([[maybe_unused]] winrt::hstring const& folderName)
     {
         _VerifyNotClosed();
 
