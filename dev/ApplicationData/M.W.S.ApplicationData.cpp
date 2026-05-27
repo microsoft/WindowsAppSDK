@@ -7,6 +7,7 @@
 #include "Microsoft.Windows.Storage.ApplicationData.g.cpp"
 
 #include "M.W.S.ApplicationDataContainer.h"
+#include "UnpackagedApplicationData.h"
 
 #include <shlobj_core.h>
 
@@ -26,24 +27,14 @@ static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::Applicati
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
     ApplicationData::ApplicationData(hstring const& packageFamilyName) :
-        m_unpackagedApplicationData(),
         m_applicationData(nullptr),
         m_packageFamilyName(packageFamilyName)
     {
     }
     ApplicationData::ApplicationData(winrt::Windows::Storage::ApplicationData& value, hstring const& packageFamilyName) :
-        m_unpackagedApplicationData(),
         m_applicationData(value),
         m_packageFamilyName(packageFamilyName)
     {
-    }
-    ApplicationData::ApplicationData(hstring const& publisher, hstring const& product) :
-        m_unpackagedApplicationData(),
-        m_applicationData(nullptr),
-        m_packageFamilyName()
-    {
-        auto unpackagedApplicationData{ new ::Microsoft::Windows::Storage::UnpackagedApplicationData(publisher, product) };
-        m_unpackagedApplicationData.reset(unpackagedApplicationData);
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetDefault()
     {
@@ -118,27 +109,17 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             _VerifyPublisher(publisher);
             _VerifyProduct(product);
 
-            return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(publisher, product);
+            return winrt::make<winrt::Microsoft::Windows::Storage::implementation::UnpackagedApplicationData>(publisher, product);
         }
         throw winrt::hresult_not_implemented(L"GetForUnpackaged is not implemented.");
     }
     bool ApplicationData::IsMachinePathSupported()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->IsMachinePathSupported();
-        }
-
         const auto path{ _MachinePath(m_packageFamilyName) };
         return !path.empty();
     }
     hstring ApplicationData::LocalCachePath()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->LocalCachePath();
-        }
-
         if (!m_applicationData)
         {
             return winrt::hstring{};
@@ -147,11 +128,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::LocalPath()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->LocalPath();
-        }
-
         if (!m_applicationData)
         {
             return winrt::hstring{};
@@ -160,21 +136,11 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::MachinePath()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->MachinePath();
-        }
-
         const auto path{ _MachinePath(m_packageFamilyName) };
         return winrt::hstring{ path.c_str() };
     }
     hstring ApplicationData::SharedLocalPath()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->SharedLocalPath();
-        }
-
         if (!m_applicationData)
         {
             return winrt::hstring{};
@@ -193,11 +159,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::TemporaryPath()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->TemporaryPath();
-        }
-
         if (!m_applicationData)
         {
             return winrt::hstring{};
@@ -206,11 +167,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::LocalCacheFolder()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->LocalCacheFolder();
-        }
-
         if (!m_applicationData)
         {
             return nullptr;
@@ -219,11 +175,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::LocalFolder()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->LocalFolder();
-        }
-
         if (!m_applicationData)
         {
             return nullptr;
@@ -232,11 +183,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::MachineFolder()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->MachineFolder();
-        }
-
         const auto path{ MachinePath() };
         if (path.empty())
         {
@@ -246,11 +192,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::SharedLocalFolder()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->SharedLocalFolder();
-        }
-
         if (!m_applicationData)
         {
             return nullptr;
@@ -259,11 +200,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::TemporaryFolder()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->TemporaryFolder();
-        }
-
         if (!m_applicationData)
         {
             return nullptr;
@@ -272,11 +208,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Microsoft::Windows::Storage::ApplicationDataContainer ApplicationData::LocalSettings()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->LocalSettings();
-        }
-
         if (!m_applicationData)
         {
             return nullptr;
@@ -286,11 +217,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearAsync(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality)
     {
-        if (m_unpackagedApplicationData)
-        {
-            co_await m_unpackagedApplicationData->ClearAsync(locality);
-        }
-
         if (!m_applicationData)
         {
             co_return;
@@ -306,11 +232,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearPublisherCacheFolderAsync(hstring folderName)
     {
-        if (m_unpackagedApplicationData)
-        {
-            co_await m_unpackagedApplicationData->ClearPublisherCacheFolderAsync(folderName);
-        }
-
         if (!m_applicationData)
         {
             co_return;
@@ -319,11 +240,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     void ApplicationData::Close()
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->Close();
-        }
-
         if (m_applicationData)
         {
             m_applicationData.Close();
@@ -331,11 +247,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::GetPublisherCachePath(hstring const& folderName)
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->GetPublisherCachePath(folderName);
-        }
-
         auto folder{ GetPublisherCacheFolder(folderName) };
         winrt::hstring path;
         if (folder)
@@ -346,11 +257,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {
-        if (m_unpackagedApplicationData)
-        {
-            return m_unpackagedApplicationData->GetPublisherCacheFolder(folderName);
-        }
-
         if (!m_applicationData)
         {
             return nullptr;
