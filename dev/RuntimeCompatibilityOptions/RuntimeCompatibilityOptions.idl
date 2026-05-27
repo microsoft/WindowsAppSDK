@@ -53,6 +53,10 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         LanguageModelInsights_GetPartialResultLatency = 62083654,
         UIAffinityReleaseQueue_PauseDispatchDuringCleanup = 62097119,
         PackageDependency_ResolveDynamically = 62052877,
+
+        // 1.8.9
+        ItemTemplateWrapper_RecyclePoolLeak = 61574370,
+        InputPointerSource_TouchUpScrollCrashFix = 62086608,
     };
 
     /// Represents a version of the Windows App Runtime.
