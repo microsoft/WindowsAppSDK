@@ -19,6 +19,9 @@
 
 #include <FrameworkUdk/Containment.h>
 
+// 61684930: [2.0 servicing] WindowsAppSDK: Microsoft.Windows.Storage.ApplicationData.GetForUnpackaged()
+#define WINAPPSDK_CHANGEID_61684930 61684930, WinAppSDK_2_1_5
+
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::SharedLocal) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::SharedLocal));
@@ -104,7 +107,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
     {
-        if (WinAppSdk::Containment::IsChangeEnabled<ApplicationData_GetForUnpackaged>())
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61684930>())
         {
             _VerifyPublisher(publisher);
             _VerifyProduct(product);
