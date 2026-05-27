@@ -1,0 +1,175 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+      Declarative list of templates and their metadata. This csproj only
+      encodes the generic packaging rules.
+  -->
+  <Import Project="..\templates.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>false</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsPackable>true</IsPackable>
+    <PackageType>Template</PackageType>
+    <PackageId>Microsoft.WindowsAppSDK.WinUI.CSharp.Templates</PackageId>
+    <Version>0.0.5-alpha</Version>
+    <Title>WinUI 3 C# Templates</Title>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <Description>Official WinUI 3 project and item templates. Install this pack to use dotnet new for different types of apps, class libraries, unit tests and common WinUI controls.</Description>
+    <PackageTags>windows;winappsdk;winui;winui3;desktop;dotnet-new;templates;csharp</PackageTags>
+    <PackageProjectUrl>https://learn.microsoft.com/windows/apps/windows-app-sdk/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/microsoft/WindowsAppSDK</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>See https://github.com/microsoft/WindowsAppSDK/releases for release notes.</PackageReleaseNotes>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\localpackages'))</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" />
+  </ItemGroup>
+
+  <!-- Shared .gitignore for all project templates -->
+  <PropertyGroup>
+    <_GitignoreSource>templates\gitignore.txt</_GitignoreSource>
+  </PropertyGroup>
+
+  <!--
+      ExpandProjectTemplatePackItems: inline C# MSBuild task that walks the
+      declarative @(ProjectTemplate) / @(ItemTemplate) lists (from
+      ..\templates.props) and emits <None Pack="true" PackagePath="..." />
+      items consumed by NuGet's Pack target.
+
+      Why a task instead of a batched <ItemGroup>: MSBuild's static MSB5029
+      check ("wildcard enumerates whole drive") inspects <None Include>
+      patterns before target batching resolves %(...) metadata, so an
+      Include of "%(ProjectTemplate.SourceDir)\**\*.*" is rejected even
+      though batching would produce per-template paths at run time. A real
+      task is opaque to that check; enumeration happens via System.IO at
+      execution time.
+  -->
+  <UsingTask TaskName="ExpandProjectTemplatePackItems"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Templates ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <GitignoreSource ParameterType="System.String" Required="false" />
+      <ExpandedItems ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="Microsoft.Build.Framework" />
+      <Using Namespace="Microsoft.Build.Utilities" />
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+var output = new List<ITaskItem>();
+var commonExcludeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "bin", "obj" };
+
+// Add one file -> one packed entry. Sets Pack/PackagePath so NuGet picks it up.
+void Emit(string sourcePath, string packagePath)
+{
+    var item = new TaskItem(sourcePath);
+    item.SetMetadata("Pack", "true");
+    item.SetMetadata("PackagePath", packagePath);
+    output.Add(item);
+}
+
+// Recursively pack every file under fromDir into toRelRoot, optionally skipping
+// files whose path relative to fromDir matches `skipRelative`.
+void EmitTree(string fromDir, string toRelRoot, Func<string, bool> skipRelative = null)
+{
+    if (!Directory.Exists(fromDir)) { return; }
+    foreach (var file in Directory.EnumerateFiles(fromDir, "*", SearchOption.AllDirectories))
+    {
+        string rel = file.Substring(fromDir.Length).TrimStart('\\', '/');
+        if (skipRelative != null && skipRelative(rel)) { continue; }
+        Emit(file, toRelRoot + "/" + rel.Replace('\\', '/'));
+    }
+}
+
+foreach (var t in Templates)
+{
+    string srcDir = t.GetMetadata("SourceDir");
+    string configDir = t.GetMetadata("DotnetConfigDir");
+    string baseName = t.GetMetadata("BaseName");
+    string renameFrom = t.GetMetadata("RenameManifestFrom");
+    string contentRoot = "content/" + t.ItemSpec;
+
+    // Files in the Source tree that are VSIX-only sidecars (excluded from the dotnet-new pack).
+    // The Source-named manifest, if any, is excluded here and re-emitted under the reserved name below.
+    var sidecars = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        baseName + ".csproj",
+        baseName + ".ico",
+        baseName + ".png",
+        baseName + ".vstemplate",
+    };
+    if (!string.IsNullOrEmpty(renameFrom)) { sidecars.Add(renameFrom); }
+
+    // 1. Template source tree, minus bin/obj and the VSIX-only sidecars.
+    EmitTree(srcDir, contentRoot, rel =>
+    {
+        var parts = rel.Split(new[] { '\\', '/' }, 2);
+        return commonExcludeNames.Contains(parts[0])
+            || (parts.Length == 1 && sidecars.Contains(parts[0]));
+    });
+
+    // 2. Source-named manifest -> reserved Package.appxmanifest, if requested.
+    // An empty/unset RenameManifestFrom means the template has no manifest (e.g. class library)
+    // and is allowed. A non-empty value MUST resolve to a real file -- otherwise it's almost
+    // certainly a typo in templates.props that would silently ship a manifest-less template.
+    if (!string.IsNullOrEmpty(renameFrom))
+    {
+        string manifestPath = Path.Combine(srcDir, renameFrom);
+        if (!File.Exists(manifestPath))
+        {
+            Log.LogError(
+                "Template '{0}': RenameManifestFrom='{1}' but '{2}' does not exist. " +
+                "Fix the filename in templates.props, add the manifest under SourceDir, " +
+                "or clear RenameManifestFrom if this template has no manifest.",
+                t.ItemSpec, renameFrom, manifestPath);
+            continue;
+        }
+        Emit(manifestPath, contentRoot + "/Package.appxmanifest");
+    }
+
+    // 3. dotnet-new template configuration.
+    EmitTree(Path.Combine(configDir, ".template.config"), contentRoot + "/.template.config");
+
+    // 4. Shared .gitignore (one copy per template).
+    if (!string.IsNullOrEmpty(GitignoreSource) && File.Exists(GitignoreSource))
+    {
+        Emit(GitignoreSource, contentRoot + "/gitignore.txt");
+    }
+}
+
+ExpandedItems = output.ToArray();
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="_ExpandProjectTemplatePackItems"
+          BeforeTargets="_GetPackageFiles;GenerateNuspec">
+    <!-- Project templates: shared + dotnet-new-only. Each gets a copy of the shared .gitignore. -->
+    <ExpandProjectTemplatePackItems Templates="@(ProjectTemplate);@(DotnetNewOnlyProjectTemplate)"
+                                    GitignoreSource="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(_GitignoreSource)'))">
+      <Output TaskParameter="ExpandedItems" ItemName="None" />
+    </ExpandProjectTemplatePackItems>
+
+    <!-- Item templates: shared + dotnet-new-only. No .gitignore (the host project already has one). -->
+    <ExpandProjectTemplatePackItems Templates="@(ItemTemplate);@(DotnetNewOnlyItemTemplate)">
+      <Output TaskParameter="ExpandedItems" ItemName="None" />
+    </ExpandProjectTemplatePackItems>
+  </Target>
+</Project>

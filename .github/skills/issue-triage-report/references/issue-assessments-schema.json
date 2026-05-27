@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IssueAssessments",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "assessments": {
+      "type": "object",
+      "description": "Issue-number keyed assessments. Keys are issue numbers as strings.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "severityTier": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low", "none"],
+            "description": "Optional. Empty or missing value falls back to default behavior."
+          },
+          "isBlocker": {
+            "type": "boolean",
+            "description": "Optional. Empty or missing value falls back to default behavior."
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Optional human or agent notes."
+          }
+        }
+      }
+    },
+    "generatedAt": {
+      "type": "string",
+      "description": "Optional ISO-8601 timestamp."
+    },
+    "assessedBy": {
+      "type": "string",
+      "description": "Optional source marker, e.g. Copilot or human alias."
+    }
+  },
+  "required": ["assessments"]
+}

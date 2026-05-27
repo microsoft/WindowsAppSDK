@@ -145,6 +145,11 @@ $result.hasAreaLabel = $areaLabels.Count -gt 0
 $result.areaLabels = @($areaLabels | ForEach-Object { $_.name })
 $result.needsTriage = $triageLabels.Count -gt 0
 
+# Note: Area classification is performed by the agent using LLM reasoning.
+# The agent uses Get-RepositoryLabels.ps1 -Filter "area-*" to fetch valid
+# area labels with descriptions, then reasons about the best match based on
+# the issue title, body, and comments. See SKILL.md for the confidence rubric.
+
 # Output
 switch ($OutputFormat) {
     'summary' {
@@ -173,6 +178,11 @@ switch ($OutputFormat) {
         Write-Host "     Needs triage:   $(if ($result.needsTriage) { '⚠️ Yes' } else { '✅ No' })" -ForegroundColor $(if ($result.needsTriage) { 'Yellow' } else { 'Green' })
         Write-Host "     Comments:       $($result.commentCount)" -ForegroundColor Gray
         Write-Host ""
+        
+        if (-not $result.hasAreaLabel) {
+            Write-Host "  🏷️ Area Classification: Pending (agent will classify using LLM reasoning)" -ForegroundColor Yellow
+            Write-Host ""
+        }
         
         if ($result.body) {
             Write-Host "  📝 Issue Body (first 500 chars):" -ForegroundColor White

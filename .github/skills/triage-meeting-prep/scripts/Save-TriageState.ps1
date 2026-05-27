@@ -13,13 +13,13 @@
     JSON string containing the array of issues from gh CLI.
 
 .PARAMETER OutputPath
-    Path to save the state file. Defaults to 'Generated Files/triageMeeting/previous-state.json'.
+    Path to save the state file. Defaults to 'Generated-Files/triageMeeting/previous-state.json'.
 
 .PARAMETER TriageDate
     Date of the triage meeting. Defaults to current date.
 
 .EXAMPLE
-    $issues | ConvertTo-Json | ./Save-TriageState.ps1 -OutputPath "Generated Files/triageMeeting/previous-state.json"
+    $issues | ConvertTo-Json | ./Save-TriageState.ps1 -OutputPath "Generated-Files/triageMeeting/previous-state.json"
 
 .EXAMPLE
     ./Save-TriageState.ps1 -IssuesJson $jsonString -TriageDate "2025-01-28"
@@ -31,7 +31,7 @@ param(
     [string]$IssuesJson,
 
     [Parameter()]
-    [string]$OutputPath = "Generated Files/triageMeeting/previous-state.json",
+    [string]$OutputPath = "Generated-Files/triageMeeting/previous-state.json",
 
     [Parameter()]
     [string]$TriageDate = (Get-Date -Format "yyyy-MM-dd")
