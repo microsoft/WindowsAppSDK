@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "frameworkudk\ResourceManager.h"
+#include <AppModel.Identity.IsPackagedProcess.h>
 
 bool IsResourceNotFound(HRESULT hr)
 {
@@ -83,7 +84,7 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
 
     // GetDefaultPriFileForCurrentPackage will not handle the new case where
     // resources.pri is in the parent folder. 
-    bool isPackaged = (hr != HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
+    bool isPackaged = AppModel::Identity::IsPackagedProcess();
     hr = GetDefaultPriFileForCurentModule(isPackaged, filePath);
 
     // Sparse-packaged apps have identity but deploy PRI files as loose files; fall back to unpackaged discovery which also searches for "[modulename].pri".
