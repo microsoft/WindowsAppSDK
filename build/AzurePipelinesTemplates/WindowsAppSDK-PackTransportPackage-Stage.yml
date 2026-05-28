@@ -168,7 +168,8 @@ stages:
         targetType: 'inline'
         script: |
           $buildType = '$(channel)'
-          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).21'
+          $majorMinorPatchRev = '$(MajorVersion).$(MinorVersion).24'
+
           
           if ($env:ComponentType)
           {
