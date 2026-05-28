@@ -39,9 +39,16 @@
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>a007e3a86ec33bad02efd987d6a4617e36c78c59</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="2.0.3-dev.experimental1">
+    <!-- Sync with WindowsAppSDKAggregator/eng/Version.Details.xml, which is temporarily
+         pinned back to pre-SemVer Base (calendar scheme) while feeders (LiftedIXP/DCPP,
+         WinUI lift, DWriteCore) ship transports built against new-scheme Base. The
+         new-scheme version 2.0.3-dev.experimental1 is numerically lower than feeders'
+         baked-in calendar-scheme floors (e.g. 2.0.260223001-experimental), causing
+         NU1605 downgrades on sample-app restore. Revert to new-scheme once Aggregator
+         reverts. Tracking: AB#62180574. -->
+    <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="2.0.260323000-dev.experimental9">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
-      <Sha>506407fef12fef366da3ed1ba2ee955d46d48fa1</Sha>
+      <Sha>699ec30b6a9ca104dac8a06f804d7db4429b814b</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="3.0.0-experimental-Rolling.20260419.2">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
