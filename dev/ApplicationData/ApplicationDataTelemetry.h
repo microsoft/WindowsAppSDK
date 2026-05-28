@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT license.
 
 #pragma once
@@ -23,6 +23,18 @@ public:
                 ClearMachineFolderAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(path.c_str(), "Path"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(UnpackagedClearAsync, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality, winrt::hstring const& publisher, winrt::hstring const& product) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                UnpackagedClearAsync,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingInt32(static_cast<std::int32_t>(locality), "Locality"),
+                TraceLoggingWideString(publisher.c_str(), "Publisher"),
+                TraceLoggingWideString(product.c_str(), "Product"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
