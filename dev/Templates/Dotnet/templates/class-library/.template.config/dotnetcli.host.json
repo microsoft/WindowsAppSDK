@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "dotnetVersion": {
+      "longName": "dotnet-version",
+      "shortName": "tfm",
+      "description": "Base TFM for the WinUI project (for example net10.0)."
+    }
+  }
+}
