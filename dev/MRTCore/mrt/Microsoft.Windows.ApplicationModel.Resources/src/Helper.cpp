@@ -1,8 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
 #include "frameworkudk\ResourceManager.h"
+#include <FrameworkUdk/Containment.h>
+#include <AppModel.Identity.IsPackagedProcess.h>
+
+// Bug 62382643: Fix sparse-packaged apps unable to discover module-specific PRI files
+#define WINAPPSDK_CHANGEID_62382643 62382643, WinAppSDK_2_1_5
 
 bool IsResourceNotFound(HRESULT hr)
 {
@@ -84,5 +89,27 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
     // GetDefaultPriFileForCurrentPackage will not handle the new case where
     // resources.pri is in the parent folder. 
     bool isPackaged = (hr != HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
+
+    if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62382643>())
+    {
+        isPackaged = AppModel::Identity::IsPackagedProcess();
+        hr = GetDefaultPriFileForCurentModule(isPackaged, filePath);
+
+        // Sparse-packaged apps have identity but deploy PRI files as loose files;
+        // fall back to unpackaged discovery which also searches for "[modulename].pri".
+        if (isPackaged && IsResourceNotFound(hr))
+        {
+            HRESULT hrFallback = GetDefaultPriFileForCurentModule(false, filePath);
+            if (SUCCEEDED(hrFallback))
+            {
+                hr = hrFallback;
+            }
+            // If the fallback also fails, preserve the original HRESULT (not the fallback's)
+            // for backward compatibility so callers checking for specific errors (e.g., ERROR_FILE_NOT_FOUND) are not broken.
+        }
+
+        return hr;
+    }
+
     return GetDefaultPriFileForCurentModule(isPackaged, filePath);
 }
