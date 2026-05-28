@@ -28,6 +28,9 @@ namespace Test::LRP
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications Long Running Process tests")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
+            // Retry on transient MSIX/COM-server install races (HRESULT 0x80073D02
+            // ERROR_INSTALL_RESOURCES_BUSY) seen intermittently on x86 Win10 22H2.
+            TEST_CLASS_PROPERTY(L"TestRetryCount", L"2")
         END_TEST_CLASS()
 
         wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
