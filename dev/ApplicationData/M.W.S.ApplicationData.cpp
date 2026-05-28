@@ -7,12 +7,20 @@
 #include "Microsoft.Windows.Storage.ApplicationData.g.cpp"
 
 #include "M.W.S.ApplicationDataContainer.h"
+#include "UnpackagedApplicationData.h"
 
 #include <shlobj_core.h>
 
 #include <winrt/Windows.Management.Core.h>
 
 #include "ApplicationDataTelemetry.h"
+
+#include "Validate.h"
+
+#include <FrameworkUdk/Containment.h>
+
+// 61684930: [2.0 servicing] WindowsAppSDK: Microsoft.Windows.Storage.ApplicationData.GetForUnpackaged()
+#define WINAPPSDK_CHANGEID_61684930 61684930, WinAppSDK_2_1_5
 
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
@@ -21,7 +29,12 @@ static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::Applicati
 
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
-    ApplicationData::ApplicationData(winrt::Windows::Storage::ApplicationData const& value, hstring const& packageFamilyName) :
+    ApplicationData::ApplicationData(hstring const& packageFamilyName) :
+        m_applicationData(nullptr),
+        m_packageFamilyName(packageFamilyName)
+    {
+    }
+    ApplicationData::ApplicationData(winrt::Windows::Storage::ApplicationData& value, hstring const& packageFamilyName) :
         m_applicationData(value),
         m_packageFamilyName(packageFamilyName)
     {
@@ -84,7 +97,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
                 {
                     // The package family has package(s) registered for the user with at least 1 Framework package
                     // (and a package family can't have Framework and not-Framework packages in the same package family)
-                    return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(nullptr, packageFamilyName);
+                    return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(packageFamilyName);
                 }
             }
 
@@ -92,10 +105,16 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             throw;
         }
     }
-    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& /*publisher*/, hstring const& /*product*/)
+    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
     {
-        // TODO implement GetForUnpackaged
-        throw hresult_not_implemented();
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61684930>())
+        {
+            _VerifyPublisher(publisher);
+            _VerifyProduct(product);
+
+            return winrt::make<winrt::Microsoft::Windows::Storage::implementation::UnpackagedApplicationData>(publisher, product);
+        }
+        throw winrt::hresult_not_implemented(L"GetForUnpackaged is not implemented.");
     }
     bool ApplicationData::IsMachinePathSupported()
     {
@@ -239,23 +258,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         }
         return path;
     }
-    winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearMachineFolderAsync()
-    {
-        const auto path{ MachinePath() };
-
-        auto logTelemetry{ ApplicationDataTelemetry::ClearMachineFolderAsync::Start(path) };
-
-        auto strong{ get_strong() };
-
-        logTelemetry.IgnoreCurrentThread();
-        co_await winrt::resume_background();
-        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
-
-        const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
-        wil::RemoveDirectoryRecursive(path.c_str(), options);
-
-        logTelemetry.Stop();
-    }
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {
         if (!m_applicationData)
@@ -279,6 +281,23 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             throw;
         }
     }
+    winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearMachineFolderAsync()
+    {
+        const auto path{ MachinePath() };
+
+        auto logTelemetry{ ApplicationDataTelemetry::ClearMachineFolderAsync::Start(path) };
+
+        auto strong{ get_strong() };
+
+        logTelemetry.IgnoreCurrentThread();
+        co_await winrt::resume_background();
+        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
+
+        const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
+        wil::RemoveDirectoryRecursive(path.c_str(), options);
+
+        logTelemetry.Stop();
+    }
     std::filesystem::path ApplicationData::_MachinePath(hstring const& packageFamilyName)
     {
         // Path = HKLM\...apprepository...\Families\ApplicationData\...pkgfamilyname...\Machine
@@ -297,7 +316,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         }
         return std::filesystem::path{};
     }
-
     bool ApplicationData::_PathExists(std::filesystem::path const& path)
     {
         const std::filesystem::directory_entry directoryEntry{ path };
@@ -311,5 +329,15 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             path = storageFolder.Path();
         }
         return path;
+    }
+    void ApplicationData::_VerifyPublisher(winrt::hstring const& string)
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()), "Publisher not valid (%ls)", string.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Windows::Storage::is_prohibited_string(string.c_str()), "Publisher not valid (%ls)", string.c_str());
+    }
+    void ApplicationData::_VerifyProduct(winrt::hstring const& string)
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()), "Product not valid (%ls)", string.c_str());
+        THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Windows::Storage::is_prohibited_string(string.c_str()), "Product not valid (%ls)", string.c_str());
     }
 }

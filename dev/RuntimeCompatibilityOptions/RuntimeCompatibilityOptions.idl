@@ -12,8 +12,6 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     {
         None = 0, /// do not use this value
 
-        // Add real changes here:
-
         // 2.1.0
         ItemTemplateWrapper_RecyclePoolLeak = 61574373,
         Animation_FixImplicitHideAnimationCrash = 61760863,
@@ -28,6 +26,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsML_FrameworkEpEnumeration = 62100797,
         WindowsML_EpSelectionMode = 62100876,
         UniformGridLayout_GetItemsPerLineDivideByZero = 62147120,
+
+        // 2.2.0
+        ApplicationData_GetForUnpackaged = 61684930,
     };
 
     /// Represents a version of the Windows App Runtime.
