@@ -37,39 +37,32 @@
       "isVisible": "true"
     },
     {
-      "id": "useLatestDependencies",
+      "id": "windowsAppSdkVersion",
       "name": {
-        "text": "Use latest project dependencies"
+        "text": "Windows App SDK version (empty = latest)"
       },
       "isVisible": "true"
     },
     {
-      "id": "windowsAppSdkVersion",
-      "name": {
-        "text": "Windows App SDK version"
-      },
-      "isVisible": "!useLatestDependencies"
-    },
-    {
       "id": "windowsSdkBuildToolsVersion",
       "name": {
-        "text": "Windows SDK BuildTools version"
+        "text": "Windows SDK BuildTools version (empty = latest)"
       },
-      "isVisible": "!useLatestDependencies"
+      "isVisible": "true"
     },
     {
       "id": "windowsSdkBuildToolsWinAppVersion",
       "name": {
-        "text": "Windows SDK BuildTools WinApp version"
+        "text": "Windows SDK BuildTools WinApp version (empty = latest)"
       },
-      "isVisible": "!useLatestDependencies"
+      "isVisible": "true"
     },
     {
       "id": "communityToolkitMvvmVersion",
       "name": {
-        "text": "CommunityToolkit.Mvvm version"
+        "text": "CommunityToolkit.Mvvm version (empty = latest)"
       },
-      "isVisible": "!useLatestDependencies"
+      "isVisible": "true"
     }
   ]
 }
