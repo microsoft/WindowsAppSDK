@@ -318,7 +318,41 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
-    auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
+
+    // AddPackageAsync intermittently fails on the test agents with transient
+    // deployment errors (most often 0x80073D02 ERROR_INSTALL_RESOURCES_BUSY)
+    // when the previous test's package teardown hasn't fully released file
+    // handles. Retry with backoff before giving up.
+    winrt::Windows::Management::Deployment::DeploymentResult deploymentResult{ nullptr };
+    constexpr int c_maxAttempts{ 5 };
+    DWORD backoffMs{ 1000 };
+    for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
+    {
+        deploymentResult = packageManager.AddPackageAsync(msixUri, nullptr, options).get();
+        const HRESULT hr{ deploymentResult.ExtendedErrorCode() };
+        if (SUCCEEDED(hr))
+        {
+            if (attempt > 1)
+            {
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                    L"AddPackageAsync('%s') succeeded on attempt %d", packageFullName, attempt));
+            }
+            break;
+        }
+        const bool isTransient{
+            hr == HRESULT_FROM_WIN32(ERROR_INSTALL_RESOURCES_BUSY) ||      // 0x80073D02
+            hr == HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED) || // 0x80073CFF
+            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };           // 0x80070020
+        if (!isTransient || attempt == c_maxAttempts)
+        {
+            break;
+        }
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(
+            L"AddPackageAsync('%s') attempt %d/%d failed with transient HRESULT 0x%08X %s; sleeping %u ms before retry",
+            packageFullName, attempt, c_maxAttempts, hr, deploymentResult.ErrorText().c_str(), backoffMs));
+        Sleep(backoffMs);
+        backoffMs = (std::min)(backoffMs * 2u, 8000u);
+    }
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
 }
 
