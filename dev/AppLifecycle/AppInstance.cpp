@@ -285,7 +285,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_current.as<Microsoft::Windows::AppLifecycle::AppInstance>();
     }
 
-    IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstances()
+    HRESULT AppInstance::GetInstancesImpl(IVector<Microsoft::Windows::AppLifecycle::AppInstance>& instancesOut) noexcept try
     {
         // Force the singleton init.
         GetCurrent();
@@ -332,6 +332,19 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
         }
 
+        instancesOut = instances;
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstances()
+    {
+        // Delegate to the noexcept GetInstancesImpl worker and rethrow any failure
+        // HRESULT cleanly via wil::ResultException. This avoids the deep WIL
+        // FormatMessage-based exception logging chain that caused stack overflow on
+        // the hot path (Bug 61688595).
+        IVector<Microsoft::Windows::AppLifecycle::AppInstance> instances{ nullptr };
+        THROW_IF_FAILED(GetInstancesImpl(instances));
         return instances;
     }
 
