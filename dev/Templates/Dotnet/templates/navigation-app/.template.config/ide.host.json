@@ -39,21 +39,21 @@
     {
       "id": "windowsAppSdkVersion",
       "name": {
-        "text": "Windows App SDK version (empty = latest)"
+        "text": "Windows App SDK version (* = latest)"
       },
       "isVisible": "true"
     },
     {
       "id": "windowsSdkBuildToolsVersion",
       "name": {
-        "text": "Windows SDK BuildTools version (empty = latest)"
+        "text": "Windows SDK BuildTools version (* = latest)"
       },
       "isVisible": "true"
     },
     {
       "id": "windowsSdkBuildToolsWinAppVersion",
       "name": {
-        "text": "Windows SDK BuildTools WinApp version (empty = latest)"
+        "text": "Windows SDK BuildTools WinApp version (* = latest)"
       },
       "isVisible": "true"
     }
