@@ -28,10 +28,10 @@
       <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
-      <CustomParameter Name="$ResolvedWindowsAppSdkVersion$" Value="*" />
-      <CustomParameter Name="$ResolvedWindowsSdkBuildToolsVersion$" Value="*" />
-      <CustomParameter Name="$ResolvedWindowsSdkBuildToolsWinAppVersion$" Value="*" />
-      <CustomParameter Name="$ResolvedCommunityToolkitMvvmVersion$" Value="*" />
+      <CustomParameter Name="$WindowsAppSdkVersion$" Value="*" />
+      <CustomParameter Name="$WindowsSdkBuildToolsVersion$" Value="*" />
+      <CustomParameter Name="$WindowsSdkBuildToolsWinAppVersion$" Value="*" />
+      <CustomParameter Name="$CommunityToolkitMvvmVersion$" Value="*" />
     </CustomParameters>
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="launchSettings.json">Properties\launchSettings.json</ProjectItem>
