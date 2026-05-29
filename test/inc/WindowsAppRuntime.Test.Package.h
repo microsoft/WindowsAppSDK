@@ -6,6 +6,8 @@
 
 #include <appmodel.h>
 
+#include <algorithm>
+
 #include <WindowsAppRuntime.Test.FileSystem.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.ApplicationModel.h>
@@ -339,10 +341,12 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
             }
             break;
         }
+        // ERROR_INSTALL_RESOURCES_BUSY (0x3D02) / ERROR_INSTALL_OPEN_PACKAGE_FAILED (0x3CFF)
+        // are not in the default <winerror.h> visible to this header, so compare raw HRESULTs.
         const bool isTransient{
-            hr == HRESULT_FROM_WIN32(ERROR_INSTALL_RESOURCES_BUSY) ||      // 0x80073D02
-            hr == HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED) || // 0x80073CFF
-            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };           // 0x80070020
+            hr == HRESULT{ 0x80073D02L } ||              // ERROR_INSTALL_RESOURCES_BUSY
+            hr == HRESULT{ 0x80073CFFL } ||              // ERROR_INSTALL_OPEN_PACKAGE_FAILED
+            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };  // 0x80070020
         if (!isTransient || attempt == c_maxAttempts)
         {
             break;
@@ -351,7 +355,7 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
             L"AddPackageAsync('%s') attempt %d/%d failed with transient HRESULT 0x%08X %s; sleeping %u ms before retry",
             packageFullName, attempt, c_maxAttempts, hr, deploymentResult.ErrorText().c_str(), backoffMs));
         Sleep(backoffMs);
-        backoffMs = (std::min)(backoffMs * 2u, 8000u);
+        backoffMs = (std::min<DWORD>)(backoffMs * 2, 8000);
     }
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
 }

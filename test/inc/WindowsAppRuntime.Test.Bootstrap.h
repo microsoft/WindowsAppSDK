@@ -156,7 +156,7 @@ namespace Test::Bootstrap
                     L"MddBootstrapInitialize attempt %d/%d failed with 0x%08X; sleeping %u ms before retry",
                     attempt, c_bootstrapMaxAttempts, bootstrapHr, bootstrapBackoffMs));
                 Sleep(bootstrapBackoffMs);
-                bootstrapBackoffMs = (std::min)(bootstrapBackoffMs * 2u, 8000u);
+                bootstrapBackoffMs = (std::min<DWORD>)(bootstrapBackoffMs * 2, 8000);
             }
         }
         VERIFY_SUCCEEDED(bootstrapHr);
