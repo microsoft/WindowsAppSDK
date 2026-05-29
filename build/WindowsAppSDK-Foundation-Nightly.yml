@@ -14,8 +14,6 @@
 #                                                                                                                                   #
 #####################################################################################################################################
 
-name: $(version)
-
 # https://aka.ms/obpipelines/triggers
 trigger: none
 
@@ -58,10 +56,17 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
+  parameters:
+    PrOrNightly: 'dev'
+- template: AzurePipelinesTemplates\WindowsAppSDK-VersionVariables.yml
+  parameters:
+    PrOrNightly: 'dev'
 - name: maxParallelForBuildSamplesCompatJob_x64
   value: 20
 - name: maxParallelForBuildSamplesCompatJob_arm64
   value: 20
+
+name: $(MajorVersion).$(FoundationMinorVersionResolved).$(FoundationPatchVersionResolved)-$(NugetBuildTypePrefix)$(channel)$(Revision)
 
 resources:
   repositories:

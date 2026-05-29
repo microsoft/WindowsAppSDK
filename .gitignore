@@ -207,6 +207,8 @@ PublishScripts/
 *.nupkg
 # NuGet Symbol Packages
 *.snupkg
+# Visual Studio Extension build output (source files are *.vsixmanifest, not affected)
+*.vsix
 # The packages folder can be ignored because of Package Restore
 **/[Pp]ackages/*
 # except build/, which is used as an MSBuild target.
