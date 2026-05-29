@@ -49,10 +49,10 @@
     <PropertyGroup> above to opt out.
   -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="*" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="*" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="*" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="*" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$ResolvedWindowsSdkBuildToolsVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$ResolvedWindowsAppSdkVersion$" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="$ResolvedCommunityToolkitMvvmVersion$" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$ResolvedWindowsSdkBuildToolsWinAppVersion$" />
   </ItemGroup>
 
   <!--
