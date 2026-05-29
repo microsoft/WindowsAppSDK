@@ -24,15 +24,9 @@ trigger: none
 # ob_sdl_*) are inert here because we explicitly disable those scanners in
 # globalSdl below. Versions.yml is needed because CommonVariables references
 # MajorVersion / MinorVersion / PatchVersion.
-#
-# PrPackageVersionSuffix is appended to the csproj <Version> at pack time
-# so PR builds don't collide with canonical packages (see
-# PackageVersionSuffix in WindowsAppSDK-DotnetNewTemplates-Stages.yml).
 variables:
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
-- name: PrPackageVersionSuffix
-  value: 'pr.$(System.PullRequest.PullRequestNumber).$(Build.BuildId)'
 
 name: TemplatesPR-$(Date:yyyyMMdd)$(Rev:.r)
 
@@ -79,14 +73,16 @@ extends:
 
     stages:
       # Build + pack the templates NuGet. Signing/publishing off; the
-      # package version is stamped with the PR number + build id.
+      # package version is the csproj <Version> with a 'pr.<PR#>.<BuildId>'
+      # suffix appended. On manual / non-PR runs the PR number macro stays
+      # unresolved -- the stages template substitutes 'unknownpr' for it.
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
         parameters:
           pool:
             type: windows
           publishToInternalFeed: false
           SignOutput: false
-          PackageVersionSuffix: '$(PrPackageVersionSuffix)'
+          PackageVersionSuffix: 'pr.$(System.PullRequest.PullRequestNumber).$(Build.BuildId)'
 
       # Smoke-test: scaffold every template from the pack and dotnet build each.
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self

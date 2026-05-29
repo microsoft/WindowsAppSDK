@@ -106,9 +106,16 @@ stages:
               throw "No <Version> element found in $csprojPath"
             }
             $baseVersion = $versionNode.Node.InnerText.Trim()
-            $suffix = '${{ parameters.PackageVersionSuffix }}'
             if ([string]::IsNullOrWhiteSpace($baseVersion)) {
               throw "csproj <Version> is empty in $csprojPath"
+            }
+            $suffix = '${{ parameters.PackageVersionSuffix }}'
+            # System.PullRequest.PullRequestNumber is undefined on manual / non-PR
+            # runs, so the agent leaves the macro literal in $suffix. Substitute
+            # 'unknownpr' so the resulting SemVer string is still valid.
+            if ($suffix -match '\$\(System\.PullRequest\.PullRequestNumber\)') {
+              Write-Host "PR number unavailable (manual/non-PR run); substituting 'unknownpr'"
+              $suffix = $suffix -replace '\$\(System\.PullRequest\.PullRequestNumber\)', 'unknownpr'
             }
             # '-' starts a SemVer prerelease tag; '.' extends an existing one.
             $separator = if ($baseVersion -match '-') { '.' } else { '-' }
