@@ -29,6 +29,15 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         // 2.2.0
         ApplicationData_GetForUnpackaged = 61684930,
+        InputPointerSource_PointerCancelCrashFix = 61854090,
+        RenderTargetBitmap_PreCommitCrashOnTreeLeave = 62216616,
+        ScrollView_HideIndicatorsTimerUseAfterFree = 62255131,
+        ThemeSettings_OffThreadDestructorFix = 62276145,
+        MRTCore_SparsePackagedPriFallback = 62382643,
+        GetPeerPrivate_UseAfterFree = 62422195,
+        WindowsMLFlatCCatalog_CallbackStringOwnership = 62440888,
+        WindowsML_ComRundownFix = 62440888,
+        WindowsML_ComInitializationFix = 62440888,
     };
 
     /// Represents a version of the Windows App Runtime.
