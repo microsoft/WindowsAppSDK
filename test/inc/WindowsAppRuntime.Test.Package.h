@@ -342,11 +342,12 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
             break;
         }
         // ERROR_INSTALL_RESOURCES_BUSY (0x3D02) / ERROR_INSTALL_OPEN_PACKAGE_FAILED (0x3CFF)
-        // are not in the default <winerror.h> visible to this header, so compare raw HRESULTs.
+        // symbols aren't visible in this header's translation units; pass raw win32 codes
+        // through HRESULT_FROM_WIN32 (always-available macro) instead.
         const bool isTransient{
-            hr == HRESULT{ 0x80073D02L } ||              // ERROR_INSTALL_RESOURCES_BUSY
-            hr == HRESULT{ 0x80073CFFL } ||              // ERROR_INSTALL_OPEN_PACKAGE_FAILED
-            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };  // 0x80070020
+            hr == HRESULT_FROM_WIN32(0x3D02) ||                  // ERROR_INSTALL_RESOURCES_BUSY
+            hr == HRESULT_FROM_WIN32(0x3CFF) ||                  // ERROR_INSTALL_OPEN_PACKAGE_FAILED
+            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) }; // 0x80070020
         if (!isTransient || attempt == c_maxAttempts)
         {
             break;
