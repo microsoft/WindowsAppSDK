@@ -37,9 +37,23 @@
       "isVisible": "true"
     },
     {
-      "id": "UseLatestWindowsAppSDK",
+      "id": "windowsAppSdkVersion",
       "name": {
-        "text": "Use latest Windows App SDK version"
+        "text": "Windows App SDK version (empty = latest)"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "windowsSdkBuildToolsVersion",
+      "name": {
+        "text": "Windows SDK BuildTools version (empty = latest)"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "windowsSdkBuildToolsWinAppVersion",
+      "name": {
+        "text": "Windows SDK BuildTools WinApp version (empty = latest)"
       },
       "isVisible": "true"
     }
