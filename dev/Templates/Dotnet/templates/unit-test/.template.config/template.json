@@ -135,45 +135,40 @@
       },
       "replaces": "$guid9$"
     },
-    "UseLatestWindowsAppSDK":{
-      "type": "parameter",
-      "datatype": "bool",
-      "defaultValue": "true"
-    },
     "windowsAppSdkVersion": {
       "type": "parameter",
       "datatype": "text",
-      "replaces": "$WindowsAppSdkVersion$",
-      "defaultValue": "1.8.260317003",
-      "description": "Version of the Microsoft.WindowsAppSDK NuGet package."
+      "defaultValue": "*",
+      "replaces": "$ResolvedWindowsAppSdkVersion$",
+      "description": "Microsoft.WindowsAppSDK NuGet version. Use * for the latest stable."
     },
     "windowsSdkBuildToolsVersion": {
       "type": "parameter",
       "datatype": "text",
-      "replaces": "$WindowsSdkBuildToolsVersion$",
-      "defaultValue": "10.0.26100.7705",
-      "description": "Version of the Microsoft.Windows.SDK.BuildTools NuGet package."
+      "defaultValue": "*",
+      "replaces": "$ResolvedWindowsSdkBuildToolsVersion$",
+      "description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable."
     },
     "windowsSdkBuildToolsWinAppVersion": {
       "type": "parameter",
       "datatype": "text",
-      "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
-      "defaultValue": "0.3.1",
-      "description": "Version of the Microsoft.Windows.SDK.BuildTools.WinApp NuGet package, which adds `dotnet run` support for packaged WinUI apps via the winapp CLI."
+      "defaultValue": "*",
+      "replaces": "$ResolvedWindowsSdkBuildToolsWinAppVersion$",
+      "description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Use * for the latest stable."
     },
     "mstestVersion": {
       "type": "parameter",
       "datatype": "text",
-      "replaces": "$MSTestVersion$",
-      "defaultValue": "3.6.4",
-      "description": "Version of the MSTest.TestFramework and MSTest.TestAdapter NuGet packages."
+      "defaultValue": "*",
+      "replaces": "$ResolvedMSTestVersion$",
+      "description": "MSTest NuGet version. Use * for the latest stable."
     },
     "microsoftNetTestSdkVersion": {
       "type": "parameter",
       "datatype": "text",
-      "replaces": "$MicrosoftNetTestSdkVersion$",
-      "defaultValue": "17.13.0",
-      "description": "Version of the Microsoft.NET.Test.Sdk and Microsoft.TestPlatform.TestHost NuGet packages."
+      "defaultValue": "*",
+      "replaces": "$ResolvedMicrosoftNetTestSdkVersion$",
+      "description": "Microsoft.NET.Test.Sdk NuGet version. Use * for the latest stable."
     }
   },
   "sources": [
@@ -209,76 +204,6 @@
     }
   },
   "postActions": [
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update Microsoft.WindowsAppSDK to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.WindowsAppSDK"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update Microsoft.Windows.SDK.BuildTools to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.Windows.SDK.BuildTools"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version (enables `dotnet run` for packaged WinUI apps).",
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.Windows.SDK.BuildTools.WinApp"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update MSTest.TestFramework to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "MSTest.TestFramework"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package MSTest.TestFramework'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update MSTest.TestAdapter to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "MSTest.TestAdapter"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package MSTest.TestAdapter'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update Microsoft.NET.Test.Sdk to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.NET.Test.Sdk"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.NET.Test.Sdk'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update Microsoft.TestPlatform.TestHost to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.TestPlatform.TestHost"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.TestPlatform.TestHost'" }]
-    },
     {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true,
