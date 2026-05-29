@@ -17,14 +17,16 @@
 
 trigger: none
 
-# Pull the same shared variables the main pipeline uses
-# (WindowsAppSDK-DotnetNewTemplates.yml) so we stay in sync on things like
-# WindowsContainerImage (required by 1ES OneBranch for `docker pull` during
-# "Initialize containers"). The SDL-related vars in CommonVariables (CodeQL,
-# ob_sdl_*) are inert here because we explicitly disable those scanners in
-# globalSdl below. Versions.yml is needed because CommonVariables references
-# MajorVersion / MinorVersion / PatchVersion.
+# Shared variable templates:
+#   - Foundation-TestConfig: defines OfficialPipelineID + LatestOfficialBuildID,
+#     used by the VSIX smoke-test stage to pull the latest nightly WindowsAppSDK
+#     nuget. Without it those vars are null and the VSIX job is silently skipped.
+#   - Versions: MajorVersion / MinorVersion / PatchVersion (consumed by CommonVariables).
+#   - CommonVariables: WindowsContainerImage (required by 1ES OneBranch for
+#     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
+#     are inert here because we disable those scanners in globalSdl below.
 variables:
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
 
