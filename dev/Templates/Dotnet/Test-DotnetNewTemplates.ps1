@@ -371,7 +371,7 @@ function Assert-CsprojPackageVersion {
     )
 
     [xml]$csproj = Get-Content -Path $CsprojPath
-    $ref = $csproj.Project.ItemGroup.PackageReference |
+    $ref = $csproj.SelectNodes('//PackageReference') |
         Where-Object { $_.Include -eq $PackageName }
     if (-not $ref) {
         throw "PackageReference '$PackageName' not found in '$CsprojPath'"
