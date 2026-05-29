@@ -31,9 +31,9 @@ stages:
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
       templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
-      # Filled in by the "Compute package version" step when a suffix is
+      # Computed by the "Compute package version" step when a suffix is
       # supplied; empty otherwise, so pack uses the csproj <Version> as-is.
-      PackVersionArg: ''
+      PackVersionFull: ''
     steps:
     - checkout: self
 
@@ -113,17 +113,24 @@ stages:
             # '-' starts a SemVer prerelease tag; '.' extends an existing one.
             $separator = if ($baseVersion -match '-') { '.' } else { '-' }
             $fullVersion = "$baseVersion$separator$suffix"
-            Write-Host "csproj <Version>:        $baseVersion"
-            Write-Host "PackageVersionSuffix:    $suffix"
+            Write-Host "csproj <Version>:         $baseVersion"
+            Write-Host "PackageVersionSuffix:     $suffix"
             Write-Host "Computed package version: $fullVersion"
-            Write-Host "##vso[task.setvariable variable=PackVersionArg]/p:Version=$fullVersion"
+            Write-Host "##vso[task.setvariable variable=PackVersionFull]$fullVersion"
 
+    # DotNetCoreCLI@2 'pack' silently ignores the 'arguments' input; build
+    # properties must go through 'buildProperties'. When PackageVersionSuffix
+    # is empty (canonical pipeline) we omit Version so pack uses the csproj
+    # <Version> as-is.
     - task: DotNetCoreCLI@2
       displayName: 'Pack dotnet new templates'
       inputs:
         command: 'pack'
         packagesToPack: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
-        arguments: '--configuration Release --no-restore --no-build /p:WindowsAppSDKBuildPipeline=1 $(PackVersionArg)'
+        ${{ if ne(parameters.PackageVersionSuffix, '') }}:
+          buildProperties: 'WindowsAppSDKBuildPipeline=1;Version=$(PackVersionFull)'
+        ${{ else }}:
+          buildProperties: 'WindowsAppSDKBuildPipeline=1'
         outputDir: '$(ob_outputDirectory)'
         workingDirectory: '$(templateProjectDir)'
 
