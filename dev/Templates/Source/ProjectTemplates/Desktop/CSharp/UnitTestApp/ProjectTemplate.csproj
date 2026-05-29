@@ -54,17 +54,15 @@
     Set <EnableWinAppRunSupport>false</EnableWinAppRunSupport> in a
     <PropertyGroup> above to opt out.
   -->
-  <!--#if (UseLatestWindowsAppSDK)
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSdkBuildToolsVersion$" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSdkVersion$" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$WindowsSdkBuildToolsWinAppVersion$" />
-    <PackageReference Include="MSTest.TestAdapter" Version="$MSTestVersion$" />
-    <PackageReference Include="MSTest.TestFramework" Version="$MSTestVersion$" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$MicrosoftNetTestSdkVersion$" />
-    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="$MicrosoftNetTestSdkVersion$" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="*" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="*" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="*" />
+    <PackageReference Include="MSTest.TestAdapter" Version="*" />
+    <PackageReference Include="MSTest.TestFramework" Version="*" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
+    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="*" />
   </ItemGroup>
-  #endif -->
 
   <!-- 
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
