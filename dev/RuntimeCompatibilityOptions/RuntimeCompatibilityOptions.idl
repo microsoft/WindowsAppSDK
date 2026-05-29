@@ -12,10 +12,23 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     {
         None = 0, /// do not use this value
 
-        // Add real changes here:
+        // 2.1.0
+        ItemTemplateWrapper_RecyclePoolLeak = 61574373,
+        Animation_FixImplicitHideAnimationCrash = 61760863,
+        TitleBar_ContentDragRegions = 61831627,
+        Popup_WindowedPopupOverrideScale = 61847252,
+        UIAffinityReleaseQueue_PauseDispatchDuringCleanup = 61855278,
+        GetModuleHandle_FixAmbiguousModuleLookup = 62040515,
+        PackageManager_FixCrash = 62056332,
+        ModelInitialization_GetReadyStateAvailabilityGuard = 62056572,
+        WindowsML_MultiEpPerPackage = 62083086,
+        LanguageModelInsights_GetPartialResultLatency = 62100233,
+        WindowsML_FrameworkEpEnumeration = 62100797,
+        WindowsML_EpSelectionMode = 62100876,
+        UniformGridLayout_GetItemsPerLineDivideByZero = 62147120,
 
-        // 1.7.1
-        // ...
+        // 2.2.0
+        ApplicationData_GetForUnpackaged = 61684930,
     };
 
     /// Represents a version of the Windows App Runtime.

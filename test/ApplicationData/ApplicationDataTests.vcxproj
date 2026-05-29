@@ -111,7 +111,7 @@
     </ClCompile>
     <ClCompile Include="ApplicationDataTests.cpp" />
     <ClCompile Include="ApplicationDataTests_Elevated.cpp" />
-    <ClCompile Include="ApplicationDataTests_Module.cpp" />
+    <ClCompile Include="UnpackagedApplicationDataTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
