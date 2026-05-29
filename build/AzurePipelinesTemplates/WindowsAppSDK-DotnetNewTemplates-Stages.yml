@@ -12,12 +12,6 @@ parameters:
 - name: SignOutput
   type: boolean
   default: false
-# Optional suffix appended to the csproj <Version> at pack time.
-# Example: suffix 'pr.42.123' on base '0.0.5-alpha' -> '0.0.5-alpha.pr.42.123'.
-# Used by PR builds so their .nupkgs don't collide with canonical packages.
-- name: PackageVersionSuffix
-  type: string
-  default: ''
 
 stages:
 - stage: DotnetNewTemplates_Build
@@ -31,8 +25,7 @@ stages:
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
       templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
-      # Computed by the "Compute package version" step when a suffix is
-      # supplied; empty otherwise, so pack uses the csproj <Version> as-is.
+      # Set by the "Compute package version" step below.
       PackVersionFull: ''
     steps:
     - checkout: self
@@ -91,53 +84,40 @@ stages:
         projects: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
         workingDirectory: '$(templateProjectDir)'
 
-    - ${{ if ne(parameters.PackageVersionSuffix, '') }}:
-      - task: PowerShell@2
-        displayName: 'Compute package version (csproj <Version> + suffix)'
-        inputs:
-          targetType: inline
-          workingDirectory: '$(templateProjectDir)'
-          script: |
-            $csprojPath = Join-Path '$(templateProjectDir)' 'WinAppSdk.CSharp.DotnetNewTemplates.csproj'
-            [xml]$csproj = Get-Content -LiteralPath $csprojPath
-            # Pick the first <Version> (csproj can have multiple PropertyGroup blocks).
-            $versionNode = Select-Xml -Xml $csproj -XPath '/Project/PropertyGroup/Version' | Select-Object -First 1
-            if (-not $versionNode) {
-              throw "No <Version> element found in $csprojPath"
-            }
-            $baseVersion = $versionNode.Node.InnerText.Trim()
-            if ([string]::IsNullOrWhiteSpace($baseVersion)) {
-              throw "csproj <Version> is empty in $csprojPath"
-            }
-            $suffix = '${{ parameters.PackageVersionSuffix }}'
-            # System.PullRequest.PullRequestNumber is undefined on manual / non-PR
-            # runs, so the agent leaves the macro literal in $suffix. Substitute
-            # 'unknownpr' so the resulting SemVer string is still valid.
-            if ($suffix -match '\$\(System\.PullRequest\.PullRequestNumber\)') {
-              Write-Host "PR number unavailable (manual/non-PR run); substituting 'unknownpr'"
-              $suffix = $suffix -replace '\$\(System\.PullRequest\.PullRequestNumber\)', 'unknownpr'
-            }
-            # '-' starts a SemVer prerelease tag; '.' extends an existing one.
-            $separator = if ($baseVersion -match '-') { '.' } else { '-' }
-            $fullVersion = "$baseVersion$separator$suffix"
-            Write-Host "csproj <Version>:         $baseVersion"
-            Write-Host "PackageVersionSuffix:     $suffix"
-            Write-Host "Computed package version: $fullVersion"
-            Write-Host "##vso[task.setvariable variable=PackVersionFull]$fullVersion"
+    # PR builds get a unique SemVer prerelease tag appended to the csproj <Version>:
+    #   <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR#>
+    # Non-PR runs (no PR# env var) pack the csproj <Version> as-is.
+    - task: PowerShell@2
+      displayName: 'Compute package version'
+      inputs:
+        targetType: inline
+        workingDirectory: '$(templateProjectDir)'
+        script: |
+          $csprojPath = Join-Path '$(templateProjectDir)' 'WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+          [xml]$csproj = Get-Content -LiteralPath $csprojPath
+          $versionNode = Select-Xml -Xml $csproj -XPath '/Project/PropertyGroup/Version' | Select-Object -First 1
+          if (-not $versionNode) { throw "No <Version> element found in $csprojPath" }
+          $baseVersion = $versionNode.Node.InnerText.Trim()
+          if ([string]::IsNullOrWhiteSpace($baseVersion)) { throw "csproj <Version> is empty in $csprojPath" }
+          $pr = $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
+          if ([string]::IsNullOrWhiteSpace($pr)) {
+            $fullVersion = $baseVersion
+          } else {
+            $now = Get-Date
+            $stamp = "$($now.ToString('yyyy'))-$($now.ToString('MMdd'))-$($now.ToString('HHmm'))-pr$pr"
+            # Join with '-' so any prerelease tag already in <Version> stays one valid SemVer identifier.
+            $fullVersion = "$baseVersion-$stamp"
+          }
+          Write-Host "Computed package version: $fullVersion"
+          Write-Host "##vso[task.setvariable variable=PackVersionFull]$fullVersion"
 
-    # DotNetCoreCLI@2 'pack' silently ignores the 'arguments' input; build
-    # properties must go through 'buildProperties'. When PackageVersionSuffix
-    # is empty (canonical pipeline) we omit Version so pack uses the csproj
-    # <Version> as-is.
+    # DotNetCoreCLI@2 'pack' ignores 'arguments'; properties go via 'buildProperties'.
     - task: DotNetCoreCLI@2
       displayName: 'Pack dotnet new templates'
       inputs:
         command: 'pack'
         packagesToPack: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
-        ${{ if ne(parameters.PackageVersionSuffix, '') }}:
-          buildProperties: 'WindowsAppSDKBuildPipeline=1;Version=$(PackVersionFull)'
-        ${{ else }}:
-          buildProperties: 'WindowsAppSDKBuildPipeline=1'
+        buildProperties: 'WindowsAppSDKBuildPipeline=1;Version=$(PackVersionFull)'
         outputDir: '$(ob_outputDirectory)'
         workingDirectory: '$(templateProjectDir)'
 

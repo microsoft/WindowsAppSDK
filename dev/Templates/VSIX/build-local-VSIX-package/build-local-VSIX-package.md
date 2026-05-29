@@ -82,7 +82,7 @@ The recommended one-shot orchestrator:
 Or run the steps separately (same result):
 
 ```powershell
-.\Build-VSIX.ps1                 # default = -Deployment LocalDev
+.\Build-VSIX-Local.ps1            # default = -Deployment LocalDev
 .\Install-LocalDev-VSIX.ps1
 ```
 
@@ -145,27 +145,29 @@ parity. **They cannot be installed locally on a workload-equipped machine.**
 
 ```powershell
 # Build the Standalone artifact only:
-.\Build-VSIX.ps1 -Deployment Standalone
+.\Build-VSIX-Local.ps1 -Deployment Standalone
 
 # Build the Component artifact only:
-.\Build-VSIX.ps1 -Deployment Component
+.\Build-VSIX-Local.ps1 -Deployment Component
 
 # Build both:
-.\Build-VSIX.ps1 -Deployment Both
+.\Build-VSIX-Local.ps1 -Deployment Both
 
 # Build with a specific Windows App SDK version:
-.\Build-VSIX.ps1 -Deployment Standalone -WindowsAppSDKVersion "1.8.260317003"
+.\Build-VSIX-Local.ps1 -Deployment Standalone -WindowsAppSDKVersion "1.8.260317003"
 
 # Build using a local .nupkg directory (auto-extracts the WindowsAppSDK version
 # from the embedded .nuspec):
-.\Build-VSIX.ps1 -Deployment Standalone -NupkgSourceDir "C:\my-packages"
+.\Build-VSIX-Local.ps1 -Deployment Standalone -NupkgSourceDir "C:\my-packages"
 
-# Override the auto-generated VSIX version (default is 99.<yyyy>.<MMdd>.<HHmm>):
-.\Build-VSIX.ps1 -Deployment Standalone -OptionalVSIXVersion "99.2026.0428.1640"
+# (Optional) Override the auto-generated VSIX version. By default the script
+# stamps <yyyy>.<MMdd>.<HHmm>.0 (e.g. 2026.0529.1640.0) from the current
+# time. Pass this flag only if you want a specific value, for instance:
+.\Build-VSIX-Local.ps1 -Deployment Standalone -OptionalVSIXVersion "2026.0529.1640.0"
 ```
 
 The output `.vsix` files land in `.\publish\VSIX\` named with the version, e.g.
-`WindowsAppSDK.Cs.Extension.Dev17.Standalone.99.2026.0428.1640.vsix`.
+`WindowsAppSDK.Cs.Extension.Dev17.Standalone.2026.0529.1640.0.vsix`.
 
 ---
 
@@ -173,9 +175,9 @@ The output `.vsix` files land in `.\publish\VSIX\` named with the version, e.g.
 
 | File | Purpose |
 |------|---------|
-| `Build-VSIX.ps1` | Builds VSIXes. Default `-Deployment LocalDev`. |
+| `Build-VSIX-Local.ps1` | Builds VSIXes. Default `-Deployment LocalDev`. |
 | `Install-LocalDev-VSIX.ps1` | Per-user install of the LocalDev VSIX into VS 17+ instances. No admin. |
-| `build-install-localdev-vsix.ps1` | One-shot orchestrator: Build-VSIX (LocalDev) + Install-LocalDev-VSIX. |
+| `build-install-localdev-vsix.ps1` | One-shot orchestrator: Build-VSIX-Local (LocalDev) + Install-LocalDev-VSIX. |
 | `vsix-nuget.config` | NuGet config the build script passes via `/p:RestoreConfigFile`. |
 | `investigation.md` | Historical findings about why per-machine install is broken on workload-equipped machines. Read this before trying to "fix" Standalone install. |
 
@@ -201,7 +203,7 @@ re-run.
 ### NuGet restore fails with "Unable to find version..."
 
 The repo's root `NuGet.config` uses `<clear/>` and points at Microsoft
-internal feeds only. `Build-VSIX.ps1` works around this by passing
+internal feeds only. `Build-VSIX-Local.ps1` works around this by passing
 `vsix-nuget.config` via `/p:RestoreConfigFile`. If you're invoking MSBuild
 yourself, use the same parameter.
 
@@ -218,13 +220,13 @@ The `WinAppSdk.CSharp.DotnetNewTemplates.csproj` targets `net8.0`. Install the
 ### `VSSDK1300: Could not find a part of the path...`
 
 The VSSDK extracts template ZIPs into deeply nested paths and the .NET
-Framework APIs it uses do not honor `LongPathsEnabled`. `Build-VSIX.ps1`
+Framework APIs it uses do not honor `LongPathsEnabled`. `Build-VSIX-Local.ps1`
 already redirects build output to `C:\tmp\vsixbo\` to keep paths short. If
 you're invoking MSBuild yourself, pass `/p:BuildOutput=C:\tmp\vsixbo\`.
 
 ### "Version 1.0.0-preview1 of package Microsoft.WindowsAppSDK not found"
 
-You ran `Build-VSIX.ps1` without `-WindowsAppSDKVersion` or `-NupkgSourceDir`,
+You ran `Build-VSIX-Local.ps1` without `-WindowsAppSDKVersion` or `-NupkgSourceDir`,
 so the build fell back to the placeholder version baked into
 `Directory.Build.props`. The VSIX file still builds and installs (the inner
 templates carry token placeholders that are rewritten at template-instantiation
@@ -232,7 +234,7 @@ time), but `dotnet new`-style restore against the published nupkg won't work.
 Pass a real version when you need package-realistic testing:
 
 ```powershell
-.\Build-VSIX.ps1 -Deployment LocalDev -WindowsAppSDKVersion "1.8.260317003"
+.\Build-VSIX-Local.ps1 -Deployment LocalDev -WindowsAppSDKVersion "1.8.260317003"
 ```
 
 ### Want to install the Standalone or Component VSIX locally

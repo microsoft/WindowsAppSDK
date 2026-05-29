@@ -48,11 +48,23 @@ stages:
       path: s\WindowsAppSDK
 
     - task: PowerShell@2
-      displayName: 'Announce VSIX smoke-test scope'
+      displayName: 'Compute VSIX version + announce smoke-test scope'
       inputs:
         targetType: 'inline'
         script: |
+          # <yyyy>.<MMdd>.<HHmm>.<PR# or 0>. Mirrors Build-VSIX-Local.ps1.
+          # All segments fit uint16; year-as-Major outranks any official 1.x/2.x
+          # (workload-shipped) and is strictly monotonic across years. A tester who
+          # installs a PR VSIX must uninstall it before any official update of
+          # the same Identity Id will apply.
+          $now = Get-Date
+          $pr = $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
+          if ([string]::IsNullOrWhiteSpace($pr)) { $pr = '0' }
+          $version = "$($now.Year).$($now.ToString('MMdd')).$($now.ToString('HHmm')).$pr"
+          Write-Host "##vso[task.setvariable variable=OptionalVSIXVersion]$version"
+
           Write-Host "VSIX smoke-test: building Cpp + Cs, Standalone + Component (4 VSIXes)"
+          Write-Host "VSIX version: $version"
           Write-Host "Pool        : $(Agent.MachineName) ($(Agent.OS))"
           Write-Host "Sources dir : $(Build.SourcesDirectory)"
           Write-Host "Repo path   : $(Build.SourcesDirectory)\$(foundationRepoPath)"
@@ -64,3 +76,4 @@ stages:
         PublishSymbols: false
         UseCurrentBuild: false
         IsOfficial: false
+        OptionalVSIXVersion: '$(OptionalVSIXVersion)'

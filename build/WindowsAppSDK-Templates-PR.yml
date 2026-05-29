@@ -3,8 +3,8 @@
 # PR validation for changes under dev/Templates/**.
 # Reuses the build/pack + smoke-test stages from the main pipeline
 # (WindowsAppSDK-DotnetNewTemplates.yml). Nothing is signed; nothing is
-# published. PR builds get a 'pr.<PR#>.<BuildId>' version suffix so they
-# can't collide with canonical packages.
+# published. PR-stamped versions keep PR artifacts from colliding with
+# canonical packages -- see each stage for the exact format.
 #
 # Triggers are configured in the Azure DevOps UI (Edit pipeline -> Triggers),
 # NOT in this YAML -- matches the WindowsAppSDK-Foundation-PR.yml convention.
@@ -79,17 +79,15 @@ extends:
         enabled: false
 
     stages:
-      # Build + pack the templates NuGet. Signing/publishing off; the
-      # package version is the csproj <Version> with a 'pr.<PR#>.<BuildId>'
-      # suffix appended. On manual / non-PR runs the PR number macro stays
-      # unresolved -- the stages template substitutes 'unknownpr' for it.
+      # Build + pack the templates NuGet. The stage detects PR runs via
+      # SYSTEM_PULLREQUEST_PULLREQUESTNUMBER and stamps the pack as
+      # <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR#> (SemVer prerelease).
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
         parameters:
           pool:
             type: windows
           publishToInternalFeed: false
           SignOutput: false
-          PackageVersionSuffix: 'pr.$(System.PullRequest.PullRequestNumber).$(Build.BuildId)'
 
       # Smoke-test: scaffold every template from the pack and dotnet build each.
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
