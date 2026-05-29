@@ -49,9 +49,9 @@
     <PropertyGroup> above to opt out.
   -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$ResolvedWindowsSdkBuildToolsVersion$" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$ResolvedWindowsAppSdkVersion$" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$ResolvedWindowsSdkBuildToolsWinAppVersion$" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSdkBuildToolsVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSdkVersion$" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$WindowsSdkBuildToolsWinAppVersion$" />
   </ItemGroup>
 
   <!--
