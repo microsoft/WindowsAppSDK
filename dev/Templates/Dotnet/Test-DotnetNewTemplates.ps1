@@ -378,6 +378,24 @@ function Test-ItemTemplates {
     Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
 }
 
+function Assert-CsprojPackageVersion {
+    param(
+        [string]$CsprojPath,
+        [string]$PackageName,
+        [string]$ExpectedVersion
+    )
+
+    [xml]$csproj = Get-Content -Path $CsprojPath
+    $ref = $csproj.Project.ItemGroup.PackageReference |
+        Where-Object { $_.Include -eq $PackageName }
+    if (-not $ref) {
+        throw "PackageReference '$PackageName' not found in '$CsprojPath'"
+    }
+    if ($ref.Version -ne $ExpectedVersion) {
+        throw "PackageReference '$PackageName' has Version='$($ref.Version)' but expected '$ExpectedVersion' in '$CsprojPath'"
+    }
+}
+
 try {
     $repoRoot = (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..')).Path
     $templateProject = Join-Path -Path $repoRoot -ChildPath 'dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
@@ -488,6 +506,82 @@ try {
     }
 
     Test-ItemTemplates -WorkingRoot $workingRoot -Platform $Platforms[0]
+
+    # ─── Version parameter test scenarios ───
+    Write-Step 'Running version parameter test scenarios...'
+
+    # Scenario 1: Default (no version passed) — verify Version="*"
+    $defaultPath = Join-Path -Path $workingRoot -ChildPath 'VersionDefault'
+    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'VersionDefault' -OutputPath $defaultPath -WorkingDirectory $workingRoot
+    $defaultCsproj = Join-Path -Path $defaultPath -ChildPath 'VersionDefault.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
+    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
+    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'default version content' -Status 'Succeeded' -Path $defaultPath
+
+    # Scenario 2: Pinned WindowsAppSDK version only
+    $pinnedPath = Join-Path -Path $workingRoot -ChildPath 'VersionPinned'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPinned', '-o', $pinnedPath, '--wasdk-version', '1.7.250127002', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pinned WASDK version'
+    $pinnedCsproj = Join-Path -Path $pinnedPath -ChildPath 'VersionPinned.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
+    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
+    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'pinned version content' -Status 'Succeeded' -Path $pinnedPath
+
+    # Scenario 3: All versions pinned
+    $allPinnedPath = Join-Path -Path $workingRoot -ChildPath 'VersionAllPinned'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionAllPinned', '-o', $allPinnedPath, '--wasdk-version', '1.7.250127002', '--build-tools-version', '10.0.26100.1742', '--winapp-version', '0.3.1', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with all versions pinned'
+    $allPinnedCsproj = Join-Path -Path $allPinnedPath -ChildPath 'VersionAllPinned.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '10.0.26100.1742'
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '0.3.1'
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'all pinned version content' -Status 'Succeeded' -Path $allPinnedPath
+
+    # Scenario 4: Pre-release version string
+    $preReleasePath = Join-Path -Path $workingRoot -ChildPath 'VersionPreRelease'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPreRelease', '-o', $preReleasePath, '--wasdk-version', '1.8.0-preview1', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pre-release version'
+    $preReleaseCsproj = Join-Path -Path $preReleasePath -ChildPath 'VersionPreRelease.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $preReleaseCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.8.0-preview1'
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'pre-release version content' -Status 'Succeeded' -Path $preReleasePath
+
+    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails
+    Write-Step 'Testing invalid version handling...'
+    $invalidPath = Join-Path -Path $workingRoot -ChildPath 'VersionInvalid'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionInvalid', '-o', $invalidPath, '--wasdk-version', 'not-a-version', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with invalid version'
+    $invalidCsproj = Join-Path -Path $invalidPath -ChildPath 'VersionInvalid.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $invalidCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion 'not-a-version'
+    # Build should fail because NuGet can't parse an invalid version string
+    $invalidBuildFailed = $false
+    try {
+        Invoke-DotnetCommand -Arguments @('build', $invalidCsproj, '-p:Configuration=Debug', '-p:Platform=x64', '-p:WindowsPackageType=None') -WorkingDirectory $invalidPath -Description 'build with invalid version (should fail)'
+    }
+    catch {
+        $invalidBuildFailed = $true
+    }
+    if (-not $invalidBuildFailed) {
+        throw "Expected build to fail for invalid WASDK version 'not-a-version'"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, build fails' -Status 'Succeeded' -Path $invalidPath
+
+    # Scenario 6: Valid version format but nonexistent package
+    $nonexistentPath = Join-Path -Path $workingRoot -ChildPath 'VersionNonexistent'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionNonexistent', '-o', $nonexistentPath, '--wasdk-version', '99.99.99', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with nonexistent version'
+    $nonexistentCsproj = Join-Path -Path $nonexistentPath -ChildPath 'VersionNonexistent.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $nonexistentCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '99.99.99'
+    # Build should fail because NuGet can't find this package version
+    $buildFailed = $false
+    try {
+        Invoke-DotnetCommand -Arguments @('build', $nonexistentCsproj, '-p:Configuration=Debug', '-p:Platform=x64', '-p:WindowsPackageType=None') -WorkingDirectory $nonexistentPath -Description 'build with nonexistent version (should fail)'
+    }
+    catch {
+        $buildFailed = $true
+    }
+    if (-not $buildFailed) {
+        throw "Expected build to fail for nonexistent WASDK version 99.99.99"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'nonexistent version: scaffold OK, build fails' -Status 'Succeeded' -Path $nonexistentPath
+
+    Write-Step 'Version parameter test scenarios completed.'
 
     if ($appExecutables.Count -gt 0) {
         if ($SkipAppLaunch.IsPresent) {
