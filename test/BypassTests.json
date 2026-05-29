@@ -1621,6 +1621,7 @@
   "release_x64_Windows.10.Enterprise.LTSC.2021.UnpackagedTests#metadataSet1::ChannelRequestUsingNullRemoteId",
   "release_x64_Windows.10.Enterprise.LTSC.2021.UnpackagedTests#metadataSet1::ChannelRequestUsingRemoteId",
   "release_x64_Windows.10.Enterprise.LTSC.2021.UnpackagedTests#metadataSet1::ChannelRequestCheckExpirationTime",
+  "release_x64_Windows.Server.2025.DataCenter.UnpackagedTests#metadataSet1::ChannelRequestCheckExpirationTime",
   "release_x64_Windows.10.Enterprise.LTSC.2021.UnpackagedTests#metadataSet1::MultipleChannelClose",
   "release_x64_Windows.10.Enterprise.LTSC.2021.UnpackagedTests#metadataSet1::VerifyRegisterAndUnregister",
   "release_x64_Windows.10.Enterprise.LTSC.2021.UnpackagedTests#metadataSet1::VerifyRegisterAndUnregisterAll",
