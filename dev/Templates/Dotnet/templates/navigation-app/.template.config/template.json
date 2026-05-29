@@ -127,21 +127,21 @@
       "type": "parameter",
       "datatype": "text",
       "defaultValue": "*",
-      "replaces": "$ResolvedWindowsAppSdkVersion$",
+      "replaces": "$WindowsAppSdkVersion$",
       "description": "Microsoft.WindowsAppSDK NuGet version. Use * for the latest stable."
     },
     "windowsSdkBuildToolsVersion": {
       "type": "parameter",
       "datatype": "text",
       "defaultValue": "*",
-      "replaces": "$ResolvedWindowsSdkBuildToolsVersion$",
+      "replaces": "$WindowsSdkBuildToolsVersion$",
       "description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable."
     },
     "windowsSdkBuildToolsWinAppVersion": {
       "type": "parameter",
       "datatype": "text",
       "defaultValue": "*",
-      "replaces": "$ResolvedWindowsSdkBuildToolsWinAppVersion$",
+      "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
       "description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Use * for the latest stable."
     }
   },

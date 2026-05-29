@@ -55,13 +55,13 @@
     <PropertyGroup> above to opt out.
   -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$ResolvedWindowsSdkBuildToolsVersion$" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$ResolvedWindowsAppSdkVersion$" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$ResolvedWindowsSdkBuildToolsWinAppVersion$" />
-    <PackageReference Include="MSTest.TestAdapter" Version="$ResolvedMSTestVersion$" />
-    <PackageReference Include="MSTest.TestFramework" Version="$ResolvedMSTestVersion$" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$ResolvedMicrosoftNetTestSdkVersion$" />
-    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="$ResolvedMicrosoftNetTestSdkVersion$" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSdkBuildToolsVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSdkVersion$" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$WindowsSdkBuildToolsWinAppVersion$" />
+    <PackageReference Include="MSTest.TestAdapter" Version="$MSTestVersion$" />
+    <PackageReference Include="MSTest.TestFramework" Version="$MSTestVersion$" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$MicrosoftNetTestSdkVersion$" />
+    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="$MicrosoftNetTestSdkVersion$" />
   </ItemGroup>
 
   <!-- 
