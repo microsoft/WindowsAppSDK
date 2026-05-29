@@ -75,6 +75,20 @@
         "fallbackVariableName": "autoDetectedTfm"
       },
       "replaces": "$DotNetVersion$"
+    },
+    "windowsAppSdkVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "*",
+      "replaces": "$ResolvedWindowsAppSdkVersion$",
+      "description": "Microsoft.WindowsAppSDK NuGet version. Use * for the latest stable."
+    },
+    "windowsSdkBuildToolsVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "*",
+      "replaces": "$ResolvedWindowsSdkBuildToolsVersion$",
+      "description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable."
     }
   },
   "sources": [
