@@ -123,6 +123,12 @@
       },
       "replaces": "$guid9$"
     },
+    "useLatestDependencies": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Use the latest available NuGet package versions for all project dependencies."
+    },
     "windowsAppSdkVersion": {
       "type": "parameter",
       "datatype": "text",
