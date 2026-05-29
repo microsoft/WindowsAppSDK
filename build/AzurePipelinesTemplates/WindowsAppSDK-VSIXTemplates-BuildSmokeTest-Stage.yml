@@ -1,0 +1,66 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# VSIX templates build smoke-test stage.
+#
+# Runs WindowsAppSDK-BuildVSIX-Steps.yml so any VSIX-pack regression
+# (VSSDK1300 path overflow, broken template asset, manifest error, etc.)
+# surfaces at PR time. Skips:
+#   - SDL/PREfast scans       (runStaticAnalysis: false)
+#   - VSIX code signing       (SignOutput: false)
+#   - Symbol server publish   (PublishSymbols: false)
+#
+# Path-length note: VSSDK1300 is a MAX_PATH (260) issue. We check the repo
+# out into a WindowsAppSDK\ subfolder (`path: s\WindowsAppSDK` paired with
+# `foundationRepoPath: 'WindowsAppSDK\'`) so absolute paths in this stage
+# are long enough to catch the same class of regression that a top-level
+# checkout layout would miss.
+
+parameters:
+- name: pool
+  type: object
+  default:
+    type: windows
+
+stages:
+- stage: VSIXTemplates_BuildSmokeTest
+  displayName: 'Smoke-build VSIX templates'
+  dependsOn: []
+  jobs:
+  - job: BuildVSIXSmoke
+    displayName: 'Restore + build WindowsAppSDK.Extension.sln (Standalone + Component)'
+    pool: ${{ parameters.pool }}
+    timeoutInMinutes: 60
+    variables:
+      # Required by OneBranch v2.
+      ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\vsix-smoketest'
+      # Path prefix consumed as $(FoundationRepoPath) inside
+      # WindowsAppSDK-BuildVSIX-Steps.yml; pairs with the `path: s\WindowsAppSDK`
+      # checkout below. See file header for why.
+      foundationRepoPath: 'WindowsAppSDK\'
+      buildConfiguration: 'Release'
+    # Skip if upstream config has no nightly build id -- we can't restore the
+    # Microsoft.WindowsAppSDK package the templates depend on.
+    condition: ne(variables.LatestOfficialBuildID, '')
+    steps:
+    # Land the repo in a subfolder; see file header for why.
+    - checkout: self
+      path: s\WindowsAppSDK
+
+    - task: PowerShell@2
+      displayName: 'Announce VSIX smoke-test scope'
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "VSIX smoke-test: building Cpp + Cs, Standalone + Component (4 VSIXes)"
+          Write-Host "Pool        : $(Agent.MachineName) ($(Agent.OS))"
+          Write-Host "Sources dir : $(Build.SourcesDirectory)"
+          Write-Host "Repo path   : $(Build.SourcesDirectory)\$(foundationRepoPath)"
+
+    - template: WindowsAppSDK-BuildVSIX-Steps.yml@self
+      parameters:
+        SignOutput: false
+        runStaticAnalysis: false
+        PublishSymbols: false
+        UseCurrentBuild: false
+        IsOfficial: false

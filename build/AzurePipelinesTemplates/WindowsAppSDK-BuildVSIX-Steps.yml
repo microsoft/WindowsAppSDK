@@ -19,6 +19,11 @@ parameters:
 - name: EnableExperimentalVSIXFeatures
   type: boolean
   default: false
+- name: PublishSymbols
+  # Defaults true to preserve official-build behavior.
+  # Set to false in PR smoke-tests to skip pushing to the symbol server.
+  type: boolean
+  default: true
 
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
@@ -193,10 +198,11 @@ steps:
       codeSignPattern: |
         **/WindowsAppSDK.*.Extension.*.dll
         
-- template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
-  parameters:
-    SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
-    IsOfficial: ${{ parameters.IsOfficial }}
+- ${{ if eq(parameters.PublishSymbols, true) }}:
+  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+      IsOfficial: ${{ parameters.IsOfficial }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
