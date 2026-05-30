@@ -119,7 +119,7 @@ namespace details
         wil::unique_hmodule dll{ ::ExportLoader::Load(L"api-ms-win-appmodel-runtime-l1-1-3.dll") };
         if (dll)
         {
-            auto getPackagePathByFullName2{ ::ExportLoader::GetFunctionIfExists<GetPackagePathByFullName2Function>(dll.get(), "GetPackagePathByFullName2", &getPackagePathByFullName2) };
+            auto getPackagePathByFullName2{ ::ExportLoader::GetFunctionIfExists<GetPackagePathByFullName2Function>(dll.get(), "GetPackagePathByFullName2") };
             if (getPackagePathByFullName2)
             {
                 g_dll_apiset_appmodel_runtime_1_3 = std::move(dll);
