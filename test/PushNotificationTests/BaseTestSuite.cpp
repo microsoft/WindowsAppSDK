@@ -109,25 +109,6 @@ void BaseTestSuite::ChannelRequestUsingNullRemoteId()
     }
 }
 
-void BaseTestSuite::ChannelRequestUsingRemoteId()
-{
-    if (PushNotificationManager::Default().IsSupported())
-    {
-        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
-        const HRESULT hr{ ChannelRequestHelper(channelOperation) };
-        if (FAILED(hr) && SkipIfWnsServiceError(hr, L"ChannelRequestUsingRemoteId"))
-        {
-            return;
-        }
-        VERIFY_SUCCEEDED(hr);
-    }
-    else
-    {
-        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
-        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), E_FAIL);
-    }
-}
-
 // Returns true (and marks the test as Skipped) if `hr` is a known transient
 // WNS production-service error that's outside the SDK's control. The test
 // reaches the live WNS endpoint to allocate a channel, so service-side
@@ -146,6 +127,25 @@ static bool SkipIfWnsServiceError(HRESULT hr, PCWSTR testName)
         return true;
     }
     return false;
+}
+
+void BaseTestSuite::ChannelRequestUsingRemoteId()
+{
+    if (PushNotificationManager::Default().IsSupported())
+    {
+        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
+        const HRESULT hr{ ChannelRequestHelper(channelOperation) };
+        if (FAILED(hr) && SkipIfWnsServiceError(hr, L"ChannelRequestUsingRemoteId"))
+        {
+            return;
+        }
+        VERIFY_SUCCEEDED(hr);
+    }
+    else
+    {
+        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
+        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), E_FAIL);
+    }
 }
 
 void BaseTestSuite::ChannelRequestCheckExpirationTime()
