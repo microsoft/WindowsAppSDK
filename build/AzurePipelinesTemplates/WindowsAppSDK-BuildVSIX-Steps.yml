@@ -12,8 +12,7 @@ parameters:
   type: boolean
   default: false 
 - name: OptionalVSIXVersion
-  # if blank, the project template will select the version matching the Windows App SDK
-  # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
+  value: "2.0.27"
   type: string
   default: 'default'
 - name: EnableExperimentalVSIXFeatures
