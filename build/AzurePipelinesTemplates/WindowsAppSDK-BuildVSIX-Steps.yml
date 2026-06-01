@@ -24,6 +24,12 @@ parameters:
   # Set to false in PR smoke-tests to skip pushing to the symbol server.
   type: boolean
   default: true
+- name: NightlyBranchName
+  # Branch (in the Aggregator pipeline's repo) to pull the latest Windows App SDK
+  # nuget from when UseCurrentBuild is false. The Aggregator nightly runs daily on
+  # 'main', so default there. Override if the active publishing branch changes.
+  type: string
+  default: 'refs/heads/main'
 
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
@@ -34,9 +40,16 @@ steps:
       targetPath: '$(System.ArtifactsDirectory)'
 - ${{ else }}:
   ###
-  # This step downloads the WindowsAppSDK NuGet package from a pipeline
-  # variables: OfficialPipelineID LatestOfficialBuildID
-  # for use in building the VSIX
+  # This step downloads the WindowsAppSDK NuGet package from the Aggregator nightly
+  # pipeline (identified by the OfficialPipelineID variable) for use in building the
+  # VSIX. We pull the latest run from NightlyBranchName rather than a pinned
+  # LatestOfficialBuildID so PR smoke-tests always get a fresh package without
+  # needing a build id supplied at queue time.
+  #
+  # The nightly runs commonly finish as PartiallySucceeded (some downstream test/SDL
+  # stages are not green) even though the packaging stage produced the artifact, so
+  # both allowPartiallySucceededBuilds and allowFailedBuilds must be true -- the task
+  # requires the pair to be set together to consider non-succeeded runs.
   - task: DownloadPipelineArtifact@2
     displayName: 'Download WindowsAppSDK From Latest Nightly'
     inputs:
@@ -44,8 +57,11 @@ steps:
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
       project: $(System.TeamProjectId)
-      pipeline: $(OfficialPipelineID) 
-      pipelineId: $(LatestOfficialBuildID) 
+      pipeline: $(OfficialPipelineID)
+      runVersion: 'latestFromBranch'
+      runBranch: '${{ parameters.NightlyBranchName }}'
+      allowPartiallySucceededBuilds: true
+      allowFailedBuilds: true
     
 - task: PowerShell@2
   name: ExtractWindowsAppSDKVersion

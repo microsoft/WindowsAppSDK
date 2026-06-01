@@ -39,9 +39,6 @@ stages:
       # checkout below. See file header for why.
       foundationRepoPath: 'WindowsAppSDK\'
       buildConfiguration: 'Release'
-    # Skip if upstream config has no nightly build id -- we can't restore the
-    # Microsoft.WindowsAppSDK package the templates depend on.
-    condition: ne(variables.LatestOfficialBuildID, '')
     steps:
     # Land the repo in a subfolder; see file header for why.
     - checkout: self

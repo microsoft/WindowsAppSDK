@@ -18,13 +18,17 @@
 trigger: none
 
 # Shared variable templates:
-#   - Foundation-TestConfig: defines OfficialPipelineID + LatestOfficialBuildID,
-#     used by the VSIX smoke-test stage to pull the latest nightly WindowsAppSDK
-#     nuget. Without it those vars are null and the VSIX job is silently skipped.
+#   - Foundation-TestConfig: test matrices reused from the main pipeline.
 #   - Versions: MajorVersion / MinorVersion / PatchVersion (consumed by CommonVariables).
 #   - CommonVariables: WindowsContainerImage (required by 1ES OneBranch for
 #     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
 #     are inert here because we disable those scanners in globalSdl below.
+#
+# OfficialPipelineID (the Aggregator nightly definition id that produces the
+# WindowsAppSDK_Nuget_And_MSIX artifact) is a pipeline-level variable set in the
+# Azure DevOps UI (Edit pipeline -> Variables), NOT defined in YAML. The VSIX
+# smoke-test stage uses it with runVersion 'latestFromBranch' to pull the latest
+# nightly nuget, so no per-run build id is required.
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
