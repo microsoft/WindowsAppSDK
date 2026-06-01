@@ -130,35 +130,11 @@ namespace Test::Bootstrap
                 TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
         }
 
-        // MddBootstrapInitialize racily fails on the test agents when the DDLM/Framework
-        // packages were registered moments ago and PackageManager hasn't yet surfaced them
-        // (most often as 0x80270254). Short-retry-with-backoff clears it; a hard failure
-        // here aborts the class fixture and cascades all tests in the class to Failed
-        // without ever running them.
-        HRESULT bootstrapHr{ S_OK };
-        constexpr int c_bootstrapMaxAttempts{ 5 };
-        DWORD bootstrapBackoffMs{ 1000 };
-        for (int attempt{ 1 }; attempt <= c_bootstrapMaxAttempts; ++attempt)
-        {
-            bootstrapHr = MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion);
-            if (SUCCEEDED(bootstrapHr))
-            {
-                if (attempt > 1)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(
-                        L"MddBootstrapInitialize succeeded on attempt %d", attempt));
-                }
-                break;
-            }
-            if (attempt < c_bootstrapMaxAttempts)
-            {
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(
-                    L"MddBootstrapInitialize attempt %d/%d failed with 0x%08X; sleeping %u ms before retry",
-                    attempt, c_bootstrapMaxAttempts, bootstrapHr, bootstrapBackoffMs));
-                Sleep(bootstrapBackoffMs);
-                bootstrapBackoffMs = (std::min<DWORD>)(bootstrapBackoffMs * 2, 8000);
-            }
-        }
+        // AddPackage now waits for FindPackageForUser to surface each registered
+        // package before returning, so MddBootstrapInitialize -> ResolvePackageDependency
+        // no longer races the OS package index. Call once and verify; any failure
+        // here is a real bug, not the historical 0x80270254 enumeration-lag race.
+        const HRESULT bootstrapHr{ MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion) };
         VERIFY_SUCCEEDED(bootstrapHr);
         s_bootstrapDll = std::move(bootstrapDll);
     }

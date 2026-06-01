@@ -314,6 +314,39 @@ inline winrt::Windows::Foundation::Uri GetAppxManifestPackageUri(PCWSTR packageF
     return winrt::Windows::Foundation::Uri{ path.c_str() };
 }
 
+inline void WaitForPackageEnumerable(PCWSTR packageFullName)
+{
+    // After AddPackageAsync's async operation completes, the OS-side
+    // PackageManager index can lag briefly before the package becomes
+    // enumerable via FindPackageForUser. MddBootstrapInitialize ->
+    // ResolvePackageDependency walks the package graph via that API and so
+    // racily returns 0x80270254 (PackageManager_NoPackagesFound) when called
+    // before the index catches up. Poll for enumerability to make AddPackage
+    // synchronous with respect to the OS index, eliminating the race at the
+    // source rather than retrying MddBootstrapInitialize after the fact.
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    constexpr DWORD c_pollIntervalMs{ 100 };
+    constexpr DWORD c_timeoutMs{ 30000 };
+    const DWORD startTick{ GetTickCount() };
+    for (;;)
+    {
+        auto package{ packageManager.FindPackageForUser(winrt::hstring{}, packageFullName) };
+        if (package)
+        {
+            return;
+        }
+        const DWORD elapsed{ GetTickCount() - startTick };
+        if (elapsed >= c_timeoutMs)
+        {
+            WEX::Logging::Log::Warning(WEX::Common::String().Format(
+                L"WaitForPackageEnumerable('%s') timed out after %u ms; downstream APIs may race",
+                packageFullName, elapsed));
+            return;
+        }
+        Sleep(c_pollIntervalMs);
+    }
+}
+
 inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
@@ -324,7 +357,10 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
     // AddPackageAsync intermittently fails on the test agents with transient
     // deployment errors (most often 0x80073D02 ERROR_INSTALL_RESOURCES_BUSY)
     // when the previous test's package teardown hasn't fully released file
-    // handles. Retry with backoff before giving up.
+    // handles. There's no precondition we can poll for here (the deployment
+    // service holds an internal lock); the documented mitigation is to back
+    // off and reissue. Bounded to 5 attempts so a genuine non-transient
+    // failure still surfaces quickly.
     winrt::Windows::Management::Deployment::DeploymentResult deploymentResult{ nullptr };
     constexpr int c_maxAttempts{ 5 };
     DWORD backoffMs{ 1000 };
@@ -359,6 +395,11 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
         backoffMs = (std::min<DWORD>)(backoffMs * 2, 8000);
     }
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+
+    // Wait for the deployment to be visible to FindPackageForUser before
+    // returning so callers (notably MddBootstrapInitialize) don't race the
+    // OS package index.
+    WaitForPackageEnumerable(packageFullName);
 }
 
 inline void AddPackageDefer(PCWSTR packageDirName, PCWSTR packageFullName)
