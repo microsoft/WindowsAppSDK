@@ -24,12 +24,14 @@ trigger: none
 #     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
 #     are inert here because we disable those scanners in globalSdl below.
 #
-# OfficialPipelineID (the Aggregator nightly definition id that produces the
-# WindowsAppSDK_Nuget_And_MSIX artifact) is a pipeline-level variable set in the
-# Azure DevOps UI (Edit pipeline -> Variables), NOT defined in YAML. The VSIX
-# smoke-test stage uses it with runVersion 'latestFromBranch' to pull the latest
-# nightly nuget, so no per-run build id is required.
+# OfficialPipelineID is the Aggregator nightly definition id (WinAppSDK-Build-Nightly,
+# OneBranch) that produces the WindowsAppSDK_Nuget_And_MSIX artifact daily on 'main'.
+# The VSIX smoke-test stage consumes it with runVersion 'latestFromBranch' to pull the
+# latest nightly nuget, so no per-run build id is required. Defined here (not in the ADO
+# UI) so it is version-controlled and reviewable.
 variables:
+- name: OfficialPipelineID
+  value: 118002
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
