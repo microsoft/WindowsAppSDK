@@ -32,21 +32,9 @@ variables:
     value: $[coalesce(variables['FoundationPatchVersion'], 0)]
   - name: PRNightlyRevision
     value: $[counter(format('{0}-{1}-{2}-{3}', variables.MajorVersion, variables.FoundationMinorVersionResolved, variables.FoundationPatchVersionResolved, variables.NugetBuildTypePrefix), 1)]
-  - name: FoundationPreviewRevisionResolved
-    value: $[coalesce(variables['FoundationPreviewRevision'], 0)]
-  - name: FoundationExperimentalRevisionResolved
-    value: $[coalesce(variables['FoundationExperimentalRevision'], 0)]
   - ${{ if ne(parameters.PrOrNightly, '') }}:
     - name: Revision
       value: $[variables['PRNightlyRevision']]
   - ${{ else }}:
-    - ${{ if eq(parameters.BuildType, 'experimental') }}:
-      - name: Revision
-        value: $[variables['FoundationExperimentalRevisionResolved']]
-    - ${{ else }}:
-      - ${{ if eq(parameters.BuildType, 'preview') }}:
-        - name: Revision
-          value: $[variables['FoundationPreviewRevisionResolved']]
-      - ${{ else }}:
-        - name: Revision
-          value: ""
+    - name: Revision
+      value: ""
