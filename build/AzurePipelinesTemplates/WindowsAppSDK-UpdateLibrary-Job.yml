@@ -53,63 +53,11 @@ jobs:
         if ($groupExists.Count -eq 0)
         {
           echo "Creating Variable Group $NextLibraryName"
-          az pipelines variable-group create --name "$NextLibraryName" --description "Variable group for Windows App SDK Foundation Major Version $NextMajorVersion" --authorize --variables FoundationMinorVersion=0 FoundationPatchVersion=0 FoundationPreviewRevision=0 FoundationExperimentalRevision=0
+          az pipelines variable-group create --name "$NextLibraryName" --description "Variable group for Windows App SDK Foundation Major Version $NextMajorVersion" --authorize --variables FoundationMinorVersion=0 FoundationPatchVersion=0
         }
         else
         {
           echo "Variable Group $NextLibraryName already exists"
-        }
-
-  - task: PowerShell@2
-    condition: eq('${{ parameters.PrOrNightly }}', '')
-    displayName: Update PreviewRevision in Variable Group
-    env:
-      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo "Determining if we need to update FoundationPreviewRevision variable in Variable Group"
-        $NextPreviewRevision = [int]$(FoundationPreviewRevisionResolved)
-        if ("${{ parameters.BuildType }}" -eq 'preview')
-        {
-          $NextPreviewRevision = $NextPreviewRevision + 1
-        }
-
-        if ($NextPreviewRevision -ne '$(FoundationPreviewRevision)')
-        {
-          echo "Updating FoundationPreviewRevision variable in Variable Group to $NextPreviewRevision"
-          $group_id = $(az pipelines variable-group list -p $(System.TeamProject) --group-name $(FoundationLibraryName) --query '[0].id' -o json)
-          az pipelines variable-group variable update --group-id $group_id --name FoundationPreviewRevision --value $NextPreviewRevision
-        }
-        else
-        {
-          echo "No update needed for FoundationPreviewRevision variable in Variable Group"
-        }
-
-  - task: PowerShell@2
-    condition: eq('${{ parameters.PrOrNightly }}', '')
-    displayName: Update ExperimentalRevision in Variable Group
-    env:
-      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo "Determining if we need to update FoundationExperimentalRevision variable in Variable Group"
-        $NextExperimentalRevision = [int]$(FoundationExperimentalRevisionResolved)
-        if ("${{ parameters.BuildType }}" -eq "experimental")
-        {
-          $NextExperimentalRevision = $NextExperimentalRevision + 1
-        }
-
-        if ($NextExperimentalRevision -ne '$(FoundationExperimentalRevision)')
-        {
-          echo "Updating FoundationExperimentalRevision variable in Variable Group to $NextExperimentalRevision"
-          $group_id = $(az pipelines variable-group list -p $(System.TeamProject) --group-name $(FoundationLibraryName) --query '[0].id' -o json)
-          az pipelines variable-group variable update --group-id $group_id --name FoundationExperimentalRevision --value $NextExperimentalRevision
-        }
-        else
-        {
-          echo "No update needed for FoundationExperimentalRevision variable in Variable Group"
         }
 
   - task: PowerShell@2
