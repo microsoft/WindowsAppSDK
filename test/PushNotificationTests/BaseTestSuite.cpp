@@ -127,8 +127,25 @@ void BaseTestSuite::ChannelRequestCheckExpirationTime()
 {
     if (PushNotificationManager::Default().IsSupported())
     {
-        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
-        VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
+        // CreateChannelAsync calls the live WNS service and can fail transiently
+        // (service throttling / extended error). Retry a few times before failing.
+        constexpr int c_maxAttempts{ 3 };
+        IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> channelOperation{ nullptr };
+        HRESULT hr{ E_FAIL };
+        for (int attempt = 1; attempt <= c_maxAttempts; ++attempt)
+        {
+            channelOperation = PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId);
+            hr = ChannelRequestHelper(channelOperation);
+            if (SUCCEEDED(hr))
+            {
+                break;
+            }
+            if (attempt < c_maxAttempts)
+            {
+                Sleep(2000u * attempt);
+            }
+        }
+        VERIFY_SUCCEEDED(hr);
 
         auto channel{ channelOperation.GetResults().Channel() };
         auto expirationTime{ channel.ExpirationTime() };
