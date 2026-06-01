@@ -227,45 +227,66 @@ inline std::filesystem::path get_package_file(
     return get_package_file(packageFullName, filename, effectiveOptions);
 }
 
+inline GetPackageFilePathOptions ToEffectiveOptions_AllSupportedPaths()
+{
+    // 'All' locations supported by the current system is one of...
+    //   * Install
+    //   * Install | Mutable
+    //   * Install | Mutable | ExternalLocation
+    if (IsPathSupported_ExternalLocation())
+    {
+        return GetPackageFilePathOptions_SearchInstallPath |
+               GetPackageFilePathOptions_SearchMutablePath |
+               GetPackageFilePathOptions_SearchMachineExternalPath |
+               GetPackageFilePathOptions_SearchUserExternalPath;
+    }
+    else if (IsPathSupported_Mutable())
+    {
+        return GetPackageFilePathOptions_SearchInstallPath |
+               GetPackageFilePathOptions_SearchMutablePath;
+    }
+    else
+    {
+        return GetPackageFilePathOptions_SearchInstallPath;
+    }
+}
+
 inline GetPackageFilePathOptions ToEffectiveOptions(
     GetPackageFilePathOptions options)
 {
+    // Determine all supported locations and cache for reuse
+    // (safe because the answer can't change during process lifetime)
+    static const auto allSupportedLocations{ ToEffectiveOptions_AllSupportedPaths() };
+
+    // All options thare are locations (i.e. GetPackageFilePathOptions_Search*Path)
+    constexpr auto locationOptions{
+        GetPackageFilePathOptions_SearchInstallPath |
+        GetPackageFilePathOptions_SearchMutablePath |
+        GetPackageFilePathOptions_SearchMachineExternalPath |
+        GetPackageFilePathOptions_SearchUserExternalPath
+    };
+
+    // All options that aren't locations (i.e. not GetPackageFilePathOptions_Search*Path)
+    constexpr auto nonLocationOptions{
+       GetPackageFilePathOptions_SearchMainPackages |
+       GetPackageFilePathOptions_SearchFrameworkPackages |
+       GetPackageFilePathOptions_SearchOptionalPackages |
+       GetPackageFilePathOptions_SearchResourcePackages |
+       GetPackageFilePathOptions_SearchBundlePackages |
+       GetPackageFilePathOptions_SearchHostRuntimeDependencies
+    };
+
     // If options == None then use default behavior (search everything)
     if (options == GetPackageFilePathOptions_None)
     {
-        // 'All' locations supported by the current system is one of...
-        //   * Install
-        //   * Install | Mutable
-        //   * Install | Mutable | ExternalLocation
-        constexpr auto nonLocationOptions{
-           GetPackageFilePathOptions_SearchMainPackages |
-           GetPackageFilePathOptions_SearchFrameworkPackages |
-           GetPackageFilePathOptions_SearchOptionalPackages |
-           GetPackageFilePathOptions_SearchResourcePackages |
-           GetPackageFilePathOptions_SearchBundlePackages |
-           GetPackageFilePathOptions_SearchHostRuntimeDependencies
-        };
-        if (IsPathSupported_ExternalLocation())
-        {
-            return nonLocationOptions |
-                   GetPackageFilePathOptions_SearchInstallPath |
-                   GetPackageFilePathOptions_SearchMutablePath |
-                   GetPackageFilePathOptions_SearchMachineExternalPath |
-                   GetPackageFilePathOptions_SearchUserExternalPath;
-        }
-        else if (IsPathSupported_Mutable())
-        {
-            return nonLocationOptions |
-                   GetPackageFilePathOptions_SearchInstallPath |
-                   GetPackageFilePathOptions_SearchMutablePath;
-        }
-        else
-        {
-            static_assert((nonLocationOptions & GetPackageFilePathOptions_SearchHostRuntimeDependencies) == GetPackageFilePathOptions_SearchHostRuntimeDependencies,
-                          "nonLocationOptions missing expected GetPackageFilePathOptions_SearchHostRuntimeDependencies");
-            return nonLocationOptions |
-                   GetPackageFilePathOptions_SearchInstallPath;
-        }
+        return allSupportedLocations | nonLocationOptions;
+    }
+
+    // If Search*Path are all clear then search them all
+    // where * = Install | Mutable | MachineExternal | UserExternal
+    if (WI_AreAllFlagsClear(options, locationOptions))
+    {
+        options |= allSupportedLocations;
     }
 
     // If Search*Dependencies are all clear then search them all
@@ -275,15 +296,9 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
     //       For example, a Main package shouldn't be searched given options=SearchFrameworkDependnecies
     //       but it should be search if the Main package declares a <HostRuntimeDependency> and
     //       options=SearchFrameworkDependencies | SearchHostRuntimeDependencies.
-    constexpr auto maskPackageTypes{ GetPackageFilePathOptions_SearchMainPackages |
-                                     GetPackageFilePathOptions_SearchFrameworkPackages |
-                                     GetPackageFilePathOptions_SearchOptionalPackages |
-                                     GetPackageFilePathOptions_SearchResourcePackages |
-                                     GetPackageFilePathOptions_SearchBundlePackages |
-                                     GetPackageFilePathOptions_SearchHostRuntimeDependencies };
-    if (WI_AreAllFlagsClear(options, maskPackageTypes))
+    if (WI_AreAllFlagsClear(options, nonLocationOptions))
     {
-        return options | maskPackageTypes;
+        options |= nonLocationOptions;
     }
     return options;
 }

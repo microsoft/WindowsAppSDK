@@ -145,7 +145,99 @@ namespace Test::Package::Tests
             VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
         }
 
-        TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)
+        TEST_METHOD(GetFilePath_FilterPackageType_Main_Match)
+        {
+            PCWSTR packageFullName{ Main_PackageFullName };
+            PCWSTR packageFamilyName{ Main_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_None };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()}, WEX::Common::String().Format(L"Expected:%ls AbsoluteFilename:%ls", expected.c_str(), absoluteFilename.get()));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Main_Main_Match)
+        {
+            PCWSTR packageFullName{ Main_PackageFullName };
+            PCWSTR packageFamilyName{ Main_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchMainPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()}, WEX::Common::String().Format(L"Expected:%ls AbsoluteFilename:%ls", expected.c_str(), absoluteFilename.get()));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Main_InstallMain_Match)
+        {
+            PCWSTR packageFullName{ Main_PackageFullName };
+            PCWSTR packageFamilyName{ Main_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"AppxManifest.xml" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchMainPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()}, WEX::Common::String().Format(L"Expected:%ls AbsoluteFilename:%ls", expected.c_str(), absoluteFilename.get()));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Main_MutableFramework_NoMatch)
+        {
+            PCWSTR packageFamilyName{ Main_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchMutablePath |
+                                GetPackageFilePathOptions_SearchFrameworkPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Main_Mutable_NoMatch)
+        {
+            PCWSTR packageFamilyName{ Main_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchMutablePath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Main_Framework_NoMatch)
+        {
+            PCWSTR packageFamilyName{ Main_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchFrameworkPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Main_InstallFramework_NoMatch)
         {
             PCWSTR packageFamilyName{ Main_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
@@ -155,10 +247,103 @@ namespace Test::Package::Tests
                                 GetPackageFilePathOptions_SearchFrameworkPackages };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
             VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
             VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
         }
 
-        TEST_METHOD(GetFilePath_FilterPackageType_Framework_NoMatch)
+        TEST_METHOD(GetFilePath_FilterPackageType_Framework_Match)
+        {
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_None };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()}, WEX::Common::String().Format(L"Expected:%ls AbsoluteFilename:%ls", expected.c_str(), absoluteFilename.get()));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Framework_Framework_Match)
+        {
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchFrameworkPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()}, WEX::Common::String().Format(L"Expected:%ls AbsoluteFilename:%ls", expected.c_str(), absoluteFilename.get()));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Framework_InstallFramework_Match)
+        {
+            PCWSTR packageFullName{ Framework_PackageFullName };
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchInstallPath |
+                                GetPackageFilePathOptions_SearchFrameworkPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Found: %ls", absoluteFilename.get()));
+            VERIFY_IS_NOT_NULL(absoluteFilename);
+            const std::filesystem::path expected{ ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Install) };
+            VERIFY_ARE_EQUAL(expected, std::filesystem::path{absoluteFilename.get()}, WEX::Common::String().Format(L"Expected:%ls AbsoluteFilename:%ls", expected.c_str(), absoluteFilename.get()));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Framework_MutableMain_NoMatch)
+        {
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchMutablePath |
+                                GetPackageFilePathOptions_SearchMainPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Framework_Mutable_NoMatch)
+        {
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchMutablePath };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Framework_Main_NoMatch)
+        {
+            PCWSTR packageFamilyName{ Framework_PackageFamilyName };
+            wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
+
+            PCWSTR fileName{ L"Shadow.cat" };
+            const auto options{ GetPackageFilePathOptions_SearchMainPackages };
+            wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
+            VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
+            VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
+        }
+
+        TEST_METHOD(GetFilePath_FilterPackageType_Framework_InstallMain_NoMatch)
         {
             PCWSTR packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
@@ -168,6 +353,7 @@ namespace Test::Package::Tests
                                 GetPackageFilePathOptions_SearchMainPackages };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
             VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
+
             VERIFY_IS_NULL(absoluteFilename, WEX::Common::String().Format(L"AbsoluteFilename:%ls", (!absoluteFilename ? L"<null>" : absoluteFilename.get())));
         }
     };
