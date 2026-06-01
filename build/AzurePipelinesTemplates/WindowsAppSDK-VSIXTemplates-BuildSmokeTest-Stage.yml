@@ -74,3 +74,36 @@ stages:
         UseCurrentBuild: false
         IsOfficial: false
         OptionalVSIXVersion: '$(OptionalVSIXVersion)'
+
+    - task: PowerShell@2
+      displayName: 'Rename staged VSIXes to include version (PR-downloadable artifacts)'
+      # BuildVSIX-Steps.yml already staged the .vsix files into
+      # $(ob_outputDirectory)\VSIX (unsigned branch). Default MSBuild output
+      # names omit the version, so testers downloading the PR artifact would
+      # see only `WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix`. Rename in
+      # place to the same `.<version>.vsix` shape Build-VSIX-Local.ps1 uses,
+      # so the filename alone identifies which PR/run produced the VSIX.
+      inputs:
+        targetType: 'inline'
+        script: |
+          $version = '$(OptionalVSIXVersion)'
+          $stageDir = Join-Path '$(ob_outputDirectory)' 'VSIX'
+          if (-not (Test-Path $stageDir)) {
+              Write-Warning "Staging dir not found: $stageDir (BuildVSIX-Steps.yml staging may have failed)"
+              exit 0
+          }
+          $vsixes = Get-ChildItem -Path $stageDir -Filter 'WindowsAppSDK.*.vsix' -File
+          if ($vsixes.Count -eq 0) {
+              Write-Warning "No .vsix files found in $stageDir"
+              exit 0
+          }
+          foreach ($v in $vsixes) {
+              # Skip if already versioned (idempotent re-run safety).
+              if ($v.BaseName -match "\.$([Regex]::Escape($version))$") {
+                  Write-Host "Skip (already versioned): $($v.Name)"
+                  continue
+              }
+              $newName = "$($v.BaseName).$version.vsix"
+              Rename-Item -Path $v.FullName -NewName $newName
+              Write-Host "Renamed: $($v.Name) -> $newName"
+          }

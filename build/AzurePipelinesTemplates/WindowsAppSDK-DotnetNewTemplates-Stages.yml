@@ -12,6 +12,13 @@ parameters:
 - name: SignOutput
   type: boolean
   default: false
+# PR pipelines pass true so every pack (including manual replays without a
+# PR#) gets a timestamp + pr<N> suffix that makes the .nupkg filename
+# uniquely identify the run. Official pipelines leave this false so the
+# pack version matches the csproj <Version> verbatim.
+- name: IsPRBuild
+  type: boolean
+  default: false
 
 stages:
 - stage: DotnetNewTemplates_Build
@@ -84,9 +91,11 @@ stages:
         projects: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
         workingDirectory: '$(templateProjectDir)'
 
-    # PR builds get a unique SemVer prerelease tag appended to the csproj <Version>:
-    #   <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR#>
-    # Non-PR runs (no PR# env var) pack the csproj <Version> as-is.
+    # PR builds always get a unique SemVer prerelease tag appended:
+    #   <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR# or 0>
+    # Manual PR-pipeline replays (no SYSTEM_PULLREQUEST_PULLREQUESTNUMBER)
+    # use pr0 so the filename still differentiates runs by timestamp.
+    # Official builds (IsPRBuild=false) keep the csproj <Version> verbatim.
     - task: PowerShell@2
       displayName: 'Compute package version'
       inputs:
@@ -99,14 +108,16 @@ stages:
           if (-not $versionNode) { throw "No <Version> element found in $csprojPath" }
           $baseVersion = $versionNode.Node.InnerText.Trim()
           if ([string]::IsNullOrWhiteSpace($baseVersion)) { throw "csproj <Version> is empty in $csprojPath" }
-          $pr = $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
-          if ([string]::IsNullOrWhiteSpace($pr)) {
-            $fullVersion = $baseVersion
-          } else {
+          $isPR = [System.Convert]::ToBoolean('${{ parameters.IsPRBuild }}')
+          if ($isPR) {
+            $pr = $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
+            if ([string]::IsNullOrWhiteSpace($pr)) { $pr = '0' }
             $now = Get-Date
             $stamp = "$($now.ToString('yyyy'))-$($now.ToString('MMdd'))-$($now.ToString('HHmm'))-pr$pr"
             # Join with '-' so any prerelease tag already in <Version> stays one valid SemVer identifier.
             $fullVersion = "$baseVersion-$stamp"
+          } else {
+            $fullVersion = $baseVersion
           }
           Write-Host "Computed package version: $fullVersion"
           Write-Host "##vso[task.setvariable variable=PackVersionFull]$fullVersion"

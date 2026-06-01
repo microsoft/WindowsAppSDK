@@ -85,15 +85,17 @@ extends:
         enabled: false
 
     stages:
-      # Build + pack the templates NuGet. The stage detects PR runs via
-      # SYSTEM_PULLREQUEST_PULLREQUESTNUMBER and stamps the pack as
-      # <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR#> (SemVer prerelease).
+      # Build + pack the templates NuGet. IsPRBuild=true makes the stage stamp
+      # every pack as <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR# or 0> so the
+      # .nupkg filename uniquely identifies the run (manual replays without a
+      # PR# fall back to pr0 + timestamp).
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
         parameters:
           pool:
             type: windows
           publishToInternalFeed: false
           SignOutput: false
+          IsPRBuild: true
 
       # Smoke-test: scaffold every template from the pack and dotnet build each.
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
