@@ -148,13 +148,13 @@ namespace Test::Package::Tests
             {
                 VERIFY_IS_NOT_NULL(absoluteFilename);
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_Mutable);
+                const std::filesystem::path actual{ absoluteFilename.get() };
+                VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
             }
             else
             {
                 VERIFY_IS_NULL(absoluteFilename);
             }
-            const std::filesystem::path actual{ absoluteFilename.get() };
-            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
         }
 
         TEST_METHOD(GetPackageFilePath_MachineExternalPath)
@@ -171,13 +171,13 @@ namespace Test::Package::Tests
             {
                 VERIFY_IS_NOT_NULL(absoluteFilename);
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_MachineExternal);
+                const std::filesystem::path actual{ absoluteFilename.get() };
+                VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
             }
             else
             {
                 VERIFY_IS_NULL(absoluteFilename);
             }
-            const std::filesystem::path actual{ absoluteFilename.get() };
-            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
         }
 
         TEST_METHOD(GetPackageFilePath_UserExternalPath)
@@ -194,13 +194,13 @@ namespace Test::Package::Tests
             {
                 VERIFY_IS_NOT_NULL(absoluteFilename);
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName, fileName, PackagePathType_UserExternal);
+                const std::filesystem::path actual{ absoluteFilename.get() };
+                VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
             }
             else
             {
                 VERIFY_IS_NULL(absoluteFilename);
             }
-            const std::filesystem::path actual{ absoluteFilename.get() };
-            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
         }
 
         TEST_METHOD(GetPackageFilePath_FilterPackageType_Main_NoMatch)

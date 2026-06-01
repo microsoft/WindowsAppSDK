@@ -192,13 +192,13 @@ namespace Test::Package::Tests
             {
                 VERIFY_IS_FALSE(absoluteFilename.empty());
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_Mutable);
+                const std::filesystem::path actual{ absoluteFilename.c_str() };
+                VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
             }
             else
             {
                 VERIFY_IS_TRUE(absoluteFilename.empty());
             }
-            const std::filesystem::path actual{ absoluteFilename.c_str() };
-            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
         }
 
         TEST_METHOD(GetFilePath_MachineExternalPath)
@@ -214,13 +214,13 @@ namespace Test::Package::Tests
             {
                 VERIFY_IS_FALSE(absoluteFilename.empty());
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_MachineExternal);
+                const std::filesystem::path actual{ absoluteFilename.c_str() };
+                VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
             }
             else
             {
                 VERIFY_IS_TRUE(absoluteFilename.empty());
             }
-            const std::filesystem::path actual{ absoluteFilename.c_str() };
-            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
         }
 
         TEST_METHOD(GetFilePath_UserExternalPath)
@@ -236,13 +236,13 @@ namespace Test::Package::Tests
             {
                 VERIFY_IS_FALSE(absoluteFilename.empty());
                 expected = ::AppModel::Package::GetAbsoluteFilename(packageFullName.c_str(), fileName.c_str(), PackagePathType_UserExternal);
+                const std::filesystem::path actual{ absoluteFilename.c_str() };
+                VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
             }
             else
             {
                 VERIFY_IS_TRUE(absoluteFilename.empty());
             }
-            const std::filesystem::path actual{ absoluteFilename.c_str() };
-            VERIFY_ARE_EQUAL(expected, actual, WEX::Common::String().Format(L"Expected:%ls Actual:%ls", expected.c_str(), actual.c_str()));
         }
 
         TEST_METHOD(GetFilePath_FilterPackageType_Main_NoMatch)
