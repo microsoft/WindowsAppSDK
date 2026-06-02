@@ -130,12 +130,7 @@ namespace Test::Bootstrap
                 TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
         }
 
-        // AddPackage now waits for FindPackageForUser to surface each registered
-        // package before returning, so MddBootstrapInitialize -> ResolvePackageDependency
-        // no longer races the OS package index. Call once and verify; any failure
-        // here is a real bug, not the historical 0x80270254 enumeration-lag race.
-        const HRESULT bootstrapHr{ MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion) };
-        VERIFY_SUCCEEDED(bootstrapHr);
+        VERIFY_SUCCEEDED(MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion));
         s_bootstrapDll = std::move(bootstrapDll);
     }
 
