@@ -12,9 +12,8 @@ parameters:
   type: boolean
   default: false 
 - name: OptionalVSIXVersion
-  value: "2.0.27"
   type: string
-  default: 'default'
+  default: '2.0.27'
 - name: EnableExperimentalVSIXFeatures
   type: boolean
   default: false
