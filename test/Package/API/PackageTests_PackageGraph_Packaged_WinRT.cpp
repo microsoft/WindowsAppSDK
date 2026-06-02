@@ -245,7 +245,7 @@ namespace Test::Package::Tests
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
             winrt::hstring fileName{ L"Shadow.cat" };
-            const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchInstallPath };
+            const auto options{ winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions::SearchFrameworkPackages };
             const auto absoluteFilename{ winrt::Microsoft::Windows::ApplicationModel::PackageGraph::GetFilePath(fileName, options) };
 
             VERIFY_IS_TRUE(absoluteFilename.empty(), WEX::Common::String().Format(L"AbsoluteFilename:%ls", absoluteFilename.c_str()));

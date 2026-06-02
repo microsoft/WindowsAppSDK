@@ -282,11 +282,22 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
         return allSupportedLocations | nonLocationOptions;
     }
 
+    // Break options specified into location and non-location bits
+    const auto locationOptionsPresent{ options & locationOptions };
+    const auto nonLocationOptionsPresent{ options & nonLocationOptions };
+
+    // Compute the effective options
+    auto effectiveOptions{ GetPackageFilePathOptions_None };
+
     // If Search*Path are all clear then search them all
     // where * = Install | Mutable | MachineExternal | UserExternal
-    if (WI_AreAllFlagsClear(options, locationOptions))
+    if (locationOptionsPresent == GetPackageFilePathOptions_None)
     {
-        options |= allSupportedLocations;
+        effectiveOptions |= allSupportedLocations;
+    }
+    else
+    {
+        effectiveOptions |= (locationOptionsPresent & allSupportedLocations);
     }
 
     // If Search*Dependencies are all clear then search them all
@@ -296,11 +307,16 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
     //       For example, a Main package shouldn't be searched given options=SearchFrameworkDependnecies
     //       but it should be search if the Main package declares a <HostRuntimeDependency> and
     //       options=SearchFrameworkDependencies | SearchHostRuntimeDependencies.
-    if (WI_AreAllFlagsClear(options, nonLocationOptions))
+    if (nonLocationOptionsPresent == GetPackageFilePathOptions_None)
     {
-        options |= nonLocationOptions;
+        effectiveOptions |= nonLocationOptions;
     }
-    return options;
+    else
+    {
+        effectiveOptions |= nonLocationOptionsPresent;
+    }
+
+    return effectiveOptions;
 }
 }
 

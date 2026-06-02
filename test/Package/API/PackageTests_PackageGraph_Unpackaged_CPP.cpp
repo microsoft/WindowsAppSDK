@@ -159,7 +159,7 @@ namespace Test::Package::Tests
             PCWSTR packageFamilyName{ Main_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
-            PCWSTR fileName{ L"Shadow.cat" };
+            PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_None };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
             VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
@@ -176,7 +176,7 @@ namespace Test::Package::Tests
             PCWSTR packageFamilyName{ Main_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
-            PCWSTR fileName{ L"Shadow.cat" };
+            PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchMainPackages };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
             VERIFY_SUCCEEDED(::GetPackageFilePathInPackageGraph(fileName, options, wil::out_param(absoluteFilename)));
@@ -193,7 +193,7 @@ namespace Test::Package::Tests
             PCWSTR packageFamilyName{ Main_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
-            PCWSTR fileName{ L"Shadow.cat" };
+            PCWSTR fileName{ L"AppxManifest.xml" };
             const auto options{ GetPackageFilePathOptions_SearchInstallPath |
                                 GetPackageFilePathOptions_SearchMainPackages };
             wil::unique_process_heap_ptr<WCHAR> absoluteFilename;
@@ -261,7 +261,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_Match)
         {
-            PCWSTR packageFullName{ Main_PackageFullName };
+            PCWSTR packageFullName{ Framework_PackageFamilyName };
             PCWSTR packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
@@ -278,7 +278,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_Framework_Match)
         {
-            PCWSTR packageFullName{ Main_PackageFullName };
+            PCWSTR packageFullName{ Framework_PackageFullName };
             PCWSTR packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
@@ -295,7 +295,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_InstallFramework_Match)
         {
-            PCWSTR packageFullName{ Main_PackageFullName };
+            PCWSTR packageFullName{ Framework_PackageFamilyName };
             PCWSTR packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
