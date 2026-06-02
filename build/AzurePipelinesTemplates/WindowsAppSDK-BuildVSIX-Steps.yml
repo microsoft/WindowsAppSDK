@@ -10,10 +10,13 @@ parameters:
   default: true
 - name: UseCurrentBuild
   type: boolean
-  default: false 
+  default: false
+# To override OptionalVSIXVersion's default, add 
+# OptionalVSIXVersion: 'x.y.z' to the parameters of
+# the stage that calls this template in the aggregator pipeline.
 - name: OptionalVSIXVersion
   type: string
-  default: '2.0.27'
+  default: 'default'
 - name: EnableExperimentalVSIXFeatures
   type: boolean
   default: false
