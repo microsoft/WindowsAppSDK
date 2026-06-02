@@ -261,7 +261,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_Match)
         {
-            PCWSTR packageFullName{ Framework_PackageFamilyName };
+            PCWSTR packageFullName{ Framework_PackageFullName };
             PCWSTR packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
@@ -295,7 +295,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_InstallFramework_Match)
         {
-            PCWSTR packageFullName{ Framework_PackageFamilyName };
+            PCWSTR packageFullName{ Framework_PackageFullName };
             PCWSTR packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 

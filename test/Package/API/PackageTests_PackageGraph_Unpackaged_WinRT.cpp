@@ -263,7 +263,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_Match)
         {
-            winrt::hstring packageFullName{ Framework_PackageFamilyName };
+            winrt::hstring packageFullName{ Framework_PackageFullName };
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
@@ -279,7 +279,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_Framework_Match)
         {
-            winrt::hstring packageFullName{ Framework_PackageFamilyName };
+            winrt::hstring packageFullName{ Framework_PackageFullName };
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
@@ -295,7 +295,7 @@ namespace Test::Package::Tests
 
         TEST_METHOD(GetFilePath_FilterPackageType_Framework_InstallFramework_Match)
         {
-            winrt::hstring packageFullName{ Framework_PackageFamilyName };
+            winrt::hstring packageFullName{ Framework_PackageFullName };
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             wil::unique_package_dependency_context packageDependencyContext{ AddDynamicDependency(packageFamilyName) };
 
