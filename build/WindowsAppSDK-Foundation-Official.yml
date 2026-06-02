@@ -58,7 +58,7 @@ parameters:
 - name: BuildType
   displayName: "Build Type"
   type: string
-  default: 'stable'
+  default: 'experimental'
   values:
   - 'stable'
   - 'experimental'
@@ -98,7 +98,7 @@ resources:
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/release/2.0-stable
+      ref: refs/heads/release/2.0-experimental
     - repository: WindowsAppSDKSamples
       type: github
       endpoint: 'GitHub - benkuhn - 2-18'
