@@ -15,6 +15,18 @@
 #include <winrt/Windows.ApplicationModel.h>
 #include <WexTestClass.h>
 
+// Some translation units that include this header are compiled with a
+// WINAPI partition that omits the ERROR_INSTALL_* family from <winerror.h>
+// (confirmed: build 148597167 hit C2065 on these symbols across ~15
+// vcxprojs after the fallbacks were removed). Define locally to keep the
+// retry condition below readable.
+#ifndef ERROR_INSTALL_OPEN_PACKAGE_FAILED
+#define ERROR_INSTALL_OPEN_PACKAGE_FAILED 0x3CFFL
+#endif
+#ifndef ERROR_INSTALL_RESOURCES_BUSY
+#define ERROR_INSTALL_RESOURCES_BUSY 0x3D02L
+#endif
+
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION            0x0004000107AF014DLLu
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MAJOR      4
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MINOR      1
