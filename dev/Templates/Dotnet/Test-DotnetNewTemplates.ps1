@@ -503,24 +503,65 @@ try {
     Assert-CsprojPackageVersion -CsprojPath $preReleaseCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.8.0-preview1'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pre-release version content' -Status 'Succeeded' -Path $preReleasePath
 
-    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails
+    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails with NU1105
     Write-Step 'Testing invalid version handling...'
     $invalidPath = Join-Path -Path $workingRoot -ChildPath 'VersionInvalid'
     Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionInvalid', '-o', $invalidPath, '--wasdk-version', 'not-a-version', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with invalid version'
     $invalidCsproj = Join-Path -Path $invalidPath -ChildPath 'VersionInvalid.csproj'
     Assert-CsprojPackageVersion -CsprojPath $invalidCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion 'not-a-version'
-    # Build should fail because NuGet can't parse an invalid version string
-    $invalidBuildFailed = $false
+    # Restore should fail with NU1105 because NuGet can't parse an invalid version string
+    $restoreFailed = $false
+    $restoreOutput = $null
     try {
-        Invoke-DotnetCommand -Arguments @('build', $invalidCsproj, '-p:Configuration=Debug', '-p:Platform=x64', '-p:WindowsPackageType=None') -WorkingDirectory $invalidPath -Description 'build with invalid version (should fail)'
+        Push-Location -Path $invalidPath
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        $restoreOutput = & $dotnetPath restore $invalidCsproj 2>&1
+        $restoreExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
+        Pop-Location
+        if ($restoreExitCode -ne 0) {
+            $restoreFailed = $true
+        }
     }
     catch {
-        $invalidBuildFailed = $true
+        $restoreFailed = $true
     }
-    if (-not $invalidBuildFailed) {
+    if (-not $restoreFailed) {
+        throw "Expected restore to fail for invalid WASDK version 'not-a-version'"
+    }
+    $restoreText = $restoreOutput -join "`n"
+    if ($restoreText -notmatch 'NU1105') {
+        throw "Expected NuGet error NU1105 (unable to read project information) for invalid WASDK version 'not-a-version', but got:`n$restoreText"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails with NU1105' -Status 'Succeeded' -Path $invalidPath
+
+    # Build (with --no-restore) should fail with NETSDK1005 since restore never succeeded
+    $buildFailed = $false
+    $buildOutput = $null
+    try {
+        Push-Location -Path $invalidPath
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        $buildOutput = & $dotnetPath build $invalidCsproj --no-restore '-p:Configuration=Debug' '-p:Platform=x64' '-p:WindowsPackageType=None' 2>&1
+        $buildExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
+        Pop-Location
+        if ($buildExitCode -ne 0) {
+            $buildFailed = $true
+        }
+    }
+    catch {
+        $buildFailed = $true
+    }
+    if (-not $buildFailed) {
         throw "Expected build to fail for invalid WASDK version 'not-a-version'"
     }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, build fails' -Status 'Succeeded' -Path $invalidPath
+    $buildText = $buildOutput -join "`n"
+    if ($buildText -notmatch 'NETSDK1005') {
+        throw "Expected NETSDK1005 (assets file missing, please run restore) for invalid WASDK version 'not-a-version', but got:`n$buildText"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails with NETSDK1005' -Status 'Succeeded' -Path $invalidPath
 
     # Scenario 6: Valid version format but nonexistent package
     $nonexistentPath = Join-Path -Path $workingRoot -ChildPath 'VersionNonexistent'
