@@ -527,10 +527,20 @@ try {
     Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionNonexistent', '-o', $nonexistentPath, '--wasdk-version', '99.99.99', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with nonexistent version'
     $nonexistentCsproj = Join-Path -Path $nonexistentPath -ChildPath 'VersionNonexistent.csproj'
     Assert-CsprojPackageVersion -CsprojPath $nonexistentCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '99.99.99'
-    # Build should fail because NuGet can't find this package version
+    # Build should fail with NU1102 because NuGet can't find this package version
     $buildFailed = $false
+    $buildOutput = $null
     try {
-        Invoke-DotnetCommand -Arguments @('build', $nonexistentCsproj, '-p:Configuration=Debug', '-p:Platform=x64', '-p:WindowsPackageType=None') -WorkingDirectory $nonexistentPath -Description 'build with nonexistent version (should fail)'
+        Push-Location -Path $nonexistentPath
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        $buildOutput = & $dotnetPath build $nonexistentCsproj '-p:Configuration=Debug' '-p:Platform=x64' '-p:WindowsPackageType=None' 2>&1
+        $buildExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
+        Pop-Location
+        if ($buildExitCode -ne 0) {
+            $buildFailed = $true
+        }
     }
     catch {
         $buildFailed = $true
@@ -538,7 +548,11 @@ try {
     if (-not $buildFailed) {
         throw "Expected build to fail for nonexistent WASDK version 99.99.99"
     }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'nonexistent version: scaffold OK, build fails' -Status 'Succeeded' -Path $nonexistentPath
+    $buildText = $buildOutput -join "`n"
+    if ($buildText -notmatch 'NU1102') {
+        throw "Expected NuGet error NU1102 (package not found) for nonexistent WASDK version 99.99.99, but got:`n$buildText"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'nonexistent version: scaffold OK, build fails with NU1102' -Status 'Succeeded' -Path $nonexistentPath
 
     Write-Step 'Version parameter test scenarios completed.'
 
