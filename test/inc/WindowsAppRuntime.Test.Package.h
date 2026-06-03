@@ -15,6 +15,16 @@
 #include <winrt/Windows.ApplicationModel.h>
 #include <WexTestClass.h>
 
+// Some of this header's translation units are compiled without the WINAPI
+// partition that defines the ERROR_INSTALL_* family in <winerror.h>. Provide
+// local definitions so the symbolic names can be used uniformly below.
+#ifndef ERROR_INSTALL_OPEN_PACKAGE_FAILED
+#define ERROR_INSTALL_OPEN_PACKAGE_FAILED 0x3CFFL
+#endif
+#ifndef ERROR_INSTALL_RESOURCES_BUSY
+#define ERROR_INSTALL_RESOURCES_BUSY 0x3D02L
+#endif
+
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION            0x0004000107AF014DLLu
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MAJOR      4
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MINOR      1
@@ -432,13 +442,11 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
             }
             break;
         }
-        // ERROR_INSTALL_RESOURCES_BUSY (0x3D02) / ERROR_INSTALL_OPEN_PACKAGE_FAILED (0x3CFF)
-        // symbols aren't visible in this header's translation units; pass raw win32 codes
-        // through HRESULT_FROM_WIN32 (always-available macro) instead.
+        // Bounded retry on the documented transient install errors.
         const bool isTransient{
-            hr == HRESULT_FROM_WIN32(0x3D02) ||                  // ERROR_INSTALL_RESOURCES_BUSY
-            hr == HRESULT_FROM_WIN32(0x3CFF) ||                  // ERROR_INSTALL_OPEN_PACKAGE_FAILED
-            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) }; // 0x80070020
+            hr == HRESULT_FROM_WIN32(ERROR_INSTALL_RESOURCES_BUSY) ||
+            hr == HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED) ||
+            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };
         if (!isTransient || attempt == c_maxAttempts)
         {
             break;

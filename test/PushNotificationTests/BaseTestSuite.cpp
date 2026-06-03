@@ -118,7 +118,7 @@ static bool SkipIfWnsServiceError(HRESULT hr, PCWSTR testName)
     // 0x8007139F == HRESULT_FROM_WIN32(ERROR_INVALID_STATE) - observed on
     //   multiple test images (Win10 rs5, LTSC.2021, Server.2025, Win11 24H2)
     //   when WNS rejects channel allocation as transiently unavailable.
-    if (hr == HRESULT_FROM_WIN32(0x139FL))
+    if (hr == HRESULT_FROM_WIN32(ERROR_INVALID_STATE))
     {
         WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped,
             WEX::Common::String().Format(
