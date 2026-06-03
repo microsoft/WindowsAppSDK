@@ -231,5 +231,11 @@ namespace Test::PowerNotifications
             VERIFY_IS_NOT_NULL(token);
             PowerManager::SystemSuspendStatusChanged(token);
         }
+
+        TEST_METHOD(GetEffectivePowerMode)
+        {
+            auto value = PowerManager::EffectivePowerMode2();
+            VERIFY_ARE_EQUAL(value, EffectivePowerMode::Balanced);
+        }
     };
 }
