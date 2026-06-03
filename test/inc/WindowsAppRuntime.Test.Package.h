@@ -15,16 +15,6 @@
 #include <winrt/Windows.ApplicationModel.h>
 #include <WexTestClass.h>
 
-// Some of this header's translation units are compiled without the WINAPI
-// partition that defines the ERROR_INSTALL_* family in <winerror.h>. Provide
-// local definitions so the symbolic names can be used uniformly below.
-#ifndef ERROR_INSTALL_OPEN_PACKAGE_FAILED
-#define ERROR_INSTALL_OPEN_PACKAGE_FAILED 0x3CFFL
-#endif
-#ifndef ERROR_INSTALL_RESOURCES_BUSY
-#define ERROR_INSTALL_RESOURCES_BUSY 0x3D02L
-#endif
-
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION            0x0004000107AF014DLLu
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MAJOR      4
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MINOR      1
