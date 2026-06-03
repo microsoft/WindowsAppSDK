@@ -55,9 +55,9 @@ namespace Test::LRP
                 {
                     const HRESULT hr{ e.GetErrorCode() };
                     const bool isTransient{
-                        hr == HRESULT_FROM_WIN32(0x3D02) ||                   // ERROR_PACKAGES_IN_USE
-                        hr == HRESULT_FROM_WIN32(0x3CFF) ||                   // ERROR_INSTALL_POLICY_FAILURE
-                        hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };  // 0x80070020
+                        hr == HRESULT_FROM_WIN32(ERROR_PACKAGES_IN_USE) ||
+                        hr == HRESULT_FROM_WIN32(ERROR_INSTALL_POLICY_FAILURE) ||
+                        hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };
                     if (!isTransient || attempt == c_maxAttempts)
                     {
                         throw;
