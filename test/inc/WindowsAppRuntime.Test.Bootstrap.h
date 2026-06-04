@@ -135,14 +135,17 @@ namespace Test::Bootstrap
         // checks, but that wait reduces the race rather than eliminating it
         // (validation runs against build 148663633 still showed residual
         // 0x80270254 / PackageManager_NoPackagesFound here). Short retry on
-        // that specific HRESULT to catch the residual race.
+        // that specific HRESULT to catch the residual race. Note: 0x80270254
+        // is an APPX-facility HRESULT (facility=0x027), NOT a HRESULT_FROM_WIN32
+        // value (that would be 0x80070254 in FACILITY_WIN32=0x007).
+        constexpr HRESULT c_bootstrapRaceHr{ static_cast<HRESULT>(0x80270254L) };
         HRESULT bootstrapHr{ S_OK };
         constexpr int c_maxAttempts{ 5 };
         DWORD backoffMs{ 1000 };
         for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
         {
             bootstrapHr = MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion);
-            if (SUCCEEDED(bootstrapHr) || bootstrapHr != HRESULT_FROM_WIN32(0x270254L) || attempt == c_maxAttempts)
+            if (SUCCEEDED(bootstrapHr) || bootstrapHr != c_bootstrapRaceHr || attempt == c_maxAttempts)
             {
                 break;
             }
