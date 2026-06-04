@@ -130,7 +130,29 @@ namespace Test::Bootstrap
                 TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
         }
 
-        VERIFY_SUCCEEDED(MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion));
+        // Defence in depth: AddPackage's WaitForPackageEnumerable already
+        // synchronises against the precondition MddBootstrapInitialize
+        // checks, but that wait reduces the race rather than eliminating it
+        // (validation runs against build 148663633 still showed residual
+        // 0x80270254 / PackageManager_NoPackagesFound here). Short retry on
+        // that specific HRESULT to catch the residual race.
+        HRESULT bootstrapHr{ S_OK };
+        constexpr int c_maxAttempts{ 5 };
+        DWORD backoffMs{ 1000 };
+        for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
+        {
+            bootstrapHr = MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion);
+            if (SUCCEEDED(bootstrapHr) || bootstrapHr != HRESULT_FROM_WIN32(0x270254L) || attempt == c_maxAttempts)
+            {
+                break;
+            }
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"MddBootstrapInitialize attempt %d/%d failed with 0x80270254; sleeping %u ms before retry",
+                attempt, c_maxAttempts, backoffMs));
+            Sleep(backoffMs);
+            backoffMs = (std::min<DWORD>)(backoffMs * 2, 8000);
+        }
+        VERIFY_SUCCEEDED(bootstrapHr);
         s_bootstrapDll = std::move(bootstrapDll);
     }
 
