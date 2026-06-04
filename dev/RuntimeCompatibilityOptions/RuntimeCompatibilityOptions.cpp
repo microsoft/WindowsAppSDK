@@ -36,12 +36,14 @@ namespace
     // unscoped enum type name still exposed by older Containment.h headers
     // (renamed there to WinAppSDKPatchVersionDeprecated in newer FrUdk
     // revisions). The scoped enum keeps all release-version constants
-    // (WinAppSDK_Latest, WinAppSDK_Security, per-release WinAppSDK_M_m_p)
-    // confined to this translation unit; no other component should reference
-    // them. WinAppSDKReleaseVersionFromValues mirrors the historical
+    // (WinAppSDK_Latest, WinAppSDK_Security, and per-release WinAppSDK_M_m_p
+    // values added by release engineering as the catalog grows) confined to
+    // this translation unit; no other component should reference them.
+    // WinAppSDKReleaseVersionFromValues mirrors the historical
     // WinAppSDKPatchVersionFromValues encoding (major*1000000 + minor*1000 + patch)
     // so the WindowsAppRuntimeVersion -> WinAppSDKReleaseVersion conversion
-    // matches the encoding embedded in each enumerator below.
+    // is consistent with the encoding release engineering uses when adding
+    // new per-release enumerators below.
     constexpr UINT32 WinAppSDKReleaseVersionFromValues(UINT32 major, UINT32 minor, UINT32 patch)
     {
         return (major * 1000000) + (minor * 1000) + patch;
