@@ -1,7 +1,7 @@
 # Templates PR Validation Pipeline
 #
 # PR validation for changes under dev/Templates/**.
-# Reuses the build/pack + smoke-test stages from the main pipeline
+# Reuses the build/pack + test stages from the main pipeline
 # (WindowsAppSDK-DotnetNewTemplates.yml). Nothing is signed; nothing is
 # published. PR-stamped versions keep PR artifacts from colliding with
 # canonical packages -- see each stage for the exact format.
@@ -26,9 +26,9 @@ trigger: none
 #
 # OfficialPipelineID is the Aggregator nightly definition id (WinAppSDK-Build-Nightly,
 # OneBranch) that produces the WindowsAppSDK_Nuget_And_MSIX artifact daily on 'main'.
-# The VSIX smoke-test stage consumes it with runVersion 'latestFromBranch' to pull the
-# latest nightly nuget, so no per-run build id is required. Defined here (not in the ADO
-# UI) so it is version-controlled and reviewable.
+# The VSIX build-validation stage consumes it with runVersion 'latestFromBranch' to pull
+# the latest nightly nuget, so no per-run build id is required. Defined here (not in the
+# ADO UI) so it is version-controlled and reviewable.
 variables:
 - name: OfficialPipelineID
   value: 118002
@@ -45,7 +45,7 @@ resources:
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
     - repository: WindowsAppSDKConfig
-      # adding config for WindowsAppSDK-VSIXTemplates-BuildSmokeTest-Stage
+      # adding config for WindowsAppSDK-VSIXTemplates-BuildValidation-Stage
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
@@ -104,10 +104,10 @@ extends:
             type: windows
           dependsOnStage: 'DotnetNewTemplates_Build'
 
-      # Smoke-build the VSIX. Runs the production VSIX pack steps so
+      # Build-validate the VSIX. Runs the production VSIX pack steps so
       # VSIX-pack regressions (e.g. VSSDK1300 path overflow) surface at PR
-      # time. See WindowsAppSDK-VSIXTemplates-BuildSmokeTest-Stage.yml.
-      - template: AzurePipelinesTemplates\WindowsAppSDK-VSIXTemplates-BuildSmokeTest-Stage.yml@self
+      # time. See WindowsAppSDK-VSIXTemplates-BuildValidation-Stage.yml.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-VSIXTemplates-BuildValidation-Stage.yml@self
         parameters:
           pool:
             type: windows

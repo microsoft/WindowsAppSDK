@@ -1,11 +1,13 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# VSIX templates build smoke-test stage.
+# VSIX templates build-validation stage.
 #
 # Runs WindowsAppSDK-BuildVSIX-Steps.yml so any VSIX-pack regression
 # (VSSDK1300 path overflow, broken template asset, manifest error, etc.)
-# surfaces at PR time. Skips:
+# surfaces at PR time. This validates that the VSIXes still build and pack;
+# it does not install or instantiate them, so it is a build regression check
+# rather than a smoke/build-verification test. Skips:
 #   - SDL/PREfast scans       (runStaticAnalysis: false)
 #   - VSIX code signing       (SignOutput: false)
 #   - Symbol server publish   (PublishSymbols: false)
@@ -23,17 +25,17 @@ parameters:
     type: windows
 
 stages:
-- stage: VSIXTemplates_BuildSmokeTest
-  displayName: 'Smoke-build VSIX templates'
+- stage: VSIXTemplates_BuildValidation
+  displayName: 'Validate VSIX templates build'
   dependsOn: []
   jobs:
-  - job: BuildVSIXSmoke
+  - job: BuildVSIX
     displayName: 'Restore + build WindowsAppSDK.Extension.sln (Standalone + Component)'
     pool: ${{ parameters.pool }}
     timeoutInMinutes: 60
     variables:
       # Required by OneBranch v2.
-      ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\vsix-smoketest'
+      ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\vsix-buildvalidation'
       # Path prefix consumed as $(FoundationRepoPath) inside
       # WindowsAppSDK-BuildVSIX-Steps.yml; pairs with the `path: s\WindowsAppSDK`
       # checkout below. See file header for why.
@@ -45,7 +47,7 @@ stages:
       path: s\WindowsAppSDK
 
     - task: PowerShell@2
-      displayName: 'Compute VSIX version + announce smoke-test scope'
+      displayName: 'Compute VSIX version + announce build-validation scope'
       inputs:
         targetType: 'inline'
         script: |
@@ -60,7 +62,7 @@ stages:
           $version = "$($now.Year).$($now.ToString('MMdd')).$($now.ToString('HHmm')).$pr"
           Write-Host "##vso[task.setvariable variable=OptionalVSIXVersion]$version"
 
-          Write-Host "VSIX smoke-test: building Cpp + Cs, Standalone + Component (4 VSIXes)"
+          Write-Host "VSIX build validation: building Cpp + Cs, Standalone + Component (4 VSIXes)"
           Write-Host "VSIX version: $version"
           Write-Host "Pool        : $(Agent.MachineName) ($(Agent.OS))"
           Write-Host "Sources dir : $(Build.SourcesDirectory)"

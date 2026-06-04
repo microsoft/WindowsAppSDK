@@ -21,7 +21,7 @@ parameters:
   default: false
 - name: PublishSymbols
   # Defaults true to preserve official-build behavior.
-  # Set to false in PR smoke-tests to skip pushing to the symbol server.
+  # Set to false in PR build-validation runs to skip pushing to the symbol server.
   type: boolean
   default: true
 - name: NightlyBranchName
@@ -43,7 +43,7 @@ steps:
   # This step downloads the WindowsAppSDK NuGet package from the Aggregator nightly
   # pipeline (identified by the OfficialPipelineID variable) for use in building the
   # VSIX. We pull the latest run from NightlyBranchName rather than a pinned
-  # LatestOfficialBuildID so PR smoke-tests always get a fresh package without
+  # LatestOfficialBuildID so PR build-validation runs always get a fresh package without
   # needing a build id supplied at queue time.
   #
   # The nightly runs commonly finish as PartiallySucceeded (some downstream test/SDL
