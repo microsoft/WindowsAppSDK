@@ -140,7 +140,7 @@ namespace Test::Bootstrap
         // value (that would be 0x80070254 in FACILITY_WIN32=0x007).
         constexpr HRESULT c_bootstrapRaceHr{ static_cast<HRESULT>(0x80270254L) };
         HRESULT bootstrapHr{ S_OK };
-        constexpr int c_maxAttempts{ 10 };
+        constexpr int c_maxAttempts{ 5 };
         DWORD backoffMs{ 1000 };
         for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
         {
@@ -153,7 +153,7 @@ namespace Test::Bootstrap
                 L"MddBootstrapInitialize attempt %d/%d failed with 0x80270254; sleeping %u ms before retry",
                 attempt, c_maxAttempts, backoffMs));
             Sleep(backoffMs);
-            backoffMs = (std::min<DWORD>)(backoffMs * 2, 30000);
+            backoffMs = (std::min<DWORD>)(backoffMs * 2, 8000);
         }
         VERIFY_SUCCEEDED(bootstrapHr);
         s_bootstrapDll = std::move(bootstrapDll);
