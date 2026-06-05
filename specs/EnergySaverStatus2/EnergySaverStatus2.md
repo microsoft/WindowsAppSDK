@@ -8,7 +8,7 @@ Starting with the [Windows 11, 24H2]() release, the [Energy Saver](https://learn
 feature was updated to support three distinct operating modes: **Off**, **Standard**, and
 **High Savings** which are now visible to users in the Windows Settings app.
 
-The original two-state API contains a bug: when Energy Saver is active in **Standard** mode, `EnergySaverStatus` incorrectly reports `Off`. Only the **High Savings** state correctly maps to `On`.
+The original two-state API has an inconsistency : when Energy Saver is active in **Standard** mode, `EnergySaverStatus` incorrectly reports `Off`. Only the **High Savings** state correctly maps to `On`.
 
 This spec introduces `EnergySaverStatus2`, a new enum and associated APIs on
 `Microsoft.Windows.System.Power.PowerManager`, that accurately reflects all three energy saver
