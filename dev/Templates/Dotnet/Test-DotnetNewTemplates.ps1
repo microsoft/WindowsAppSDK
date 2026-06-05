@@ -534,10 +534,10 @@ try {
         throw "Expected restore to fail for invalid WASDK version 'not-a-version'"
     }
     $restoreText = $restoreOutput -join "`n"
-    # Finds NU1105, NETSDK1005, etc.
-    $errorCodes = [regex]::Matches($restoreText, '\b(?:NU|NETSDK|MSB)\d{4,}\b') |
+    # Finds NU1105, NETSDK1004, etc.
+    $errorCodes = @([regex]::Matches($restoreText, '\b(?:NU|NETSDK|MSB)\d{4,}\b') |
         ForEach-Object { $_.Value } |
-        Select-Object -Unique
+        Select-Object -Unique)
     if ($errorCodes.Count -gt 0) {
         if ($errorCodes -notcontains 'NU1105') {
             throw "Expected NU1105, got: $($errorCodes -join ', ')"
@@ -573,10 +573,10 @@ try {
         throw "Expected build to fail for invalid WASDK version 'not-a-version'"
     }
     $buildText = $buildOutput -join "`n"
-    if ($buildText -notmatch 'NETSDK1005') {
-        throw "Expected NETSDK1005 (assets file missing, please run restore) for invalid WASDK version 'not-a-version', but got:`n$buildText"
+    if ($buildText -notmatch 'NETSDK1004') {
+        throw "Expected NETSDK1004 (assets file missing, please run restore) for invalid WASDK version 'not-a-version', but got:`n$buildText"
     }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails with NETSDK1005' -Status 'Succeeded' -Path $invalidPath
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails with NETSDK1004' -Status 'Succeeded' -Path $invalidPath
 
     # Scenario 6: Valid version format but nonexistent package
     $nonexistentPath = Join-Path -Path $workingRoot -ChildPath 'VersionNonexistent'
