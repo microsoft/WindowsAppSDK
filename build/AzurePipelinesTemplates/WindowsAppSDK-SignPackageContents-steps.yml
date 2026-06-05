@@ -22,6 +22,11 @@ parameters:
   values:
   - "vsix"
   - "nupkg"
+# When true, EsrpCodeSigning-Steps is invoked WITHOUT the @WinAppSDK suffix
+# because the WindowsAppSDK monorepo IS the self repo in the monobuild context.
+- name: IsMonobuild
+  type: boolean
+  default: false
 
 steps:
 - ${{ each package in parameters.packages }}:
@@ -31,13 +36,15 @@ steps:
       archiveFilePatterns: '${{parameters.inputPackageDirectory}}\${{package}}'
       destinationFolder: '$(Agent.TempDirectory)/${{package}}'
 
-  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      DisplayName: 'CodeSign package contents'
-      FolderPath: '$(Agent.TempDirectory)/${{package}}'
-      Pattern: ${{parameters.codeSignPattern}}
-      UseMinimatch: true
-      KeyCode: 'CP-230012'
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        DisplayName: 'CodeSign package contents'
+        FolderPath: '$(Agent.TempDirectory)/${{package}}'
+        Pattern: ${{parameters.codeSignPattern}}
+        UseMinimatch: true
+        KeyCode: 'CP-230012'
 
   - task: ArchiveFiles@2
     displayName: Repack signed package contents
@@ -47,19 +54,23 @@ steps:
       archiveFile: '${{parameters.outputPackageDirectory}}/${{package}}'
 
   - ${{ if eq(parameters.packageType, 'nupkg') }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
+    - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
       parameters:
-        DisplayName: 'CodeSign repacked package (Nuget)'
-        FolderPath: '${{parameters.outputPackageDirectory}}'
-        Pattern: ${{package}}
-        UseMinimatch: true
-        KeyCode: 'CP-401405'
+        IsMonobuild: ${{ parameters.IsMonobuild }}
+        InnerParams:
+          DisplayName: 'CodeSign repacked package (Nuget)'
+          FolderPath: '${{parameters.outputPackageDirectory}}'
+          Pattern: ${{package}}
+          UseMinimatch: true
+          KeyCode: 'CP-401405'
 
   - ${{ if eq(parameters.packageType, 'vsix') }}:
-    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
+    - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
       parameters:
-        DisplayName: 'CodeSign repacked package (VSIX)'
-        FolderPath: '${{parameters.outputPackageDirectory}}'
-        Pattern: ${{package}}
-        UseMinimatch: true
-        KeyCode: 'CP-233016'
+        IsMonobuild: ${{ parameters.IsMonobuild }}
+        InnerParams:
+          DisplayName: 'CodeSign repacked package (VSIX)'
+          FolderPath: '${{parameters.outputPackageDirectory}}'
+          Pattern: ${{package}}
+          UseMinimatch: true
+          KeyCode: 'CP-233016'
