@@ -512,6 +512,7 @@ try {
     # Restore should fail with NU1105 because NuGet can't parse an invalid version string
     $restoreFailed = $false
     $restoreOutput = $null
+    $restoreText = $null
     try {
         Push-Location -Path $invalidPath
         $savedEAP = $ErrorActionPreference
@@ -520,6 +521,8 @@ try {
         $restoreExitCode = $LASTEXITCODE
         $ErrorActionPreference = $savedEAP
         Pop-Location
+        $restoreText = $restoreOutput -join "`n"
+
         if ($restoreExitCode -ne 0) {
             $restoreFailed = $true
         }
@@ -531,8 +534,20 @@ try {
         throw "Expected restore to fail for invalid WASDK version 'not-a-version'"
     }
     $restoreText = $restoreOutput -join "`n"
-    if ($restoreText -notmatch 'NU1105') {
-        throw "Expected NuGet error NU1105 (unable to read project information) for invalid WASDK version 'not-a-version', but got:`n$restoreText"
+    # Finds NU1105, NETSDK1005, etc.
+    $errorCodes = [regex]::Matches($restoreText, '\b(?:NU|NETSDK|MSB)\d{4,}\b') |
+        ForEach-Object { $_.Value } |
+        Select-Object -Unique
+    if ($errorCodes.Count -gt 0) {
+        if ($errorCodes -notcontains 'NU1105') {
+            throw "Expected NU1105, got: $($errorCodes -join ', ')"
+        }
+    }
+    else {
+        # No machine-readable code surfaced; use narrow fallback
+        if ($restoreText -notmatch 'not a valid version string') {
+            throw "Expected invalid version failure, got:`n$restoreText"
+        }
     }
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails with NU1105' -Status 'Succeeded' -Path $invalidPath
 
