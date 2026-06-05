@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #pragma once
-#include <Windows.h>
+#include <windows.h>
 #include <assert.h>
 #include <unknwn.h>
 #include <ShlObj_core.h>

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <Windows.h>
+#include <windows.h>
 #include <stdlib.h>
 
 // Ensure the including PE file has an import reference to
