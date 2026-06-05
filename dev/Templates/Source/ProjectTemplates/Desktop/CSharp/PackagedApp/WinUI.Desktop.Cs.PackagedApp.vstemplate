@@ -31,8 +31,5 @@
       <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.Cs.WapProj.vstemplate</ProjectTemplateLink>
       <ProjectTemplateLink ProjectName="$projectname$" CopyParameters="true">BlankApp\WinUI.Desktop.Cs.BlankApp.vstemplate</ProjectTemplateLink>
     </ProjectCollection>
-    <CustomParameters>
-      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.SDK.BuildTools"/>
-    </CustomParameters>
   </TemplateContent>
 </VSTemplate>
