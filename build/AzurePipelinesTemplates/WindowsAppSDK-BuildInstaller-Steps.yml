@@ -17,6 +17,23 @@ parameters:
 - name: IsMonobuild
   type: boolean
   default: false
+# Name of the upstream NuGet+MSIX pipeline artifact to download. The monobuild's
+# Aggregate stage publishes 'WindowsAppSDK-NuGet-And-MSIX' (hyphens); the legacy
+# Aggregator pipeline used 'WindowsAppSDK_Nuget_And_MSIX' (underscores). Default
+# preserves the legacy name so non-monobuild callers don't need to opt in.
+- name: artifactName
+  type: string
+  default: 'WindowsAppSDK_Nuget_And_MSIX'
+# When true, skip the artifact download step entirely. The caller is responsible
+# for ensuring $(parameters.artifactName) content is already present at
+# $(System.ArtifactsDirectory) before this template's first MSBuild step. Used by
+# the monobuild's CreateInstaller stage so it can download the artifact with
+# rebuild-aware variables ($(_useBuildOutputFromBuildId) /
+# $(_useBuildOutputFromPipeline)) that honor useBuildOutput_BuildId /
+# useBuildOutput_RebuildStage queue-time overrides.
+- name: SkipArtifactDownload
+  type: boolean
+  default: false
 
 steps:
 - task: PowerShell@2
@@ -42,28 +59,29 @@ steps:
   # Don't bother doing this step if we are not validating a test OS image. All steps below work as usual.
   condition: and(succeeded(), eq(variables.EnableTestImageValidation , true))
 
-- ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Current Build'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
-    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
-- ${{ else }}:
-  ###
-  # This step downloads the WindowsAppSDK NuGet package from a pipeline
-  # variables: OfficialPipelineID LatestOfficialBuildID
-  # for use in building the Installers
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Latest Nightly'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
-      source: 'specific'
-      project: 55e8140e-57ac-4e5f-8f9c-c7c15b51929d # TODO: replace with $(System.TeamProjectId) once we can have a full WinAppSDK Build on the new mono repo
-      pipeline: $(OfficialPipelineID) 
-      pipelineId: $(LatestOfficialBuildID) 
-    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+- ${{ if eq(parameters.SkipArtifactDownload, false) }}:
+  - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Current Build'
+      inputs:
+        artifactName: ${{ parameters.artifactName }}
+        targetPath: '$(System.ArtifactsDirectory)'
+      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+  - ${{ else }}:
+    ###
+    # This step downloads the WindowsAppSDK NuGet package from a pipeline
+    # variables: OfficialPipelineID LatestOfficialBuildID
+    # for use in building the Installers
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Latest Nightly'
+      inputs:
+        artifactName: ${{ parameters.artifactName }}
+        targetPath: '$(System.ArtifactsDirectory)'
+        source: 'specific'
+        project: 55e8140e-57ac-4e5f-8f9c-c7c15b51929d # TODO: replace with $(System.TeamProjectId) once we can have a full WinAppSDK Build on the new mono repo
+        pipeline: $(OfficialPipelineID) 
+        pipelineId: $(LatestOfficialBuildID) 
+      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
     
 ###
 # Install the internal licensing support for release-signed packages. This can always be present in
