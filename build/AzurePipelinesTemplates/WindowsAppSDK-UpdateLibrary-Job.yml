@@ -61,18 +61,6 @@ jobs:
         }
 
   - task: PowerShell@2
-    condition: and(ne(variables.FoundationMinorVersionResolved, variables.MinorVersion), eq('${{ parameters.PrOrNightly }}', ''))
-    displayName: Update FoundationMinorVersion in Variable Group
-    env:
-      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo "Updating Foundation Minor Version variable in Variable Group"
-        $group_id = $(az pipelines variable-group list -p $(System.TeamProject) --group-name $(FoundationLibraryName) --query '[0].id' -o json)
-        az pipelines variable-group variable update --group-id $group_id --name FoundationMinorVersion --value $(MinorVersion)
-
-  - task: PowerShell@2
     condition: eq('${{ parameters.PrOrNightly }}', '')
     displayName: Update PreviewRevision in Variable Group
     env:
