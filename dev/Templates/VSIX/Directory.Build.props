@@ -24,7 +24,23 @@
         <SolutionDir Condition="!Exists('$(SolutionDir)')">$(MSBuildThisFileDirectory)</SolutionDir>
         <BuildOutput Condition="'$(BuildOutput)' == ''">$(SolutionDir)BuildOutput\</BuildOutput>
         <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\$(Deployment)\</BuildOutputRoot>
-        <BaseIntermediateOutputPath>$(BuildOutputRoot)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    </PropertyGroup>
+
+    <!--
+        Shorten the project's output folder segment to stay under Windows
+        MAX_PATH (260) on CI. VSSDK's GenerateTemplatesManifest extracts every
+        vstemplate .zip under $(IntermediateOutputPath)$(TargetFramework)\...,
+        which combined with the ~32-char Dev17 project names and deep template
+        asset paths overflows on CI (repo root C:\__w\1\s\WindowsAppSDK\) and
+        aborts with VSSDK1300. Cpp17/Cs17 save ~27 chars per path; other
+        projects keep $(MSBuildProjectName) for diagnosability.
+    -->
+    <PropertyGroup>
+        <_VsixProjectFolderAlias>$(MSBuildProjectName)</_VsixProjectFolderAlias>
+        <_VsixProjectFolderAlias Condition="'$(MSBuildProjectName)' == 'WindowsAppSDK.Cpp.Extension.Dev17'">Cpp17</_VsixProjectFolderAlias>
+        <_VsixProjectFolderAlias Condition="'$(MSBuildProjectName)' == 'WindowsAppSDK.Cs.Extension.Dev17'">Cs17</_VsixProjectFolderAlias>
+
+        <BaseIntermediateOutputPath>$(BuildOutputRoot)$(_VsixProjectFolderAlias)\</BaseIntermediateOutputPath>
         <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
         <OutputPath>$(IntermediateOutputPath)</OutputPath>
         <OutDir>$(OutputPath)</OutDir>
