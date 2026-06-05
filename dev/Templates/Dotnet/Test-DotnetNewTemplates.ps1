@@ -381,6 +381,100 @@ function Assert-CsprojPackageVersion {
     }
 }
 
+function Get-LatestPreviewPackageVersion {
+    param(
+        [string]$PackageId,
+        [string]$WorkingDirectory
+    )
+
+    if (-not (Test-Path -Path $WorkingDirectory -PathType Container)) {
+        throw "Working directory '$WorkingDirectory' does not exist."
+    }
+
+    $previewVersions = @(Get-PackageVersions -PackageId $PackageId -WorkingDirectory $WorkingDirectory -IncludePrerelease | Where-Object { $_ -match '-preview' })
+    $latestPreview = $previewVersions | Select-Object -First 1
+
+    if (-not $latestPreview) {
+        throw "Unable to determine latest preview version for '$PackageId'."
+    }
+
+    return $latestPreview
+}
+
+function Initialize-NuGetVersioningAssembly {
+    if ('NuGet.Versioning.NuGetVersion' -as [type]) {
+        return
+    }
+
+    $dotnetRoot = Split-Path -Path $dotnetPath -Parent
+    $nugetVersioningAssembly = Get-ChildItem -Path (Join-Path -Path $dotnetRoot -ChildPath 'sdk') -Filter 'NuGet.Versioning.dll' -Recurse -ErrorAction SilentlyContinue |
+        Sort-Object -Property FullName -Descending |
+        Select-Object -First 1
+    if (-not $nugetVersioningAssembly) {
+        throw 'Unable to find NuGet.Versioning.dll under the installed dotnet SDK.'
+    }
+
+    Add-Type -Path $nugetVersioningAssembly.FullName -ErrorAction SilentlyContinue
+}
+
+function Get-PackageVersions {
+    param(
+        [string]$PackageId,
+        [string]$WorkingDirectory,
+        [switch]$IncludePrerelease
+    )
+
+    if (-not (Test-Path -Path $WorkingDirectory -PathType Container)) {
+        throw "Working directory '$WorkingDirectory' does not exist."
+    }
+
+    Initialize-NuGetVersioningAssembly
+
+    $searchArgs = @('package', 'search', $PackageId, '--exact-match', '--format', 'json')
+    if ($IncludePrerelease.IsPresent) {
+        $searchArgs += '--prerelease'
+    }
+
+    $rawOutput = Invoke-DotnetCommand -Arguments $searchArgs -WorkingDirectory $WorkingDirectory -Description "search package versions for $PackageId" -CaptureOutput
+    $outputText = @($rawOutput) -join "`n"
+    $jsonStart = $outputText.IndexOf('{')
+    if ($jsonStart -lt 0) {
+        throw "Unable to parse dotnet package search output for '$PackageId'."
+    }
+    $searchJson = $outputText.Substring($jsonStart) | ConvertFrom-Json
+
+    $versions = @($searchJson.searchResult |
+        ForEach-Object { $_.packages } |
+        Where-Object { $_.id -eq $PackageId } |
+        ForEach-Object { $_.version } |
+        Select-Object -Unique)
+
+    if (-not $IncludePrerelease.IsPresent) {
+        $versions = @($versions | Where-Object { $_ -notmatch '-' })
+    }
+
+    return @($versions | Sort-Object { [NuGet.Versioning.NuGetVersion]::Parse($_) } -Descending)
+}
+
+function Get-StablePackageVersionFromLatestOffset {
+    param(
+        [string]$PackageId,
+        [string]$WorkingDirectory,
+        [int]$OffsetFromLatest
+    )
+
+    if ($OffsetFromLatest -lt 0) {
+        throw "OffsetFromLatest must be >= 0, got '$OffsetFromLatest'."
+    }
+
+    $stableVersions = @(Get-PackageVersions -PackageId $PackageId -WorkingDirectory $WorkingDirectory)
+    if ($stableVersions.Count -le $OffsetFromLatest) {
+        throw "Package '$PackageId' has only $($stableVersions.Count) stable versions, cannot select offset $OffsetFromLatest."
+    }
+
+    return $stableVersions[$OffsetFromLatest]
+}
+
 try {
     $repoRoot = (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..')).Path
     $templateProject = Join-Path -Path $repoRoot -ChildPath 'dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
@@ -469,6 +563,15 @@ try {
     # ─── Version parameter test scenarios ───
     Write-Step 'Running version parameter test scenarios...'
 
+    $stableOffset = 2
+    $pinnedWasdkVersion = Get-StablePackageVersionFromLatestOffset -PackageId 'Microsoft.WindowsAppSDK' -WorkingDirectory $workingRoot -OffsetFromLatest $stableOffset
+    $pinnedBuildToolsVersion = Get-StablePackageVersionFromLatestOffset -PackageId 'Microsoft.Windows.SDK.BuildTools' -WorkingDirectory $workingRoot -OffsetFromLatest $stableOffset
+    $pinnedWinAppVersion = Get-StablePackageVersionFromLatestOffset -PackageId 'Microsoft.Windows.SDK.BuildTools.WinApp' -WorkingDirectory $workingRoot -OffsetFromLatest $stableOffset
+    Write-Step "Resolved pinned versions (offset $stableOffset): WASDK=$pinnedWasdkVersion BuildTools=$pinnedBuildToolsVersion WinApp=$pinnedWinAppVersion"
+
+    $latestPreviewWasdkVersion = Get-LatestPreviewPackageVersion -PackageId 'Microsoft.WindowsAppSDK' -WorkingDirectory $workingRoot
+    Write-Step "Resolved latest preview Microsoft.WindowsAppSDK version: $latestPreviewWasdkVersion"
+
     # Scenario 1: Default (no version passed) — verify Version="*"
     $defaultPath = Join-Path -Path $workingRoot -ChildPath 'VersionDefault'
     New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'VersionDefault' -OutputPath $defaultPath -WorkingDirectory $workingRoot
@@ -480,27 +583,27 @@ try {
 
     # Scenario 2: Pinned WindowsAppSDK version only
     $pinnedPath = Join-Path -Path $workingRoot -ChildPath 'VersionPinned'
-    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPinned', '-o', $pinnedPath, '--wasdk-version', '1.7.250127002', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pinned WASDK version'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPinned', '-o', $pinnedPath, '--wasdk-version', $pinnedWasdkVersion, '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pinned WASDK version'
     $pinnedCsproj = Join-Path -Path $pinnedPath -ChildPath 'VersionPinned.csproj'
-    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
+    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion $pinnedWasdkVersion
     Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
     Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pinned version content' -Status 'Succeeded' -Path $pinnedPath
 
     # Scenario 3: All versions pinned
     $allPinnedPath = Join-Path -Path $workingRoot -ChildPath 'VersionAllPinned'
-    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionAllPinned', '-o', $allPinnedPath, '--wasdk-version', '1.7.250127002', '--build-tools-version', '10.0.26100.1742', '--winapp-version', '0.3.1', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with all versions pinned'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionAllPinned', '-o', $allPinnedPath, '--wasdk-version', $pinnedWasdkVersion, '--build-tools-version', $pinnedBuildToolsVersion, '--winapp-version', $pinnedWinAppVersion, '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with all versions pinned'
     $allPinnedCsproj = Join-Path -Path $allPinnedPath -ChildPath 'VersionAllPinned.csproj'
-    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
-    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '10.0.26100.1742'
-    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '0.3.1'
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion $pinnedWasdkVersion
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion $pinnedBuildToolsVersion
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion $pinnedWinAppVersion
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'all pinned version content' -Status 'Succeeded' -Path $allPinnedPath
 
     # Scenario 4: Pre-release version string
     $preReleasePath = Join-Path -Path $workingRoot -ChildPath 'VersionPreRelease'
-    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPreRelease', '-o', $preReleasePath, '--wasdk-version', '1.8.0-preview1', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pre-release version'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPreRelease', '-o', $preReleasePath, '--wasdk-version', $latestPreviewWasdkVersion, '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pre-release version'
     $preReleaseCsproj = Join-Path -Path $preReleasePath -ChildPath 'VersionPreRelease.csproj'
-    Assert-CsprojPackageVersion -CsprojPath $preReleaseCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.8.0-preview1'
+    Assert-CsprojPackageVersion -CsprojPath $preReleaseCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion $latestPreviewWasdkVersion
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pre-release version content' -Status 'Succeeded' -Path $preReleasePath
 
     # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails with NU1105
