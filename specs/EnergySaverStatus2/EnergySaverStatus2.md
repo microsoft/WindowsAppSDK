@@ -8,9 +8,7 @@ Starting with the [Windows 11, 24H2]() release, the [Energy Saver](https://learn
 feature was updated to support three distinct operating modes: **Off**, **Standard**, and
 **High Savings** which are now visible to users in the Windows Settings app.
 
-The original two-state API contains a bug: when Energy Saver is active in **Standard** mode
-(battery above 20%), `EnergySaverStatus` incorrectly reports `Off`. Only the **High Savings**
-state (battery at or below 20%) correctly maps to `On`.
+The original two-state API contains a bug: when Energy Saver is active in **Standard** mode, `EnergySaverStatus` incorrectly reports `Off`. Only the **High Savings** state correctly maps to `On`.
 
 This spec introduces `EnergySaverStatus2`, a new enum and associated APIs on
 `Microsoft.Windows.System.Power.PowerManager`, that accurately reflects all three energy saver
@@ -153,8 +151,8 @@ public enum EnergySaverStatus2
 |---|---|
 | `Unknown` | The Energy Saver v2 status is unavailable, either because the OS does not support it or because the status has not yet been initialized. |
 | `Off` | Energy Saver is disabled. Apps should operate normally. |
-| `Standard` | Energy Saver is active with mild performance impact acceptable(at battery level greater than 20%). Energy saving behaviors that have mild performance impact are encouraged (for example, a sync client might reduce sync frequency). This state is returned when the user has opted into Energy Saver but battery life is not critical. |
-| `HighSavings` | Energy Saver is active and maximum battery savings are preferred, even at the cost of performance(at battery level less than or equal to 20%). This state is returned when battery level is low and the device is not plugged in. |
+| `Standard` | Energy Saver is active with mild performance impact acceptable. Energy saving behaviors that have mild performance impact are encouraged (for example, a sync client might reduce sync frequency). This state is returned when the user has opted into Energy Saver but battery life is not critical. |
+| `HighSavings` | Energy Saver is active and maximum battery savings are preferred, even at the cost of performance. This state is returned when battery level is low and the device is not plugged in. |
 
 ### Remarks
 
@@ -225,6 +223,6 @@ namespace Microsoft.Windows.System.Power
 > `PowerManager.EnergySaverStatus2Changed`, and the `EnergySaverStatus2` enum instead.
 
 The legacy `EnergySaverStatus` has a known limitation: when Energy Saver is active in **Standard**
-mode (battery above 20%), it reports `Off`, meaning apps using the legacy API cannot distinguish
+mode, it reports `Off`, meaning apps using the legacy API cannot distinguish
 "Energy Saver Standard active" from "Energy Saver disabled". `EnergySaverStatus2` fixes this.
 
