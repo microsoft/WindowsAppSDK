@@ -103,22 +103,60 @@ namespace Test::Bootstrap
     // Poll for the precondition MddBootstrapInitialize -> FindDDLMViaEnumeration
     // actually checks (not just package enumerability via PackageManager).
     // The bootstrap does:
-    //   1. FindPackagesForUserWithPackageTypes(currentUser, Main) - covered by AddPackage's wait.
-    //   2. GetPackagePathByFullName(packageFullName) - filesystem-backed; can transiently fail.
-    //   3. FindFirstFile(<packagePath>\Microsoft.WindowsAppRuntime.Release!*) - the DDLM's
-    //      release-marker payload file; not visible until the .msix payload is fully staged.
-    // If #2 or #3 transiently fails, the bootstrap silently skips our DDLM and throws
-    // STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED (0x80270254). Poll the same APIs here
-    // so MddBootstrapInitialize is called only when its real precondition is satisfied.
-    inline void WaitForDDLMBootstrapReady(PCWSTR ddlmPackageFullName)
+    //   1. FindPackagesForUserWithPackageTypes(currentUser, Main) - UNSCOPED enumeration
+    //      (no family filter). Returns ALL Main packages for the user; the
+    //      bootstrap then filters by Name prefix. This is a different OS query
+    //      from the family-scoped enumeration in AddPackage's wait - it can
+    //      return 0 packages while the family-scoped path returns our DDLM.
+    //   2. GetPackagePathByFullName(packageFullName) - filesystem-backed.
+    //   3. FindFirstFile(<packagePath>\Microsoft.WindowsAppRuntime.Release!*) -
+    //      the DDLM's release-marker payload file; not visible until the .msix
+    //      payload is fully staged.
+    // If any of these are transiently empty/stale, the bootstrap silently skips
+    // our DDLM (or sees zero candidates) and throws
+    // STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED (0x80270254). Poll all three.
+    inline void WaitForDDLMBootstrapReady(PCWSTR ddlmPackageFullName, PCWSTR ddlmPackageNamePrefix)
     {
         constexpr DWORD c_pollIntervalMs{ 100 };
         constexpr DWORD c_timeoutMs{ 30000 };
         const DWORD startTick{ GetTickCount() };
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Main };
+        const std::wstring ddlmNamePrefix{ ddlmPackageNamePrefix };
         for (;;)
         {
+            bool unscopedEnumReady{ false };
             bool pathReady{ false };
             bool markerReady{ false };
+
+            // Check 1: unscoped Main-package enumeration includes a package whose
+            // Name starts with the DDLM prefix - matches the bootstrap's enumeration.
+            try
+            {
+                auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring{}, c_packageTypes) };
+                if (packages)
+                {
+                    for (const auto& candidate : packages)
+                    {
+                        const auto name{ candidate.Id().Name() };
+                        if (name.size() >= ddlmNamePrefix.size() &&
+                            CompareStringOrdinal(name.c_str(), static_cast<int>(ddlmNamePrefix.size()),
+                                                 ddlmNamePrefix.c_str(), static_cast<int>(ddlmNamePrefix.size()),
+                                                 TRUE) == CSTR_EQUAL)
+                        {
+                            unscopedEnumReady = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (...)
+            {
+                // PackageManager occasionally throws transient access errors;
+                // treat as not-yet-ready.
+            }
+
+            // Check 2 + 3: GetPackagePathByFullName + FindFirstFile for the release marker.
             std::wstring packagePath;
             uint32_t packagePathLength{};
             const auto sizeProbeRc{ GetPackagePathByFullName(ddlmPackageFullName, &packagePathLength, nullptr) };
@@ -144,16 +182,19 @@ namespace Test::Bootstrap
                     }
                 }
             }
-            if (pathReady && markerReady)
+
+            if (unscopedEnumReady && pathReady && markerReady)
             {
                 return;
             }
+
             const DWORD elapsed{ GetTickCount() - startTick };
             if (elapsed >= c_timeoutMs)
             {
                 WEX::Logging::Log::Warning(WEX::Common::String().Format(
-                    L"WaitForDDLMBootstrapReady('%s') timed out after %u ms (pathReady=%d markerReady=%d); MddBootstrapInitialize may race",
-                    ddlmPackageFullName, elapsed, pathReady ? 1 : 0, markerReady ? 1 : 0));
+                    L"WaitForDDLMBootstrapReady('%s') timed out after %u ms (unscopedEnum=%d pathReady=%d markerReady=%d); MddBootstrapInitialize may race",
+                    ddlmPackageFullName, elapsed,
+                    unscopedEnumReady ? 1 : 0, pathReady ? 1 : 0, markerReady ? 1 : 0));
                 return;
             }
             Sleep(c_pollIntervalMs);
@@ -191,10 +232,13 @@ namespace Test::Bootstrap
         }
 
         // Synchronise against MddBootstrapInitialize's actual precondition (the
-        // GetPackagePathByFullName + FindFirstFile probe inside FindDDLMViaEnumeration)
-        // before calling it. Otherwise the bootstrap silently skips our DDLM and
-        // returns STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED (0x80270254).
-        WaitForDDLMBootstrapReady(TP::DynamicDependencyLifetimeManager::c_PackageFullName);
+        // unscoped Main enumeration + GetPackagePathByFullName + FindFirstFile
+        // probe inside FindDDLMViaEnumeration) before calling it. Otherwise the
+        // bootstrap silently skips our DDLM and returns
+        // STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED (0x80270254).
+        WaitForDDLMBootstrapReady(
+            TP::DynamicDependencyLifetimeManager::c_PackageFullName,
+            TP::DynamicDependencyLifetimeManager::c_PackageNamePrefix);
 
         VERIFY_SUCCEEDED(MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion));
         s_bootstrapDll = std::move(bootstrapDll);
