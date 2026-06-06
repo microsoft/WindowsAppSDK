@@ -6,6 +6,10 @@
 
 #include <appmodel.h>
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include <WindowsAppRuntime.Test.FileSystem.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.ApplicationModel.h>
@@ -312,14 +316,143 @@ inline winrt::Windows::Foundation::Uri GetAppxManifestPackageUri(PCWSTR packageF
     return winrt::Windows::Foundation::Uri{ path.c_str() };
 }
 
+inline void WaitForPackageEnumerable(PCWSTR packageFullName)
+{
+    // After AddPackageAsync's async operation completes, the OS-side
+    // PackageManager index can lag briefly before the just-registered
+    // package becomes visible to family-scoped enumeration AND its on-disk
+    // state reports Status.VerifyIsOK(). MddBootstrapInitialize ->
+    // PackageDeploymentResolver::Find resolves the DDLM via exactly that
+    // path (FindPackagesForUserWithPackageTypes + Status.VerifyIsOK), so a
+    // FindPackageForUser-by-full-name poll uses the wrong cache and returns
+    // too early. Mirror the resolver's enumeration here so AddPackage only
+    // returns once the OS will satisfy MddBootstrapInitialize.
+    //
+    // PackageFullName format: <Name>_<Version>_<Architecture>_<ResourceId>_<PublisherId>
+    // FamilyName format:      <Name>_<PublisherId>  (parts[0] + "_" + parts[4])
+    std::wstring fullName{ packageFullName };
+    std::vector<std::wstring> parts;
+    {
+        size_t start{ 0 };
+        for (size_t i{ 0 }; i <= fullName.size(); ++i)
+        {
+            if (i == fullName.size() || fullName[i] == L'_')
+            {
+                parts.emplace_back(fullName.substr(start, i - start));
+                start = i + 1;
+            }
+        }
+    }
+    if (parts.size() < 5)
+    {
+        WEX::Logging::Log::Warning(WEX::Common::String().Format(
+            L"WaitForPackageEnumerable('%s'): unparseable full name (parts=%zu); skipping wait",
+            packageFullName, parts.size()));
+        return;
+    }
+    const winrt::hstring familyName{ parts[0] + L"_" + parts[4] };
+    const winrt::hstring fullNameH{ packageFullName };
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    const auto packageTypes{
+        winrt::Windows::Management::Deployment::PackageTypes::Framework |
+        winrt::Windows::Management::Deployment::PackageTypes::Main };
+
+    constexpr DWORD c_pollIntervalMs{ 100 };
+    constexpr DWORD c_timeoutMs{ 30000 };
+    const DWORD startTick{ GetTickCount() };
+    for (;;)
+    {
+        bool found{ false };
+        bool statusOk{ false };
+        try
+        {
+            auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring{}, familyName, packageTypes) };
+            if (packages)
+            {
+                for (const auto& candidate : packages)
+                {
+                    if (candidate.Id().FullName() == fullNameH)
+                    {
+                        found = true;
+                        statusOk = candidate.Status().VerifyIsOK();
+                        break;
+                    }
+                }
+            }
+        }
+        catch (...)
+        {
+            // PackageManager occasionally throws transient access errors
+            // during the index-update window; treat as not-yet-visible.
+        }
+        if (found && statusOk)
+        {
+            return;
+        }
+        const DWORD elapsed{ GetTickCount() - startTick };
+        if (elapsed >= c_timeoutMs)
+        {
+            WEX::Logging::Log::Warning(WEX::Common::String().Format(
+                L"WaitForPackageEnumerable('%s', family='%s') timed out after %u ms (found=%d statusOk=%d); downstream bootstrap may race",
+                packageFullName, familyName.c_str(), elapsed, found ? 1 : 0, statusOk ? 1 : 0));
+            return;
+        }
+        Sleep(c_pollIntervalMs);
+    }
+}
+
 inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
 
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
-    auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
+
+    // AddPackageAsync intermittently fails on the test agents with transient
+    // deployment errors (most often 0x80073D02 ERROR_INSTALL_RESOURCES_BUSY)
+    // when the previous test's package teardown hasn't fully released file
+    // handles. There's no precondition we can poll for here (the deployment
+    // service holds an internal lock); the documented mitigation is to back
+    // off and reissue. Bounded to 5 attempts so a genuine non-transient
+    // failure still surfaces quickly.
+    winrt::Windows::Management::Deployment::DeploymentResult deploymentResult{ nullptr };
+    constexpr int c_maxAttempts{ 5 };
+    DWORD backoffMs{ 1000 };
+    for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
+    {
+        deploymentResult = packageManager.AddPackageAsync(msixUri, nullptr, options).get();
+        const HRESULT hr{ deploymentResult.ExtendedErrorCode() };
+        if (SUCCEEDED(hr))
+        {
+            if (attempt > 1)
+            {
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                    L"AddPackageAsync('%s') succeeded on attempt %d", packageFullName, attempt));
+            }
+            break;
+        }
+        // Bounded retry on the documented transient install errors.
+        const bool isTransient{
+            hr == HRESULT_FROM_WIN32(ERROR_PACKAGES_IN_USE) ||
+            hr == HRESULT_FROM_WIN32(ERROR_INSTALL_POLICY_FAILURE) ||
+            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };
+        if (!isTransient || attempt == c_maxAttempts)
+        {
+            break;
+        }
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(
+            L"AddPackageAsync('%s') attempt %d/%d failed with transient HRESULT 0x%08X %s; sleeping %u ms before retry",
+            packageFullName, attempt, c_maxAttempts, hr, deploymentResult.ErrorText().c_str(), backoffMs));
+        Sleep(backoffMs);
+        backoffMs = (std::min<DWORD>)(backoffMs * 2, 8000);
+    }
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+
+    // Wait for the deployment to be visible to FindPackageForUser before
+    // returning so callers (notably MddBootstrapInitialize) don't race the
+    // OS package index.
+    WaitForPackageEnumerable(packageFullName);
 }
 
 inline void AddPackageDefer(PCWSTR packageDirName, PCWSTR packageFullName)

@@ -28,11 +28,47 @@ namespace Test::LRP
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications Long Running Process tests")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
+            // Retry on transient MSIX/COM-server install races (HRESULT 0x80073D02
+            // ERROR_INSTALL_RESOURCES_BUSY) seen intermittently on x86 Win10 22H2.
+            TEST_CLASS_PROPERTY(L"TestRetryCount", L"2")
         END_TEST_CLASS()
 
         wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
         {
-            auto notificationPlatform{ NotificationPlatform::GetNotificationPlatform() };
+            // CoCreateInstance against the LRP COM server (housed in the
+            // WindowsAppRuntimeSingleton MSIX package) can transiently throw
+            // ERROR_PACKAGES_IN_USE (0x80073D02) when a sibling test's package
+            // teardown is still releasing the COM server's binary on x86 Win10
+            // 22H2. Same transient family we retry for AddPackageAsync; bounded
+            // retry here so individual test methods aren't false-failed.
+            wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform;
+            constexpr int c_maxAttempts{ 5 };
+            DWORD backoffMs{ 1000 };
+            for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
+            {
+                try
+                {
+                    notificationPlatform = NotificationPlatform::GetNotificationPlatform();
+                    break;
+                }
+                catch (const wil::ResultException& e)
+                {
+                    const HRESULT hr{ e.GetErrorCode() };
+                    const bool isTransient{
+                        hr == HRESULT_FROM_WIN32(ERROR_PACKAGES_IN_USE) ||
+                        hr == HRESULT_FROM_WIN32(ERROR_INSTALL_POLICY_FAILURE) ||
+                        hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };
+                    if (!isTransient || attempt == c_maxAttempts)
+                    {
+                        throw;
+                    }
+                    WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                        L"GetNotificationPlatform() attempt %d/%d threw transient HRESULT 0x%08X; sleeping %u ms before retry",
+                        attempt, c_maxAttempts, hr, backoffMs));
+                    Sleep(backoffMs);
+                    backoffMs = (std::min<DWORD>)(backoffMs * 2, 8000);
+                }
+            }
             VERIFY_IS_NOT_NULL(notificationPlatform);
 
             return notificationPlatform;
