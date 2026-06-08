@@ -16,12 +16,39 @@
 
 name: $(pipelineName)
 
+# https://aka.ms/obpipelines/triggers
+trigger: none
+
+parameters: # parameters are shown up in ADO UI in a build queue time
+- name: "BuildSampleApps"
+  displayName: "Run Build Sample Apps Stage"
+  type: boolean
+  default: false
+- name: "TestSampleApps"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: false
+- name: "TestOnArm64"
+  displayName: "Enable running of tests on arm64 platform (Default: false)"
+  type: boolean
+  default: false
+- name: runStaticAnalysis
+  displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
+  type: boolean
+  default: true
+
+variables:
+- template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
+  parameters:
+    PrOrNightly: 'pr'
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
+- template: WindowsAppSDK-CommonVariables.yml
+- group: WinAppSDK-Foundation-Build-Variables
 - name: maxParallelForBuildSamplesCompatJob_x64
   value: 20
 - name: maxParallelForBuildSamplesCompatJob_arm64
   value: 20
-
-name: $(MajorVersion).$(FoundationMinorVersionResolved).$(FoundationPatchVersionResolved)-$(NugetBuildTypePrefix)$(channel)$(Revision)
 
 resources:
   repositories:

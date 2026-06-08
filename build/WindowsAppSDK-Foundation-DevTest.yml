@@ -54,17 +54,10 @@ variables:
     PrOrNightly: 'ci'
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
 - template: WindowsAppSDK-CommonVariables.yml
-  parameters:
-    PrOrNightly: 'devtest'
-- template: AzurePipelinesTemplates\WindowsAppSDK-VersionVariables.yml
-  parameters:
-    PrOrNightly: 'devtest'
 - name: maxParallelForBuildSamplesCompatJob_x64
   value: 20
 - name: maxParallelForBuildSamplesCompatJob_arm64
   value: 20
-
-name: $(MajorVersion).$(FoundationMinorVersionResolved).$(FoundationPatchVersionResolved)-$(NugetBuildTypePrefix)$(channel)$(Revision)
 
 resources:
   repositories:
