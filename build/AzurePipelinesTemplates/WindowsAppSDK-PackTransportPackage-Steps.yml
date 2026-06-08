@@ -28,6 +28,16 @@ parameters:
   - name: IsMonobuild
     type: boolean
     default: false
+  # PrOrNightly: '' (Official), 'ci' (PR), 'dev' (Nightly), 'devtest'.
+  # Used by DetermineComponentNugetPackageVersion to distinguish Library-based
+  # versions (Official) from prefixed/revisioned versions (PR/Nightly).
+  - name: PrOrNightly
+    type: string
+    default: ''
+  # BuildType: 'experimental' | 'preview' | 'stable'. Drives version-tag selection.
+  - name: BuildType
+    type: string
+    default: 'experimental'
 
 steps:
   - task: NuGetAuthenticate@1
@@ -125,6 +135,9 @@ steps:
       InnerParams:
         IsOfficial: ${{ parameters.IsOfficial }}
 
+  # Metapackage version: $(packageVersion) sourced from $(WindowsAppSDKFormattedVersion)
+  # (computed by DetermineVersion-Wrapper above). Also writes it into the
+  # Foundation transport nuspec metadata.
   - task: PowerShell@2
     name: SetVersion
     displayName: Update metapackage version
@@ -133,15 +146,97 @@ steps:
       ${{ if parameters.IsMonobuild }}:
         script: |
           $packageVersion = '$(WindowsAppSDKFormattedVersion)'
+          Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+          Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
+          Write-Host $packageVersion
           [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\WindowsAppSDK\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
           $publicNuspec.package.metadata.version = $packageVersion
           Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\WindowsAppSDK\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
       ${{ else }}:
         script: |
           $packageVersion = '$(WindowsAppSDKFormattedVersion)'
+          Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+          Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
+          Write-Host $packageVersion
           [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
           $publicNuspec.package.metadata.version = $packageVersion
           Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+
+  # Component package version: Library-based, distinct from metapackage version.
+  # Adapted from main #6462. Variable mapping vs main:
+  #   FoundationMinorVersionResolved  -> MinorVersion
+  #   FoundationPatchVersionResolved  -> WindowsAppRuntimePatchVersion
+  # NugetBuildTypePrefix, VersionTag, channel, Revision already match monobuild's
+  # shared WindowsAppSDK-Versions.yml@WinAppSDK template.
+  - task: PowerShell@2
+    name: DetermineComponentNugetPackageVersion
+    displayName: 'Determine Component Nuget Package Version'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $buildType = '$(channel)'
+
+        # All builds (PR, Nightly, Official) use Library-based versioning
+        $majorMinorPatch = '$(MajorVersion).$(MinorVersion).$(WindowsAppRuntimePatchVersion)'
+
+        if ('${{ parameters.IsOfficial }}' -eq 'true')
+        {
+          $versionTag = '$(VersionTag)'
+          Write-Host "VersionTag: " $versionTag
+          if ($buildType -ne "stable" -and -not $versionTag.StartsWith($buildType))
+          {
+            Write-Host "Variable VersionTag must start with " $buildType
+            Write-Host "Please update this variable and restart the build"
+            Write-Host "##vso[task.complete result=Failed;]DONE"
+          }
+          if ($buildType -eq "stable" -and -not [String]::IsNullOrEmpty($versionTag))
+          {
+            Write-Host "Stable builds must have an empty VersionTag"
+            Write-Host "Please update this variable and restart the build"
+            Write-Host "##vso[task.complete result=Failed;]DONE"
+          }
+
+          $formattedTag = ''
+          if(-not [String]::IsNullOrEmpty($versionTag))
+          {
+            $formattedTag = '-' + $versionTag
+          }
+
+          # For stable official builds with no tag: Major.Minor.Patch
+          # For non-stable official builds: Major.Minor.Patch-tag{Revision}
+          $revision = '$(Revision)'
+          if ($buildType -eq "stable" -and [String]::IsNullOrEmpty($formattedTag))
+          {
+            $version = $majorMinorPatch
+          }
+          elseif (-not [String]::IsNullOrEmpty($revision))
+          {
+            $version = $majorMinorPatch + $formattedTag + $revision
+          }
+          else
+          {
+            $version = $majorMinorPatch + $formattedTag
+          }
+
+          Write-Host "Using Release Versioning"
+        }
+        else
+        {
+          # PR/Nightly: Major.Minor.Patch-{NugetBuildTypePrefix}{buildType}{Revision}
+          # Uses Library version but does NOT update it. Distinguished by prefix + revision.
+          $versionTag = '$(NugetBuildTypePrefix)' + $buildType
+          $version = $majorMinorPatch + '-' + $versionTag + '$(Revision)'
+        }
+
+        if ($env:ComponentType)
+        {
+          Write-Host "componentType " $env:ComponentType
+          $version = $version + $env:ComponentType
+        }
+
+        Write-Host 'Component Package Version: ' $version
+        Write-Host "##vso[task.setvariable variable=componentPackageVersion;isOutput=true]$version"
+        Write-Host "##vso[task.setvariable variable=componentPackageVersion;]$version"
 
   - task: PowerShell@2
     name: PackNuget
@@ -151,7 +246,7 @@ steps:
         workingDirectory: '$(Build.SourcesDirectory)\WindowsAppSDK'
       ${{ else }}:
         filePath: 'BuildAll.ps1'
-      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKFormattedVersion)" -ComponentPackageVersion "$(WindowsAppSDKFormattedVersion)" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
+      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)" -ComponentPackageVersion "$(componentPackageVersion)" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
 
   # ── Sign ──
   - ${{ if eq(parameters.SignOutput, 'true') }}:

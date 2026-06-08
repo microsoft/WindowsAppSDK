@@ -131,6 +131,9 @@ extends:
       parameters:
         SignOutput: false
         PublishPackage: false
+        PrOrNightly: 'ci'
+        BuildType: 'experimental'
+        RunUpdateLibraryJob: false
         
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:

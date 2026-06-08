@@ -57,6 +57,18 @@ parameters:
   displayName: "Run WindowsAppSDK-CheckApiChanges stage"
   type: boolean
   default: true
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+  values:
+  - 'stable'
+  - 'experimental'
+  - 'preview'
+- name: RunUpdateLibraryJob
+  displayName: "Run the Update Library Variable Group Job"
+  type: boolean
+  default: true
 
 variables:
 - template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
@@ -175,6 +187,9 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
         IsOfficial: true
+        PrOrNightly: ''
+        BuildType: ${{ parameters.BuildType }}
+        RunUpdateLibraryJob: ${{ parameters.RunUpdateLibraryJob }}
 
     - ${{ if eq( parameters.CheckApiChanges, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self

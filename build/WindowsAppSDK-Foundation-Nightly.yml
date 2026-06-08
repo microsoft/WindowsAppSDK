@@ -162,6 +162,9 @@ extends:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
+        PrOrNightly: 'dev'
+        BuildType: 'experimental'
+        RunUpdateLibraryJob: false
 
     - ${{ if eq( parameters.CheckApiChanges, true ) }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self

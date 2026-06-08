@@ -58,3 +58,15 @@ stages:
         SignOutput: ${{ parameters.SignOutput }}
         IsOfficial: ${{ parameters.IsOfficial }}
         PublishPackage: ${{ parameters.PublishPackage }}
+        PrOrNightly: ${{ parameters.PrOrNightly }}
+        BuildType: ${{ parameters.BuildType }}
+
+- stage: UpdateFoundationLibrary
+  dependsOn: Pack
+  condition: and(succeeded('Pack'), eq(${{ parameters.RunUpdateLibraryJob }}, true))
+  jobs:
+  - template: WindowsAppSDK-UpdateLibrary-Job.yml
+    parameters:
+      jobName: 'UpdateFoundationLibraryJob'
+      BuildType: ${{ parameters.BuildType }}
+      PrOrNightly: ${{ parameters.PrOrNightly }}

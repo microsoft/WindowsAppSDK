@@ -154,6 +154,9 @@ extends:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
+        PrOrNightly: 'devtest'
+        BuildType: 'experimental'
+        RunUpdateLibraryJob: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:
