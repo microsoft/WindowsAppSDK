@@ -135,31 +135,33 @@
       },
       "replaces": "$guid9$"
     },
-    "UseLatestWindowsAppSDK":{
-      "type": "parameter",
-      "datatype": "bool",
-      "defaultValue": "true"
-    },
     "windowsAppSdkVersion": {
       "type": "parameter",
       "datatype": "text",
+      "defaultValue": "*",
       "replaces": "$WindowsAppSdkVersion$",
-      "defaultValue": "1.8.260317003",
-      "description": "Version of the Microsoft.WindowsAppSDK NuGet package."
+      "description": "Microsoft.WindowsAppSDK NuGet version. Use * for the latest stable."
     },
     "windowsSdkBuildToolsVersion": {
       "type": "parameter",
       "datatype": "text",
+      "defaultValue": "*",
       "replaces": "$WindowsSdkBuildToolsVersion$",
-      "defaultValue": "10.0.26100.7705",
-      "description": "Version of the Microsoft.Windows.SDK.BuildTools NuGet package."
+      "description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable."
     },
     "windowsSdkBuildToolsWinAppVersion": {
       "type": "parameter",
       "datatype": "text",
+      "defaultValue": "*",
       "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
-      "defaultValue": "0.3.1",
-      "description": "Version of the Microsoft.Windows.SDK.BuildTools.WinApp NuGet package, which adds `dotnet run` support for packaged WinUI apps via the winapp CLI."
+      "description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Use * for the latest stable."
+    },
+    "communityToolkitMvvmVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "*",
+      "replaces": "$CommunityToolkitMvvmVersion$",
+      "description": "CommunityToolkit.Mvvm NuGet version. Use * for the latest stable."
     }
   },
   "sources": [
@@ -195,46 +197,6 @@
     }
   },
   "postActions": [
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update Microsoft.WindowsAppSDK to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.WindowsAppSDK"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update Microsoft.Windows.SDK.BuildTools to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.Windows.SDK.BuildTools"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version (enables `dotnet run` for packaged WinUI apps).",
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.Windows.SDK.BuildTools.WinApp"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" }]
-    },
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "description": "Update CommunityToolkit.Mvvm to the latest stable version.",
-      "args": {
-        "referenceType": "package",
-        "reference": "CommunityToolkit.Mvvm"
-      },
-      "manualInstructions": [{ "text": "Run 'dotnet add package CommunityToolkit.Mvvm'" }]
-    },
     {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true,

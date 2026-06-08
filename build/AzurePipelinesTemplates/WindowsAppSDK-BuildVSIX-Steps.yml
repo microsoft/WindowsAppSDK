@@ -10,10 +10,11 @@ parameters:
   default: true
 - name: UseCurrentBuild
   type: boolean
-  default: false 
+  default: false
+# To override OptionalVSIXVersion's default, add 
+# OptionalVSIXVersion: 'x.y.z' to the parameters of
+# the stage that calls this template in the aggregator pipeline.
 - name: OptionalVSIXVersion
-  # if blank, the project template will select the version matching the Windows App SDK
-  # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
   type: string
   default: 'default'
 - name: EnableExperimentalVSIXFeatures

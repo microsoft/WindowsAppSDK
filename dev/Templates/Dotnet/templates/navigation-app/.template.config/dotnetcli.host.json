@@ -16,6 +16,18 @@
     "publisherDisplay": {
       "longName": "publisher-display",
       "shortName": "publisherName"
+    },
+    "windowsAppSdkVersion": {
+      "longName": "wasdk-version",
+      "shortName": "wasdkv"
+    },
+    "windowsSdkBuildToolsVersion": {
+      "longName": "build-tools-version",
+      "shortName": "btv"
+    },
+    "windowsSdkBuildToolsWinAppVersion": {
+      "longName": "winapp-version",
+      "shortName": "wav"
     }
   }
 }
