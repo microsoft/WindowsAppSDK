@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Hidden>true</Hidden>
+    <Name ID="1040" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1041" Package="FIXME-PACKAGEGUID" />
+    <Icon>WinUI.Desktop.Cs.BlankApp.ico</Icon>
+    <TemplateID>Microsoft.WinUI.Desktop.Cs.BlankApp</TemplateID>
+    <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+    <ProjectType>CSharp</ProjectType>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>App</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+    <TargetPlatformName>Windows</TargetPlatformName>
+    <CreateInPlace>true</CreateInPlace>
+    <PreviewImage>WinUI.Desktop.Cs.BlankApp.png</PreviewImage>
+    <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+    <LanguageTag>csharp</LanguageTag>
+    <LanguageTag>XAML</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <ProjectTypeTag>desktop</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
+  </TemplateData>
+  <TemplateContent PreferedSolutionConfiguration="Debug|x64">
+    <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-arm64.pubxml">Properties\PublishProfiles\win-arm64.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-x64.pubxml">Properties\PublishProfiles\win-x64.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-x86.pubxml">Properties\PublishProfiles\win-x86.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="app.manifest">app.manifest</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml">App.xaml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.cs">App.xaml.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml">MainWindow.xaml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.cs">MainWindow.xaml.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="AppIcon.ico">AppIcon.ico</ProjectItem>
+    </Project>      
+    <CustomParameters>
+      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.SDK.BuildTools"/>
+    </CustomParameters>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>WindowsAppSDK.Cs.Extension.Dev17, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>WindowsAppSDK.TemplateUtilities.NuGetPackageInstaller</FullClassName>
+  </WizardExtension>
+</VSTemplate>

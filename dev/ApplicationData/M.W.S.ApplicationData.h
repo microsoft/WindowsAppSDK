@@ -5,8 +5,6 @@
 
 #include "Microsoft.Windows.Storage.ApplicationData.g.h"
 
-#include "UnpackagedApplicationData.h"
-
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
     struct ApplicationData : ApplicationDataT<ApplicationData>
@@ -14,7 +12,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         ApplicationData() = default;
         ApplicationData(hstring const& packageFamilyName);
         ApplicationData(winrt::Windows::Storage::ApplicationData& value, hstring const& packageFamilyName);
-        ApplicationData(hstring const& publisher, hstring const& product);
 
         static winrt::Microsoft::Windows::Storage::ApplicationData GetDefault();
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForUser(winrt::Windows::System::User user);
@@ -47,7 +44,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         static void _VerifyProduct(winrt::hstring const& string);
 
     private:
-        std::unique_ptr<::Microsoft::Windows::Storage::UnpackagedApplicationData> m_unpackagedApplicationData;
         winrt::Windows::Storage::ApplicationData m_applicationData;
         winrt::hstring m_packageFamilyName;
     };

@@ -11,6 +11,18 @@ parameters:
 - name: "BuildMockWindowsAppSDK"
   type: boolean
   default: true
+- name: PrOrNightly
+  displayName: "PR or Nightly"
+  type: string
+  default: ''
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+- name: RunUpdateLibraryJob
+  displayName: "Run the Update Library Variable Group Job"
+  type: boolean
+  default: false
 
 stages:
 - stage: Pack
@@ -46,3 +58,13 @@ stages:
         SignOutput: ${{ parameters.SignOutput }}
         IsOfficial: ${{ parameters.IsOfficial }}
         PublishPackage: ${{ parameters.PublishPackage }}
+
+- stage: UpdateFoundationLibrary
+  dependsOn: Pack
+  condition: and(succeeded('Pack'), eq(${{ parameters.RunUpdateLibraryJob }}, true))
+  jobs:
+  - template: WindowsAppSDK-UpdateLibrary-Job.yml
+    parameters:
+      jobName: 'UpdateFoundationLibraryJob'
+      BuildType: ${{ parameters.BuildType }}
+      PrOrNightly: ${{ parameters.PrOrNightly }}

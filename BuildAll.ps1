@@ -1,4 +1,4 @@
-<#
+﻿<#
 This script is to build the Foundation transport package that will be used to generate the windows app sdk package.
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
 
@@ -179,7 +179,7 @@ Try {
     .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
     .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
-    if ($AzureBuildStep -ne "all")
+    if ($AzureBuildStep -ne "all" -and $AzureBuildStep -ne "BuildTemplates")
     {
         # Some builds have "-branchname" appended, but when this happens the environment variable
         # TFS_BUILDNUMBER has the un-modified version.
@@ -663,6 +663,50 @@ Try {
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
+            exit 1
+        }
+    }
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildTemplates"))
+    {
+        #------------------
+        #    Build WinUI template artifacts:
+        #      - dotnet-new NuGet (Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg)
+        #      - templates VSIX  (Standalone + Component, x C# + C++ = 4 .vsix)
+        #
+        #    All artifacts land in <repo>\localpackages\ so a single dev workflow
+        #    (the docs, the csproj's <PackageOutputPath> default, the NuGet.config
+        #    "localpackages" feed, and Test-DotnetNewTemplates.ps1) all agree on
+        #    one path. .vsix files coexist fine; NuGet only sees *.nupkg.
+        #------------------
+        $templatesOutputDir = Join-Path $env:Build_SourcesDirectory "localpackages"
+        if (-not (Test-Path $templatesOutputDir))
+        {
+            New-Item -ItemType Directory -Path $templatesOutputDir -Force | Out-Null
+        }
+
+        write-host "Packing dotnet-new templates (Microsoft.WindowsAppSDK.WinUI.CSharp.Templates) ..."
+        & dotnet pack "dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj" `
+            --configuration $Configuration `
+            --output $templatesOutputDir
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: dotnet pack WinAppSdk.CSharp.DotnetNewTemplates.csproj FAILED."
+            exit 1
+        }
+
+        # Templates VSIX (Standalone + Component, matching CI). The
+        # Microsoft.WindowsAppSDK version used for restore comes from
+        # dev\Templates\Directory.Build.props (<WindowsAppSdkVersion> default)
+        # - single source of truth.
+        write-host "Building templates VSIX (Standalone + Component) ..."
+        & "dev\Templates\VSIX\build-local-VSIX-package\Build-VSIX-Local.ps1" `
+            -Configuration $Configuration `
+            -Deployment   Both `
+            -RepoRoot     $env:Build_SourcesDirectory `
+            -OutputDir    $templatesOutputDir
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: Build-VSIX-Local.ps1 FAILED."
             exit 1
         }
     }
