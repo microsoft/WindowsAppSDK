@@ -7,6 +7,21 @@
 #include <FrameworkUdk/Containment.h>
 #include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
 
+// Signature of the test-only DLL export from Microsoft.WindowsAppRuntime.dll.
+// Switches the WinAppSDK Containment catalog used by RuntimeCompatibilityOptions::Apply()
+// between the production catalog (default) and a test-only catalog whose two groups
+// straddle WinAppSDK_Latest: an "enabled" group at WinAppSDK_Latest - 1 holding
+// {1, 2, 3} that Apply prunes out of disabledChanges, and a "disabled" group at
+// WinAppSDK_Latest + 1 holding {0, 99999999} that Apply preserves in disabledChanges.
+//
+// The export is resolved via GetModuleHandleW/GetProcAddress (not a static import)
+// because RuntimeCompatibilityOptions::Apply runs in the framework-package copy of
+// Microsoft.WindowsAppRuntime.dll loaded by the bootstrap. The catalog globals live
+// in that same module instance, so the test must call ContainmentTestInitialize on
+// that DLL handle - a static import would resolve to a test-folder copy with its
+// own (production) catalog and the catalog swap would have no observable effect.
+using PFN_ContainmentTestInitialize = HRESULT(STDAPICALLTYPE*)(bool) noexcept;
+
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
@@ -14,6 +29,25 @@ namespace WAR = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime;
 
 namespace Test::CompatibilityTests
 {
+    // Resolve ContainmentTestInitialize from the bootstrap-loaded framework copy
+    // of Microsoft.WindowsAppRuntime.dll. Must be called AFTER SetupBootstrap so
+    // the DLL is present in the process module list.
+    static HRESULT ContainmentTestInitialize(bool enableTest) noexcept
+    {
+        HMODULE const hmod{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
+        if (hmod == nullptr)
+        {
+            return HRESULT_FROM_WIN32(::GetLastError());
+        }
+        auto const pfn{ reinterpret_cast<PFN_ContainmentTestInitialize>(
+            ::GetProcAddress(hmod, "ContainmentTestInitialize")) };
+        if (pfn == nullptr)
+        {
+            return HRESULT_FROM_WIN32(::GetLastError());
+        }
+        return pfn(enableTest);
+    }
+
     class CompatibilityTests
     {
     public:
@@ -42,12 +76,24 @@ namespace Test::CompatibilityTests
             // The test method setup and execution is on a different thread than the class setup.
             // Initialize the framework for the test thread.
             ::Test::Bootstrap::SetupBootstrap();
+
+            // Swap in the test-only catalog so the catalog pre-prune tests
+            // observe the synthetic groups that straddle WinAppSDK_Latest.
+            // Must be done after SetupBootstrap so the framework copy of
+            // Microsoft.WindowsAppRuntime.dll is loaded and reachable via
+            // GetModuleHandleW; that copy is the one that hosts
+            // RuntimeCompatibilityOptions::Apply and owns the catalog globals.
+            VERIFY_ARE_EQUAL(S_OK, ContainmentTestInitialize(true));
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            // Restore the production catalog before tearing down the bootstrap.
+            // IsolationLevel="Method" already guarantees a fresh process per test,
+            // but resetting keeps the contract clean.
+            VERIFY_ARE_EQUAL(S_OK, ContainmentTestInitialize(false));
             ::Test::Bootstrap::CleanupBootstrap();
             return true;
         }
@@ -145,6 +191,62 @@ namespace Test::CompatibilityTests
 
             // A different value not in DisabledChanges should remain enabled.
             VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999, WinAppSDK_Security>()));
+        }
+
+        TEST_METHOD(VerifyCatalogPrePrunesByPatchLevel)
+        {
+            // The test catalog has two groups whose releaseVersion straddles
+            // the runtime's effective patch level (WinAppSDK_Latest by
+            // default):
+            //   * s_enabled_changes_test  at WinAppSDK_Latest - 1: the
+            //     pre-prune walk SKIPS this group, so {1, 2, 3} remain
+            //     enabled.
+            //   * s_disabled_changes_test at WinAppSDK_Latest + 1: the
+            //     pre-prune walk COPIES this group into disabledChanges,
+            //     so {0, 99999999} are disabled.
+            // Together the two groups span the value range and exercise
+            // both branches of the catalog walk, both ends of std::sort,
+            // and both ends of the FrUdk worker's std::binary_search.
+            winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
+            options.Apply();
+
+            // Use WinAppSDK_Security as the template-arg patch so the worker's
+            // per-callsite patch comparison degenerates to (0 > effective) = false,
+            // isolating the catalog pre-prune as the disabling mechanism.
+
+            // s_enabled_changes_test: catalog group released BEFORE the
+            // effective patch level. Apply prunes it out; IDs remain enabled.
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<1, WinAppSDK_Security>()));
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<2, WinAppSDK_Security>()));
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<3, WinAppSDK_Security>()));
+
+            // s_disabled_changes_test: catalog group released AFTER the
+            // effective patch level. Apply preserves it; IDs are disabled.
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<0, WinAppSDK_Security>()));        // smallest representable ID
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<99999999, WinAppSDK_Security>())); // high-value sentinel
+
+            // An ID not in the catalog and not explicitly disabled stays enabled.
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999, WinAppSDK_Security>()));
+        }
+
+        TEST_METHOD(VerifyCatalogAndExplicitDisabledChangesCombine)
+        {
+            // Catalog pre-prune contributes {0, 99999999} via
+            // s_disabled_changes_test (the catalog group released AFTER the
+            // effective patch level), and the app's explicit DisabledChanges
+            // also names 99999999 plus 55555. Duplicates between the two
+            // sources are harmless: the FrUdk worker treats disabledChanges
+            // as a sorted set and uses set-membership semantics, so the
+            // result is the union, not a tally.
+            winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
+            options.DisabledChanges().Append((WAR::RuntimeCompatibilityChange)99999999);
+            options.DisabledChanges().Append((WAR::RuntimeCompatibilityChange)55555);
+            options.Apply();
+
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<0, WinAppSDK_Security>()));        // catalog only
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<99999999, WinAppSDK_Security>())); // catalog + explicit
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<55555, WinAppSDK_Security>()));    // explicit only
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999, WinAppSDK_Security>()));     // neither
         }
     };
 }

@@ -113,7 +113,7 @@ steps:
 - task: VSBuild@1
   displayName: 'Restore WindowsAppSDK.Extension.sln'
   inputs:
-    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    solution: $(FoundationRepoPath)dev\Templates\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.restore.binlog'
@@ -121,7 +121,7 @@ steps:
 - task: VSBuild@1
   displayName: 'Build Standalone WindowsAppSDK.Extension.sln'
   inputs:
-    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    solution: $(FoundationRepoPath)dev\Templates\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.build.binlog'
@@ -147,7 +147,7 @@ steps:
 - task: VSBuild@1
   displayName: 'Restore Component WindowsAppSDK.Extension.sln'
   inputs:
-    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    solution: $(FoundationRepoPath)dev\Templates\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.restore.binlog' 
@@ -155,7 +155,7 @@ steps:
 - task: VSBuild@1
   displayName: 'Build Component WindowsAppSDK.Extension.sln'
   inputs:
-    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    solution: $(FoundationRepoPath)dev\Templates\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.build.binlog'
@@ -188,7 +188,7 @@ steps:
   - task: CopyFiles@2
     displayName: 'Stage unsigned VSIX files for publishing'
     inputs:
-      SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+      SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
       Contents: '**/WindowsAppSDK.*.vsix'
       flattenFolders: true
       TargetFolder: '$(ob_outputDirectory)\VSIX'
@@ -197,7 +197,7 @@ steps:
   - task: CopyFiles@2
     displayName: 'Stage unsigned VSIX files for signing'
     inputs:
-      SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+      SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
       Contents: '**/WindowsAppSDK.*.vsix'
       flattenFolders: true
       TargetFolder: '$(Agent.TempDirectory)/UnsignedVSIX'
@@ -221,13 +221,13 @@ steps:
   parameters:
     IsMonobuild: ${{ parameters.IsMonobuild }}
     InnerParams:
-      SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+      SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
   inputs:
-    SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+    SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
     Contents: '**/WindowsAppSDK*.pdb'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)\symbols'
@@ -235,7 +235,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
   inputs:
-    SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+    SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
     Contents: '**/WindowsAppSDK.*.Component.json'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
@@ -243,7 +243,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Stage VSIX manifest'
   inputs:
-    SourceFolder: '$(FoundationRepoPath)dev\VSIX'
+    SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX'
     Contents: 'extension.manifest.json'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
@@ -251,7 +251,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Stage VSIX overview markdown'
   inputs:
-    SourceFolder: '$(FoundationRepoPath)dev\VSIX'
+    SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX'
     Contents: 'overview.md'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'

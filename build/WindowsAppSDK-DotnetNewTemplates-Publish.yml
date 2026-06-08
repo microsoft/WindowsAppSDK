@@ -1,0 +1,100 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# Standalone (non-OneBranch) pipeline for publishing dotnet new templates to NuGet.org.
+# This pipeline is separate from the OneBranch build pipeline because OneBranch agents
+# block outbound internet access, which prevents pushing packages to NuGet.org.
+#
+# Usage:
+#   1. Run the OneBranch build pipeline (WindowsAppSDK-DotnetNewTemplates.yml) first.
+#   2. Note the build ID from that run.
+#   3. Run this pipeline, providing the build ID as a parameter.
+
+trigger: none
+
+parameters:
+- name: "BuildPipelineId"
+  displayName: "Build pipeline definition ID (from WindowsAppSDK-DotnetNewTemplates pipeline)"
+  type: number
+  default: 186691
+- name: "BuildRunId"
+  displayName: "Build run ID to download artifact from"
+  type: number
+- name: "ArtifactName"
+  displayName: "Artifact name from the build pipeline"
+  type: string
+  default: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+
+variables:
+- template: WindowsAppSDK-CommonVariables.yml
+
+pool:
+  vmImage: 'windows-latest'
+
+stages:
+- stage: DotnetNewTemplates_Approval
+  displayName: 'Approve NuGet.org publish'
+  jobs:
+  - job: WaitForPublishApproval
+    displayName: 'Manual Approval'
+    pool: server
+    timeoutInMinutes: 1440
+    steps:
+    - task: ManualValidation@0
+      displayName: 'Verify artifacts before NuGet.org publish'
+      timeoutInMinutes: 1440
+      inputs:
+        notifyUsers: ''
+        instructions: |
+          Please verify the .nupkg in the ${{ parameters.ArtifactName }} folder before continuing the publish to NuGet.org:
+          https://dev.azure.com/microsoft/ProjectReunion/_build/results?buildId=${{ parameters.BuildRunId }}&view=artifacts&pathAsName=false&type=publishedArtifacts
+
+- stage: DotnetNewTemplates_Publish
+  displayName: 'Publish dotnet new templates to NuGet.org'
+  dependsOn:
+  - DotnetNewTemplates_Approval
+  jobs:
+  - job: PublishNuGetOrg
+    displayName: 'Publish dotnet new template pack to NuGet.org'
+    pool:
+      vmImage: 'windows-latest'
+    variables:
+      dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
+    steps:
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download dotnet new template pack artifact'
+      inputs:
+        source: 'specific'
+        project: '$(System.TeamProjectId)'
+        pipeline: ${{ parameters.BuildPipelineId }}
+        runVersion: 'specific'
+        runId: ${{ parameters.BuildRunId }}
+        artifact: '${{ parameters.ArtifactName }}'
+        targetPath: '$(dotnetTemplatesArtifactPath)'
+
+    - task: PowerShell@2
+      displayName: 'Verify dotnet new template pack artifact exists'
+      inputs:
+        targetType: inline
+        script: |
+          $artifactPath = '$(dotnetTemplatesArtifactPath)'
+          if (-not (Test-Path $artifactPath)) {
+            throw "Expected artifact directory '$artifactPath' was not found."
+          }
+          $packages = Get-ChildItem -Path $artifactPath -Filter *.nupkg -File -Recurse
+          if (-not $packages) {
+            throw "No .nupkg files were found under '$artifactPath'."
+          }
+          Write-Host "Found the following packages ready for publish:"
+          $packages | ForEach-Object { Write-Host " - $($_.FullName)" }
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'Publish dotnet new templates to NuGet.org'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(dotnetTemplatesArtifactPath)\*.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'NugetOrg'

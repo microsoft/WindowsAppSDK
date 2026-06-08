@@ -11,6 +11,18 @@ parameters:
 - name: "BuildMockWindowsAppSDK"
   type: boolean
   default: true
+- name: PrOrNightly
+  displayName: "PR or Nightly"
+  type: string
+  default: ''
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+- name: RunUpdateLibraryJob
+  displayName: "Run the Update Library Variable Group Job"
+  type: boolean
+  default: false
 
 stages:
 - stage: Pack

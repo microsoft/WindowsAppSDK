@@ -10,9 +10,8 @@
     This package defines the following CMake targets:
 
         * Microsoft.WindowsAppSDK.Foundation - A target representing the C++/WinRT projection, headers and libraries of
-            the Windows App SDK Foundation APIs. This does not include the necessary runtime components to use the
-            Windows App SDK, and is intended to be used by library authors who want to consume the Windows App SDK
-            Foundation APIs.
+          the Windows App SDK Foundation APIs. This target does not have any deployment-mode-specific behavior, 
+          however it does forward-declare two variant targets (Foundation_Framework and Foundation_SelfContained) that the wasdk_link_component_variant() helper populates based on the consumer's WindowsAppSDKSelfContained property.
 
         * Microsoft.WindowsAppSDK.Foundation_Framework - A target representing the Windows App SDK Foundation APIs for
             framework-dependent deployment scenarios. Auto-initialization behavior is controlled by target properties
@@ -51,7 +50,7 @@ if(CMAKE_VERSION VERSION_LESS 3.31)
     message(FATAL_ERROR "Microsoft.WindowsAppSDK.Foundation requires at least CMake 3.31, but CMake ${CMAKE_VERSION} is in use.")
 endif()
 
-
+find_package(Microsoft.WindowsAppSDK.Base CONFIG REQUIRED)
 find_package(Microsoft.WindowsAppSDK.InteractiveExperiences CONFIG REQUIRED)
 
 block(SCOPE_FOR VARIABLES)
@@ -77,6 +76,17 @@ block(SCOPE_FOR VARIABLES)
         INTERFACE
             ${PACKAGE_LOCATION}/include
     )
+
+    # Forward-declare deployment-mode variant targets adjacent to the basic target.
+    # Populated further below; this declaration lets wasdk_link_component_variant() enforce
+    # the contract that both variants exist at configure time.
+    add_library(Microsoft.WindowsAppSDK.Foundation_Framework INTERFACE)
+    add_library(Microsoft.WindowsAppSDK.Foundation_SelfContained INTERFACE)
+
+    # Basic target as variant selector
+    # Resolves to _Framework or _SelfContained based on the consumer's WindowsAppSDKSelfContained
+    # property at generation time.
+    wasdk_link_component_variant(Foundation)
 
     #[[====================================================================================================================
         Target: Microsoft.WindowsAppSDK.Foundation_DynamicDependencyBootstrap
@@ -217,7 +227,7 @@ block(SCOPE_FOR VARIABLES)
             IMPORTED_LOCATION "${FRAMEWORK_DLLS}"
     )
 
-    add_library(Microsoft.WindowsAppSDK.Foundation_SelfContained INTERFACE)
+    # _SelfContained interface target was forward-declared near the basic target above.
 
     wasdk_transform_appxfragment(
         Microsoft.WindowsAppSDK.Foundation_SelfContained
@@ -271,7 +281,7 @@ block(SCOPE_FOR VARIABLES)
 
         If the Runtime package is not found, _Framework is not available.
     ====================================================================================================================]]#
-    add_library(Microsoft.WindowsAppSDK.Foundation_Framework INTERFACE)
+    # _Framework interface target was forward-declared near the basic target above.
 
     target_link_libraries(Microsoft.WindowsAppSDK.Foundation_Framework
         INTERFACE
@@ -353,107 +363,104 @@ block(SCOPE_FOR VARIABLES)
         )
 
     #[[====================================================================================================================
-        wasdk_generate_appx_manifest()
+        Foundation auto-init configuration validation (deferred)
 
-        Generates an AppxManifest.xml for packaged apps. For framework-dependent apps, automatically
-        includes the <PackageDependency> entry for the Windows App Runtime Framework package.
+        Runs at end of consumer's directory configure. Walks targets that link
+        any Microsoft.WindowsAppSDK* and validates 2 configuration rules:
 
-            wasdk_generate_appx_manifest(
-                TARGET <target>
-                OUTPUT <output-path>
-                IDENTITY_NAME <name>
-                IDENTITY_PUBLISHER <publisher>
-                IDENTITY_VERSION <version>
-                [DISPLAY_NAME <name>]
-                [DESCRIPTION <description>]
-                [LOGO <path>]
-            )
+        Rule A: FW Unpackaged + WindowsAppSdkBootstrapInitialize=FALSE
+            → "The Windows App SDK Bootstrapper is required for framework-dependent unpackaged apps"
 
-        The TARGET must already be defined via add_executable(). If the target links
-        Microsoft.WindowsAppSDK.Foundation_Framework, a <PackageDependency> for the Windows App Runtime
-        Framework package is automatically included. If the target links _SelfContained, no
-        PackageDependency is added.
+        Rule B: SelfContained + downlevel SDK (< 19H1) + WindowsAppSdkUndockedRegFreeWinRTInitialize=FALSE
+            → "Undocked Reg-Free WinRT activation is required for self-contained apps targeting Windows versions prior to 10.0.18362.0"
+
+        Both produce configure-time FATAL_ERROR. This Foundation-side validator only fires when Foundation
+        IS loaded.
     ====================================================================================================================]]#
-    function(wasdk_generate_appx_manifest)
-        set(ONE_VALUE_KEYWORDS TARGET OUTPUT IDENTITY_NAME IDENTITY_PUBLISHER IDENTITY_VERSION DISPLAY_NAME DESCRIPTION LOGO)
-        cmake_parse_arguments(PARSE_ARGV 0 APPX "" "${ONE_VALUE_KEYWORDS}" "")
-
-        if(NOT APPX_TARGET)
-            message(FATAL_ERROR "wasdk_generate_appx_manifest: TARGET is required")
-        endif()
-        if(NOT APPX_OUTPUT)
-            set(APPX_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml")
-        endif()
-        if(NOT APPX_IDENTITY_NAME OR NOT APPX_IDENTITY_PUBLISHER OR NOT APPX_IDENTITY_VERSION)
-            message(FATAL_ERROR "wasdk_generate_appx_manifest: IDENTITY_NAME, IDENTITY_PUBLISHER, and IDENTITY_VERSION are required")
-        endif()
-        if(NOT APPX_DISPLAY_NAME)
-            set(APPX_DISPLAY_NAME "${APPX_IDENTITY_NAME}")
-        endif()
-        if(NOT APPX_DESCRIPTION)
-            set(APPX_DESCRIPTION "${APPX_DISPLAY_NAME}")
-        endif()
-        if(NOT APPX_LOGO)
-            set(APPX_LOGO "Logo.png")
+    function(_wasdk_foundation_validate_target target)
+        get_target_property(_type ${target} TYPE)
+        if(NOT _type STREQUAL "EXECUTABLE")
+            return()
         endif()
 
-        # Determine architecture
-        wasdk_detect_platform()
-        if(PLATFORM_IDENTIFIER STREQUAL "x64")
-            set(_PROC_ARCH "x64")
-        elseif(PLATFORM_IDENTIFIER STREQUAL "arm64")
-            set(_PROC_ARCH "arm64")
-        else()
-            set(_PROC_ARCH "x64")
+        get_target_property(_link_libs ${target} LINK_LIBRARIES)
+        if(NOT _link_libs)
+            return()
+        endif()
+        set(_uses_wasdk FALSE)
+        foreach(_lib IN LISTS _link_libs)
+            if(_lib MATCHES "^Microsoft\\.WindowsAppSDK")
+                set(_uses_wasdk TRUE)
+                break()
+            endif()
+        endforeach()
+        if(NOT _uses_wasdk)
+            return()
         endif()
 
-        # Build the PackageDependency section if framework info is available
-        set(_PACKAGE_DEPENDENCY "")
-        if(DEFINED WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME)
-            set(_PACKAGE_DEPENDENCY "    <PackageDependency Name=\"${WINDOWSAPPSDK_FRAMEWORK_PACKAGE_NAME}\" MinVersion=\"${WINDOWSAPPSDK_FRAMEWORK_MIN_VERSION}\" Publisher=\"${WINDOWSAPPSDK_FRAMEWORK_PUBLISHER}\" />\n")
+        get_target_property(_pkg_type ${target} WindowsPackageType)
+        get_target_property(_sc       ${target} WindowsAppSDKSelfContained)
+        get_target_property(_bootstrap ${target} WindowsAppSdkBootstrapInitialize)
+        get_target_property(_urf       ${target} WindowsAppSdkUndockedRegFreeWinRTInitialize)
+
+        # Rule A: FW Unpackaged + BootstrapInit=FALSE → error
+        if(_pkg_type STREQUAL "None" AND NOT _sc AND _bootstrap STREQUAL "FALSE")
+            message(FATAL_ERROR
+                "The Windows App SDK Bootstrapper is required for framework-dependent unpackaged apps. "
+                "Target '${target}' has WindowsPackageType=\"None\" and "
+                "WindowsAppSdkBootstrapInitialize=FALSE. Either set "
+                "WindowsAppSdkBootstrapInitialize=TRUE, change the deployment model, or "
+                "make the app self-contained.")
         endif()
 
-        # Generate the manifest
-        file(WRITE "${APPX_OUTPUT}"
-"<?xml version=\"1.0\" encoding=\"utf-8\"?>
-<Package xmlns=\"http://schemas.microsoft.com/appx/manifest/foundation/windows10\"
-         xmlns:uap=\"http://schemas.microsoft.com/appx/manifest/uap/windows10\"
-         xmlns:rescap=\"http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities\"
-         IgnorableNamespaces=\"uap rescap\">
-  <Identity Name=\"${APPX_IDENTITY_NAME}\"
-            Version=\"${APPX_IDENTITY_VERSION}\"
-            Publisher=\"${APPX_IDENTITY_PUBLISHER}\"
-            ProcessorArchitecture=\"${_PROC_ARCH}\" />
-  <Properties>
-    <DisplayName>${APPX_DISPLAY_NAME}</DisplayName>
-    <PublisherDisplayName>${APPX_IDENTITY_PUBLISHER}</PublisherDisplayName>
-    <Description>${APPX_DESCRIPTION}</Description>
-    <Logo>${APPX_LOGO}</Logo>
-  </Properties>
-  <Dependencies>
-    <TargetDeviceFamily Name=\"Windows.Desktop\" MinVersion=\"10.0.17763.0\" MaxVersionTested=\"10.0.26100.0\" />
-${_PACKAGE_DEPENDENCY}  </Dependencies>
-  <Resources>
-    <Resource Language=\"en-us\" />
-  </Resources>
-  <Applications>
-    <Application Id=\"App\" Executable=\"${APPX_TARGET}.exe\" EntryPoint=\"Windows.FullTrustApplication\">
-      <uap:VisualElements DisplayName=\"${APPX_DISPLAY_NAME}\" Description=\"${APPX_DESCRIPTION}\"
-                          BackgroundColor=\"transparent\" Square150x150Logo=\"${APPX_LOGO}\" Square44x44Logo=\"${APPX_LOGO}\">
-        <uap:DefaultTile Wide310x150Logo=\"${APPX_LOGO}\" />
-      </uap:VisualElements>
-    </Application>
-  </Applications>
-  <Capabilities>
-    <rescap:Capability Name=\"runFullTrust\" />
-  </Capabilities>
-</Package>
-")
-
-        # Copy manifest + logo to output directory post-build
-        add_custom_command(TARGET ${APPX_TARGET} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${APPX_OUTPUT}" $<TARGET_FILE_DIR:${APPX_TARGET}>
-        )
+        # Rule B: SC + downlevel SDK + URFInit=FALSE → error
+        if(_sc AND _urf STREQUAL "FALSE")
+            # Detect the target's MINIMUM supported OS version.
+            # CMAKE_SYSTEM_VERSION (set via -DCMAKE_SYSTEM_VERSION or by toolchain
+            # file) is the canonical CMake variable for the target MIN OS version.
+            # CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION is the BUILD SDK that VS
+            # selects to compile against (often newer than the target min); not
+            # what we want for this check. Falls back to env if neither set.
+            set(_tpv "")
+            if(NOT "${CMAKE_SYSTEM_VERSION}" STREQUAL "")
+                set(_tpv "${CMAKE_SYSTEM_VERSION}")
+            elseif(NOT "${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}" STREQUAL "")
+                set(_tpv "${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}")
+            elseif(DEFINED ENV{WindowsSDKVersion})
+                string(REGEX REPLACE "^([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" _tpv "$ENV{WindowsSDKVersion}")
+            endif()
+            if(_tpv AND _tpv VERSION_LESS "10.0.18362.0")
+                message(FATAL_ERROR
+                    "Undocked Reg-Free WinRT activation is required for self-contained apps targeting Windows versions prior to 10.0.18362.0. "
+                    "Target '${target}' is self-contained, targets SDK version ${_tpv}, and has "
+                    "WindowsAppSdkUndockedRegFreeWinRTInitialize=FALSE. Either remove the "
+                    "explicit FALSE override, raise the target SDK version, or switch to "
+                    "framework-dependent deployment.")
+            endif()
+        endif()
     endfunction()
+
+    function(_wasdk_foundation_validate_recursive _dir)
+        get_directory_property(_targets DIRECTORY ${_dir} BUILDSYSTEM_TARGETS)
+        foreach(_t IN LISTS _targets)
+            _wasdk_foundation_validate_target(${_t})
+        endforeach()
+
+        get_directory_property(_subdirs DIRECTORY ${_dir} SUBDIRECTORIES)
+        foreach(_sub IN LISTS _subdirs)
+            _wasdk_foundation_validate_recursive(${_sub})
+        endforeach()
+    endfunction()
+
+    function(_wasdk_foundation_validate)
+        _wasdk_foundation_validate_recursive(${CMAKE_CURRENT_SOURCE_DIR})
+    endfunction()
+
+    # Register DEFER hook; idempotent per directory.
+    get_directory_property(_already_deferred _WASDK_FOUNDATION_VALIDATE_DEFERRED)
+    if(NOT _already_deferred)
+        set_property(DIRECTORY PROPERTY _WASDK_FOUNDATION_VALIDATE_DEFERRED TRUE)
+        cmake_language(DEFER CALL _wasdk_foundation_validate)
+    endif()
 
 endblock()
