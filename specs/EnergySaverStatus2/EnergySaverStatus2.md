@@ -86,9 +86,15 @@ switch (status)
         // (e.g., double or triple the interval between heartbeats to conserve power)
         heartbeatInterval = TimeSpan.FromSeconds(30);
         break;
-    default:
-        // API not supported on this OS build
-        break;
+    case EnergySaverStatus2.Unknown:
+        //  State is explicitly unknown
+        //  Maintain default heartbeat interval (e.g., 10 sec)
+       break;
+     default:
+       // Unexpected state
+       // Default to normal operation heartbeat interval (e.g., 10 sec)
+       // or have a conservative fallback TimeSpan.FromSeconds(20);         
+      break;
 }
 ```
 
@@ -126,6 +132,16 @@ private static void OnEnergySaverStatus2Changed(object sender, object e)
         case EnergySaverStatus2.Off:
             ResumeNormalActivity();
             break;
+       case EnergySaverStatus2.Unknown:
+            // State is explicitly unknown
+            // Default to normal operation
+            ResumeNormalActivity();
+            break;
+       default:
+            // Unexpected state
+            // Default to normal operation  ResumeNormalActivity();
+            // or have a conservative fallback  ReduceBackgroundActivity();         
+        break;
     }
 }
 
@@ -149,7 +165,7 @@ public enum EnergySaverStatus2
 
 | Value | Description |
 |---|---|
-| `Unknown` | The Energy Saver v2 status is unavailable, either because the OS does not support it or because the status has not yet been initialized. |
+| `Unknown` | The Energy Saver v2 status is unavailable. |
 | `Off` | Energy Saver is disabled. Apps should operate normally. |
 | `Standard` | Energy Saver is active with mild performance impact acceptable. Energy saving behaviors that have mild performance impact are encouraged (for example, a sync client might reduce sync frequency). This state is returned when the user has opted into Energy Saver but battery life is not critical. |
 | `HighSavings` | Energy Saver is active and maximum battery savings are preferred, even at the cost of performance. This state is returned when battery level is low and the device is not plugged in. |
