@@ -50,15 +50,15 @@
     Skip NuGet restore (useful if you've already restored).
 
 .EXAMPLE
-    .\Build-VSIX.ps1
+    .\Build-VSIX-Local.ps1
     # Build the LocalDev VSIX (default). Then install with .\Install-LocalDev-VSIX.ps1
 
 .EXAMPLE
-    .\Build-VSIX.ps1 -WindowsAppSDKVersion "1.8.260317003" -Deployment Standalone
+    .\Build-VSIX-Local.ps1 -WindowsAppSDKVersion "1.8.260317003" -Deployment Standalone
     # Build a Standalone VSIX artifact (build-only; not installable locally)
 
 .EXAMPLE
-    .\Build-VSIX.ps1 -NupkgSourceDir "C:\packages" -Deployment Both
+    .\Build-VSIX-Local.ps1 -NupkgSourceDir "C:\packages" -Deployment Both
     # Build the Standalone + Component artifacts (build-only)
 #>
 
@@ -295,9 +295,11 @@ if ($WindowsAppSDKVersion -ne "") {
 }
 
 if ($OptionalVSIXVersion -eq "") {
+    # <yyyy>.<MMdd>.<HHmm>.0 -- year-as-Major outranks any official 1.x/2.x,
+    # monotonic across years. PR# segment is always 0 locally.
     $now = Get-Date
-    $OptionalVSIXVersion = "99.$($now.ToString('yyyy')).$($now.ToString('MMdd')).$($now.ToString('HHmm'))"
-    Write-Step "OptionalVSIXVersion = $OptionalVSIXVersion (auto-generated from current time)"
+    $OptionalVSIXVersion = "$($now.Year).$($now.ToString('MMdd')).$($now.ToString('HHmm')).0"
+    Write-Step "OptionalVSIXVersion = $OptionalVSIXVersion (auto-generated)"
 } else {
     Write-Step "OptionalVSIXVersion = $OptionalVSIXVersion (user-specified)"
 }
@@ -311,7 +313,7 @@ Write-Banner "Configuring NuGet Sources"
 $nugetConfig = Join-Path $scriptDir "vsix-nuget.config"
 if (-not (Test-Path $nugetConfig)) {
     Write-Err "vsix-nuget.config not found at: $nugetConfig"
-    Write-Err "This file should be alongside Build-VSIX.ps1."
+    Write-Err "This file should be alongside Build-VSIX-Local.ps1."
     exit 1
 }
 
