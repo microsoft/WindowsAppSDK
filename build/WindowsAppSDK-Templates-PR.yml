@@ -1,0 +1,113 @@
+# Templates PR Validation Pipeline
+#
+# PR validation for changes under dev/Templates/**.
+# Reuses the build/pack + test stages from the main pipeline
+# (WindowsAppSDK-DotnetNewTemplates.yml). Nothing is signed; nothing is
+# published. PR-stamped versions keep PR artifacts from colliding with
+# canonical packages -- see each stage for the exact format.
+#
+# Triggers are configured in the Azure DevOps UI (Edit pipeline -> Triggers),
+# NOT in this YAML -- matches the WindowsAppSDK-Foundation-PR.yml convention.
+# In the UI, under Pull request validation:
+#   - Override the YAML pull request trigger from here: ON
+#   - Enable pull request validation:                   ON
+#   - Branch filters:  Include refs/heads/main
+#                      Include refs/heads/release/*
+#   - Path filters:    Include dev/Templates/**
+
+trigger: none
+
+# Shared variable templates:
+#   - Foundation-TestConfig: test matrices reused from the main pipeline.
+#   - Versions: MajorVersion / MinorVersion / PatchVersion (consumed by CommonVariables).
+#   - CommonVariables: WindowsContainerImage (required by 1ES OneBranch for
+#     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
+#     are inert here because we disable those scanners in globalSdl below.
+#
+# OfficialPipelineID is the Aggregator nightly definition id (WinAppSDK-Build-Nightly,
+# OneBranch) that produces the WindowsAppSDK_Nuget_And_MSIX artifact daily on 'main'.
+# The VSIX build-validation stage consumes it with runVersion 'latestFromBranch' to pull
+# the latest nightly nuget, so no per-run build id is required. Defined here (not in the
+# ADO UI) so it is version-controlled and reviewable.
+variables:
+- name: OfficialPipelineID
+  value: 118002
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: WindowsAppSDK-CommonVariables.yml
+
+name: TemplatesPR-$(Date:yyyyMMdd)$(Rev:.r)
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    - repository: WindowsAppSDKConfig
+      # adding config for WindowsAppSDK-VSIXTemplates-BuildValidation-Stage
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKVersionConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+
+extends:
+  template: v2/Microsoft.NonOfficial.yml@templates
+  parameters:
+    featureFlags:
+      EnableCDPxPAT: false
+      WindowsHostVersion:
+        Version: 2022
+        Network: R1
+
+    platform:
+      name: 'windows_undocked'
+
+    cloudvault:
+      enabled: false
+
+    # Skip heavy SDL tools for PR validation; the main pipeline
+    # (WindowsAppSDK-DotnetNewTemplates.yml) covers them on canonical builds.
+    globalSdl:
+      tsa:
+        enabled: false
+      isNativeCode: false
+      psscriptanalyzer:
+        enable: false
+      binskim:
+        enabled: false
+      prefast:
+        enabled: false
+      apiscan:
+        enabled: false
+
+    stages:
+      # Build + pack the templates NuGet. IsPRBuild=true makes the stage stamp
+      # every pack as <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR# or 0> so the
+      # .nupkg filename uniquely identifies the run (manual replays without a
+      # PR# fall back to pr0 + timestamp).
+      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
+        parameters:
+          pool:
+            type: windows
+          publishToInternalFeed: false
+          SignOutput: false
+          IsPRBuild: true
+
+      # Smoke-test: scaffold every template from the pack and dotnet build each.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
+        parameters:
+          pool:
+            type: windows
+          dependsOnStage: 'DotnetNewTemplates_Build'
+
+      # Build-validate the VSIX. Runs the production VSIX pack steps so
+      # VSIX-pack regressions (e.g. VSSDK1300 path overflow) surface at PR
+      # time. See WindowsAppSDK-VSIXTemplates-BuildValidation-Stage.yml.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-VSIXTemplates-BuildValidation-Stage.yml@self
+        parameters:
+          pool:
+            type: windows
