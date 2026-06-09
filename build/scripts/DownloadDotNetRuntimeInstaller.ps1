@@ -41,7 +41,7 @@ else
 if(-not(Test-Path $outputPath))
 {
     Write-Host "Downloading $downloadurl to $outputPath"
-    Invoke-WebRequest $downloadurl -OutFile $outputPath
+    Invoke-WebRequest $downloadurl -OutFile $outputPath -UseBasicParsing
 }
 else
 {

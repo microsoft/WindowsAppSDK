@@ -5,6 +5,9 @@
 #include "packages.h"
 #include "install.h"
 #include "MachineTypeAttributes.h"
+#include <fcntl.h>
+#include <io.h>
+#include <mutex>
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -18,11 +21,45 @@ using namespace WindowsAppRuntimeInstaller::Console;
 
 namespace WindowsAppRuntimeInstaller
 {
+    static void RenderProgress(uint32_t percent)
+    {
+        constexpr size_t barWidth{ 50 };
+
+        double percentAsDouble{ static_cast<double>(percent) / 100.0 };
+        int filled{ static_cast<int>(std::floor(barWidth * percentAsDouble)) };
+        if ((filled == 0) && (percentAsDouble > 0.0))
+        {
+            // Progress is more than 0% so show at least 1 bar
+            filled = 1;
+        }
+
+        std::wstring bar;
+        bar.reserve(barWidth);
+        bar.append(static_cast<size_t>(filled), L'\u2588');
+        bar.append(static_cast<size_t>(barWidth - filled), L' ');
+
+        wprintf(L"\r[%s] %0.2lf", bar.c_str(), percentAsDouble * 100.0);
+        fflush(stdout);
+    }
 
     HRESULT GetAndLogDeploymentOperationResult(
         WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
         const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation)
     {
+        if (_isatty(_fileno(stdout)))
+        {
+            static std::once_flag s_setConsoleUtf16Once;
+            std::call_once(s_setConsoleUtf16Once, []()
+            {
+                _setmode(_fileno(stdout), _O_U16TEXT);
+            });
+
+            deploymentOperation.Progress([&](auto const&, winrt::Windows::Management::Deployment::DeploymentProgress const& progress)
+            {
+                RenderProgress(progress.percentage);
+            });
+        }
+
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
@@ -335,6 +372,7 @@ namespace WindowsAppRuntimeInstaller
 
         if (!quiet)
         {
+            std::wcout << std::endl;
             std::wcout << L"Deploying package: " << packageProperties->fullName.get() << std::endl;
         }
 
@@ -379,6 +417,7 @@ namespace WindowsAppRuntimeInstaller
         }
         if (!quiet)
         {
+            std::wcout << std::endl;
             std::wcout << "Package deployment result : 0x" << std::hex << hrDeploymentResult << " ";
             DisplayError(hrDeploymentResult);
         }

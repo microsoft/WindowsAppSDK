@@ -4,7 +4,7 @@
 //
 //  Microsoft Research Detours Package, Version 4.0.1
 //
-//  Copyright (c) Microsoft Corporation and Contributors.  All rights reserved.
+//  Copyright (c) Microsoft Corporation.  All rights reserved.
 //
 //  Used for for payloads, byways, and imports.
 //
@@ -145,6 +145,8 @@ protected:
     DWORD                   m_cbData;
     DWORD                   m_cbAlloc;
 };
+
+class CImageImportName;
 
 class CImageImportFile
 {
@@ -534,18 +536,7 @@ PBYTE CImageData::Find(REFGUID rguid, DWORD *pcbData)
             continue;
         }
 
-        if (pRecord->guid.Data1 == rguid.Data1 &&
-            pRecord->guid.Data2 == rguid.Data2 &&
-            pRecord->guid.Data3 == rguid.Data3 &&
-            pRecord->guid.Data4[0] == rguid.Data4[0] &&
-            pRecord->guid.Data4[1] == rguid.Data4[1] &&
-            pRecord->guid.Data4[2] == rguid.Data4[2] &&
-            pRecord->guid.Data4[3] == rguid.Data4[3] &&
-            pRecord->guid.Data4[4] == rguid.Data4[4] &&
-            pRecord->guid.Data4[5] == rguid.Data4[5] &&
-            pRecord->guid.Data4[6] == rguid.Data4[6] &&
-            pRecord->guid.Data4[7] == rguid.Data4[7]) {
-
+        if (DetourAreSameGuid(pRecord->guid, rguid)) {
             *pcbData = cbBytes - sizeof(DETOUR_SECTION_RECORD);
             return (PBYTE)(pRecord + 1);
         }
@@ -775,25 +766,8 @@ CImage::CImage()
     m_hMap = NULL;
     m_pMap = NULL;
 
-    m_nNextFileAddr = 0;
-    m_nNextVirtAddr = 0;
-
-    ZeroMemory(&m_DosHeader, sizeof(m_DosHeader));
-    ZeroMemory(&m_NtHeader, sizeof(m_NtHeader));
-    ZeroMemory(&m_SectionHeaders, sizeof(m_SectionHeaders));
-
-    m_nPrePE = 0;
-    m_cbPrePE = 0;
-    m_cbPostPE = 0;
-
     m_nPeOffset = 0;
     m_nSectionsOffset = 0;
-    m_nExtraOffset = 0;
-    m_nFileSize = 0;
-
-    m_nOutputVirtAddr = 0;
-    m_nOutputVirtSize = 0;
-    m_nOutputFileAddr = 0;
 
     m_pbOutputBuffer = NULL;
     m_cbOutputBuffer = 0;

@@ -1,12 +1,18 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+    <ItemDefinitionGroup>
+        <!-- Add the appropriate definition to the ClCompile ItemDefinitionGroup to apply to all compilations -->
+        <ClCompile>
+            <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_Default)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_None)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnErrorShowUI)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERRORSHOWUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        </ClCompile>
+    </ItemDefinitionGroup>
+
     <Target Name="GenerateDeploymentManagerCpp">
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\DeploymentManagerAutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
-                <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_Default)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-                <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_None)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-                <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnErrorShowUI)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERRORSHOWUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
             </ClCompile>
         </ItemGroup>
     </Target>

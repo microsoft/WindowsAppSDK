@@ -6,11 +6,16 @@ parameters:
 - name: jobName
   type: string
   default: PipelineTests
-- name: dependsOn
+- name: samplesArtifactName
+  displayName: "Supply a valid base name for Sample Apps BuildOutput to trigger publishing of the artifact"
+  type: string
+  default: ''
+- name: sampleFeatureAreasList
   type: object
-  default:
-  - ''
-  # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+  default: []
+- name: callingStage
+  type: string
+  default: ''
 - name: testMatrix
   type: object
   default: ''
@@ -32,7 +37,8 @@ jobs:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
     AZURE_PIPELINES_DEDUP_PARALLELISM: 16
     artifactAttempt: ''
-    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(Agent.JobStatus)$(artifactAttempt)'
+    artifactStatus: 'Succeeded'
+    ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)_$(artifactStatus)$(artifactAttempt)'
     ob_artifactBaseName: '$(System.StageName)_$(imageName)'
     # As the name of this job suggests, we currently don't build any code here, but only run tests; therefore, not bothering to enable BinSkim scans
     # here. OTOH, if we leave BinSkim enabled, then the "Guardian: BinSkim" task in the Post* jobs injected into our pipeline by OneBranch 
@@ -55,3 +61,6 @@ jobs:
         buildConfiguration: $(buildConfiguration)
         testLocale: $(testLocale)
         ImageName: $(imageName)
+        callingStage: ${{ parameters.callingStage }}
+        samplesArtifactName: ${{ parameters.samplesArtifactName }}
+        sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}

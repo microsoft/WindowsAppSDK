@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="1001" xml:space="preserve">
+    <value>빈 창</value>
+  </data>
+  <data name="1002" xml:space="preserve">
+    <value>[실험적] 빈 창</value>
+  </data>
+  <data name="1003" xml:space="preserve">
+    <value>빈 창(WinUI).</value>
+  </data>
+  <data name="1005" xml:space="preserve">
+    <value>빈 페이지</value>
+  </data>
+  <data name="1006" xml:space="preserve">
+    <value>[실험적] 빈 페이지</value>
+  </data>
+  <data name="1007" xml:space="preserve">
+    <value>빈 페이지(WinUI).</value>
+  </data>
+  <data name="1009" xml:space="preserve">
+    <value>리소스 사전</value>
+  </data>
+  <data name="1010" xml:space="preserve">
+    <value>[실험적] 리소스 사전</value>
+  </data>
+  <data name="1011" xml:space="preserve">
+    <value>비어 있는 키로 구성된 XAML 리소스 컬렉션입니다(WinUI).</value>
+  </data>
+  <data name="1013" xml:space="preserve">
+    <value>리소스 파일(.resw)</value>
+  </data>
+  <data name="1014" xml:space="preserve">
+    <value>[실험] 리소스 파일(.resw)</value>
+  </data>
+  <data name="1015" xml:space="preserve">
+    <value>WinUI(문자열 및 조건부 리소스)를 저장하는 파일입니다.</value>
+  </data>
+  <data name="1017" xml:space="preserve">
+    <value>템플릿 제공 컨트롤</value>
+  </data>
+  <data name="1018" xml:space="preserve">
+    <value>[실험적] 템플릿 제공 컨트롤</value>
+  </data>
+  <data name="1019" xml:space="preserve">
+    <value>적절한 기본 스타일(WinUI)을 사용하는 빈 사용자 지정 컨트롤입니다.</value>
+  </data>
+  <data name="1021" xml:space="preserve">
+    <value>사용자 정의 컨트롤</value>
+  </data>
+  <data name="1022" xml:space="preserve">
+    <value>[실험적] 사용자 정의 컨트롤</value>
+  </data>
+  <data name="1023" xml:space="preserve">
+    <value>빈 사용자 정의 컨트롤(WinUI).</value>
+  </data>
+  <data name="1025" xml:space="preserve">
+    <value>WinUI 클래스 라이브러리</value>
+  </data>
+  <data name="1026" xml:space="preserve">
+    <value>[실험적] WinUI 클래스 라이브러리</value>
+  </data>
+  <data name="1027" xml:space="preserve">
+    <value>WinUI(관리되는 클래스 라이브러리)(.dll)를 만드는 프로젝트입니다.</value>
+  </data>
+  <data name="1029" xml:space="preserve">
+    <value>WinUI 빈 앱(Windows 애플리케이션 패키징 프로젝트 패키지)</value>
+  </data>
+  <data name="1030" xml:space="preserve">
+    <value>[실험적] WinUI 빈 앱(Windows 애플리케이션 패키징 프로젝트 패키지)</value>
+  </data>
+  <data name="1031" xml:space="preserve">
+    <value>WinUI 앱을 만들기 위한 프로젝트 템플릿. Microsoft Store를 통해 테스트용으로 로드하거나 배포하기 위한 MSIX 패키지를 만들기 위해 WAP(Windows 애플리케이션 패키징) 프로젝트가 포함되어 있습니다.</value>
+  </data>
+  <data name="1033" xml:space="preserve">
+    <value>WinUI 빈 앱(패키지됨)</value>
+  </data>
+  <data name="1034" xml:space="preserve">
+    <value>[실험적] WinUI 빈 앱(패키지됨)</value>
+  </data>
+  <data name="1035" xml:space="preserve">
+    <value>Microsoft Store 통해 테스트용 로드 또는 배포를 위한 MSIX 패키지와 함께 WinUI 앱을 만들기 위한 프로젝트 템플릿.</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>WinUI 단위 테스트 앱</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[실험적] WinUI 단위 테스트 앱</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>MSTest를 사용하여 WinUI용 C# 단위 테스트 앱을 만드는 프로젝트입니다.</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>WinUI 빈 앱</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>빈 WinUI 앱을 만들기 위한 프로젝트.</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>WinUI용 Windows 애플리케이션 패키징 프로젝트</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Microsoft Store 통해 테스트용 로드 또는 배포를 위한 WinUI 애플리케이션이 포함된 MSIX 패키지를 만드는 프로젝트 템플릿입니다.</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>프로젝트에 NuGet 패키지를 설치하는 중입니다...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>작업이 진행 중입니다.</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>누락된 패키지 참조</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>{0} 대한 다음 패키지에 참조를 추가할 수 없습니다. {1}. 빌드하기 전에 패키지 참조를 추가하세요.</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}] 다음 패키지에 참조를 추가할 수 없습니다. {1}. 환경 오류입니다. 프로젝트를 빌드하기 전에 패키지 참조를 추가하세요.</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>NuGet 패키지 관리</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>오류 세부 정보 보기</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>{0}에 대해 누락된 패키지 참조:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>빌드하기 전에 패키지 참조를 수동으로 추가하세요.</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>일반</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>출력 정보를 사용할 수 없습니다.</value>
+  </data>
+</root>

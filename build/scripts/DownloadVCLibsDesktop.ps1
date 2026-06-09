@@ -21,7 +21,7 @@ $downloadurl = "https://aka.ms/Microsoft.VCLibs.$Platform.14.00.Desktop.appx"
 if(-not(Test-Path $outputPath))
 {
     Write-Host "Downloading $downloadurl to $outputPath"
-    Invoke-WebRequest $downloadurl -OutFile $outputPath
+    Invoke-WebRequest $downloadurl -OutFile $outputPath -UseBasicParsing
 }
 else
 {

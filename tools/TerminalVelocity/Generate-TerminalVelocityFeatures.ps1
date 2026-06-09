@@ -47,6 +47,7 @@ Param(
 )
 
 Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
 
 # Make sure Channel has the exact spelling even if the parameter had different case
 foreach ($c in "Experimental", "Preview", "Stable", "WindowsInbox")

@@ -33,7 +33,7 @@
     <ClCompile Include="PickerCommonTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pickerlocalization.cpp">
+    <ClCompile Include="PickerLocalization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

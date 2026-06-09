@@ -2,9 +2,6 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: runApiScan
   type: boolean
   default: true
@@ -14,8 +11,6 @@ parameters:
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
-  parameters:
-    IsOneBranch: ${{ parameters.IsOneBranch }}
 
 - task: WinUndockNativeCompiler@1
   displayName: 'Setup native compiler version override'
@@ -97,9 +92,3 @@ steps:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: PublishBuildArtifacts@1
-    condition: always()
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'

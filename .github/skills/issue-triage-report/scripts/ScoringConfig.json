@@ -1,0 +1,33 @@
+{
+  "weights": {
+    "reactions": 0.3,
+    "age": 0.3,
+    "comments": 0.3,
+    "severity": 0.1,
+    "blockers": 0
+  },
+  "thresholds": {
+    "aging_days": 90,
+    "trending_comments": 10,
+    "trending_days": 14,
+    "popular_reactions": 5
+  },
+  "maxLabelsPerIssue": 2,
+  "rankingCeilings": {
+    "reactions": 10,
+    "ageDays": 365,
+    "comments": 20
+  },
+  "severityMultipliers": {
+    "critical": 1.0,
+    "high": 0.8,
+    "medium": 0.5,
+    "low": 0.2,
+    "none": 0.0
+  },
+  "recommendationBands": {
+    "high": 0.7,
+    "medium": 0.45,
+    "normal": 0.2
+  }
+}

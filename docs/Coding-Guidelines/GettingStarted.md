@@ -74,14 +74,23 @@ Troubleshoot build problems by enabling binary logging (e.g. `msbuild...-bl`) an
 
 ### Common Build Errors
 
-PROBLEM 001: Expired Test Certificate
-SYMPTOMS:
-    VS ErrorList:
-        MSB3073 The command "signtool.exe sign ..." exited with code 1...\MakeMsix.targets...
-    Build Output:
-        Build Output: EXEC : SignTool error : No certificates were found that met all the given criteria.
-        ...\MakeMsix.targets...error MSB3073: The command "signtool.exe sign ..." exited with code 1.
-SOLUTION: Run DevCheck.cmd (from an admin prompt). This detects the expired certificate and prompts to create a new one.
+#### Problem 001: Expired Test Certificate
+
+##### Symptoms
+
+###### VS ErrorList:
+
+```MSB3073 The command "signtool.exe sign ..." exited with code 1...\MakeMsix.targets...```
+
+###### Build Output:
+
+```
+Build Output: EXEC : SignTool error : No certificates were found that met all the given criteria.
+...\MakeMsix.targets...error MSB3073: The command "signtool.exe sign ..." exited with code 1.
+```
+##### Solution
+
+Run `DevCheck.cmd` (from an admin prompt). This detects the expired certificate and prompts to create a new one.
 
 ## Testing Tips
 

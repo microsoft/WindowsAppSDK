@@ -1,0 +1,154 @@
+parameters:
+- name: pool
+  type: object
+  default:
+    vmImage: 'windows-latest'
+- name: sourceSubdirectory
+  type: string
+  default: 'WindowsAppSDK'
+- name: publishToInternalFeed
+  type: boolean
+  default: true
+- name: SignOutput
+  type: boolean
+  default: false
+# PR pipelines pass true so every pack (including manual replays without a
+# PR#) gets a timestamp + pr<N> suffix that makes the .nupkg filename
+# uniquely identify the run. Official pipelines leave this false so the
+# pack version matches the csproj <Version> verbatim.
+- name: IsPRBuild
+  type: boolean
+  default: false
+
+stages:
+- stage: DotnetNewTemplates_Build
+  displayName: 'Build and pack dotnet new templates'
+  dependsOn: []
+  jobs:
+  - job: PackDotnetNewTemplates
+    displayName: 'Pack dotnet new template NuGet'
+    dependsOn: []
+    pool: ${{ parameters.pool }}
+    variables:
+      ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
+      templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
+      # Set by the "Compute package version" step below.
+      PackVersionFull: ''
+    steps:
+    - checkout: self
+
+    - task: PowerShell@2
+      displayName: 'Ensure test certificate for signing'
+      inputs:
+        targetType: inline
+        workingDirectory: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}'
+        script: |
+          $repoRoot = "$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}"
+          $userDir = Join-Path $repoRoot '.user'
+          $pfxPath = Join-Path $userDir 'winappsdk.certificate.test.pfx'
+          $pwdPath = Join-Path $userDir 'winappsdk.certificate.test.pwd'
+
+          if (-not (Test-Path $userDir)) {
+            New-Item -ItemType Directory -Path $userDir | Out-Null
+          }
+
+          if ((Test-Path $pfxPath) -and (Test-Path $pwdPath)) {
+            Write-Host "Test certificate already exists at $pfxPath"
+          }
+          else {
+            $password = [Guid]::NewGuid().ToString()
+            $securePwd = ConvertTo-SecureString -String $password -Force -AsPlainText
+            $subject = 'CN=WindowsAppSDK Test Certificate'
+            $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject $subject -KeyExportPolicy Exportable -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation 'Cert:\CurrentUser\My'
+            Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $securePwd | Out-Null
+            Set-Content -Path $pwdPath -Value $password -NoNewline
+            Write-Host "Created test certificate at $pfxPath"
+          }
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET SDK'
+      inputs:
+        packageType: sdk
+        version: '8.0.x'
+
+    - task: PowerShell@2
+      displayName: 'Verify template csproj exists before restore'
+      inputs:
+        targetType: inline
+        workingDirectory: '$(templateProjectDir)'
+        script: |
+          Write-Host "Current directory: $(Get-Location)"
+          $projectPath = Join-Path (Get-Location) 'WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+          if (-not (Test-Path $projectPath)) {
+            throw "Template project missing at $projectPath"
+          }
+          Write-Host "Confirmed template project at $projectPath"
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore template project'
+      inputs:
+        command: 'restore'
+        projects: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+        workingDirectory: '$(templateProjectDir)'
+
+    # PR builds always get a unique SemVer prerelease tag appended:
+    #   <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR# or 0>
+    # Manual PR-pipeline replays (no SYSTEM_PULLREQUEST_PULLREQUESTNUMBER)
+    # use pr0 so the filename still differentiates runs by timestamp.
+    # Official builds (IsPRBuild=false) keep the csproj <Version> verbatim.
+    - task: PowerShell@2
+      displayName: 'Compute package version'
+      inputs:
+        targetType: inline
+        workingDirectory: '$(templateProjectDir)'
+        script: |
+          $csprojPath = Join-Path '$(templateProjectDir)' 'WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+          [xml]$csproj = Get-Content -LiteralPath $csprojPath
+          $versionNode = Select-Xml -Xml $csproj -XPath '/Project/PropertyGroup/Version' | Select-Object -First 1
+          if (-not $versionNode) { throw "No <Version> element found in $csprojPath" }
+          $baseVersion = $versionNode.Node.InnerText.Trim()
+          if ([string]::IsNullOrWhiteSpace($baseVersion)) { throw "csproj <Version> is empty in $csprojPath" }
+          $isPR = [System.Convert]::ToBoolean('${{ parameters.IsPRBuild }}')
+          if ($isPR) {
+            $pr = $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
+            if ([string]::IsNullOrWhiteSpace($pr)) { $pr = '0' }
+            $now = Get-Date
+            $stamp = "$($now.ToString('yyyy'))-$($now.ToString('MMdd'))-$($now.ToString('HHmm'))-pr$pr"
+            # Join with '-' so any prerelease tag already in <Version> stays one valid SemVer identifier.
+            $fullVersion = "$baseVersion-$stamp"
+          } else {
+            $fullVersion = $baseVersion
+          }
+          Write-Host "Computed package version: $fullVersion"
+          Write-Host "##vso[task.setvariable variable=PackVersionFull]$fullVersion"
+
+    # DotNetCoreCLI@2 'pack' ignores 'arguments'; properties go via 'buildProperties'.
+    - task: DotNetCoreCLI@2
+      displayName: 'Pack dotnet new templates'
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(templateProjectDir)\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+        buildProperties: 'WindowsAppSDKBuildPipeline=1;Version=$(PackVersionFull)'
+        outputDir: '$(ob_outputDirectory)'
+        workingDirectory: '$(templateProjectDir)'
+
+    - ${{ if eq(parameters.SignOutput, true) }}:
+      - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+        parameters:
+          FolderPath: '$(ob_outputDirectory)'
+          Pattern: '*.nupkg'
+          KeyCode: 'CP-401405'
+          UseMinimatch: true
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'Publish dotnet template pack to internal feed'
+      condition: and(succeeded(), eq('${{ parameters.publishToInternalFeed }}', 'true'))
+      inputs:
+        command: 'push'
+        packagesToPush: '$(ob_outputDirectory)\*.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+        allowPackageConflicts: true
+
+

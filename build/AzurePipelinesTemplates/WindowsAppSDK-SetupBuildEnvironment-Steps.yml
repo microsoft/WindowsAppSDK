@@ -1,8 +1,3 @@
-parameters:
-- name: "IsOneBranch"
-  type: boolean
-  default: true
-
 steps:
 - task: UseDotNet@2
   displayName: Use .NET Core SDK 6
@@ -58,14 +53,6 @@ steps:
     filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
     arguments: >
       -SdkVersion "10.1.17763"
-
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: powershell@2
-    inputs:
-      targetType: filePath
-      filePath: build\scripts\Install-WindowsSdkISO.ps1
-      arguments: 26100
-    displayName: 'Install Windows SDK (26100)'
 
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'

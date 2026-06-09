@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="1001" xml:space="preserve">
+    <value>空白視窗</value>
+  </data>
+  <data name="1002" xml:space="preserve">
+    <value>[實驗性] 空白視窗</value>
+  </data>
+  <data name="1003" xml:space="preserve">
+    <value>空白視窗 (WinUI)。</value>
+  </data>
+  <data name="1005" xml:space="preserve">
+    <value>空白頁</value>
+  </data>
+  <data name="1006" xml:space="preserve">
+    <value>[實驗性] 空白頁</value>
+  </data>
+  <data name="1007" xml:space="preserve">
+    <value>空白頁 (WinUI)。</value>
+  </data>
+  <data name="1009" xml:space="preserve">
+    <value>資源字典</value>
+  </data>
+  <data name="1010" xml:space="preserve">
+    <value>[實驗性] 資源字典</value>
+  </data>
+  <data name="1011" xml:space="preserve">
+    <value>WinUI) (XAML 資源的空白金鑰集合。</value>
+  </data>
+  <data name="1013" xml:space="preserve">
+    <value>資源檔 (.resw)</value>
+  </data>
+  <data name="1014" xml:space="preserve">
+    <value>[實驗性] 資源檔 (.resw)</value>
+  </data>
+  <data name="1015" xml:space="preserve">
+    <value>用於在 WinUI) (儲存字串和條件式資源的檔案。</value>
+  </data>
+  <data name="1017" xml:space="preserve">
+    <value>範本控制項</value>
+  </data>
+  <data name="1018" xml:space="preserve">
+    <value>[實驗性] 範本控制項</value>
+  </data>
+  <data name="1019" xml:space="preserve">
+    <value>具有適當預設樣式的空白自定義控件 (WinUI)。</value>
+  </data>
+  <data name="1021" xml:space="preserve">
+    <value>使用者控制項</value>
+  </data>
+  <data name="1022" xml:space="preserve">
+    <value>[實驗性] 使用者控制項</value>
+  </data>
+  <data name="1023" xml:space="preserve">
+    <value>空白使用者控制項 (WinUI)。</value>
+  </data>
+  <data name="1025" xml:space="preserve">
+    <value>WinUI 類別庫</value>
+  </data>
+  <data name="1026" xml:space="preserve">
+    <value>[實驗性] WinUI 類別庫</value>
+  </data>
+  <data name="1027" xml:space="preserve">
+    <value>用於建立 WinUI) (.dll) (受管理類別庫的專案。</value>
+  </data>
+  <data name="1029" xml:space="preserve">
+    <value>WinUI 空白應用程式 (與 Windows 應用程式封裝專案封裝)</value>
+  </data>
+  <data name="1030" xml:space="preserve">
+    <value>[實驗性] WinUI 空白應用程式 (與 Windows 應用程式封裝專案封裝)</value>
+  </data>
+  <data name="1031" xml:space="preserve">
+    <value>用於建立 WinUI 應用程式的專案範本。會包含 Windows 應用程式封裝 (WAP) 專案，以建立 MSIX 套件，以便透過 Microsoft Store 側載或散佈。</value>
+  </data>
+  <data name="1033" xml:space="preserve">
+    <value>WinUI 空白應用程式 (已封裝)</value>
+  </data>
+  <data name="1034" xml:space="preserve">
+    <value>[實驗性] WinUI 空白應用程式 (已封裝)</value>
+  </data>
+  <data name="1035" xml:space="preserve">
+    <value>用於建立 WinUI 應用程式以及 MSIX 套件，以便透過 Microsoft Store 側載或發行的專案範本。</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>WinUI 單元測試應用程式</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[實驗性] WinUI 單元測試應用程式</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>用於使用 MSTest 為 WinUI 建立 C# 單元測試應用程式的專案。</value>
+  </data>
+  <data name="1040" xml:space="preserve">
+    <value>WinUI 空白應用程式</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>用於建立空白 WinUI 應用程式的專案。</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>WinUI 的 Windows 應用程式封裝專案</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>此項目範本會建立 MSIX 套件，其中包含 WinUI 應用程式以透過Microsoft Store側載或散發。</value>
+  </data>
+  <data name="1044" xml:space="preserve">
+    <value>正在將 NuGet 套件安裝到專案中...</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>操作進行中...</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>缺少套件參考</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>無法為以下套件添加參考，{0}：{1}。請在製作前加入套件參考資料。</value>
+  </data>
+  <data name="1048" xml:space="preserve">
+    <value>[{0}]無法新增以下套件的參考：{1}。這是環境錯誤。請在建置專案前先加入套件參考。</value>
+  </data>
+  <data name="1049" xml:space="preserve">
+    <value>管理 NuGet 套件</value>
+  </data>
+  <data name="1050" xml:space="preserve">
+    <value>請參閱錯誤詳細資料</value>
+  </data>
+  <data name="1051" xml:space="preserve">
+    <value>缺少 {0} 的套件參考:</value>
+  </data>
+  <data name="1052" xml:space="preserve">
+    <value>請在建置之前手動新增套件參考。</value>
+  </data>
+  <data name="1053" xml:space="preserve">
+    <value>一般</value>
+  </data>
+  <data name="1054" xml:space="preserve">
+    <value>沒有可用的輸出資訊。</value>
+  </data>
+</root>

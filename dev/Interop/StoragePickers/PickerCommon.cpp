@@ -3,16 +3,20 @@
 
 #include "pch.h"
 #include "shellapi.h"
+#include <appmodel.h>
 #include "PickerCommon.h"
 #include "PickerLocalization.h"
 #include <wil/resource.h>
 #include "ShObjIdl.h"
 #include "shobjidl_core.h"
 #include <KnownFolders.h>
+#include <shlguid.h>
 #include <filesystem>
 #include <format>
 #include <utility>
-
+#include <string_view>
+#include <cwctype>
+#include <vector>
 
 namespace {
 
@@ -98,8 +102,169 @@ namespace {
 
 }
 
+namespace {
+
+    // Search immediate children of parentItem for the WSL item.
+    // If found, make it visible via INameSpaceTreeControl::SetItemState.
+    bool FindAndShowWslInChildren(winrt::com_ptr<IShellItem> const& wslItem, winrt::com_ptr<IShellItem> const& parentItem, winrt::com_ptr<INameSpaceTreeControl> const& nstc) noexcept
+    {
+        if (!parentItem || !wslItem || !nstc)
+        {
+            return false;
+        }
+
+        winrt::com_ptr<IEnumShellItems> enumItems;
+        if (FAILED(parentItem->BindToHandler(nullptr, BHID_EnumItems, IID_PPV_ARGS(enumItems.put()))) || !enumItems)
+        {
+            return false;
+        }
+
+        winrt::com_ptr<IShellItem> childItem;
+        ULONG fetched = 0;
+        while (SUCCEEDED(enumItems->Next(1, childItem.put(), &fetched)) && fetched > 0)
+        {
+            if (childItem)
+            {
+                int order = 0;
+                if (childItem->Compare(wslItem.get(), SICHINT_CANONICAL, &order) == S_OK && order == 0)
+                {
+                    nstc->SetItemState(childItem.get(), NSTCIS_EXPANDED, NSTCIS_EXPANDED);
+                    return true;
+                }
+                childItem = nullptr;
+            }
+            fetched = 0;
+        }
+
+        return false;
+    }
+
+}
+
 namespace PickerCommon {
     using namespace winrt;
+
+    void CALLBACK WslNodeRevealer::PollTimerProc(HWND hwnd, UINT, UINT_PTR timerId, DWORD) noexcept
+    {
+        reinterpret_cast<WslNodeRevealer*>(timerId)->RevealWslNodeWhenReady(hwnd);
+    }
+
+    void WslNodeRevealer::RevealWslNodeWhenReady(HWND hwnd) noexcept
+    {
+        if (!m_nstc || !m_wslItem || ++m_pollCount >= s_maxPollCount)
+        {
+            KillTimer(hwnd, reinterpret_cast<UINT_PTR>(this));
+            m_timerPending = false;
+            m_nstc = nullptr;
+            m_wslItem = nullptr;
+            return;
+        }
+
+        winrt::com_ptr<IShellItemArray> roots;
+        DWORD count = 0;
+        if (SUCCEEDED(m_nstc->GetRootItems(roots.put())) && roots)
+        {
+            if (FAILED(roots->GetCount(&count)))
+            {
+                count = 0;
+            }
+        }
+
+        // Wait until at least one root node has loaded.
+        if (count == 0)
+        {
+            return;
+        }
+
+        KillTimer(hwnd, reinterpret_cast<UINT_PTR>(this));
+        m_timerPending = false;
+
+        // Search for the WSL node in the immediate children of each root node.
+        for (DWORD i = 0; i < count; i++)
+        {
+            winrt::com_ptr<IShellItem> rootItem;
+            if (SUCCEEDED(roots->GetItemAt(i, rootItem.put())) && rootItem)
+            {
+                if (FindAndShowWslInChildren(m_wslItem, rootItem, m_nstc))
+                {
+                    break;
+                }
+            }
+        }
+
+        m_nstc = nullptr;
+        m_wslItem = nullptr;
+        m_pollCount = 0;
+    }
+
+    void WslNodeRevealer::CancelPendingReveal() noexcept
+    {
+        if (m_timerPending)
+        {
+            KillTimer(m_timerHwnd, reinterpret_cast<UINT_PTR>(this));
+            m_timerPending = false;
+            m_timerHwnd = nullptr;
+        }
+        m_nstc = nullptr;
+        m_wslItem = nullptr;
+        m_pollCount = 0;
+    }
+
+    // IFileDialogEvents::OnFolderChange is called when the dialog is opened.
+    // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ifiledialogevents-onfolderchange
+    IFACEMETHODIMP WslNodeRevealer::OnFolderChange(IFileDialog* pfd) noexcept
+    {
+        if (!m_revealed)
+        {
+            m_revealed = true;
+            TryStartReveal(pfd); // best-effort; ignore failure so the picker always opens
+        }
+        return S_OK;
+    }
+
+    HRESULT WslNodeRevealer::TryStartReveal(IFileDialog* pfd) noexcept
+    {
+        winrt::com_ptr<IServiceProvider> sp;
+        RETURN_IF_FAILED(pfd->QueryInterface(IID_PPV_ARGS(sp.put())));
+
+        winrt::com_ptr<IShellBrowser> sb;
+        RETURN_IF_FAILED(sp->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(sb.put())));
+
+        winrt::com_ptr<IServiceProvider> sbSp;
+        RETURN_IF_FAILED(sb->QueryInterface(IID_PPV_ARGS(sbSp.put())));
+
+        winrt::com_ptr<INameSpaceTreeControl> nstc;
+        RETURN_IF_FAILED(sbSp->QueryService(IID_INameSpaceTreeControl, IID_PPV_ARGS(nstc.put())));
+
+        // Resolve the WSL root shell item, falling back from \\wsl.localhost to \\wsl$.
+        winrt::com_ptr<IShellItem> wslItem;
+        if (FAILED(SHCreateItemFromParsingName(L"\\\\wsl.localhost", nullptr, IID_PPV_ARGS(wslItem.put()))))
+        {
+            RETURN_IF_FAILED(SHCreateItemFromParsingName(L"\\\\wsl$", nullptr, IID_PPV_ARGS(wslItem.put())));
+        }
+
+        // Obtain the dialog's HWND so we can attach the timer to it.
+        // SetTimer with a non-NULL hWnd uses the supplied nIDEvent as-is (letting us
+        // recover `this` in PollTimerProc) and synthesizes WM_TIMER via the window's
+        // message loop rather than posting to the thread queue, so KillTimer is atomic.
+        winrt::com_ptr<IOleWindow> oleWindow;
+        RETURN_IF_FAILED(pfd->QueryInterface(IID_PPV_ARGS(oleWindow.put())));
+        HWND dialogHwnd = nullptr;
+        RETURN_IF_FAILED(oleWindow->GetWindow(&dialogHwnd));
+        RETURN_HR_IF_NULL(E_FAIL, dialogHwnd);
+
+        m_nstc = nstc;
+        m_wslItem = wslItem;
+        m_pollCount = 0;
+        m_timerHwnd = dialogHwnd;
+        m_timerPending = SetTimer(m_timerHwnd, reinterpret_cast<UINT_PTR>(this), s_pollIntervalMs, PollTimerProc) != 0;
+        if (!m_timerPending)
+        {
+            m_timerHwnd = nullptr;
+        }
+
+        return S_OK;
+    }
 
     bool IsHStringNullOrEmpty(winrt::hstring value)
     {
@@ -178,7 +343,7 @@ namespace PickerCommon {
             return;
         }
 
-        for (int i = 0; i < value.size(); i++)
+        for (size_t i = 0; i < value.size(); i++)
         {
             if (value[i] == L'\0')
             {
@@ -201,7 +366,7 @@ namespace PickerCommon {
                 PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
         }
 
-        for (int i = 1; i < filter.size(); i++)
+        for (size_t i = 1; i < filter.size(); i++)
         {
             if (filter[i] == L'.' || filter[i] == L'*' || filter[i] == L'?')
             {
@@ -224,7 +389,7 @@ namespace PickerCommon {
         ValidateStringNoEmbeddedNulls(suggestedFileName);
     }
 
-    void ValidateSuggestedFolder(winrt::hstring const& path)
+    void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName)
     {
         if (path.empty())
         {
@@ -237,13 +402,23 @@ namespace PickerCommon {
         auto pathObj = std::filesystem::path(path.c_str());
         if (!pathObj.is_absolute())
         {
-            throw std::invalid_argument("SuggestedFolder");
+            throw std::invalid_argument(propertyName);
         }
 
-        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl(SHSimpleIDListFromPath(path.c_str()));
+        // The method SHSimpleIDListFromPath does syntax check on the path string.
+        wil::unique_cotaskmem_ptr<ITEMIDLIST> pidl{ SHSimpleIDListFromPath(path.c_str()) };
         if (!pidl)
         {
-            throw std::invalid_argument("SuggestedFolder");
+            throw std::invalid_argument(propertyName);
+        }
+    }
+
+    void ValidateInitialFileTypeIndex(int const& value)
+    {
+        if (value < DefaultInitialFileTypeIndex)
+        {
+            throw winrt::hresult_invalid_argument(
+                PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
         }
     }
 
@@ -278,6 +453,41 @@ namespace PickerCommon {
         return result;
     }
 
+    void PickerParameters::CaptureFilterSpecData(
+        winrt::Windows::Foundation::Collections::IVectorView<winrt::hstring> fileTypeFilterView,
+        winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::Windows::Foundation::Collections::IVector<winrt::hstring>> fileTypeChoicesView,
+        int initialFileTypeIndex)
+    {
+        InitialFileTypeIndex = initialFileTypeIndex;
+
+        // The FileTypeChoices takes precedence over FileTypeFilter if both are provided.
+        if (fileTypeChoicesView && fileTypeChoicesView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeChoicesView);
+            if (InitialFileTypeIndex > static_cast<int>(FileTypeFilterParams.size() - 1))
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
+            }
+            return;
+        }
+
+        if (fileTypeFilterView && fileTypeFilterView.Size() > 0)
+        {
+            CaptureFilterSpec(fileTypeFilterView);
+            if (InitialFileTypeIndex > static_cast<int>(FileTypeFilterParams.size() - 1))
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidInitialFileTypeIndexLocalizationKey));
+            }
+            return;
+        }
+
+        // Even if no filters provided, we still need to set filter to All Files *.*
+        auto emptyFilters = winrt::single_threaded_vector<winrt::hstring>();
+        CaptureFilterSpec(emptyFilters.GetView());
+    }
+
     /// <summary>
     /// Capture and processing pickers filter inputs and convert them into Common Item Dialog's accepting type, for FileOpenPicker
     /// </summary>
@@ -293,7 +503,7 @@ namespace PickerCommon {
         for (const auto& filter : filters)
         {
             auto ext = FormatExtensionWithWildcard(filter);
-            FileTypeFilterData.push_back(L"");
+            FileTypeFilterData.push_back(ext);
             FileTypeFilterData.push_back(ext);
 
             allFilesExtensionList += ext;
@@ -324,11 +534,17 @@ namespace PickerCommon {
             FileTypeFilterData.push_back(allFilesExtensionList.c_str());
         }
 
-        FileTypeFilterPara.clear();
-        FileTypeFilterPara.reserve(resultSize);
+        FileTypeFilterParams.clear();
+        FileTypeFilterParams.reserve(resultSize);
         for (size_t i = 0; i < resultSize; i++)
         {
-            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
+            FileTypeFilterParams.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
+        }
+
+        if (InitialFileTypeIndex == DefaultInitialFileTypeIndex)
+        {
+            // If no valid InitialFileTypeIndex specified, focus the last one ("All Files" - the auto-added unioned category)
+            InitialFileTypeIndex = static_cast<int>(resultSize) - 1;
         }
     }
 
@@ -357,12 +573,38 @@ namespace PickerCommon {
             resultSize = 1;
         }
 
-        FileTypeFilterPara.clear();
-        FileTypeFilterPara.reserve(resultSize);
+        FileTypeFilterParams.clear();
+        FileTypeFilterParams.reserve(resultSize);
         for (size_t i = 0; i < resultSize; i++)
         {
-            FileTypeFilterPara.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
+            FileTypeFilterParams.push_back({ FileTypeFilterData.at(i * 2).c_str(), FileTypeFilterData.at(i * 2 + 1).c_str() });
         }
+    }
+
+    winrt::hstring PickerParameters::TryGetAppUserModelId()
+    {
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+        UINT32 appUserModelIdSize{ _countof(appUserModelId) };
+
+        auto hr{GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId) };
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ appUserModelId };
+        }
+
+        return {};
+    }
+
+    winrt::hstring PickerParameters::TryGetProcessFullPath()
+    {
+        wil::unique_cotaskmem_string module;
+        auto hr{ LOG_IF_FAILED(wil::GetModuleFileNameW(nullptr, module)) };
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ module.get() };
+        }
+
+        return {};
     }
 
     void PickerParameters::ConfigureDialog(winrt::com_ptr<IFileDialog> dialog)
@@ -372,16 +614,67 @@ namespace PickerCommon {
             check_hresult(dialog->SetOkButtonLabel(CommitButtonText.c_str()));
         }
 
-        auto defaultFolder = GetKnownFolderFromId(PickerLocationId);
-        if (defaultFolder != nullptr)
+        if (!IsHStringNullOrEmpty(Title))
+        {
+            check_hresult(dialog->SetTitle(Title.c_str()));
+        }
+
+        winrt::com_ptr<IShellItem> defaultFolder{};
+
+        // The SuggestedStartFolder takes precedence over SuggestedStartLocation if both are provided.
+        if (!IsHStringNullOrEmpty(SuggestedStartFolder))
+        {
+            defaultFolder = TryParseFolderItem(SuggestedStartFolder);
+        }
+
+        if (!defaultFolder)
+        {
+            defaultFolder = GetKnownFolderFromId(SuggestedStartLocation);
+        }
+
+        if (defaultFolder)
         {
             check_hresult(dialog->SetDefaultFolder(defaultFolder.get()));
         }
 
-        if (FileTypeFilterPara.size() > 0)
+        // SuggestedFolder takes precedence over SuggestedStartFolder/SuggestedStartLocation if both are provided.
+        if (!IsHStringNullOrEmpty(SuggestedFolder))
         {
-            check_hresult(dialog->SetFileTypes((UINT)FileTypeFilterPara.size(), FileTypeFilterPara.data()));
+            if (auto folderItem = TryParseFolderItem(SuggestedFolder))
+            {
+                check_hresult(dialog->SetFolder(folderItem.get()));
+            }
         }
+
+        if (FileTypeFilterParams.size() > 0)
+        {
+            check_hresult(dialog->SetFileTypes(static_cast<UINT>(FileTypeFilterParams.size()), FileTypeFilterParams.data()));
+
+            if (InitialFileTypeIndex != DefaultInitialFileTypeIndex && InitialFileTypeIndex < static_cast<int>(FileTypeFilterParams.size()))
+            {
+                check_hresult(dialog->SetFileTypeIndex(InitialFileTypeIndex + 1)); // COMDLG file type index is 1-based
+            }
+        }
+
+        if (!IsHStringNullOrEmpty(SettingsIdentifier))
+        {
+            auto appDistinctString = TryGetAppUserModelId();
+            if (appDistinctString.empty())
+            {
+                appDistinctString = TryGetProcessFullPath();
+            }
+            if (!appDistinctString.empty())
+            {
+                auto clientId = HashHStringToGuid(appDistinctString + L"|" + SettingsIdentifier);
+                check_hresult(dialog->SetClientGuid(clientId));
+            }
+            else
+            {
+                throw winrt::hresult_invalid_argument(
+                    PickerLocalization::GetStoragePickersLocalizationText(InvalidAppIdForSettingsIdentifierLocalizationKey));
+            }
+        }
+
     }
 
     /// <summary>
@@ -395,13 +688,13 @@ namespace PickerCommon {
             check_hresult(dialog->SetFileName(SuggestedFileName.c_str()));
         }
 
-        if (!PickerCommon::IsHStringNullOrEmpty(SuggestedFolder))
+        if (!ShowOverwritePrompt)
         {
-            winrt::com_ptr<IShellItem> folderItem = TryParseFolderItem(SuggestedFolder);
-            if (folderItem)
-            {
-                check_hresult(dialog->SetFolder(folderItem.get()));
-            }
+            FILEOPENDIALOGOPTIONS options{};
+            check_hresult(dialog->GetOptions(&options));
+            options = static_cast<FILEOPENDIALOGOPTIONS>(options & ~FOS_OVERWRITEPROMPT);
+			check_hresult(dialog->SetOptions(options));
         }
+
     }
 }

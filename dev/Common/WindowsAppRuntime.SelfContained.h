@@ -20,6 +20,23 @@ inline bool IsSelfContained()
     THROW_IF_FAILED(WindowsAppRuntime_IsSelfContained(&isSelfContained));
     return !!isSelfContained;
 }
+
+/// Non-throwing variant using dynamic loading (safe before DLL is loaded).
+inline HRESULT IsSelfContained_nothrow(bool& isSelfContained) noexcept
+{
+    isSelfContained = false;
+    auto module = ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll");
+    RETURN_LAST_ERROR_IF_NULL(module);
+    using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
+    auto fn = reinterpret_cast<IsSelfContainedFn>(
+        ::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained"));
+    RETURN_LAST_ERROR_IF_NULL(fn);
+    BOOL result{};
+    const auto hr{ fn(&result) };
+    RETURN_IF_FAILED(hr);
+    isSelfContained = !!result;
+    return S_OK;
+}
 }
 #endif // defined(__cplusplus)
 

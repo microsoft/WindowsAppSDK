@@ -1,3 +1,8 @@
+parameters:
+- name: "TestOnArm64"
+  type: boolean
+  default: true
+
 stages:
 - stage: Test_x86
   dependsOn: Build_x86
@@ -19,12 +24,13 @@ stages:
       testMatrix: $[ stageDependencies.Build_x64.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       buildPlatform: x64
 
-- stage: Test_arm64
-  dependsOn: Build_arm64
-  condition: not(failed())
-  jobs:
-  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
-    parameters:
-      jobName: PipelineTests
-      testMatrix: $[ stageDependencies.Build_arm64.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
-      buildPlatform: arm64
+- ${{ if eq(parameters.TestOnArm64, true)}}:
+  - stage: Test_arm64
+    dependsOn: Build_arm64
+    condition: not(failed())
+    jobs:
+    - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
+      parameters:
+        jobName: PipelineTests
+        testMatrix: $[ stageDependencies.Build_arm64.ExtractMatrix.outputs['filterByPlatformStep.filteredTestMatrix'] ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
+        buildPlatform: arm64

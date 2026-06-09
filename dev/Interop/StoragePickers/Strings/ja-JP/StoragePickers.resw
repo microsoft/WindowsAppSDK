@@ -135,4 +135,10 @@
   <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
     <value>候補のファイル名は、使える文字数の上限を超えています。</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDINITIALFILETYPEINDEX" xml:space="preserve">
+    <value>InitialFileTypeIndex を -1 未満または範囲外にすることはできません。</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDAPPIDFORSETTINGSIDENTIFIER" xml:space="preserve">
+    <value>SettingsIdentifier のアプリ ID を特定できません。</value>
+  </data>
 </root>

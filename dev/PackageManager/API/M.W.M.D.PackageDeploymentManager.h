@@ -106,30 +106,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
-        HRESULT AddPackage(
-            winrt::Windows::Foundation::Uri const& packageUri,
-            winrt::Windows::Management::Deployment::AddPackageOptions const& addOptions,
-            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
-            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
-            const double progressMaxPerPackage,
-            HRESULT& extendedError,
-            winrt::hstring& errorText,
-            winrt::guid& activityId);
         HRESULT StagePackage(
             winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
             const double progressMaxPerPackageSetItem,
-            HRESULT& extendedError,
-            winrt::hstring& errorText,
-            winrt::guid& activityId);
-        HRESULT StagePackage(
-            winrt::Windows::Foundation::Uri const& packageUri,
-            winrt::Windows::Management::Deployment::StagePackageOptions const& stageOptions,
-            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
-            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
-            const double progressMaxPerPackage,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -298,6 +280,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet,
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
         static bool IsUriScheme_MsUup(winrt::Windows::Foundation::Uri const& packageUri);
+
+        void ValidatePackagesAndUpdateExpectedDigests(
+            winrt::Windows::Foundation::Collections::IMapView<winrt::Windows::Foundation::Uri, winrt::Microsoft::Windows::Management::Deployment::PackageValidationEventSource> const& packageValidators,
+            winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring>& expectedDigests
+        );
 
     private:
         static size_t Count(winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::ApplicationModel::Package> packages)

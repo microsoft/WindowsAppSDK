@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap3 uap5 com rescap">
+
+  <Identity
+    Name="MicrosoftCorporationII.WinAppRuntime.Singleton-T"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    Version="4.1.1968.333" />
+
+  <Properties>
+    <DisplayName>MicrosoftCorporationII.WinAppRuntime.Singleton.Test (aka Microsoft.WindowsAppRuntime.Singleton) fake for tests</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Logo>Assets\logo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.1.0-Test" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en"/>
+  </Resources>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

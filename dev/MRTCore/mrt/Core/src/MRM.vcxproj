@@ -67,7 +67,7 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MRTCoreRoot)\mrt\mrm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(MRTCoreRoot)\mrt\mrm\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(OutDir)..\mrmmin\mrmmin.lib;rpcrt4.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>

@@ -135,4 +135,10 @@
   <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
     <value>Önerilen dosya adı izin verilen karakter sayısı üst sınırını aşıyor.</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDINITIALFILETYPEINDEX" xml:space="preserve">
+    <value>InitialFileTypeIndex -1'den küçük veya aralık dışında olamaz.</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDAPPIDFORSETTINGSIDENTIFIER" xml:space="preserve">
+    <value>SettingsIdentifier için uygulama kimliği belirlenemedi.</value>
+  </data>
 </root>

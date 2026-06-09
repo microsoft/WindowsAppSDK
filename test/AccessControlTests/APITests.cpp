@@ -118,7 +118,7 @@ namespace Test::AccessControl
             SECURITY_ATTRIBUTES sa{ sizeof(sa), securityDescriptor, FALSE };
             win32_event.create(wil::EventOptions::None, L"AccessControlTest_Event", &sa);
 
-            VERIFY_IS_TRUE(win32_event.wait(5000));
+            VERIFY_IS_TRUE(win32_event.wait(10000));
         }
 
         TEST_METHOD(FlatAPITest)

@@ -1,3 +1,9 @@
+parameters:
+- name: PrOrNightly
+  displayName: "PR or Nightly Identifier"
+  type: string
+  default: ''
+
 variables:
   _useBuildOutputFromPipeline: $[coalesce(variables.useBuildOutputFromPipeline, variables['System.DefinitionId'] )]
   _useBuildOutputFromBuildId: $[coalesce(variables.useBuildOutputFromBuildId, variables['Build.BuildId'] )]
@@ -8,10 +14,16 @@ variables:
   versionMinDate: $[format('{0:yyMMdd}', pipeline.startTime)]
   versionCounter: $[counter(variables['versionDate'], 0)]
   version: $[format('{0}.{1}.{2}-{3}.{4}', variables['MajorVersion'], variables['MinorVersion'], variables['PatchVersion'], variables['versionDate'], variables['versionCounter'])]
+  SamplesBranch: "release/experimental" # Used in the Samples Build Compat Test
+
+  # Extra nuget version variables for version automation
+  ${{ if ne(parameters.PrOrNightly, '') }}:
+    NugetBuildTypePrefix: ${{ format('{0}.', parameters.PrOrNightly) }}
+  ${{ else }}:
+    NugetBuildTypePrefix: ''
   
   #OneBranch Variables
   CDP_DEFINITION_BUILD_COUNT: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
-  system.debug: ${{ parameters.debug }}
   ENABLE_PRS_DELAYSIGN: 1
   ROOT: $(Build.SourcesDirectory)
   REPOROOT: $(Build.SourcesDirectory)
@@ -31,6 +43,10 @@ variables:
   ob_sdl_msbuildOverride: true
 
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
-  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
 
   Codeql.Enabled: true #  CodeQL runs every 3 days on the default branch for all languages its applicable to in that pipeline.
+  
+  enableTestPass: true
+
+  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe;-:f|**\WindowsAppSDK.Test.NetCore\net**

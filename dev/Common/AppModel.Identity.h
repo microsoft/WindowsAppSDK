@@ -9,15 +9,10 @@
 #include <memory>
 #include <stdint.h>
 
+#include "AppModel.Identity.IsPackagedProcess.h"
+
 namespace AppModel::Identity
 {
-inline bool IsPackagedProcess()
-{
-    UINT32 n{};
-    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageFullName rc=%d", rc);
-    return rc == ERROR_INSUFFICIENT_BUFFER;
-}
 
 template <typename Tstring>
 inline Tstring GetCurrentPackageFullName()
@@ -273,13 +268,15 @@ inline bool operator>=(const PackageVersion& packageVersion1, const PackageVersi
 inline bool IsValidVersionShortTag(
     const std::wstring& versionShortTag)
 {
-    // VersionShortTag must be "" or 1 ASCII letter optionally followed by 1 ASCII digit
+    // VersionShortTag must be "" or 1 ASCII letter optionally followed by 1-2 base-36 characters (0-9, A-Z)
+    // v1.x format: letter [+ digit]          e.g. "p", "p2"
+    // v2.x format: letter + base36(revision) e.g. "c0", "c1M", "pZ"
     if (versionShortTag.empty())
     {
         return true;
     }
 
-    const size_t c_maxVersionShortTagLength{ 2 };
+    const size_t c_maxVersionShortTagLength{ 3 };
     const auto versionShortTagLength{ versionShortTag.length() };
     if (versionShortTagLength > c_maxVersionShortTagLength)
     {
@@ -292,11 +289,12 @@ inline bool IsValidVersionShortTag(
     {
         return false;
     }
-    if (versionShortTagLength > 1)
+    for (size_t i = 1; i < versionShortTagLength; ++i)
     {
-        const auto tagSuffix{ versionShortTag[1] };
-        const auto isTagSuffixADigit{ ('0' <= tagSuffix) && (tagSuffix <= '9') };
-        if (!isTagSuffixADigit)
+        const auto ch{ versionShortTag[i] };
+        const auto isBase36Char{ (('0' <= ch) && (ch <= '9')) ||
+                                 (('A' <= ch) && (ch <= 'Z')) };
+        if (!isBase36Char)
         {
             return false;
         }
@@ -305,6 +303,7 @@ inline bool IsValidVersionShortTag(
 }
 
 /// VersionShortTag = VersionTag[0] [+ VersionTag[last] if 0-9]
+/// Use this for v1.x compatibility.
 inline std::wstring GetVersionShortTagFromVersionTag(
     PCWSTR versionTag)
 {
@@ -321,6 +320,45 @@ inline std::wstring GetVersionShortTagFromVersionTag(
                 versionShortTag += lastCharInVersionTag;
             }
         }
+        THROW_HR_IF_MSG(E_INVALIDARG, !IsValidVersionShortTag(versionShortTag.c_str()), "VersionTag=%ls", versionTag);
+    }
+    return versionShortTag;
+}
+
+/// VersionShortTag for v2.x+ = VersionTag[0] + ChannelBuildString
+/// where ChannelBuildString is extracted from the end of the versionTag.
+/// The Tag portion uses only lowercase letters and dots [a-z.], while the
+/// ChannelBuildString (base-36 encoded) uses only digits and uppercase [0-9A-Z].
+/// These disjoint character sets allow deterministic extraction.
+inline std::wstring GetVersionShortTagFromVersionTagV2(
+    PCWSTR versionTag)
+{
+    std::wstring versionShortTag;
+    if (versionTag && (versionTag[0] != L'\0'))
+    {
+        versionShortTag = versionTag[0];
+
+        // Extract the ChannelBuildString from the end of versionTag.
+        // Scan backwards: [0-9A-Z] chars are from the ChannelBuildString (max 2 chars).
+        const auto versionTagLength{ wcslen(versionTag) };
+        size_t cbsStart{ versionTagLength };
+        while (cbsStart > 0 && (versionTagLength - cbsStart) < 2)
+        {
+            const auto ch{ versionTag[cbsStart - 1] };
+            if ((L'0' <= ch && ch <= L'9') || (L'A' <= ch && ch <= L'Z'))
+            {
+                --cbsStart;
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (cbsStart < versionTagLength)
+        {
+            versionShortTag.append(versionTag + cbsStart, versionTagLength - cbsStart);
+        }
+
         THROW_HR_IF_MSG(E_INVALIDARG, !IsValidVersionShortTag(versionShortTag.c_str()), "VersionTag=%ls", versionTag);
     }
     return versionShortTag;

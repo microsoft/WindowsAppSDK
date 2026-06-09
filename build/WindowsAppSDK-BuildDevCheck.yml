@@ -31,6 +31,7 @@ extends:
       name: 'windows_undocked' # windows undocked
     featureFlags:
       WindowsHostVersion:
+        Version: 2022
         Network: R1
 
     stages:
@@ -72,7 +73,7 @@ extends:
             TargetFolder: '$(Build.SourcesDirectory)\PackLocation'
             flattenFolders: false
 
-        - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+        - task: NuGetCommand@2
           displayName: 'Pack DevCheckPackage'
           inputs:
             command: 'pack'
@@ -82,7 +83,7 @@ extends:
             packDestination: '$(ob_outputDirectory)'
 
         - ${{ if eq(parameters.PushPackageToInternalFeed, 'true') }}:
-          - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+          - task: NuGetCommand@2
             displayName: 'NuGet push package to Project.Reunion.nuget.internal'
             inputs:
               command: 'push'

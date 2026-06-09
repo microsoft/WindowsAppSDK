@@ -14,8 +14,6 @@
 #                                                                                                                                   #
 #####################################################################################################################################
 
-name: $(version)
-
 # https://aka.ms/obpipelines/triggers
 trigger: none
 
@@ -33,11 +31,42 @@ parameters:
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
   default: true
+- name: "BuildSampleApps"
+  displayName: "Run Build Sample Apps Stage"
+  type: boolean
+  default: true
+- name: "TestSampleApps"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: true
+- name: "TestOnArm64"
+  displayName: "Enable running of tests on arm64 platform (Default: true)"
+  type: boolean
+  default: true
+- name: "MaestroDependOnTestSamples"
+  displayName: "Whether Maestro publishing should depend on successful Sample tests"
+  type: boolean
+  default: false
+- name: "CheckApiChanges"
+  displayName: "Whether to run Api Diff against latest stable package"
+  type: boolean
+  default: true
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
+  parameters:
+    PrOrNightly: 'dev'
+- template: AzurePipelinesTemplates\WindowsAppSDK-VersionVariables.yml
+  parameters:
+    PrOrNightly: 'dev'
+- name: maxParallelForBuildSamplesCompatJob_x64
+  value: 20
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  value: 20
+
+name: $(MajorVersion).$(FoundationMinorVersionResolved).$(FoundationPatchVersionResolved)-$(NugetBuildTypePrefix)$(channel)$(Revision)
 
 resources:
   repositories:
@@ -53,6 +82,11 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'GitHub - benkuhn - 2-18'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
@@ -60,6 +94,7 @@ extends:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
+        Version: 2022
         Network: R1
 
     platform:
@@ -94,7 +129,7 @@ extends:
       binskim:
         enabled: true
         break: true
-        analyzeTargetGlob: +:f|**.exe;+:f|**.dll;-:f|**\packages\**\*.dll;-:f|**\packages\**\*.exe
+        analyzeTargetGlob: $(BinskimExclusionForFoundationRepo)
       prefast:
         ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
           enabled: true
@@ -133,6 +168,11 @@ extends:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
 
+    - ${{ if eq( parameters.CheckApiChanges, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self
+        parameters:
+          CompareAgainstExperimental: false
+
     - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
@@ -143,3 +183,15 @@ extends:
       parameters:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
+        TestSampleApps: ${{ parameters.TestSampleApps }}
+        TestOnArm64: ${{ parameters.TestOnArm64 }}
+        MaestroDependOnTestSamples: ${{ parameters.MaestroDependOnTestSamples }}
+
+    - ${{ if eq( parameters.BuildSampleApps, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
+        parameters:
+          TestSampleApps: ${{ parameters.TestSampleApps }}
+          TestOnArm64: ${{ parameters.TestOnArm64 }}
+          runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
+          maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
+          maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}

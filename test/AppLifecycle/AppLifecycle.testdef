@@ -4,7 +4,7 @@
             "Description": "AppLifecycle API (x86 not currently enabled)",
             "Filename": "AppLifecycleTests.dll",
             "Parameters": "",
-            "Architectures": ["x64", "arm64"],
+            "Architectures": ["x64", "x86", "arm64"],
             "Status": "Enabled"
         }
     ]

@@ -135,4 +135,10 @@
   <data name="IDS_APIERROR_MAXSAVEFILELENGTHEXCEEDED" xml:space="preserve">
     <value>Sugerowana nazwa pliku przekracza maksymalną dozwoloną liczbę znaków.</value>
   </data>
+  <data name="IDS_APIERROR_INVALIDINITIALFILETYPEINDEX" xml:space="preserve">
+    <value>Wartość InitialFileTypeIndex nie może być mniejsza niż -1 ani spoza zakresu.</value>
+  </data>
+  <data name="IDS_APIERROR_INVALIDAPPIDFORSETTINGSIDENTIFIER" xml:space="preserve">
+    <value>Nie można określić tożsamości aplikacji dla ustawienia SettingsIdentifier.</value>
+  </data>
 </root>
