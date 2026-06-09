@@ -1090,7 +1090,6 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         if ((pass == SearchPass::DefaultFallback) ||
             ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY)))
         {
-            // The file exists. Done.
             *filePath = outputPath.release();
             break;
         }
