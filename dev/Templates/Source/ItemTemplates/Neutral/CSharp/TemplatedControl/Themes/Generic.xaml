@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:$rootnamespace$">
+
+    <!--
+        To add another templated control to this project, re-run with the
+        IncludeDefaultStyle option set to false so the dotnet template engine
+        does not try to overwrite this file:
+
+            dotnet new winui-templatedcontrol -n NewName -I false
+
+        (-I is the short form of IncludeDefaultStyle. Without it, the second
+         invocation fails saying it would overwrite Themes/Generic.xaml. Do
+         not pass force to bypass that; it would erase the styles below.)
+
+        Then copy the Style block below, change TargetType to local:NewName,
+        and customize it. Save and rebuild.
+    -->
+
+    <Style TargetType="local:$safeitemname$">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:$safeitemname$">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

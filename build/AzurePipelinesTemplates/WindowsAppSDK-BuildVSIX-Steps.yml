@@ -31,7 +31,7 @@ parameters:
 # preserves the legacy name so non-monobuild callers don't need to opt in.
 - name: artifactName
   type: string
-  default: 'WindowsAppSDK_Nuget_And_MSIX'
+  default: 'WindowsAppSDK-NuGet-And-MSIX'
 # When true, skip the artifact download step entirely. The caller is responsible
 # for ensuring $(parameters.artifactName) content is already present at
 # $(System.ArtifactsDirectory) before ExtractWindowsAppSDKVersion runs. Used by
@@ -41,6 +41,17 @@ parameters:
 - name: SkipArtifactDownload
   type: boolean
   default: false
+# Defaults true to preserve official-build behavior.
+# Set to false in PR build-validation runs to skip pushing to the symbol server.
+- name: PublishSymbols
+  type: boolean
+  default: true
+# Branch (in the Aggregator pipeline's repo) to pull the latest Windows App SDK
+# nuget from when UseCurrentBuild is false. The Aggregator nightly runs daily on
+# 'main', so default there. Override if the active publishing branch changes.
+- name: NightlyBranchName
+  type: string
+  default: 'refs/heads/release/dev/monobuild'
 
 steps:
 - ${{ if eq(parameters.SkipArtifactDownload, false) }}:
@@ -52,19 +63,29 @@ steps:
         targetPath: '$(System.ArtifactsDirectory)'
   - ${{ else }}:
     ###
-    # This step downloads the WindowsAppSDK NuGet package from a pipeline
-    # variables: OfficialPipelineID LatestOfficialBuildID
-    # for use in building the VSIX
+    # This step downloads the WindowsAppSDK NuGet package from the Aggregator nightly
+    # pipeline (identified by the OfficialPipelineID variable) for use in building the
+    # VSIX. We pull the latest run from NightlyBranchName rather than a pinned
+    # LatestOfficialBuildID so PR build-validation runs always get a fresh package without
+    # needing a build id supplied at queue time.
+    #
+    # The nightly runs commonly finish as PartiallySucceeded (some downstream test/SDL
+    # stages are not green) even though the packaging stage produced the artifact, so
+    # both allowPartiallySucceededBuilds and allowFailedBuilds must be true -- the task
+    # requires the pair to be set together to consider non-succeeded runs.
     - task: DownloadPipelineArtifact@2
       displayName: 'Download WindowsAppSDK From Latest Nightly'
       inputs:
         artifactName: ${{ parameters.artifactName }}
         targetPath: '$(System.ArtifactsDirectory)'
         source: 'specific'
-        project: 55e8140e-57ac-4e5f-8f9c-c7c15b51929d # TODO: replace with $(System.TeamProjectId) once we can have a full WinAppSDK Build on the new mono repo
-        pipeline: $(OfficialPipelineID) 
-        pipelineId: $(LatestOfficialBuildID) 
-    
+        project: $(System.TeamProjectId)
+        pipeline: 190463
+        runVersion: 'latestFromBranch'
+        runBranch: '${{ parameters.NightlyBranchName }}'
+        allowPartiallySucceededBuilds: true
+        allowFailedBuilds: true
+      
 - task: PowerShell@2
   name: ExtractWindowsAppSDKVersion
   displayName: Extract WindowsAppSDKVersion
@@ -113,7 +134,7 @@ steps:
 - task: VSBuild@1
   displayName: 'Restore WindowsAppSDK.Extension.sln'
   inputs:
-    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    solution: $(FoundationRepoPath)dev\Templates\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.restore.binlog'
@@ -121,7 +142,7 @@ steps:
 - task: VSBuild@1
   displayName: 'Build Standalone WindowsAppSDK.Extension.sln'
   inputs:
-    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    solution: $(FoundationRepoPath)dev\Templates\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.build.binlog'
@@ -147,7 +168,7 @@ steps:
 - task: VSBuild@1
   displayName: 'Restore Component WindowsAppSDK.Extension.sln'
   inputs:
-    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    solution: $(FoundationRepoPath)dev\Templates\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.restore.binlog' 
@@ -155,7 +176,7 @@ steps:
 - task: VSBuild@1
   displayName: 'Build Component WindowsAppSDK.Extension.sln'
   inputs:
-    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    solution: $(FoundationRepoPath)dev\Templates\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
     msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.build.binlog'
@@ -188,7 +209,7 @@ steps:
   - task: CopyFiles@2
     displayName: 'Stage unsigned VSIX files for publishing'
     inputs:
-      SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+      SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
       Contents: '**/WindowsAppSDK.*.vsix'
       flattenFolders: true
       TargetFolder: '$(ob_outputDirectory)\VSIX'
@@ -197,7 +218,7 @@ steps:
   - task: CopyFiles@2
     displayName: 'Stage unsigned VSIX files for signing'
     inputs:
-      SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+      SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
       Contents: '**/WindowsAppSDK.*.vsix'
       flattenFolders: true
       TargetFolder: '$(Agent.TempDirectory)/UnsignedVSIX'
@@ -221,13 +242,13 @@ steps:
   parameters:
     IsMonobuild: ${{ parameters.IsMonobuild }}
     InnerParams:
-      SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+      SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
   inputs:
-    SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+    SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
     Contents: '**/WindowsAppSDK*.pdb'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)\symbols'
@@ -235,7 +256,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
   inputs:
-    SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+    SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
     Contents: '**/WindowsAppSDK.*.Component.json'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
@@ -243,7 +264,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Stage VSIX manifest'
   inputs:
-    SourceFolder: '$(FoundationRepoPath)dev\VSIX'
+    SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX'
     Contents: 'extension.manifest.json'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
@@ -251,7 +272,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Stage VSIX overview markdown'
   inputs:
-    SourceFolder: '$(FoundationRepoPath)dev\VSIX'
+    SourceFolder: '$(FoundationRepoPath)dev\Templates\VSIX'
     Contents: 'overview.md'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
