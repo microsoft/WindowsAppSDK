@@ -104,7 +104,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     bool AppNotificationManager::IsSupported()
     {
-        static bool isSupported{ !Security::IntegrityLevel::IsElevated() };
+        static bool isSupported = true;
         return isSupported;
     }
 
@@ -427,14 +427,20 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         {
             return;
         }
-
+        bool isCallingPreviewSupported = false;  
+        try  
+        {  
+            isCallingPreviewSupported = winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported();  
+        }  
+        catch(...) {}  
+  
         auto logTelemetry{ AppNotificationTelemetry::Show::Start(
             g_telemetryHelper,
             m_appId,
             notification.Payload(),
             notification.Tag(),
             notification.Group(),
-            winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) };
+            isCallingPreviewSupported) };
 
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 
