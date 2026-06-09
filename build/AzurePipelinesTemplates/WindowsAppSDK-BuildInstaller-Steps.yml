@@ -23,7 +23,7 @@ parameters:
 # preserves the legacy name so non-monobuild callers don't need to opt in.
 - name: artifactName
   type: string
-  default: 'WindowsAppSDK_Nuget_And_MSIX'
+  default: 'WindowsAppSDK-NuGet-And-MSIX'
 # When true, skip the artifact download step entirely. The caller is responsible
 # for ensuring $(parameters.artifactName) content is already present at
 # $(System.ArtifactsDirectory) before this template's first MSBuild step. Used by
@@ -34,6 +34,12 @@ parameters:
 - name: SkipArtifactDownload
   type: boolean
   default: false
+# Branch (in the Aggregator pipeline's repo) to pull the latest Windows App SDK
+# nuget from when UseCurrentBuild is false. The Aggregator nightly runs daily on
+# 'main', so default there. Override if the active publishing branch changes.
+- name: NightlyBranchName
+  type: string
+  default: 'refs/heads/release/dev/monobuild'
 
 steps:
 - task: PowerShell@2
@@ -69,19 +75,28 @@ steps:
       condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
   - ${{ else }}:
     ###
-    # This step downloads the WindowsAppSDK NuGet package from a pipeline
-    # variables: OfficialPipelineID LatestOfficialBuildID
-    # for use in building the Installers
+    # This step downloads the WindowsAppSDK NuGet package from the Aggregator nightly
+    # pipeline (identified by the OfficialPipelineID variable) for use in building the
+    # VSIX. We pull the latest run from NightlyBranchName rather than a pinned
+    # LatestOfficialBuildID so PR build-validation runs always get a fresh package without
+    # needing a build id supplied at queue time.
+    #
+    # The nightly runs commonly finish as PartiallySucceeded (some downstream test/SDL
+    # stages are not green) even though the packaging stage produced the artifact, so
+    # both allowPartiallySucceededBuilds and allowFailedBuilds must be true -- the task
+    # requires the pair to be set together to consider non-succeeded runs.
     - task: DownloadPipelineArtifact@2
       displayName: 'Download WindowsAppSDK From Latest Nightly'
       inputs:
         artifactName: ${{ parameters.artifactName }}
         targetPath: '$(System.ArtifactsDirectory)'
         source: 'specific'
-        project: 55e8140e-57ac-4e5f-8f9c-c7c15b51929d # TODO: replace with $(System.TeamProjectId) once we can have a full WinAppSDK Build on the new mono repo
-        pipeline: $(OfficialPipelineID) 
-        pipelineId: $(LatestOfficialBuildID) 
-      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+        project: $(System.TeamProjectId)
+        pipeline: 190463
+        runVersion: 'latestFromBranch'
+        runBranch: '${{ parameters.NightlyBranchName }}'
+        allowPartiallySucceededBuilds: true
+        allowFailedBuilds: true
     
 ###
 # Install the internal licensing support for release-signed packages. This can always be present in

@@ -50,8 +50,6 @@ variables:
 - name: maxParallelForBuildSamplesCompatJob_arm64
   value: 20
 
-name: $(MajorVersion).$(FoundationMinorVersionResolved).$(FoundationPatchVersionResolved)-$(NugetBuildTypePrefix)$(channel)$(Revision)
-
 resources:
   repositories:
     - repository: templates

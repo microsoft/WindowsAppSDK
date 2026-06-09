@@ -31,7 +31,7 @@ parameters:
 # preserves the legacy name so non-monobuild callers don't need to opt in.
 - name: artifactName
   type: string
-  default: 'WindowsAppSDK_Nuget_And_MSIX'
+  default: 'WindowsAppSDK-NuGet-And-MSIX'
 # When true, skip the artifact download step entirely. The caller is responsible
 # for ensuring $(parameters.artifactName) content is already present at
 # $(System.ArtifactsDirectory) before ExtractWindowsAppSDKVersion runs. Used by
@@ -51,7 +51,7 @@ parameters:
 # 'main', so default there. Override if the active publishing branch changes.
 - name: NightlyBranchName
   type: string
-  default: 'refs/heads/main'
+  default: 'refs/heads/release/dev/monobuild'
 
 steps:
 - ${{ if eq(parameters.SkipArtifactDownload, false) }}:
@@ -59,7 +59,7 @@ steps:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download WindowsAppSDK From Current Build'
       inputs:
-        artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+        artifactName: ${{ parameters.artifactName }}
         targetPath: '$(System.ArtifactsDirectory)'
   - ${{ else }}:
     ###
@@ -76,11 +76,11 @@ steps:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download WindowsAppSDK From Latest Nightly'
       inputs:
-        artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+        artifactName: ${{ parameters.artifactName }}
         targetPath: '$(System.ArtifactsDirectory)'
         source: 'specific'
         project: $(System.TeamProjectId)
-        pipeline: $(OfficialPipelineID)
+        pipeline: 190463
         runVersion: 'latestFromBranch'
         runBranch: '${{ parameters.NightlyBranchName }}'
         allowPartiallySucceededBuilds: true
