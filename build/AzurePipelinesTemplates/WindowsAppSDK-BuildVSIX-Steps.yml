@@ -52,7 +52,7 @@ steps:
     # (downstream test/SDL not green) yet still produce the artifact, so both
     # allow* flags are required as a pair to accept non-succeeded runs.
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download WindowsAppSDK From Latest Nightly'
+      displayName: 'Download WindowsAppSDK From Latest Nightly (by branch)'
       inputs:
         artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
         targetPath: '$(System.ArtifactsDirectory)'
