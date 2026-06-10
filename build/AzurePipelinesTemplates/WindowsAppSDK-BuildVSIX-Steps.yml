@@ -25,11 +25,17 @@ parameters:
   type: boolean
   default: true
 - name: NightlyBranchName
-  # Branch (in the Aggregator pipeline's repo) to pull the latest Windows App SDK
-  # nuget from when UseCurrentBuild is false. The Aggregator nightly runs daily on
-  # 'main', so default there. Override if the active publishing branch changes.
+  # Branch to pull the latest nightly nuget from (only when
+  # UseLatestNightlyFromBranch is true). The Aggregator nightly runs on 'main'.
   type: string
   default: 'refs/heads/main'
+- name: UseLatestNightlyFromBranch
+  # false (default): download a pinned nightly via $(LatestOfficialBuildID),
+  #   matching the Foundation VSIX stage (gated on a non-empty build id).
+  # true: pull the latest run from NightlyBranchName instead, for the Templates
+  #   PR pipeline, which has no pinned build id at queue time.
+  type: boolean
+  default: false
 
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
@@ -39,29 +45,38 @@ steps:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
 - ${{ else }}:
-  ###
-  # This step downloads the WindowsAppSDK NuGet package from the Aggregator nightly
-  # pipeline (identified by the OfficialPipelineID variable) for use in building the
-  # VSIX. We pull the latest run from NightlyBranchName rather than a pinned
-  # LatestOfficialBuildID so PR build-validation runs always get a fresh package without
-  # needing a build id supplied at queue time.
-  #
-  # The nightly runs commonly finish as PartiallySucceeded (some downstream test/SDL
-  # stages are not green) even though the packaging stage produced the artifact, so
-  # both allowPartiallySucceededBuilds and allowFailedBuilds must be true -- the task
-  # requires the pair to be set together to consider non-succeeded runs.
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Latest Nightly'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
-      source: 'specific'
-      project: $(System.TeamProjectId)
-      pipeline: $(OfficialPipelineID)
-      runVersion: 'latestFromBranch'
-      runBranch: '${{ parameters.NightlyBranchName }}'
-      allowPartiallySucceededBuilds: true
-      allowFailedBuilds: true
+  - ${{ if eq(parameters.UseLatestNightlyFromBranch, 'true') }}:
+    ###
+    # Templates PR path: grab the latest nightly from NightlyBranchName since no
+    # build id is pinned at queue time. Nightlies often end PartiallySucceeded
+    # (downstream test/SDL not green) yet still produce the artifact, so both
+    # allow* flags are required as a pair to accept non-succeeded runs.
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Latest Nightly'
+      inputs:
+        artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+        targetPath: '$(System.ArtifactsDirectory)'
+        source: 'specific'
+        project: $(System.TeamProjectId)
+        pipeline: $(OfficialPipelineID)
+        runVersion: 'latestFromBranch'
+        runBranch: '${{ parameters.NightlyBranchName }}'
+        allowPartiallySucceededBuilds: true
+        allowFailedBuilds: true
+  - ${{ else }}:
+    ###
+    # Default path (Foundation VSIX stage): download the pinned nightly named by
+    # $(LatestOfficialBuildID). The consuming stage is gated on a non-empty id,
+    # so it is skipped when no valid nightly is available.
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Latest Nightly'
+      inputs:
+        artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+        targetPath: '$(System.ArtifactsDirectory)'
+        source: 'specific'
+        project: $(System.TeamProjectId)
+        pipeline: $(OfficialPipelineID)
+        pipelineId: $(LatestOfficialBuildID)
     
 - task: PowerShell@2
   name: ExtractWindowsAppSDKVersion
