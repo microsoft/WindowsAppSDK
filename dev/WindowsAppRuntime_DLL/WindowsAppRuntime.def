@@ -16,6 +16,7 @@ EXPORTS
     MddTryCreatePackageDependency
     MddLifetimeManagementGC
     MddLifetimeManagementTestInitialize
+
     MddGetPackageGraphRevisionId
     MddGetGenerationId
 
@@ -27,5 +28,7 @@ EXPORTS
     WindowsAppRuntime_VersionInfo_MSIX_Framework_PackageFamilyName_Get
     WindowsAppRuntime_VersionInfo_MSIX_Main_PackageFamilyName_Get
     WindowsAppRuntime_VersionInfo_TestInitialize
+
+    ContainmentTestInitialize
 
     WindowsAppRuntime_EnsureIsLoaded
