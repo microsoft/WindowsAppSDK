@@ -65,7 +65,7 @@ function Write-Err  { param([string]$M) Write-Host "[X] $M" -ForegroundColor Red
 $scriptDir = $PSScriptRoot
 if (-not $scriptDir) { $scriptDir = (Get-Location).Path }
 
-$buildScript   = Join-Path $scriptDir 'Build-VSIX.ps1'
+$buildScript   = Join-Path $scriptDir 'Build-VSIX-Local.ps1'
 $installScript = Join-Path $scriptDir 'Install-LocalDev-VSIX.ps1'
 $publishDir    = Join-Path $scriptDir 'publish\VSIX'
 
@@ -81,14 +81,14 @@ if ($SkipBuild) {
 } else {
     Write-Banner 'Build LocalDev VSIX'
     if (-not (Test-Path $buildScript)) {
-        Write-Err "Build-VSIX.ps1 not found at: $buildScript"
+        Write-Err "Build-VSIX-Local.ps1 not found at: $buildScript"
         exit 1
     }
     Push-Location $scriptDir
     try {
         & $buildScript -Deployment LocalDev
         if ($LASTEXITCODE -ne 0) {
-            Write-Err "Build-VSIX.ps1 exited with code $LASTEXITCODE"
+            Write-Err "Build-VSIX-Local.ps1 exited with code $LASTEXITCODE"
             exit $LASTEXITCODE
         }
     } finally {

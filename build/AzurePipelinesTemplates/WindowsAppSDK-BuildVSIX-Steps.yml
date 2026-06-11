@@ -19,6 +19,23 @@ parameters:
 - name: EnableExperimentalVSIXFeatures
   type: boolean
   default: false
+- name: PublishSymbols
+  # Defaults true to preserve official-build behavior.
+  # Set to false in PR build-validation runs to skip pushing to the symbol server.
+  type: boolean
+  default: true
+- name: NightlyBranchName
+  # Branch to pull the latest nightly nuget from (only when
+  # UseLatestNightlyFromBranch is true). The Aggregator nightly runs on 'main'.
+  type: string
+  default: 'refs/heads/main'
+- name: UseLatestNightlyFromBranch
+  # false (default): download a pinned nightly via $(LatestOfficialBuildID),
+  #   matching the Foundation VSIX stage (gated on a non-empty build id).
+  # true: pull the latest run from NightlyBranchName instead, for the Templates
+  #   PR pipeline, which has no pinned build id at queue time.
+  type: boolean
+  default: false
 
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
@@ -28,19 +45,38 @@ steps:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
 - ${{ else }}:
-  ###
-  # This step downloads the WindowsAppSDK NuGet package from a pipeline
-  # variables: OfficialPipelineID LatestOfficialBuildID
-  # for use in building the VSIX
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Latest Nightly'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
-      source: 'specific'
-      project: $(System.TeamProjectId)
-      pipeline: $(OfficialPipelineID) 
-      pipelineId: $(LatestOfficialBuildID) 
+  - ${{ if eq(parameters.UseLatestNightlyFromBranch, 'true') }}:
+    ###
+    # Templates PR path: grab the latest nightly from NightlyBranchName since no
+    # build id is pinned at queue time. Nightlies often end PartiallySucceeded
+    # (downstream test/SDL not green) yet still produce the artifact, so both
+    # allow* flags are required as a pair to accept non-succeeded runs.
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Latest Nightly (by branch)'
+      inputs:
+        artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+        targetPath: '$(System.ArtifactsDirectory)'
+        source: 'specific'
+        project: $(System.TeamProjectId)
+        pipeline: $(OfficialPipelineID)
+        runVersion: 'latestFromBranch'
+        runBranch: '${{ parameters.NightlyBranchName }}'
+        allowPartiallySucceededBuilds: true
+        allowFailedBuilds: true
+  - ${{ else }}:
+    ###
+    # Default path (Foundation VSIX stage): download the pinned nightly named by
+    # $(LatestOfficialBuildID). The consuming stage is gated on a non-empty id,
+    # so it is skipped when no valid nightly is available.
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Latest Nightly'
+      inputs:
+        artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+        targetPath: '$(System.ArtifactsDirectory)'
+        source: 'specific'
+        project: $(System.TeamProjectId)
+        pipeline: $(OfficialPipelineID)
+        pipelineId: $(LatestOfficialBuildID)
     
 - task: PowerShell@2
   name: ExtractWindowsAppSDKVersion
@@ -193,10 +229,11 @@ steps:
       codeSignPattern: |
         **/WindowsAppSDK.*.Extension.*.dll
         
-- template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
-  parameters:
-    SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
-    IsOfficial: ${{ parameters.IsOfficial }}
+- ${{ if eq(parameters.PublishSymbols, true) }}:
+  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+      IsOfficial: ${{ parameters.IsOfficial }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
