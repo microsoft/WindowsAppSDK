@@ -16,8 +16,8 @@ namespace Test::ApplicationData::Tests
 {
     const auto Main_PackageFamilyName{ ::TP::DynamicDependencyDataStore::c_PackageFamilyName };
 
-    const winrt::hstring Publisher{ L"ApplicationDataTests" };
-    const winrt::hstring Product{ L"UnpackagedApplicationDataTests" };
+    const winrt::hstring Publisher{ L"TestApplicationDataUnpackaged_Contoso" };
+    const winrt::hstring Product{ L"SupermarketPointOfSale" };
 
     class UnpackagedApplicationDataTests
     {
@@ -377,8 +377,8 @@ namespace Test::ApplicationData::Tests
             VERIFY_ARE_EQUAL(foodAndStuff, container.Name());
             {
                 const auto regkey{ GetResources_Registry() };
-                const auto foodAndStuffRegkey{ regkey / foodAndStuff.c_str() };
-                VERIFY_IS_TRUE(RegistryKeyExists(regkey), WEX::Common::String().Format(L"HKCU\\%s", regkey.c_str()));
+                const auto foodAndStuffRegkey{ regkey / Product.c_str() / foodAndStuff.c_str() };
+                VERIFY_IS_TRUE(RegistryKeyExists(foodAndStuffRegkey), WEX::Common::String().Format(L"HKCU\\%s", foodAndStuffRegkey.c_str()));
             }
             //
             VERIFY_ARE_EQUAL(0u, containers.Size());
@@ -614,7 +614,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(ContainerOperations)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             VERIFY_IS_NOT_NULL(applicationData);
 
             auto localSettings{ applicationData.LocalSettings() };
@@ -686,7 +686,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Values_ScalarTypes)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
             auto values{ localSettings.Values() };
             values.Clear();
@@ -801,7 +801,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Values_ArrayTypes)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
             auto values{ localSettings.Values() };
             values.Clear();
@@ -1070,7 +1070,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Values_PropertySetOperations)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
             auto values{ localSettings.Values() };
             values.Clear();
@@ -1137,7 +1137,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Values_MapChangedEvent)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
             auto values{ localSettings.Values() };
             values.Clear();
@@ -1191,7 +1191,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Close_ThrowsAfterClose)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
 
             // Create a child container to test Close on
