@@ -19,7 +19,8 @@
     The workload ships the same extension Id (Microsoft.WindowsAppSDK.Cs.Dev17)
     per-machine. VS scans BOTH the per-machine and per-user extension hives
     at startup. When two installed extensions share the same Id, the higher
-    Version wins. The locally-built VSIX uses version 99.<yyyy>.<MMdd>.<HHmm>
+    Version wins. The locally-built VSIX uses version
+    <yyyy>.<MMdd>.<HHmm>.0 (e.g. 2026.0529.1710.0)
     and the workload-shipped one is 1.x.x.x, so the LocalDev build always
     wins for the current user. The workload copy stays untouched on disk
     (no admin needed to install OR uninstall LocalDev).
@@ -167,7 +168,7 @@ if ($VsixPath -ne "") {
     }
     if (-not (Test-Path $VsixDir)) {
         Write-Err "VSIX directory not found: $VsixDir"
-        Write-Err "Run '.\Build-VSIX.ps1 -Deployment LocalDev' first."
+        Write-Err "Run '.\Build-VSIX-Local.ps1 -Deployment LocalDev' first."
         exit 1
     }
 
@@ -181,7 +182,7 @@ if ($VsixPath -ne "") {
 if (-not $toInstall) {
     Write-Err "No matching LocalDev VSIX files found."
     Write-Err "Expected names: WindowsAppSDK.{Cs,Cpp}.Extension.Dev17.LocalDev.<version>.vsix"
-    Write-Err "Run: .\Build-VSIX.ps1 -Deployment LocalDev"
+    Write-Err "Run: .\Build-VSIX-Local.ps1 -Deployment LocalDev"
     exit 1
 }
 
