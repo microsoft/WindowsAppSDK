@@ -144,6 +144,27 @@ namespace {
 namespace PickerCommon {
     using namespace winrt;
 
+    DialogFocusRestorer::DialogFocusRestorer()
+    {
+        // Capture on the UI thread: GetFocus returns the focused window of the calling
+        // thread's message queue, which is the WinUI content island hosting the focused element.
+        m_focusedWindow = ::GetFocus();
+        m_dispatcherQueue = winrt::Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+    }
+
+    DialogFocusRestorer::~DialogFocusRestorer()
+    {
+        if (m_focusedWindow && m_dispatcherQueue)
+        {
+            HWND focusedWindow = m_focusedWindow;
+            // Marshal back to the UI thread so SetFocus runs on the thread that owns the window.
+            m_dispatcherQueue.TryEnqueue([focusedWindow]()
+            {
+                ::SetFocus(focusedWindow);
+            });
+        }
+    }
+
     void CALLBACK WslNodeRevealer::PollTimerProc(HWND hwnd, UINT, UINT_PTR timerId, DWORD) noexcept
     {
         reinterpret_cast<WslNodeRevealer*>(timerId)->RevealWslNodeWhenReady(hwnd);
