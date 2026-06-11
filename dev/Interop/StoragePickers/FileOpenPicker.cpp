@@ -74,6 +74,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         CaptureParameters(parameters);
 
+        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+        PickerCommon::DialogFocusRestorer focusRestorer{};
+
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
@@ -126,6 +129,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 
         CaptureParameters(parameters);
+
+        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+        PickerCommon::DialogFocusRestorer focusRestorer{};
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
