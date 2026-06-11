@@ -5,6 +5,8 @@
 
 #include "package_runtime.h"
 
+#include "PackageTelemetry.h"
+
 namespace appmodel
 {
 static bool IsPathSupported_Mutable()
@@ -347,6 +349,8 @@ STDAPI GetPackageFilePath(
     _In_ GetPackageFilePathOptions options,
     _Outptr_result_maybenull_ PWSTR* packageFile) noexcept try
 {
+    auto logTelemetry{ PackageTelemetry::GetPackageFilePath::Start(filename, options, packageFullName) };
+
     *packageFile = nullptr;
 
     RETURN_HR_IF(E_INVALIDARG, ::Microsoft::Foundation::String::IsNullOrEmpty(filename));
@@ -380,6 +384,9 @@ STDAPI GetPackageFilePath(
         auto absoluteFilename{ wil::make_process_heap_string(path.c_str()) };
         *packageFile = absoluteFilename.release();
     }
+
+    logTelemetry.Stop();
+
     return S_OK;
 }
 CATCH_RETURN();
@@ -389,6 +396,8 @@ STDAPI GetPackageFilePathInPackageGraph(
     _In_ GetPackageFilePathOptions options,
     _Outptr_result_maybenull_ PWSTR* packageFile) noexcept try
 {
+    auto logTelemetry{ PackageTelemetry::GetPackageFilePathInPackageGraph::Start(filename, options) };
+
     *packageFile = nullptr;
 
     RETURN_HR_IF(E_INVALIDARG, ::Microsoft::Foundation::String::IsNullOrEmpty(filename));
@@ -426,6 +435,9 @@ STDAPI GetPackageFilePathInPackageGraph(
             break;
         }
     }
+
+    logTelemetry.Stop();
+
     return S_OK;
 }
 CATCH_RETURN();

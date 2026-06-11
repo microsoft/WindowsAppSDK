@@ -377,7 +377,7 @@ string GetXamlWinMD()
                   GetPackageFilePathOptions.SearchUserExternalPath |
                   GetPackageFilePathOptions.SearchMainPackages |
                   GetPackageFilePathOptions.SearchFrameworkPackages |
-                  GetPackageFilePathOptions.SearchOptionalPath;
+                  GetPackageFilePathOptions.SearchOptionalPackages;
     var absoluteFilename = PackageGraph.GetFilePath("Microsoft.UI.Xaml.winmd", options);
     if (absoluteFilename == null)
     {
@@ -398,7 +398,7 @@ std::wstring GetXamlWinMD()
                                        GetPackageFilePathOptions_SearchUserExternalPath |
                                        GetPackageFilePathOptions_SearchMainPackages |
                                        GetPackageFilePathOptions_SearchFrameworkPackages |
-                                       GetPackageFilePathOptions_SearchOptionalPath };
+                                       GetPackageFilePathOptions_SearchOptionalPackages };
     wil::unique_process_heap_string absoluteFilename;
     const HRESULT hr{ GetPackageFilePathInPackageGraph(
         L"Microsoft.UI.Xaml.winmd", options, wistd::out_param(absoluteFilename)) };
