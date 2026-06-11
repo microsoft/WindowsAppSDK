@@ -74,6 +74,7 @@ stages:
         runStaticAnalysis: false
         PublishSymbols: false
         UseCurrentBuild: false
+        UseLatestNightlyFromBranch: true
         IsOfficial: false
         OptionalVSIXVersion: '$(OptionalVSIXVersion)'
 
