@@ -363,6 +363,24 @@ function Test-ItemTemplates {
     Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
 }
 
+function Assert-CsprojPackageVersion {
+    param(
+        [string]$CsprojPath,
+        [string]$PackageName,
+        [string]$ExpectedVersion
+    )
+
+    [xml]$csproj = Get-Content -Path $CsprojPath
+    $ref = $csproj.SelectNodes('//PackageReference') |
+        Where-Object { $_.Include -eq $PackageName }
+    if (-not $ref) {
+        throw "PackageReference '$PackageName' not found in '$CsprojPath'"
+    }
+    if ($ref.Version -ne $ExpectedVersion) {
+        throw "PackageReference '$PackageName' has Version='$($ref.Version)' but expected '$ExpectedVersion' in '$CsprojPath'"
+    }
+}
+
 try {
     $repoRoot = (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..')).Path
     $templateProject = Join-Path -Path $repoRoot -ChildPath 'dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
@@ -384,7 +402,7 @@ try {
     # Generate a NuGet.config so scaffolded projects resolve packages from
     # internal feeds only. The repo's NuGet.config has relative local-source
     # paths (tools/nuget, localpackages) that don't exist under the temp
-    # directory, and nuget.org is blocked by OneBranch network isolation.
+    # directory, and nuget.org may be blocked by CI network isolation.
     # We extract only the remote (https) feeds from the repo config.
     $repoNugetConfig = Join-Path -Path $repoRoot -ChildPath 'NuGet.config'
     $workNugetConfig = Join-Path -Path $workingRoot -ChildPath 'NuGet.config'
@@ -445,6 +463,256 @@ try {
     }
 
     Test-ItemTemplates -WorkingRoot $workingRoot -Platform $Platforms[0]
+
+    # ─── Version parameter test scenarios ───
+    Write-Step 'Running version parameter test scenarios...'
+
+    # Scenario 1: Default (no version passed) — verify Version="*"
+    $defaultPath = Join-Path -Path $workingRoot -ChildPath 'VersionDefault'
+    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'VersionDefault' -OutputPath $defaultPath -WorkingDirectory $workingRoot
+    $defaultCsproj = Join-Path -Path $defaultPath -ChildPath 'VersionDefault.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
+    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
+    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'default version content' -Status 'Succeeded' -Path $defaultPath
+
+    # Scenario 2: Pinned WindowsAppSDK version only
+    $pinnedPath = Join-Path -Path $workingRoot -ChildPath 'VersionPinned'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPinned', '-o', $pinnedPath, '--wasdk-version', '1.7.250127002', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pinned WASDK version'
+    $pinnedCsproj = Join-Path -Path $pinnedPath -ChildPath 'VersionPinned.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
+    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
+    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'pinned version content' -Status 'Succeeded' -Path $pinnedPath
+
+    # Scenario 3: All versions pinned
+    $allPinnedPath = Join-Path -Path $workingRoot -ChildPath 'VersionAllPinned'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionAllPinned', '-o', $allPinnedPath, '--wasdk-version', '1.7.250127002', '--build-tools-version', '10.0.26100.1742', '--winapp-version', '0.3.1', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with all versions pinned'
+    $allPinnedCsproj = Join-Path -Path $allPinnedPath -ChildPath 'VersionAllPinned.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '10.0.26100.1742'
+    Assert-CsprojPackageVersion -CsprojPath $allPinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '0.3.1'
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'all pinned version content' -Status 'Succeeded' -Path $allPinnedPath
+
+    # Scenario 4: Pre-release version string
+    $preReleasePath = Join-Path -Path $workingRoot -ChildPath 'VersionPreRelease'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPreRelease', '-o', $preReleasePath, '--wasdk-version', '1.8.0-preview1', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pre-release version'
+    $preReleaseCsproj = Join-Path -Path $preReleasePath -ChildPath 'VersionPreRelease.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $preReleaseCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.8.0-preview1'
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'pre-release version content' -Status 'Succeeded' -Path $preReleasePath
+
+    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails with NU1105
+    Write-Step 'Testing invalid version handling...'
+    $invalidPath = Join-Path -Path $workingRoot -ChildPath 'VersionInvalid'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionInvalid', '-o', $invalidPath, '--wasdk-version', 'not-a-version', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with invalid version'
+    $invalidCsproj = Join-Path -Path $invalidPath -ChildPath 'VersionInvalid.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $invalidCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion 'not-a-version'
+    # Restore should fail with NU1105 because NuGet can't parse an invalid version string
+    $restoreFailed = $false
+    $restoreOutput = $null
+    $restoreText = $null
+    try {
+        Push-Location -Path $invalidPath
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        $restoreOutput = & $dotnetPath restore $invalidCsproj 2>&1
+        $restoreExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
+        Pop-Location
+        $restoreText = $restoreOutput -join "`n"
+
+        if ($restoreExitCode -ne 0) {
+            $restoreFailed = $true
+        }
+    }
+    catch {
+        $restoreFailed = $true
+    }
+    if (-not $restoreFailed) {
+        throw "Expected restore to fail for invalid WASDK version 'not-a-version'"
+    }
+    $restoreText = $restoreOutput -join "`n"
+    # Finds NU1105, NETSDK1004, etc.
+    $errorCodes = @([regex]::Matches($restoreText, '\b(?:NU|NETSDK|MSB)\d{4,}\b') |
+        ForEach-Object { $_.Value } |
+        Select-Object -Unique)
+    if ($errorCodes.Count -gt 0) {
+        if ($errorCodes -notcontains 'NU1105') {
+            throw "Expected NU1105, got: $($errorCodes -join ', ')"
+        }
+    }
+    else {
+        # No machine-readable code surfaced; use narrow fallback
+        if ($restoreText -notmatch 'not a valid version string') {
+            throw "Expected invalid version failure, got:`n$restoreText"
+        }
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails with NU1105' -Status 'Succeeded' -Path $invalidPath
+
+    # Build (with --no-restore) should fail with NETSDK1005 since restore never succeeded
+    $buildFailed = $false
+    $buildOutput = $null
+    try {
+        Push-Location -Path $invalidPath
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        $buildOutput = & $dotnetPath build $invalidCsproj --no-restore '-p:Configuration=Debug' '-p:Platform=x64' '-p:WindowsPackageType=None' 2>&1
+        $buildExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
+        Pop-Location
+        if ($buildExitCode -ne 0) {
+            $buildFailed = $true
+        }
+    }
+    catch {
+        $buildFailed = $true
+    }
+    if (-not $buildFailed) {
+        throw "Expected build to fail for invalid WASDK version 'not-a-version'"
+    }
+    $buildText = $buildOutput -join "`n"
+    if ($buildText -notmatch 'NETSDK1004') {
+        throw "Expected NETSDK1004 (assets file missing, please run restore) for invalid WASDK version 'not-a-version', but got:`n$buildText"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails with NETSDK1004' -Status 'Succeeded' -Path $invalidPath
+
+    # Scenario 6: Valid version format but nonexistent package
+    $nonexistentPath = Join-Path -Path $workingRoot -ChildPath 'VersionNonexistent'
+    Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionNonexistent', '-o', $nonexistentPath, '--wasdk-version', '99.99.99', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with nonexistent version'
+    $nonexistentCsproj = Join-Path -Path $nonexistentPath -ChildPath 'VersionNonexistent.csproj'
+    Assert-CsprojPackageVersion -CsprojPath $nonexistentCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '99.99.99'
+    # Build should fail with NU1102 because NuGet can't find this package version
+    $buildFailed = $false
+    $buildOutput = $null
+    try {
+        Push-Location -Path $nonexistentPath
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        $buildOutput = & $dotnetPath build $nonexistentCsproj '-p:Configuration=Debug' '-p:Platform=x64' '-p:WindowsPackageType=None' 2>&1
+        $buildExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
+        Pop-Location
+        if ($buildExitCode -ne 0) {
+            $buildFailed = $true
+        }
+    }
+    catch {
+        $buildFailed = $true
+    }
+    if (-not $buildFailed) {
+        throw "Expected build to fail for nonexistent WASDK version 99.99.99"
+    }
+    $buildText = $buildOutput -join "`n"
+    if ($buildText -notmatch 'NU1102') {
+        throw "Expected NuGet error NU1102 (package not found) for nonexistent WASDK version 99.99.99, but got:`n$buildText"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'nonexistent version: scaffold OK, build fails with NU1102' -Status 'Succeeded' -Path $nonexistentPath
+
+    # Scenario 7: Unreachable NuGet source — scaffold succeeds but restore fails
+    # Simulates a developer working offline (e.g. no Wi-Fi, airplane mode, or
+    # misconfigured NuGet sources) where package feeds are unreachable. The
+    # template engine creates the project files but the post-action restore
+    # cannot reach any feed.
+    Write-Step 'Testing unreachable NuGet source handling...'
+    $unreachablePath = Join-Path -Path $workingRoot -ChildPath 'UnreachableSource'
+
+    # Write a NuGet.config that points to a nonexistent local path and no other
+    # sources, so restore has nowhere to fetch packages from.
+    New-Item -ItemType Directory -Path $unreachablePath -Force | Out-Null
+    $bogusNugetConfig = Join-Path -Path $unreachablePath -ChildPath 'NuGet.config'
+    @(
+        '<?xml version="1.0" encoding="utf-8"?>'
+        '<configuration>'
+        '  <packageSources>'
+        '    <clear />'
+        '    <add key="bogus" value="C:\nonexistent_feed_path" />'
+        '  </packageSources>'
+        '</configuration>'
+    ) | Set-Content -Path $bogusNugetConfig -Encoding UTF8
+
+    # Scaffold: dotnet new writes project files regardless of restore outcome.
+    # The post-action restore will fail, but dotnet new still exits 0 and emits
+    # the project files, so Invoke-DotnetCommand (which checks $LASTEXITCODE)
+    # will not throw.
+    Push-Location -Path $unreachablePath
+    $savedEAP = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    & $dotnetPath new winui -n UnreachableSource -o $unreachablePath --force --no-update-check 2>&1 | ForEach-Object { Write-Host $_ }
+    $ErrorActionPreference = $savedEAP
+    Pop-Location
+
+    $unreachableCsproj = Join-Path -Path $unreachablePath -ChildPath 'UnreachableSource.csproj'
+    if (-not (Test-Path -Path $unreachableCsproj)) {
+        throw "Template scaffold did not produce a .csproj at '$unreachableCsproj'"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'unreachable source: scaffold produces files' -Status 'Succeeded' -Path $unreachablePath
+
+    # Build should fail because no packages could be restored.
+    $buildFailed = $false
+    $buildOutput = $null
+    try {
+        Push-Location -Path $unreachablePath
+        $savedEAP = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        $buildOutput = & $dotnetPath build $unreachableCsproj '-p:Configuration=Debug' '-p:Platform=x64' '-p:WindowsPackageType=None' 2>&1
+        $buildExitCode = $LASTEXITCODE
+        $ErrorActionPreference = $savedEAP
+        Pop-Location
+        if ($buildExitCode -ne 0) {
+            $buildFailed = $true
+        }
+    }
+    catch {
+        $buildFailed = $true
+    }
+    if (-not $buildFailed) {
+        throw "Expected build to fail when NuGet sources are unreachable"
+    }
+    $buildText = $buildOutput -join "`n"
+    # Expect NU1301 (unable to load source) or NU1102 (package not found) or
+    # NETSDK1004 (assets file missing because restore never succeeded).
+    if ($buildText -notmatch 'NU1301|NU1102|NETSDK1004') {
+        throw "Expected NuGet resolution error (NU1301, NU1102, or NETSDK1004) when sources are unreachable, but got:`n$buildText"
+    }
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'unreachable source: build fails with NuGet error' -Status 'Succeeded' -Path $unreachablePath
+
+    # Scenario 7b: Working NuGet source — restore resolves up-to-date packages
+    # and the project builds successfully. Complements 7a by proving that when
+    # pointed at valid feeds the default Version="*" wildcard pulls the latest
+    # stable packages and produces a clean build.
+    Write-Step 'Testing working NuGet source resolves packages and builds...'
+    $workingSourcePath = Join-Path -Path $workingRoot -ChildPath 'WorkingSource'
+    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'WorkingSource' -OutputPath $workingSourcePath -WorkingDirectory $workingRoot
+
+    $workingSourceCsproj = Join-Path -Path $workingSourcePath -ChildPath 'WorkingSource.csproj'
+
+    # Verify the csproj uses wildcard versions (the default)
+    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
+    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
+
+    # Explicit restore to confirm packages are fetched from the working feeds
+    Invoke-DotnetCommand -Arguments @('restore', $workingSourceCsproj) -WorkingDirectory $workingSourcePath -Description 'restore with working NuGet source'
+
+    # Verify the assets file was created (proves restore actually resolved packages)
+    $assetsFile = Join-Path -Path $workingSourcePath -ChildPath 'obj\project.assets.json'
+    if (-not (Test-Path -Path $assetsFile)) {
+        throw "Expected project.assets.json after restore but file was not found at '$assetsFile'"
+    }
+
+    # Verify resolved packages are real versions (not still wildcards)
+    $assetsJson = Get-Content -Path $assetsFile -Raw | ConvertFrom-Json
+    $resolvedWasdk = $assetsJson.libraries.PSObject.Properties.Name | Where-Object { $_ -match '^Microsoft\.WindowsAppSDK/' }
+    if (-not $resolvedWasdk) {
+        throw "Microsoft.WindowsAppSDK was not resolved in project.assets.json"
+    }
+    Write-Step "Resolved: $resolvedWasdk"
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'working source: restore resolves packages' -Status 'Succeeded' -Path $workingSourcePath
+
+    # Build the project
+    Invoke-DotnetCommand -Arguments @('build', $workingSourceCsproj, '-p:Configuration=Debug', "-p:Platform=$($Platforms[0])", '-p:WindowsPackageType=None', '--no-restore') -WorkingDirectory $workingSourcePath -Description 'build with working NuGet source'
+    Add-Result -Template 'winui' -Platform $Platforms[0] -Step 'working source: build succeeds' -Status 'Succeeded' -Path $workingSourceCsproj
+
+    Write-Step 'Version parameter test scenarios completed.'
 
     if ($appExecutables.Count -gt 0) {
         if ($SkipAppLaunch.IsPresent) {
