@@ -34,6 +34,13 @@ If greater than zero, any WinUI apps launched at the end of the run are
 automatically closed after the specified number of seconds. A value of 0 keeps
 them open until you close each window manually (default).
 
+.PARAMETER DotnetSdkVersion
+When specified, drops a global.json in the temporary working directory to pin
+the .NET SDK version used for scaffolding and building. Accepts a full version
+(e.g. 8.0.300) or a major.minor prefix with rollForward latestFeature
+(e.g. 8.0). This closes the gap between CI (which installs a specific SDK) and
+local dev boxes (which may have a newer SDK on the PATH).
+
 .PARAMETER KeepWorkingDirectory
 Preserves the temporary scaffolding directory instead of deleting it.
 
@@ -48,6 +55,11 @@ PS> ./Test-DotnetNewTemplates.ps1 -PackagePath C:/tmp/Templates.nupkg -Platforms
 
 Installs the provided package and validates builds for both x64 and arm64
 without launching the apps.
+
+.EXAMPLE
+PS> ./Test-DotnetNewTemplates.ps1 -DotnetSdkVersion 8.0
+
+Pins the .NET 8.0.x SDK (latestFeature roll-forward) so builds match CI.
 #>
 [CmdletBinding()]
 param(
@@ -68,6 +80,9 @@ param(
 
     [Parameter()]
     [int]$RunTimeoutSeconds = 0,
+
+    [Parameter()]
+    [string]$DotnetSdkVersion,
 
     [Parameter()]
     [switch]$KeepWorkingDirectory
@@ -381,6 +396,32 @@ try {
     # Disable the MSBuild server to avoid lingering processes on CI agents.
     $env:DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER = 'true'
 
+    # Pin the .NET SDK version when requested so the temp directory (which is
+    # outside the repo tree and has no global.json) uses the same SDK that CI
+    # installs instead of the highest version on the local machine.
+    if ($DotnetSdkVersion) {
+        $globalJsonPath = Join-Path -Path $workingRoot -ChildPath 'global.json'
+        # A major.minor prefix (e.g. "8.0") uses latestFeature roll-forward so
+        # any installed 8.0.xxx patch works. A full version pins exactly.
+        $parts = $DotnetSdkVersion.Split('.')
+        if ($parts.Count -le 2) {
+            $sdkVersion = "$DotnetSdkVersion.100"
+            $rollForward = 'latestFeature'
+        }
+        else {
+            $sdkVersion = $DotnetSdkVersion
+            $rollForward = 'latestPatch'
+        }
+        $globalJson = @{
+            sdk = [ordered]@{
+                version     = $sdkVersion
+                rollForward = $rollForward
+            }
+        } | ConvertTo-Json -Depth 3
+        Set-Content -Path $globalJsonPath -Value $globalJson -Encoding UTF8
+        Write-Step "Dropped global.json pinning SDK to $sdkVersion (rollForward: $rollForward)"
+    }
+
     # Generate a NuGet.config so scaffolded projects resolve packages from
     # internal feeds only. The repo's NuGet.config has relative local-source
     # paths (tools/nuget, localpackages) that don't exist under the temp
@@ -429,6 +470,8 @@ try {
     $projectTemplates = @(
         @{ ShortName = 'winui'; Kind = 'App' },
         @{ ShortName = 'winui-navview'; Kind = 'App' },
+        @{ ShortName = 'winui-mvvm'; Kind = 'App' },
+        @{ ShortName = 'winui-tabview'; Kind = 'App' },
         @{ ShortName = 'winui-lib'; Kind = 'Library' },
         # winui-unittest is a self-hosted packaged test runner: tests run
         # from inside UnitTestApp.OnLaunched (which sets DispatcherQueue and
