@@ -447,8 +447,6 @@ try {
     $projectTemplates = @(
         @{ ShortName = 'winui'; Kind = 'App' },
         @{ ShortName = 'winui-navview'; Kind = 'App' },
-        @{ ShortName = 'winui-tabview'; Kind = 'App' },
-        @{ ShortName = 'winui-mvvm'; Kind = 'App' },
         @{ ShortName = 'winui-lib'; Kind = 'Library' },
         # winui-unittest is a self-hosted packaged test runner: tests run
         # from inside UnitTestApp.OnLaunched (which sets DispatcherQueue and
