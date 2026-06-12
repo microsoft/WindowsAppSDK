@@ -15,6 +15,11 @@
     <BaseOutputPath>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\StoragePickersTestApp\</BaseOutputPath>
     <IntDir>$(RepoRoot)obj\$(Configuration)\$(Platform)\StoragePickersTestApp\</IntDir>
     <OutDir>$(BaseOutputPath)</OutDir>
+    <!-- The repo's WindowsAppRuntime_DLL builds 32-bit output under the 'x86' folder,
+         but this project's platform is named 'Win32'. Map Win32 -> x86 so the verify
+         and copy targets below find the repo build output. -->
+    <WindowsAppRuntimeBuildPlatform Condition="'$(Platform)' == 'Win32'">x86</WindowsAppRuntimeBuildPlatform>
+    <WindowsAppRuntimeBuildPlatform Condition="'$(WindowsAppRuntimeBuildPlatform)' == ''">$(Platform)</WindowsAppRuntimeBuildPlatform>
   </PropertyGroup>
   
   <!-- Import NuGet props BEFORE other imports -->
@@ -207,7 +212,7 @@
   <!-- Reference Storage Pickers WinMD from the repo's build output -->
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Storage.Pickers">
-      <HintPath>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
+      <HintPath>$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
@@ -242,32 +247,32 @@
   <!-- Copy Windows App Runtime DLL and PRI from repo build output for runtime -->
   <Target Name="CopyWindowsAppRuntimeDll" AfterTargets="Build">
     <Copy 
-      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll"
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll"
       DestinationFolder="$(OutDir)"
       SkipUnchangedFiles="true"
-      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
     <Copy 
-      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri"
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri"
       DestinationFolder="$(OutDir)"
       SkipUnchangedFiles="true"
-      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri')" />
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pri')" />
     <Copy 
-      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.exp"
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.exp"
       DestinationFolder="$(OutDir)"
       SkipUnchangedFiles="true"
-      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.exp')" />
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.exp')" />
     <Copy 
-      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib"
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib"
       DestinationFolder="$(OutDir)"
       SkipUnchangedFiles="true"
-      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib')" />
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib')" />
     <Copy 
-      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb"
+      SourceFiles="$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb"
       DestinationFolder="$(OutDir)"
       SkipUnchangedFiles="true"
-      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb')" />
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb')" />
     <Message Importance="High" Text="Copied Microsoft.WindowsAppRuntime.dll and .pri from repo build output" 
-      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
+      Condition="Exists('$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll')" />
   </Target>
   
   <!-- 
@@ -277,8 +282,8 @@
   -->
   <Target Name="VerifyWindowsAppRuntimeDllExists" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <_WindowsAppRuntimeDll>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll</_WindowsAppRuntimeDll>
-      <_WindowsAppRuntimeWinmd>$(RepoRoot)BuildOutput\$(Configuration)\$(Platform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</_WindowsAppRuntimeWinmd>
+      <_WindowsAppRuntimeDll>$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll</_WindowsAppRuntimeDll>
+      <_WindowsAppRuntimeWinmd>$(RepoRoot)BuildOutput\$(Configuration)\$(WindowsAppRuntimeBuildPlatform)\WindowsAppRuntime_DLL\Microsoft.Windows.Storage.Pickers.winmd</_WindowsAppRuntimeWinmd>
     </PropertyGroup>
     <Error 
       Text="WindowsAppRuntime_DLL not found for $(Configuration)|$(Platform). Please build it first:&#xA;&#xA;  Option 1: Build full solution&#xA;    msbuild WindowsAppRuntime.sln /p:Configuration=$(Configuration) /p:Platform=$(Platform)&#xA;&#xA;  Option 2: Use BuildAll.cmd&#xA;    BuildAll.cmd -Platform $(Platform) -Configuration $(Configuration)&#xA;&#xA;Missing file: $(_WindowsAppRuntimeDll)"
