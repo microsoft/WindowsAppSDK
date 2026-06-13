@@ -79,6 +79,12 @@ namespace Microsoft.Windows.System.Power
         ManualResume
     };
 
+    [contract(PowerNotificationsContract, 2)]
+    runtimeclass SystemSuspendStatusChangedEventArgs
+    {
+        SystemSuspendStatus Status{ get; };
+    }
+
     [contract(PowerNotificationsContract, 1)]
     static runtimeclass PowerManager
     {
@@ -120,5 +126,10 @@ namespace Microsoft.Windows.System.Power
 
         static SystemSuspendStatus SystemSuspendStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> SystemSuspendStatusChanged;
+
+        [contract(PowerNotificationsContract, 2)]
+        {
+            static event Windows.Foundation.TypedEventHandler<Object, SystemSuspendStatusChangedEventArgs> SystemSuspendStatusChanged2;
+        }
     };
 }
