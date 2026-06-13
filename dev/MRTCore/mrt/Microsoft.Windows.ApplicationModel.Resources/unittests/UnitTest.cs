@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
 using WEX.Common.Managed;
 using WEX.Logging.Interop;
 using WEX.TestExecution;
@@ -163,6 +164,32 @@ namespace ManagedTest
         public void NoResourceFileWithContextTest()
         {
             CommonTestCode.ResourceContextTest.NoResourceFileWithContextTest();
+        }
+    }
+
+    [TestClass]
+    public class ApplicationLanguagesTest
+    {
+        [TestMethod]
+        public void PrimaryLanguageOverrideAcceptsEmptyStringTest()
+        {
+            CommonTestCode.ApplicationLanguagesTest.PrimaryLanguageOverrideAcceptsEmptyStringTest();
+        }
+
+        [TestMethod]
+        public void PrimaryLanguageOverrideAcceptsNullStringTest()
+        {
+            CommonTestCode.ApplicationLanguagesTest.PrimaryLanguageOverrideAcceptsNullStringTest();
+        }
+
+        [TestMethod]
+        public void PrimaryLanguageOverrideSetsWindowsValueTest()
+        {
+            ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+            Verify.AreEqual(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride, "fr-FR");
+
+            ApplicationLanguages.PrimaryLanguageOverride = null;
+            Verify.AreEqual(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride, ""); // C# projection of null HSTRING is empty string
         }
     }
 }

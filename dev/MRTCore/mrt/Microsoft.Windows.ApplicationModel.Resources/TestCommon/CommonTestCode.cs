@@ -5,6 +5,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
 #else
 using System;
 using System.ComponentModel;
@@ -18,6 +19,7 @@ using WEX.Logging.Interop;
 using WEX.TestExecution;
 using WEX.TestExecution.Markup;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
 #endif
 
 namespace CommonTestCode
@@ -583,6 +585,25 @@ namespace CommonTestCode
 
             resourceCandidate = resourceMap.TryGetValue("xyz", resourceContext);
             Verify.IsNull(resourceCandidate);
+        }
+    }
+
+    public class ApplicationLanguagesTest
+    {
+        public static void PrimaryLanguageOverrideAcceptsEmptyStringTest()
+        {
+            ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+            ApplicationLanguages.PrimaryLanguageOverride = "";
+
+            Verify.AreEqual(ApplicationLanguages.PrimaryLanguageOverride, "");
+        }
+
+        public static void PrimaryLanguageOverrideAcceptsNullStringTest()
+        {
+            ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+            ApplicationLanguages.PrimaryLanguageOverride = null;
+
+            Verify.AreEqual(ApplicationLanguages.PrimaryLanguageOverride, ""); // C# projection of null HSTRING is empty string
         }
     }
 }
