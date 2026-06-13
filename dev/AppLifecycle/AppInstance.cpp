@@ -183,6 +183,90 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         m_redirectionArgs.Enqueue(id);
     }
 
+    size_t AppInstance::ComputeFileActivationFingerprint(AppLifecycle::AppActivationArguments const& args)
+    {
+        try
+        {
+            if (args.Kind() != ExtendedActivationKind::File)
+            {
+                return 0;
+            }
+
+            auto fileArgs = args.Data().try_as<IFileActivatedEventArgs>();
+            if (!fileArgs)
+            {
+                return 0;
+            }
+
+            auto files = fileArgs.Files();
+            if (files.Size() == 0)
+            {
+                return 0;
+            }
+
+            // Build a combined string from verb + file paths for hashing.
+            // The Shell consistently orders files across all N launched processes
+            // for the same selection, so sorting is not required.
+            // Paths are lowercased for case-insensitive matching on NTFS.
+            std::wstring combined{ fileArgs.Verb() };
+            for (uint32_t i = 0; i < files.Size(); i++)
+            {
+                auto path = files.GetAt(i).Path();
+                if (!path.empty())
+                {
+                    combined += L'|';
+                    combined += path;
+                }
+            }
+
+            // Normalize to lowercase for case-insensitive file path comparison.
+            for (auto& ch : combined)
+            {
+                ch = towlower(ch);
+            }
+
+            // std::hash<std::wstring> yields size_t (32-bit on x86, 64-bit on
+            // x64/ARM64). Collisions are tolerable here because a false positive
+            // only suppresses one redundant activation within the dedup window.
+            return std::hash<std::wstring>{}(combined);
+        }
+        catch (...)
+        {
+            // Best-effort deduplication: if fingerprinting fails, skip dedup
+            // and deliver the activation (no regression from current behavior).
+            LOG_CAUGHT_EXCEPTION();
+            return 0;
+        }
+    }
+
+    bool AppInstance::IsDuplicateFileActivation(AppLifecycle::AppActivationArguments const& args)
+    {
+        auto fingerprint = ComputeFileActivationFingerprint(args);
+        if (fingerprint == 0)
+        {
+            return false;
+        }
+
+        auto now = GetTickCount64();
+        bool isDuplicate = false;
+
+        AcquireSRWLockExclusive(&m_fileActivationDedupLock);
+        auto releaseLock = wil::scope_exit([this]() { ReleaseSRWLockExclusive(&m_fileActivationDedupLock); });
+
+        if (m_lastFileActivationFingerprint == fingerprint &&
+            (now - m_lastFileActivationTickCount) < c_fileActivationDedupWindowMs)
+        {
+            isDuplicate = true;
+        }
+        else
+        {
+            m_lastFileActivationFingerprint = fingerprint;
+            m_lastFileActivationTickCount = now;
+        }
+
+        return isDuplicate;
+    }
+
     void AppInstance::ProcessRedirectionRequests()
     {
         auto activity{ AppLifecycleTelemetry::ProcessRedirectionRequests::Start(m_processId, m_isCurrent) };
@@ -201,10 +285,20 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             request.Open(name);
             auto args = request.UnmarshalArguments();
 
-            // Notify the app that the redirection request is here.
-            m_activatedEvent(*this, args);
-            activity.RedrectionActivatedEvent(id);
+            // Deduplicate file activations from multi-process Shell launches (issue #5066).
+            // When Shell opens N selected files with a packaged Win32 app, it launches
+            // N separate processes. Each process receives all N files and redirects to the
+            // key owner. Without deduplication, the key owner fires N identical Activated
+            // events. This check ensures only the first unique file activation is delivered.
+            if (!IsDuplicateFileActivation(args))
+            {
+                // Notify the app that the redirection request is here.
+                m_activatedEvent(*this, args);
+                activity.RedrectionActivatedEvent(id);
+            }
 
+            // Always signal the cleanup event so the redirecting process can exit,
+            // even when the activation was deduplicated.
             std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
             if (cleanupEvent.try_open(eventName.c_str()))
@@ -552,7 +646,25 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             data = make<LaunchActivatedEventArgs>(commandLine.c_str());
         }
 
-        return make<AppActivationArguments>(kind, data);
+        auto result = make<AppActivationArguments>(kind, data);
+
+        // Record file activation fingerprint for deduplication (issue #5066).
+        // This ensures that when secondary processes redirect identical file
+        // activations to the key owner, they are recognized as duplicates of
+        // the initial activation that the app already processes directly.
+        if (m_isCurrent)
+        {
+            auto fingerprint = ComputeFileActivationFingerprint(result);
+            if (fingerprint != 0)
+            {
+                AcquireSRWLockExclusive(&m_fileActivationDedupLock);
+                auto releaseLock = wil::scope_exit([this]() { ReleaseSRWLockExclusive(&m_fileActivationDedupLock); });
+                m_lastFileActivationFingerprint = fingerprint;
+                m_lastFileActivationTickCount = GetTickCount64();
+            }
+        }
+
+        return result;
     }
 
     hstring AppInstance::Key()
