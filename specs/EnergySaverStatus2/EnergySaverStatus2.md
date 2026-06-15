@@ -166,7 +166,7 @@ public enum EnergySaverStatus2
 | Value | Description |
 |---|---|
 | `Unknown` | The Energy Saver v2 status is unavailable. |
-| `Off` | Energy Saver is disabled. Apps should operate normally. |
+| `Off` | Energy Saver is inactive. Apps should operate normally. |
 | `Standard` | Energy Saver is active with mild performance impact acceptable. Energy saving behaviors that have mild performance impact are encouraged (for example, a sync client might reduce sync frequency). This state is returned when the user has opted into Energy Saver but battery life is not critical. |
 | `HighSavings` | Energy Saver is active and maximum battery savings are preferred, even at the cost of performance. This state is returned when battery level is low and the device is not plugged in. |
 
