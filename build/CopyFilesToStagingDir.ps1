@@ -152,45 +152,45 @@ PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\net6.0-windows1
 PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\net6.0-windows10.0.17763.0\Microsoft.Windows.System.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 
 # C#/WinRT Projections - .NET 10 (CsWinRT 3.0 forwarder DLLs for runtime, no PDBs)
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.Background.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.ApplicationModel.Background.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.AppLifecycle.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Builder.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.AppNotifications.Builder.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.AppNotifications.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.BadgeNotifications.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.BadgeNotifications.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Foundation.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Foundation.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Foundation\net10.0-windows10.0.17763.1\Microsoft.Windows.Foundation.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Foundation\net10.0-windows10.0.17763.1\Microsoft.Windows.Foundation.pdb $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Management.Deployment.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Management.Deployment.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Media.Capture.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Media.Capture.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Pickers.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Storage.Pickers.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Security.Authentication.OAuth.Projection\net10.0-windows10.0.17763.1\Microsoft.Security.Authentication.OAuth.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Storage.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.System.Power.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.System.Projection.dll $NugetDir\lib\net10.0-windows10.0.17763.1
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.Background.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.ApplicationModel.Background.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.AppLifecycle.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Builder.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.AppNotifications.Builder.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.AppNotifications.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.BadgeNotifications.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.BadgeNotifications.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Foundation.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Foundation.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Foundation\net10.0-windows10.0.17763.1\Microsoft.Windows.Foundation.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Foundation\net10.0-windows10.0.17763.1\Microsoft.Windows.Foundation.pdb $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Management.Deployment.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Management.Deployment.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Media.Capture.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Media.Capture.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Pickers.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Storage.Pickers.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Security.Authentication.OAuth.Projection\net10.0-windows10.0.17763.1\Microsoft.Security.Authentication.OAuth.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.Storage.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.System.Power.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\net10.0-windows10.0.17763.1\Microsoft.Windows.System.Projection.dll $NugetDir\lib\net10.0-windows10.0.26100.1
 
 # C#/WinRT Projections - .NET 10 (CsWinRT 3.0 reference projection DLLs for compile-time)
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.Background.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.ApplicationModel.Background.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.AppLifecycle.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Builder.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.AppNotifications.Builder.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.AppNotifications.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.BadgeNotifications.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.BadgeNotifications.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Foundation.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Foundation.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Foundation\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Foundation.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Management.Deployment.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Management.Deployment.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Media.Capture.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Media.Capture.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Pickers.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Storage.Pickers.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Security.Authentication.OAuth.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Security.Authentication.OAuth.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Storage.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.System.Power.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
-PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.System.Projection.dll $NugetDir\ref\net10.0-windows10.0.17763.1
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.Background.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.ApplicationModel.Background.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.AppLifecycle.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Builder.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.AppNotifications.Builder.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.AppNotifications.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.BadgeNotifications.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.BadgeNotifications.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Foundation.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Foundation.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Foundation\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Foundation.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Management.Deployment.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Management.Deployment.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Media.Capture.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Media.Capture.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Pickers.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Storage.Pickers.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Security.Authentication.OAuth.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Security.Authentication.OAuth.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.Storage.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.Storage.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.System.Power.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
+PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\net10.0-windows10.0.17763.1\ref\Microsoft.Windows.System.Projection.dll $NugetDir\ref\net10.0-windows10.0.26100.1
 
 #
 # Dynamic Dependency build overrides
