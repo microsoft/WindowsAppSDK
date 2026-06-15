@@ -634,14 +634,14 @@ Try {
         # dev\Templates\Directory.Build.props (<WindowsAppSdkVersion> default)
         # - single source of truth.
         write-host "Building templates VSIX (Standalone + Component) ..."
-        & "dev\Templates\VSIX\build-local-VSIX-package\Build-VSIX.ps1" `
+        & "dev\Templates\VSIX\build-local-VSIX-package\Build-VSIX-Local.ps1" `
             -Configuration $Configuration `
             -Deployment   Both `
             -RepoRoot     $env:Build_SourcesDirectory `
             -OutputDir    $templatesOutputDir
         if ($lastexitcode -ne 0)
         {
-            write-host "ERROR: Build-VSIX.ps1 FAILED."
+            write-host "ERROR: Build-VSIX-Local.ps1 FAILED."
             exit 1
         }
     }

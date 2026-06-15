@@ -16,13 +16,13 @@ jobs:
 
     steps:
     - name: checkout project
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
       
     - name: setup msbuild
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@v3
       
     - name: setup nuget
-      uses: NuGet/setup-nuget@v1.0.2
+      uses: NuGet/setup-nuget@v4
 
     - name: restore project packages
       run: nuget restore WindowsAppRuntime.sln

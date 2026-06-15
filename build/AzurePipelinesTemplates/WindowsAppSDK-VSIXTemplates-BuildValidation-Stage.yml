@@ -1,0 +1,112 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# VSIX templates build-validation stage.
+#
+# Runs WindowsAppSDK-BuildVSIX-Steps.yml so any VSIX-pack regression
+# (VSSDK1300 path overflow, broken template asset, manifest error, etc.)
+# surfaces at PR time. This validates that the VSIXes still build and pack;
+# it does not install or instantiate them, so it is a build regression check
+# rather than a smoke/build-verification test. Skips:
+#   - SDL/PREfast scans       (runStaticAnalysis: false)
+#   - VSIX code signing       (SignOutput: false)
+#   - Symbol server publish   (PublishSymbols: false)
+#
+# Path-length note: VSSDK1300 is a MAX_PATH (260) issue. We check the repo
+# out into a WindowsAppSDK\ subfolder (`path: s\WindowsAppSDK` paired with
+# `foundationRepoPath: 'WindowsAppSDK\'`) so absolute paths in this stage
+# are long enough to catch the same class of regression that a top-level
+# checkout layout would miss.
+
+parameters:
+- name: pool
+  type: object
+  default:
+    type: windows
+
+stages:
+- stage: VSIXTemplates_BuildValidation
+  displayName: 'Validate VSIX templates build'
+  dependsOn: []
+  jobs:
+  - job: BuildVSIX
+    displayName: 'Restore + build WindowsAppSDK.Extension.sln (Standalone + Component)'
+    pool: ${{ parameters.pool }}
+    timeoutInMinutes: 60
+    variables:
+      # Required by OneBranch v2.
+      ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\vsix-buildvalidation'
+      # Path prefix consumed as $(FoundationRepoPath) inside
+      # WindowsAppSDK-BuildVSIX-Steps.yml; pairs with the `path: s\WindowsAppSDK`
+      # checkout below. See file header for why.
+      foundationRepoPath: 'WindowsAppSDK\'
+      buildConfiguration: 'Release'
+    steps:
+    # Land the repo in a subfolder; see file header for why.
+    - checkout: self
+      path: s\WindowsAppSDK
+
+    - task: PowerShell@2
+      displayName: 'Compute VSIX version + announce build-validation scope'
+      inputs:
+        targetType: 'inline'
+        script: |
+          # <yyyy>.<MMdd>.<HHmm>.<PR# or 0>. Mirrors Build-VSIX-Local.ps1.
+          # All segments fit uint16; year-as-Major outranks any official 1.x/2.x
+          # (workload-shipped) and is strictly monotonic across years. A tester who
+          # installs a PR VSIX must uninstall it before any official update of
+          # the same Identity Id will apply.
+          $now = Get-Date
+          $pr = $env:SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
+          if ([string]::IsNullOrWhiteSpace($pr)) { $pr = '0' }
+          $version = "$($now.Year).$($now.ToString('MMdd')).$($now.ToString('HHmm')).$pr"
+          Write-Host "##vso[task.setvariable variable=OptionalVSIXVersion]$version"
+
+          Write-Host "VSIX build validation: building Cpp + Cs, Standalone + Component (4 VSIXes)"
+          Write-Host "VSIX version: $version"
+          Write-Host "Pool        : $(Agent.MachineName) ($(Agent.OS))"
+          Write-Host "Sources dir : $(Build.SourcesDirectory)"
+          Write-Host "Repo path   : $(Build.SourcesDirectory)\$(foundationRepoPath)"
+
+    - template: WindowsAppSDK-BuildVSIX-Steps.yml@self
+      parameters:
+        SignOutput: false
+        runStaticAnalysis: false
+        PublishSymbols: false
+        UseCurrentBuild: false
+        UseLatestNightlyFromBranch: true
+        IsOfficial: false
+        OptionalVSIXVersion: '$(OptionalVSIXVersion)'
+
+    - task: PowerShell@2
+      displayName: 'Rename staged VSIXes to include version (PR-downloadable artifacts)'
+      # BuildVSIX-Steps.yml already staged the .vsix files into
+      # $(ob_outputDirectory)\VSIX (unsigned branch). Default MSBuild output
+      # names omit the version, so testers downloading the PR artifact would
+      # see only `WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix`. Rename in
+      # place to the same `.<version>.vsix` shape Build-VSIX-Local.ps1 uses,
+      # so the filename alone identifies which PR/run produced the VSIX.
+      inputs:
+        targetType: 'inline'
+        script: |
+          $version = '$(OptionalVSIXVersion)'
+          $stageDir = Join-Path '$(ob_outputDirectory)' 'VSIX'
+          if (-not (Test-Path $stageDir)) {
+              Write-Warning "Staging dir not found: $stageDir (BuildVSIX-Steps.yml staging may have failed)"
+              exit 0
+          }
+          $vsixes = Get-ChildItem -Path $stageDir -Filter 'WindowsAppSDK.*.vsix' -File
+          if ($vsixes.Count -eq 0) {
+              Write-Warning "No .vsix files found in $stageDir"
+              exit 0
+          }
+          foreach ($v in $vsixes) {
+              # Skip if already versioned (idempotent re-run safety).
+              if ($v.BaseName -match "\.$([Regex]::Escape($version))$") {
+                  Write-Host "Skip (already versioned): $($v.Name)"
+                  continue
+              }
+              $newName = "$($v.BaseName).$version.vsix"
+              Rename-Item -Path $v.FullName -NewName $newName
+              Write-Host "Renamed: $($v.Name) -> $newName"
+          }
