@@ -31,7 +31,7 @@ with varying levels of optimization:
 
 | State | Meaning | Recommended app behavior |
 |---|---|---|
-| `Off` | Energy Saver is disabled | Normal operation |
+| `Off` | Energy Saver is inactive | Normal operation |
 | `Standard` | Energy Saver active; mild performance impact acceptable | Reduce background sync frequency, defer non-critical work |
 | `HighSavings` | Energy Saver active; maximum power savings preferred | Pause background sync, defer all non-critical work, reduce UI refresh rates |
 
