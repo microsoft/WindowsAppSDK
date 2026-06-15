@@ -89,12 +89,12 @@ switch (status)
     case EnergySaverStatus2.Unknown:
         //  State is explicitly unknown
         //  Maintain default heartbeat interval (e.g., 10 sec)
-       break;
+        break;
      default:
-       // Unexpected state
-       // Default to normal operation heartbeat interval (e.g., 10 sec)
-       // or have a conservative fallback TimeSpan.FromSeconds(20);         
-      break;
+        // Unexpected state
+        // Default to normal operation heartbeat interval (e.g., 10 sec)
+        // or have a conservative fallback TimeSpan.FromSeconds(20);         
+        break;
 }
 ```
 
@@ -141,7 +141,7 @@ private static void OnEnergySaverStatus2Changed(object sender, object e)
             // Unexpected state
             // Default to normal operation  ResumeNormalActivity();
             // or have a conservative fallback  ReduceBackgroundActivity();         
-        break;
+            break;
     }
 }
 
