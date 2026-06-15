@@ -168,7 +168,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
 
         wil::unique_hkey currentUserKey;
         THROW_IF_WIN32_ERROR(::RegOpenCurrentUser(KEY_READ | KEY_WRITE, currentUserKey.put()));
-        auto subKey{ std::format(L"SOFTWARE\\{}\\{}", m_publisher, m_product) };
+        auto subKey{ std::format(L"SOFTWARE\\Classes\\Local Settings\\SOFTWARE\\{}\\{}", m_publisher, m_product) };
         auto key{ wil::reg::create_shared_key(currentUserKey.get(), subKey.c_str(), wil::reg::key_access::readwrite) };
         return winrt::make<UnpackagedApplicationDataContainer>(
             std::move(key), winrt::hstring{}, winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local);
@@ -223,7 +223,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             wil::unique_hkey currentUserKey;
             THROW_IF_WIN32_ERROR(::RegOpenCurrentUser(KEY_READ | KEY_WRITE, currentUserKey.put()));
-            auto subKey{ std::format(L"SOFTWARE\\{}\\{}", publisher, product) };
+            auto subKey{ std::format(L"SOFTWARE\\Classes\\Local Settings\\SOFTWARE\\{}\\{}", publisher, product) };
             const auto hr{ HRESULT_FROM_WIN32(::RegDeleteTreeW(currentUserKey.get(), subKey.c_str())) };
             if (hr != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) && hr != HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
             {
