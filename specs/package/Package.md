@@ -557,7 +557,7 @@ namespace Microsoft.Windows.ApplicationModel
         /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
         /// @see PackageGraph.GetFilePath
-        /// @see PackageGraph.GetFilePathOptions
+        /// @see GetFilePathOptions
         [method_name("GetFilePathInPackageWithOptions")]
         static String GetFilePath(String filename, String packageFullName, GetFilePathOptions options);
     }
@@ -582,7 +582,7 @@ namespace Microsoft.Windows.ApplicationModel
         /// @note If a package has a UserExternal location then MachineExternal location is not checked (even if the package has one).
         /// @see https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getpackagepathbyfullname2
         /// @see Package.GetFilePath
-        /// @see GetPackageFilePathOptions
+        /// @see GetFilePathOptions
         [method_name("GetFilePathWithOptions")]
         static String GetFilePath(String filename, GetFilePathOptions options);
     };
