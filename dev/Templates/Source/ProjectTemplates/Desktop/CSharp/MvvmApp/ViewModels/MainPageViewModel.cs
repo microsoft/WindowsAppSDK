@@ -4,17 +4,17 @@ using CommunityToolkit.Mvvm.Input;
 namespace $safeprojectname$.ViewModels;
 
 /// <summary>
-/// Sample ViewModel using CommunityToolkit.Mvvm partial property syntax.
+/// Sample ViewModel using CommunityToolkit.Mvvm source generators.
 /// Uses <see cref="ObservableProperty"/> for change notification and
 /// <see cref="RelayCommand"/> for command binding.
 /// </summary>
 public partial class MainPageViewModel : ObservableObject
 {
     [ObservableProperty]
-    public partial string Greeting { get; set; } = "Hello, WinUI!";
+    private string _greeting = "Hello, WinUI!";
 
     [ObservableProperty]
-    public partial int Counter { get; set; }
+    private int _counter;
 
     [RelayCommand]
     private void Increment()
