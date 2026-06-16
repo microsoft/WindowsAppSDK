@@ -15,7 +15,7 @@
 #include <FrameworkUdk/Containment.h>
 
 // 62698635: [2.x Servicing][WASDK] Fix bad regkey path for ApplicationData.GetForUnpackaged().LocalSettings()
-#define WINAPPSDK_CHANGEID_62698635 62698635, WinAppSDK_2_2_1
+#define WINAPPSDK_CHANGEID_62698635 62698635
 
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
