@@ -38,6 +38,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsMLFlatCCatalog_CallbackStringOwnership = 62440888,
         WindowsML_ComRundownFix = 62440888,
         WindowsML_ComInitializationFix = 62440888,
+
+        // 2.2.1
+        ApplicationData_GetForUnpackaged_LocalSettings = 62698635,
     };
 
     /// Represents a version of the Windows App Runtime.
