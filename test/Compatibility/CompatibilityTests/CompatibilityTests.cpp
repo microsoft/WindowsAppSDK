@@ -183,12 +183,12 @@ namespace Test::CompatibilityTests
             WEX::Logging::Log::Comment(WEX::Common::String(L"RuntimeCompatibilityOptions with DisabledChanges applied."));
 
             // Verify that the specified DisabledChanges are disabled.
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<12345, WinAppSDK_Security>()));
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<23456, WinAppSDK_Security>()));
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<34567, WinAppSDK_Security>()));
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<12345>()));
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<23456>()));
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<34567>()));
 
             // A different value not in DisabledChanges should remain enabled.
-            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999, WinAppSDK_Security>()));
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999>()));
         }
 
         TEST_METHOD(VerifyCatalogPrePrunesByPatchLevel)
@@ -208,23 +208,19 @@ namespace Test::CompatibilityTests
             winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
             options.Apply();
 
-            // Use WinAppSDK_Security as the template-arg patch so the worker's
-            // per-callsite patch comparison degenerates to (0 > effective) = false,
-            // isolating the catalog pre-prune as the disabling mechanism.
-
             // s_enabled_changes_test: catalog group released BEFORE the
             // effective patch level. Apply prunes it out; IDs remain enabled.
-            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<1, WinAppSDK_Security>()));
-            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<2, WinAppSDK_Security>()));
-            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<3, WinAppSDK_Security>()));
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<1>()));
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<2>()));
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<3>()));
 
             // s_disabled_changes_test: catalog group released AFTER the
             // effective patch level. Apply preserves it; IDs are disabled.
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<0, WinAppSDK_Security>()));        // smallest representable ID
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<99999999, WinAppSDK_Security>())); // high-value sentinel
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<0>()));        // smallest representable ID
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<99999999>())); // high-value sentinel
 
             // An ID not in the catalog and not explicitly disabled stays enabled.
-            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999, WinAppSDK_Security>()));
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999>()));
         }
 
         TEST_METHOD(VerifyCatalogAndExplicitDisabledChangesCombine)
@@ -241,10 +237,10 @@ namespace Test::CompatibilityTests
             options.DisabledChanges().Append((WAR::RuntimeCompatibilityChange)55555);
             options.Apply();
 
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<0, WinAppSDK_Security>()));        // catalog only
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<99999999, WinAppSDK_Security>())); // catalog + explicit
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<55555, WinAppSDK_Security>()));    // explicit only
-            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999, WinAppSDK_Security>()));     // neither
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<0>()));        // catalog only
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<99999999>())); // catalog + explicit
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<55555>()));    // explicit only
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999>()));     // neither
         }
     };
 }
