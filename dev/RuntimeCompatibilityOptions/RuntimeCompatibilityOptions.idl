@@ -41,6 +41,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         // 2.2.1
         ApplicationData_GetForUnpackaged_LocalSettings = 62698635,
+
+        // 2.2.2
+        UniversalBGTask_RunCrash = 62755661,
     };
 
     /// Represents a version of the Windows App Runtime.
