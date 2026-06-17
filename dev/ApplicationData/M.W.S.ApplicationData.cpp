@@ -20,7 +20,7 @@
 #include <FrameworkUdk/Containment.h>
 
 // 61684930: [2.0 servicing] WindowsAppSDK: Microsoft.Windows.Storage.ApplicationData.GetForUnpackaged()
-#define WINAPPSDK_CHANGEID_61684930 61684930, WinAppSDK_2_1_5
+#define WINAPPSDK_CHANGEID_61684930 61684930
 
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
