@@ -14,7 +14,7 @@ using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Storage;
 
 // 62755661: [2.0 Servicing][WASDK] Fix UniversalBGTask::Task::Run crash on missing CLSID / CoCreateInstance failure
-#define WINAPPSDK_CHANGEID_62755661 62755661, WinAppSDK_2_2_2
+#define WINAPPSDK_CHANGEID_62755661 62755661
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Background::UniversalBGTask::implementation
 {
