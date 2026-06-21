@@ -4,7 +4,8 @@
   "description": "MCP server for downloading and analyzing images and ZIP attachments from GitHub issues and pull requests",
   "main": "server.js",
   "scripts": {
-    "test": "node test-github_issue_images.js && node test-github_issue_attachments.js",
+    "test": "node test-token-allowlist.js && node test-github_issue_images.js && node test-github_issue_attachments.js",
+    "test:unit": "node test-token-allowlist.js",
     "start": "node server.js"
   },
   "keywords": [],
