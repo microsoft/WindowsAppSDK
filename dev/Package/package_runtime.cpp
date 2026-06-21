@@ -325,6 +325,11 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
 STDAPI_(BOOL) IsPackageFeatureSupported(
     PackageFeature feature) noexcept
 {
+    if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62800606>())
+    {
+        return E_NOTIMPL;
+    }
+
     switch (feature)
     {
         case PackageFeature_PackagePath_Mutable:
@@ -349,6 +354,11 @@ STDAPI GetPackageFilePath(
     _In_ GetPackageFilePathOptions options,
     _Outptr_result_maybenull_ PWSTR* packageFile) noexcept try
 {
+    if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62800606>())
+    {
+        return E_NOTIMPL;
+    }
+
     auto logTelemetry{ PackageTelemetry::GetPackageFilePath::Start(filename, options, packageFullName) };
 
     *packageFile = nullptr;
@@ -396,6 +406,11 @@ STDAPI GetPackageFilePathInPackageGraph(
     _In_ GetPackageFilePathOptions options,
     _Outptr_result_maybenull_ PWSTR* packageFile) noexcept try
 {
+    if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62800606>())
+    {
+        return E_NOTIMPL;
+    }
+
     auto logTelemetry{ PackageTelemetry::GetPackageFilePathInPackageGraph::Start(filename, options) };
 
     *packageFile = nullptr;

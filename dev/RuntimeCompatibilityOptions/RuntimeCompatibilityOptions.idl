@@ -41,6 +41,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         // 2.2.1
         ApplicationData_GetForUnpackaged_LocalSettings = 62698635,
+        Package_GetPackageFilePath = 62800606,
     };
 
     /// Represents a version of the Windows App Runtime.

@@ -30,6 +30,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
     }
     hstring PackageGraph::GetFilePath(hstring const& filename, winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions const& options)
     {
+        if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62800606>())
+        {
+            throw winrt::hresult_not_implemented();
+        }
+
         wil::unique_process_heap_ptr<WCHAR> packageFile;
         THROW_IF_FAILED_MSG(::GetPackageFilePathInPackageGraph(filename.c_str(), static_cast<::GetPackageFilePathOptions>(options), wil::out_param(packageFile)),
                             "Options=0x%X Filename=%ls", static_cast<std::int32_t>(options), filename.c_str());

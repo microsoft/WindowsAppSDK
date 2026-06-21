@@ -29,6 +29,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
 
     bool Package::IsFeatureSupported(winrt::Microsoft::Windows::ApplicationModel::PackageFeature const& feature)
     {
+        if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62800606>())
+        {
+            return false;
+        }
         return ::IsPackageFeatureSupported(static_cast<::PackageFeature>(feature));
     }
     hstring Package::GetFilePath(hstring const& filename)
@@ -41,6 +45,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
     }
     hstring Package::GetFilePath(hstring const& filename, hstring const& packageFullName, winrt::Microsoft::Windows::ApplicationModel::GetFilePathOptions const& options)
     {
+        if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62800606>())
+        {
+            throw winrt::hresult_not_implemented();
+        }
+
         wil::unique_process_heap_ptr<WCHAR> packageFile;
         THROW_IF_FAILED_MSG(::GetPackageFilePath(packageFullName.c_str(), filename.c_str(), static_cast<::GetPackageFilePathOptions>(options), wil::out_param(packageFile)),
                             "PackageFullName=%ls Options=0x%X Filename=%ls", packageFullName.c_str(), static_cast<std::int32_t>(options), filename.c_str());
