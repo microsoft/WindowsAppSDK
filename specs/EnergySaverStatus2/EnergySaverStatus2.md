@@ -171,9 +171,6 @@ public enum EnergySaverStatus2
 | `HighSavings` | Energy Saver is active and maximum battery savings are preferred, even at the cost of performance. This state is returned when battery level is low and the device is not plugged in. |
 
 ### Remarks
-
-- `EnergySaverStatus2` may be extended with additional values in future OS releases. Your code
-  should handle unknown enum values gracefully (for example, with a `default` case in a `switch`).
 - The legacy `EnergySaverStatus` enum, `PowerManager.EnergySaverStatus` property, and
   `PowerManager.EnergySaverStatusChanged` event are deprecated. Migrate to `EnergySaverStatus2`,
   `PowerManager.EnergySaverStatus2`, and `PowerManager.EnergySaverStatus2Changed`.
