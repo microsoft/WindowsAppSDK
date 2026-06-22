@@ -20,4 +20,9 @@
     <Compile Condition="'$(WindowsAppSDKAggregatePackage)' == 'true' and '$(WindowsAppSdkIncludeVersionInfo)'=='true'" Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
   </ItemGroup>
 
+  <!-- Add the distributed winmds to CsWinRTInputs for C# scenarios. -->
+  <ItemGroup>
+    <CsWinRTInputs Include="$(MSBuildThisFileDirectory)..\metadata\*.winmd" />
+  </ItemGroup>
+
 </Project>
