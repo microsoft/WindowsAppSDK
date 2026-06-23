@@ -23,6 +23,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.A.PackageGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)package_runtime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageContainment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageTelemetry.h" />
   </ItemGroup>
   <ItemGroup>

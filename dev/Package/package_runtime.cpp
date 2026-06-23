@@ -7,6 +7,8 @@
 
 #include "PackageTelemetry.h"
 
+#include "PackageContainment.h"
+
 namespace appmodel
 {
 static bool IsPathSupported_Mutable()

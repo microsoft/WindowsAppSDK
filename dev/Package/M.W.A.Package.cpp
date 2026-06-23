@@ -10,6 +10,10 @@
 
 #include "PackageTelemetry.h"
 
+#include "PackageContainment.h"
+
+#include <FrameworkUdk/Containment.h>
+
 namespace winrt::Microsoft::Windows::ApplicationModel::implementation
 {
     static_assert(static_cast<std::int32_t>(PackageFeature::PackagePath_Mutable) == static_cast<std::int32_t>(::PackageFeature_PackagePath_Mutable), "PackageFeature::PackagePath_Mutable != PackageFeature_PackagePath_Mutable");

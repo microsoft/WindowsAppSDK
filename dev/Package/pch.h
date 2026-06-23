@@ -27,11 +27,6 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 
-#include <FrameworkUdk/Containment.h>
-
 #include <appmodel.identity.h>
 #include <appmodel.package.h>
 #include <microsoft.foundation.string.h>
-
-// 62800606: [2.x Servicing][WASDK] Add new 'GetPackage[Graph]File` APIs
-#define WINAPPSDK_CHANGEID_62800606 62800606

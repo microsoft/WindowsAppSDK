@@ -10,6 +10,8 @@
 
 #include "PackageTelemetry.h"
 
+#include "PackageContainment.h"
+
 namespace winrt::Microsoft::Windows::ApplicationModel::implementation
 {
     static_assert(static_cast<std::int32_t>(GetFilePathOptions::None) == static_cast<std::int32_t>(GetPackageFilePathOptions_None), "GetFilePathOptions::None != FindPackageFileOptions_None");

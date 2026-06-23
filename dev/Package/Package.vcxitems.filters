@@ -34,6 +34,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageContainment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageTelemetry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
