@@ -6,6 +6,7 @@
 #include <PowerNotifications.h>
 #include <frameworkudk\PowerNotificationsPal.h>
 #include <Microsoft.Windows.System.Power.PowerManager.g.cpp>
+#include <Microsoft.Windows.System.Power.SystemSuspendStatusChangedEventArgs.g.cpp>
 #include <powrprof.h>
 
 namespace winrt::Microsoft::Windows::System::Power::implementation
@@ -323,5 +324,20 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
     {
         check_win32(PowerUnregisterSuspendResumeNotification(
             Factory()->m_systemSuspendHandle));
+    }
+
+    SystemSuspendStatusChangedEventType& SystemSuspendStatus2_Event()
+    {
+        return Factory()->m_systemSuspendStatusChanged2Event;
+    }
+
+    void SystemSuspendStatus2_Register()
+    {
+        SystemSuspendStatus_Register();
+    }
+
+    void SystemSuspendStatus2_Unregister()
+    {
+        SystemSuspendStatus_Unregister();
     }
 }
