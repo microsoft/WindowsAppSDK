@@ -188,31 +188,111 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         auto activity{ AppLifecycleTelemetry::ProcessRedirectionRequests::Start(m_processId, m_isCurrent) };
         m_innerActivated.ResetEvent();
 
-        GUID id;
-        while ((id = DequeueRedirectionRequestId()) != GUID_NULL)
+        // Structures for coalescing rapid-fire file activation redirections into a single
+        // event.  When users open multiple files at once, each file triggers a separate
+        // process that redirects to this instance.  Without coalescing the app would
+        // receive N separate activation events instead of one event containing all N files.
+        struct CoalescedRequestInfo
         {
-            activity.DequeueRedirectionRequest(id);
-            wil::unique_cotaskmem_string idString;
-            THROW_IF_FAILED(StringFromCLSID(id, &idString));
+            GUID id;
+            std::wstring name;
+        };
 
-            auto name = wil::str_printf<std::wstring>(c_requestPacketNameFormat, m_processName.c_str(), idString.get());
+        std::vector<CoalescedRequestInfo> fileRequestInfos;
+        auto coalescedFiles = winrt::single_threaded_vector<winrt::Windows::Storage::IStorageItem>();
+        winrt::hstring coalescedVerb;
 
-            RedirectionRequest request;
-            request.Open(name);
-            auto args = request.UnmarshalArguments();
+        // Lambda to dequeue all pending requests and categorize them.
+        // File activations are collected for coalescing; other types fire immediately.
+        auto dequeueAndProcess = [&]()
+        {
+            GUID id;
+            while ((id = DequeueRedirectionRequestId()) != GUID_NULL)
+            {
+                activity.DequeueRedirectionRequest(id);
+                wil::unique_cotaskmem_string idString;
+                THROW_IF_FAILED(StringFromCLSID(id, &idString));
 
-            // Notify the app that the redirection request is here.
-            m_activatedEvent(*this, args);
-            activity.RedrectionActivatedEvent(id);
+                auto name = wil::str_printf<std::wstring>(c_requestPacketNameFormat, m_processName.c_str(), idString.get());
 
-            std::wstring eventName = name + c_activatedEventNameSuffix;
+                RedirectionRequest request;
+                request.Open(name);
+                auto args = request.UnmarshalArguments();
+
+                // Coalesce file activations into a single event (fixes multi-file open).
+                if (args.Kind() == ExtendedActivationKind::File)
+                {
+                    auto fileArgs = args.Data().try_as<IFileActivatedEventArgs>();
+                    if (fileArgs)
+                    {
+                        if (coalescedVerb.empty())
+                        {
+                            coalescedVerb = fileArgs.Verb();
+                        }
+
+                        for (auto const& file : fileArgs.Files())
+                        {
+                            coalescedFiles.Append(file);
+                        }
+
+                        fileRequestInfos.push_back({ id, std::move(name) });
+                        continue;
+                    }
+                }
+
+                // Non-file activations: notify the app immediately.
+                m_activatedEvent(*this, args);
+                activity.RedrectionActivatedEvent(id);
+
+                std::wstring eventName = name + c_activatedEventNameSuffix;
+                wil::unique_event cleanupEvent;
+                if (cleanupEvent.try_open(eventName.c_str()))
+                {
+                    // If the event is missing, it means the waiter gave up.  Ignore the error.
+                    cleanupEvent.SetEvent();
+                }
+                activity.RequestCleanupEvent(id);
+            }
+        };
+
+        // Process all currently pending requests.
+        dequeueAndProcess();
+
+        // If file activations were found, wait briefly for more to arrive.
+        // When multiple files are opened simultaneously, redirecting processes may not all
+        // enqueue their requests before we start processing.  A short coalescing window
+        // ensures we capture all files from a single user action.
+        if (!fileRequestInfos.empty())
+        {
+            constexpr DWORD c_fileCoalescingWindowMs = 150;
+            if (WaitForSingleObject(m_innerActivated.get(), c_fileCoalescingWindowMs) == WAIT_OBJECT_0)
+            {
+                m_innerActivated.ResetEvent();
+                dequeueAndProcess();
+            }
+        }
+
+        // Fire coalesced file activation as a single event containing all files.
+        if (coalescedFiles.Size() > 0)
+        {
+            auto mergedFileArgs = winrt::make<FileActivatedEventArgs>(coalescedVerb, coalescedFiles);
+            auto mergedAppArgs = winrt::make<AppActivationArguments>(ExtendedActivationKind::File, mergedFileArgs.as<IInspectable>());
+            m_activatedEvent(*this, mergedAppArgs);
+        }
+
+        // Signal cleanup events for all coalesced file activation requests so that the
+        // redirecting processes can exit.
+        for (const auto& req : fileRequestInfos)
+        {
+            activity.RedrectionActivatedEvent(req.id);
+
+            std::wstring eventName = req.name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
             if (cleanupEvent.try_open(eventName.c_str()))
             {
-                // If the event is missing, it means the waiter gave up.  Ignore the error.
                 cleanupEvent.SetEvent();
             }
-            activity.RequestCleanupEvent(id);
+            activity.RequestCleanupEvent(req.id);
         }
 
         activity.Stop();
