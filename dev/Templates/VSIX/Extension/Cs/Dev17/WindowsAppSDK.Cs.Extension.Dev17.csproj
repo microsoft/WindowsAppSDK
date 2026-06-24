@@ -46,9 +46,7 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.TemplateWizardInterface" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="NuGet.VisualStudio" GeneratePathProperty="true" />
     <PackageReference Include="System.Net.Http" />
     <PackageReference Include="System.Text.Json" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
@@ -60,19 +58,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ExtensionDependencies Condition=" '$(ExcludeRestorePackageImports)' != 'true' " Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
-    <Compile Include="..\..\..\Shared\WizardImplementation.cs" Link="WizardImplementation.cs" />
-    <Compile Include="..\..\..\Shared\WizardInfoBarEvents.cs" Link="WizardInfoBarEvents.cs" />
-    <Compile Include="..\..\..\Shared\OutputWindowHelper.cs" Link="OutputWindowHelper.cs" />
     <Compile Include="..\Common\VSPackage.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>VSPackage.resx</DependentUpon>
     </Compile>
-    <Content Include="@(ExtensionDependencies)">
-      <VSIXSubPath>.</VSIXSubPath>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="$(ExtensionDir)WindowsAppSDK.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -86,7 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <!--
       ProjectReferences for the WinUI templates, derived from ..\..\..\..\templates.props:
