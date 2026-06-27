@@ -122,7 +122,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         auto logTelemetry{ AppNotificationBuilderTelemetry::ButtonToString::Start(g_telemetryHelper) };
 
         std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<action content='%ls'%ls%ls%ls%ls%ls%ls%ls/>",
-            m_content.c_str(),
+            EncodeXml(m_content).c_str(),
             GetActivationArguments().c_str(),
             m_useContextMenuPlacement ? L" placement='contextMenu'" : L"",
             m_iconUri ? wil::str_printf<std::wstring>(L" imageUri='%ls'", m_iconUri.ToString().c_str()).c_str() : L"",
