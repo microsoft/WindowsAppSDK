@@ -22,8 +22,9 @@ but with additional functionality, improved developer experience and performance
   - [3.9. PackageRuntimeManager](#39-packageruntimemanager)
   - [3.10. PackageVolume Repair](#310-packagevolume-repair)
   - [3.11. Usability](#311-usability)
-  - [3.12. Is\*Provisioned()](#312-312-isprovisioned)
+  - [3.12. Is\*Provisioned()](#312-isprovisioned)
   - [3.13. Package Validation](#313-package-validation)
+  - [3.14. Pinned Packages](#314-pinned-packages)
 - [4. Examples](#4-examples)
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
@@ -34,6 +35,14 @@ but with additional functionality, improved developer experience and performance
   - [4.7. PackageRuntimeManager.RemovePackageset()](#47-packageruntimemanagerremovepackageset)
   - [4.8. PackageVolume.Repair()](#48-packagevolumerepair)
   - [4.9. IsPackageProvisioned()](#49-ispackageprovisioned)
+  - [4.9. Package Validation](#49-package-validation)
+    - [4.9.1. Using built-in package validators](#491-using-built-in-package-validators)
+    - [4.9.2. Using IPackageValidator to implement custom package validator](#492-using-ipackagevalidator-to-implement-custom-package-validator)
+    - [4.9.3. Using custom package validator as event handler](#493-using-custom-package-validator-as-event-handler)
+  - [4.10. PinPackages()](#410-pinpackages)
+  - [4.11. DepinPackages()](#411-depinpackages)
+  - [4.12. FindPinnedPackages()](#412-findpinnedpackages)
+  - [4.13. IsPackagePinned()](#413-ispackagepinned)
 - [5. Remarks](#5-remarks)
   - [5.1. Platform Support](#51-platform-support)
 - [6. API Details](#6-api-details)
@@ -66,6 +75,8 @@ following scenarios:
 * Reset a package
 * Provision a package
 * Deprovision a package
+* Pin a package
+* Depin a package
 
 Additional functionality includes:
 
@@ -95,6 +106,8 @@ The following verbs are supported:
 * Reset
 * Provision
 * Deprovision
+* Pin
+* Depin
 
 These methods accept their target package(s) as their first parameter. This parameter can be an
 various types of information including:
@@ -134,6 +147,9 @@ The following table shows the supported permutations of verbs and targets:
 |IsProvisioned           |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 |Provision               |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 |Deprovision             |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|IsPinned                |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|Pin                     |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|Depin                   |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 
 Legend:
 
@@ -325,6 +341,8 @@ return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
 |IsProvisioned           |    N/A     |            Used           |  Optional  |             N/A             |
 |Provision               |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
 |Deprovision             |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
+|Pin                     |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
+|Depin                   |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
 
 **Legend:**
 
@@ -424,6 +442,36 @@ Package validators can be customized to verify any part of packages'
 handlers for the `PackageValidationEventSource.ValidationRequested` event.  The
 `PackageValidationHandler` runtimeclass provides a standard implementation of such a handler,
 and accepts any implementation class derived from the `IPackageValidator` interface.
+
+## 3.14. Pinned Packages
+
+Packages can be pinned to prevent them from being removed. Pinning a package by its package family
+name ensures that all packages in that family are protected from removal until explicitly depinned.
+This is useful for scenarios where a package is critical to the operation of an application or
+system component and should not be inadvertently uninstalled.
+
+Pinning is a subset of provisioning. Windows tracks a list of provisioned packages. Packages in this
+list have the following behaviors:
+
+1. **Lifetime Management** -- The provisioned list acts as a reference to packages in the family
+   preventing their removal from the system. Provisioned packages can be deregistered for users but
+   even if a package isn't registered to any user (and otherwise has no other references on the
+   package requiring its presence) the provisioned package cannot be destaged.
+2. **Register For All Users** -- Packages in the provisioned list should be registered for all users.
+
+Windows tracks a similar list of pinned packages, but this only provides a reference for lifetime
+management. Pinning a package provides a subset of provisioning behavior, specifically #1 (without
+#2).
+
+The following operations are supported:
+
+* **Pin** -- Pin all packages in a package family to prevent removal.
+* **Depin** -- Remove the pin from a package family, allowing its packages to be removed.
+* **Find** -- Enumerate all currently pinned package families.
+
+Pinning is scoped to the caller's context. A pinned package family cannot be destaged via
+`RemovePackage*` APIs until it is depinned. Attempts to destage a pinned package will fail with an
+appropriate error.
 
 # 4. Examples
 
@@ -973,6 +1021,89 @@ void InstallPackageWithCustomValidation()
 }
 ```
 
+## 4.10. PinPackages()
+
+Fabrikam app pins Contoso's Muffin package to prevent it from being removed.
+
+```c#
+void PinMuffin()
+{
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    packageDeploymentManager.PinPackages("contoso.muffin_1234567890abc");
+    Console.WriteLine("Pinned contoso.muffin");
+}
+```
+
+## 4.11. DepinPackages()
+
+Fabrikam app depins Contoso's Muffin package, allowing it to be removed.
+
+```c#
+void DepinMuffin()
+{
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    packageDeploymentManager.DepinPackages("contoso.muffin_1234567890abc");
+    Console.WriteLine("Depinned contoso.muffin");
+}
+```
+
+## 4.12. FindPinnedPackages()
+
+Fabrikam app enumerates all currently pinned package families.
+
+```c#
+void ShowPinnedPackages()
+{
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    var pinnedFamilies = packageDeploymentManager.FindPinnedPackages();
+    if (pinnedFamilies.Count == 0)
+    {
+        Console.WriteLine("No pinned packages");
+    }
+    else
+    {
+        foreach (var familyName in pinnedFamilies)
+        {
+            Console.WriteLine($"Pinned: {familyName}");
+        }
+    }
+}
+```
+
+## 4.13. IsPackagePinned()
+
+Fabrikam app pinning Contoso's Muffin and Waffle packages if necessary, and with explicit user confirmation before pinning.
+
+```c#
+void PinIfNeeded()
+{
+    var packageSet = new PackageSet() {
+        Items = { new PackageSetItem() { PackageFamilyName = "contoso.muffin_1234567890abc" },
+                { new PackageSetItem() { PackageFamilyName = "contoso.waffle_1234567890abc" }
+        }
+    };
+
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    if (packageDeploymentManager.IsPackageSetPinned(packageSet))
+    {
+        Console.WriteLine("Already pinned");
+        return;
+    }
+
+    bool ok = PromptUserForConfirmation();
+    if (!ok)
+    {
+        return;
+    }
+
+    foreach (var item in packageSet.Items)
+    {
+        packageDeploymentManager.PinPackages(item.PackageFamilyName);
+        Console.WriteLine($"Pinned: {item.PackageFamilyName}");
+    }
+}
+```
+
 # 5. Remarks
 
 ## 5.1. Platform Support
@@ -996,8 +1127,92 @@ if (options.IsLimitToExistingPackagesSupported)
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.Management.Deployment
 {
-    [contractversion(3)]
+    [contractversion(4)]
     apicontract PackageDeploymentContract{};
+
+    /// Features can be queried if currently available/enabled.
+    /// @see PackageDeploymentManager.IsPackageDeploymentFeatureSupported()
+    [contract(PackageDeploymentContract, 2)]
+    enum PackageDeploymentFeature
+    {
+        PackageUriScheme_ms_uup             = 1,
+        IsPackageReadyOrNewerAvailable      = 2,
+        RemovePackageByUri                  = 3,
+        ResetPackage                        = 4,
+        RepairPackage                       = 5,
+        ProvisionPackage_Framework          = 6,
+        PinPackage                          = 7,
+    };
+
+    /// Features can be queried if currently available/enabled.
+    /// @see PackageVolume.IsFeatureSupported()
+    [contract(PackageDeploymentContract, 3)]
+    enum PackageVolumeFeature
+    {
+        GetDefault          = 1,
+        SetDefault          = 2,
+        Add                 = 3,
+        Remove              = 4,
+        SetOffline          = 5,
+        SetOnline           = 6,
+        GetAvailableSpace   = 7,
+    };
+
+    /// The progress status of the deployment request.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageDeploymentProgressStatus
+    {
+        Queued = 0,             // The request is queued
+        InProgress = 1,         // The request is in progress
+        CompletedSuccess = 2,   // The request completed successfully
+        CompletedFailure = 3,   // The request failed with some critical internal error.
+    };
+
+    /// Contains progress information for the deployment request.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress
+    [contract(PackageDeploymentContract, 1)]
+    struct PackageDeploymentProgress
+    {
+        PackageDeploymentProgressStatus Status;
+
+        /// The progress percentage of the deployment request.
+        /// @note This is a double with values 0.0-1.0. Windows.Management.Deployment.DeploymentProgress.percentage is uint32 with values 0-100.
+        Double Progress;
+    };
+
+    /// The status of the deployment request.
+    /// @see PackageDeploymentResult.Status
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageDeploymentStatus
+    {
+        InProgress = 0,         // The request is in progress
+        CompletedSuccess = 1,   // The request completed successfully
+        CompletedFailure = 2,   // The request failed with some critical internal error.
+    };
+
+    /// Provides the result of a deployment request.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageDeploymentResult
+    {
+        PackageDeploymentStatus Status { get; };
+
+        /// The extended error code can be used to distinguish a specific error condition which needs to be handled differently from the general error indicated by the return code. The extended error code may provide a more specific reason for the failure that caused the general error. Also, it usually corresponds directly to the specific message in the ErrorText.
+        HRESULT Error { get; };
+
+        /// The extended error code can be used to distinguish a specific error condition which needs to be handled differently from the general error indicated by the return code. The extended error code may provide a more specific reason for the failure that caused the general error. Also, it usually corresponds directly to the specific message in the ErrorText.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.extendederrorcode
+        HRESULT ExtendedError { get; };
+
+        /// Gets extended error text for the error if the deployment operation is not successful.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.errortext
+        String ErrorText { get; };
+
+        /// Gets the activity identifier used to look up an event in Windows Event Viewer. Gets the activity identifier used to look up an event. All events of a deployment operation are logged with the same activityId.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.activityid
+        Guid ActivityId { get; };
+    }
 
     /// Represents a package storage volume.
     /// @note A volume 'name' is the volume's media ID (you can treat 'Volume Name' == 'Volume Media ID').
@@ -1156,6 +1371,28 @@ namespace Microsoft.Windows.Management.Deployment
         NewerAvailable       = 2,
     };
 
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetItem
+    {
+        PackageSetItem();
+
+        String Id;
+        String PackageFamilyName;
+        Windows.ApplicationModel.PackageVersion MinVersion;
+        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures ProcessorArchitectureFilter;
+        Windows.Foundation.Uri PackageUri;
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSet
+    {
+        PackageSet();
+
+        String Id;
+        Windows.Foundation.Uri PackageUri;
+        IVector<PackageSetItem> Items { get; };
+    }
+
     [contract(PackageDeploymentContract, 3)]
     runtimeclass PackageValidationEventArgs
     {
@@ -1204,28 +1441,6 @@ namespace Microsoft.Windows.Management.Deployment
     runtimeclass PackageCertificateEkuValidator : [default] IPackageValidator
     {
         PackageCertificateEkuValidator(String expectedCertificateEku);
-    }
-
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageSetItem
-    {
-        PackageSetItem();
-
-        String Id;
-        String PackageFamilyName;
-        Windows.ApplicationModel.PackageVersion MinVersion;
-        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures ProcessorArchitectureFilter;
-        Windows.Foundation.Uri PackageUri;
-    }
-
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageSet
-    {
-        PackageSet();
-
-        String Id;
-        Windows.Foundation.Uri PackageUri;
-        IVector<PackageSetItem> Items { get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -1556,6 +1771,103 @@ namespace Microsoft.Windows.Management.Deployment
         /// @warning The parameter should be "packageFullName" but can't due to http://task.ms/53280356.
         ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
         Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetItemRuntimeDisposition
+    {
+        PackageSetItemRuntimeDisposition();
+
+        String PackageSetItemId{ get; };
+        String PackageFullName{ get; };
+        String PackageDependencyId{ get; };
+        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContextId PackageDependencyContextId{ get; };
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetRuntimeDisposition
+    {
+        PackageSetRuntimeDisposition();
+
+        String PackageSetId;
+        IVector<PackageSetItemRuntimeDisposition> PackageSetItemRuntimeDispositions { get; };
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageRuntimeManager
+    {
+        // Get an instance of the manager
+        static PackageRuntimeManager GetDefault();
+
+        // Make the package(s) in the package set available to the calling process
+        // i.e. dynamically add the package(s) in the package set to the caller's package graph.
+        // This is equivalent to
+        //   FOREACH psi IN packageSet.Items
+        //       pd = TryCreatePackageDependency(psi)
+        //       AddPackageDependency(pd)
+
+        Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSet(
+            PackageSet packageSet);
+
+        [method_name("AddPackageSetWithOptions")]
+        Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSet(
+            PackageSet packageSet,
+            Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
+            Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
+
+        void RemovePackageSet(
+            Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition packageSetRuntimeDisposition);
+
+        //-------------------------------------------------------------
+        // Pinned packages
+
+        /// Pin the packages in the specified package family to prevent removal.
+        /// @param packageFamilyName The package family name of the packages to pin.
+        [contract(PackageDeploymentContract, 4)]
+        void PinPackages(String packageFamilyName);
+
+        /// Pin the packages identified by the specified URI to prevent removal.
+        /// @param packageUri The URI identifying the packages to pin.
+        [contract(PackageDeploymentContract, 4)]
+        void PinPackagesByUri(Windows.Foundation.Uri packageUri);
+
+        /// Pin all packages in the specified package set to prevent removal.
+        /// @param packageSet The package set containing the packages to pin.
+        [contract(PackageDeploymentContract, 4)]
+        void PinPackageSet(PackageSet packageSet);
+
+        /// Depin the packages in the specified package family, allowing removal.
+        /// @param packageFamilyName The package family name of the packages to depin.
+        [contract(PackageDeploymentContract, 4)]
+        void DepinPackages(String packageFamilyName);
+
+        // Return true if the package(s) are pinned
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackagePinned(String package);
+
+        // Return true if the package(s) are pinned
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackagePinnedByUri(Windows.Foundation.Uri packageUri);
+
+        // Return true if the package(s) are pinned
+        /// @note packageSet[Item].PackageUri is optional
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackageSetPinned(PackageSet packageSet);
+
+        /// Depin the packages identified by the specified URI, allowing removal.
+        /// @param packageUri The URI identifying the packages to depin.
+        [contract(PackageDeploymentContract, 4)]
+        void DepinPackagesByUri(Windows.Foundation.Uri packageUri);
+
+        /// Depin all packages in the specified package set, allowing removal.
+        /// @param packageSet The package set containing the packages to depin.
+        [contract(PackageDeploymentContract, 4)]
+        void DepinPackageSet(PackageSet packageSet);
+
+        /// Find all currently pinned package families.
+        /// @return A list of package family names that are currently pinned.
+        [contract(PackageDeploymentContract, 4)]
+        IVector<String> FindPinnedPackages();
     }
 
     [contract(PackageDeploymentContract, 1)]
