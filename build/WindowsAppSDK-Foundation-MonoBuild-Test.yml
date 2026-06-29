@@ -1,0 +1,170 @@
+#####################################################################################################################################
+#                                  Foundation MonoBuild Test Pipeline                                                               #
+#####################################################################################################################################
+#                                                                                                                                   #
+# Test pipeline that consumes Foundation build artifacts produced by the WinAppSDK MonoBuild and runs the Foundation TAEF test    #
+# matrix against them.                                                                                                              #
+#                                                                                                                                   #
+# Scope                                                                                                                             #
+#   - Test stages only (Test_x86, Test_x64, Test_arm64).                                                                            #
+#   - Pack, StaticValidationTest, BuildAndTestSampleApps are NOT included; Pack already ran in the parent monobuild's Foundation   #
+#     stage and the other two depend on Pack outputs in the same run. Those will return as a follow-up once they're adapted to     #
+#     consume `Component-Foundation-Final` from the parent monobuild instead of the current run's Pack stage.                       #
+#                                                                                                                                   #
+# Trigger contract                                                                                                                  #
+#   - All triggers are configured in the ADO pipeline UI (Build Completion / Pipeline Resource trigger), not in this YAML.          #
+#   - Source pipeline + run id are passed as queue-time parameters (`sourcePipelineId` / `sourceBuildId`) so any monobuild          #
+#     definition (Nightly, future Official, 189940, ...) can feed this pipeline without YAML edits.                                 #
+#                                                                                                                                   #
+# Artifact reuse contract                                                                                                           #
+#   - Sets `foundationUseBuildOutputFromPipeline` / `foundationUseBuildOutputFromBuildId` to point at the parent monobuild run.     #
+#   - WindowsAppSDK-CommonVariables.yml coalesces these into `_foundationBuildOutputPipeline`/`_foundationBuildOutputBuildId`,      #
+#     which the RunTests step template consumes to download Build-Foundation-<plat>-Release/Build-Foundation-MRT-<plat>-Release artifacts. #
+#                                                                                                                                   #
+# Tag-back contract (see CopilotBrain/Docs/Mono-Build-Pipeline-Migration.md §8.3)                                                   #
+#   - On overall success, tags the parent monobuild with `TestSucceeded_Foundation`.                                                #
+#   - On failure, no tag is added; TestGate falls through to its timeout / manual-override path when the success tag is absent.    #
+#                                                                                                                                   #
+#####################################################################################################################################
+
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# Build run name shows the locked source pipeline label + build id so it's obvious
+# which parent run each test run is paired with.
+name: '${{ parameters.sourcePipeline }} #${{ parameters.sourceBuildId }} (def $(sourcePipelineId))'
+
+parameters:
+  # Source pipeline is locked to known definitions and mapped below to the numeric
+  # definition id used by artifact download and tag-back.
+  - name: sourcePipeline
+    displayName: 'Source pipeline'
+    type: string
+    default: 'Monobuild-Nightly'
+    values:
+      - 'Monobuild-Nightly'
+      - 'Monobuild-Official'
+      - 'Foundation-PR'
+  - name: sourceBuildId
+    displayName: 'Source monobuild Build Id (run id of the producing build) - required'
+    type: string
+    default: ''
+  - name: TestOnArm64
+    displayName: 'Run tests on arm64'
+    type: boolean
+    default: true
+
+variables:
+  - ${{ if eq(parameters.sourcePipeline, 'Monobuild-Nightly') }}:
+    - name: sourcePipelineId
+      value: '190463'
+  - ${{ if eq(parameters.sourcePipeline, 'Monobuild-Official') }}:
+    - name: sourcePipelineId
+      value: '190464'
+  - ${{ if eq(parameters.sourcePipeline, 'Foundation-PR') }}:
+    - name: sourcePipelineId
+      value: '189940'
+  - template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
+  - template: WindowsAppSDK-CommonVariables.yml
+  - group: WinAppSDK-Foundation-Build-Variables
+
+  # ── Reuse contract: pull binaries + transport packages from the source monobuild run ───────────────────────────────
+  # Foundation's WindowsAppSDK-CommonVariables.yml coalesces these into _foundationBuildOutputPipeline / _foundationBuildOutputBuildId,
+  # which the RunTests step template already consumes to download Build-Foundation-<plat>-Release/Build-Foundation-MRT-<plat>-Release from
+  # the parent monobuild run.
+  - name: foundationUseBuildOutputFromPipeline
+    value: $(sourcePipelineId)
+  - name: foundationUseBuildOutputFromBuildId
+    value: ${{ parameters.sourceBuildId }}
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    # TODO: Pinned to the WASDK monobuild dev branch while the monobuild contract is
+    # still in flight. Once the trigger flow lands on release/main and we're ready to
+    # consume monobuild templates from the same branch the parent run is executing on,
+    # switch this to a queue-time parameter (or pass it through the trigger POST body
+    # alongside resources.repositories.self.refName) so the test pipeline picks up the
+    # exact monobuild commit that produced its input artifacts.
+    - repository: WinAppSDK
+      type: git
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'WinAppSDK-Github'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
+
+extends:
+  template: v2/Microsoft.NonOfficial.yml@templates
+  parameters:
+    featureFlags:
+      EnableCDPxPAT: false
+      WindowsHostVersion:
+        Version: 2022
+        Network: R1
+
+    platform:
+      name: 'windows_undocked'
+
+    cloudvault:
+      enabled: false
+
+    globalSdl:
+      tsa:
+        enabled: $(TsaEnabled)
+      isNativeCode: false
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
+      psscriptanalyzer:
+        enable: true
+        break: true
+      binskim:
+        # Test pipeline does not produce binaries — only consumes monobuild artifacts and runs tests.
+        enabled: false
+        break: false
+      prefast:
+        enabled: false
+        break: false
+      apiscan:
+        enabled: false
+        break: false
+
+    stages:
+      # ── Test stages only ───────────────────────────────────────────────────────────────────────────────────────────────────────
+      # Test_<plat> downloads Build-Foundation-<plat>-Release / Build-Foundation-MRT-<plat>-Release from the parent monobuild run
+      # via $(_foundationBuildOutputPipeline) / $(_foundationBuildOutputBuildId) and runs the TAEF test matrix.
+      # buildStageDependencies_* are passed empty so Test_* don't try to reference non-existent Build_* stages.
+      #
+      # Pack, StaticValidationTest, BuildAndTestSampleApps are intentionally NOT included here:
+      #   - Pack already ran in the parent monobuild's Foundation stage; re-running it would be duplicate work.
+      #   - StaticValidationTest currently consumes the in-pipeline TransportPackage artifact (Pack output).
+      #   - BuildAndTestSampleApps reads stageDependencies.Pack.NugetPackage outputs.
+      # Both will be re-introduced in a follow-up that adapts those stages to consume `Component-Foundation-Final`
+      # from the parent monobuild run instead of the current run's Pack stage.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+        parameters:
+          testMatrix: ${{ variables.PipelineTests }}
+          TestOnArm64: ${{ parameters.TestOnArm64 }}
+          buildStageDependencies_x86: []
+          buildStageDependencies_x64: []
+          buildStageDependencies_arm64: []
+
+      # ── Tag the parent monobuild on success ───────────────────────────────────────────────────────────────────────────────────
+      # Delegated to the shared monorepo template so every component uses the same
+      # tag-back contract (`TestSucceeded_<componentName>`). See
+      # Build/WindowsAppSDK/AzurePipelinesTemplates/WinAppSDK-TagTestResult-Stage.yml.
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WinAppSDK-TagTestResult-Stage.yml@WinAppSDK
+        parameters:
+          componentName: 'Foundation'
+          sourceBuildId: ${{ parameters.sourceBuildId }}
+          dependsOn:
+            - Test_x86
+            - Test_x64
+            - ${{ if eq(parameters.TestOnArm64, true) }}:
+              - Test_arm64

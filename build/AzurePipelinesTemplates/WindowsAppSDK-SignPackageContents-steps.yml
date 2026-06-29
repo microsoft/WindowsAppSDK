@@ -31,7 +31,7 @@ steps:
       archiveFilePatterns: '${{parameters.inputPackageDirectory}}\${{package}}'
       destinationFolder: '$(Agent.TempDirectory)/${{package}}'
 
-  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
     parameters:
       DisplayName: 'CodeSign package contents'
       FolderPath: '$(Agent.TempDirectory)/${{package}}'
@@ -47,7 +47,7 @@ steps:
       archiveFile: '${{parameters.outputPackageDirectory}}/${{package}}'
 
   - ${{ if eq(parameters.packageType, 'nupkg') }}:
-    - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
       parameters:
         DisplayName: 'CodeSign repacked package (Nuget)'
         FolderPath: '${{parameters.outputPackageDirectory}}'
@@ -56,7 +56,7 @@ steps:
         KeyCode: 'CP-401405'
 
   - ${{ if eq(parameters.packageType, 'vsix') }}:
-    - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
       parameters:
         DisplayName: 'CodeSign repacked package (VSIX)'
         FolderPath: '${{parameters.outputPackageDirectory}}'

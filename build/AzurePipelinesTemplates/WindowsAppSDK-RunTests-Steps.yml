@@ -8,6 +8,10 @@ parameters:
   SamplesArtifactName: ''
   IsOneBranch: false
   callingStage: ''
+  # When 'true', this template is being invoked from the monobuild context where
+  # the WindowsAppSDK monorepo IS the self repo. ConvertWttLogToXUnit-Steps is
+  # invoked WITHOUT the @WinAppSDK suffix.
+  IsMonobuild: 'false'
 
 steps:
   - task: powershell@2
@@ -24,9 +28,9 @@ steps:
       source: specific
       runVersion: specific
       project: $(System.TeamProjectId)
-      pipeline: $(_useBuildOutputFromPipeline)
-      pipelineId: $(_useBuildOutputFromBuildId)
-      artifactName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+      pipeline: $(_foundationBuildOutputPipeline)
+      pipelineId: $(_foundationBuildOutputBuildId)
+      artifactName: "Build-Foundation-$(buildPlatform)-$(buildConfiguration)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: DownloadPipelineArtifact@2
@@ -35,9 +39,9 @@ steps:
       source: specific
       runVersion: specific
       project: $(System.TeamProjectId)
-      pipeline: $(_useBuildOutputFromPipeline)
-      pipelineId: $(_useBuildOutputFromBuildId)
-      artifactName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+      pipeline: $(_foundationBuildOutputPipeline)
+      pipelineId: $(_foundationBuildOutputBuildId)
+      artifactName: "Build-Foundation-MRT-$(buildPlatform)-$(buildConfiguration)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: CopyFiles@2
@@ -145,9 +149,9 @@ steps:
             source: specific
             runVersion: specific
             project: $(System.TeamProjectId)
-            pipeline: $(_useBuildOutputFromPipeline)
-            pipelineId: $(_useBuildOutputFromBuildId)
-            artifactName: ${{ parameters.SamplesArtifactName }}_${{ featureAreas.key }}
+            pipeline: $(_foundationBuildOutputPipeline)
+            pipelineId: $(_foundationBuildOutputBuildId)
+            artifactName: ${{ parameters.SamplesArtifactName }}_${{ artifactNameSuffix }}
             targetPath: '$(Build.SourcesDirectory)\$(SamplesRepoName)\Samples'
             patterns: |
               **
@@ -247,16 +251,18 @@ steps:
         -Configuration "${{ parameters.buildConfiguration }}"
         -Test
         -List
-        -wprProfilePath "$(Build.SourcesDirectory)\WindowsAppSDKConfig\src\test\AppModelProviders.wprp"
+        -wprProfilePath "$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK\src\test\AppModelProviders.wprp"
         -callingStage "${{ parameters.callingStage }}"
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WindowsAppSDKConfig
+  - template: WindowsAppSDK-ConvertWttLogToXUnit-Wrapper.yml
     parameters:
-      WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
-      xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
-      TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
-      BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
-      CheckoutPath: '$(Build.SourcesDirectory)\WindowsAppSDKConfig'
+      IsMonobuild: ${{ eq(parameters.IsMonobuild, 'true') }}
+      InnerParams:
+        WttInputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\Te.wtl'
+        xunitOutputPath: '$(Build.SourcesDirectory)\TestOutput\$(buildConfiguration)\$(buildPlatform)\testResults-$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}.xml'
+        TestNamePrefix: '$(buildConfiguration)_$(buildPlatform)_${{ parameters.ImageName }}'
+        BypassTests: '$(Build.SourcesDirectory)\test\BypassTests.json'
+        CheckoutPath: '$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK'
 
   - task: PublishTestResults@2
     displayName: 'Publish test results'
