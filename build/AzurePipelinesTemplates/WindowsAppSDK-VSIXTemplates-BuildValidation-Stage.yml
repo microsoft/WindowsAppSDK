@@ -23,11 +23,21 @@ parameters:
   type: object
   default:
     type: windows
+# Optional gate wiring used by the PR pipeline to short-circuit when no
+# dev/Templates files changed. Defaults preserve official-pipeline behavior.
+- name: dependsOn
+  type: object
+  default: []
+- name: condition
+  type: string
+  default: ''
 
 stages:
 - stage: VSIXTemplates_BuildValidation
   displayName: 'Validate VSIX templates build'
-  dependsOn: []
+  dependsOn: ${{ parameters.dependsOn }}
+  ${{ if ne(parameters.condition, '') }}:
+    condition: ${{ parameters.condition }}
   jobs:
   - job: BuildVSIX
     displayName: 'Restore + build WindowsAppSDK.Extension.sln (Standalone + Component)'
