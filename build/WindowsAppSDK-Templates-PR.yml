@@ -111,9 +111,13 @@ extends:
                     # (1ES convention, matching the other Templates stages which
                     # all reference $(Build.SourcesDirectory)\WindowsAppSDK). The
                     # task cwd is not the repo root, so point git at it with -C.
-                    # Fail fast: if git can't determine the diff, throw so the gate
-                    # goes red instead of silently running full validation.
-                    $ErrorActionPreference = 'Stop'
+                    #
+                    # git writes normal progress (e.g. "From https://github.com/...")
+                    # to stderr even on success, so keep ErrorActionPreference at
+                    # Continue -- otherwise that stderr becomes a terminating
+                    # NativeCommandError. Fail-fast is enforced via $LASTEXITCODE +
+                    # throw, so a real git failure still turns the gate red.
+                    $ErrorActionPreference = 'Continue'
                     $repo = Join-Path $env:BUILD_SOURCESDIRECTORY 'WindowsAppSDK'
                     Write-Host "Using repo: $repo"
 
@@ -121,8 +125,8 @@ extends:
                     $changed = 'True'
                     if ($env:BUILD_REASON -eq 'PullRequest') {
                       $target = $env:SYSTEM_PULLREQUEST_TARGETBRANCH
-                      git -C $repo fetch --no-tags origin $target 2>&1 | Out-Null
-                      if ($LASTEXITCODE -ne 0) { throw "git fetch failed (exit $LASTEXITCODE) for target '$target'" }
+                      $fetchOut = git -C $repo fetch --no-tags origin $target 2>&1
+                      if ($LASTEXITCODE -ne 0) { throw "git fetch failed (exit $LASTEXITCODE) for target '$target': $fetchOut" }
                       $files = git -C $repo diff --name-only FETCH_HEAD HEAD 2>&1
                       if ($LASTEXITCODE -ne 0) { throw "git diff failed (exit $LASTEXITCODE): $files" }
                       $hit = $files | Where-Object { $_ -like 'dev/Templates/*' }
