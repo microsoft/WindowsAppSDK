@@ -41,6 +41,15 @@ the .NET SDK version used for scaffolding and building. Accepts a full version
 (e.g. 8.0). This closes the gap between CI (which installs a specific SDK) and
 local dev boxes (which may have a newer SDK on the PATH).
 
+.PARAMETER WindowsAppSdkVersion
+When specified, passes --wasdk-version to every build-validation scaffold so the
+generated projects pin Microsoft.WindowsAppSDK to this exact version instead of
+the template default of "*". Use this when the active NuGet feed publishes
+in-development/experimental WindowsAppSDK builds (e.g. the internal feed serves a
+higher version than the latest public release) that the "*" wildcard would
+otherwise float to. The dedicated version-assertion scenarios (which validate
+the shipped "*" default and explicit-version behavior) are unaffected.
+
 .PARAMETER KeepWorkingDirectory
 Preserves the temporary scaffolding directory instead of deleting it.
 
@@ -83,6 +92,9 @@ param(
 
     [Parameter()]
     [string]$DotnetSdkVersion,
+
+    [Parameter()]
+    [string]$WindowsAppSdkVersion,
 
     [Parameter()]
     [switch]$KeepWorkingDirectory
@@ -292,14 +304,19 @@ function New-ProjectFromTemplate {
         [string]$TemplateShortName,
         [string]$ProjectName,
         [string]$OutputPath,
-        [string]$WorkingDirectory
+        [string]$WorkingDirectory,
+        [string]$WindowsAppSdkVersion
     )
 
     if (-not (Test-Path -Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
     }
 
-    Invoke-DotnetCommand -Arguments @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force', '--no-update-check') -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
+    $newArgs = @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force', '--no-update-check')
+    if ($WindowsAppSdkVersion) {
+        $newArgs += @('--wasdk-version', $WindowsAppSdkVersion)
+    }
+    Invoke-DotnetCommand -Arguments $newArgs -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
 }
 
 function Test-WinUiProjectTemplate {
@@ -308,12 +325,13 @@ function Test-WinUiProjectTemplate {
         [ValidateSet('App', 'Library', 'Test')]
         [string]$Kind,
         [string]$Platform,
-        [string]$WorkingRoot
+        [string]$WorkingRoot,
+        [string]$WindowsAppSdkVersion
     )
 
     $projectName = '{0}_{1}_{2}' -f $TemplateShortName, $Platform, ([Guid]::NewGuid().ToString('N').Substring(0, 8))
     $projectPath = Join-Path -Path $WorkingRoot -ChildPath $projectName
-    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot
+    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $WindowsAppSdkVersion
     Add-Result -Template $TemplateShortName -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
     $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName.csproj"
@@ -349,12 +367,13 @@ function Test-WinUiProjectTemplate {
 function Test-ItemTemplates {
     param(
         [string]$WorkingRoot,
-        [string]$Platform
+        [string]$Platform,
+        [string]$WindowsAppSdkVersion
     )
 
     $hostName = 'ItemHost_{0}' -f ([Guid]::NewGuid().ToString('N').Substring(0, 8))
     $hostPath = Join-Path -Path $WorkingRoot -ChildPath $hostName
-    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot
+    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $WindowsAppSdkVersion
     Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $hostPath
 
     $projectFile = Join-Path -Path $hostPath -ChildPath "$hostName.csproj"
@@ -501,11 +520,11 @@ try {
 
     foreach ($template in $projectTemplates) {
         foreach ($platform in $Platforms) {
-            Test-WinUiProjectTemplate -TemplateShortName $template.ShortName -Kind $template.Kind -Platform $platform -WorkingRoot $workingRoot
+            Test-WinUiProjectTemplate -TemplateShortName $template.ShortName -Kind $template.Kind -Platform $platform -WorkingRoot $workingRoot -WindowsAppSdkVersion $WindowsAppSdkVersion
         }
     }
 
-    Test-ItemTemplates -WorkingRoot $workingRoot -Platform $Platforms[0]
+    Test-ItemTemplates -WorkingRoot $workingRoot -Platform $Platforms[0] -WindowsAppSdkVersion $WindowsAppSdkVersion
 
     # ─── Version parameter test scenarios ───
     Write-Step 'Running version parameter test scenarios...'
@@ -721,16 +740,20 @@ try {
 
     # Scenario 7b: Working NuGet source — restore resolves up-to-date packages
     # and the project builds successfully. Complements 7a by proving that when
-    # pointed at valid feeds the default Version="*" wildcard pulls the latest
-    # stable packages and produces a clean build.
+    # pointed at valid feeds the version wildcard (or the pinned
+    # -WindowsAppSdkVersion, when supplied) pulls real packages and produces a
+    # clean build.
     Write-Step 'Testing working NuGet source resolves packages and builds...'
     $workingSourcePath = Join-Path -Path $workingRoot -ChildPath 'WorkingSource'
-    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'WorkingSource' -OutputPath $workingSourcePath -WorkingDirectory $workingRoot
+    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'WorkingSource' -OutputPath $workingSourcePath -WorkingDirectory $workingRoot -WindowsAppSdkVersion $WindowsAppSdkVersion
 
     $workingSourceCsproj = Join-Path -Path $workingSourcePath -ChildPath 'WorkingSource.csproj'
 
-    # Verify the csproj uses wildcard versions (the default)
-    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
+    # Verify the csproj uses the expected WindowsAppSDK version: the pinned value
+    # when -WindowsAppSdkVersion was supplied, otherwise the template default '*'.
+    # BuildTools is always left at the '*' default.
+    $expectedWorkingWasdk = if ($WindowsAppSdkVersion) { $WindowsAppSdkVersion } else { '*' }
+    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion $expectedWorkingWasdk
     Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
 
     # Explicit restore to confirm packages are fetched from the working feeds

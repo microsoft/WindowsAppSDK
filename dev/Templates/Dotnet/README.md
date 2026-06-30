@@ -150,6 +150,13 @@ launches every template, use the included script:
 ```powershell
 .\dev\Templates\Dotnet\Test-DotnetNewTemplates.ps1                      # full run
 .\dev\Templates\Dotnet\Test-DotnetNewTemplates.ps1 -SkipAppLaunch       # CI-friendly
+
+# Pin the WindowsAppSDK version used by the build-validation scaffolds. Use this
+# when the active NuGet feed publishes in-development/experimental WindowsAppSDK
+# builds that the template's default Version="*" would otherwise float to (for
+# example, an internal feed serving a higher version than the latest public
+# release). The version-assertion scenarios still validate the shipped "*" default.
+.\dev\Templates\Dotnet\Test-DotnetNewTemplates.ps1 -SkipAppLaunch -WindowsAppSdkVersion 2.2.0
 ```
 
 ### Validation Checklist
