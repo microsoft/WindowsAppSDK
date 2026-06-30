@@ -407,7 +407,22 @@ try {
     }
     New-Item -ItemType Directory -Path $workingRoot -Force | Out-Null
 
-    $nugetFallback = Join-Path -Path $workingRoot -ChildPath '.nuget'
+    # Use a SHORT, dedicated NuGet package cache instead of a path nested
+    # under the deep working directory. The WinUI XAML compiler (and other
+    # build tooling) resolves transitive assemblies such as
+    # Microsoft.InteractiveExperiences.Projection.dll directly out of this cache
+    # using APIs that are NOT long-path aware. Any WindowsAppSDK build that carries
+    # long pre-release version segments (e.g. "2.0.15-experimental-...")
+    # that, when combined with a deep cache root, pushes those assembly paths past
+    # Windows MAX_PATH (260). When that happens, the XAML compiler silently
+    # fails to resolve the type universe and never emits App.g.i.cs, causing a
+    # downstream CS2001 when the test templates build. A short cache root keeps
+    # every package path comfortably under 260, so any version builds.
+    $nugetCacheRoot = $env:TEMP
+    if ([string]::IsNullOrEmpty($nugetCacheRoot)) {
+        $nugetCacheRoot = 'C:'
+    }
+    $nugetFallback = Join-Path -Path "$nugetCacheRoot\" -ChildPath ('wn' + [Guid]::NewGuid().ToString('N').Substring(0, 6))
     New-Item -ItemType Directory -Path $nugetFallback -Force | Out-Null
     $env:NUGET_PACKAGES = $nugetFallback
 
@@ -781,6 +796,11 @@ finally {
     }
 
     Remove-Item Env:DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER -ErrorAction SilentlyContinue
+
+    if (-not $KeepWorkingDirectory.IsPresent -and $nugetFallback -and (Test-Path -Path $nugetFallback)) {
+        Write-Step "Cleaning up NuGet cache '$nugetFallback'"
+        Remove-Item -Path $nugetFallback -Recurse -Force -ErrorAction SilentlyContinue
+    }
 
     if (-not $KeepWorkingDirectory.IsPresent -and (Test-Path -Path $workingRoot)) {
         Write-Step "Cleaning up '$workingRoot'"
