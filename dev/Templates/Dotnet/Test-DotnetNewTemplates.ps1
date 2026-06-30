@@ -308,12 +308,21 @@ function Write-ResolvedPackageVersions {
         [string]$ProjectPath
     )
 
-    # Log the actual resolved Microsoft.WindowsAppSDK / SDK.BuildTools versions.
-    # The templates float these as Version="*", so a green build is only as good
-    # as whatever the feed serves that day. Logging the resolved versions makes a
-    # smoke-test failure point at a specific package build, and turns this test
-    # into an early-warning for regressions in already-published WindowsAppSDK
-    # packages. Logging must never fail the run, hence EAP=Continue + try/finally.
+    # Why we log this:
+    #   The templates reference Microsoft.WindowsAppSDK and the SDK build tools
+    #   with Version="*", so every build quietly picks up whatever the feed
+    #   serves that day. When a build breaks, the first thing we need to know is
+    #   which package versions it actually used.
+    #
+    # What this does:
+    #   Prints the resolved versions (via 'dotnet list package') BEFORE the build
+    #   runs, so they appear in the log even when the build later fails. As a
+    #   bonus, this lets the smoke test act as an early warning when a freshly
+    #   published WindowsAppSDK package regresses.
+    #
+    # Safety:
+    #   Logging must never fail the run, so we keep going on errors
+    #   (ErrorActionPreference = Continue) and always restore state (try/finally).
     Write-Step "Resolving package versions for $(Split-Path -Path $ProjectFile -Leaf)"
     $savedEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
