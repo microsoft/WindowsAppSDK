@@ -105,16 +105,32 @@ extends:
                 displayName: 'Detect dev/Templates changes'
                 inputs:
                   targetType: inline
+                  workingDirectory: '$(Build.SourcesDirectory)'
                   script: |
+                    # The repo is checked out under a WindowsAppSDK subfolder
+                    # (1ES convention, matching the other Templates stages which
+                    # all reference $(Build.SourcesDirectory)\WindowsAppSDK). The
+                    # task cwd is not the repo root, so point git at it with -C.
+                    # Fail fast: if git can't determine the diff, throw so the gate
+                    # goes red instead of silently running full validation.
+                    $ErrorActionPreference = 'Stop'
+                    $repo = Join-Path $env:BUILD_SOURCESDIRECTORY 'WindowsAppSDK'
+                    Write-Host "Using repo: $repo"
+
+                    # Non-PR runs (manual queue) build everything.
                     $changed = 'True'
                     if ($env:BUILD_REASON -eq 'PullRequest') {
-                      git fetch origin $env:SYSTEM_PULLREQUEST_TARGETBRANCH | Out-Null
-                      $files = git diff "origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH" --name-only
+                      $target = $env:SYSTEM_PULLREQUEST_TARGETBRANCH
+                      git -C $repo fetch --no-tags origin $target 2>&1 | Out-Null
+                      if ($LASTEXITCODE -ne 0) { throw "git fetch failed (exit $LASTEXITCODE) for target '$target'" }
+                      $files = git -C $repo diff --name-only FETCH_HEAD HEAD 2>&1
+                      if ($LASTEXITCODE -ne 0) { throw "git diff failed (exit $LASTEXITCODE): $files" }
                       $hit = $files | Where-Object { $_ -like 'dev/Templates/*' }
                       $changed = if ($hit) { 'True' } else { 'False' }
                     }
                     Write-Host "templatesChanged=$changed"
                     Write-Host "##vso[task.setvariable variable=templatesChanged;isOutput=true]$changed"
+                    exit 0
 
       # Build + pack the templates NuGet. IsPRBuild=true makes the stage stamp
       # every pack as <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR# or 0> so the
