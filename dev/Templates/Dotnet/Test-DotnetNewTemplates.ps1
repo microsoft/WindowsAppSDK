@@ -302,6 +302,41 @@ function New-ProjectFromTemplate {
     Invoke-DotnetCommand -Arguments @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force', '--no-update-check') -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
 }
 
+function Write-ResolvedPackageVersions {
+    param(
+        [string]$ProjectFile,
+        [string]$ProjectPath
+    )
+
+    # Log the actual resolved Microsoft.WindowsAppSDK / SDK.BuildTools versions.
+    # The templates float these as Version="*", so a green build is only as good
+    # as whatever the feed serves that day. Logging the resolved versions makes a
+    # smoke-test failure point at a specific package build, and turns this test
+    # into an early-warning for regressions in already-published WindowsAppSDK
+    # packages. Logging must never fail the run, hence EAP=Continue + try/finally.
+    Write-Step "Resolving package versions for $(Split-Path -Path $ProjectFile -Leaf)"
+    $savedEAP = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        Push-Location -Path $ProjectPath
+        & $dotnetPath restore $ProjectFile 2>&1 | ForEach-Object { Write-Host $_ }
+        $packages = & $dotnetPath list $ProjectFile package --include-transitive 2>&1
+        $packages | ForEach-Object { Write-Host $_ }
+        $key = $packages | Select-String -Pattern 'Microsoft\.WindowsAppSDK|Microsoft\.Windows\.SDK\.BuildTools'
+        if ($key) {
+            Write-Host '>> Resolved key package versions:'
+            $key | ForEach-Object { Write-Host "     $($_.Line.Trim())" }
+        }
+    }
+    catch {
+        Write-Warning "Could not list resolved package versions: $_"
+    }
+    finally {
+        Pop-Location
+        $ErrorActionPreference = $savedEAP
+    }
+}
+
 function Test-WinUiProjectTemplate {
     param(
         [string]$TemplateShortName,
@@ -317,6 +352,8 @@ function Test-WinUiProjectTemplate {
     Add-Result -Template $TemplateShortName -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
     $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName.csproj"
+
+    Write-ResolvedPackageVersions -ProjectFile $projectFile -ProjectPath $projectPath
 
     switch ($Kind) {
         'App' {
@@ -481,6 +518,7 @@ try {
 
     $packageToInstall = Get-TemplatePackagePath -PackagePathOverride $PackagePath -ProjectPath $templateProject -Configuration $Configuration -PackOutputDirectory $PackOutputDirectory -RepoRoot $repoRoot
     Write-Step "Using template package '$packageToInstall'"
+    Write-Step "Active .NET SDK: $(& $dotnetPath --version)"
 
     Remove-TemplatePackIfPresent -RepoRoot $repoRoot
     Install-TemplatePack -RepoRoot $repoRoot -PackageToInstall $packageToInstall
