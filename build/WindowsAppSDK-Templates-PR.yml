@@ -16,6 +16,12 @@
 
 trigger: none
 
+parameters:
+- name: WindowsAppSDKVersion
+  displayName: 'WindowsAppSDK version for template validation (* = latest stable)'
+  type: string
+  default: '*'
+
 # Shared variable templates:
 #   - Foundation-TestConfig: test matrices reused from the main pipeline.
 #   - Versions: MajorVersion / MinorVersion / PatchVersion (consumed by CommonVariables).
@@ -158,6 +164,7 @@ extends:
           dependsOnStage: 'DotnetNewTemplates_Build'
           dependsOn: [EvaluateTemplatesPaths]
           condition: eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True')
+          WindowsAppSdkVersion: ${{ parameters.WindowsAppSDKVersion }}
 
       # Build-validate the VSIX. Runs the production VSIX pack steps so
       # VSIX-pack regressions (e.g. VSSDK1300 path overflow) surface at PR

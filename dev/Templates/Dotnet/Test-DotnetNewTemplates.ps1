@@ -85,6 +85,9 @@ param(
     [string]$DotnetSdkVersion,
 
     [Parameter()]
+    [string]$WindowsAppSdkVersion = '*',
+
+    [Parameter()]
     [switch]$KeepWorkingDirectory
 )
 
@@ -92,6 +95,10 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
 $script:exitCode = 0
+# WindowsAppSDK NuGet version passed to `dotnet new --wasdk-version` when
+# scaffolding. Defaults to '*' (latest stable); a caller or the pipeline can pin
+# a known-good version to work around a bad latest package.
+$script:windowsAppSdkVersion = $WindowsAppSdkVersion
 $results = New-Object System.Collections.Generic.List[object]
 $appExecutables = New-Object System.Collections.Generic.List[object]
 $dotnetPath = (Get-Command dotnet -ErrorAction Stop).Source
@@ -292,14 +299,19 @@ function New-ProjectFromTemplate {
         [string]$TemplateShortName,
         [string]$ProjectName,
         [string]$OutputPath,
-        [string]$WorkingDirectory
+        [string]$WorkingDirectory,
+        [string]$WindowsAppSdkVersion
     )
 
     if (-not (Test-Path -Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
     }
 
-    Invoke-DotnetCommand -Arguments @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force', '--no-update-check') -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
+    $createArgs = @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force', '--no-update-check')
+    if (-not [string]::IsNullOrWhiteSpace($WindowsAppSdkVersion)) {
+        $createArgs += @('--wasdk-version', $WindowsAppSdkVersion)
+    }
+    Invoke-DotnetCommand -Arguments $createArgs -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
 }
 
 function Write-ResolvedPackageVersions {
@@ -346,7 +358,7 @@ function Test-WinUiProjectTemplate {
 
     $projectName = '{0}_{1}_{2}' -f $TemplateShortName, $Platform, ([Guid]::NewGuid().ToString('N').Substring(0, 8))
     $projectPath = Join-Path -Path $WorkingRoot -ChildPath $projectName
-    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot
+    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
     Add-Result -Template $TemplateShortName -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
     $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName.csproj"
@@ -389,7 +401,7 @@ function Test-ItemTemplates {
 
     $hostName = 'ItemHost_{0}' -f ([Guid]::NewGuid().ToString('N').Substring(0, 8))
     $hostPath = Join-Path -Path $WorkingRoot -ChildPath $hostName
-    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot
+    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
     Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $hostPath
 
     $projectFile = Join-Path -Path $hostPath -ChildPath "$hostName.csproj"
@@ -517,6 +529,7 @@ try {
     $packageToInstall = Get-TemplatePackagePath -PackagePathOverride $PackagePath -ProjectPath $templateProject -Configuration $Configuration -PackOutputDirectory $PackOutputDirectory -RepoRoot $repoRoot
     Write-Step "Using template package '$packageToInstall'"
     Write-Step "Active .NET SDK: $(& $dotnetPath --version)"
+    Write-Step "WindowsAppSDK version for scaffolding: $script:windowsAppSdkVersion"
 
     Remove-TemplatePackIfPresent -RepoRoot $repoRoot
     Install-TemplatePack -RepoRoot $repoRoot -PackageToInstall $packageToInstall
