@@ -418,7 +418,7 @@ try {
     # fails to resolve the type universe and never emits App.g.i.cs, causing a
     # downstream CS2001 when the test templates build. A short cache root keeps
     # every package path comfortably under 260, so any version builds.
-    $nugetCacheRoot = $env:TEMP
+    $nugetCacheRoot = 'C:'
     if ([string]::IsNullOrEmpty($nugetCacheRoot)) {
         $nugetCacheRoot = 'C:'
     }
