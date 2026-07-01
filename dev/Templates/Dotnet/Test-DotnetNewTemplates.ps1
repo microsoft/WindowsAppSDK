@@ -419,9 +419,6 @@ try {
     # downstream CS2001 when the test templates build. A short cache root keeps
     # every package path comfortably under 260, so any version builds.
     $nugetCacheRoot = 'C:'
-    if ([string]::IsNullOrEmpty($nugetCacheRoot)) {
-        $nugetCacheRoot = 'C:'
-    }
     $nugetFallback = Join-Path -Path "$nugetCacheRoot\" -ChildPath ('wn' + [Guid]::NewGuid().ToString('N').Substring(0, 6))
     New-Item -ItemType Directory -Path $nugetFallback -Force | Out-Null
     $env:NUGET_PACKAGES = $nugetFallback
