@@ -14,6 +14,12 @@ parameters:
 - name: UseCurrentBuild
   type: boolean
   default: false 
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. PublishSymbol-Steps and
+# EsrpCodeSigning-Steps are invoked WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
+  type: boolean
+  default: false
 
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
@@ -33,7 +39,7 @@ steps:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
-      project: $(System.TeamProjectId)
+      project: 55e8140e-57ac-4e5f-8f9c-c7c15b51929d # TODO: replace with $(System.TeamProjectId) once we can have a full WinAppSDK Build on the new mono repo
       pipeline: $(OfficialPipelineID) 
       pipelineId: $(LatestOfficialBuildID) 
 
@@ -43,12 +49,13 @@ steps:
 
 # Future: this stage only requires a the app licensing internal package, but is downloading all transport packages
 # used for aggregation consider refactoring for efficiency.
-- task: PowerShell@2
-  name: ConvertVersionDetailsToPackageConfig
-  displayName: "Convert VersionDetails To PackageConfig"
+- task: MSBuild@1
+  name: GeneratePackagesConfig
+  displayName: "Generate packages.config from CPM"
   inputs:
-    filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\$(foundationRepoPath)build\packages.config'
+    solution: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\RestoreWinAppSDKDependencies.proj'
+    msbuildArguments: '/t:GeneratePackagesConfig'
+  condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: RestoreNuGetPackages
@@ -248,19 +255,23 @@ steps:
     scanType: 'Register'
     failOnAlert: false
 
-- ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
-    parameters:
+- template: WindowsAppSDK-PublishSymbol-Wrapper.yml
+  parameters:
+    IsMonobuild: ${{ parameters.IsMonobuild }}
+    InnerParams:
       SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
+      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
-      Pattern: WindowsAppRuntimeInstall*.exe
-      UseMinimatch: true
-      KeyCode: 'CP-230012'
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
+        Pattern: WindowsAppRuntimeInstall*.exe
+        UseMinimatch: true
+        KeyCode: 'CP-230012'
 
 - task: CopyFiles@2
   displayName: 'Publish Installer'

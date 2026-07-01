@@ -18,9 +18,9 @@ parameters:
 stages:
 - stage: ${{ iif(parameters.runPREfast, 'PREfast_AnyCPU', 'Build_AnyCPU') }}
   # Skip the build job if we are reusing the output of a previous build.
-  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  # foundationUseBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+    eq(variables['foundationUseBuildOutputFromBuildId'],'')
   dependsOn: []
   jobs:
   - job: VerifyCopyrightHeaders
@@ -50,9 +50,9 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
       ${{ if parameters.runPREfast }}:
-        ob_artifactBaseName: "FoundationBinaries_release_anycpu_PREfast"
+        ob_artifactBaseName: "Build-Foundation-anycpu-Release-PREfast"
       ${{ if not( parameters.runPREfast ) }}:
-        ob_artifactBaseName: "FoundationBinaries_release_anycpu"
+        ob_artifactBaseName: "Build-Foundation-anycpu-Release"
       ${{ if parameters.runApiScan }}:
         ob_sdl_apiscan_enabled: true
       ${{ if not( parameters.runApiScan ) }}:

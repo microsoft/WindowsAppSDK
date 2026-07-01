@@ -1,0 +1,192 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# Pack Transport Package Steps — Reusable steps for packaging Foundation NuGet.
+#
+# Downloads all Foundation + MRT build artifacts, stages files, determines version,
+# packs transport + component NuGet packages, signs, and publishes.
+#
+# Used by:
+#   - WindowsAppSDK-PackTransportPackage-Stage.yml (per-component pipeline Pack stage)
+#   - Foundation-Build-Stage.yml (monobuild PackFoundation job)
+
+parameters:
+  - name: SignOutput
+    type: boolean
+    default: false
+  - name: IsOfficial
+    type: boolean
+    default: false
+  - name: PublishPackage
+    type: boolean
+    default: false
+  # When true, this template is being invoked from the monobuild context where
+  # the WindowsAppSDK monorepo IS the self repo. Shared templates (PublishSymbol,
+  # DetermineVersion, EsrpCodeSigning) are invoked WITHOUT @WinAppSDK suffix.
+  # When false (default, per-component pipeline context), shared templates are
+  # invoked via @WinAppSDK to reach the monobuild repo as a cross-repo resource.
+  - name: IsMonobuild
+    type: boolean
+    default: false
+
+steps:
+  - task: NuGetAuthenticate@1
+
+  # ── Download Foundation build artifacts ──
+  # Always uses source: specific with _foundationBuildOutputBuildId.
+  # The coalesce on that variable resolves to Build.BuildId (current run)
+  # when no override is set, making this equivalent to source: current.
+  # Artifact names follow the monobuild spec (Mono-Build-Pipeline-Migration.md §6.3):
+  # Build-Foundation-<plat>-Release for native and AnyCPU, Build-Foundation-MRT-<plat>-Release for MRT.
+  - ${{ each platform in split('x64;x86;arm64;anycpu', ';') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Foundation ${{ platform }}'
+      inputs:
+        source: specific
+        runVersion: specific
+        project: $(System.TeamProjectId)
+        pipeline: $(_foundationBuildOutputPipeline)
+        pipelineId: $(_foundationBuildOutputBuildId)
+        artifactName: "Build-Foundation-${{ platform }}-Release"
+        ${{ if parameters.IsMonobuild }}:
+          targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
+        ${{ else }}:
+          targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+
+  # ── Download MRT build artifacts ──
+  - ${{ each platform in split('x64;x86;arm64', ';') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download MRT ${{ platform }}'
+      inputs:
+        source: specific
+        runVersion: specific
+        project: $(System.TeamProjectId)
+        pipeline: $(_foundationBuildOutputPipeline)
+        pipelineId: $(_foundationBuildOutputBuildId)
+        artifactName: "Build-Foundation-MRT-${{ platform }}-Release"
+        ${{ if parameters.IsMonobuild }}:
+          targetPath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput'
+        ${{ else }}:
+          targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+
+  # ── Stage files + symbols ──
+  # In monobuild context:
+  #   - Self (WinAppSDK monorepo) is checked out at $(Build.SourcesDirectory)\WinAppSDK
+  #   - Foundation is checked out at  $(Build.SourcesDirectory)\WindowsAppSDK
+  # BuildAll.ps1 (in Foundation root) reads the license at the relative path
+  # `WinAppSDK\Build\WindowsAppSDK\NuGetLicense\...`, resolved against its own
+  # location. Mirror it there from the monorepo's copy so BuildAll.ps1 finds it.
+  - ${{ if parameters.IsMonobuild }}:
+    - task: PowerShell@2
+      displayName: 'Mirror NuGetLicense files to BuildAll.ps1-expected path (monobuild)'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $src = Join-Path $env:BUILD_SOURCESDIRECTORY 'WinAppSDK\Build\WindowsAppSDK\NuGetLicense'
+          $dst = Join-Path $env:BUILD_SOURCESDIRECTORY 'WindowsAppSDK\WinAppSDK\Build\WindowsAppSDK\NuGetLicense'
+          if (-not (Test-Path $src)) { throw "Source NuGetLicense path not found: $src" }
+          New-Item -ItemType Directory -Force -Path (Split-Path $dst -Parent) | Out-Null
+          Copy-Item -Recurse -Force $src $dst
+          Write-Host "Mirrored $src -> $dst"
+
+  - task: PowerShell@2
+    name: StageFiles
+    inputs:
+      ${{ if parameters.IsMonobuild }}:
+        filePath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildAll.ps1'
+        workingDirectory: '$(Build.SourcesDirectory)\WindowsAppSDK'
+      ${{ else }}:
+        filePath: 'BuildAll.ps1'
+      arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
+
+  - task: CopyFiles@2
+    displayName: 'Copy symbols to artifact staging directory'
+    condition: always()
+    inputs:
+      ${{ if parameters.IsMonobuild }}:
+        sourceFolder: $(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput\FullNuget
+      ${{ else }}:
+        sourceFolder: $(Build.SourcesDirectory)\BuildOutput\FullNuget
+      contents: |
+        **\*.pdb
+      targetFolder: $(Build.ArtifactStagingDirectory)\symbols
+
+  - template: WindowsAppSDK-PublishSymbol-Wrapper.yml
+    parameters:
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+        IsOfficial: ${{ parameters.IsOfficial }}
+
+  # ── Determine version + pack NuGet ──
+  - template: WindowsAppSDK-DetermineVersion-Wrapper.yml
+    parameters:
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        IsOfficial: ${{ parameters.IsOfficial }}
+
+  - task: PowerShell@2
+    name: SetVersion
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      ${{ if parameters.IsMonobuild }}:
+        script: |
+          $packageVersion = '$(WindowsAppSDKFormattedVersion)'
+          [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\WindowsAppSDK\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+          $publicNuspec.package.metadata.version = $packageVersion
+          Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\WindowsAppSDK\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+      ${{ else }}:
+        script: |
+          $packageVersion = '$(WindowsAppSDKFormattedVersion)'
+          [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+          $publicNuspec.package.metadata.version = $packageVersion
+          Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
+
+  - task: PowerShell@2
+    name: PackNuget
+    inputs:
+      ${{ if parameters.IsMonobuild }}:
+        filePath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildAll.ps1'
+        workingDirectory: '$(Build.SourcesDirectory)\WindowsAppSDK'
+      ${{ else }}:
+        filePath: 'BuildAll.ps1'
+      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKFormattedVersion)" -ComponentPackageVersion "$(WindowsAppSDKFormattedVersion)" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
+
+  # ── Sign ──
+  - ${{ if eq(parameters.SignOutput, 'true') }}:
+    - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
+      parameters:
+        IsMonobuild: ${{ parameters.IsMonobuild }}
+        InnerParams:
+          FolderPath: $(build.artifactStagingDirectory)\FullNuget
+          Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+          KeyCode: 'CP-401405'
+          UseMinimatch: true
+
+  # ── Stage output ──
+  - task: CopyFiles@2
+    displayName: MoveToOutputDirectory
+    inputs:
+      ${{ if parameters.IsMonobuild }}:
+        SourceFolder: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildOutput\FullNuget'
+      ${{ else }}:
+        SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
+      TargetFolder: '$(ob_outputDirectory)\NugetContent'
+
+  - task: CopyFiles@2
+    displayName: MoveToOutputDirectory
+    inputs:
+      SourceFolder: '$(build.artifactStagingDirectory)\FullNuget'
+      TargetFolder: '$(ob_outputDirectory)'
+
+  # ── Publish to feed ──
+  - ${{ if eq(parameters.PublishPackage, 'true') }}:
+    - task: NuGetCommand@2
+      displayName: 'NuGet push to Project.Reunion.nuget.internal'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(ob_outputDirectory)\*.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'

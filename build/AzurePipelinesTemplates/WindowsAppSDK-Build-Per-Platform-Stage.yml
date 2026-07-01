@@ -21,9 +21,9 @@ parameters:
 stages:
 - stage: ${{ format(iif(parameters.runPREfast, 'PREfast_{0}', 'Build_{0}'), parameters.buildPlatform) }}
   # Skip the build job if we are reusing the output of a previous build.
-  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  # foundationUseBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+    eq(variables['foundationUseBuildOutputFromBuildId'],'')
   dependsOn: []
   jobs:
   - job: BuildFoundation
@@ -59,9 +59,9 @@ stages:
         value: '-|**\Release\**;-|**\packages\**'
       - name: ob_artifactBaseName
         ${{ if parameters.runPREfast }}:
-          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+          value: "Build-Foundation-$(buildPlatform)-$(buildConfiguration)-PREfast"
         ${{ else }}:
-          value: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+          value: "Build-Foundation-$(buildPlatform)-$(buildConfiguration)"
       - name: ob_sdl_apiscan_enabled
         ${{ if parameters.runApiScan }}:
           value: true
@@ -71,7 +71,7 @@ stages:
         value: '$(build.SourcesDirectory)\APIScanTarget'
       - name: ob_sdl_apiscan_symbolsFolder
         value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WinAppSDK
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
@@ -144,9 +144,9 @@ stages:
         value: default
       - name: ob_artifactBaseName
         ${{ if parameters.runPREfast }}:
-          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)_PREfast"
+          value: "Build-Foundation-MRT-$(buildPlatform)-$(buildConfiguration)-PREfast"
         ${{ else }}:
-          value: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+          value: "Build-Foundation-MRT-$(buildPlatform)-$(buildConfiguration)"
       - name: ob_sdl_apiscan_enabled
         ${{ if parameters.runApiScan }}:
           value: true
@@ -156,7 +156,7 @@ stages:
         value: '$(build.SourcesDirectory)\APIScanTarget'
       - name: ob_sdl_apiscan_symbolsFolder
         value: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WinAppSDK
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
@@ -192,28 +192,3 @@ stages:
         IsOneBranch: ${{ parameters.IsOneBranch }}
         runPREfast : ${{ parameters.runPREfast }}
         runApiScan : ${{ parameters.runApiScan }}
-
-  # Only run the test matrix extraction job in Build_{buildPlatform} job. The PREfast_{buildPlatform} job don't have the following test stages, don't need this job.
-  - ${{ if not(parameters.runPREfast) }}:
-    - job: ExtractMatrix
-      pool:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
-      steps:
-      - powershell: |
-          $testMatrix = "${{ parameters.testMatrix }}" | ConvertFrom-Json
-          $targetPlatform = "${{ parameters.buildPlatform }}"
-          $filteredMatrix = @{}
-          foreach ($entry in $testMatrix.PSObject.Properties) {
-            if ($entry.Value.buildPlatform -eq $targetPlatform) {
-                $filteredMatrix[$entry.Name] = $entry.Value
-            }
-          }
-          $matrixJson = $filteredMatrix | ConvertTo-Json -Compress
-          Write-Host "##vso[task.setvariable variable=filteredTestMatrix;isOutput=true]$matrixJson"
-        name: filterByPlatformStep
-        displayName: "Extract matrix as json value filtering by build platform"
-      - script: echo $(filterByPlatformStep.filteredTestMatrix)
-        name: echoMatrix
-        displayName: "Echo filtered matrix"
