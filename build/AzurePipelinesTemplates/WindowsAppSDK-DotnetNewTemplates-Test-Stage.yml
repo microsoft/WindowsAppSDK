@@ -26,12 +26,27 @@ parameters:
 - name: dotnetSdkVersion
   type: string
   default: '8.0.x'
+- name: WindowsAppSdkVersion
+  type: string
+  default: '*'
+# Optional gate wiring used by the PR pipeline to short-circuit when no
+# dev/Templates files changed. Defaults preserve official-pipeline behavior.
+- name: dependsOn
+  type: object
+  default: []
+- name: condition
+  type: string
+  default: ''
 
 stages:
 - stage: DotnetNewTemplates_Test
   displayName: 'Smoke-test dotnet new templates'
   dependsOn:
   - ${{ parameters.dependsOnStage }}
+  - ${{ each s in parameters.dependsOn }}:
+    - ${{ s }}
+  ${{ if ne(parameters.condition, '') }}:
+    condition: ${{ parameters.condition }}
   jobs:
   - job: TestDotnetNewTemplates
     displayName: 'Scaffold and build dotnet new templates'
@@ -71,4 +86,5 @@ stages:
           & '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet\Test-DotnetNewTemplates.ps1' `
             -PackagePath $package.FullName `
             -Platforms $platforms `
+            -WindowsAppSdkVersion '${{ parameters.WindowsAppSdkVersion }}' `
             -SkipAppLaunch

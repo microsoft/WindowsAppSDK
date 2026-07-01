@@ -85,6 +85,9 @@ param(
     [string]$DotnetSdkVersion,
 
     [Parameter()]
+    [string]$WindowsAppSdkVersion = '*',
+
+    [Parameter()]
     [switch]$KeepWorkingDirectory
 )
 
@@ -92,6 +95,10 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
 $script:exitCode = 0
+# WindowsAppSDK NuGet version passed to `dotnet new --wasdk-version` when
+# scaffolding. Defaults to '*' (latest stable); a caller or the pipeline can pin
+# a known-good version to work around a bad latest package.
+$script:windowsAppSdkVersion = $WindowsAppSdkVersion
 $results = New-Object System.Collections.Generic.List[object]
 $appExecutables = New-Object System.Collections.Generic.List[object]
 $dotnetPath = (Get-Command dotnet -ErrorAction Stop).Source
@@ -292,14 +299,52 @@ function New-ProjectFromTemplate {
         [string]$TemplateShortName,
         [string]$ProjectName,
         [string]$OutputPath,
-        [string]$WorkingDirectory
+        [string]$WorkingDirectory,
+        [string]$WindowsAppSdkVersion
     )
 
     if (-not (Test-Path -Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
     }
 
-    Invoke-DotnetCommand -Arguments @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force', '--no-update-check') -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
+    $createArgs = @('new', $TemplateShortName, '-n', $ProjectName, '-o', $OutputPath, '--force', '--no-update-check')
+    if (-not [string]::IsNullOrWhiteSpace($WindowsAppSdkVersion)) {
+        $createArgs += @('--wasdk-version', $WindowsAppSdkVersion)
+    }
+    Invoke-DotnetCommand -Arguments $createArgs -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
+}
+
+function Write-ResolvedPackageVersions {
+    param(
+        [string]$ProjectFile,
+        [string]$ProjectPath
+    )
+
+    # Templates reference WindowsAppSDK and the SDK build tools with Version="*",
+    # so each build silently picks whatever the feed serves. Log the resolved
+    # versions before building, so a failed build shows which ones it used.
+    # Logging must never fail the run, hence Continue + try/finally.
+    Write-Step "Resolving package versions for $(Split-Path -Path $ProjectFile -Leaf)"
+    $savedEAP = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        Push-Location -Path $ProjectPath
+        & $dotnetPath restore $ProjectFile 2>&1 | ForEach-Object { Write-Host $_ }
+        $packages = & $dotnetPath list $ProjectFile package --include-transitive 2>&1
+        $packages | ForEach-Object { Write-Host $_ }
+        $key = $packages | Select-String -Pattern 'Microsoft\.WindowsAppSDK|Microsoft\.Windows\.SDK\.BuildTools'
+        if ($key) {
+            Write-Host '>> Resolved key package versions:'
+            $key | ForEach-Object { Write-Host "     $($_.Line.Trim())" }
+        }
+    }
+    catch {
+        Write-Warning "Could not list resolved package versions: $_"
+    }
+    finally {
+        Pop-Location
+        $ErrorActionPreference = $savedEAP
+    }
 }
 
 function Test-WinUiProjectTemplate {
@@ -313,10 +358,12 @@ function Test-WinUiProjectTemplate {
 
     $projectName = '{0}_{1}_{2}' -f $TemplateShortName, $Platform, ([Guid]::NewGuid().ToString('N').Substring(0, 8))
     $projectPath = Join-Path -Path $WorkingRoot -ChildPath $projectName
-    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot
+    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
     Add-Result -Template $TemplateShortName -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
     $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName.csproj"
+
+    Write-ResolvedPackageVersions -ProjectFile $projectFile -ProjectPath $projectPath
 
     switch ($Kind) {
         'App' {
@@ -354,7 +401,7 @@ function Test-ItemTemplates {
 
     $hostName = 'ItemHost_{0}' -f ([Guid]::NewGuid().ToString('N').Substring(0, 8))
     $hostPath = Join-Path -Path $WorkingRoot -ChildPath $hostName
-    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot
+    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
     Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $hostPath
 
     $projectFile = Join-Path -Path $hostPath -ChildPath "$hostName.csproj"
@@ -481,6 +528,8 @@ try {
 
     $packageToInstall = Get-TemplatePackagePath -PackagePathOverride $PackagePath -ProjectPath $templateProject -Configuration $Configuration -PackOutputDirectory $PackOutputDirectory -RepoRoot $repoRoot
     Write-Step "Using template package '$packageToInstall'"
+    Write-Step "Active .NET SDK: $(& $dotnetPath --version)"
+    Write-Step "WindowsAppSDK version for scaffolding: $script:windowsAppSdkVersion"
 
     Remove-TemplatePackIfPresent -RepoRoot $repoRoot
     Install-TemplatePack -RepoRoot $repoRoot -PackageToInstall $packageToInstall
@@ -751,9 +800,19 @@ try {
     Write-Step "Resolved: $resolvedWasdk"
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'working source: restore resolves packages' -Status 'Succeeded' -Path $workingSourcePath
 
-    # Build the project
-    Invoke-DotnetCommand -Arguments @('build', $workingSourceCsproj, '-p:Configuration=Debug', "-p:Platform=$($Platforms[0])", '-p:WindowsPackageType=None', '--no-restore') -WorkingDirectory $workingSourcePath -Description 'build with working NuGet source'
-    Add-Result -Template 'winui' -Platform $Platforms[0] -Step 'working source: build succeeds' -Status 'Succeeded' -Path $workingSourceCsproj
+    # This is the only scenario that builds the default Version="*" wildcard, so
+    # it is what proves the latest published packages build cleanly (an early
+    # warning for a bad WindowsAppSDK release). When the pipeline pins a specific
+    # version to work around a broken latest, skip this build so the pinned run
+    # can go green -- the real templates above already built against the pin.
+    if ($script:windowsAppSdkVersion -eq '*') {
+        Invoke-DotnetCommand -Arguments @('build', $workingSourceCsproj, '-p:Configuration=Debug', "-p:Platform=$($Platforms[0])", '-p:WindowsPackageType=None', '--no-restore') -WorkingDirectory $workingSourcePath -Description 'build with working NuGet source'
+        Add-Result -Template 'winui' -Platform $Platforms[0] -Step 'working source: build succeeds' -Status 'Succeeded' -Path $workingSourceCsproj
+    }
+    else {
+        Write-Step "WindowsAppSDK pinned to '$script:windowsAppSdkVersion'; skipping the default-wildcard 'latest builds' check."
+        Add-Result -Template 'winui' -Platform 'N/A' -Step "working source: build skipped (pinned to $script:windowsAppSdkVersion)" -Status 'Skipped' -Path $workingSourceCsproj
+    }
 
     Write-Step 'Version parameter test scenarios completed.'
 
