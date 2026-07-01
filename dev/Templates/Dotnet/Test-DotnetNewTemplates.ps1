@@ -800,9 +800,19 @@ try {
     Write-Step "Resolved: $resolvedWasdk"
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'working source: restore resolves packages' -Status 'Succeeded' -Path $workingSourcePath
 
-    # Build the project
-    Invoke-DotnetCommand -Arguments @('build', $workingSourceCsproj, '-p:Configuration=Debug', "-p:Platform=$($Platforms[0])", '-p:WindowsPackageType=None', '--no-restore') -WorkingDirectory $workingSourcePath -Description 'build with working NuGet source'
-    Add-Result -Template 'winui' -Platform $Platforms[0] -Step 'working source: build succeeds' -Status 'Succeeded' -Path $workingSourceCsproj
+    # This is the only scenario that builds the default Version="*" wildcard, so
+    # it is what proves the latest published packages build cleanly (an early
+    # warning for a bad WindowsAppSDK release). When the pipeline pins a specific
+    # version to work around a broken latest, skip this build so the pinned run
+    # can go green -- the real templates above already built against the pin.
+    if ($script:windowsAppSdkVersion -eq '*') {
+        Invoke-DotnetCommand -Arguments @('build', $workingSourceCsproj, '-p:Configuration=Debug', "-p:Platform=$($Platforms[0])", '-p:WindowsPackageType=None', '--no-restore') -WorkingDirectory $workingSourcePath -Description 'build with working NuGet source'
+        Add-Result -Template 'winui' -Platform $Platforms[0] -Step 'working source: build succeeds' -Status 'Succeeded' -Path $workingSourceCsproj
+    }
+    else {
+        Write-Step "WindowsAppSDK pinned to '$script:windowsAppSdkVersion'; skipping the default-wildcard 'latest builds' check."
+        Add-Result -Template 'winui' -Platform 'N/A' -Step "working source: build skipped (pinned to $script:windowsAppSdkVersion)" -Status 'Skipped' -Path $workingSourceCsproj
+    }
 
     Write-Step 'Version parameter test scenarios completed.'
 
