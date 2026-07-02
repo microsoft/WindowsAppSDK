@@ -88,3 +88,7 @@ stages:
             -Platforms $platforms `
             -WindowsAppSdkVersion '${{ parameters.WindowsAppSdkVersion }}' `
             -SkipAppLaunch
+      env:
+        # Lets the smoke test read the latest official WindowsAppSDK version from
+        # the package source when the version is '*'.
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)

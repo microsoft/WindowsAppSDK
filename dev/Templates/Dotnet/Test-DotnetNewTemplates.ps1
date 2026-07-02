@@ -444,21 +444,28 @@ function Assert-CsprojPackageVersion {
 }
 
 function Get-LatestOfficialWasdkVersion {
-    # Reads ONLY the version list from nuget.org (an official-only feed) to learn
-    # the latest official Microsoft.WindowsAppSDK version number. It does NOT
-    # restore any package from nuget.org -- the caller restores that exact version
-    # from the internal feed, which mirrors the official package. This is how we
-    # get "latest official": the internal feed also carries dev builds published
-    # without a prerelease tag (e.g. 2.63.x), so a plain Version="*" there would
-    # pick a dev build. Returns the version string, or $null if nuget.org can't be
-    # reached (caller then falls back to '*').
-    $url = 'https://api.nuget.org/v3-flatcontainer/microsoft.windowsappsdk/index.json'
+    # Returns the latest official Microsoft.WindowsAppSDK version number from the
+    # package source. NuGet only distinguishes stable vs prerelease, but some
+    # stable-tagged builds (2.63.x) aren't shipping releases, so we skip those and
+    # take the highest remaining. Reads the version list only (auth via the build
+    # token); packages are still restored normally. Returns $null on failure.
+    # If those excluded builds ever move off 2.63.x, update $excludedVersionPrefixes.
+    $sourceFeed = 'https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/flat2/microsoft.windowsappsdk/index.json'
+    $excludedVersionPrefixes = @('2.63.')
+    $token = $env:SYSTEM_ACCESSTOKEN
+    if ([string]::IsNullOrWhiteSpace($token)) {
+        Write-Warning "SYSTEM_ACCESSTOKEN is not set; cannot query the package source for versions."
+        return $null
+    }
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        $response = Invoke-RestMethod -Uri $url -TimeoutSec 30 -ErrorAction Stop
+        $response = Invoke-RestMethod -Uri $sourceFeed -Headers @{ Authorization = "Bearer $token" } -TimeoutSec 30 -ErrorAction Stop
         $latest = $null
         foreach ($v in $response.versions) {
-            if ($v -match '-') { continue }   # skip prerelease / experimental
+            if ($v -match '-') { continue }   # skip prerelease
+            $excluded = $false
+            foreach ($p in $excludedVersionPrefixes) { if ($v.StartsWith($p)) { $excluded = $true; break } }
+            if ($excluded) { continue }
             $parsed = $null
             if (-not [version]::TryParse($v, [ref]$parsed)) { continue }
             if (($null -eq $latest) -or ($parsed -gt $latest.Ver)) {
@@ -466,14 +473,14 @@ function Get-LatestOfficialWasdkVersion {
             }
         }
         if ($latest) {
-            Write-Host "nuget.org: latest official stable Microsoft.WindowsAppSDK = $($latest.Raw) (version number only; packages still come from the internal feed)"
+            Write-Host "Latest official Microsoft.WindowsAppSDK = $($latest.Raw) (excluded prerelease and $($excludedVersionPrefixes -join ', ')*)"
             return $latest.Raw
         }
-        Write-Warning "nuget.org returned no stable Microsoft.WindowsAppSDK versions."
+        Write-Warning "No official Microsoft.WindowsAppSDK version found on the package source."
         return $null
     }
     catch {
-        Write-Warning "Failed to query nuget.org for the latest official version: $($_.Exception.Message)"
+        Write-Warning "Failed to query the package source for versions: $($_.Exception.Message)"
         return $null
     }
 }
@@ -565,17 +572,15 @@ try {
     Write-Step "Using template package '$packageToInstall'"
     Write-Step "Active .NET SDK: $(& $dotnetPath --version)"
 
-    # '*' means "latest OFFICIAL": resolve the number from nuget.org (official-only),
-    # then scaffold with that exact version so it restores from the internal feed.
-    # If nuget.org can't give us the number, fail fast (throw) so it's obvious the
-    # lookup didn't work, rather than silently building an internal dev build.
+    # '*' means "latest official": resolve the number from the package source, then
+    # scaffold with that exact version. Fail fast if we can't get it.
     if ($script:windowsAppSdkVersion -eq '*') {
         $latestOfficial = Get-LatestOfficialWasdkVersion
         if (-not $latestOfficial) {
-            throw "Could not get the latest official Microsoft.WindowsAppSDK version from nuget.org; cannot resolve '*'. See the warning above for the reason."
+            throw "Could not determine the latest official Microsoft.WindowsAppSDK version from the package source; cannot resolve '*'. See the warning above."
         }
         $script:windowsAppSdkVersion = $latestOfficial
-        Write-Step "Using latest official WindowsAppSDK $latestOfficial (number from nuget.org; package from the internal feed)."
+        Write-Step "Using latest official WindowsAppSDK $latestOfficial."
     }
 
     Write-Step "WindowsAppSDK version for scaffolding: $script:windowsAppSdkVersion"
