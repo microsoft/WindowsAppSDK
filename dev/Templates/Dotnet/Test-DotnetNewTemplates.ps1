@@ -443,6 +443,41 @@ function Assert-CsprojPackageVersion {
     }
 }
 
+function Get-LatestOfficialWasdkVersion {
+    # Reads ONLY the version list from nuget.org (an official-only feed) to learn
+    # the latest official Microsoft.WindowsAppSDK version number. It does NOT
+    # restore any package from nuget.org -- the caller restores that exact version
+    # from the internal feed, which mirrors the official package. This is how we
+    # get "latest official": the internal feed also carries dev builds published
+    # without a prerelease tag (e.g. 2.63.x), so a plain Version="*" there would
+    # pick a dev build. Returns the version string, or $null if nuget.org can't be
+    # reached (caller then falls back to '*').
+    $url = 'https://api.nuget.org/v3-flatcontainer/microsoft.windowsappsdk/index.json'
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+        $response = Invoke-RestMethod -Uri $url -TimeoutSec 30 -ErrorAction Stop
+        $latest = $null
+        foreach ($v in $response.versions) {
+            if ($v -match '-') { continue }   # skip prerelease / experimental
+            $parsed = $null
+            if (-not [version]::TryParse($v, [ref]$parsed)) { continue }
+            if (($null -eq $latest) -or ($parsed -gt $latest.Ver)) {
+                $latest = [pscustomobject]@{ Raw = $v; Ver = $parsed }
+            }
+        }
+        if ($latest) {
+            Write-Host "nuget.org: latest official stable Microsoft.WindowsAppSDK = $($latest.Raw) (version number only; packages still come from the internal feed)"
+            return $latest.Raw
+        }
+        Write-Warning "nuget.org returned no stable Microsoft.WindowsAppSDK versions."
+        return $null
+    }
+    catch {
+        Write-Warning "Failed to query nuget.org for the latest official version: $($_.Exception.Message)"
+        return $null
+    }
+}
+
 try {
     $repoRoot = (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..')).Path
     $templateProject = Join-Path -Path $repoRoot -ChildPath 'dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj'
@@ -529,6 +564,20 @@ try {
     $packageToInstall = Get-TemplatePackagePath -PackagePathOverride $PackagePath -ProjectPath $templateProject -Configuration $Configuration -PackOutputDirectory $PackOutputDirectory -RepoRoot $repoRoot
     Write-Step "Using template package '$packageToInstall'"
     Write-Step "Active .NET SDK: $(& $dotnetPath --version)"
+
+    # '*' means "latest OFFICIAL": resolve the number from nuget.org (official-only),
+    # then scaffold with that exact version so it restores from the internal feed.
+    # If nuget.org can't give us the number, fail fast (throw) so it's obvious the
+    # lookup didn't work, rather than silently building an internal dev build.
+    if ($script:windowsAppSdkVersion -eq '*') {
+        $latestOfficial = Get-LatestOfficialWasdkVersion
+        if (-not $latestOfficial) {
+            throw "Could not get the latest official Microsoft.WindowsAppSDK version from nuget.org; cannot resolve '*'. See the warning above for the reason."
+        }
+        $script:windowsAppSdkVersion = $latestOfficial
+        Write-Step "Using latest official WindowsAppSDK $latestOfficial (number from nuget.org; package from the internal feed)."
+    }
+
     Write-Step "WindowsAppSDK version for scaffolding: $script:windowsAppSdkVersion"
 
     Remove-TemplatePackIfPresent -RepoRoot $repoRoot
