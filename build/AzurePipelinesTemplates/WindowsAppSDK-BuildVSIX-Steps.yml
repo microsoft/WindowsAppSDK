@@ -14,6 +14,12 @@ parameters:
 - name: UseCurrentBuild
   type: boolean
   default: false 
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. PublishSymbol-Steps is invoked
+# WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
+  type: boolean
+  default: false
 - name: OptionalVSIXVersion
   # if blank, the project template will select the version matching the Windows App SDK
   # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
@@ -41,7 +47,7 @@ steps:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
-      project: $(System.TeamProjectId)
+      project: 55e8140e-57ac-4e5f-8f9c-c7c15b51929d # TODO: replace with $(System.TeamProjectId) once we can have a full WinAppSDK Build on the new mono repo
       pipeline: $(OfficialPipelineID) 
       pipelineId: $(LatestOfficialBuildID) 
     
@@ -196,9 +202,10 @@ steps:
       codeSignPattern: |
         **/WindowsAppSDK.*.Extension.*.dll
         
-- ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
-    parameters:
+- template: WindowsAppSDK-PublishSymbol-Wrapper.yml
+  parameters:
+    IsMonobuild: ${{ parameters.IsMonobuild }}
+    InnerParams:
       SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
 

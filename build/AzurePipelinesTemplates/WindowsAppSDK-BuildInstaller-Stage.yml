@@ -8,10 +8,10 @@ stages:
     dependsOn: []
     pool:
       type: windows
-      isCustom: true
-      name: 'ProjectReunionESPool-2022' # This stage is purely for validation
-      # If we just let the pool give us MMS2022, we will get an error saying an artifact for 1ESPT is missing
-      demands: ImageOverride -equals MMS2022-1ES-GPT      
+      # isCustom: true
+      # name: 'ProjectReunionESPool-2022' # This stage is purely for validation
+      # # If we just let the pool give us MMS2022, we will get an error saying an artifact for 1ESPT is missing
+      # demands: ImageOverride -equals MMS2022-1ES-GPT      
     strategy:
       maxParallel: 10
       matrix:
@@ -35,7 +35,7 @@ stages:
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       - name: foundationRepoPath
         value: ""
-      - template: AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WindowsAppSDKVersionConfig
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Global-LKGVersions.yml@WinAppSDK
       - name: localCompilerOverridePackageName
         value: $[coalesce(variables.compilerOverridePackageName, variables.global_CompilerOverridePackageName)]
       - name: localCompilerOverridePackageVersion
