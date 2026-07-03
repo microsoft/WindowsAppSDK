@@ -47,6 +47,7 @@ the non-reserved name in Source.
 
 ```
 dev/Templates/Dotnet/templates/<short-name>/
+    AGENTS.md                   (optional outline; see step 5)
     .template.config/
         template.json           (required)
         dotnetcli.host.json     (CLI parameter aliases)
@@ -90,7 +91,68 @@ shape:
 | `DotnetConfigDir` | Absolute path to `Dotnet/templates/<short-name>/`. | When ships to dotnet-new |
 | `RenameManifestFrom` | Source-side manifest filename, typically `Package-managed.appxmanifest`. Packed as `Package.appxmanifest`. | Packaged WinUI app templates only |
 
-### 5. Local build for tests
+### 5. (Optional) Per-template AGENTS.md
+
+If the template should ship an `AGENTS.md` that users (and AI agents)
+see in their new project root, drop an `AGENTS.md` **outline** in the
+channel-specific location:
+
+| Channel    | Outline location                                                          |
+| ---------- | ------------------------------------------------------------------------- |
+| dotnet-new | `Dotnet/templates/<short-name>/AGENTS.md` (next to `.template.config/`)   |
+| VSIX       | `VSIX/templates/Desktop/CSharp/<Name>/AGENTS.md`                          |
+
+An outline mixes inline prose (title, intro, project-layout diagram)
+with `####FileName.md####` placeholders that name section files in
+[`Source/TemplateReadmeSections/`](Source/TemplateReadmeSections) **verbatim**:
+
+```markdown
+# WinUI 3 desktop MVVM app
+
+A WinUI 3 desktop app pre-wired with the MVVM pattern...
+
+## Project layout
+...
+
+####Prerequisites.md####
+####BuildAndRun.app.vsix.md####
+####CommonNextSteps.app.vsix.md####
+####PublishGuide.app.vsix.md####
+```
+
+Reusable section files live under
+[`Source/TemplateReadmeSections/`](Source/TemplateReadmeSections). Their
+filenames bake the channel/shape suffix (`.app.vsix.md`,
+`.library.dotnet.md`, `.wapproj.vsix.md`, …) so the outline can
+pinpoint the exact file — no inference, no fallback chain.
+
+At build / pack time the outline is merged into the final `AGENTS.md`
+that ships in the produced template:
+
+- **dotnet-new**: merged inside `ExpandProjectTemplatePackItems` and
+  packed as `content/<short-name>/AGENTS.md`.
+- **VSIX**: merged by `_GenerateMergedReadme`
+  (in [`Source/Directory.Build.targets`](Source/Directory.Build.targets))
+  directly next to the `.vstemplate` (i.e. into
+  `$(MSBuildProjectDirectory)\AGENTS.md`) so the VS SDK packs it
+  into the project-template `.zip`. The generated file is `.gitignore`d
+  and removed by `Clean`.
+
+For VSIX templates, the `.vstemplate` must also list the file so VS
+copies it into the user's new project:
+
+```xml
+<ProjectItem ReplaceParameters="false" TargetFileName="AGENTS.md">AGENTS.md</ProjectItem>
+```
+
+`ReplaceParameters="false"` is intentional — the file is already in
+its final shipping form at build time; VS must not re-scan it for
+`$xxx$` substitution (which would corrupt example shell variables or
+text that happens to contain `$...$` strings). See
+[Per-template AGENTS.md assembly](#per-template-agentsmd-assembly) below
+for the full pipeline.
+
+### 6. Local build for tests
 
 1. dotnet new template:
 
@@ -173,14 +235,19 @@ We replaced it with an **inline C# MSBuild task** —
 `ExpandProjectTemplatePackItems` in
 [`WinAppSdk.CSharp.DotnetNewTemplates.csproj`](Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj).
 It takes `@(ProjectTemplate)` (or `@(ItemTemplate)`, etc.) and per
-template performs the same four-step packing recipe:
+template performs the same five-step packing recipe:
 
 1. Pack everything under `SourceDir`, minus `bin/`, `obj/`, and the
    per-template sidecars (`.csproj` / `.ico` / `.png` / `.vstemplate`).
 2. If `RenameManifestFrom` is set, re-pack that manifest under the
    reserved name `Package.appxmanifest`.
 3. Pack everything under `DotnetConfigDir/.template.config/`.
-4. Pack a copy of the shared `.gitignore` (project templates only).
+4. If `DotnetConfigDir` contains an `AGENTS.md` outline, merge it
+   (substituting `####FileName.md####` placeholders with files from
+   [`Source/TemplateReadmeSections/`](Source/TemplateReadmeSections)) and pack
+   the result as `content/<short-name>/AGENTS.md`. See
+   [Per-template AGENTS.md assembly](#per-template-agentsmd-assembly) below.
+5. Pack a copy of the shared `.gitignore` (project templates only).
 
 ### Why a C# task and not a pure-MSBuild `<None Include="...">` with batching
 
@@ -224,6 +291,85 @@ The convention is therefore:
 
 The `RenameManifestFrom` metadata is what tells the inline task to
 perform that rename.
+
+### Per-template AGENTS.md assembly
+
+Per-template `AGENTS.md` files are not authored as monolithic files. Each
+template ships a per-channel **outline** (short, template-specific
+prose) that embeds `####FileName.md####` placeholders pointing at
+shared **section files** in
+[`Source/TemplateReadmeSections/`](Source/TemplateReadmeSections). At
+build / pack time an MSBuild task expands those placeholders into the
+final `AGENTS.md` that the produced template ships.
+
+> **Design intent.** `Source/` is meant to be the **shared canonical
+> content area** consumed by both the dotnet-new and the VSIX channels.
+> The sections folder lives there for that reason. Today `Source/` also
+> still contains VSIX-only sidecars (`.vstemplate`, `.ico`, `.png`, the
+> twin `.csproj`) for legacy reasons; relocating those to `VSIX/` so
+> `Source/` is purely shared is a known future cleanup.
+
+#### Inputs
+
+| Kind             | Path                                                              | Purpose                                                                                                                                       |
+| ---------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Outline (dotnet) | `Dotnet/templates/<short-name>/AGENTS.md`                         | Per-template prose; merged when packing the dotnet-new NuGet.                                                                                 |
+| Outline (VSIX)   | `VSIX/templates/Desktop/CSharp/<Name>/AGENTS.md`                  | Per-template prose; merged when building the VSIX twin csproj under `Source/`.                                                                |
+| Section files    | [`Source/TemplateReadmeSections/*.md`](Source/TemplateReadmeSections) | Reusable, shared prose consumed by both channels. Filename bakes the channel/shape suffix (`.app.vsix.md`, `.library.dotnet.md`, `.wapproj.vsix.md`, …). |
+
+#### Placeholder syntax
+
+Outlines reference sections by **literal filename**:
+
+```text
+####Prerequisites.md####
+####BuildAndRun.app.vsix.md####
+####CommonNextSteps.library.dotnet.md####
+```
+
+There is intentionally **no** shape/channel inference and **no**
+fallback chain — the placeholder *is* the filename. A reader of any
+outline can pinpoint the exact source of every embedded paragraph
+without consulting resolver code.
+
+#### Merge tasks
+
+| Channel    | Task                                                                  | Where it lives                                                                                                                              | Output                                                                                                                                                       |
+| ---------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| dotnet-new | `ExpandProjectTemplatePackItems` (step 4 of its packing recipe)       | [`Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj`](Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj)                                    | Merged file written under `$(IntermediateOutputPath)merged-readmes/<short-name>/AGENTS.md` and packed as `content/<short-name>/AGENTS.md`.                   |
+| VSIX       | `GenerateMergedReadme` (invoked by `_GenerateMergedReadme` target)    | [`Source/Directory.Build.targets`](Source/Directory.Build.targets) (auto-imported by `Microsoft.Common.targets` for every Source twin csproj) | Merged file written to `$(MSBuildProjectDirectory)\AGENTS.md` (next to the `.vstemplate`, `.gitignore`d) so the VS SDK's `CreateProjectTemplateZipFile` task picks it up via the `.vstemplate`'s `<ProjectItem>AGENTS.md</ProjectItem>` reference. |
+
+Both tasks are deliberately a **single** `Regex.Replace` pass over the
+outline: read outline → for each `####File.md####` match, substitute
+`File.ReadAllText(Source/TemplateReadmeSections/File.md).TrimEnd()` →
+collapse runs of 3+ newlines → fail the build on any missing file or
+leftover marker. There are no helpers and no conditional branches
+around content massaging.
+
+#### VSIX wiring
+
+For VSIX templates the merged `AGENTS.md` must also be advertised in
+the `.vstemplate` so VS copies it into the user's new project:
+
+```xml
+<ProjectItem ReplaceParameters="false" TargetFileName="AGENTS.md">AGENTS.md</ProjectItem>
+```
+
+`ReplaceParameters="false"` is intentional: the file is already in
+its final shipping form, and VS must not rescan it for `$xxx$`
+substitution (which could corrupt example shell variables, code
+fragments, or text that happens to contain `$...$` strings).
+
+#### Build-time guarantees
+
+Both tasks fail the build if:
+
+- An outline references a section file that does not exist.
+- A `####...####` marker survives substitution (i.e. malformed
+  placeholder).
+- The merged content cannot be written.
+
+A typo in an outline therefore cannot silently ship to users.
 
 ### VSIX consumption
 
@@ -275,13 +421,21 @@ dev/Templates/
 │   ├── WinAppSdk.CSharp.DotnetNewTemplates.csproj
 │   ├── Directory.Build.props
 │   └── templates/<short-name>/
+│       ├── AGENTS.md                   ← optional outline (dotnet channel)
 │       └── .template.config/
 │           ├── template.json
 │           ├── dotnetcli.host.json
 │           ├── ide.host.json
 │           └── icon.png
-├── Source/                             ← actual template content (C# and C++)
-│   ├── ProjectTemplates/Desktop/CSharp/<TemplateName>/
+├── Source/                             ← shared canonical content consumed by both channels
+│   ├── Directory.Build.targets         ← merges per-template READMEs for VSIX twin csprojs
+│   ├── TemplateReadmeSections/         ← reusable README section files (channel/shape suffixes baked into the filename)
+│   │   ├── Prerequisites.md
+│   │   ├── BuildAndRun.app.dotnet.md
+│   │   ├── BuildAndRun.app.vsix.md
+│   │   ├── ...                         (30 files total — see folder for full list)
+│   │   └── FrameworkFooter.vsix.md
+│   ├── ProjectTemplates/Desktop/CSharp/<TemplateName>/      ← currently also holds VSIX-only sidecars (see note below)
 │   │   ├── <TemplateName>.csproj
 │   │   ├── <TemplateName>.{ico,png,vstemplate}
 │   │   ├── Package-managed.appxmanifest    (if packaged)
@@ -293,8 +447,17 @@ dev/Templates/
     ├── WindowsAppSDK.Extension.sln
     ├── Extension/Cs/Dev17/WindowsAppSDK.Cs.Extension.Dev17.csproj    ← C# VSIX (consumes templates.props)
     ├── Extension/Cpp/Dev17/WindowsAppSDK.Cpp.Extension.Dev17.csproj  ← C++ VSIX (does NOT import templates.props)
+    ├── templates/Desktop/CSharp/<TemplateName>/
+    │   └── AGENTS.md                   ← optional outline (VSIX channel)
     └── Directory.Build.props
 ```
+
+> **Note on `Source/`.** The intent is that `Source/` holds **only**
+> content that is shared by both the dotnet-new and the VSIX channels.
+> Today the per-template VSIX sidecars (`.vstemplate`, `.ico`, `.png`,
+> the twin `.csproj`) still live alongside the source files for legacy
+> reasons. Moving those into `VSIX/` so `Source/` is purely shared is a
+> known future cleanup.
 
 ---
 
@@ -322,3 +485,20 @@ For C++ templates, add the template content under
 and a corresponding `<Asset>` to the C++ vsixmanifest. 
 
 There is no dotnet-new pack for C++/WinRT templates yet.
+
+---
+
+## Validating VSIX builds
+
+Before submitting changes, validate that all VSIX templates build successfully and include the required `AGENTS.md` files. Use the provided PowerShell script:
+
+```
+pwsh dev/Templates/Source/Validate-VSIXBuilds.ps1
+```
+
+This script:
+- Builds all VSIX templates in `Release` configuration.
+- Checks for `VSSDK1016` errors during packaging.
+- Verifies that `AGENTS.md` files are generated for all project templates.
+
+If the script reports any failures, resolve them before submitting your changes.

@@ -27,6 +27,13 @@
     <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
     <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+    <!-- VSIX outline lives under
+         dev\Templates\VSIX\templates\Desktop\CSharp\PackagedApp\AGENTS.md by convention.
+         Merged at build time by Source\Directory.Build.targets. The PackagedApp
+         .vstemplate is a ProjectGroup linking BlankApp+WapProj children; wiring the
+         merged AGENTS.md into the ProjectGroup .zip itself is tracked as a follow-up
+         (build still validates the merged artifact via this Content/Link include). -->
+    <TemplateReadme>$(MSBuildThisFileDirectory)..\..\..\..\..\VSIX\templates\Desktop\CSharp\PackagedApp\AGENTS.md</TemplateReadme>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
