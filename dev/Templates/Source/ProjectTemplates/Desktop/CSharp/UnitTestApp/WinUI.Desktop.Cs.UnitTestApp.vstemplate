@@ -27,6 +27,11 @@
   <TemplateContent PreferedSolutionConfiguration="Debug|x64">
     <CustomParameters>
       <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
+      <CustomParameter Name="$WindowsAppSdkVersion$" Value="*" />
+      <CustomParameter Name="$WindowsSdkBuildToolsVersion$" Value="*" />
+      <CustomParameter Name="$WindowsSdkBuildToolsWinAppVersion$" Value="*" />
+      <CustomParameter Name="$MSTestVersion$" Value="*" />
+      <CustomParameter Name="$MicrosoftNetTestSdkVersion$" Value="*" />
     </CustomParameters>
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="launchSettings.json">Properties\launchSettings.json</ProjectItem>
