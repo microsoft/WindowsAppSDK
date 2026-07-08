@@ -57,6 +57,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         // 1.8.9
         ItemTemplateWrapper_RecyclePoolLeak = 61574370,
         InputPointerSource_TouchUpScrollCrashFix = 62086608,
+
+        // 1.8.10
+        ThemeSettings_OffThreadDestructorFix = 62451730,
     };
 
     /// Represents a version of the Windows App Runtime.
