@@ -125,10 +125,14 @@ namespace
         62393567, // CPopupRoot_ReplayPointerUpdateCrash
         62406051, // XamlIslandRoot_UiaTeardownReentrancyCrash
         62434240, // ModernCollectionBasePanel_StaleViewportAnchorRecycle
+        62434371, // Popup_RemoveChildIdempotentWhenClosing
+        62434372, // UIAWindow_PauseNewDispatchOnDisconnectProviders
+        62434373, // CascadingMenuHelper_DelayOpenTimerTickAfterUnload
         62471884, // AcrylicBrush_InitializePropertyInMarkup
         62542953, // Xaml_ReserveVectorSpace
         62639407, // XamlUICommand_LightweightBindings
         62644600, // Xaml_DefaultStyleOptimizations
+        62645877, // Xaml_ThemeResourceUseResourceKeys
         62646974, // Xaml_FasterResourceDictionary
         62659855, // Xaml_CachedTypeChecks
         62673714, // Xaml_FasterXbfIntLoading
