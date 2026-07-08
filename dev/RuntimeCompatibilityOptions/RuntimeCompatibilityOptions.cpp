@@ -53,6 +53,7 @@ namespace
     {
         WinAppSDK_2_1_0 = WinAppSDKReleaseVersionFromValues(2, 1, 0),
         WinAppSDK_2_1_5 = WinAppSDKReleaseVersionFromValues(2, 1, 5),
+        WinAppSDK_2_3_0 = WinAppSDKReleaseVersionFromValues(2, 3, 0),
         WinAppSDK_Latest = 999999999,
         WinAppSDK_Security = 0,
     };
@@ -120,9 +121,49 @@ namespace
         62276145, // os.2020: ThemeSettings crash on shutdown off-thread
         62382643, // WindowsAppSDK: MRT sparse-packaged module-specific PRI discovery
     };
+    constexpr UINT32 s_changes_2_3_0[] = {
+        62393567, // CPopupRoot_ReplayPointerUpdateCrash
+        62406051, // XamlIslandRoot_UiaTeardownReentrancyCrash
+        62434240, // ModernCollectionBasePanel_StaleViewportAnchorRecycle
+        62471884, // AcrylicBrush_InitializePropertyInMarkup
+        62542953, // Xaml_ReserveVectorSpace
+        62639407, // XamlUICommand_LightweightBindings
+        62644600, // Xaml_DefaultStyleOptimizations
+        62646974, // Xaml_FasterResourceDictionary
+        62659855, // Xaml_CachedTypeChecks
+        62673714, // Xaml_FasterXbfIntLoading
+        62676756, // Xaml_ActivationFactoryFastPaths
+        62676766, // XamlUICommand_SkipEmptyKeyboardAcceleratorBinding
+        62676773, // Xaml_ReduceThemeResourceLookupHashing
+        62688041, // RefreshRateInfo_RemovePowerNotification
+        62698635, // ApplicationData_GetForUnpackaged_LocalSettings
+        62724527, // CustomMetadataTypes_InvalidateUseAfterFree
+        62724733, // CPopup_OpenSetFocusReentrancy
+        62724906, // MediaPlayerPresenter_DeviceLostCrash
+        62725196, // HWBuildGlyphRunTextures_DeviceGuardScope
+        62725364, // FocusRectManager_FindFocusRectHostCrash
+        62726703, // Xaml_EagerDeviceRemovedEventRegistration
+        62738389, // XamlSettings_OptionalChangesApi
+        62755661, // UniversalBGTask_RunCrash
+        62759377, // Xaml_OptimizedCommandBarInitialization
+        62771256, // Flyout_SidePlacementFlipUpAlignmentFix
+        62774942, // LanguageModel_StructuredJsonOutput
+        62776273, // Xaml_OptimizedCommandBarFlyoutUpdateCommands
+        62779870, // XamlInit_GetMuxVersionCompileTime
+        62784965, // Xaml_IconNoGridOptimization
+        62786355, // UniformGridLayoutFlowLayout_OnItemsChangedNullLayoutStateCrash
+        62789076, // Xaml_DeferStylePropertySetters
+        62818033, // Xaml_LoadDeferredResourceOptimization
+        62833838, // Xaml_DeferContextFlyoutInit
+        62847209, // Xaml_DelayApplyStylesAfterCreationComplete
+        62849414, // Xaml_ReserveTrackerCollectionSpace
+        62865780, // WindowsML_ExecutionProviderEnumerationUpdate
+        62934326, // VideoSuperResolution_HardwareDetection
+    };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
         MakeGroup(s_changes_2_1_0, WinAppSDKReleaseVersion::WinAppSDK_2_1_0),
         MakeGroup(s_changes_2_1_5, WinAppSDKReleaseVersion::WinAppSDK_2_1_5),
+        MakeGroup(s_changes_2_3_0, WinAppSDKReleaseVersion::WinAppSDK_2_3_0),
     };
     constexpr size_t s_catalogGroupsProdCount{ std::size(s_catalogGroupsProd) };
 
