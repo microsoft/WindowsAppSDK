@@ -137,19 +137,19 @@ namespace Test::Bootstrap
         // backoff. Only this specific HRESULT is retried; any other failure is verified immediately and
         // is not masked.
         constexpr HRESULT c_stateRepositoryDependencyNotResolved{ static_cast<HRESULT>(0x80670016) }; // STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED
-        constexpr UINT32 c_maxInitRetries{ 10 };
+        constexpr UINT32 c_maxInitAttempts{ 10 };
         constexpr DWORD c_initRetryDelayMs{ 300 };
         HRESULT initHR{ E_FAIL };
-        for (UINT32 retry = 0; ; ++retry)
+        for (UINT32 attempt = 1; attempt <= c_maxInitAttempts; ++attempt)
         {
             initHR = MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion);
-            if (SUCCEEDED(initHR) || (initHR != c_stateRepositoryDependencyNotResolved) || (retry >= c_maxInitRetries))
+            if (SUCCEEDED(initHR) || (initHR != c_stateRepositoryDependencyNotResolved) || (attempt == c_maxInitAttempts))
             {
                 break;
             }
             WEX::Logging::Log::Comment(WEX::Common::String().Format(
-                L"MddBootstrapInitialize returned STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED (0x%X); State Repository likely still indexing the just-installed package. Retry %u/%u after %ums.",
-                initHR, retry + 1, c_maxInitRetries, c_initRetryDelayMs));
+                L"MddBootstrapInitialize returned STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED (0x%X); State Repository likely still indexing the just-installed package. Attempt %u/%u. Retrying after %ums.",
+                initHR, attempt, c_maxInitAttempts, c_initRetryDelayMs));
             Sleep(c_initRetryDelayMs);
         }
         VERIFY_SUCCEEDED(initHR);
