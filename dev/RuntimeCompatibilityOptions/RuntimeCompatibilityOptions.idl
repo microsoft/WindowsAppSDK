@@ -76,6 +76,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         Xaml_DelayApplyStylesAfterCreationComplete = 62847209,
         Xaml_ReserveTrackerCollectionSpace = 62849414,
         WindowsML_ExecutionProviderEnumerationUpdate = 62865780,
+        CompositionEngine_API = 62917618,
         VideoSuperResolution_HardwareDetection = 62934326,
     };
 
