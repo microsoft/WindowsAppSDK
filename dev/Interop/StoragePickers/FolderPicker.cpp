@@ -11,7 +11,11 @@
 #include "TerminalVelocityFeatures-StoragePickers.h"
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
-#include "PickerLocalization.h" 
+#include "PickerLocalization.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug 63006043: [1.8 servicing] Fix focus not restored after Storage Pickers dialog closes
+#define WINAPPSDK_CHANGEID_63006043 63006043, WinAppSDK_1_8_10
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -68,8 +72,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         CaptureParameters(parameters);
 
-        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
-        PickerCommon::DialogFocusRestorer focusRestorer{};
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63006043>())
+        {
+            // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+            PickerCommon::DialogFocusRestorer focusRestorer{};
+        }
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
