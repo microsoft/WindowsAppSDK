@@ -72,10 +72,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         CaptureParameters(parameters);
 
+        std::optional<PickerCommon::DialogFocusRestorer> focusRestorer;
         if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63006043>())
         {
             // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
-            PickerCommon::DialogFocusRestorer focusRestorer{};
+            focusRestorer.emplace();
         }
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
