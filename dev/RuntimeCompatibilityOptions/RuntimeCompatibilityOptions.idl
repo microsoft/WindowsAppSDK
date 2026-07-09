@@ -44,6 +44,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         // 2.2.2
         UniversalBGTask_RunCrash = 62755661,
+
+        // 2.2.3
+        StoragePickers_RestoreFocusAfterDialogCloses = 63006068,
     };
 
     /// Represents a version of the Windows App Runtime.

@@ -12,7 +12,11 @@
 #include "TerminalVelocityFeatures-StoragePickers2.h"
 #include "PickerCommon.h"
 #include "PickFolderResult.h"
-#include "PickerLocalization.h" 
+#include "PickerLocalization.h"
+#include <FrameworkUdk/Containment.h>
+
+// Bug 63006068: [2.x servicing] Fix focus not restored after Storage Pickers dialog closes
+#define WINAPPSDK_CHANGEID_63006068 63006068
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
@@ -105,8 +109,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
-        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
-        PickerCommon::DialogFocusRestorer focusRestorer{};
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63006068>())
+        {
+            // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+            PickerCommon::DialogFocusRestorer focusRestorer{};
+        }
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
@@ -155,8 +162,11 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
 
-        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
-        PickerCommon::DialogFocusRestorer focusRestorer{};
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63006068>())
+        {
+            // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+            PickerCommon::DialogFocusRestorer focusRestorer{};
+        }
 
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
