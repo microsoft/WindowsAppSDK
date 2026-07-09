@@ -685,8 +685,20 @@ public:
         MrmFreeResource(path);
 
         VERIFY_ARE_EQUAL(MrmGetFilePathFromName(L"something.pri", &path), S_OK);
-        // Even if the file doesn't exist, we will still return a path. This is for those don't use PRI for resource.
+        // Even if the file doesn't exist, we still return a best-effort path so apps without a PRI
+        // file can still create a ResourceManager. The path is under the module (exe) directory.
         VERIFY_IS_NOT_NULL(wcsstr(path, L"something.pri"));
+        {
+            wchar_t moduleFilePath[MAX_PATH];
+            VERIFY_ARE_NOT_EQUAL(0u, GetModuleFileNameW(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath)));
+            PWSTR lastSeparator = wcsrchr(moduleFilePath, L'\\');
+            VERIFY_IS_NOT_NULL(lastSeparator);
+            lastSeparator[1] = L'\0'; // Trim to "<moduleDir>\"
+            wchar_t expectedPath[MAX_PATH];
+            VERIFY_ARE_EQUAL(0, wcscpy_s(expectedPath, ARRAYSIZE(expectedPath), moduleFilePath));
+            VERIFY_ARE_EQUAL(0, wcscat_s(expectedPath, ARRAYSIZE(expectedPath), L"something.pri"));
+            VERIFY_ARE_EQUAL(CSTR_EQUAL, CompareStringOrdinal(path, -1, expectedPath, -1, TRUE));
+        }
         MrmFreeResource(path);
 
         VERIFY_ARE_EQUAL(MrmGetFilePathFromName(nullptr, &path), S_OK);
