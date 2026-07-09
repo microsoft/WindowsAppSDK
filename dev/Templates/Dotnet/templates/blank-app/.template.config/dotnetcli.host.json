@@ -20,6 +20,21 @@
       "longName": "publisher-display",
       "shortName": "publisherName",
       "description": "Publisher display name stored in Package.appxmanifest."
+    },
+    "windowsAppSdkVersion": {
+      "longName": "wasdk-version",
+      "shortName": "wasdkv",
+      "description": "Pin to a specific Windows App SDK NuGet version. Leave empty for latest."
+    },
+    "windowsSdkBuildToolsVersion": {
+      "longName": "build-tools-version",
+      "shortName": "btv",
+      "description": "Pin to a specific Windows SDK BuildTools NuGet version. Leave empty for latest."
+    },
+    "windowsSdkBuildToolsWinAppVersion": {
+      "longName": "winapp-version",
+      "shortName": "wav",
+      "description": "Pin to a specific Windows SDK BuildTools WinApp NuGet version. Leave empty for latest."
     }
   }
 }

@@ -322,3 +322,6 @@ For C++ templates, add the template content under
 and a corresponding `<Asset>` to the C++ vsixmanifest. 
 
 There is no dotnet-new pack for C++/WinRT templates yet.
+
+<!-- ci: trigger Templates PR pipeline (remove after validation) -->
+
