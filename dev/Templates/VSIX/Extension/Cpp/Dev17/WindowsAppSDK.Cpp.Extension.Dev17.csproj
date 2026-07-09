@@ -138,13 +138,6 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CppWinRT\PackagedApp\WinUI.Desktop.CppWinRT.PackagedApp.csproj">
-      <Project>{80195619-D4CF-4287-BA59-08077486BE1C}</Project>
-      <Name>WinUI.Desktop.CppWinRT.PackagedApp</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
     <ProjectReference Include="$(ProjectTemplatesDir)Neutral\CppWinRT\RuntimeComponent\WinUI.Neutral.CppWinRT.RuntimeComponent.csproj">
       <Project>{FD33E535-127D-48AC-8788-0F61FA2A251C}</Project>
       <Name>WinUI.Neutral.CppWinRT.RuntimeComponent</Name>
