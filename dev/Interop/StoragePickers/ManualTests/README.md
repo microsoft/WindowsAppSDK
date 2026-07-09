@@ -59,7 +59,7 @@ auto& file = co_await picker.PickSaveFileAsync();
 ### Keyboard focus is restored after the dialog closes
 Run from a WinUI 3 app with a button whose Click handler opens a picker. This applies to every pick
 method: `FileOpenPicker.PickSingleFileAsync` / `PickMultipleFilesAsync`, `FileSavePicker.PickSaveFileAsync`,
-and `FolderPicker.PickSingleFolderAsync` / `PickMultipleFoldersAsync`.
+and `FolderPicker.PickSingleFolderAsync`.
 
 Test code (C++), in the button's Click handler:
 ```C++
