@@ -9,6 +9,7 @@
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
+#include <optional>
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
