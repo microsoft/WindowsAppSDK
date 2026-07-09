@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
     <DefaultName>ContentDialog.xaml</DefaultName>
-    <Name ID="1021" Package="FIXME-PACKAGEGUID" />
-    <Description ID="1023" Package="FIXME-PACKAGEGUID" />
+    <Name ID="1065" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1067" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Neutral.Cs.ContentDialog.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Cs.Neutral.ContentDialog</TemplateID>
