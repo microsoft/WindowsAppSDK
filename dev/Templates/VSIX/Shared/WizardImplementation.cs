@@ -241,36 +241,15 @@ namespace WindowsAppSDK.TemplateUtilities
                     return;
                 }
 
-                // Normally, either InstallNuGetPackagesAsync is called from ProjectFinishedGenerating
-                // for VC++ projects (C++ templates) or from here for C# and wapproj projects. In the
-                // C++ wapproj template, InstallNuGetPackagesAsync() was called twice for the vcxproj,
-                // once from each location. This caused the NuGet install API to throw an
-                // InvalidOperationException because the package was already installed.
-                // This check prevents the double installation attempt.
+                // The wizard now runs only for single-project VC++ (C++) templates, whose
+                // packages are installed from ProjectFinishedGenerating. Here we only surface
+                // any package-install failures detected for those projects after solution restore.
                 Guid _projectGuid = GetProjectGuid(_project);
-                if (_projectGuid.Equals(SolutionVCProjectGuid))
+                if (_projectGuid.Equals(SolutionVCProjectGuid) && _failedPackageExceptions.Count > 0)
                 {
-                    if (_failedPackageExceptions.Count > 0)
-                    {
-                        var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
-                        LogError(errorMessage);
-                        _ = DisplayInfoBarAsync(errorMessage);
-                        return;
-                    }
-                    return;
-                }
-                else
-                {
-                    // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
-                    // during solution restore.
-                    if (_nugetProjectUpdateEvents == null)
-                    {
-                        return;
-                    }
-                    _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
-                    var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
-
-                    _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
+                    var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
+                    LogError(errorMessage);
+                    _ = DisplayInfoBarAsync(errorMessage);
                 }
             });
         }
