@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>Microsoft Storeを使用してサイドローディングまたはディストリビューションを行う WinUI アプリケーションを含む MSIX パッケージを作成するプロジェクト テンプレートです。</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>NuGet パッケージをプロジェクトにインストールしています...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>操作は実行中です...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>パッケージ参照がありません</value>
   </data>

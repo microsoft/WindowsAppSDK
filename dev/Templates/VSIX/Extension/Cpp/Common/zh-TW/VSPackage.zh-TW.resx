@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>此項目範本會建立 MSIX 套件，其中包含 WinUI 應用程式以透過Microsoft Store側載或散發。</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>正在將 NuGet 套件安裝到專案中...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>操作進行中...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>缺少套件參考</value>
   </data>

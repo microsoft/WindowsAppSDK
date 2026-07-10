@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>Eine Projektvorlage, die MSIX-Pakete mit WinUI-Anwendungen zum Querladen oder Verteilen über den Microsoft Store erstellt.</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>NuGet-Pakete werden in das Projekt installiert...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Wird ausgeführt...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>Fehlende Paketverweise</value>
   </data>

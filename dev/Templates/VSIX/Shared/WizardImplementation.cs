@@ -40,7 +40,6 @@ namespace WindowsAppSDK.TemplateUtilities
         private Project _project;
         private IComponentModel _componentModel;
         private IEnumerable<string> _nuGetPackages;
-        private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
@@ -51,12 +50,6 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_componentModel == null)
             {
                 System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IComponentModel service.");
-            }
-
-            _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
-            if (_waitDialog == null)
-            {
-                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
             }
 
             // Assuming package list is passed via a custom parameter in the .vstemplate file
@@ -85,33 +78,12 @@ namespace WindowsAppSDK.TemplateUtilities
             await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                int canceled = 0; // Initialize as not canceled
 
-                // Start the package installation task but do not await it here
-                var installationTask = StartInstallationAsync();
+                // Install the packages, then persist the generated project(s).
+                await StartInstallationAsync();
 
-                // Start the threaded wait dialog
-                if (_waitDialog != null)
-                {
-                    _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
-                }
-
-                // Now await the installation task to complete
-                await installationTask;
-
-                // Once the installation is complete, end the wait dialog
-                if (_waitDialog != null)
-                {
-                    _waitDialog.EndWaitDialog(out canceled);
-                }
-
-                // If _waitDialog is null, canceled remains 0 (not canceled)
-                // Check if the process was canceled before proceeding
-                if (canceled == 0) // If not canceled, finalize the process
-                {
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    SaveAllProjects();
-                }
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                SaveAllProjects();
             });
         }
 

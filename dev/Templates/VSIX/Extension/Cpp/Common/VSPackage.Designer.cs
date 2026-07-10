@@ -370,24 +370,6 @@ namespace WindowsAppSDK.Cpp.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installing NuGet packages into project....
-        /// </summary>
-        internal static string _1044 {
-            get {
-                return ResourceManager.GetString("1044", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operation in progress....
-        /// </summary>
-        internal static string _1045 {
-            get {
-                return ResourceManager.GetString("1045", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Missing Package Reference(s).
         /// </summary>
         internal static string _1046 {

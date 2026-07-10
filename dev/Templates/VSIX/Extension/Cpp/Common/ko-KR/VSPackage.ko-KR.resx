@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>Microsoft Store 통해 테스트용 로드 또는 배포를 위한 WinUI 애플리케이션이 포함된 MSIX 패키지를 만드는 프로젝트 템플릿입니다.</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>프로젝트에 NuGet 패키지를 설치하는 중입니다...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>작업이 진행 중입니다.</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>누락된 패키지 참조</value>
   </data>

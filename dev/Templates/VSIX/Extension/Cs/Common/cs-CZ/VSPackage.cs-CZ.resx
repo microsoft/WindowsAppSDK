@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>Šablona projektu, která vytváří balíčky MSIX obsahující aplikace WinUI pro instalaci bokem nebo distribuci prostřednictvím Microsoft Store</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>Instalují se balíčky NuGet do projektu...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Probíhá operace...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>Chybějící odkaz(y) na balíček</value>
   </data>
