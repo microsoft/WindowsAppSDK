@@ -40,7 +40,6 @@ namespace WindowsAppSDK.TemplateUtilities
         private Project _project;
         private IComponentModel _componentModel;
         private IEnumerable<string> _nuGetPackages;
-        private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
 
@@ -60,14 +59,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
             }
 
-            if (_componentModel != null)
-            {
-                _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
-                if (_nugetProjectUpdateEvents != null)
-                {
-                    _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
-                }
-            }
             // Assuming package list is passed via a custom parameter in the .vstemplate file
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
@@ -227,31 +218,6 @@ namespace WindowsAppSDK.TemplateUtilities
                     }
                 }
             }
-        }
-
-        private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
-        {
-            ThreadHelper.JoinableTaskFactory.Run(async delegate
-            {
-                // Accessing _project requires the main thread
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                if (_project == null)
-                {
-                    return;
-                }
-
-                // The wizard now runs only for single-project VC++ (C++) templates, whose
-                // packages are installed from ProjectFinishedGenerating. Here we only surface
-                // any package-install failures detected for those projects after solution restore.
-                Guid _projectGuid = GetProjectGuid(_project);
-                if (_projectGuid.Equals(SolutionVCProjectGuid) && _failedPackageExceptions.Count > 0)
-                {
-                    var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
-                    LogError(errorMessage);
-                    _ = DisplayInfoBarAsync(errorMessage);
-                }
-            });
         }
 
         private string CreateErrorMessage(ErrorMessageFormat format)
