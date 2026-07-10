@@ -144,7 +144,7 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_project == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                LogError("Project reference is null. Likely a ProjectGroup vstemplate.");
+                LogError("Project reference is null; skipping NuGet package installation.");
                 return;
             }
 
