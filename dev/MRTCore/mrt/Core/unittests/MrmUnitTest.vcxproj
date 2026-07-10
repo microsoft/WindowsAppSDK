@@ -166,6 +166,8 @@
     <ClCompile Include="MrmTests.cpp" />
     <CopyFileToFolders Include="$(BaseOutputPath)MRM\mrm.dll" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
     <CopyFileToFolders Include="$(BaseOutputPath)MRM\mrm.pdb" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
+    <!-- mrm.dll now links the FrameworkUdk Containment worker (Microsoft.Internal.FrameworkUdk.dll); deploy it alongside for the test host to load. -->
+    <CopyFileToFolders Include="$(BaseOutputPath)MRM\Microsoft.Internal.FrameworkUdk.dll" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(MRTCoreRoot)\mrt\Core\src\MRM.vcxproj">
