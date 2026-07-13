@@ -38,7 +38,6 @@ class App : Component
         var (state, dispatch) = UseReducer<CounterState, CounterMessage>(Update, new CounterState(0));
 
         var titleBar = TitleBar("$projectname$")
-            .Icon(FontIcon("\uEA3A", "Segoe Fluent Icons"))
             .Flex(shrink: 0);
 
         // ─── View ─── a pure projection of the current state.
