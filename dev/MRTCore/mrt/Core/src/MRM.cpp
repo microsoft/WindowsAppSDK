@@ -16,6 +16,7 @@
 #include "MRM.h"
 
 #include <memory>
+#include <string>
 
 using namespace Microsoft::Resources;
 
@@ -980,6 +981,11 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     RETURN_IF_FAILED(SizeTAdd(exeDirCount, 1, &exeDirCount));
     RETURN_IF_FAILED(PathCchRemoveFileSpec(exeDir.get(), exeDirCount));
 
+    // The ParentPathForFileName pass truncates exeDir in place to reach the parent folder, so
+    // preserve the original module directory here for the DefaultFallback pass, which must return
+    // a path under the module directory (the documented behavior).
+    std::wstring moduleDir(exeDir.get());
+
     enum SearchPass
     {
         exeDirForFileName,
@@ -988,6 +994,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         BaseDirForModulePri,
         exeDirForResourcesPri,
         exeDirForModulePri,
+        DefaultFallback,
         Final,
     };
     SearchPass searchStart = SearchPass::exeDirForFileName;
@@ -1030,7 +1037,10 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
             case SearchPass::ParentPathForFileName:
                 // move to parent folder of previous search
                 RETURN_IF_FAILED(PathCchRemoveFileSpec(searchDir, searchDirCount));
-                pass = SearchPass::Final;
+                // If the parent search misses, skip the no-FileName passes and fall through to
+                // DefaultFallback so we still return a best-effort path (the documented
+                // always-succeed contract). The loop's increment lands pass on DefaultFallback.
+                pass = SearchPass(SearchPass::DefaultFallback - 1);
                 break;
 
             // Search, given no FileName
@@ -1050,7 +1060,34 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
                 break;
             case SearchPass::exeDirForModulePri:
                 searchFilename = modulePriFileName;
-                pass = SearchPass::Final;
+                // If this search misses, fall through to DefaultFallback (the next pass) so we
+                // still return a best-effort path (the documented always-succeed contract).
+                break;
+            case SearchPass::DefaultFallback:
+                // No file was found in any prior pass. Return a best-effort path even though it
+                // doesn't exist, matching the documented contract: the provided filename (if any)
+                // or resources.pri, under the base directory (if set) otherwise the module (exe)
+                // directory. Callers (e.g. ResourceManager) tolerate a non-existent path.
+                if (filename == nullptr || *filename == L'\0')
+                {
+                    if (baseDir)
+                    {
+                        searchDir = baseDir.get();
+                        searchDirCount = baseDirCount;
+                    }
+                    else
+                    {
+                        searchDir = moduleDir.data();
+                        searchDirCount = exeDirCount;
+                    }
+                    searchFilename = ResourcesPriFileName;
+                }
+                else
+                {
+                    searchDir = moduleDir.data();
+                    searchDirCount = exeDirCount;
+                    searchFilename = filename;
+                }
                 break;
         }
 
@@ -1074,13 +1111,13 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
             PATHCCH_ALLOW_LONG_PATHS));
 
         DWORD attributes = GetFileAttributes(outputPath.get());
-        if ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+        if ((pass == SearchPass::DefaultFallback) ||
+            ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY)))
         {
-            // The file exists. Done.
             *filePath = outputPath.release();
-            return S_OK;
+            break;
         }
     }
 
-    return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+    return S_OK;
 }
