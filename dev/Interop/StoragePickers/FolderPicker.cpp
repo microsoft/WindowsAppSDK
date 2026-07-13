@@ -15,7 +15,7 @@
 #include <FrameworkUdk/Containment.h>
 
 // Bug 63006043: [1.8 servicing] Fix focus not restored after Storage Pickers dialog closes
-#define WINAPPSDK_CHANGEID_63006043 63006043, WinAppSDK_1_8_10
+#define WINAPPSDK_CHANGEID_63006043 63006043, WinAppSDK_1_8_11
 
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
