@@ -599,7 +599,14 @@ try {
         # acquires package identity) via UnitTestClient.Run(), not via
         # `dotnet test`. Validate it as an App so we still confirm the
         # template builds cleanly.
-        @{ ShortName = 'winui-unittest'; Kind = 'App' }
+        @{ ShortName = 'winui-unittest'; Kind = 'App' },
+        # Reactor (Microsoft.UI.Reactor) app templates: pure C#, unpackaged,
+        # dotnet-new-only. They build with the same App path below
+        # (-p:WindowsPackageType=None), and their .csproj already sets it.
+        @{ ShortName = 'reactor'; Kind = 'App' },
+        @{ ShortName = 'reactor-mvu'; Kind = 'App' },
+        @{ ShortName = 'reactor-navview'; Kind = 'App' },
+        @{ ShortName = 'reactor-tabview'; Kind = 'App' }
     )
 
     foreach ($template in $projectTemplates) {

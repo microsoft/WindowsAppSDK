@@ -116,15 +116,38 @@
 
     <ItemGroup>
         <!--
-            Reserved slot for dotnet-new-only project templates. Example shape:
-
-            <DotnetNewOnlyProjectTemplate Include="winui.someclicentric">
-                <BaseName>WinUI.Desktop.Cs.SomeCliCentric</BaseName>
-                <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\SomeCliCentric</SourceDir>
-                <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\some-cli-centric</DotnetConfigDir>
-                <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
-            </DotnetNewOnlyProjectTemplate>
+            Reactor (Microsoft.UI.Reactor) project templates. dotnet-new-only:
+            they ship in the NuGet template pack but are not surfaced as Visual
+            Studio VSIX templates. Reactor apps are pure C# (no XAML) and run
+            unpackaged, so there is no Package.appxmanifest and RenameManifestFrom
+            is intentionally left unset. The Source tree carries only the generic
+            ProjectTemplate.csproj (renamed via sourceName), App.cs and
+            Properties\launchSettings.json; there are no VSIX sidecars, so the
+            BaseName below is used purely to key the (absent) sidecar exclusion.
         -->
+        <DotnetNewOnlyProjectTemplate Include="reactor.blankapp">
+            <BaseName>Reactor.Desktop.Cs.BlankApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\ReactorBlankApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\reactor-blank-app</DotnetConfigDir>
+        </DotnetNewOnlyProjectTemplate>
+
+        <DotnetNewOnlyProjectTemplate Include="reactor.mvuapp">
+            <BaseName>Reactor.Desktop.Cs.MvuApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\ReactorMvuApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\reactor-mvu-app</DotnetConfigDir>
+        </DotnetNewOnlyProjectTemplate>
+
+        <DotnetNewOnlyProjectTemplate Include="reactor.navview">
+            <BaseName>Reactor.Desktop.Cs.NavigationApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\ReactorNavigationApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\reactor-navigation-app</DotnetConfigDir>
+        </DotnetNewOnlyProjectTemplate>
+
+        <DotnetNewOnlyProjectTemplate Include="reactor.tabview">
+            <BaseName>Reactor.Desktop.Cs.TabViewApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\ReactorTabViewApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\reactor-tabview-app</DotnetConfigDir>
+        </DotnetNewOnlyProjectTemplate>
     </ItemGroup>
 
     <ItemGroup>

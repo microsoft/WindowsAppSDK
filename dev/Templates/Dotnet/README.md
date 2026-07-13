@@ -34,6 +34,27 @@ Get below list via `dotnet new list winui`
 
 Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
+### Reactor Templates
+
+[Microsoft.UI.Reactor](https://github.com/microsoft/microsoft-ui-reactor) is a
+declarative, React-style way to build WinUI 3 apps in **pure C# — no XAML**.
+These templates scaffold a runnable, unpackaged Reactor app.
+
+Get the list via `dotnet new list reactor`
+
+| Short Name         | Description                                                          |
+|--------------------|----------------------------------------------------------------------|
+| `reactor`          | Blank Reactor app (alias `reactor-blank`). Start here if unsure      |
+| `reactor-mvu`      | Reactor app using the Model-View-Update pattern with `UseReducer`    |
+| `reactor-navview`  | Reactor app with a `NavigationView` shell and multiple pages         |
+| `reactor-tabview`  | Reactor app with a `TabView` shell and multiple tabs                 |
+
+Reactor apps run unpackaged and reference the
+[`Microsoft.UI.Reactor`](https://www.nuget.org/packages/Microsoft.UI.Reactor)
+preview NuGet package. They require .NET 10 or later. Pin a specific Reactor
+package version at scaffold time with `--reactor-version`, or the Windows App
+SDK version with `--wasdk-version`.
+
 ### Item Templates
 
 | Short Name                 | Description                                              |
@@ -63,6 +84,21 @@ dotnet run
 
 `dotnet run` registers a loose-layout MSIX, gives the app package identity,
 and launches it via AUMID activation — equivalent to F5 in Visual Studio.
+
+### Quickstart a new Reactor app
+
+```powershell
+dotnet new reactor -n MyReactorApp
+cd MyReactorApp
+dotnet run
+```
+
+Reactor apps are pure C# (no XAML) and run unpackaged, so `dotnet run` launches
+them directly. See the
+[Reactor documentation](https://github.com/microsoft/microsoft-ui-reactor) to
+learn the component model, hooks, and layout system. Swap `reactor` for
+`reactor-mvu`, `reactor-navview`, or `reactor-tabview` to start from a richer
+shell.
 
 ### Add items to an existing project
 
