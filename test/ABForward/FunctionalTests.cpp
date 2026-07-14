@@ -30,22 +30,75 @@ namespace Test::ABForward
     private:
         winrt::hstring packageFamilyName{};
 
+        // TODO(ABForward-diag): Temporary diagnostics to capture the real failure on
+        // Win11 24H2/25H2 (see un-bypass in test/BypassTests.json). Revert once root-caused.
+        static void WaitAndLogDeployment(PCWSTR stage, PCWSTR uri,
+            winrt::Windows::Foundation::IAsyncOperationWithProgress<
+                winrt::Windows::Management::Deployment::DeploymentResult,
+                winrt::Windows::Management::Deployment::DeploymentProgress> const& op)
+        {
+            HRESULT getHr{ S_OK };
+            try
+            {
+                op.get();
+            }
+            catch (winrt::hresult_error const& e)
+            {
+                getHr = e.code();
+            }
+            catch (...)
+            {
+                getHr = E_FAIL;
+            }
+
+            HRESULT extendedError{ S_OK };
+            winrt::hstring errorText{};
+            try
+            {
+                if (auto result{ op.GetResults() })
+                {
+                    extendedError = static_cast<HRESULT>(result.ExtendedErrorCode());
+                    errorText = result.ErrorText();
+                }
+            }
+            catch (...)
+            {
+            }
+
+            const auto status{ op.Status() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"[ABForward] %s: uri=%s asyncStatus=%d getHr=0x%08X extendedError=0x%08X errorText='%s'",
+                stage, uri, static_cast<int>(status), getHr, extendedError, errorText.c_str()));
+            VERIFY_ARE_EQUAL(winrt::Windows::Foundation::AsyncStatus::Completed, status,
+                WEX::Common::String().Format(L"[ABForward] %s deployment failed (getHr=0x%08X extendedError=0x%08X errorText='%s')",
+                    stage, getHr, extendedError, errorText.c_str()));
+        }
+
         void AddPackages()
         {
             auto packageManager{ Windows::Management::Deployment::PackageManager() };
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"[ABForward] AddPackages: packageFamilyName='%s'", packageFamilyName.c_str()));
 
             auto frameworkPackages{ packageManager.FindPackages(packageFamilyName) };
 
             if (!frameworkPackages.First().HasCurrent())
             {
-                auto frameworkUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime").c_str()) };
+                const auto frameworkPath{ Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime") };
+                auto frameworkUri{ Windows::Foundation::Uri(frameworkPath.c_str()) };
                 auto frameworkOp{ packageManager.AddPackageAsync(frameworkUri, nullptr, DeploymentOptions::None) };
-                auto frameworkResult{ frameworkOp.get() };
+                WaitAndLogDeployment(L"Framework", frameworkPath.c_str(), frameworkOp);
+            }
+            else
+            {
+                WEX::Logging::Log::Comment(L"[ABForward] Framework already present; skipping install");
             }
 
-            auto ddlmUri{ Windows::Foundation::Uri(Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime.DDLM").c_str()) };
+            const auto ddlmPath{ Test::Packages::GetMsixPackagePath(L"Microsoft.WindowsAppRuntime.DDLM") };
+            auto ddlmUri{ Windows::Foundation::Uri(ddlmPath.c_str()) };
             auto ddlmOp{ packageManager.AddPackageAsync(ddlmUri, nullptr, DeploymentOptions::None) };
-            auto ddlmResult{ ddlmOp.get() };
+            WaitAndLogDeployment(L"DDLM", ddlmPath.c_str(), ddlmOp);
         }
 
     public:
@@ -70,7 +123,11 @@ namespace Test::ABForward
 
             const UINT32 c_Version_MajorMinor{ ABFORWARD_RUNTIME_VERSION_MAJOR << 16 | ABFORWARD_RUNTIME_VERSION_MINOR };
             const PACKAGE_VERSION minVersion{};
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"[ABForward] Bootstrapping version %d.%d (MajorMinor=0x%08X)",
+                ABFORWARD_RUNTIME_VERSION_MAJOR, ABFORWARD_RUNTIME_VERSION_MINOR, c_Version_MajorMinor));
             ::Test::Bootstrap::SetupBootstrapWithVersion(c_Version_MajorMinor, minVersion, false);
+            WEX::Logging::Log::Comment(L"[ABForward] Bootstrap succeeded");
 
             return true;
         }
