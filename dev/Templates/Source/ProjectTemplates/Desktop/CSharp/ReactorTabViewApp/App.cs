@@ -16,6 +16,7 @@ class App : Component
         var (selectedIndex, setSelectedIndex) = UseState(0);
 
         var titleBar = TitleBar("$projectname$")
+            .Icon(FontIcon("\uEA3A", "Segoe Fluent Icons"))
             .Flex(shrink: 0);
 
         // Each Tab hosts a component. IsClosable=false keeps these fixed; set it to

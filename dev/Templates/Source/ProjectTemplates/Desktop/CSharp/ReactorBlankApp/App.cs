@@ -16,7 +16,11 @@ class App : Component
     {
         var (name, setName) = UseState("World");
 
+        // App-mark icon in the title bar: a placeholder Segoe Fluent Icons glyph
+        // (U+EA3A). Swap it for a bundled asset once you add one, e.g.
+        // .Icon("ms-appx:///Assets/AppIcon.ico").
         var titleBar = TitleBar("$projectname$")
+            .Icon(FontIcon("\uEA3A", "Segoe Fluent Icons"))
             .Flex(shrink: 0);
 
         var body = Border(
