@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <string>
+#include <cstdlib>
 
 using namespace Microsoft::Resources;
 
@@ -950,6 +951,26 @@ STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
     return;
 }
 
+// The base directory is communicated via the MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY process
+// environment variable, which is inherited by child processes spawned via CreateProcess. Its owner
+// also stamps its process id in MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID. Honor the base
+// directory only when that stamp matches the current process; otherwise it was inherited from a
+// parent and must be ignored (a child would otherwise resolve resources from the parent's directory).
+// See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+static bool IsBaseDirectoryStampedByCurrentProcess()
+{
+    wchar_t stampedPidText[16]{};
+    const DWORD length{ ::GetEnvironmentVariableW(
+        L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", stampedPidText, ARRAYSIZE(stampedPidText)) };
+    if ((length == 0) || (length >= ARRAYSIZE(stampedPidText)))
+    {
+        // Not stamped (absent) or unexpectedly long: do not honor the base directory.
+        return false;
+    }
+
+    return static_cast<DWORD>(wcstoul(stampedPidText, nullptr, 10)) == ::GetCurrentProcessId();
+}
+
 // When filename is provided, append filename to current module path. If the file doesn't exist, it will
 // append the filename to parent path. If none exists, file in current module
 // path will be returned.
@@ -1003,7 +1024,14 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     if (filename == nullptr || *filename == L'\0')
     {
         searchStart = SearchPass::exeDirForResourcesPri;
-        if (SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)) && baseDir)
+        // Honor MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY only when it was stamped by the current
+        // process. It is a process environment variable (inherited across CreateProcess), so without
+        // this guard a child would load the parent's resources.pri from the parent's base directory.
+        // When the stamp is foreign or absent, leave baseDir empty and fall back to the module (exe)
+        // directory (handled by the passes below and DefaultFallback).
+        // See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+        if (IsBaseDirectoryStampedByCurrentProcess() &&
+            SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)) && baseDir)
         {
             searchStart = SearchPass::BaseDirForResourcesPri;
             RETURN_IF_FAILED(StringCchLengthW(baseDir.get(), STRSAFE_MAX_CCH, &baseDirCount));
