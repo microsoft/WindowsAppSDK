@@ -81,6 +81,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         Xaml_ReserveTrackerCollectionSpace = 62849414,
         WindowsML_ExecutionProviderEnumerationUpdate = 62865780,
         CompositionEngine_API = 62917618,
+        WindowsServices_GetKeyboardModifiersStateRace = 62927180,
         VideoSuperResolution_HardwareDetection = 62934326,
     };
 
