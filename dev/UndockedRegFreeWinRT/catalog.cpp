@@ -15,6 +15,15 @@
 
 #include <../DynamicDependency/API/MddWinRT.h>
 
+#include <FrameworkUdk/Containment.h>
+#include <cstdlib>
+
+// Bug 63098344: MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY is a process environment variable
+// (inherited across CreateProcess). Honor it only when it was stamped by the current process. The
+// change is gated so apps can revert to the prior (unguarded) behavior via RuntimeCompatibilityOptions.
+// See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+#define WINAPPSDK_CHANGEID_63098344 63098344, WinAppSDK_1_8_11
+
 using namespace std;
 using namespace Microsoft::WRL;
 
@@ -154,11 +163,45 @@ HRESULT WinRTLoadComponentFromFilePath(PCWSTR manifestPath)
     }
 }
 
+// Honor the base directory only when it was stamped by the current process (see MRM.cpp). The base
+// directory is a process environment variable and is inherited across CreateProcess, so an inherited
+// value must not steer this process's SxS DLL redirection.
+static bool IsBaseDirectoryStampedByCurrentProcess()
+{
+    wchar_t stampedPidText[16]{};
+    const DWORD length{ ::GetEnvironmentVariableW(
+        L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", stampedPidText, ARRAYSIZE(stampedPidText)) };
+    if ((length == 0) || (length >= ARRAYSIZE(stampedPidText)))
+    {
+        return false;
+    }
+
+    return static_cast<DWORD>(wcstoul(stampedPidText, nullptr, 10)) == ::GetCurrentProcessId();
+}
+
 HRESULT WinRTLoadComponentFromString(std::string_view xmlStringValue)
 {
     try
     {
         auto wideXmlString = ::Microsoft::Utf8::ToUtf16(xmlStringValue.data());
+
+        // MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY is a process environment variable inherited across
+        // CreateProcess. When the guard is enabled and the value was not stamped by this process, strip
+        // the token so redirection falls back to the application directory (the non-PublishSingleFile
+        // behavior) rather than a directory inherited from a parent process. When the change is disabled
+        // via RuntimeCompatibilityOptions, honor it regardless (pre-fix behavior).
+        // See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63098344>() &&
+            !IsBaseDirectoryStampedByCurrentProcess())
+        {
+            const std::wstring baseDirectoryToken{ L"%MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY%" };
+            for (size_t pos{ wideXmlString.find(baseDirectoryToken) };
+                pos != std::wstring::npos;
+                pos = wideXmlString.find(baseDirectoryToken, pos))
+            {
+                wideXmlString.erase(pos, baseDirectoryToken.size());
+            }
+        }
 
         // Expand any env vars, such as %MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY% in asmv3:file.loadFrom
         auto expandedSize = ExpandEnvironmentStringsW(wideXmlString.data(), nullptr, 0);
