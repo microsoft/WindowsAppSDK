@@ -163,6 +163,7 @@ namespace
         62849414, // Xaml_ReserveTrackerCollectionSpace
         62865780, // WindowsML_ExecutionProviderEnumerationUpdate
         62917618, // CompositionEngine_API
+        62927180, // WindowsServices_GetKeyboardModifiersStateRace
         62934326, // VideoSuperResolution_HardwareDetection
     };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
