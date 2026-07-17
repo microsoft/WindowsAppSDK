@@ -8,6 +8,8 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>
+#include <winrt/Microsoft.UI.Dispatching.h>
+#include <optional>
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
@@ -27,6 +29,27 @@ namespace PickerCommon {
     void ValidateSingleFileTypeFilterElement(winrt::hstring const& filter);
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
     void ValidateSuggestedFolder(winrt::hstring const& path);
+
+    // Restores keyboard focus to the WinUI window after a COM file dialog closes.
+    //
+    // These dialogs run on a background thread (winrt::resume_background), so the SetFocus they
+    // perform on close comes from a thread that does not own the window and is ignored, leaving the
+    // window unable to receive key presses until the user clicks it again (issue #6505).
+    //
+    // Construct this RAII helper on the UI thread before switching to the background thread: it
+    // captures the focused window at construction and, on destruction, marshals SetFocus back to
+    // the UI thread via its DispatcherQueue, restoring focus once the dialog has closed.
+    struct DialogFocusRestorer
+    {
+        DialogFocusRestorer();
+        ~DialogFocusRestorer();
+        DialogFocusRestorer(DialogFocusRestorer const&) = delete;
+        DialogFocusRestorer& operator=(DialogFocusRestorer const&) = delete;
+
+    private:
+        HWND m_focusedWindow{ nullptr };
+        winrt::Microsoft::UI::Dispatching::DispatcherQueue m_dispatcherQueue{ nullptr };
+    };
 
     struct PickerParameters {
         HWND HWnd{};

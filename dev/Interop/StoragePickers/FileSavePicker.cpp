@@ -23,6 +23,9 @@
 // Bug 60257559: [1.8 servicing] Bugfix: FileSavePicker.PickSaveFileAsync() should not truncate file when the picked file exists.
 #define WINAPPSDK_CHANGEID_60257559 60257559, WinAppSDK_1_8_4
 
+// Bug 63006043: [1.8 servicing] Fix focus not restored after Storage Pickers dialog closes
+#define WINAPPSDK_CHANGEID_63006043 63006043, WinAppSDK_1_8_11
+
 namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 {
 
@@ -103,6 +106,13 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         parameters.AllFilesText = PickerLocalization::GetStoragePickersLocalizationText(PickerCommon::AllFilesLocalizationKey);
 
         CaptureParameters(parameters);
+
+        std::optional<PickerCommon::DialogFocusRestorer> focusRestorer;
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63006043>())
+        {
+            // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+            focusRestorer.emplace();
+        }
 
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedFolder = m_suggestedFolder;
