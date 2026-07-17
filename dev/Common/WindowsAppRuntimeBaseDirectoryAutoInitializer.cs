@@ -29,7 +29,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.BaseDirectoryCS
             // being steered to read files from a parent-controlled directory).
             // See https://github.com/microsoft/WindowsAppSDK/issues/5987.
             Environment.SetEnvironmentVariable("MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID",
-                Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                Environment.ProcessId.ToString(global::System.Globalization.CultureInfo.InvariantCulture));
         }
     }
 }
