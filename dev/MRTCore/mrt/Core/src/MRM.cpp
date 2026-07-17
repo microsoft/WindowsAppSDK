@@ -15,7 +15,15 @@
 
 #include "MRM.h"
 
+#include <FrameworkUdk/Containment.h>
+
 #include <memory>
+#include <string>
+
+// Bug 63048673: Restore MrmGetFilePathFromName always-succeed contract (return S_OK with a
+// best-effort path when no PRI file exists) instead of failing with ERROR_FILE_NOT_FOUND. The
+// change is gated so apps can revert to the prior behavior via RuntimeCompatibilityOptions.
+#define WINAPPSDK_CHANGEID_63048673 63048673, WinAppSDK_1_8_11
 
 using namespace Microsoft::Resources;
 
@@ -969,6 +977,10 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
 {
     *filePath = nullptr;
 
+    // When disabled via RuntimeCompatibilityOptions, retain the pre-fix behavior of failing with
+    // ERROR_FILE_NOT_FOUND when no PRI file exists.
+    const bool fallbackChangeEnabled = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63048673>();
+
     wil::unique_cotaskmem_string exeDir;
     RETURN_IF_FAILED(wil::GetModuleFileNameW(nullptr, exeDir));
     PCWSTR exeName = wil::find_last_path_segment(exeDir.get());
@@ -980,6 +992,11 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     RETURN_IF_FAILED(SizeTAdd(exeDirCount, 1, &exeDirCount));
     RETURN_IF_FAILED(PathCchRemoveFileSpec(exeDir.get(), exeDirCount));
 
+    // The ParentPathForFileName pass truncates exeDir in place to reach the parent folder, so
+    // preserve the original module directory here for the DefaultFallback pass, which must return
+    // a path under the module directory (the documented behavior).
+    std::wstring moduleDir(exeDir.get());
+
     enum SearchPass
     {
         exeDirForFileName,
@@ -988,6 +1005,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         BaseDirForModulePri,
         exeDirForResourcesPri,
         exeDirForModulePri,
+        DefaultFallback,
         Final,
     };
     SearchPass searchStart = SearchPass::exeDirForFileName;
@@ -1030,7 +1048,10 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
             case SearchPass::ParentPathForFileName:
                 // move to parent folder of previous search
                 RETURN_IF_FAILED(PathCchRemoveFileSpec(searchDir, searchDirCount));
-                pass = SearchPass::Final;
+                // If the change is enabled and the parent search misses, fall through to
+                // DefaultFallback so we still return a best-effort path (the documented
+                // always-succeed contract). The loop's increment lands pass on DefaultFallback.
+                pass = fallbackChangeEnabled ? SearchPass(SearchPass::DefaultFallback - 1) : SearchPass::Final;
                 break;
 
             // Search, given no FileName
@@ -1050,7 +1071,38 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
                 break;
             case SearchPass::exeDirForModulePri:
                 searchFilename = modulePriFileName;
-                pass = SearchPass::Final;
+                // If the change is enabled, fall through to DefaultFallback (the next pass) on a
+                // miss so we still return a best-effort path; otherwise stop after this pass.
+                if (!fallbackChangeEnabled)
+                {
+                    pass = SearchPass::Final;
+                }
+                break;
+            case SearchPass::DefaultFallback:
+                // No file was found in any prior pass. Return a best-effort path even though it
+                // doesn't exist, matching the documented contract: the provided filename (if any)
+                // or resources.pri, under the base directory (if set) otherwise the module (exe)
+                // directory. Callers (e.g. ResourceManager) tolerate a non-existent path.
+                if (filename == nullptr || *filename == L'\0')
+                {
+                    if (baseDir)
+                    {
+                        searchDir = baseDir.get();
+                        searchDirCount = baseDirCount;
+                    }
+                    else
+                    {
+                        searchDir = moduleDir.data();
+                        searchDirCount = exeDirCount;
+                    }
+                    searchFilename = ResourcesPriFileName;
+                }
+                else
+                {
+                    searchDir = moduleDir.data();
+                    searchDirCount = exeDirCount;
+                    searchFilename = filename;
+                }
                 break;
         }
 
@@ -1074,13 +1126,15 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
             PATHCCH_ALLOW_LONG_PATHS));
 
         DWORD attributes = GetFileAttributes(outputPath.get());
-        if ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+        if ((pass == SearchPass::DefaultFallback) ||
+            ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY)))
         {
-            // The file exists. Done.
+            // The file exists, or this is the unconditional best-effort fallback pass. Done.
             *filePath = outputPath.release();
             return S_OK;
         }
     }
 
+    // Only reached when the change is disabled (the DefaultFallback pass is skipped).
     return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
 }
