@@ -131,12 +131,12 @@ namespace Test::CompatibilityTests
             WEX::Logging::Log::Comment(WEX::Common::String(L"RuntimeCompatibilityOptions with DisabledChanges applied."));
 
             // Verify that the specified DisabledChanges are disabled.
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<12345, WinAppSDK_Security>()));
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<23456, WinAppSDK_Security>()));
-            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<34567, WinAppSDK_Security>()));
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<12345>()));
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<23456>()));
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<34567>()));
 
             // A different value not in DisabledChanges should remain enabled.
-            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999, WinAppSDK_Security>()));
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999>()));
         }
     };
 }
