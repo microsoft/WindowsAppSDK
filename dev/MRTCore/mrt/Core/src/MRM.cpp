@@ -19,10 +19,18 @@
 
 #include <memory>
 #include <string>
+#include <cstdlib>
 
 // Bug 63048673: Restore MrmGetFilePathFromName always-succeed contract (return S_OK with a
 // best-effort path when no PRI file exists) instead of failing with ERROR_FILE_NOT_FOUND.
 #define WINAPPSDK_CHANGEID_63048673 63048673
+
+// Bug 63098344/63098302: MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY is a process environment variable
+// (inherited across CreateProcess). Honor it only when it was stamped by the current process, so a
+// child does not resolve the parent's resources.pri. The change is gated so apps can revert to the
+// prior (unguarded) behavior via RuntimeCompatibilityOptions.
+// See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+#define WINAPPSDK_CHANGEID_63098302 63098302
 
 using namespace Microsoft::Resources;
 
@@ -956,6 +964,26 @@ STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
     return;
 }
 
+// The base directory is communicated via the MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY process
+// environment variable, which is inherited by child processes spawned via CreateProcess. Its owner
+// also stamps its process id in MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID. Honor the base
+// directory only when that stamp matches the current process; otherwise it was inherited from a
+// parent and must be ignored (a child would otherwise resolve resources from the parent's directory).
+// See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+static bool IsBaseDirectoryStampedByCurrentProcess()
+{
+    wchar_t stampedPidText[16]{};
+    const DWORD length{ ::GetEnvironmentVariableW(
+        L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", stampedPidText, ARRAYSIZE(stampedPidText)) };
+    if ((length == 0) || (length >= ARRAYSIZE(stampedPidText)))
+    {
+        // Not stamped (absent) or unexpectedly long: do not honor the base directory.
+        return false;
+    }
+
+    return static_cast<DWORD>(wcstoul(stampedPidText, nullptr, 10)) == ::GetCurrentProcessId();
+}
+
 // When filename is provided, append filename to current module path. If the file doesn't exist, it will
 // append the filename to parent path. If none exists, file in current module
 // path will be returned.
@@ -979,6 +1007,10 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     // When disabled via RuntimeCompatibilityOptions, retain the pre-fix behavior of failing with
     // ERROR_FILE_NOT_FOUND when no PRI file exists.
     const bool fallbackChangeEnabled = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63048673>();
+
+    // When disabled via RuntimeCompatibilityOptions, retain the pre-fix behavior of honoring an
+    // inherited MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY regardless of which process stamped it.
+    const bool baseDirPidGuardEnabled = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63098302>();
 
     wil::unique_cotaskmem_string exeDir;
     RETURN_IF_FAILED(wil::GetModuleFileNameW(nullptr, exeDir));
@@ -1015,9 +1047,20 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         searchStart = SearchPass::exeDirForResourcesPri;
         if (SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)) && baseDir)
         {
-            searchStart = SearchPass::BaseDirForResourcesPri;
-            RETURN_IF_FAILED(StringCchLengthW(baseDir.get(), STRSAFE_MAX_CCH, &baseDirCount));
-            RETURN_IF_FAILED(SizeTAdd(baseDirCount, 1, &baseDirCount));
+            // The base directory is a process environment variable (inherited across CreateProcess);
+            // when the guard is enabled and the value was not stamped by this process, ignore it so a
+            // child does not load the parent's resources.pri. When the guard is disabled, honor it
+            // regardless (pre-fix behavior).
+            if (baseDirPidGuardEnabled && !IsBaseDirectoryStampedByCurrentProcess())
+            {
+                baseDir.reset();
+            }
+            else
+            {
+                searchStart = SearchPass::BaseDirForResourcesPri;
+                RETURN_IF_FAILED(StringCchLengthW(baseDir.get(), STRSAFE_MAX_CCH, &baseDirCount));
+                RETURN_IF_FAILED(SizeTAdd(baseDirCount, 1, &baseDirCount));
+            }
         }
     }
 
