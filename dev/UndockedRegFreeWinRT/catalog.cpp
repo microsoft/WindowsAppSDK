@@ -186,21 +186,28 @@ HRESULT WinRTLoadComponentFromString(std::string_view xmlStringValue)
         auto wideXmlString = ::Microsoft::Utf8::ToUtf16(xmlStringValue.data());
 
         // MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY is a process environment variable inherited across
-        // CreateProcess. When the guard is enabled and the value was not stamped by this process, strip
-        // the token so redirection falls back to the application directory (the non-PublishSingleFile
-        // behavior) rather than a directory inherited from a parent process. When the change is disabled
-        // via RuntimeCompatibilityOptions, honor it regardless (pre-fix behavior).
+        // CreateProcess. When the value was not stamped by this process, strip the token so redirection
+        // falls back to the application directory (the non-PublishSingleFile behavior) rather than a
+        // directory inherited from a parent process.
+        //
+        // The manifest only references the token for PublishSingleFile apps, so only consult the
+        // containment change when the token is actually present. IsChangeEnabled locks the process's
+        // runtime-compatibility configuration on first call, and this code runs during reg-free WinRT
+        // activation - before an app can call RuntimeCompatibilityOptions.Apply(); calling it
+        // unconditionally would lock the configuration early and make Apply() fail.
         // See https://github.com/microsoft/WindowsAppSDK/issues/5987.
-        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63098302>() &&
+        const std::wstring baseDirectoryToken{ L"%MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY%" };
+        size_t tokenPos{ wideXmlString.find(baseDirectoryToken) };
+        if ((tokenPos != std::wstring::npos) &&
+            WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63098302>() &&
             !IsBaseDirectoryStampedByCurrentProcess())
         {
-            const std::wstring baseDirectoryToken{ L"%MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY%" };
-            for (size_t pos{ wideXmlString.find(baseDirectoryToken) };
-                pos != std::wstring::npos;
-                pos = wideXmlString.find(baseDirectoryToken, pos))
+            // When disabled via RuntimeCompatibilityOptions, honor the token regardless (pre-fix behavior).
+            do
             {
-                wideXmlString.erase(pos, baseDirectoryToken.size());
-            }
+                wideXmlString.erase(tokenPos, baseDirectoryToken.size());
+                tokenPos = wideXmlString.find(baseDirectoryToken, tokenPos);
+            } while (tokenPos != std::wstring::npos);
         }
 
         // Expand any env vars, such as %MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY% in asmv3:file.loadFrom
