@@ -79,8 +79,18 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
+      <!--
+        Delay-load Microsoft.WindowsAppRuntime.dll so the test DLL's static import
+        on ContainmentTestInitialize (added implicitly by linking against
+        Microsoft.WindowsAppRuntime.lib) does not force the loader to find a copy
+        in the test folder at TE.exe startup. The bootstrap loads the framework-
+        package copy first; ContainmentTestInitialize is then resolved via
+        GetModuleHandle/GetProcAddress on that same copy. This is the only DLL
+        in the test that must defer to the bootstrap-loaded framework instance.
+      -->
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
