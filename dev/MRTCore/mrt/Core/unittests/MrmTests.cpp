@@ -4,6 +4,11 @@
 #include <Windows.h>
 #include <WexTestClass.h>
 #include "..\src\MRM.h"
+#include <FrameworkUdk/Containment.h>
+
+// Change ID that gates the MrmGetFilePathFromName always-succeed fallback (see MRM.cpp). Defined
+// here (mirroring the inline definition in MRM.cpp) so the disabled-behavior test can name it.
+#define WINAPPSDK_CHANGEID_63048673 63048673
 
 using namespace WEX::Common;
 using namespace WEX::TestExecution;
@@ -685,8 +690,20 @@ public:
         MrmFreeResource(path);
 
         VERIFY_ARE_EQUAL(MrmGetFilePathFromName(L"something.pri", &path), S_OK);
-        // Even if the file doesn't exist, we will still return a path. This is for those don't use PRI for resource.
+        // Even if the file doesn't exist, we still return a best-effort path so apps without a PRI
+        // file can still create a ResourceManager. The path is under the module (exe) directory.
         VERIFY_IS_NOT_NULL(wcsstr(path, L"something.pri"));
+        {
+            wchar_t moduleFilePath[MAX_PATH];
+            VERIFY_ARE_NOT_EQUAL(0u, GetModuleFileNameW(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath)));
+            PWSTR lastSeparator = wcsrchr(moduleFilePath, L'\\');
+            VERIFY_IS_NOT_NULL(lastSeparator);
+            lastSeparator[1] = L'\0'; // Trim to "<moduleDir>\"
+            wchar_t expectedPath[MAX_PATH];
+            VERIFY_ARE_EQUAL(0, wcscpy_s(expectedPath, ARRAYSIZE(expectedPath), moduleFilePath));
+            VERIFY_ARE_EQUAL(0, wcscat_s(expectedPath, ARRAYSIZE(expectedPath), L"something.pri"));
+            VERIFY_ARE_EQUAL(CSTR_EQUAL, CompareStringOrdinal(path, -1, expectedPath, -1, TRUE));
+        }
         MrmFreeResource(path);
 
         VERIFY_ARE_EQUAL(MrmGetFilePathFromName(nullptr, &path), S_OK);
@@ -712,5 +729,43 @@ private:
     }
 
     wchar_t previousWorkingDirectory[MAX_PATH];
+};
+
+// Verifies the runtime-compatibility containment behavior of the MrmGetFilePathFromName fallback
+// (WINAPPSDK_CHANGEID_63048673). When an app disables the change, the API must revert to its
+// previous behavior of failing with ERROR_FILE_NOT_FOUND for a non-existent PRI file, instead of
+// returning S_OK with a best-effort path.
+//
+// This runs with IsolationLevel=Method so it executes in its own process: WinAppSdk::Containment::
+// IsChangeEnabled<>() caches its result in a process-lifetime function-local static, so testing the
+// disabled state must not share a process with BasicTest::GetFilePath (which exercises the enabled
+// default state and would otherwise poison, or be poisoned by, the cache).
+class ContainmentDisabledTest
+{
+public:
+    BEGIN_TEST_CLASS(ContainmentDisabledTest)
+        TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+    END_TEST_CLASS()
+
+    TEST_METHOD(GetFilePathFallbackDisabled)
+    {
+        // Disable the fallback change at the FrameworkUdk containment worker. MrmGetFilePathFromName
+        // consults it via IsChangeEnabled<WINAPPSDK_CHANGEID_63048673>(). disabledChanges must be
+        // sorted ascending; a single element is trivially sorted.
+        const UINT32 disabledChanges[] = { WINAPPSDK_CHANGEID_63048673 };
+        WinAppSdk::Containment::WinAppSDKRuntimeConfiguration config{};
+        config.disabledChanges = disabledChanges;
+        config.disabledChangesCount = ARRAYSIZE(disabledChanges);
+        VERIFY_SUCCEEDED(WinAppSdk::Containment::SetConfiguration(&config));
+
+        // Confirm the worker now reports the change as disabled.
+        VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63048673>()));
+
+        // With the change disabled, a non-existent PRI file must fail with ERROR_FILE_NOT_FOUND
+        // (the pre-fix behavior) rather than returning S_OK with a best-effort path.
+        wchar_t* path = nullptr;
+        VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), MrmGetFilePathFromName(L"something.pri", &path));
+        VERIFY_IS_NULL(path);
+    }
 };
 } // namespace UnitTest
