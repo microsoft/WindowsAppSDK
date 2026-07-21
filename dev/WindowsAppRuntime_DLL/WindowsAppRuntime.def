@@ -28,4 +28,6 @@ EXPORTS
     WindowsAppRuntime_VersionInfo_MSIX_Main_PackageFamilyName_Get
     WindowsAppRuntime_VersionInfo_TestInitialize
 
+    ContainmentTestInitialize
+
     WindowsAppRuntime_EnsureIsLoaded
