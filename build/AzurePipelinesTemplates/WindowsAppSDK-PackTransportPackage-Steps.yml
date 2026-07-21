@@ -17,6 +17,12 @@ parameters:
   - name: IsOfficial
     type: boolean
     default: false
+  # Gates the public SymWeb/MSDL symbol publish inside WindowsAppSDK-PublishSymbol-Steps.yml.
+  # Default true preserves standalone per-component behavior; the monobuild passes false while
+  # the public symbol-publish service connection is being sorted.
+  - name: PublishPublicSymbols
+    type: boolean
+    default: true
   - name: PublishPackage
     type: boolean
     default: false
@@ -117,6 +123,7 @@ steps:
       InnerParams:
         SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
         IsOfficial: ${{ parameters.IsOfficial }}
+        PublishPublicSymbols: ${{ parameters.PublishPublicSymbols }}
 
   # ── Determine version + pack NuGet ──
   - template: WindowsAppSDK-DetermineVersion-Wrapper.yml
