@@ -130,7 +130,14 @@
     <PropertyGroup>
       <VsixIdentity>$(_OriginalVsixId)</VsixIdentity>
       <ExperimentalVsixIdentity>$(_OriginalVsixId).Experimental</ExperimentalVsixIdentity>
-      <ExperimentalVsixDisplayName>Experimental $(_OriginalVsixName)</ExperimentalVsixDisplayName>
+      <!--
+        The VSIX manifest DisplayName has a 50-character maximum. Prepending
+        "Experimental " (13 chars) to a full name like
+        "Windows App SDK C# VS Templates (LocalDev)" (42) overflows it, so strip
+        the trailing deployment parenthetical (e.g. " (LocalDev)") - the
+        deployment is already encoded in the .Experimental Identity/suffix.
+      -->
+      <ExperimentalVsixDisplayName>Experimental $([System.Text.RegularExpressions.Regex]::Replace('$(_OriginalVsixName)', ' \(.*\)', ''))</ExperimentalVsixDisplayName>
       <ExperimentalVsixTags>$(_OriginalVsixTags)</ExperimentalVsixTags>
 
       <_OriginalVsixId></_OriginalVsixId>
