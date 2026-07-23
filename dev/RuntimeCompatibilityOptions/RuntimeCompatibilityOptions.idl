@@ -84,7 +84,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsServices_GetKeyboardModifiersStateRace = 62927180,
         VideoSuperResolution_HardwareDetection = 62934326,
 
-        // Experimental-only, flighting in 2.0-experimental; fold into the stable release group when it graduates.
+        // 2.3.3
         WinUI_WindowWidthHeight = 63077767,
     };
 
