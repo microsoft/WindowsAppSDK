@@ -38,6 +38,26 @@ ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::Window
     m_kind = ResourceCandidateKind::EmbeddedData;
 }
 
+ResourceCandidate::ResourceCandidate(embedded_resoure_ptr&& data, uint32_t size)
+    : m_loadedBlob(std::move(data)), m_loadedBlobSize(size), m_kind(ResourceCandidateKind::EmbeddedData)
+{
+}
+
+ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, embedded_resoure_ptr&& data, uint32_t size)
+    : m_resourceManagerHandle(manager), m_resourceContext(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id), m_loadedBlob(std::move(data)), m_loadedBlobSize(size), m_kind(ResourceCandidateKind::EmbeddedData)
+{
+}
+
+winrt::array_view<uint8_t const> ResourceCandidate::EmbeddedBytes() const noexcept
+{
+    if (m_loadedBlob != nullptr)
+    {
+        auto const first = static_cast<uint8_t const*>(m_loadedBlob.get());
+        return {first, first + m_loadedBlobSize};
+    }
+    return {m_blobData.begin(), m_blobData.end()};
+}
+
 hstring ResourceCandidate::ValueAsString()
 {
     if (m_kind == ResourceCandidateKind::String || m_kind == ResourceCandidateKind::FilePath)
@@ -51,7 +71,8 @@ com_array<uint8_t> ResourceCandidate::ValueAsBytes()
 {
     if (m_kind == ResourceCandidateKind::EmbeddedData)
     {
-        return com_array<uint8_t>(m_blobData.begin(), m_blobData.end());
+        auto const bytes = EmbeddedBytes();
+        return com_array<uint8_t>(bytes.begin(), bytes.end());
     }
     throw_hresult(HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH));
 }

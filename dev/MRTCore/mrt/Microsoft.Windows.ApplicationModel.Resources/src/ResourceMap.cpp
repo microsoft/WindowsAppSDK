@@ -115,7 +115,8 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
             m_resourceMapHandle,
             static_cast<uint32_t>(-1),
             resource,
-            winrt::array_view<uint8_t>(reinterpret_cast<byte*>(resourceContainer.get()), reinterpret_cast<byte*>(resourceContainer.get()) + resourceData.size));
+            std::move(resourceContainer),
+            resourceData.size);
     }
     case MrmType_String:
     {
@@ -204,7 +205,8 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
             m_resourceMapHandle,
             index,
             hstring(),
-            winrt::array_view<uint8_t>(reinterpret_cast<byte*>(resourceContainer.get()), reinterpret_cast<byte*>(resourceContainer.get()) + resourceData.size));
+            std::move(resourceContainer),
+            resourceData.size);
 
         return winrt::make<winrt::impl::key_value_pair<IKeyValuePair<hstring, Resources::ResourceCandidate>>>(resourceName, candidate);
     }
