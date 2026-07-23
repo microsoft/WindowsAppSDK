@@ -83,6 +83,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         CompositionEngine_API = 62917618,
         WindowsServices_GetKeyboardModifiersStateRace = 62927180,
         VideoSuperResolution_HardwareDetection = 62934326,
+
+        // 2.3.3
+        WinUI_WindowWidthHeight = 63077767,
     };
 
     /// Represents a version of the Windows App Runtime.

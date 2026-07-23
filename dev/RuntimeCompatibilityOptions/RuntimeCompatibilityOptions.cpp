@@ -54,6 +54,7 @@ namespace
         WinAppSDK_2_1_0 = WinAppSDKReleaseVersionFromValues(2, 1, 0),
         WinAppSDK_2_1_5 = WinAppSDKReleaseVersionFromValues(2, 1, 5),
         WinAppSDK_2_3_0 = WinAppSDKReleaseVersionFromValues(2, 3, 0),
+        WinAppSDK_2_3_3 = WinAppSDKReleaseVersionFromValues(2, 3, 3),
         WinAppSDK_Latest = 999999999,
         WinAppSDK_Security = 0,
     };
@@ -166,10 +167,14 @@ namespace
         62927180, // WindowsServices_GetKeyboardModifiersStateRace
         62934326, // VideoSuperResolution_HardwareDetection
     };
+    constexpr UINT32 s_changes_2_3_3[] = {
+        63077767, // WinUI_WindowWidthHeight
+    };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
         MakeGroup(s_changes_2_1_0, WinAppSDKReleaseVersion::WinAppSDK_2_1_0),
         MakeGroup(s_changes_2_1_5, WinAppSDKReleaseVersion::WinAppSDK_2_1_5),
         MakeGroup(s_changes_2_3_0, WinAppSDKReleaseVersion::WinAppSDK_2_3_0),
+        MakeGroup(s_changes_2_3_3, WinAppSDKReleaseVersion::WinAppSDK_2_3_3),
     };
     constexpr size_t s_catalogGroupsProdCount{ std::size(s_catalogGroupsProd) };
 
