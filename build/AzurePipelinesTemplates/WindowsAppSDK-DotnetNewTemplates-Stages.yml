@@ -19,11 +19,21 @@ parameters:
 - name: IsPRBuild
   type: boolean
   default: false
+# Optional gate wiring used by the PR pipeline to short-circuit when no
+# dev/Templates files changed. Defaults preserve official-pipeline behavior.
+- name: dependsOn
+  type: object
+  default: []
+- name: condition
+  type: string
+  default: ''
 
 stages:
 - stage: DotnetNewTemplates_Build
   displayName: 'Build and pack dotnet new templates'
-  dependsOn: []
+  dependsOn: ${{ parameters.dependsOn }}
+  ${{ if ne(parameters.condition, '') }}:
+    condition: ${{ parameters.condition }}
   jobs:
   - job: PackDotnetNewTemplates
     displayName: 'Pack dotnet new template NuGet'
