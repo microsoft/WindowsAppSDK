@@ -26,6 +26,12 @@ parameters:
 - name: dotnetSdkVersion
   type: string
   default: '8.0.x'
+# Reactor project templates target net10.0 and declare a [10.0,) SDK
+# constraint, so the test agent also needs the .NET 10 SDK to scaffold and
+# build them. Installed alongside dotnetSdkVersion below.
+- name: reactorDotnetSdkVersion
+  type: string
+  default: '10.0.x'
 - name: WindowsAppSdkVersion
   type: string
   default: '*'
@@ -67,6 +73,16 @@ stages:
       inputs:
         packageType: sdk
         version: '${{ parameters.dotnetSdkVersion }}'
+
+    # Reactor templates require the .NET 10 SDK (they target net10.0 and set a
+    # [10.0,) sdk-version constraint). Install it alongside the version above;
+    # the .NET muxer picks the highest installed SDK, and the WinUI templates
+    # auto-detect their TFM and build cleanly on .NET 10 as well.
+    - task: UseDotNet@2
+      displayName: 'Use .NET SDK ${{ parameters.reactorDotnetSdkVersion }} (for Reactor templates)'
+      inputs:
+        packageType: sdk
+        version: '${{ parameters.reactorDotnetSdkVersion }}'
 
     - task: NuGetAuthenticate@1
       displayName: 'Authenticate NuGet feeds'
