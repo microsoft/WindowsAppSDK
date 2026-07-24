@@ -10,16 +10,17 @@ parameters:
   default: true
 - name: UseCurrentBuild
   type: boolean
-  default: false 
+  default: false
 # When true, this template is being invoked from the monobuild context where
 # the WindowsAppSDK monorepo IS the self repo. PublishSymbol-Steps is invoked
 # WITHOUT the @WinAppSDK suffix.
 - name: IsMonobuild
   type: boolean
   default: false
+# To override OptionalVSIXVersion's default, add
+# OptionalVSIXVersion: 'x.y.z' to the parameters of
+# the stage that calls this template in the aggregator pipeline.
 - name: OptionalVSIXVersion
-  # if blank, the project template will select the version matching the Windows App SDK
-  # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
   type: string
   default: 'default'
 - name: EnableExperimentalVSIXFeatures
@@ -128,6 +129,12 @@ steps:
         }
       }
       Exit 1
+
+- task: UseDotNet@2
+  displayName: 'Use .NET SDK 10.0.110'
+  inputs:
+    packageType: 'sdk'
+    version: '10.0.110'
 
 - task: NuGetAuthenticate@1
 
