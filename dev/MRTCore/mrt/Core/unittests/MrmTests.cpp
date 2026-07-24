@@ -389,6 +389,148 @@ public:
         MrmDestroyResourceManager(resourceManager);
     }
 
+    TEST_METHOD(ReadStringOrEmbeddedResourceNoCopyReturnsView)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        // The no-copy variant should return a non-owning view directly into the memory-mapped PRI,
+        // whose bytes are identical to those returned by the copying variant.
+        MrmType copyType;
+        wchar_t* copyString;
+        MrmResourceData copyData {};
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResource(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &copyType, &copyString, &copyData), S_OK);
+        VERIFY_IS_TRUE(copyType == MrmType_Embedded);
+        VERIFY_IS_FALSE(copyData.isView);
+        VERIFY_IS_NOT_NULL(copyData.data);
+        VERIFY_ARE_EQUAL(copyData.size, 15002u);
+
+        MrmType viewType;
+        wchar_t* viewString;
+        MrmResourceData viewData {};
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceNoCopy(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &viewType, &viewString, &viewData), S_OK);
+        VERIFY_IS_NULL(viewString);
+        VERIFY_IS_TRUE(viewType == MrmType_Embedded);
+        VERIFY_IS_TRUE(viewData.isView);
+        VERIFY_IS_NOT_NULL(viewData.data);
+        VERIFY_ARE_EQUAL(viewData.size, copyData.size);
+
+        // A view must not point at the freshly allocated copy - it references the mapped file.
+        VERIFY_ARE_NOT_EQUAL(viewData.data, copyData.data);
+        VERIFY_ARE_EQUAL(0, memcmp(viewData.data, copyData.data, viewData.size));
+
+        // Freeing a view is a no-op that clears the descriptor; freeing the copy releases the buffer.
+        MrmFreeResourceData(&viewData);
+        VERIFY_IS_NULL(viewData.data);
+        VERIFY_ARE_EQUAL(viewData.size, 0u);
+        VERIFY_IS_FALSE(viewData.isView);
+
+        MrmFreeResourceData(&copyData);
+        VERIFY_IS_NULL(copyData.data);
+
+        MrmDestroyResourceManager(resourceManager);
+    }
+
+    TEST_METHOD(ReadStringOrEmbeddedResourceNoCopyStringIsNotAView)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        // String resources are unaffected by the no-copy path: no blob, not a view.
+        MrmType resourceType;
+        wchar_t* resourceString;
+        MrmResourceData resourceData {};
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceNoCopy(resourceManager, nullptr, nullptr, L"resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceType, &resourceString, &resourceData), S_OK);
+
+        VERIFY_IS_NOT_NULL(resourceString);
+        VERIFY_IS_TRUE(resourceType == MrmType_String);
+        VERIFY_IS_FALSE(resourceData.isView);
+        VERIFY_IS_NULL(resourceData.data);
+        VERIFY_ARE_EQUAL(resourceData.size, 0u);
+        VerifyStringEqual(resourceString, L"Groove Music");
+
+        MrmFreeResource(resourceString);
+        MrmDestroyResourceManager(resourceManager);
+    }
+
+    TEST_METHOD(ReadStringOrEmbeddedResourceByIndexNoCopyReturnsView)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        MrmMapHandle resourceMap;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, nullptr, L"Files", &resourceMap), S_OK);
+
+        UINT32 resourceCount = 0;
+        VERIFY_ARE_EQUAL(MrmGetResourceCount(resourceManager, resourceMap, &resourceCount), S_OK);
+        VERIFY_IS_TRUE(resourceCount > 0);
+
+        // Walk the map by index and, for the first embedded resource, verify the no-copy variant
+        // yields a view whose bytes match the copying variant.
+        bool verifiedEmbedded = false;
+        for (UINT32 index = 0; index < resourceCount && !verifiedEmbedded; index++)
+        {
+            MrmType viewType;
+            wchar_t* viewName = nullptr;
+            wchar_t* viewString = nullptr;
+            MrmResourceData viewData {};
+            VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceByIndexNoCopy(resourceManager, nullptr, resourceMap, index, &viewType, &viewName, &viewString, &viewData), S_OK);
+
+            if (viewType == MrmType_Embedded)
+            {
+                VERIFY_IS_TRUE(viewData.isView);
+                VERIFY_IS_NOT_NULL(viewData.data);
+                VERIFY_IS_TRUE(viewData.size > 0);
+
+                MrmType copyType;
+                wchar_t* copyName = nullptr;
+                wchar_t* copyString = nullptr;
+                MrmResourceData copyData {};
+                VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceByIndex(resourceManager, nullptr, resourceMap, index, &copyType, &copyName, &copyString, &copyData), S_OK);
+                VERIFY_IS_TRUE(copyType == MrmType_Embedded);
+                VERIFY_IS_FALSE(copyData.isView);
+                VERIFY_ARE_EQUAL(viewData.size, copyData.size);
+                VERIFY_ARE_EQUAL(0, memcmp(viewData.data, copyData.data, viewData.size));
+
+                MrmFreeResourceData(&copyData);
+                MrmFreeResource(copyName);
+                verifiedEmbedded = true;
+            }
+
+            MrmFreeResourceData(&viewData);
+            MrmFreeResource(viewName);
+        }
+
+        VERIFY_IS_TRUE(verifiedEmbedded);
+
+        MrmDestroyResourceManager(resourceManager);
+    }
+
+    TEST_METHOD(MrmFreeResourceDataFreesOwnedBuffer)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        // The copying variant produces an owned buffer; MrmFreeResourceData must release it and reset
+        // the descriptor without crashing.
+        MrmResourceData resourceData {};
+        VERIFY_ARE_EQUAL(MrmLoadEmbeddedResource(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &resourceData), S_OK);
+        VERIFY_IS_FALSE(resourceData.isView);
+        VERIFY_IS_NOT_NULL(resourceData.data);
+        VERIFY_ARE_EQUAL(resourceData.size, 15002u);
+
+        MrmFreeResourceData(&resourceData);
+        VERIFY_IS_NULL(resourceData.data);
+        VERIFY_ARE_EQUAL(resourceData.size, 0u);
+        VERIFY_IS_FALSE(resourceData.isView);
+
+        // Calling again on a cleared descriptor is safe.
+        MrmFreeResourceData(&resourceData);
+        MrmFreeResourceData(nullptr);
+
+        MrmDestroyResourceManager(resourceManager);
+    }
+
     TEST_METHOD(ReadStringOrEmbeddedResourceWithQualifierOverride)
     {
         MrmManagerHandle resourceManager;
