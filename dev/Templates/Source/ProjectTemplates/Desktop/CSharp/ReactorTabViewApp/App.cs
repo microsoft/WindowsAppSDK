@@ -94,7 +94,8 @@ static class Ui
     // Shared page scaffold: a title heading + body text on a solid surface.
     // The opaque tertiary background covers the window's Mica in the tab content
     // area (matching the WinUI TabView template); the title bar / tab strip still
-    // show Mica.
+    // show Mica. The explicit Stretch alignment makes the surface fill the whole
+    // tab content region instead of shrinking to the text.
     public static Element Page(string title, string body) =>
         Border(
             VStack(24,
@@ -103,5 +104,10 @@ static class Ui
             )
         )
         .Background(Theme.Ref("SolidBackgroundFillColorTertiaryBrush"))
-        .Padding(24, 16, 24, 16);
+        .Padding(24, 16, 24, 16)
+        .Set(b =>
+        {
+            b.HorizontalAlignment = HorizontalAlignment.Stretch;
+            b.VerticalAlignment = VerticalAlignment.Stretch;
+        });
 }
