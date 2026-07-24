@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.NavigationApp",
   "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.NavigationApp",
   "name": "Reactor NavigationView App",
-  "shortName": [ "reactor-navview" ],
+  "shortName": [ "reactor-navview", "winui-reactor-navview" ],
   "sourceName": "ProjectTemplate",
   "defaultName": "ReactorNavApp",
   "description": "Creates a Microsoft.UI.Reactor (WinUI 3) desktop app with a NavigationView shell and multiple pages.",

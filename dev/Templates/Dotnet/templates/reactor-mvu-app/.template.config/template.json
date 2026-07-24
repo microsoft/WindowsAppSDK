@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.MvuApp",
   "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.MvuApp",
   "name": "Reactor MVU App",
-  "shortName": [ "reactor-mvu" ],
+  "shortName": [ "reactor-mvu", "winui-reactor-mvu" ],
   "sourceName": "ProjectTemplate",
   "defaultName": "ReactorMvuApp",
   "description": "Creates a Microsoft.UI.Reactor (WinUI 3) desktop app using the Model-View-Update pattern with UseReducer.",

@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.BlankApp",
   "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.BlankApp",
   "name": "Reactor Blank App",
-  "shortName": [ "reactor", "reactor-blank" ],
+  "shortName": [ "reactor", "reactor-blank", "winui-reactor" ],
   "sourceName": "ProjectTemplate",
   "defaultName": "ReactorApp",
   "description": "Creates a blank Microsoft.UI.Reactor (WinUI 3) desktop app. Pure C#, no XAML. Start here if unsure.",

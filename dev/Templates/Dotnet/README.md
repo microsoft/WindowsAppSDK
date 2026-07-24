@@ -49,6 +49,9 @@ Get the list via `dotnet new list reactor`
 | `reactor-navview`  | Reactor app with a `NavigationView` shell and multiple pages         |
 | `reactor-tabview`  | Reactor app with a `TabView` shell and multiple tabs                 |
 
+Each also has a `winui-reactor*` alias (e.g. `winui-reactor`, `winui-reactor-mvu`)
+so they show up under `dotnet new list winui` alongside the other WinUI templates.
+
 Reactor apps run unpackaged and reference the
 [`Microsoft.UI.Reactor`](https://www.nuget.org/packages/Microsoft.UI.Reactor)
 preview NuGet package. They require .NET 10 or later. Pin a specific Reactor

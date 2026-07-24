@@ -9,7 +9,7 @@
   "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.TabViewApp",
   "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.TabViewApp",
   "name": "Reactor TabView App",
-  "shortName": [ "reactor-tabview" ],
+  "shortName": [ "reactor-tabview", "winui-reactor-tabview" ],
   "sourceName": "ProjectTemplate",
   "defaultName": "ReactorTabApp",
   "description": "Creates a Microsoft.UI.Reactor (WinUI 3) desktop app with a TabView shell and multiple tabs.",
