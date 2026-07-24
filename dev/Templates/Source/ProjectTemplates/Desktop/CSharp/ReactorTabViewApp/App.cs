@@ -91,10 +91,17 @@ class App : Component
 
 static class Ui
 {
-    // Shared page scaffold: a title heading + body text.
+    // Shared page scaffold: a title heading + body text on a solid surface.
+    // The opaque tertiary background covers the window's Mica in the tab content
+    // area (matching the WinUI TabView template); the title bar / tab strip still
+    // show Mica.
     public static Element Page(string title, string body) =>
-        VStack(24,
-            Title(title),
-            Body(body)
-        ).Padding(24, 16, 24, 16);
+        Border(
+            VStack(24,
+                Title(title),
+                Body(body)
+            )
+        )
+        .Background(Theme.Ref("SolidBackgroundFillColorTertiaryBrush"))
+        .Padding(24, 16, 24, 16);
 }
