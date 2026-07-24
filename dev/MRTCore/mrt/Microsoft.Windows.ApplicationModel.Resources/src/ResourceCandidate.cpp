@@ -48,8 +48,18 @@ ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::Window
 {
 }
 
+ResourceCandidate::ResourceCandidate(Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager, MrmManagerHandle managerHandle, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, array_view<uint8_t const> data)
+    : m_blobView(data.data()), m_blobViewSize(static_cast<uint32_t>(data.size())), m_kind(ResourceCandidateKind::EmbeddedData),
+      m_resourceManager(manager), m_resourceManagerHandle(managerHandle), m_resourceContext(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id)
+{
+}
+
 winrt::array_view<uint8_t const> ResourceCandidate::EmbeddedBytes() const noexcept
 {
+    if (m_blobView != nullptr)
+    {
+        return {m_blobView, m_blobView + m_blobViewSize};
+    }
     if (m_loadedBlob != nullptr)
     {
         auto const first = static_cast<uint8_t const*>(m_loadedBlob.get());

@@ -81,7 +81,7 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
     wchar_t* resourceString;
     MrmResourceData resourceData {};
 
-    HRESULT hr = MrmLoadStringOrEmbeddedResource(
+    HRESULT hr = MrmLoadStringOrEmbeddedResourceNoCopy(
         m_resourceManagerHandle,
         resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
         m_resourceMapHandle,
@@ -108,6 +108,22 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
     {
     case MrmType_Embedded:
     {
+        if (resourceData.isView)
+        {
+            // resourceData.data is a non-owning view into the memory-mapped PRI. Pass the strong
+            // resource manager reference so the mapping stays alive for the candidate's lifetime.
+            auto const first = static_cast<uint8_t const*>(resourceData.data);
+            return winrt::make<ResourceCandidate>(
+                m_resourceManager,
+                m_resourceManagerHandle,
+                resourceContext,
+                m_resourceMapHandle,
+                static_cast<uint32_t>(-1),
+                resource,
+                winrt::array_view<uint8_t const>(first, first + resourceData.size));
+        }
+
+        // Loader returned an owned buffer (e.g. a decompressed blob); adopt it without re-copying.
         embedded_resoure_ptr resourceContainer(resourceData.data);
         return winrt::make<ResourceCandidate>(
             m_resourceManagerHandle,
@@ -182,7 +198,7 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
     wchar_t* resourceString;
     MrmResourceData resourceData {};
 
-    winrt::check_hresult(MrmLoadStringOrEmbeddedResourceByIndex(
+    winrt::check_hresult(MrmLoadStringOrEmbeddedResourceByIndexNoCopy(
         m_resourceManagerHandle,
         resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
         m_resourceMapHandle,
@@ -198,15 +214,34 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
     {
     case MrmType_Embedded:
     {
-        embedded_resoure_ptr resourceContainer(resourceData.data);
-        Resources::ResourceCandidate candidate = winrt::make<ResourceCandidate>(
-            m_resourceManagerHandle,
-            resourceContext,
-            m_resourceMapHandle,
-            index,
-            hstring(),
-            std::move(resourceContainer),
-            resourceData.size);
+        Resources::ResourceCandidate candidate{nullptr};
+        if (resourceData.isView)
+        {
+            // resourceData.data is a non-owning view into the memory-mapped PRI. Pass the strong
+            // resource manager reference so the mapping stays alive for the candidate's lifetime.
+            auto const first = static_cast<uint8_t const*>(resourceData.data);
+            candidate = winrt::make<ResourceCandidate>(
+                m_resourceManager,
+                m_resourceManagerHandle,
+                resourceContext,
+                m_resourceMapHandle,
+                index,
+                hstring(),
+                winrt::array_view<uint8_t const>(first, first + resourceData.size));
+        }
+        else
+        {
+            // Loader returned an owned buffer (e.g. a decompressed blob); adopt it without re-copying.
+            embedded_resoure_ptr resourceContainer(resourceData.data);
+            candidate = winrt::make<ResourceCandidate>(
+                m_resourceManagerHandle,
+                resourceContext,
+                m_resourceMapHandle,
+                index,
+                hstring(),
+                std::move(resourceContainer),
+                resourceData.size);
+        }
 
         return winrt::make<winrt::impl::key_value_pair<IKeyValuePair<hstring, Resources::ResourceCandidate>>>(resourceName, candidate);
     }

@@ -378,6 +378,7 @@ static HRESULT LoadEmbeddedResource(
 {
     data->data = nullptr;
     data->size = 0;
+    data->isView = false;
 
     ResourceCandidateResult candidate;
     RETURN_IF_FAILED_WITH_EXPECTED(LoadResourceCandidate(resourceManager, resourceContext, resourceMap, index, resourceIdOrUri, &candidate, nullptr, nullptr, nullptr, nullptr),
@@ -407,10 +408,12 @@ static HRESULT LoadStringOrEmbeddedResource(
     _Outptr_opt_result_maybenull_ PWSTR* resourceName,
     _Out_opt_ UINT32* qualifierCount,
     _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
-    _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
+    _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierValues,
+    bool noCopy = false)
 {
     data->data = nullptr;
     data->size = 0;
+    data->isView = false;
 
     ResourceCandidateResult candidate;
     PWSTR localName = nullptr;
@@ -439,8 +442,26 @@ static HRESULT LoadStringOrEmbeddedResource(
             return E_UNEXPECTED;
         }
 
-        // This ensures the blob result holds a copy of the data we can return to the caller, not a pointer to the PRI file.
-        RETURN_IF_FAILED(BlobResultReleaseOwnershipBuffer(blobResult, &data->data, &data->size));
+        // When the caller opted into a no-copy load AND the blob is a reference directly into the
+        // memory-mapped PRI (rather than an owned buffer produced by e.g. a decompressing reader),
+        // publish that pointer as a non-owning view. The pages are read-only and remain valid for
+        // the lifetime of the resource manager, which the caller is required to keep alive. If the
+        // blob is instead owned by the BlobResult, we must fall back to the copy path or the pointer
+        // would dangle once the local BlobResult is destroyed.
+        if (noCopy && (blobResult.GetType() == DefResultType_Reference))
+        {
+            size_t referenceSizeInBytes = 0;
+            const void* reference = blobResult.GetRef(&referenceSizeInBytes);
+            RETURN_HR_IF_NULL(E_UNEXPECTED, reference);
+            data->data = const_cast<void*>(reference);
+            data->size = static_cast<UINT32>(referenceSizeInBytes);
+            data->isView = true;
+        }
+        else
+        {
+            // This ensures the blob result holds a copy of the data we can return to the caller, not a pointer to the PRI file.
+            RETURN_IF_FAILED(BlobResultReleaseOwnershipBuffer(blobResult, &data->data, &data->size));
+        }
 
         *resourceString = nullptr;
         *resourceType = MrmType_Embedded;
@@ -939,12 +960,72 @@ STDAPI MrmLoadStringOrEmbeddedResourceByIndexWithQualifierValues(
 
 STDAPI_(void*) MrmAllocateBuffer(size_t size) { return Def_Alloc(size); }
 
+STDAPI MrmLoadStringOrEmbeddedResourceNoCopy(
+    _In_ MrmManagerHandle resourceManager,
+    _In_opt_ MrmContextHandle resourceContext,
+    _In_opt_ MrmMapHandle resourceMap,
+    _In_ PCWSTR resourceId,
+    _Out_ MrmType* resourceType,
+    _Outptr_result_maybenull_ PWSTR* resourceString,
+    _Out_ MrmResourceData* data)
+{
+    if (IsResourceUri(resourceId))
+    {
+        RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
+            resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr, /* noCopy */ true),
+            HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
+    }
+    else
+    {
+        RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
+            resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr, /* noCopy */ true),
+            HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
+    }
+    return S_OK;
+}
+
+STDAPI MrmLoadStringOrEmbeddedResourceByIndexNoCopy(
+    _In_ MrmManagerHandle resourceManager,
+    _In_opt_ MrmContextHandle resourceContext,
+    _In_opt_ MrmMapHandle resourceMap,
+    UINT32 index,
+    _Out_ MrmType* resourceType,
+    _Outptr_ PWSTR* resourceName,
+    _Outptr_result_maybenull_ PWSTR* resourceString,
+    _Out_ MrmResourceData* data)
+{
+    RETURN_IF_FAILED(LoadStringOrEmbeddedResource(
+        resourceManager, resourceContext, resourceMap, index, nullptr, resourceType, resourceString, data, resourceName, nullptr, nullptr, nullptr, /* noCopy */ true));
+    return S_OK;
+}
+
 STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
 {
     if (resource != nullptr)
     {
         Def_Free(resource);
     }
+
+    return;
+}
+
+STDAPI_(void) MrmFreeResourceData(_Inout_opt_ MrmResourceData* data)
+{
+    if (data == nullptr)
+    {
+        return;
+    }
+
+    // Views borrow memory owned by the resource manager's PRI mapping; nothing to free. Only owned
+    // buffers were allocated by the loader and must be released.
+    if (!data->isView && (data->data != nullptr))
+    {
+        Def_Free(data->data);
+    }
+
+    data->data = nullptr;
+    data->size = 0;
+    data->isView = false;
 
     return;
 }

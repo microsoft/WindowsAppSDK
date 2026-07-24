@@ -24,6 +24,21 @@ extern "C"
     {
         UINT32 size;
         void* data;
+
+        // When true, 'data' is a non-owning view directly into the memory-mapped, read-only PRI
+        // owned by the resource manager. In that case the caller must keep the resource manager
+        // alive for as long as 'data' is used, and must NOT free 'data' (MrmFreeResourceData is a
+        // no-op for views; MrmFreeResource must not be called on it). When false (the default for
+        // zero-initialized instances) 'data' is a heap allocation owned by the caller, freed via
+        // MrmFreeResource / MrmFreeResourceData. Only produced by the *NoCopy loader variants.
+// TODO: Need to figure out the A/B Forward compatibility issue here. Is it
+// sufficient to say that any app directly using this struct must ensure they
+// compile with the larger size of this struct whether they are running on an
+// older WinAppSDK or a version which expects/requires this?
+// Or, could potentially only write to isView if "noData==true" is passed, and
+// have the new functions init to false. But this leaves legacy use with an
+// uninitialized param, which has its own risks.
+        bool isView;
     };
 
     STDAPI MrmCreateResourceManager(_In_ PCWSTR priFileName, _Out_ MrmManagerHandle* resourceManager);
@@ -123,8 +138,37 @@ extern "C"
         _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
         _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierValues);
 
+    // No-copy loader variants. For embedded/binary resources these publish a non-owning view
+    // (MrmResourceData::isView == true) directly into the memory-mapped PRI instead of allocating
+    // and copying a private heap buffer. The caller must keep 'resourceManager' alive while the
+    // returned view is in use and must free the result with MrmFreeResourceData (which is a no-op
+    // for views). String/path resources are unaffected and behave exactly as the copying variants.
+    STDAPI MrmLoadStringOrEmbeddedResourceNoCopy(
+        _In_ MrmManagerHandle resourceManager,
+        _In_opt_ MrmContextHandle resourceContext,
+        _In_opt_ MrmMapHandle resourceMap,
+        _In_ PCWSTR resourceId,
+        _Out_ MrmType* resourceType,
+        _Outptr_result_maybenull_ PWSTR* resourceString,
+        _Out_ MrmResourceData* data);
+
+    STDAPI MrmLoadStringOrEmbeddedResourceByIndexNoCopy(
+        _In_ MrmManagerHandle resourceManager,
+        _In_opt_ MrmContextHandle resourceContext,
+        _In_opt_ MrmMapHandle resourceMap,
+        UINT32 index,
+        _Out_ MrmType* resourceType,
+        _Outptr_ PWSTR* resourceName,
+        _Outptr_result_maybenull_ PWSTR* resourceString,
+        _Out_ MrmResourceData* data);
+
     STDAPI_(void*) MrmAllocateBuffer(size_t size);
     STDAPI_(void) MrmFreeResource(_In_opt_ void* resource);
+
+    // Frees an MrmResourceData produced by any loader. Safe for both owned buffers (frees 'data')
+    // and views (no-op). Prefer this over MrmFreeResource when the data may have come from a
+    // *NoCopy variant.
+    STDAPI_(void) MrmFreeResourceData(_Inout_opt_ MrmResourceData* data);
 
     STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath);
 
