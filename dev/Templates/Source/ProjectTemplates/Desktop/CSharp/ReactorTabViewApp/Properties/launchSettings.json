@@ -1,9 +1,4 @@
 {
-  "//": "Default F5 / `dotnet run` profiles for the scaffolded Reactor app.",
-  "//": "The Devtools profile pairs --devtools with the Debug-only",
-  "//": "Microsoft.UI.Reactor.Devtools package + Reactor.DevtoolsSupport host",
-  "//": "config option (see the .csproj). Release builds exclude the devtools",
-  "//": "package, so the default profile does not pass --devtools.",
   "profiles": {
     "$projectname$": {
       "commandName": "Project",
