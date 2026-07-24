@@ -66,7 +66,7 @@ class App : Component
         }
 
         var tabItems = tabs
-            .Select(t => Tab(t.Title, Ui.Page(t.Page, $"This is the {t.Page} page")) with
+            .Select(t => Tab(t.Title, Ui.Page(t.Page, $"This is the {t.Page} page", winH)) with
             {
                 Icon = "Document",
                 IsClosable = true,
@@ -94,9 +94,9 @@ static class Ui
     // Shared page scaffold: a title heading + body text on a solid surface.
     // The opaque tertiary background covers the window's Mica in the tab content
     // area (matching the WinUI TabView template); the title bar / tab strip still
-    // show Mica. The explicit Stretch alignment makes the surface fill the whole
-    // tab content region instead of shrinking to the text.
-    public static Element Page(string title, string body) =>
+    // show Mica. A MinHeight tied to the window height makes the surface fill the
+    // whole tab content area, since tab content otherwise shrinks to its text.
+    public static Element Page(string title, string body, double minHeight) =>
         Border(
             VStack(24,
                 Title(title),
@@ -105,9 +105,5 @@ static class Ui
         )
         .Background(Theme.Ref("SolidBackgroundFillColorTertiaryBrush"))
         .Padding(24, 16, 24, 16)
-        .Set(b =>
-        {
-            b.HorizontalAlignment = HorizontalAlignment.Stretch;
-            b.VerticalAlignment = VerticalAlignment.Stretch;
-        });
+        .Set(b => b.MinHeight = minHeight);
 }
