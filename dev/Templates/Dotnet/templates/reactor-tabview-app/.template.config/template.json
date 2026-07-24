@@ -61,6 +61,42 @@
       "replaces": "$WindowsAppSdkVersion$",
       "description": "Microsoft.WindowsAppSDK NuGet version to reference."
     },
+    "windowsSdkBuildToolsVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "*",
+      "replaces": "$WindowsSdkBuildToolsVersion$",
+      "description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable."
+    },
+    "windowsSdkBuildToolsWinAppVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "*",
+      "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
+      "description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Use * for the latest stable."
+    },
+    "publisherDn": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisherDistinguishedName$",
+      "defaultValue": "CN=AppPublisher",
+      "description": "Publisher distinguished name used inside Package.appxmanifest."
+    },
+    "publisherDisplay": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisher$",
+      "defaultValue": "AppPublisher",
+      "description": "Publisher display name shown in the manifest."
+    },
+    "guid9": {
+      "type": "generated",
+      "generator": "guid",
+      "parameters": {
+        "format": "D"
+      },
+      "replaces": "$guid9$"
+    },
     "skipRestore": {
       "type": "parameter",
       "datatype": "bool",
@@ -70,6 +106,16 @@
   },
   "sources": [
     {
+      "modifiers": [
+        {
+          "replacements": [
+            {
+              "before": "$targetnametoken$",
+              "after": "{{safeProjectName}}"
+            }
+          ]
+        }
+      ],
       "rename": {
         "gitignore.txt": ".gitignore"
       }

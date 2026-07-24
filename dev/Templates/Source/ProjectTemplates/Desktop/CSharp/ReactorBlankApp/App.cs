@@ -1,37 +1,28 @@
 ﻿using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;         // BackdropKind
-using Microsoft.UI.Reactor.Layout;       // FlexDirection, FlexJustify, FlexAlign
-using Microsoft.UI.Xaml;                  // Thickness, HorizontalAlignment, VerticalAlignment
-using Microsoft.UI.Xaml.Controls;         // Orientation, InfoBarSeverity, etc.
+using Microsoft.UI.Reactor.Layout;       // FlexColumn layout
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using static Microsoft.UI.Reactor.Factories;
 
 // Reactor apps are pure C# — no XAML. `ReactorApp.Run` opens a single window and
 // renders the root <see cref="Component"/>. To learn more about Reactor, see:
 // https://github.com/microsoft/microsoft-ui-reactor
-ReactorApp.Run<App>("$projectname$", width: 900, height: 600);
+ReactorApp.Run<App>("$projectname$", width: 1000, height: 700);
 
 class App : Component
 {
     public override Element Render()
     {
-        var (name, setName) = UseState("World");
-
-        // App-mark icon in the title bar: a placeholder Segoe Fluent Icons glyph
-        // (U+EA3A). Swap it for a bundled asset once you add one, e.g.
-        // .Icon("ms-appx:///Assets/AppIcon.ico").
         var titleBar = TitleBar("$projectname$")
-            .Icon(FontIcon("\uEA3A", "Segoe Fluent Icons"))
+            .Icon("ms-appx:///Assets/AppIcon.ico")
             .Flex(shrink: 0);
 
-        var body = Border(
-            FlexColumn(
-                Heading($"Hello, {name}!"),
-                TextBox(name, setName, placeholderText: "Your name")
-                    .AutomationName("NameInput")
-            ) with { RowGap = 16 }
-        ).Padding(24).Flex(grow: 1, basis: 0);
+        // This is the main content area of your application.
+        // Add your UI elements here — for example, controls, layouts, and views.
+        var content = Border(Empty()).Flex(grow: 1, basis: 0);
 
-        return FlexColumn(titleBar, body)
+        return FlexColumn(titleBar, content)
             .Backdrop(BackdropKind.Mica);
     }
 }

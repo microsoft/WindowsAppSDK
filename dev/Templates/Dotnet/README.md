@@ -38,7 +38,8 @@ Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
 [Microsoft.UI.Reactor](https://github.com/microsoft/microsoft-ui-reactor) is a
 declarative, React-style way to build WinUI 3 apps in **pure C# — no XAML**.
-These templates scaffold a runnable, unpackaged Reactor app.
+These templates scaffold a runnable, single-project MSIX-packaged Reactor app
+whose UI mirrors the matching WinUI 3 XAML templates.
 
 Get the list via `dotnet new list reactor`
 
@@ -47,16 +48,18 @@ Get the list via `dotnet new list reactor`
 | `reactor`          | Blank Reactor app (alias `reactor-blank`). Start here if unsure      |
 | `reactor-mvu`      | Reactor app using the Model-View-Update pattern with `UseReducer`    |
 | `reactor-navview`  | Reactor app with a `NavigationView` shell and multiple pages         |
-| `reactor-tabview`  | Reactor app with a `TabView` shell and multiple tabs                 |
+| `reactor-tabview`  | Reactor app with a `TabView` shell whose tabs live in the title bar  |
 
 Each also has a `winui-reactor*` alias (e.g. `winui-reactor`, `winui-reactor-mvu`)
 so they show up under `dotnet new list winui` alongside the other WinUI templates.
 
-Reactor apps run unpackaged and reference the
+Reactor apps are packaged (single-project MSIX) and reference the
 [`Microsoft.UI.Reactor`](https://www.nuget.org/packages/Microsoft.UI.Reactor)
-preview NuGet package. They require .NET 10 or later. Pin a specific Reactor
-package version at scaffold time with `--reactor-version`, or the Windows App
-SDK version with `--wasdk-version`.
+preview NuGet package. They require .NET 10 or later. Like the WinUI templates,
+they reference `Microsoft.Windows.SDK.BuildTools.WinApp` so `dotnet run` launches
+the app with full MSIX package identity. Pin a specific Reactor package version
+at scaffold time with `--reactor-version`, or the Windows App SDK version with
+`--wasdk-version`.
 
 ### Item Templates
 
@@ -96,8 +99,9 @@ cd MyReactorApp
 dotnet run
 ```
 
-Reactor apps are pure C# (no XAML) and run unpackaged, so `dotnet run` launches
-them directly. See the
+Reactor apps are pure C# (no XAML) and packaged (single-project MSIX), so
+`dotnet run` registers a loose-layout package and launches the app with full
+MSIX package identity — equivalent to F5 in Visual Studio. See the
 [Reactor documentation](https://github.com/microsoft/microsoft-ui-reactor) to
 learn the component model, hooks, and layout system. Swap `reactor` for
 `reactor-mvu`, `reactor-navview`, or `reactor-tabview` to start from a richer

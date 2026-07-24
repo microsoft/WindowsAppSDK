@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Reactor;
-using Microsoft.UI.Reactor.Core;         // BackdropKind, Theme
-using Microsoft.UI.Reactor.Layout;       // FlexColumn layout
+using Microsoft.UI.Reactor.Core;         // BackdropKind, FontIconData
+using Microsoft.UI.Reactor.Layout;       // VStack layout
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using static Microsoft.UI.Reactor.Factories;
@@ -19,69 +19,55 @@ class App : Component
         var items = new[]
         {
             NavItem("Home", icon: "Home", tag: "home"),
-            NavItem("Library", icon: "Library", tag: "library"),
-            NavItem("Settings", icon: "Setting", tag: "settings"),
+            NavItem("About", tag: "about") with { IconElement = new FontIconData("\uEA3A", "Segoe Fluent Icons") },
         };
 
         // Map the selected tag to the page component to show in the content area.
+        // The built-in Settings item reports a null tag when selected.
         Element content = selectedTag switch
         {
-            "library"  => Component<LibraryPage>(),
+            "about"    => Component<AboutPage>(),
             "settings" => Component<SettingsPage>(),
             _          => Component<HomePage>(),
         };
 
-        return (NavigationView(items, content: content) with
+        var titleBar = TitleBar("$projectname$")
+            .Icon("ms-appx:///Assets/AppIcon.ico")
+            .Flex(shrink: 0);
+
+        var nav = (NavigationView(items, content: content) with
         {
             SelectedTag = selectedTag,
-            OnSelectedTagChanged = tag => { if (tag != null) setSelectedTag(tag); },
-            PaneTitle = "$projectname$",
-            // This app routes "Settings" through a normal menu item above, so the
-            // built-in settings entry is turned off. Flip to true to use it.
-            IsSettingsVisible = false,
-        }).Backdrop(BackdropKind.Mica);
+            OnSelectedTagChanged = tag => setSelectedTag(tag ?? "settings"),
+            IsSettingsVisible = true,
+        }).Flex(grow: 1, basis: 0);
+
+        return FlexColumn(titleBar, nav).Backdrop(BackdropKind.Mica);
     }
 }
 
 // Each page is a plain Component — drop your own UI inside Render().
 class HomePage : Component
 {
-    public override Element Render() =>
-        Ui.Page("Home", "Welcome to your Reactor NavigationView app. Pick an item on the left to switch pages.");
+    public override Element Render() => Ui.Page("Home", "This is the Home page");
 }
 
-class LibraryPage : Component
+class AboutPage : Component
 {
-    public override Element Render() =>
-        Ui.Page("Library", "Your content lives here. Replace this page with a list, grid, or detail view.");
+    public override Element Render() => Ui.Page("About", "This is the About page");
 }
 
 class SettingsPage : Component
 {
-    public override Element Render()
-    {
-        // A small stateful page: toggle a setting and watch the view re-render.
-        var (notify, setNotify) = UseState(true);
-
-        return Border(
-            FlexColumn(
-                Heading("Settings"),
-                Caption("Pages are just Components, so each one can hold its own state and hooks.")
-                    .Foreground(Theme.SecondaryText),
-                ToggleSwitch(notify, setNotify, header: "Send notifications")
-            ) with { RowGap = 16 }
-        ).Padding(32);
-    }
+    public override Element Render() => Ui.Page("Settings", "This is the Settings page");
 }
 
 static class Ui
 {
-    // Shared page scaffold: a heading + description inside a padded card.
-    public static Element Page(string title, string description) =>
-        Border(
-            FlexColumn(
-                Heading(title),
-                Caption(description).Foreground(Theme.SecondaryText)
-            ) with { RowGap = 8 }
-        ).Padding(32);
+    // Shared page scaffold: a title heading + body text.
+    public static Element Page(string title, string body) =>
+        VStack(24,
+            Heading(title),
+            TextBlock(body)
+        ).Padding(24, 16, 24, 16);
 }

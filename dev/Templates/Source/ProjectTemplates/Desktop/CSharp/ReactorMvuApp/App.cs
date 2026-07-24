@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Reactor;
-using Microsoft.UI.Reactor.Core;         // BackdropKind, Theme
-using Microsoft.UI.Reactor.Layout;       // FlexColumn layout
-using Microsoft.UI.Xaml;
+using Microsoft.UI.Reactor.Core;         // BackdropKind
+using Microsoft.UI.Reactor.Layout;       // VStack / HStack layout
+using Microsoft.UI.Xaml;                  // HorizontalAlignment, VerticalAlignment, TextAlignment
 using Microsoft.UI.Xaml.Controls;
 using static Microsoft.UI.Reactor.Factories;
 
@@ -9,7 +9,7 @@ using static Microsoft.UI.Reactor.Factories;
 // through the reducer. dispatch(message) -> Update(state, message) -> a new
 // immutable state -> the view re-renders. Learn more about Reactor at:
 // https://github.com/microsoft/microsoft-ui-reactor
-ReactorApp.Run<App>("$projectname$", width: 900, height: 600);
+ReactorApp.Run<App>("$projectname$", width: 1000, height: 700);
 
 // ─── Model ─── the immutable, single source of truth for the component.
 record CounterState(int Count);
@@ -18,17 +18,15 @@ record CounterState(int Count);
 abstract record CounterMessage;
 sealed record Increment : CounterMessage;
 sealed record Decrement : CounterMessage;
-sealed record ResetCount : CounterMessage;
 
 class App : Component
 {
     // ─── Update ─── a pure function: (state, message) => next state.
     static CounterState Update(CounterState state, CounterMessage message) => message switch
     {
-        Increment  => state with { Count = state.Count + 1 },
-        Decrement  => state with { Count = state.Count - 1 },
-        ResetCount => state with { Count = 0 },
-        _          => state,
+        Increment => state with { Count = state.Count + 1 },
+        Decrement => state with { Count = state.Count - 1 },
+        _         => state,
     };
 
     public override Element Render()
@@ -38,24 +36,24 @@ class App : Component
         var (state, dispatch) = UseReducer<CounterState, CounterMessage>(Update, new CounterState(0));
 
         var titleBar = TitleBar("$projectname$")
-            .Icon(FontIcon("\uEA3A", "Segoe Fluent Icons"))
+            .Icon("ms-appx:///Assets/AppIcon.ico")
             .Flex(shrink: 0);
 
-        // ─── View ─── a pure projection of the current state.
-        var body = Border(
-            FlexColumn(
-                Heading($"Count: {state.Count}"),
-                Caption("State flows one way: dispatch a message, the reducer returns a new state, the view re-renders.")
-                    .Foreground(Theme.SecondaryText),
-                HStack(8,
-                    Button("Decrement", () => dispatch(new Decrement())),
-                    Button("Reset", () => dispatch(new ResetCount())),
-                    Button("Increment", () => dispatch(new Increment()))
-                )
-            ) with { RowGap = 16 }
-        ).Padding(24).Flex(grow: 1, basis: 0);
+        // ─── View ─── a pure projection of the current state, centered in the window.
+        var content = VStack(16,
+            Heading("Hello, WinUI!").HAlign(HorizontalAlignment.Center),
+            HStack(8,
+                Button(Icon(FontIcon("\uE710", "Segoe Fluent Icons")), () => dispatch(new Increment())),
+                TextBlock($"{state.Count}")
+                    .SemiBold()
+                    .Width(40)
+                    .VAlign(VerticalAlignment.Center)
+                    .Set(tb => tb.TextAlignment = TextAlignment.Center),
+                Button(Icon(FontIcon("\uE738", "Segoe Fluent Icons")), () => dispatch(new Decrement()))
+            ).HAlign(HorizontalAlignment.Center)
+        ).HAlign(HorizontalAlignment.Center).VAlign(VerticalAlignment.Center);
 
-        return FlexColumn(titleBar, body)
+        return FlexColumn(titleBar, Border(content).Flex(grow: 1, basis: 0))
             .Backdrop(BackdropKind.Mica);
     }
 }
