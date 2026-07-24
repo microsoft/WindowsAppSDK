@@ -41,11 +41,10 @@ class App : Component
 
         // ─── View ─── a pure projection of the current state, centered in the window.
         var content = VStack(16,
-            Heading("Hello, WinUI!").HAlign(HorizontalAlignment.Center),
+            Title("Hello, Reactor!").HAlign(HorizontalAlignment.Center),
             HStack(8,
                 Button(Icon(FontIcon("\uE710", "Segoe Fluent Icons")), () => dispatch(new Increment())),
-                TextBlock($"{state.Count}")
-                    .SemiBold()
+                BodyStrong($"{state.Count}")
                     .Width(40)
                     .VAlign(VerticalAlignment.Center)
                     .Set(tb => tb.TextAlignment = TextAlignment.Center),

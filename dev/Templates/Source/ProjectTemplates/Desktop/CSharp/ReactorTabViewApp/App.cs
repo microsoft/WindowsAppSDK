@@ -94,7 +94,7 @@ static class Ui
     // Shared page scaffold: a title heading + body text.
     public static Element Page(string title, string body) =>
         VStack(24,
-            Heading(title),
-            TextBlock(body)
+            Title(title),
+            Body(body)
         ).Padding(24, 16, 24, 16);
 }
