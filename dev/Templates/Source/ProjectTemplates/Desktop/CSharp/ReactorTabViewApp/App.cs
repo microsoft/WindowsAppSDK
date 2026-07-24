@@ -14,14 +14,35 @@ class App : Component
     public override Element Render()
     {
         var (selectedIndex, setSelectedIndex) = UseState(0);
+        var window = UseWindow();
+        var dragRef = UseRef<FrameworkElement?>(null);
+        var wired = UseRef(false);
+        var dpi = UseDpi();
+        var (winW, winH) = UseWindowSize();
 
-        var titleBar = TitleBar("$projectname$")
-            .Icon(FontIcon("\uEA3A", "Segoe Fluent Icons"))
-            .Flex(shrink: 0);
+        // Put the tabs up in the title bar (Edge/Terminal style): extend content
+        // into the caption area and register the tab strip's trailing footer as
+        // the draggable title-bar region.
+        UseEffect(() =>
+        {
+            if (window is not { } win || win.NativeWindow is not { } w || dragRef.Current is not { } drag)
+                return;
+            if (!wired.Current)
+            {
+                w.ExtendsContentIntoTitleBar = true;
+                w.SetTitleBar(drag);
+                wired.Current = true;
+            }
+            // Reserve the caption-button strip so tabs never slide under it
+            // (RightInset is in physical pixels; convert to DIPs).
+            drag.MinWidth = win.AppWindow.TitleBar.RightInset / (dpi / 96.0);
+        }, dpi, winW, winH);
 
         // Each Tab hosts a component. IsClosable=false keeps these fixed; set it to
         // true (and track the tab list in state) to support user-closable tabs.
-        var tabs = TabView(
+        // TabStripHeader shows the app name at the leading edge; TabStripFooter is
+        // the draggable region registered as the title bar above.
+        return (TabView(
             Tab("Welcome", Component<WelcomePage>()) with { IsClosable = false },
             Tab("Documents", Component<DocumentsPage>()) with { IsClosable = false },
             Tab("Settings", Component<SettingsPage>()) with { IsClosable = false }
@@ -29,10 +50,12 @@ class App : Component
         {
             SelectedIndex = selectedIndex,
             OnSelectedIndexChanged = i => setSelectedIndex(i),
-        };
-
-        return FlexColumn(titleBar, tabs.Flex(grow: 1, basis: 0))
-            .Backdrop(BackdropKind.Mica);
+            TabStripHeader = TextBlock("$projectname$")
+                .Margin(16, 0, 12, 0)
+                .VAlign(VerticalAlignment.Center),
+            TabStripFooter = Border(Empty())
+                .Set(b => dragRef.Current = b),
+        }).Backdrop(BackdropKind.Mica);
     }
 }
 
