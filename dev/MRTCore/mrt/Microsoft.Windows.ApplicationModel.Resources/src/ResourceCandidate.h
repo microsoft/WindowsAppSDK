@@ -30,15 +30,19 @@ struct ResourceCandidate : ResourceCandidateT<ResourceCandidate>
 
     hstring ValueAsString();
     com_array<uint8_t> ValueAsBytes();
+    winrt::Windows::Foundation::IMemoryBuffer ValueAsMemoryBuffer();
     Microsoft::Windows::ApplicationModel::Resources::ResourceCandidateKind Kind();
     winrt::Windows::Foundation::Collections::IMapView<hstring, hstring> QualifierValues();
 
     void SetQualifierValuesFromContext(Microsoft::Windows::ApplicationModel::Resources::ResourceContext context);
 
-private:
     // Returns a read-only view over the embedded bytes, regardless of whether they are owned as an
-    // adopted loader buffer (m_loadedBlob) or a caller-copied array (m_blobData).
+    // adopted loader buffer (m_loadedBlob), a caller-copied array (m_blobData), or a borrowed view
+    // into the memory-mapped PRI (m_blobView). Public so the internal IMemoryBuffer projection can
+    // hand out the same zero-copy pointer; not part of the projected (IDL) surface.
     winrt::array_view<uint8_t const> EmbeddedBytes() const noexcept;
+
+private:
 
     hstring m_stringData;
     com_array<uint8_t> m_blobData;
