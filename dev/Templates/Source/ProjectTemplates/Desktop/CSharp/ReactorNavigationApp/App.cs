@@ -41,7 +41,7 @@ class App : Component
     public override Element Render()
     {
         var nav = UseNavigation(AppRoute.Home);
-        var (isPaneOpen, setIsPaneOpen) = UseState(false);
+        var navViewRef = UseRef<Microsoft.UI.Xaml.Controls.NavigationView?>(null);
 
         // The title bar hosts the back and pane toggle buttons, so give it the
         // taller title bar layout the WinUI template uses. Reactor extends content
@@ -65,7 +65,14 @@ class App : Component
             .Icon("ms-appx:///Assets/AppIcon.ico")
             .WithNavigation(nav)
             .PaneToggleButtonVisible(true)
-            .PaneToggleRequested(() => setIsPaneOpen(!isPaneOpen))
+            .PaneToggleRequested(() =>
+            {
+                // Flip the pane on the control itself: NavigationView also opens and
+                // closes it on its own (light dismiss, display mode changes), so a
+                // separate state copy would drift out of sync.
+                if (navViewRef.Current is { } view)
+                    view.IsPaneOpen = !view.IsPaneOpen;
+            })
             .Height(48)
             .Flex(shrink: 0);
 
@@ -74,7 +81,6 @@ class App : Component
             SelectedTag = RouteToTag(nav.CurrentRoute),
             OnSelectedTagChanged = tag => nav.Navigate(TagToRoute(tag)),
             IsSettingsVisible = true,
-            IsPaneOpen = isPaneOpen,
         })
         .OnMount(fe =>
         {
@@ -83,6 +89,7 @@ class App : Component
             var view = (Microsoft.UI.Xaml.Controls.NavigationView)fe;
             view.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
             view.IsPaneToggleButtonVisible = false;
+            navViewRef.Current = view;
         })
         .Flex(grow: 1, basis: 0);
 
