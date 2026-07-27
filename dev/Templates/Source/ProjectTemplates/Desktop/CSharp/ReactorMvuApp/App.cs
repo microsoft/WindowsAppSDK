@@ -40,12 +40,14 @@ class App : Component
         var content = VStack(16,
             Title("Hello, Reactor!").HAlign(HorizontalAlignment.Center),
             HStack(8,
-                Button(Icon(FontIcon("\uE710", "Segoe Fluent Icons")), () => dispatch(new Increment())),
+                Button(Icon(FontIcon("\uE710", "Segoe Fluent Icons")), () => dispatch(new Increment()))
+                    .AutomationName("Increment"),
                 BodyStrong($"{state.Count}")
                     .Width(40)
                     .VAlign(VerticalAlignment.Center)
                     .Set(tb => tb.TextAlignment = TextAlignment.Center),
                 Button(Icon(FontIcon("\uE738", "Segoe Fluent Icons")), () => dispatch(new Decrement()))
+                    .AutomationName("Decrement")
             ).HAlign(HorizontalAlignment.Center)
         ).HAlign(HorizontalAlignment.Center).VAlign(VerticalAlignment.Center);
 

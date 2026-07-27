@@ -17,11 +17,11 @@ class App : Component
 {
     public override Element Render()
     {
-        var (tabs, setTabs) = UseState(new[]
+        var (tabs, setTabs) = UseState(UseMemo(() => new[]
         {
             new TabModel(0, "Home", "Home"),
             new TabModel(1, "About", "About"),
-        });
+        }, []));
         var (selectedIndex, setSelectedIndex) = UseState(0);
         var (nextId, setNextId) = UseState(2);
 
@@ -84,7 +84,8 @@ class App : Component
             TabStripHeader = Image("ms-appx:///Assets/AppIcon.ico")
                 .Width(16)
                 .Margin(16, 4, 12, 0)
-                .VAlign(VerticalAlignment.Center),
+                .VAlign(VerticalAlignment.Center)
+                .AccessibilityHidden(),
             TabStripFooter = Border(Empty()).Set(b => dragRef.Current = b),
         }).Backdrop(BackdropKind.MicaAlt);
     }
@@ -103,5 +104,5 @@ static class Ui
         )
         .Background(Theme.Ref("SolidBackgroundFillColorTertiaryBrush"))
         .Padding(24, 16, 24, 16)
-        .Set(b => b.MinHeight = minHeight);
+        .MinHeight(minHeight);
 }
