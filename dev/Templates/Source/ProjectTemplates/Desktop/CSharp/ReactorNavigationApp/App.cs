@@ -1,23 +1,20 @@
 ﻿using Microsoft.UI.Reactor;
-using Microsoft.UI.Reactor.Core;         // BackdropKind, FontIconData
-using Microsoft.UI.Reactor.Layout;       // VStack layout
-using Microsoft.UI.Reactor.Navigation;   // NavigationTransition, SlideDirection
-using Microsoft.UI.Windowing;            // TitleBarHeightOption
+using Microsoft.UI.Reactor.Core;
+using Microsoft.UI.Reactor.Layout;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using static Microsoft.UI.Reactor.Factories;
 
-// A NavigationView shell whose back button and pane toggle live in the title bar.
-// Reactor apps are pure C# — no XAML. Learn more at:
-// https://github.com/microsoft/microsoft-ui-reactor
+// To learn more about Reactor, the Reactor project structure, and more about
+// our project templates, see: https://github.com/microsoft/microsoft-ui-reactor
 ReactorApp.Run<App>("$projectname$", width: 1000, height: 700);
 
-// The pages this app can show. Reactor's navigation handle keeps the back stack.
 enum AppRoute { Home, About, Settings }
 
 class App : Component
 {
-    // The built-in Settings item has no tag, so it maps to/from null.
+    // The built-in Settings item has no tag, so it maps to and from null.
     static string? RouteToTag(AppRoute route) => route switch
     {
         AppRoute.About => "about",
@@ -42,11 +39,11 @@ class App : Component
     public override Element Render()
     {
         var nav = UseNavigation(AppRoute.Home);
-        var navViewRef = UseRef<Microsoft.UI.Xaml.Controls.NavigationView?>(null);
+        var navViewRef = UseRef<NavigationView?>(null);
 
         // The title bar hosts the back and pane toggle buttons, so give it the
-        // taller title bar layout the WinUI template uses. Reactor extends content
-        // into the title bar while mounting, so apply this once that has run.
+        // taller layout. Reactor extends content into the title bar while
+        // mounting, so apply this once that has run.
         var window = UseWindow();
         UseEffect(() =>
         {
@@ -68,21 +65,15 @@ class App : Component
             .PaneToggleButtonVisible(true)
             .PaneToggleRequested(() =>
             {
-                // Flip the pane on the control itself: NavigationView also opens and
-                // closes it on its own (light dismiss, display mode changes), so a
-                // separate state copy would drift out of sync.
+                // NavigationView also opens and closes the pane on its own, so
+                // flip it on the control rather than tracking a separate copy.
                 if (navViewRef.Current is { } view)
                     view.IsPaneOpen = !view.IsPaneOpen;
             })
             .Height(48)
             .Flex(shrink: 0);
 
-        var navView = (NavigationView(items, NavigationHost(nav, RouteToPage) with
-        {
-            // Rise the new page up into place, matching the entrance transition
-            // WinUI's Frame uses by default (Reactor slides in from the side).
-            Transition = NavigationTransition.Slide(SlideDirection.FromBottom),
-        }) with
+        var navView = (NavigationView(items, NavigationHost(nav, RouteToPage)) with
         {
             SelectedTag = RouteToTag(nav.CurrentRoute),
             OnSelectedTagChanged = tag => nav.Navigate(TagToRoute(tag)),
@@ -91,8 +82,8 @@ class App : Component
         .OnMount(fe =>
         {
             // The title bar owns the back and pane toggle buttons, so hide the
-            // ones NavigationView draws itself (matching the WinUI template).
-            var view = (Microsoft.UI.Xaml.Controls.NavigationView)fe;
+            // ones NavigationView draws itself.
+            var view = (NavigationView)fe;
             view.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
             view.IsPaneToggleButtonVisible = false;
             navViewRef.Current = view;
@@ -103,7 +94,6 @@ class App : Component
     }
 }
 
-// Each page is a plain Component — drop your own UI inside Render().
 class HomePage : Component
 {
     public override Element Render() => Ui.Page("Home", "This is the Home page");
@@ -121,7 +111,6 @@ class SettingsPage : Component
 
 static class Ui
 {
-    // Shared page scaffold: a title heading + body text.
     public static Element Page(string title, string body) =>
         VStack(24,
             Title(title),

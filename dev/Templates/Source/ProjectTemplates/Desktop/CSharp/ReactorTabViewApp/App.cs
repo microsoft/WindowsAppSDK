@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.UI.Reactor;
-using Microsoft.UI.Reactor.Core;         // BackdropKind
-using Microsoft.UI.Reactor.Layout;       // VStack layout
+using Microsoft.UI.Reactor.Core;
+using Microsoft.UI.Reactor.Layout;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using static Microsoft.UI.Reactor.Factories;
 
-// A TabView shell whose tabs live in the title bar (Edge/Terminal style). Tabs
-// are closable and a new one is added with the "+" button. Reactor apps are
-// pure C# — no XAML. Learn more at: https://github.com/microsoft/microsoft-ui-reactor
+// To learn more about Reactor, the Reactor project structure, and more about
+// our project templates, see: https://github.com/microsoft/microsoft-ui-reactor
 ReactorApp.Run<App>("$projectname$", width: 1000, height: 700);
 
-// One open tab: a stable id, the header text, and which page it shows.
 record TabModel(int Id, string Title, string Page);
 
 class App : Component
@@ -27,8 +25,8 @@ class App : Component
         var (selectedIndex, setSelectedIndex) = UseState(0);
         var (nextId, setNextId) = UseState(2);
 
-        // Put the tabs up in the title bar: extend content into the caption area
-        // and register the tab strip's trailing footer as the draggable region.
+        // Extend content into the title bar and use the tab strip's trailing
+        // footer as the drag region, so the tab strip acts as the title bar.
         var window = UseWindow();
         var dragRef = UseRef<FrameworkElement?>(null);
         var wired = UseRef(false);
@@ -44,6 +42,9 @@ class App : Component
                 w.SetTitleBar(drag);
                 wired.Current = true;
             }
+
+            // RightInset is in physical pixels; convert to DIPs so the caption
+            // buttons don't overlap tabs on high-DPI displays.
             drag.MinWidth = win.AppWindow.TitleBar.RightInset / (dpi / 96.0);
         }, dpi, winW, winH);
 
@@ -91,11 +92,8 @@ class App : Component
 
 static class Ui
 {
-    // Shared page scaffold: a title heading + body text on a solid surface.
-    // The opaque tertiary background covers the window's Mica in the tab content
-    // area (matching the WinUI TabView template); the title bar / tab strip still
-    // show Mica. A MinHeight tied to the window height makes the surface fill the
-    // whole tab content area, since tab content otherwise shrinks to its text.
+    // The opaque background covers the window's Mica in the tab content area,
+    // and the MinHeight fills it, since tab content otherwise shrinks to its text.
     public static Element Page(string title, string body, double minHeight) =>
         Border(
             VStack(24,
