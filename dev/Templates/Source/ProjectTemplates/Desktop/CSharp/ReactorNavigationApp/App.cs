@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;         // BackdropKind, FontIconData
 using Microsoft.UI.Reactor.Layout;       // VStack layout
+using Microsoft.UI.Reactor.Navigation;   // NavigationTransition, SlideDirection
 using Microsoft.UI.Windowing;            // TitleBarHeightOption
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -76,7 +77,12 @@ class App : Component
             .Height(48)
             .Flex(shrink: 0);
 
-        var navView = (NavigationView(items, NavigationHost(nav, RouteToPage)) with
+        var navView = (NavigationView(items, NavigationHost(nav, RouteToPage) with
+        {
+            // Rise the new page up into place, matching the entrance transition
+            // WinUI's Frame uses by default (Reactor slides in from the side).
+            Transition = NavigationTransition.Slide(SlideDirection.FromBottom),
+        }) with
         {
             SelectedTag = RouteToTag(nav.CurrentRoute),
             OnSelectedTagChanged = tag => nav.Navigate(TagToRoute(tag)),
