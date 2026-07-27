@@ -72,6 +72,30 @@ namespace ManagedTest
         }
 
         [TestMethod]
+        public void ValueAsMemoryBufferTest_Succeeds()
+        {
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_Succeeds();
+        }
+
+        [TestMethod]
+        public void ValueAsMemoryBufferTest_NonEmbeddedResource_Throws()
+        {
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_NonEmbeddedResource_Throws();
+        }
+
+        [TestMethod]
+        public void ValueAsMemoryBufferTest_OutlivesCandidate()
+        {
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_OutlivesCandidate();
+        }
+
+        [TestMethod]
+        public void ValueAsMemoryBufferTest_CloseReleases()
+        {
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_CloseReleases();
+        }
+
+        [TestMethod]
         public void GetKindTest()
         {
             CommonTestCode.ResourceManagerTest.GetKindTest();
