@@ -34,7 +34,14 @@ Get below list via `dotnet new list winui`
 
 Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
-### Reactor Templates
+### Reactor Templates (Experimental)
+
+> [!IMPORTANT]
+> These templates are **experimental**.
+> [Microsoft.UI.Reactor](https://github.com/microsoft/microsoft-ui-reactor) is
+> prerelease software: its API may change in breaking ways between releases, and
+> these templates may change or be removed. They aren't recommended for
+> production apps yet.
 
 [Microsoft.UI.Reactor](https://github.com/microsoft/microsoft-ui-reactor) is a
 declarative, React-style way to build WinUI 3 apps in **pure C# — no XAML**.

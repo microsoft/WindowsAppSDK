@@ -1,18 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor" ],
+  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor", "Experimental" ],
   "tags": {
     "language": "C#",
     "type": "project"
   },
   "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.BlankApp",
   "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.BlankApp",
-  "name": "Reactor Blank App",
+  "name": "Reactor Blank App (Experimental)",
   "shortName": [ "reactor", "reactor-blank", "winui-reactor" ],
   "sourceName": "ProjectTemplate",
   "defaultName": "ReactorApp",
-  "description": "Creates a blank Microsoft.UI.Reactor (WinUI 3) desktop app. Pure C#, no XAML. Start here if unsure.",
+  "description": "Experimental. Creates a blank Microsoft.UI.Reactor (WinUI 3) desktop app. Pure C#, no XAML. Start here if unsure. Microsoft.UI.Reactor is prerelease and its API may change.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {

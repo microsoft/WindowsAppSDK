@@ -1,18 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor" ],
+  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor", "Experimental" ],
   "tags": {
     "language": "C#",
     "type": "project"
   },
   "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.TabViewApp",
   "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.TabViewApp",
-  "name": "Reactor TabView App",
+  "name": "Reactor TabView App (Experimental)",
   "shortName": [ "reactor-tabview", "winui-reactor-tabview" ],
   "sourceName": "ProjectTemplate",
   "defaultName": "ReactorTabApp",
-  "description": "Creates a Microsoft.UI.Reactor (WinUI 3) desktop app with a TabView shell and multiple tabs.",
+  "description": "Experimental. Creates a Microsoft.UI.Reactor (WinUI 3) desktop app with a TabView shell and multiple tabs. Microsoft.UI.Reactor is prerelease and its API may change.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {

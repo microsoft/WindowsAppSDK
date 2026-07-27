@@ -1,18 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor" ],
+  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor", "Experimental" ],
   "tags": {
     "language": "C#",
     "type": "project"
   },
   "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.MvuApp",
   "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.MvuApp",
-  "name": "Reactor MVU App",
+  "name": "Reactor MVU App (Experimental)",
   "shortName": [ "reactor-mvu", "winui-reactor-mvu" ],
   "sourceName": "ProjectTemplate",
   "defaultName": "ReactorMvuApp",
-  "description": "Creates a Microsoft.UI.Reactor (WinUI 3) desktop app using the Model-View-Update pattern with UseReducer.",
+  "description": "Experimental. Creates a Microsoft.UI.Reactor (WinUI 3) desktop app using the Model-View-Update pattern with UseReducer. Microsoft.UI.Reactor is prerelease and its API may change.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {

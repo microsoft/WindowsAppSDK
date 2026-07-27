@@ -1,18 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/template",
   "author": "Microsoft",
-  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor" ],
+  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor", "Experimental" ],
   "tags": {
     "language": "C#",
     "type": "project"
   },
   "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.NavigationApp",
   "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.NavigationApp",
-  "name": "Reactor NavigationView App",
+  "name": "Reactor NavigationView App (Experimental)",
   "shortName": [ "reactor-navview", "winui-reactor-navview" ],
   "sourceName": "ProjectTemplate",
   "defaultName": "ReactorNavApp",
-  "description": "Creates a Microsoft.UI.Reactor (WinUI 3) desktop app with a NavigationView shell and multiple pages.",
+  "description": "Experimental. Creates a Microsoft.UI.Reactor (WinUI 3) desktop app with a NavigationView shell and multiple pages. Microsoft.UI.Reactor is prerelease and its API may change.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {

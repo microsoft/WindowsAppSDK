@@ -116,14 +116,13 @@
 
     <ItemGroup>
         <!--
-            Reactor (Microsoft.UI.Reactor) project templates. dotnet-new-only:
-            they ship in the NuGet template pack but are not surfaced as Visual
-            Studio VSIX templates. Reactor apps are pure C# (no XAML) and run
-            unpackaged, so there is no Package.appxmanifest and RenameManifestFrom
-            is intentionally left unset. The Source tree carries only the generic
-            ProjectTemplate.csproj (renamed via sourceName), App.cs and
-            Properties\launchSettings.json; there are no VSIX sidecars, so the
-            BaseName below is used purely to key the (absent) sidecar exclusion.
+            Reactor (Microsoft.UI.Reactor) project templates. Experimental, and
+            dotnet-new-only: they ship in the NuGet template pack but are not
+            surfaced as Visual Studio VSIX templates. Reactor apps are pure C#
+            (no XAML) and are packaged (single-project MSIX), so each carries a
+            Package-managed.appxmanifest that RenameManifestFrom repacks as
+            Package.appxmanifest. There are no VSIX sidecars, so the BaseName
+            below is used purely to key the (absent) sidecar exclusion.
         -->
         <DotnetNewOnlyProjectTemplate Include="reactor.blankapp">
             <BaseName>Reactor.Desktop.Cs.BlankApp</BaseName>
