@@ -33,7 +33,7 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="Windows.FullTrustApplication">
+      EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="$projectname$"
         Description="$projectname$"
