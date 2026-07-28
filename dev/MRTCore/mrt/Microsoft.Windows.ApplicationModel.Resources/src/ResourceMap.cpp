@@ -79,7 +79,7 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
 
     MrmType resourceType;
     wchar_t* resourceString;
-    MrmResourceData resourceData {};
+    MrmResourceData2 resourceData {};
 
     HRESULT hr = MrmLoadStringOrEmbeddedResourceNoCopy(
         m_resourceManagerHandle,
@@ -196,7 +196,7 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
     MrmType resourceType;
     wchar_t* resourceName;
     wchar_t* resourceString;
-    MrmResourceData resourceData {};
+    MrmResourceData2 resourceData {};
 
     winrt::check_hresult(MrmLoadStringOrEmbeddedResourceByIndexNoCopy(
         m_resourceManagerHandle,

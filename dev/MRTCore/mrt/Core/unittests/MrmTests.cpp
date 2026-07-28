@@ -401,13 +401,12 @@ public:
         MrmResourceData copyData {};
         VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResource(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &copyType, &copyString, &copyData), S_OK);
         VERIFY_IS_TRUE(copyType == MrmType_Embedded);
-        VERIFY_IS_FALSE(copyData.isView);
         VERIFY_IS_NOT_NULL(copyData.data);
         VERIFY_ARE_EQUAL(copyData.size, 15002u);
 
         MrmType viewType;
         wchar_t* viewString;
-        MrmResourceData viewData {};
+        MrmResourceData2 viewData {};
         VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceNoCopy(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &viewType, &viewString, &viewData), S_OK);
         VERIFY_IS_NULL(viewString);
         VERIFY_IS_TRUE(viewType == MrmType_Embedded);
@@ -425,8 +424,7 @@ public:
         VERIFY_ARE_EQUAL(viewData.size, 0u);
         VERIFY_IS_FALSE(viewData.isView);
 
-        MrmFreeResourceData(&copyData);
-        VERIFY_IS_NULL(copyData.data);
+        MrmFreeResource(copyData.data);
 
         MrmDestroyResourceManager(resourceManager);
     }
@@ -439,7 +437,7 @@ public:
         // String resources are unaffected by the no-copy path: no blob, not a view.
         MrmType resourceType;
         wchar_t* resourceString;
-        MrmResourceData resourceData {};
+        MrmResourceData2 resourceData {};
         VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceNoCopy(resourceManager, nullptr, nullptr, L"resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceType, &resourceString, &resourceData), S_OK);
 
         VERIFY_IS_NOT_NULL(resourceString);
@@ -473,7 +471,7 @@ public:
             MrmType viewType;
             wchar_t* viewName = nullptr;
             wchar_t* viewString = nullptr;
-            MrmResourceData viewData {};
+            MrmResourceData2 viewData {};
             VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceByIndexNoCopy(resourceManager, nullptr, resourceMap, index, &viewType, &viewName, &viewString, &viewData), S_OK);
 
             if (viewType == MrmType_Embedded)
@@ -488,11 +486,10 @@ public:
                 MrmResourceData copyData {};
                 VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceByIndex(resourceManager, nullptr, resourceMap, index, &copyType, &copyName, &copyString, &copyData), S_OK);
                 VERIFY_IS_TRUE(copyType == MrmType_Embedded);
-                VERIFY_IS_FALSE(copyData.isView);
                 VERIFY_ARE_EQUAL(viewData.size, copyData.size);
                 VERIFY_ARE_EQUAL(0, memcmp(viewData.data, copyData.data, viewData.size));
 
-                MrmFreeResourceData(&copyData);
+                MrmFreeResource(copyData.data);
                 MrmFreeResource(copyName);
                 verifiedEmbedded = true;
             }
@@ -508,27 +505,35 @@ public:
 
     TEST_METHOD(MrmFreeResourceDataFreesOwnedBuffer)
     {
-        MrmManagerHandle resourceManager;
-        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
-
-        // The copying variant produces an owned buffer; MrmFreeResourceData must release it and reset
-        // the descriptor without crashing.
-        MrmResourceData resourceData {};
-        VERIFY_ARE_EQUAL(MrmLoadEmbeddedResource(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &resourceData), S_OK);
-        VERIFY_IS_FALSE(resourceData.isView);
+        // MrmFreeResourceData must release an owned (non-view) buffer and reset the descriptor
+        // without crashing. Build an owned descriptor from the matched allocator so the test is
+        // deterministic regardless of which resources happen to be stored as references.
+        MrmResourceData2 resourceData {};
+        resourceData.size = 64;
+        resourceData.data = MrmAllocateBuffer(resourceData.size);
+        resourceData.isView = FALSE;
         VERIFY_IS_NOT_NULL(resourceData.data);
-        VERIFY_ARE_EQUAL(resourceData.size, 15002u);
 
         MrmFreeResourceData(&resourceData);
         VERIFY_IS_NULL(resourceData.data);
         VERIFY_ARE_EQUAL(resourceData.size, 0u);
         VERIFY_IS_FALSE(resourceData.isView);
 
-        // Calling again on a cleared descriptor is safe.
+        // Freeing a view descriptor must NOT free the borrowed memory, only clear the descriptor.
+        BYTE borrowed[8] = {};
+        MrmResourceData2 viewData {};
+        viewData.size = sizeof(borrowed);
+        viewData.data = borrowed;
+        viewData.isView = TRUE;
+
+        MrmFreeResourceData(&viewData);
+        VERIFY_IS_NULL(viewData.data);
+        VERIFY_ARE_EQUAL(viewData.size, 0u);
+        VERIFY_IS_FALSE(viewData.isView);
+
+        // Calling again on a cleared descriptor, and on nullptr, is safe.
         MrmFreeResourceData(&resourceData);
         MrmFreeResourceData(nullptr);
-
-        MrmDestroyResourceManager(resourceManager);
     }
 
     TEST_METHOD(ReadStringOrEmbeddedResourceWithQualifierOverride)

@@ -378,7 +378,6 @@ static HRESULT LoadEmbeddedResource(
 {
     data->data = nullptr;
     data->size = 0;
-    data->isView = false;
 
     ResourceCandidateResult candidate;
     RETURN_IF_FAILED_WITH_EXPECTED(LoadResourceCandidate(resourceManager, resourceContext, resourceMap, index, resourceIdOrUri, &candidate, nullptr, nullptr, nullptr, nullptr),
@@ -409,11 +408,14 @@ static HRESULT LoadStringOrEmbeddedResource(
     _Out_opt_ UINT32* qualifierCount,
     _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierValues,
-    bool noCopy = false)
+    _Out_opt_ bool* isView = nullptr)
 {
     data->data = nullptr;
     data->size = 0;
-    data->isView = false;
+    if (isView != nullptr)
+    {
+        *isView = false;
+    }
 
     ResourceCandidateResult candidate;
     PWSTR localName = nullptr;
@@ -448,14 +450,14 @@ static HRESULT LoadStringOrEmbeddedResource(
         // the lifetime of the resource manager, which the caller is required to keep alive. If the
         // blob is instead owned by the BlobResult, we must fall back to the copy path or the pointer
         // would dangle once the local BlobResult is destroyed.
-        if (noCopy && (blobResult.GetType() == DefResultType_Reference))
+        if ((isView != nullptr) && (blobResult.GetType() == DefResultType_Reference))
         {
             size_t referenceSizeInBytes = 0;
             const void* reference = blobResult.GetRef(&referenceSizeInBytes);
             RETURN_HR_IF_NULL(E_UNEXPECTED, reference);
             data->data = const_cast<void*>(reference);
             data->size = static_cast<UINT32>(referenceSizeInBytes);
-            data->isView = true;
+            *isView = true;
         }
         else
         {
@@ -967,20 +969,29 @@ STDAPI MrmLoadStringOrEmbeddedResourceNoCopy(
     _In_ PCWSTR resourceId,
     _Out_ MrmType* resourceType,
     _Outptr_result_maybenull_ PWSTR* resourceString,
-    _Out_ MrmResourceData* data)
+    _Out_ MrmResourceData2* data)
 {
+    data->data = nullptr;
+    data->size = 0;
+    data->isView = FALSE;
+
+    MrmResourceData base{};
+    bool isView = false;
     if (IsResourceUri(resourceId))
     {
         RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
-            resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr, /* noCopy */ true),
+            resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceId, resourceType, resourceString, &base, nullptr, nullptr, nullptr, nullptr, &isView),
             HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     }
     else
     {
         RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
-            resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr, /* noCopy */ true),
+            resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceType, resourceString, &base, nullptr, nullptr, nullptr, nullptr, &isView),
             HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     }
+    data->size = base.size;
+    data->data = base.data;
+    data->isView = isView ? TRUE : FALSE;
     return S_OK;
 }
 
@@ -992,10 +1003,19 @@ STDAPI MrmLoadStringOrEmbeddedResourceByIndexNoCopy(
     _Out_ MrmType* resourceType,
     _Outptr_ PWSTR* resourceName,
     _Outptr_result_maybenull_ PWSTR* resourceString,
-    _Out_ MrmResourceData* data)
+    _Out_ MrmResourceData2* data)
 {
+    data->data = nullptr;
+    data->size = 0;
+    data->isView = FALSE;
+
+    MrmResourceData base{};
+    bool isView = false;
     RETURN_IF_FAILED(LoadStringOrEmbeddedResource(
-        resourceManager, resourceContext, resourceMap, index, nullptr, resourceType, resourceString, data, resourceName, nullptr, nullptr, nullptr, /* noCopy */ true));
+        resourceManager, resourceContext, resourceMap, index, nullptr, resourceType, resourceString, &base, resourceName, nullptr, nullptr, nullptr, &isView));
+    data->size = base.size;
+    data->data = base.data;
+    data->isView = isView ? TRUE : FALSE;
     return S_OK;
 }
 
@@ -1009,7 +1029,7 @@ STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
     return;
 }
 
-STDAPI_(void) MrmFreeResourceData(_Inout_opt_ MrmResourceData* data)
+STDAPI_(void) MrmFreeResourceData(_Inout_opt_ MrmResourceData2* data)
 {
     if (data == nullptr)
     {
@@ -1025,7 +1045,7 @@ STDAPI_(void) MrmFreeResourceData(_Inout_opt_ MrmResourceData* data)
 
     data->data = nullptr;
     data->size = 0;
-    data->isView = false;
+    data->isView = FALSE;
 
     return;
 }
