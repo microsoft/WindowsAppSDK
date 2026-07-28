@@ -9,6 +9,7 @@
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
+#include <AppModel.Identity.h>
 #include "WindowsAppRuntime-License.h"
 
 using namespace winrt;
@@ -75,19 +76,17 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
     }
 
+    // Derives the short channel tag used in the Main/Singleton package family names
+    // (e.g. L"-experimentalA" -> L"-eA"). versionTag arrives with a leading '-'.
+    // Delegates to the canonical v2 derivation so the runtime, the DDLM/Bootstrap path,
+    // and the build (CreateBuildInfo.ps1) stay in agreement. See AB#63309642, AB#62727253.
     std::wstring ExtractFormattedVersionTag(const std::wstring& versionTag)
     {
-        std::wstring result{};
-        if (versionTag.size() > 1)
+        if (versionTag.size() <= 1)
         {
-            result = std::wstring(L"-") + versionTag[1];
+            return {};
         }
-        unsigned int numberBeforeUnderscore{};
-        if (swscanf_s(versionTag.c_str(), L"%*[^0-9]%u", &numberBeforeUnderscore) == 1)
-        {
-            result += std::to_wstring(numberBeforeUnderscore);
-        }
-        return result;
+        return L"-" + AppModel::Identity::GetVersionShortTagFromVersionTagV2(versionTag.c_str() + 1);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
