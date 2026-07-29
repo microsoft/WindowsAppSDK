@@ -231,6 +231,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Wind
 # Common Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeAutoInitializer.cpp $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeAutoInitializer.cs $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeBaseDirectoryAutoInitializer.cs $NugetDir\include
 #
 # Bootstrap Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp $NugetDir\include
