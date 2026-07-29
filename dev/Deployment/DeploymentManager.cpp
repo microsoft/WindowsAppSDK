@@ -79,7 +79,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     // Derives the short channel tag used in the Main/Singleton package family names
     // (e.g. L"-experimentalA" -> L"-eA"). versionTag arrives with a leading '-'.
     // Delegates to the canonical v2 derivation so the runtime, the DDLM/Bootstrap path,
-    // and the build (CreateBuildInfo.ps1) stay in agreement. See AB#63309642, AB#62727253.
+    // and the build (CreateBuildInfo.ps1) stay in agreement.
     std::wstring ExtractFormattedVersionTag(const std::wstring& versionTag)
     {
         if (versionTag.size() <= 1)
