@@ -15,7 +15,22 @@
 
 #include "MRM.h"
 
+#include <FrameworkUdk/Containment.h>
+
 #include <memory>
+#include <string>
+#include <cstdlib>
+
+// Bug 63048673: Restore MrmGetFilePathFromName always-succeed contract (return S_OK with a
+// best-effort path when no PRI file exists) instead of failing with ERROR_FILE_NOT_FOUND.
+#define WINAPPSDK_CHANGEID_63048673 63048673
+
+// Bug 63098344/63098302: MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY is a process environment variable
+// (inherited across CreateProcess). Honor it only when it was stamped by the current process, so a
+// child does not resolve the parent's resources.pri. The change is gated so apps can revert to the
+// prior (unguarded) behavior via RuntimeCompatibilityOptions.
+// See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+#define WINAPPSDK_CHANGEID_63098302 63098302
 
 using namespace Microsoft::Resources;
 
@@ -949,6 +964,26 @@ STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
     return;
 }
 
+// The base directory is communicated via the MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY process
+// environment variable, which is inherited by child processes spawned via CreateProcess. Its owner
+// also stamps its process id in MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID. Honor the base
+// directory only when that stamp matches the current process; otherwise it was inherited from a
+// parent and must be ignored (a child would otherwise resolve resources from the parent's directory).
+// See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+static bool IsBaseDirectoryStampedByCurrentProcess()
+{
+    wchar_t stampedPidText[16]{};
+    const DWORD length{ ::GetEnvironmentVariableW(
+        L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", stampedPidText, ARRAYSIZE(stampedPidText)) };
+    if ((length == 0) || (length >= ARRAYSIZE(stampedPidText)))
+    {
+        // Not stamped (absent) or unexpectedly long: do not honor the base directory.
+        return false;
+    }
+
+    return static_cast<DWORD>(wcstoul(stampedPidText, nullptr, 10)) == ::GetCurrentProcessId();
+}
+
 // When filename is provided, append filename to current module path. If the file doesn't exist, it will
 // append the filename to parent path. If none exists, file in current module
 // path will be returned.
@@ -969,6 +1004,14 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
 {
     *filePath = nullptr;
 
+    // When disabled via RuntimeCompatibilityOptions, retain the pre-fix behavior of failing with
+    // ERROR_FILE_NOT_FOUND when no PRI file exists.
+    const bool fallbackChangeEnabled = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63048673>();
+
+    // When disabled via RuntimeCompatibilityOptions, retain the pre-fix behavior of honoring an
+    // inherited MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY regardless of which process stamped it.
+    const bool baseDirPidGuardEnabled = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63098302>();
+
     wil::unique_cotaskmem_string exeDir;
     RETURN_IF_FAILED(wil::GetModuleFileNameW(nullptr, exeDir));
     PCWSTR exeName = wil::find_last_path_segment(exeDir.get());
@@ -980,6 +1023,11 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     RETURN_IF_FAILED(SizeTAdd(exeDirCount, 1, &exeDirCount));
     RETURN_IF_FAILED(PathCchRemoveFileSpec(exeDir.get(), exeDirCount));
 
+    // The ParentPathForFileName pass truncates exeDir in place to reach the parent folder, so
+    // preserve the original module directory here for the DefaultFallback pass, which must return
+    // a path under the module directory (the documented behavior).
+    std::wstring moduleDir(exeDir.get());
+
     enum SearchPass
     {
         exeDirForFileName,
@@ -988,6 +1036,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         BaseDirForModulePri,
         exeDirForResourcesPri,
         exeDirForModulePri,
+        DefaultFallback,
         Final,
     };
     SearchPass searchStart = SearchPass::exeDirForFileName;
@@ -998,9 +1047,20 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         searchStart = SearchPass::exeDirForResourcesPri;
         if (SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)) && baseDir)
         {
-            searchStart = SearchPass::BaseDirForResourcesPri;
-            RETURN_IF_FAILED(StringCchLengthW(baseDir.get(), STRSAFE_MAX_CCH, &baseDirCount));
-            RETURN_IF_FAILED(SizeTAdd(baseDirCount, 1, &baseDirCount));
+            // The base directory is a process environment variable (inherited across CreateProcess);
+            // when the guard is enabled and the value was not stamped by this process, ignore it so a
+            // child does not load the parent's resources.pri. When the guard is disabled, honor it
+            // regardless (pre-fix behavior).
+            if (baseDirPidGuardEnabled && !IsBaseDirectoryStampedByCurrentProcess())
+            {
+                baseDir.reset();
+            }
+            else
+            {
+                searchStart = SearchPass::BaseDirForResourcesPri;
+                RETURN_IF_FAILED(StringCchLengthW(baseDir.get(), STRSAFE_MAX_CCH, &baseDirCount));
+                RETURN_IF_FAILED(SizeTAdd(baseDirCount, 1, &baseDirCount));
+            }
         }
     }
 
@@ -1030,7 +1090,10 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
             case SearchPass::ParentPathForFileName:
                 // move to parent folder of previous search
                 RETURN_IF_FAILED(PathCchRemoveFileSpec(searchDir, searchDirCount));
-                pass = SearchPass::Final;
+                // If the change is enabled and the parent search misses, fall through to
+                // DefaultFallback so we still return a best-effort path (the documented
+                // always-succeed contract). The loop's increment lands pass on DefaultFallback.
+                pass = fallbackChangeEnabled ? SearchPass(SearchPass::DefaultFallback - 1) : SearchPass::Final;
                 break;
 
             // Search, given no FileName
@@ -1050,7 +1113,38 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
                 break;
             case SearchPass::exeDirForModulePri:
                 searchFilename = modulePriFileName;
-                pass = SearchPass::Final;
+                // If the change is enabled, fall through to DefaultFallback (the next pass) on a
+                // miss so we still return a best-effort path; otherwise stop after this pass.
+                if (!fallbackChangeEnabled)
+                {
+                    pass = SearchPass::Final;
+                }
+                break;
+            case SearchPass::DefaultFallback:
+                // No file was found in any prior pass. Return a best-effort path even though it
+                // doesn't exist, matching the documented contract: the provided filename (if any)
+                // or resources.pri, under the base directory (if set) otherwise the module (exe)
+                // directory. Callers (e.g. ResourceManager) tolerate a non-existent path.
+                if (filename == nullptr || *filename == L'\0')
+                {
+                    if (baseDir)
+                    {
+                        searchDir = baseDir.get();
+                        searchDirCount = baseDirCount;
+                    }
+                    else
+                    {
+                        searchDir = moduleDir.data();
+                        searchDirCount = exeDirCount;
+                    }
+                    searchFilename = ResourcesPriFileName;
+                }
+                else
+                {
+                    searchDir = moduleDir.data();
+                    searchDirCount = exeDirCount;
+                    searchFilename = filename;
+                }
                 break;
         }
 
@@ -1074,13 +1168,15 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
             PATHCCH_ALLOW_LONG_PATHS));
 
         DWORD attributes = GetFileAttributes(outputPath.get());
-        if ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+        if ((pass == SearchPass::DefaultFallback) ||
+            ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY)))
         {
-            // The file exists. Done.
+            // The file exists, or this is the unconditional best-effort fallback pass. Done.
             *filePath = outputPath.release();
             return S_OK;
         }
     }
 
+    // Only reached when the change is disabled (the DefaultFallback pass is skipped).
     return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
 }
