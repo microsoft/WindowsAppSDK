@@ -86,6 +86,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         {
             return {};
         }
+        // +1 skips the leading '-'; the v2 helper expects the bare tag.
         return L"-" + AppModel::Identity::GetVersionShortTagFromVersionTagV2(versionTag.c_str() + 1);
     }
 
