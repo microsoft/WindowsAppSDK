@@ -1,0 +1,139 @@
+trigger: none    # No CI trigger; only run manually or on release (see below)
+parameters:
+  - name: PackageVersion
+    displayName: 'Package version'
+    type: string
+    default: '<Major>.<Minor>.<Patch>'
+  - name: NugetVersion
+    displayName: 'NuGet package version'
+    type: string
+    default: '<Major>.<Minor>.<yymmddnnn>-<VersionTag>'
+  - name: MSIXVersion
+    displayName: 'MSIX package version (e.g.,7000.522.1444.0 for 1.7.3)'
+    type: string
+    default: '<Major>.<Minor>.<Build>.<Revision>'
+  - name: ReleaseDate
+    displayName: 'Release date'
+    type: string
+    default: '<YYYY>-<MM>-<DD>'
+  - name: DocsMajorMinor
+    displayName: 'Override for the release notes docs family slug (Major.Minor, e.g. 2.0). Leave blank to derive automatically from PackageVersion.'
+    type: string
+    default: ''
+  - name: ReleaseNotesAnchor
+    displayName: 'Override for the release notes anchor (e.g. version-220). Leave blank to derive automatically from PackageVersion.'
+    type: string
+    default: ''
+
+resources:
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022'
+      # Need a clone of MMS2022 with artifact windows-1es-pt-prerequisites-v2 installed to satisfy 1ESPT.
+      # https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/1es-pipeline-templates/onboardingesteams/create-agent-image
+      demands: ImageOverride -equals MMS2022-1ES-GPT
+    customBuildTags:
+    - ES365AIMigrationTooling
+    stages:
+    - stage: PRCreationForWingetPkg
+      displayName: 'Create PR for winget-pkg repository'
+      jobs:
+      - job: PRCreation
+        displayName: 'Create winget manifests PR'
+        steps:
+          - task: PowerShell@2
+            displayName: 'Wingetcreate update'
+            env:
+              WINGET_CREATE_GITHUB_TOKEN: $(GITHUB_TOKEN)
+            inputs:
+              targetType: 'inline'
+              script: |
+                $PackageVersion = "${{ parameters.PackageVersion }}"
+                $NugetVersion = "${{ parameters.NugetVersion }}"
+                $MSIXVersion = "${{ parameters.MSIXVersion }}"
+                $ReleaseDate = "${{ parameters.ReleaseDate }}"
+                $DocsMajorMinor = "${{ parameters.DocsMajorMinor }}"
+                $ReleaseNotesAnchor = "${{ parameters.ReleaseNotesAnchor }}"
+
+                # Construct installer URLs
+                $segments = $PackageVersion -split '\.'
+                $Major = $segments[0]
+                $Minor = $segments[1]
+                $MajorMinor = $Major + '.' + $Minor
+                $x86InstallerUrl = "https://aka.ms/windowsappsdk/$MajorMinor/$NugetVersion/windowsappruntimeinstall-x86.exe"
+                $x64InstallerUrl = "https://aka.ms/windowsappsdk/$MajorMinor/$NugetVersion/windowsappruntimeinstall-x64.exe"
+                $arm64InstallerUrl = "https://aka.ms/windowsappsdk/$MajorMinor/$NugetVersion/windowsappruntimeinstall-arm64.exe"
+                # Construct package identifier
+                $PackageIdentifier = "Microsoft.WindowsAppRuntime.$MajorMinor"
+                # Construct release notes URL
+                $NugetVersionCompat = $NugetVersion -replace '\.', ''
+                $PackageVersionCompat = $PackageVersion -replace '\.', ''
+                # Derive the docs family slug and anchor from the package version.
+                # The docs release-notes pages are organized differently per major family:
+                #   1.x  -> one page per minor (windows-app-sdk-1-8) with anchor
+                #           version-<PackageVersionCompat>-<NugetVersionCompat>.
+                #   2.x+ -> the whole family shares the parent family page
+                #           (windows-app-sdk-2-0) and the anchor is just
+                #           version-<PackageVersionCompat> (no NuGet suffix).
+                if ([int]$Major -ge 2) {
+                    $DerivedDocsSlug = "${Major}-0"
+                    $DerivedAnchor = "version-$PackageVersionCompat"
+                } else {
+                    $DerivedDocsSlug = "${Major}-${Minor}"
+                    $DerivedAnchor = "version-$PackageVersionCompat-$NugetVersionCompat"
+                }
+                # Optional overrides for cases the rule above does not cover
+                # (e.g. a future docs re-organization). Leave the parameters blank
+                # to use the derived values.
+                if ([string]::IsNullOrWhiteSpace($DocsMajorMinor)) {
+                    $DocsSlug = $DerivedDocsSlug
+                } else {
+                    $DocsSlug = $DocsMajorMinor -replace '\.', '-'
+                }
+                if ([string]::IsNullOrWhiteSpace($ReleaseNotesAnchor)) {
+                    $Anchor = $DerivedAnchor
+                } else {
+                    $Anchor = $ReleaseNotesAnchor
+                }
+                $ReleaseNotesUrl = "https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/release-notes/windows-app-sdk-${DocsSlug}?pivots=stable#${Anchor}"
+
+                # Disable progress bar to avoid issues in non-interactive mode
+                $ProgressPreference = 'SilentlyContinue'
+
+                # Validate release notes URL is accessible
+                Write-Host "Validating release notes URL: $ReleaseNotesUrl"
+                try {
+                    $response = Invoke-WebRequest -Uri $ReleaseNotesUrl -Method Head -UseBasicParsing -ErrorAction Stop
+                    $statusCode = $response.StatusCode
+                    if ($statusCode -ge 200 -and $statusCode -lt 400) {
+                        Write-Host "Release notes URL is valid (HTTP $statusCode)"
+                    } else {
+                        Write-Error "Release notes URL returned unexpected status code: $statusCode"
+                        exit 1
+                    }
+                } catch {
+                    Write-Error "Failed to validate release notes URL: $_"
+                    Write-Error "Please verify the URL is correct and the documentation page exists."
+                    exit 1
+                }
+
+                # Download latest wingetcreate
+                Invoke-WebRequest -Uri "https://aka.ms/wingetcreate/latest" -OutFile "wingetcreate.exe" -UseBasicParsing
+
+                # Run wingetcreate
+                .\wingetcreate.exe update $PackageIdentifier `
+                  --version $PackageVersion `
+                  --urls "$x86InstallerUrl" "$x64InstallerUrl" "$arm64InstallerUrl" `
+                  --display-version $MSIXVersion `
+                  --release-notes-url $ReleaseNotesUrl `
+                  --release-date $ReleaseDate `
+                  --submit
