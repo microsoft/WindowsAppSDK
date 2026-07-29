@@ -160,7 +160,7 @@ raw pointer by querying the reference for
   `IMemoryBufferReference` it came from is alive and has not been closed. Keep both the buffer and the
   reference alive for the entire time you read the bytes, and `Close`/`Dispose` them (or use a `using`
   / `winrt` scope) when you are done to ensure the underlying memory can be released promptly.
-  Explicit `Close`/`Dispose` is not strictly required — releasing all references to the buffer and
+  Explicit `Close`/`Dispose` is not strictly required, as releasing all references to the buffer and
   reference also releases the pin, though possibly later (for managed callers, whenever the GC
   finalizes them). After the reference is
   closed, `GetBuffer` returns `RO_E_CLOSED` (`0x80000013`) and the reported capacity is `0`.
@@ -228,8 +228,8 @@ exactly as with the copying variant.
 Not every embedded resource can be returned as a view. If the resource was materialized into its own buffer by
 the loader (for example a compressed resource that had to be decompressed), the function transparently
 falls back to returning an **owned** buffer (`isView == FALSE`) so the pointer can never dangle.
-Callers therefore must not assume `isView == TRUE` for embedded resources — always inspect it (or
-simply always release with `MrmFreeResourceData`, which handles both cases).
+Callers therefore must not assume `isView == TRUE` for embedded resources. Either inspect `isView`,
+or simply always release with `MrmFreeResourceData`, which handles both cases.
 
 Release `data` with `MrmFreeResourceData` when done. While `isView == TRUE`, keep `resourceManager`
 alive for as long as you use `data`.
@@ -259,8 +259,8 @@ copying variant.
 Not every embedded resource can be returned as a view. If the resource was materialized into its own buffer by
 the loader (for example a compressed resource that had to be decompressed), the function transparently
 falls back to returning an **owned** buffer (`isView == FALSE`) so the pointer can never dangle.
-Callers therefore must not assume `isView == TRUE` for embedded resources — always inspect it (or
-simply always release with `MrmFreeResourceData`, which handles both cases).
+Callers therefore must not assume `isView == TRUE` for embedded resources. Either inspect `isView`,
+or simply always release with `MrmFreeResourceData`, which handles both cases.
 
 Release `data` with `MrmFreeResourceData`, and free `resourceName` and `resourceString` with
 `MrmFreeResource` when done. While `isView == TRUE`, keep `resourceManager` alive for as long
