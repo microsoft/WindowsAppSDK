@@ -35,7 +35,7 @@ stages:
       maxParallel: 10
       matrix:
         ${{ format('Release_{0}', parameters.buildPlatform) }}:
-          ${{ if ne(parameters.buildPlatform, 'arm64') }}:
+          ${{ if and(ne(parameters.buildPlatform, 'arm64'), ne(parameters.buildPlatform, 'arm64ec')) }}:
             buildPlatform: ${{ parameters.buildPlatform }}
             buildConfiguration: 'Release'
             normalizedConfiguration: 'fre'
@@ -112,7 +112,7 @@ stages:
       maxParallel: 10
       matrix:
         ${{ format('Release_{0}', parameters.buildPlatform) }}:
-          ${{ if ne(parameters.buildPlatform, 'arm64') }}:
+          ${{ if and(ne(parameters.buildPlatform, 'arm64'), ne(parameters.buildPlatform, 'arm64ec')) }}:
             buildPlatform: ${{ parameters.buildPlatform }}
             buildConfiguration: 'Release'
             normalizedConfiguration: 'fre'
