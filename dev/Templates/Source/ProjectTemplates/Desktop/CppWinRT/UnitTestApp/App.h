@@ -6,6 +6,7 @@ namespace winrt::$safeprojectname$::implementation
 {
     struct App : AppT<App>
     {
+        App();
         App(PWSTR argv);
 
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);

@@ -12,10 +12,12 @@ using namespace winrt::Microsoft::UI::Xaml;
 
 namespace winrt::$safeprojectname$::implementation
 {
-    App::App(PWSTR argv)
+    App::App() : App(nullptr)
     {
-        m_args = argv;
+    }
 
+    App::App(PWSTR argv) : m_args(argv ? argv : L"")
+    {
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
         UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs const& e)
         {
