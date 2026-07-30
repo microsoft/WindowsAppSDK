@@ -59,7 +59,6 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         Xaml_ReduceThemeResourceLookupHashing = 62676773,
         RefreshRateInfo_RemovePowerNotification = 62688041,
         ApplicationData_GetForUnpackaged_LocalSettings = 62698635,
-        Package_GetPackageFilePath = 62800606,
         CustomMetadataTypes_InvalidateUseAfterFree = 62724527,
         CPopup_OpenSetFocusReentrancy = 62724733,
         MediaPlayerPresenter_DeviceLostCrash = 62724906,
@@ -84,6 +83,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         CompositionEngine_API = 62917618,
         WindowsServices_GetKeyboardModifiersStateRace = 62927180,
         VideoSuperResolution_HardwareDetection = 62934326,
+
+        // 2.4.0
+        Package_GetPackageFilePath = 62800606,
     };
 
     /// Represents a version of the Windows App Runtime.

@@ -329,7 +329,7 @@ STDAPI_(BOOL) IsPackageFeatureSupported(
 {
     if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_62800606>())
     {
-        return E_NOTIMPL;
+        return FALSE;
     }
 
     switch (feature)
