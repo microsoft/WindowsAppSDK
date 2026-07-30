@@ -91,7 +91,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         InputPointerSource_OSHaptics = 63096865,
         WindowsAppRuntime_BaseDirectoryIsolation = 63098302,
         AppContentSearchNewAPI_LafCheck = 63264582,
-        LanguageModelLanguageDetectionStatus = 63293066,
+        LanguageModel_LanguageDetectionStatus = 63293066,
     };
 
     /// Represents a version of the Windows App Runtime.
