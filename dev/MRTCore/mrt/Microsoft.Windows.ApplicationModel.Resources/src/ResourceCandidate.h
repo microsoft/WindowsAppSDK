@@ -15,17 +15,14 @@ struct ResourceCandidate : ResourceCandidateT<ResourceCandidate>
     ResourceCandidate(MrmManagerHandle manager, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, ResourceCandidateKind kind, hstring data);
     ResourceCandidate(MrmManagerHandle manager, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, array_view<uint8_t const> data);
 
-    // Adopting constructors: take ownership of a loader-provided embedded resource buffer (freed via
+    // Adopting constructor: takes ownership of a loader-provided embedded resource buffer (freed via
     // MrmFreeResource) instead of copying it. This avoids duplicating memory that already lives in a
-    // heap copy owned by the MRT Core loader (see ADO #61159271).
-// TODO: Remoe ADO reference.
-    ResourceCandidate(embedded_resoure_ptr&& data, uint32_t size);
+    // heap copy owned by the MRT Core loader.
     ResourceCandidate(MrmManagerHandle manager, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, embedded_resoure_ptr&& data, uint32_t size);
 
     // Borrowed-view constructor: 'data' points directly into the memory-mapped, read-only PRI owned
-    // by 'manager'. No copy is made at all (see ADO #61159306 load-time / Copy #1). The strong
-    // 'manager' reference is retained so the mapping stays valid for the lifetime of this candidate.
-// TODO: Remoe ADO reference.
+    // by 'manager'. No copy is made at all. The strong 'manager' reference is retained so the
+    // mapping stays valid for the lifetime of this candidate.
     ResourceCandidate(Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager, MrmManagerHandle managerHandle, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, array_view<uint8_t const> data);
 
     hstring ValueAsString();
@@ -58,7 +55,6 @@ private:
     // Information required to refetch the candidate for candidate qualifier values
     // Strong reference retained only for borrowed-view candidates, to pin the PRI mapping that
     // m_blobView points into for the lifetime of this object.
-    // TODO: Check for reference loops.
     Microsoft::Windows::ApplicationModel::Resources::ResourceManager m_resourceManager = nullptr;
     MrmManagerHandle m_resourceManagerHandle = nullptr;
     Microsoft::Windows::ApplicationModel::Resources::ResourceContext m_resourceContext = nullptr;

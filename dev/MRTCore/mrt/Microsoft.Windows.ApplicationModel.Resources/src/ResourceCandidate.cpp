@@ -40,11 +40,6 @@ ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::Window
     m_kind = ResourceCandidateKind::EmbeddedData;
 }
 
-ResourceCandidate::ResourceCandidate(embedded_resoure_ptr&& data, uint32_t size)
-    : m_loadedBlob(std::move(data)), m_loadedBlobSize(size), m_kind(ResourceCandidateKind::EmbeddedData)
-{
-}
-
 ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, embedded_resoure_ptr&& data, uint32_t size)
     : m_resourceManagerHandle(manager), m_resourceContext(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id), m_loadedBlob(std::move(data)), m_loadedBlobSize(size), m_kind(ResourceCandidateKind::EmbeddedData)
 {
