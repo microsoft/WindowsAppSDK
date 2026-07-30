@@ -72,24 +72,28 @@ namespace ManagedTest
         }
 
         [TestMethod]
+        [TestProperty("Ignore", "True")] // When run in the pipeline, WinAppSDK is not initialized and the test fails. MrtCoreUnpackagedTests validates this test.
         public void ValueAsMemoryBufferTest_Succeeds()
         {
             CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_Succeeds();
         }
 
         [TestMethod]
+        [TestProperty("Ignore", "True")] // When run in the pipeline, WinAppSDK is not initialized and the test fails. MrtCoreUnpackagedTests validates this test.
         public void ValueAsMemoryBufferTest_NonEmbeddedResource_Throws()
         {
             CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_NonEmbeddedResource_Throws();
         }
 
         [TestMethod]
+        [TestProperty("Ignore", "True")] // When run in the pipeline, WinAppSDK is not initialized and the test fails. MrtCoreUnpackagedTests validates this test.
         public void ValueAsMemoryBufferTest_OutlivesCandidate()
         {
             CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_OutlivesCandidate();
         }
 
         [TestMethod]
+        [TestProperty("Ignore", "True")] // When run in the pipeline, WinAppSDK is not initialized and the test fails. MrtCoreUnpackagedTests validates this test.
         public void ValueAsMemoryBufferTest_CloseReleases()
         {
             CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_CloseReleases();
