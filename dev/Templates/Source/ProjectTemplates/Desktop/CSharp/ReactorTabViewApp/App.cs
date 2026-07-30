@@ -67,7 +67,7 @@ class App : Component
         }
 
         var tabItems = tabs
-            .Select(t => Tab(t.Title, Ui.Page(t.Page, $"This is the {t.Page} page", winH)) with
+            .Select(t => Tab(t.Title, Ui.Page(t.Page, $"This is the {t.Page} page")) with
             {
                 Icon = "Document",
                 IsClosable = true,
@@ -81,6 +81,7 @@ class App : Component
             IsAddTabButtonVisible = true,
             OnAddTabButtonClick = AddTab,
             OnTabCloseRequested = CloseTab,
+            FillContentArea = true,
             TabStripHeader = Image("ms-appx:///Assets/AppIcon.ico")
                 .Width(16)
                 .Margin(16, 4, 12, 0)
@@ -93,9 +94,8 @@ class App : Component
 
 static class Ui
 {
-    // The opaque background covers the window's Mica in the tab content area,
-    // and the MinHeight fills it, since tab content otherwise shrinks to its text.
-    public static Element Page(string title, string body, double minHeight) =>
+    // The opaque background covers the window's Mica in the tab content area.
+    public static Element Page(string title, string body) =>
         Border(
             VStack(24,
                 Title(title),
@@ -103,6 +103,5 @@ static class Ui
             )
         )
         .Background(Theme.Ref("SolidBackgroundFillColorTertiaryBrush"))
-        .Padding(24, 16, 24, 16)
-        .MinHeight(minHeight);
+        .Padding(24, 16, 24, 16);
 }

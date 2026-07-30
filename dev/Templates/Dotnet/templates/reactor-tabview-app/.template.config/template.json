@@ -50,7 +50,7 @@
     "reactorVersion": {
       "type": "parameter",
       "datatype": "text",
-      "defaultValue": "0.1.0-preview.12",
+      "defaultValue": "0.1.0-preview.13",
       "replaces": "$ReactorVersion$",
       "description": "Microsoft.UI.Reactor (and Microsoft.UI.Reactor.Devtools) NuGet version to reference."
     },
