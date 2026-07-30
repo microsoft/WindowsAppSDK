@@ -63,6 +63,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         
         // 1.8.11
         StoragePickers_RestoreFocusAfterDialogCloses = 63006043,
+        ResourceManager_RestoreDefaultFallbackPath = 63048673,
+        WindowsAppRuntime_BaseDirectoryIsolation = 63098344,
     };
 
     /// Represents a version of the Windows App Runtime.
