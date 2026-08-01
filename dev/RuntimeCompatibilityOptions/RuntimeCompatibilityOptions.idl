@@ -84,6 +84,15 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsServices_GetKeyboardModifiersStateRace = 62927180,
         VideoSuperResolution_HardwareDetection = 62934326,
 
+        // 2.3.3
+        InputPointerSource_DepartingScrollInputCrashFix = 62785439,
+        StoragePickers_RestoreFocusAfterDialogCloses = 63006068,
+        ResourceManager_RestoreDefaultFallbackPath = 63048673,
+        InputPointerSource_OSHaptics = 63096865,
+        WindowsAppRuntime_BaseDirectoryIsolation = 63098302,
+        AppContentSearchNewAPI_LafCheck = 63264582,
+        LanguageModel_LanguageDetectionStatus = 63293066,
+
         // 2.4.0
         Package_GetPackageFilePath = 62800606,
     };
