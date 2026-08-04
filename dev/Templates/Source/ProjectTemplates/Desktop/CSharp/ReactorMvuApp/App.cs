@@ -7,7 +7,7 @@ using static Microsoft.UI.Reactor.Factories;
 
 // To learn more about Reactor, the Reactor project structure, and more about
 // our project templates, see: https://github.com/microsoft/microsoft-ui-reactor
-ReactorApp.Run<App>("$projectname$", width: 1000, height: 700);
+ReactorApp.Run<App>("$projectname$");
 
 record CounterState(int Count);
 
