@@ -33,7 +33,7 @@ namespace Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS
             // being steered to read files from a parent-controlled directory).
             // See https://github.com/microsoft/WindowsAppSDK/issues/5987.
             Environment.SetEnvironmentVariable("MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID",
-                Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                Environment.ProcessId.ToString(global::System.Globalization.CultureInfo.InvariantCulture));
 
             // No error handling needed as the target function does nothing (just {return S_OK}).
             // It's the act of calling the function causing the DllImport to load the DLL that
