@@ -25,14 +25,27 @@ parameters:
 - name: EnableExperimentalVSIXFeatures
   type: boolean
   default: false
+# Artifact name to consume for the WindowsAppSDK NuGet + MSIX drop. Overridable so the
+# monobuild caller can point at its Aggregate stage artifact (e.g. 'WindowsAppSDK-NuGet-And-MSIX')
+# without changing the hardcoded 'WindowsAppSDK_Nuget_And_MSIX' default used by legacy callers.
+- name: artifactName
+  type: string
+  default: 'WindowsAppSDK_Nuget_And_MSIX'
+# When true, the caller has already downloaded the WindowsAppSDK NuGet + MSIX artifact to
+# $(System.ArtifactsDirectory) (e.g. the monobuild CreateVSIX stage handles rebuild-aware
+# download itself) and this template must NOT re-download it.
+- name: SkipArtifactDownload
+  type: boolean
+  default: false
 
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Current Build'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
+  - ${{ if ne(parameters.SkipArtifactDownload, true) }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Current Build'
+      inputs:
+        artifactName: ${{ parameters.artifactName }}
+        targetPath: '$(System.ArtifactsDirectory)'
 - ${{ else }}:
   ###
   # This step downloads the WindowsAppSDK NuGet package from a pipeline
@@ -41,7 +54,7 @@ steps:
   - task: DownloadPipelineArtifact@2
     displayName: 'Download WindowsAppSDK From Latest Nightly'
     inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+      artifactName: ${{ parameters.artifactName }}
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
       project: 55e8140e-57ac-4e5f-8f9c-c7c15b51929d # TODO: replace with $(System.TeamProjectId) once we can have a full WinAppSDK Build on the new mono repo
