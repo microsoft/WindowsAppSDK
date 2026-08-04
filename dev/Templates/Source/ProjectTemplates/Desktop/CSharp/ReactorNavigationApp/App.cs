@@ -56,7 +56,7 @@ class App : Component
         var items = new[]
         {
             NavItem("Home", icon: "Home", tag: "home"),
-            NavItem("About", tag: "about") with { IconElement = new FontIconData("\uEA3A", "Segoe Fluent Icons") },
+            NavItem("About", tag: "about") with { IconElement = new FontIconData("\uEA3A") },
         };
 
         var titleBar = TitleBar("$projectname$")
