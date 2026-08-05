@@ -1,13 +1,14 @@
 {
   "profiles": {
-    "$projectname$": {
-      "commandName": "Project",
-      "nativeDebugging": false
+    "$projectname$ (Package)": {
+      "commandName": "MsixPackage"
     },
-    "$projectname$ (Devtools)": {
+    "$projectname$ (Unpackaged)": {
+      "commandName": "Project"
+    },
+    "$projectname$ (Unpackaged, Devtools)": {
       "commandName": "Project",
-      "commandLineArgs": "--devtools",
-      "nativeDebugging": false
+      "commandLineArgs": "--devtools"
     }
   }
 }
