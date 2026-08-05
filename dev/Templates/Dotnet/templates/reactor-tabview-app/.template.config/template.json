@@ -57,9 +57,9 @@
     "windowsAppSdkVersion": {
       "type": "parameter",
       "datatype": "text",
-      "defaultValue": "2.1.3",
+      "defaultValue": "*",
       "replaces": "$WindowsAppSdkVersion$",
-      "description": "Microsoft.WindowsAppSDK NuGet version to reference."
+      "description": "Microsoft.WindowsAppSDK NuGet version. Requires 2.1.3 or later; use * for the latest stable."
     },
     "windowsSdkBuildToolsVersion": {
       "type": "parameter",
