@@ -19,6 +19,11 @@ ENV=x64
 ENV=arm32
 !ELSEIF "$(Platform)" == "arm64" ||  "$(Platform)" == "ARM64"
 ENV=arm64
+!ELSEIF "$(Platform)" == "arm64ec" || "$(Platform)" == "ARM64EC"
+# MIDL has no arm64ec environment. ARM64EC uses the x64-compatible ABI (same struct layout
+# and pointer size), and MSBuild's own Midl task emits /env x64 for ARM64EC, so match that
+# here to keep this generated header consistent with the generated proxy/stub code.
+ENV=x64
 !ELSE
 !ERROR "Unknown platform $(Platform)"
 !endif
