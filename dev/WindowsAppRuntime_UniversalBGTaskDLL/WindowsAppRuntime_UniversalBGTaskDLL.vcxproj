@@ -82,6 +82,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <TargetName>Microsoft.Windows.ApplicationModel.Background.UniversalBGTask</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">
+    <TargetName>Microsoft.Windows.ApplicationModel.Background.UniversalBGTask</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>Microsoft.Windows.ApplicationModel.Background.UniversalBGTask</TargetName>
   </PropertyGroup>
