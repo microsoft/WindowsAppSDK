@@ -542,10 +542,16 @@ inline void RemovePackage(PCWSTR packageFullName)
 {
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
-    // Verify the operation's ExtendedErrorCode; the old `if (!deploymentResult)` tested the
-    // (never-null) result object, so removal failures were silently ignored and left the
-    // package behind to break the next test's (re)install.
-    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    const HRESULT hr{ deploymentResult.ExtendedErrorCode() };
+    // Callers use RemovePackage() to ensure a package is absent, frequently on one that isn't
+    // installed — so "not installed" is the desired end state, not a failure. Any other
+    // non-success (e.g. ERROR_PACKAGES_IN_USE) is a real removal error and must surface, so we
+    // don't fall back to the old `if (!deploymentResult)` that silently swallowed everything.
+    if (hr == HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND))
+    {
+        return;
+    }
+    VERIFY_SUCCEEDED(hr, WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, hr, deploymentResult.ErrorText().c_str()));
 }
 
 inline void RemovePackageIfNecessary(PCWSTR packageFullName)
