@@ -159,6 +159,13 @@ steps:
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
+    # Monobuild BinSkim scans ob_outputDirectory; drop WindowsAppSDK.Test.NetCore's CFG-less .NET
+    # runtime API-set shims (test-only, unused by monobuild tests). Standalone keeps them -- its
+    # SampleApps stage downloads this artifact and needs the net6 folder.
+    ${{ if parameters.IsMonobuild }}:
+      Contents: |
+        **
+        !**/WindowsAppSDK.Test.NetCore/**
 
 - task: CopyFiles@2
   displayName: Stage redist files for publish
