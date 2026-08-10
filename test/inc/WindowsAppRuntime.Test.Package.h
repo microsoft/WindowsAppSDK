@@ -542,10 +542,10 @@ inline void RemovePackage(PCWSTR packageFullName)
 {
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
-    if (!deploymentResult)
-    {
-        VERIFY_FAIL(WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
-    }
+    // Verify the operation's ExtendedErrorCode; the old `if (!deploymentResult)` tested the
+    // (never-null) result object, so removal failures were silently ignored and left the
+    // package behind to break the next test's (re)install.
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
 }
 
 inline void RemovePackageIfNecessary(PCWSTR packageFullName)
