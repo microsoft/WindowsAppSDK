@@ -32,6 +32,22 @@
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
 
+  <!-- A linked ARM64EC image carries PE machine type AMD64 (0x8664) by design so the x64 emulator
+       can load it; only its object files are marked ARM64EC (0xA641). ResolveAssemblyReference
+       compares that AMD64 value against $(ProcessorArchitecture) via System.Reflection.ProcessorArchitecture,
+       which has no ARM64 member, so our ARM64 value degrades to None - MSB3271 reports the project
+       architecture as "". Every ARM64EC winmd implementation DLL we build therefore looks
+       mismatched and the check can never pass on this platform.
+       Microsoft.AppxPackage.Targets changes the normal Warning severity to Error even though
+       ResolveAssemblyReference cannot represent ARM64. Keep this diagnostic as a Warning rather
+       than disabling it so a genuinely x86 or MSIL reference is still reported - the message names
+       the offending architecture.
+       Do not instead force $(ProcessorArchitecture) to AMD64: it also feeds
+       $(TargetedSDKArchitecture), which would silently resolve x64 SDK payloads for ARM64EC. -->
+  <PropertyGroup Condition="'$(Platform)' == 'ARM64EC'">
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>Warning</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+
   <!-- Compilation differs for the build pipeline vs local development -->
   <PropertyGroup Condition="$(WindowsAppSDKBuildPipeline) != '1'">
     <!-- If not set, default it to no . -->
