@@ -21,6 +21,12 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Common
 #if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER
             Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManagerCS.AutoInitialize.AccessWindowsAppSDK();
 #endif
+#if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BASEDIRECTORY
+            // Publish %MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY% (used by manifest SxS redirection and
+            // MRTCore) before loading the runtime so the value is available when reg-free WinRT
+            // activation resolves it.
+            Microsoft.Windows.ApplicationModel.WindowsAppRuntime.BaseDirectoryCS.AutoInitialize.AccessWindowsAppSDK();
+#endif
 #if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT
             Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS.AutoInitialize.AccessWindowsAppSDK();
 #endif

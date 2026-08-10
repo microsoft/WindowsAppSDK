@@ -8,7 +8,7 @@
     <ProjectType>VC</ProjectType>
     <TemplateID>WinUI.Desktop.CppWinRT.BlankWindow</TemplateID>
     <TemplateGroupID>WinRT-Native-UAP</TemplateGroupID>
-    <AppliesTo>VisualC + WindowsAppSDK</AppliesTo>
+    <AppliesTo>VisualC + (WindowsAppSDK | WinUI)</AppliesTo>
     <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
     <ShowByDefault>false</ShowByDefault>
     <TargetPlatformName>Windows</TargetPlatformName>

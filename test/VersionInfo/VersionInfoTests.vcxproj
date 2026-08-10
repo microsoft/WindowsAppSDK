@@ -77,7 +77,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(RepoRoot)\test\inc;$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\test\inc;$(RepoRoot)\dev\common;$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="$(WindowsAppSDKBuildPipeline) == '1'">$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
