@@ -281,7 +281,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- The Windows SDK has no ARM64EC rometadata import library; ARM64EC can link its x64 flavor. -->
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;$(WindowsSdkDir)Lib\$(TargetPlatformVersion)\um\x64\rometadata.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -353,7 +354,7 @@
        Must stay after the CppWinRT.targets import, which is where the original value is appended. -->
   <ItemDefinitionGroup Condition="'$(Platform)' == 'ARM64EC' And '$(CppWinRTFastAbi)' == 'true' And !Exists('$(CppWinRTPackageDir)build\native\lib\$(Platform)\cppwinrt_fast_forwarder.lib')">
     <Link>
-      <AdditionalDependencies>$([System.String]::Copy('%(AdditionalDependencies)').Replace('\lib\$(Platform)\cppwinrt_fast_forwarder.lib', '\lib\x64\cppwinrt_fast_forwarder.lib'))</AdditionalDependencies>
+      <AdditionalDependencies>$([MSBuild]::Unescape($([System.String]::Copy('%(AdditionalDependencies)').Replace('\lib\$(Platform)\cppwinrt_fast_forwarder.lib', '\lib\x64\cppwinrt_fast_forwarder.lib'))))</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Target Name="MakeStrippedMetadata" AfterTargets="CppWinRTMergeProjectWinMDInputs" BeforeTargets="ClCompile">

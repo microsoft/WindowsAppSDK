@@ -348,7 +348,7 @@
        Must stay after the CppWinRT.targets import, which is where the original value is appended. -->
   <ItemDefinitionGroup Condition="'$(Platform)' == 'ARM64EC' And '$(CppWinRTFastAbi)' == 'true' And !Exists('$(CppWinRTPackageDir)build\native\lib\$(Platform)\cppwinrt_fast_forwarder.lib')">
     <Link>
-      <AdditionalDependencies>$([System.String]::Copy('%(AdditionalDependencies)').Replace('\lib\$(Platform)\cppwinrt_fast_forwarder.lib', '\lib\x64\cppwinrt_fast_forwarder.lib'))</AdditionalDependencies>
+      <AdditionalDependencies>$([MSBuild]::Unescape($([System.String]::Copy('%(AdditionalDependencies)').Replace('\lib\$(Platform)\cppwinrt_fast_forwarder.lib', '\lib\x64\cppwinrt_fast_forwarder.lib'))))</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
