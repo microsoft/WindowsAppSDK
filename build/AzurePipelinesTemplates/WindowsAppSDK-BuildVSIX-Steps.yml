@@ -17,6 +17,9 @@ parameters:
 - name: IsMonobuild
   type: boolean
   default: false
+# To override OptionalVSIXVersion's default, add
+# OptionalVSIXVersion: 'x.y.z' to the parameters of
+# the stage that calls this template in the aggregator pipeline.
 - name: OptionalVSIXVersion
   # if blank, the project template will select the version matching the Windows App SDK
   # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
@@ -69,10 +72,10 @@ steps:
     # LatestOfficialBuildID so PR build-validation runs always get a fresh package without
     # needing a build id supplied at queue time.
     #
-    # The nightly runs commonly finish as PartiallySucceeded (some downstream test/SDL
-    # stages are not green) even though the packaging stage produced the artifact, so
-    # both allowPartiallySucceededBuilds and allowFailedBuilds must be true -- the task
-    # requires the pair to be set together to consider non-succeeded runs.
+    # Accept PartiallySucceeded nightlies (downstream test/SDL stages red but the
+    # Aggregate/packaging stage still produced the artifact). Do NOT accept fully-failed
+    # runs: when Aggregate itself fails, 1ES names the artifact '<name>_failed_N', so a
+    # download of the plain '<name>' 404s -- fall back to the last packaging-green run.
     - task: DownloadPipelineArtifact@2
       displayName: 'Download WindowsAppSDK From Latest Nightly'
       inputs:
@@ -84,7 +87,7 @@ steps:
         runVersion: 'latestFromBranch'
         runBranch: '${{ parameters.NightlyBranchName }}'
         allowPartiallySucceededBuilds: true
-        allowFailedBuilds: true
+        allowFailedBuilds: false
       
 - task: PowerShell@2
   name: ExtractWindowsAppSDKVersion

@@ -279,4 +279,13 @@
   <data name="1064" xml:space="preserve">
     <value>A project template for creating a WinUI app structured with the MVVM pattern using the CommunityToolkit.Mvvm package.</value>
   </data>
+  <data name="1065" xml:space="preserve">
+    <value>Content Dialog</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Experimental] Content Dialog</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>A dialog box that displays content over the app UI to show information or gather input (WinUI).</value>
+  </data>
 </root>
