@@ -540,22 +540,6 @@ Try {
                 -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
         }
 
-        # Populate ARM64EC folders with x64 content
-        if ($platform.Split(",") -contains "x64")
-        {
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\lib\native\x64" `
-                -dest "$ComponentBasePath\lib\native\arm64ec"
-
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\runtimes\win-x64" `
-                -dest "$ComponentBasePath\runtimes\win-arm64ec"
-
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\runtimes-framework\win-x64" `
-                -dest "$ComponentBasePath\runtimes-framework\win-arm64ec"
-        }
-
         Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
         Copy-Item -Path "$nuSpecsPath\microsoft.windowsappsdk.foundation-config.cmake" -Destination "$ComponentBasePath\build\cmake\microsoft.windowsappsdk.foundation-config.cmake"
 
