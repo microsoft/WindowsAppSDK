@@ -38,6 +38,7 @@ variables:
 - name: OfficialPipelineID
   value: 118002
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates/WindowsAppSDK-TSAVariables.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
 
