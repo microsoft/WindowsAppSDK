@@ -175,6 +175,7 @@ namespace
         63098302, // WindowsAppRuntime_BaseDirectoryIsolation
         63264582, // AppContentSearchNewAPI_LafCheck
         63293066, // LanguageModel_LanguageDetectionStatus
+        63077767, // WinUI_WindowWidthHeight
     };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
         MakeGroup(s_changes_2_1_0, WinAppSDKReleaseVersion::WinAppSDK_2_1_0),
