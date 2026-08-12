@@ -168,6 +168,13 @@ namespace
         62934326, // VideoSuperResolution_HardwareDetection
     };
     constexpr UINT32 s_changes_2_3_3[] = {
+        62785439, // InputPointerSource_DepartingScrollInputCrashFix
+        63006068, // StoragePickers_RestoreFocusAfterDialogCloses
+        63048673, // ResourceManager_RestoreDefaultFallbackPath
+        63096865, // InputPointerSource_OSHaptics
+        63098302, // WindowsAppRuntime_BaseDirectoryIsolation
+        63264582, // AppContentSearchNewAPI_LafCheck
+        63293066, // LanguageModel_LanguageDetectionStatus
         63077767, // WinUI_WindowWidthHeight
     };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
