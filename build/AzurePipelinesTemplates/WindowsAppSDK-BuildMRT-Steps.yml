@@ -34,7 +34,7 @@ steps:
   retryCountOnTaskFailure: 10
   inputs:
     filePath: 'BuildAll.ps1'
-    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
 - ${{ if eq(parameters.runPREfast, 'true') }}:
   - task: SDLNativeRules@3

@@ -40,13 +40,6 @@ Param(
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
-# When the pipeline variable is not defined (e.g. standalone, non-monobuild runs), the
-# $(WindowsAppSDKVersionPinned) macro is passed through unexpanded. Treat an unexpanded
-# macro as "not pinned" so the ValueOrDefault fallback versions are used.
-if ($WindowsAppSDKVersionPinned -like '*$(*') {
-    $WindowsAppSDKVersionPinned = ""
-}
-
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 
 $buildOverridePath = "build\override"
@@ -298,7 +291,6 @@ Try {
                                 /p:Platform=$platformToRun `
                                 /p:RestoreConfigFile=NuGet.config `
                                 /p:PGOBuildMode=$PGOBuildMode `
-                                /p:WindowsAppSDKVersionPinned=$WindowsAppSDKVersionPinned `
                                 /binaryLogger:"BuildOutput/binlogs/MrtCore.$platformToRun.$configurationForMrtAndAnyCPU.binlog"
 
                 if ($lastexitcode -ne 0)
