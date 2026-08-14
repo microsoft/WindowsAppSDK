@@ -93,6 +93,10 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         AppContentSearchNewAPI_LafCheck = 63264582,
         LanguageModel_LanguageDetectionStatus = 63293066,
         WinUI_WindowWidthHeight = 63077767,
+
+        // 2.4.1
+        InkCanvas_InkingSupport = 63503009,
+        TableView_TabularBinaryActivation = 63518980,
     };
 
     /// Represents a version of the Windows App Runtime.
