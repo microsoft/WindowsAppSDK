@@ -40,8 +40,6 @@ namespace WindowsAppSDK.TemplateUtilities
         private Project _project;
         private IComponentModel _componentModel;
         private IEnumerable<string> _nuGetPackages;
-        private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
-        private IVsThreadedWaitDialog2 _waitDialog;
         private Dictionary<string, Exception> _failedPackageExceptions = new Dictionary<string, Exception>();
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
@@ -54,20 +52,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IComponentModel service.");
             }
 
-            _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
-            if (_waitDialog == null)
-            {
-                System.Diagnostics.Debug.WriteLine("Warning: Could not obtain IVsThreadedWaitDialog2 service.");
-            }
-
-            if (_componentModel != null)
-            {
-                _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
-                if (_nugetProjectUpdateEvents != null)
-                {
-                    _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
-                }
-            }
             // Assuming package list is passed via a custom parameter in the .vstemplate file
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
@@ -96,33 +80,12 @@ namespace WindowsAppSDK.TemplateUtilities
             await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                int canceled = 0; // Initialize as not canceled
 
-                // Start the package installation task but do not await it here
-                var installationTask = StartInstallationAsync();
+                // Install the packages, then persist the generated project(s).
+                await StartInstallationAsync();
 
-                // Start the threaded wait dialog
-                if (_waitDialog != null)
-                {
-                    _waitDialog.StartWaitDialog(null, Resources._1044, null, null, Resources._1045, 0, false, true);
-                }
-
-                // Now await the installation task to complete
-                await installationTask;
-
-                // Once the installation is complete, end the wait dialog
-                if (_waitDialog != null)
-                {
-                    _waitDialog.EndWaitDialog(out canceled);
-                }
-
-                // If _waitDialog is null, canceled remains 0 (not canceled)
-                // Check if the process was canceled before proceeding
-                if (canceled == 0) // If not canceled, finalize the process
-                {
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    SaveAllProjects();
-                }
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                SaveAllProjects();
             });
         }
 
@@ -146,7 +109,7 @@ namespace WindowsAppSDK.TemplateUtilities
             if (_project == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                LogError("Project reference is null. Likely a ProjectGroup vstemplate.");
+                LogError("Project reference is null; skipping NuGet package installation.");
                 return;
             }
 
@@ -229,52 +192,6 @@ namespace WindowsAppSDK.TemplateUtilities
                     }
                 }
             }
-        }
-
-        private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
-        {
-            ThreadHelper.JoinableTaskFactory.Run(async delegate
-            {
-                // Accessing _project requires the main thread
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                if (_project == null)
-                {
-                    return;
-                }
-
-                // Normally, either InstallNuGetPackagesAsync is called from ProjectFinishedGenerating
-                // for VC++ projects (C++ templates) or from here for C# and wapproj projects. In the
-                // C++ wapproj template, InstallNuGetPackagesAsync() was called twice for the vcxproj,
-                // once from each location. This caused the NuGet install API to throw an
-                // InvalidOperationException because the package was already installed.
-                // This check prevents the double installation attempt.
-                Guid _projectGuid = GetProjectGuid(_project);
-                if (_projectGuid.Equals(SolutionVCProjectGuid))
-                {
-                    if (_failedPackageExceptions.Count > 0)
-                    {
-                        var errorMessage = CreateErrorMessage(ErrorMessageFormat.InfoBar);
-                        LogError(errorMessage);
-                        _ = DisplayInfoBarAsync(errorMessage);
-                        return;
-                    }
-                    return;
-                }
-                else
-                {
-                    // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
-                    // during solution restore.
-                    if (_nugetProjectUpdateEvents == null)
-                    {
-                        return;
-                    }
-                    _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
-                    var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
-
-                    _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
-                }
-            });
         }
 
         private string CreateErrorMessage(ErrorMessageFormat format)

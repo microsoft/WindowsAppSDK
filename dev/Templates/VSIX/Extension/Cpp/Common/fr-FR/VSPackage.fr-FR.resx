@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>Modèle de projet qui crée des packages MSIX contenant des applications WinUI pour le chargement indépendant ou la distribution via le Microsoft Store.</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>Installation des packages NuGet dans le projet...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Opération en cours...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>Référence(s) de package manquante(s)</value>
   </data>

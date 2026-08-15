@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>Szablon projektu, który tworzy pakiety MSIX zawierające aplikacje WinUI na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem Microsoft Store.</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>Trwa instalowanie pakietów NuGet w projekcie...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Operacja w toku...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>Brak odwołań do pakietu</value>
   </data>

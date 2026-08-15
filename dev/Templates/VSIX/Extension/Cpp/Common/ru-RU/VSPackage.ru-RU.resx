@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>Шаблон проекта, который создает пакеты MSIX, содержащие приложения WinUI для загрузки неопубликованного приложения или распространения через Microsoft Store.</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>Установка пакетов NuGet в проект...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Операция выполняется...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>Отсутствуют ссылки на пакеты</value>
   </data>

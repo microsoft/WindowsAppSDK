@@ -15,7 +15,7 @@
             ProjectTemplate                  yes        yes
             ItemTemplate                     yes        yes    single-file 'Add New Item' templates (Page, UserControl, ...)
 
-            VsixOnlyProjectTemplate          no         yes    e.g. .wapproj-based packaging not usable from the CLI
+            VsixOnlyProjectTemplate          no         yes    (framework slot; no instances today)
             DotnetNewOnlyProjectTemplate     yes        no     (framework slot; no instances today)
 
             VsixOnlyItemTemplate             no         yes    (framework slot; no instances today)
@@ -104,14 +104,17 @@
 
     <ItemGroup>
         <!--
-            Two-project (.csproj + .wapproj) packaged WinUI template. VSIX-only:
-            dotnet-new users get the equivalent functionality from winui.blankapp
-            (single-project packaging) without the .wapproj indirection.
+            Reserved slot for VSIX-only project templates (e.g. two-project
+            .csproj + .wapproj packaged apps). No instances today: the former
+            WinUI.Desktop.Cs.PackagedApp / WinUI.Desktop.CppWinRT.PackagedApp
+            .wapproj templates were removed in favor of the single-project
+            SingleProjectPackagedApp templates. Example shape:
+
+            <VsixOnlyProjectTemplate Include="WinUI.Desktop.Cs.SomeVsOnlyApp">
+                <BaseName>WinUI.Desktop.Cs.SomeVsOnlyApp</BaseName>
+                <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\SomeVsOnlyApp</SourceDir>
+            </VsixOnlyProjectTemplate>
         -->
-        <VsixOnlyProjectTemplate Include="WinUI.Desktop.Cs.PackagedApp">
-            <BaseName>WinUI.Desktop.Cs.PackagedApp</BaseName>
-            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\PackagedApp</SourceDir>
-        </VsixOnlyProjectTemplate>
     </ItemGroup>
 
     <ItemGroup>

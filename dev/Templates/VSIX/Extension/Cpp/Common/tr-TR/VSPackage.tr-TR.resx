@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>Takım projesi aracılığıyla dışarıdan yükleme veya dağıtım için WinUI uygulamaları içeren MSIX paketleri Microsoft Store.</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>Projeye NuGet paketleri yükleniyor...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>İşlem sürüyor...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>Eksik Paket Başvuruları</value>
   </data>

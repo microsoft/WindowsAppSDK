@@ -219,12 +219,6 @@
   <data name="1043" xml:space="preserve">
     <value>一个项目模板，用于创建 MSIX 包，其中包含用于通过Microsoft Store旁加载或分发的 WinUI 应用程序。</value>
   </data>
-  <data name="1044" xml:space="preserve">
-    <value>正在将 NuGet 包安装到项目中...</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>操作在进行中...</value>
-  </data>
   <data name="1046" xml:space="preserve">
     <value>缺少包引用</value>
   </data>
