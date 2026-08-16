@@ -75,6 +75,8 @@ namespace WindowsAppSDK.TemplateUtilities
             }
         }
 
+        // This event is called when a project has finished generating. We use it to 
+        // trigger NuGet package installation for VC++ projects (C++ templates)
         public void ProjectFinishedGenerating(Project project)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
