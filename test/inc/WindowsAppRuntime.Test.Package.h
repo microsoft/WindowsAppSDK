@@ -425,6 +425,22 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
     // service holds an internal lock); the documented mitigation is to back
     // off and reissue. Bounded to 5 attempts so a genuine non-transient
     // failure still surfaces quickly.
+    //
+    // ERROR_PACKAGES_IN_USE (0x80073D02) specifically means the deployment
+    // service found a running process from an earlier-version package in the
+    // same family (e.g. a test that activated the app and is still winding
+    // down, or a not-yet-completed deferred registration from a prior test)
+    // and is refusing to register over it. Backing off and reissuing with
+    // the same DeploymentOptions::None can spin through all 5 attempts
+    // without ever making progress if that process takes longer than the
+    // backoff window to exit and release its package lock. Once we've seen
+    // this specific error, switch to
+    // DeploymentOptions::ForceTargetApplicationShutdown on the next retry so
+    // the deployment service force-closes the blocking process itself
+    // instead of us guessing how long to wait; this is the option the
+    // platform documents for exactly this error. The first attempt stays
+    // non-destructive (DeploymentOptions::None) so a clean install never
+    // forcibly terminates anything.
     winrt::Windows::Management::Deployment::DeploymentResult deploymentResult{ nullptr };
     constexpr int c_maxAttempts{ 5 };
     DWORD backoffMs{ 1000 };
@@ -442,13 +458,21 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
             break;
         }
         // Bounded retry on the documented transient install errors.
+        const bool isPackageInUse{ hr == HRESULT_FROM_WIN32(ERROR_PACKAGES_IN_USE) };
         const bool isTransient{
-            hr == HRESULT_FROM_WIN32(ERROR_PACKAGES_IN_USE) ||
+            isPackageInUse ||
             hr == HRESULT_FROM_WIN32(ERROR_INSTALL_POLICY_FAILURE) ||
             hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };
         if (!isTransient || attempt == c_maxAttempts)
         {
             break;
+        }
+        if (isPackageInUse && (options == winrt::Windows::Management::Deployment::DeploymentOptions::None))
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"AddPackageAsync('%s') attempt %d/%d failed with ERROR_PACKAGES_IN_USE; retrying with DeploymentOptions::ForceTargetApplicationShutdown",
+                packageFullName, attempt, c_maxAttempts));
+            options = winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown;
         }
         WEX::Logging::Log::Comment(WEX::Common::String().Format(
             L"AddPackageAsync('%s') attempt %d/%d failed with transient HRESULT 0x%08X %s; sleeping %u ms before retry",
