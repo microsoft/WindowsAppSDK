@@ -440,7 +440,13 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
     // instead of us guessing how long to wait; this is the option the
     // platform documents for exactly this error. The first attempt stays
     // non-destructive (DeploymentOptions::None) so a clean install never
-    // forcibly terminates anything.
+    // forcibly terminates anything. This can only ever close a process left
+    // over from an earlier, already-finished test - the app a given test is
+    // actively exercising is never installed via this helper while it's
+    // running. Precedent: Shared.cpp's and TestSetupAndTeardownHelper.h's
+    // InstallPackage() helpers already pass ForceApplicationShutdown
+    // unconditionally on every install for the same reason; this is scoped
+    // to only escalate after a confirmed in-use failure instead.
     winrt::Windows::Management::Deployment::DeploymentResult deploymentResult{ nullptr };
     constexpr int c_maxAttempts{ 5 };
     DWORD backoffMs{ 1000 };
