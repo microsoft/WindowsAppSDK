@@ -420,6 +420,44 @@ function Invoke-MSBuildBuild {
     }
 }
 
+function Test-VsixContainsTemplates {
+    param(
+        [string]$Path
+    )
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($Path)
+    try {
+        $projectTemplates = @(
+            $archive.Entries | Where-Object {
+                $_.FullName.StartsWith("ProjectTemplates/", [System.StringComparison]::OrdinalIgnoreCase) -and
+                $_.FullName.EndsWith(".vstemplate", [System.StringComparison]::OrdinalIgnoreCase)
+            }
+        )
+        $itemTemplates = @(
+            $archive.Entries | Where-Object {
+                $_.FullName.StartsWith("ItemTemplates/", [System.StringComparison]::OrdinalIgnoreCase) -and
+                $_.FullName.EndsWith(".vstemplate", [System.StringComparison]::OrdinalIgnoreCase)
+            }
+        )
+
+        if ($projectTemplates.Count -eq 0 -or $itemTemplates.Count -eq 0) {
+            Write-Err "VSIX template validation failed: $Path"
+            Write-Err "  Project templates: $($projectTemplates.Count)"
+            Write-Err "  Item templates   : $($itemTemplates.Count)"
+            Write-Err "The selected Visual Studio/MSBuild toolset may not support packaging these templates."
+            return $false
+        }
+
+        Write-Step "Verified templates in $($archive.Entries.Count)-entry VSIX: $($projectTemplates.Count) project, $($itemTemplates.Count) item"
+        return $true
+    }
+    finally {
+        $archive.Dispose()
+    }
+}
+
 function Copy-VsixOutput {
     param(
         [string]$DeploymentType
@@ -446,6 +484,10 @@ function Copy-VsixOutput {
     foreach ($vsix in $vsixFiles) {
         if (-not $seen.ContainsKey($vsix.Name)) {
             $seen[$vsix.Name] = $vsix
+            if (-not (Test-VsixContainsTemplates -Path $vsix.FullName)) {
+                exit 1
+            }
+
             # Rename to include version: WindowsAppSDK.Cs.Extension.Dev17.Component.vsix
             #   -> WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0416.1640.vsix
             $newName = $vsix.BaseName + ".$OptionalVSIXVersion.vsix"
