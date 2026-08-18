@@ -25,6 +25,8 @@
   </TemplateData>
   <TemplateContent PreferedSolutionConfiguration="Debug|x64">
     <CustomParameters>
+      <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
       <CustomParameter Name="$WindowsAppSdkVersion$" Value="*" />
       <CustomParameter Name="$WindowsSdkBuildToolsVersion$" Value="*" />
