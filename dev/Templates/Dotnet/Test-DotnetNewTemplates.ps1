@@ -453,31 +453,101 @@ function Get-LatestOfficialWasdkVersion {
     $sourceFeed = 'https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/flat2/microsoft.windowsappsdk/index.json'
     $excludedVersionPrefixes = @('2.63.')
     $token = $env:SYSTEM_ACCESSTOKEN
-    if ([string]::IsNullOrWhiteSpace($token)) {
-        Write-Warning "SYSTEM_ACCESSTOKEN is not set; cannot query the package source for versions."
-        return $null
-    }
     try {
-        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        $response = Invoke-RestMethod -Uri $sourceFeed -Headers @{ Authorization = "Bearer $token" } -TimeoutSec 30 -ErrorAction Stop
-        $latest = $null
-        foreach ($v in $response.versions) {
-            if ($v -match '-') { continue }   # skip prerelease
-            $excluded = $false
-            foreach ($p in $excludedVersionPrefixes) { if ($v.StartsWith($p)) { $excluded = $true; break } }
-            if ($excluded) { continue }
-            $parsed = $null
-            if (-not [version]::TryParse($v, [ref]$parsed)) { continue }
-            if (($null -eq $latest) -or ($parsed -gt $latest.Ver)) {
-                $latest = [pscustomobject]@{ Raw = $v; Ver = $parsed }
+        # SYSTEM_ACCESSTOKEN is a pipeline variable. Use nuget CLI when running outside of pipeline runs
+        if ([string]::IsNullOrWhiteSpace($token)) {
+            Write-Warning "SYSTEM_ACCESSTOKEN is not set; cannot query package source for latest official Microsoft.WindowsAppSDK version."
+            Write-Host "Using NuGet CLI instead"
+            $packageId = 'Microsoft.WindowsAppSDK'
+            $sourceFeed = 'https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json'
+            $excludedVersionPrefixes = @('1.0.', '1.1.')
+            $json = & dotnet package search $packageId `
+                --source $sourceFeed `
+                --exact-match `
+                --format json `
+                --verbosity quiet
+
+            if ($LASTEXITCODE -ne 0) {
+                throw "dotnet package search failed with exit code $LASTEXITCODE."
             }
-        }
-        if ($latest) {
-            Write-Host "Latest official Microsoft.WindowsAppSDK = $($latest.Raw) (excluded prerelease and $($excludedVersionPrefixes -join ', ')*)"
+
+            $response = $json | ConvertFrom-Json
+
+            $problems = @()
+
+            if ($response.PSObject.Properties['problems']) {
+                $problems += @($response.problems)
+            }
+
+            foreach ($result in @($response.searchResult)) {
+                if ($result.PSObject.Properties['problems']) {
+                    $problems += @($result.problems)
+                }
+            }
+
+            if ($problems.Count -gt 0) {
+                throw ($problems | ForEach-Object { $_.text } | Join-String -Separator "`n")
+            }
+
+            if ($problems.Count -gt 0) {
+                throw ($problems.text -join [Environment]::NewLine)
+            }
+
+            $versions = foreach ($result in @($response.searchResult)) {
+                foreach ($package in @($result.packages)) {
+                    if ($package.id -ine $packageId) {
+                        continue
+                    }
+
+                    if ($package.PSObject.Properties['version']) {
+                        $package.version
+                    }
+                    elseif ($package.PSObject.Properties['latestVersion']) {
+                        $package.latestVersion
+                    }
+                }
+            }
+            $latest = $versions |
+                Where-Object {
+                    $version = $_
+                    -not ($excludedVersionPrefixes | Where-Object {
+                        $version.StartsWith($_)
+                    })
+                } |
+                ForEach-Object {
+                    [pscustomobject]@{
+                        Raw = $_
+                        Ver = [version]$_
+                    }
+                } |
+                Sort-Object Ver -Descending |
+                Select-Object -First 1
+
             return $latest.Raw
         }
-        Write-Warning "No official Microsoft.WindowsAppSDK version found on the package source."
-        return $null
+        else
+        {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+            $response = Invoke-RestMethod -Uri $sourceFeed -Headers @{ Authorization = "Bearer $token" } -TimeoutSec 30 -ErrorAction Stop
+            $latest = $null
+            foreach ($v in $response.versions) {
+                if ($v -match '-') { continue }   # skip prerelease
+                $excluded = $false
+                foreach ($p in $excludedVersionPrefixes) { if ($v.StartsWith($p)) { $excluded = $true; break } }
+                if ($excluded) { continue }
+                $parsed = $null
+                if (-not [version]::TryParse($v, [ref]$parsed)) { continue }
+                if (($null -eq $latest) -or ($parsed -gt $latest.Ver)) {
+                    $latest = [pscustomobject]@{ Raw = $v; Ver = $parsed }
+                }
+            }
+            if ($latest) {
+                Write-Host "Latest official Microsoft.WindowsAppSDK = $($latest.Raw) (excluded prerelease and $($excludedVersionPrefixes -join ', ')*)"
+                return $latest.Raw
+            }
+            Write-Warning "No official Microsoft.WindowsAppSDK version found on the package source."
+            return $null
+        }
     }
     catch {
         Write-Warning "Failed to query the package source for versions: $($_.Exception.Message)"
