@@ -26,6 +26,9 @@
   <TemplateContent PreferedSolutionConfiguration="Debug|x64">
     <CustomParameters>
       <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
+      <CustomParameter Name="$WindowsAppSdkVersion$" Value="*" />
+      <CustomParameter Name="$WindowsSdkBuildToolsVersion$" Value="*" />
+      <CustomParameter Name="$WindowsSdkBuildToolsWinAppVersion$" Value="*" />
     </CustomParameters>
     <ProjectCollection>
       <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.Cs.WapProj.vstemplate</ProjectTemplateLink>
