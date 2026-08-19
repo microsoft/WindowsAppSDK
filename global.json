@@ -1,8 +1,4 @@
 {
-  "sdk": {
-    "version": "10.0.111",
-    "rollForward": "latestMinor"
-  },
   "tools": {
     "dotnet": "6.0.425"
   },
