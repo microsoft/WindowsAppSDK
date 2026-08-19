@@ -49,6 +49,10 @@
 .PARAMETER SkipRestore
     Skip NuGet restore (useful if you've already restored).
 
+.PARAMETER VsVersion
+    Visual Studio version to target for MSBuild. Default: 17 (Visual Studio 2022).
+    Set to 18 for Visual Studio 2026.
+
 .EXAMPLE
     .\Build-VSIX-Local.ps1
     # Build the LocalDev VSIX (default). Then install with .\Install-LocalDev-VSIX.ps1
@@ -82,7 +86,10 @@ param(
 
     [string]$OptionalVSIXVersion = "",
 
-    [switch]$SkipRestore
+    [switch]$SkipRestore,
+
+    [ValidateSet(17, 18)]
+    [double]$MsBuildVersion = 17
 )
 
 Set-StrictMode -Version 2.0
@@ -122,7 +129,8 @@ function Find-MSBuild {
         exit 1
     }
 
-    $msbuildPath = & $vswherePath -latest -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe" 2>$null | Select-Object -First 1
+    $range = '[{0},{1})' -f $MsBuildVersion, ($MsBuildVersion + 1)
+    $msbuildPath = & $vswherePath -version $range -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe" 2>$null | Select-Object -First 1
     if (-not $msbuildPath -or -not (Test-Path $msbuildPath)) {
         Write-Err "MSBuild.exe not found. Please install Visual Studio 2022+ with the '.NET desktop development' workload."
         exit 1
