@@ -35,4 +35,14 @@
       <ProjectTemplateLink ProjectName="$projectname$" CopyParameters="true">BlankApp\WinUI.Desktop.Cs.BlankApp.vstemplate</ProjectTemplateLink>
     </ProjectCollection>
   </TemplateContent>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.Universal.TemplateWizards, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.Universal.TemplateWizards.PlatformVersion.Wizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
+    <SkipXamlCompilerCheck>true</SkipXamlCompilerCheck>
+    <UseWindowsSdkBuildToolsPackage>true</UseWindowsSdkBuildToolsPackage>
+    <UseSdkFallbackFile>true</UseSdkFallbackFile>
+  </WizardData>
 </VSTemplate>
