@@ -1,5 +1,5 @@
 steps:
-- template: AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
   parameters:
     componentTsaOptionsPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
     areaPath: '$(WinAppSDKCoreTsaAreaPath)'

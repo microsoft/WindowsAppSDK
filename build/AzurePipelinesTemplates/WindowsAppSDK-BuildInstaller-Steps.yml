@@ -14,7 +14,7 @@ parameters:
 
 steps:
 # Supports both root and subfolder Foundation checkouts.
-- template: AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
   parameters:
     componentTsaOptionsPath: '$(Build.SourcesDirectory)\$(foundationRepoPath).config\tsaoptions.json'
     areaPath: '$(WinAppSDKCoreTsaAreaPath)'
