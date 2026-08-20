@@ -18,6 +18,7 @@
             "Parameters": { "type": "string" },
             "Architectures": { "type": "array", "items": { "type": "string" } },
             "Status": { "enum": ["Enabled", "Disabled"] },
+            "MaxReruns": { "type": "integer", "default": 0 },
           },
           "required": ["Description", "Filename", "Architectures", "Status"]
         }
@@ -118,6 +119,19 @@ function Get-Tests
             $t | Add-Member -MemberType NoteProperty -Name 'TestDef' -Value $testdef.FullName
             $t | Add-Member -MemberType NoteProperty -Name 'Type' -Value $testType
 
+            # Optional: number of times to rerun this test (into separate rerun logs) if it fails the primary pass.
+            # Used to tolerate known transient/flaky failures without masking genuine regressions - a test that
+            # fails the primary pass but passes on rerun is later reported as "unreliable" (skipped) instead of failed.
+            if ($testConfig.PSObject.Properties.Name -contains 'MaxReruns')
+            {
+                $maxReruns = [int]$testConfig.MaxReruns
+            }
+            else
+            {
+                $maxReruns = 0
+            }
+            $t | Add-Member -MemberType NoteProperty -Name 'MaxReruns' -Value $maxReruns
+
             $tests += $t
             $count += 1
         }
@@ -143,16 +157,17 @@ function List-Tests
 
 function Run-TaefTest
 {
-    param($test)
+    param($test, $logFile)
 
     $testFolder = Split-Path -parent $test.TestDef
     $tePath = Join-Path $testFolder "te.exe"
     $dllFile = Join-Path $testFolder $test.Filename
 
-    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
-    $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
+    # Pipe te.exe console output to the host so it is not captured as this function's return value
+    # (the caller assigns the return value to read te.exe's exit code). WTT results still go to $logFile.
+    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$logFile /testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath | Out-Host
 
-    & $tePath $dllFile $test.Parameters /enableWttLogging /appendWttLogging /screenCaptureOnError /logFile:$teLogFile /testMode:EtwLogger /EtwLogger:WprProfile=WDGDEPAdex /EtwLogger:SavePoint=TestFailure /EtwLogger:RecordingScope=Execution /EtwLogger:WprProfileFile=$wprProfilePath
+    return $LASTEXITCODE
 }
 
 function Run-PowershellTest
@@ -164,6 +179,14 @@ function Run-PowershellTest
 
 function Run-Tests
 {
+    $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
+    # Rerun logs consumed by WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml (wttSingleRerunInputPath / wttMultipleRerunInputPath / wttMoreRerunInputPath).
+    $rerunLogFiles = @(
+        (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.rerun1.wtl"),
+        (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.rerun2.wtl"),
+        (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.rerun3.wtl")
+    )
+
     $tests = Get-Tests
     foreach ($test in $tests)
     {
@@ -174,7 +197,18 @@ function Run-Tests
         {
             if ($test.Type -eq 'TAEF')
             {
-                Run-TaefTest $test
+                $exitCode = Run-TaefTest $test $teLogFile
+
+                # Tolerate known transient failures: rerun the failing testdef into separate rerun logs.
+                # The WTT-to-XUnit conversion (useRetryLogic=true) reports a test that failed the primary
+                # pass but passed on rerun as "unreliable" rather than failed. A test that fails every
+                # attempt is still reported as failed, so genuine regressions are not masked.
+                $maxReruns = [Math]::Min([int]$test.MaxReruns, $rerunLogFiles.Count)
+                for ($attempt = 1; ($exitCode -ne 0) -and ($attempt -le $maxReruns); $attempt++)
+                {
+                    Write-Host "$($test.Filename) failed the previous run (exit code $exitCode); rerun attempt $attempt of $maxReruns"
+                    $exitCode = Run-TaefTest $test $rerunLogFiles[$attempt - 1]
+                }
             }
             elseif ($test.Type -eq 'Powershell')
             {
@@ -247,19 +281,26 @@ if ($Test -eq $true)
 {
     $teLogFile = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\Te.wtl")
     $teLogPathTo = (Join-Path $env:Build_SourcesDirectory "TestOutput\$Configuration\$Platform")
-    remove-item -Path $teLogFile -ErrorAction Ignore
-    remove-item -Path (Join-path $teLogPathTo "Te.wtl") -ErrorAction Ignore
+    # Primary log plus rerun logs produced for flaky testdefs (see Run-Tests / Run-TaefTest).
+    $teLogFileNames = @("Te.wtl", "Te.rerun1.wtl", "Te.rerun2.wtl", "Te.rerun3.wtl")
+    foreach ($logName in $teLogFileNames) {
+        remove-item -Path (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\$logName") -ErrorAction Ignore
+        remove-item -Path (Join-Path $teLogPathTo $logName) -ErrorAction Ignore
+    }
 
     Run-Tests
 
-    # copy test log to TestOutput folder
-    if (Test-Path -Path $teLogFile) {
-        Write-Host "Starting copy test log from '$teLogFile'"
+    # copy test logs (primary + any rerun logs) to TestOutput folder
+    foreach ($logName in $teLogFileNames) {
+        $logSource = (Join-Path $env:Build_SourcesDirectory "BuildOutput\$Configuration\$Platform\$logName")
+        if (Test-Path -Path $logSource) {
+            Write-Host "Starting copy test log from '$logSource'"
 
-        New-Item -ItemType Directory -Path $teLogPathTo -Force
-        copy-item -Path $teLogFile -Destination $teLogPathTo -Force
+            New-Item -ItemType Directory -Path $teLogPathTo -Force
+            copy-item -Path $logSource -Destination $teLogPathTo -Force
 
-        Write-Host "Test log copied to '$teLogPathTo'"
+            Write-Host "Test log copied to '$teLogPathTo'"
+        }
     }
 
     # copy screenshots to TestOutput folder
