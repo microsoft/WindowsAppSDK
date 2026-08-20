@@ -122,13 +122,24 @@ function Get-Tests
             # Optional: number of times to rerun this test (into separate rerun logs) if it fails the primary pass.
             # Used to tolerate known transient/flaky failures without masking genuine regressions - a test that
             # fails the primary pass but passes on rerun is later reported as "unreliable" (skipped) instead of failed.
+            # Only 0..3 are supported (there are three rerun logs, see Run-Tests); non-integer or out-of-range
+            # values are coerced into that range with a warning so the testdef value matches actual behavior.
+            $maxSupportedReruns = 3
+            $maxReruns = 0
             if ($testConfig.PSObject.Properties.Name -contains 'MaxReruns')
             {
-                $maxReruns = [int]$testConfig.MaxReruns
-            }
-            else
-            {
-                $maxReruns = 0
+                $parsedMaxReruns = 0
+                if (-not [int]::TryParse("$($testConfig.MaxReruns)", [ref]$parsedMaxReruns))
+                {
+                    Write-Warning "Invalid MaxReruns value '$($testConfig.MaxReruns)' in '$($testdef.FullName)' for '$id'. Using 0."
+                    $parsedMaxReruns = 0
+                }
+                elseif (($parsedMaxReruns -lt 0) -or ($parsedMaxReruns -gt $maxSupportedReruns))
+                {
+                    Write-Warning "MaxReruns value '$parsedMaxReruns' in '$($testdef.FullName)' for '$id' is outside the supported range 0..$maxSupportedReruns. Clamping to that range."
+                    $parsedMaxReruns = [Math]::Max(0, [Math]::Min($parsedMaxReruns, $maxSupportedReruns))
+                }
+                $maxReruns = $parsedMaxReruns
             }
             $t | Add-Member -MemberType NoteProperty -Name 'MaxReruns' -Value $maxReruns
 
