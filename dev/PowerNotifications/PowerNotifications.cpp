@@ -7,6 +7,7 @@
 #include <frameworkudk\PowerNotificationsPal.h>
 #include <Microsoft.Windows.System.Power.PowerManager.g.cpp>
 #include <powrprof.h>
+#include <winrt/Windows.Foundation.Metadata.h>
 
 namespace winrt::Microsoft::Windows::System::Power::implementation
 {
@@ -14,6 +15,8 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
     {
         return make_self<factory_implementation::PowerManager>();
     }
+
+    using OsPowerManager = winrt::Windows::System::Power::PowerManager;
 
     // EnergySaverStatus Functions
     EventType& EnergySaverStatus_Event()
@@ -38,6 +41,83 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
     {
         THROW_IF_FAILED(PowerNotifications_GetEnergySaverStatus(
             &Factory()->m_cachedEnergySaverStatus));
+    }
+
+    // EnergySaverStatus2 Functions
+    static bool IsEnergySaverStatus2ApiPresent()
+    {
+        auto factory{ Factory() };
+        if (!factory->m_energySaverStatus2Available.has_value())
+        {
+            using winrt::Windows::Foundation::Metadata::ApiInformation;
+            factory->m_energySaverStatus2Available =
+                ApiInformation::IsPropertyPresent(L"Windows.System.Power.PowerManager", L"EnergySaverStatus2") &&
+                ApiInformation::IsEventPresent(L"Windows.System.Power.PowerManager", L"EnergySaverStatus2Changed");
+        }
+        return *factory->m_energySaverStatus2Available;
+    }
+
+    static Power::EnergySaverStatus2 ReadOsEnergySaverStatus2()
+    {
+        return static_cast<Power::EnergySaverStatus2>(OsPowerManager::EnergySaverStatus2());
+    }
+
+    EventType& EnergySaverStatus2_Event()
+    {
+        return Factory()->m_energySaverStatus2ChangedEvent;
+    }
+
+    void EnergySaverStatus2_Register()
+    {
+        auto factory{ Factory() };
+        if (IsEnergySaverStatus2ApiPresent())
+        {
+            factory->m_cachedEnergySaverStatus2 = ReadOsEnergySaverStatus2();
+            factory->m_energySaverStatus2ChangedRevoker = OsPowerManager::EnergySaverStatus2Changed(
+                winrt::auto_revoke,
+                [](auto&&, auto&&)
+                {
+                    auto factory{ Factory() };
+                    factory->m_cachedEnergySaverStatus2 = ReadOsEnergySaverStatus2();
+                    factory->RaiseEvent(factory->energySaverStatus2Func);
+                });
+        }
+        else
+        {
+            THROW_IF_FAILED(PowerNotifications_RegisterEnergySaverStatusChangedListener(
+                &PowerManager::EnergySaverStatus2Changed_Callback,
+                &factory->m_energySaverStatus2FallbackHandle));
+        }
+    }
+
+    void EnergySaverStatus2_Unregister()
+    {
+        auto factory{ Factory() };
+        if (IsEnergySaverStatus2ApiPresent())
+        {
+            factory->m_energySaverStatus2ChangedRevoker.revoke();
+        }
+        else
+        {
+            THROW_IF_FAILED(PowerNotifications_UnregisterEnergySaverStatusChangedListener(
+                factory->m_energySaverStatus2FallbackHandle));
+        }
+    }
+
+    void EnergySaverStatus2_Update()
+    {
+        auto factory{ Factory() };
+        if (IsEnergySaverStatus2ApiPresent())
+        {
+            factory->m_cachedEnergySaverStatus2 = ReadOsEnergySaverStatus2();
+        }
+        else
+        {
+            ::EnergySaverStatus legacyStatus{};
+            THROW_IF_FAILED(PowerNotifications_GetEnergySaverStatus(&legacyStatus));
+            factory->m_cachedEnergySaverStatus2 =
+                factory_implementation::PowerManager::MapLegacyToEnergySaverStatus2(legacyStatus);
+        }
     }
 
     // BatteryStatus Functions
