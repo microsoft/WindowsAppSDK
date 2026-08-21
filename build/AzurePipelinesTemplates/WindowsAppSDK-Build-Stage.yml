@@ -86,3 +86,11 @@ stages:
       runApiScan : ${{ parameters.runApiScan }}
       BuildPlatform: arm64
       testMatrix: ${{ parameters.testMatrix }}
+
+  - template: WindowsAppSDK-Build-Per-Platform-Stage.yml@self
+    parameters:
+      SignOutput: ${{ parameters.SignOutput }}
+      runPREfast : ${{ parameters.runPREfast }}
+      runApiScan : ${{ parameters.runApiScan }}
+      BuildPlatform: arm64ec
+      testMatrix: ${{ parameters.testMatrix }}

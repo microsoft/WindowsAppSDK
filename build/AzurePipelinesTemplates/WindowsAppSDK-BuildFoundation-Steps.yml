@@ -60,6 +60,7 @@ steps:
 
 - task: WinUndockNativeCompiler@1
   displayName: 'Setup native compiler version override'
+  condition: and(succeeded(), ne(variables['buildPlatform'], 'arm64ec'))
   inputs:
     microsoftDropReadPat: $(System.AccessToken)
     compilerPackageName: $(localCompilerOverridePackageName)
@@ -67,6 +68,17 @@ steps:
     slnDirectory: $(Build.SourcesDirectory)
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
+
+- task: WinUndockNativeCompiler@1
+  displayName: 'Setup native compiler version override (arm64ec, no UCRT)'
+  condition: and(succeeded(), eq(variables['buildPlatform'], 'arm64ec'))
+  inputs:
+    microsoftDropReadPat: $(System.AccessToken)
+    compilerPackageName: $(localCompilerOverridePackageName)
+    compilerPackageVersion: $(localCompilerOverridePackageVersion)
+    slnDirectory: $(Build.SourcesDirectory)
+    includeUCRT: false
     platform: $(buildPlatform)
 
 - task: PowerShell@2
