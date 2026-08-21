@@ -31,6 +31,7 @@ stages:
     - Build_x86
     - Build_x64
     - Build_arm64
+    - Build_arm64ec
   condition:
     # not(failed()) instead of succeeded() so Pack runs when Build stages are
     # skipped via foundationUseBuildOutputFromBuildId (skipped != succeeded).
