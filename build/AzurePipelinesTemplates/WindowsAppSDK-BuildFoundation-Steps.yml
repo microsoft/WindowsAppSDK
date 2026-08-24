@@ -174,7 +174,10 @@ steps:
 
 - task: CopyFiles@2
   displayName: Stage redist files for publish
-  condition: always()
+  # arm64ec skips the redist downloads above (no arm64ec vc_redist/dotnet/VCLibs exist), so
+  # $(build.SourcesDirectory)\redist is never created for that leg; guard so CopyFiles doesn't
+  # fail with "Not found SourceFolder". Nothing consumes an arm64ec redist downstream.
+  condition: and(always(), ne(variables['buildPlatform'], 'arm64ec'))
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\redist'
     TargetFolder: '$(ob_outputDirectory)\redist'

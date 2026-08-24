@@ -70,9 +70,15 @@ steps:
       -ProductMajor "$(MajorVersion)"
       -ProductMinor "$(MinorVersion)"
 
+# ARM64EC has no dedicated third-party redist: Microsoft ships the .NET Desktop runtime,
+# VC++ redist (vc_redist.<arch>.exe) and Desktop VCLibs only as x86/x64/arm64. ARM64EC code
+# runs against the arm64/x64 redist, so these downloads are limited to x86/x64/arm64. Including
+# arm64ec made DownloadVCRedistInstaller.ps1 request a vc_redist.arm64ec.exe that does not exist;
+# the saved redist\vc_redist.arm64ec.exe then broke Guardian CodeSign (CodeSign.MissingSigningCert).
+# The arm64ec leg is build-only and consumes none of these redists.
 - task: PowerShell@2
   displayName: 'Download dotnet installer'
-  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'), eq(variables['buildPlatform'], 'arm64ec'))
+  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadDotNetRuntimeInstaller.ps1'
@@ -80,7 +86,7 @@ steps:
 
 - task: PowerShell@2
   displayName: 'Download vcredist installer'
-  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'), eq(variables['buildPlatform'], 'arm64ec'))
+  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCRedistInstaller.ps1'
@@ -88,7 +94,7 @@ steps:
 
 - task: PowerShell@2
   displayName: 'Download desktop bridge CRT'
-  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'), eq(variables['buildPlatform'], 'arm64ec'))
+  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCLibsDesktop.ps1'
