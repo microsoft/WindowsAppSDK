@@ -107,5 +107,19 @@ Write-Host "Starting F5 deployment..."
 winapp ui wait-for "Debug Target" -w $templateHWND --timeout 5000
 $debugButtonJson = winapp ui inspect "Debug Target" -a devenv -w $templateHWND --json | ConvertFrom-Json
 $debugButtonSelector = $debugButtonJson.windows[0].elements[0].selector
+$windowTitle = $debugButtonJson.windows[0].title
 Write-Host "Debug button selector: $debugButtonSelector"
 winapp ui invoke $debugButtonSelector -w $templateHWND
+winapp ui wait-for "$appName (Running) - Microsoft Visual Studio" -a devenv
+
+# Now, assert the template app appears and there are no errors in the output or error list
+# Grab the app title from Visual Studio and then find the app?
+if ($windowTitle -match '(App\d+)') {
+    $appName = $matches[1]
+    Write-Host "App name: $appName"
+}
+else
+{
+    Write-Host "Failed to extract app name from window title: $windowTitle"
+}
+winapp ui wait-for "TitleBar" -a $appName
