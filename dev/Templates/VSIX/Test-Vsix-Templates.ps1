@@ -88,6 +88,5 @@ $nextButtonSelector = $nextButton.windows[0].elements | Select-Object -ExpandPro
 winapp ui invoke $nextButtonSelector -w $firstHWND
 
 # Create the new project
-# $createButton = winapp ui inspect -a devenv -i "Create" -w $firstHWND --json | ConvertFrom-Json
-# $createButtonSelector = $createButton.windows[0].elements | Select-Object -ExpandProperty selector
-# winapp ui invoke $createButtonSelector -w $firstHWND
+# button_Next appears to be an unchanging property
+winapp ui invoke button_Next -w $firstHWND
