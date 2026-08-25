@@ -79,16 +79,13 @@ $templateItem = winapp ui inspect -a devenv -i $templateName -w $firstHWND
 Write-Host "Template item for '$templateName': $templateItem"
 $templateSelector = Select-String -Pattern '^\s*(\S+)' -InputObject $templateItem | ForEach-Object { $_.Matches[0].Groups[1].Value }
 winapp ui invoke $templateSelector -w $firstHWND
+winapp ui wait-for "Next" -a devenv -w $firstHWND --timeout 5000
 
-
-# winapp ui invoke $templateSelector -w $firstHWND
-#$singleProjectTemplateButton = winapp ui inspect -a devenv -i "(Packaged)" -w $firstHWND --json
-#$singleProjectTemplateSelector = $singleProjectTemplateButton.windows[0].elements | Select-Object -ExpandProperty selector
-#winapp ui invoke $singleProjectTemplateSelector -w $firstHWND
-
-#$nextButton = winapp ui inspect -a devenv -i "Next" -w $firstHWND --json | ConvertFrom-Json
-#$nextButtonSelector = $nextButton.windows[0].elements | Select-Object -ExpandProperty selector
-#winapp ui invoke $nextButtonSelector -w $firstHWND
+# Click the Next button to continue with the defaults selected
+# Not sure if a wait is needed here because the window has already loaded
+$nextButton = winapp ui inspect -a devenv -i "Next" -w $firstHWND --json | ConvertFrom-Json
+$nextButtonSelector = $nextButton.windows[0].elements | Select-Object -ExpandProperty selector
+winapp ui invoke $nextButtonSelector -w $firstHWND
 
 # Create the new project
 # $createButton = winapp ui inspect -a devenv -i "Create" -w $firstHWND --json | ConvertFrom-Json
