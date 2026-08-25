@@ -73,6 +73,12 @@ winapp ui wait-for "ListViewTemplates" -a devenv
 
 # Create a new project in Visual Studio using the invoked menu
 Write-Host "Creating the C# template"
+winapp ui wait-for "WinUI Blank App (Packaged)" -a devenv -w $firstHWND --timeout 5000
+$templateName = "WinUI Blank App (Packaged)"
+$templateItem = winapp ui inspect -a devenv -i $templateName -w $firstHWND
+Write-Host "Template item for '$templateName': $templateItem"
+$templateSelector = Select-String -Pattern '^\s*(\S+)' -InputObject $templateItem | ForEach-Object { $_.Matches[0].Groups[1].Value }
+winapp ui invoke $templateSelector -w $firstHWND
 
 
 # winapp ui invoke $templateSelector -w $firstHWND
