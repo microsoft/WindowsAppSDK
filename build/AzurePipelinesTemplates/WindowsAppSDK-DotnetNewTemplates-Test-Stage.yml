@@ -29,9 +29,23 @@ parameters:
 # Reactor project templates target net10.0 and declare a [10.0,) SDK
 # constraint, so the test agent also needs the .NET 10 SDK to scaffold and
 # build them. Installed alongside dotnetSdkVersion below.
+#
+# Pinned to an exact version rather than '10.0.x', matching every other
+# UseDotNet@2 task in this repo (see WindowsAppSDK-BuildVSIX-Steps.yml, #6624
+# and #6699). A floating '10.0.x' silently jumped feature bands when 10.0.400
+# shipped on 2026-08-11, which changed the NuGet diagnostic for an unparseable
+# package version and broke the invalid-version smoke test with no source
+# change. Bump this deliberately, as #6699 did.
+#
+# NOTE: this must stay on the 10.0.4xx band, and cannot be aligned with the
+# 10.0.1xx servicing SDK used by BuildVSIX. Microsoft.UI.Reactor's analyzers
+# and source generators (Reactor.Analyzers, Reactor.Wrappers.Generator,
+# Reactor.Localization.Generator) reference Roslyn 5.6.0.0. The 10.0.1xx band
+# ships Roslyn 5.0.0.0, so all three are silently disabled with CS9057 while
+# the build still succeeds. 10.0.400 ships Roslyn 5.9.0.0 and loads them.
 - name: reactorDotnetSdkVersion
   type: string
-  default: '10.0.x'
+  default: '10.0.400'
 - name: WindowsAppSdkVersion
   type: string
   default: '*'
