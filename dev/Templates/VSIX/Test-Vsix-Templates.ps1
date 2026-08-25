@@ -69,9 +69,13 @@ $json = winapp ui inspect -a devenv -i "Create a new project" -w $firstHWND --js
 $button = $json.windows[0].elements | Select-Object -ExpandProperty selector
 winapp ui invoke $button -w $firstHWND
 Write-Host "firstHWND: $firstHWND"
+winapp ui wait-for "ListViewTemplates" -a devenv
 
 # Create a new project in Visual Studio using the invoked menu
-#Write-Host "Creating the C# template"
+Write-Host "Creating the C# template"
+
+
+# winapp ui invoke $templateSelector -w $firstHWND
 #$singleProjectTemplateButton = winapp ui inspect -a devenv -i "(Packaged)" -w $firstHWND --json
 #$singleProjectTemplateSelector = $singleProjectTemplateButton.windows[0].elements | Select-Object -ExpandProperty selector
 #winapp ui invoke $singleProjectTemplateSelector -w $firstHWND
