@@ -94,3 +94,18 @@ winapp ui invoke button_Next -w $firstHWND
 # Let the project load
 winapp ui wait-for "SolutionExplorer" -w $firstHWND
 Write-Host "Solution Explorer loaded"
+
+# Get the new HWND
+$output = winapp ui list-windows -a devenv
+$templateHWND = $output | Select-String 'HWND (\d+):' | Select-Object -First 1 | ForEach-Object { $_.Matches[0].Groups[1].Value }
+Write-Host "First HWND for devenv after project creation: $templateHWND"
+
+# This ends the setup section
+
+# Smoke test 1: F5 deployment
+Write-Host "Starting F5 deployment..."
+winapp ui wait-for "Debug Target" -w $templateHWND --timeout 5000
+$debugButtonJson = winapp ui inspect "Debug Target" -a devenv -w $templateHWND --json | ConvertFrom-Json
+$debugButtonSelector = $debugButtonJson.windows[0].elements[0].selector
+Write-Host "Debug button selector: $debugButtonSelector"
+winapp ui invoke $debugButtonSelector -w $templateHWND
