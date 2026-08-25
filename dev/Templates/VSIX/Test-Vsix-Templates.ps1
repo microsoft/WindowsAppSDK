@@ -90,3 +90,7 @@ winapp ui invoke $nextButtonSelector -w $firstHWND
 # Create the new project
 # button_Next appears to be an unchanging property
 winapp ui invoke button_Next -w $firstHWND
+
+# Let the project load
+winapp ui wait-for "SolutionExplorer" -w $firstHWND
+Write-Host "Solution Explorer loaded"
