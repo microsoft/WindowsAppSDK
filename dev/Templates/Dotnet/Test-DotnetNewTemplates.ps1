@@ -704,7 +704,8 @@ try {
     }
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails' -Status 'Succeeded' -Path $invalidPath
 
-    # Build (with --no-restore) should fail with NETSDK1004 since restore never succeeded
+    # Build (with --no-restore) should fail because restore never produced usable
+    # assets for this project's target framework.
     $buildFailed = $false
     $buildOutput = $null
     try {
@@ -726,10 +727,17 @@ try {
         throw "Expected build to fail for invalid WASDK version 'not-a-version'"
     }
     $buildText = $buildOutput -join "`n"
-    if ($buildText -notmatch 'NETSDK1004') {
-        throw "Expected NETSDK1004 (assets file missing, please run restore) for invalid WASDK version 'not-a-version', but got:`n$buildText"
+    # Which diagnostic surfaces depends on whether the failed restore left an
+    # obj/project.assets.json behind:
+    #   NETSDK1004 - no assets file at all (restore wrote nothing).
+    #   NETSDK1005 - assets file exists but has no target for the project's TFM.
+    #                This is what .NET SDK 10 produces: NuGet's RestoreTask fails
+    #                (MSB4181) yet still writes a partial assets file.
+    # Both mean the same thing here: restore did not produce usable assets.
+    if ($buildText -notmatch 'NETSDK1004|NETSDK1005') {
+        throw "Expected NETSDK1004 (assets file missing) or NETSDK1005 (assets file has no target for the TFM) for invalid WASDK version 'not-a-version', but got:`n$buildText"
     }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails with NETSDK1004' -Status 'Succeeded' -Path $invalidPath
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails without usable assets' -Status 'Succeeded' -Path $invalidPath
 
     # Scenario 6: Valid version format but nonexistent package
     $nonexistentPath = Join-Path -Path $workingRoot -ChildPath 'VersionNonexistent'
@@ -825,9 +833,10 @@ try {
     }
     $buildText = $buildOutput -join "`n"
     # Expect NU1301 (unable to load source) or NU1102 (package not found) or
-    # NETSDK1004 (assets file missing because restore never succeeded).
-    if ($buildText -notmatch 'NU1301|NU1102|NETSDK1004') {
-        throw "Expected NuGet resolution error (NU1301, NU1102, or NETSDK1004) when sources are unreachable, but got:`n$buildText"
+    # NETSDK1004/NETSDK1005 (restore never produced usable assets — 1004 when no
+    # assets file was written, 1005 when a partial one was, as .NET SDK 10 does).
+    if ($buildText -notmatch 'NU1301|NU1102|NETSDK1004|NETSDK1005') {
+        throw "Expected NuGet resolution error (NU1301, NU1102, NETSDK1004, or NETSDK1005) when sources are unreachable, but got:`n$buildText"
     }
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'unreachable source: build fails with NuGet error' -Status 'Succeeded' -Path $unreachablePath
 
