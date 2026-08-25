@@ -654,13 +654,13 @@ try {
     Assert-CsprojPackageVersion -CsprojPath $preReleaseCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.8.0-preview1'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pre-release version content' -Status 'Succeeded' -Path $preReleasePath
 
-    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails with NU1105
+    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails
     Write-Step 'Testing invalid version handling...'
     $invalidPath = Join-Path -Path $workingRoot -ChildPath 'VersionInvalid'
     Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionInvalid', '-o', $invalidPath, '--wasdk-version', 'not-a-version', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with invalid version'
     $invalidCsproj = Join-Path -Path $invalidPath -ChildPath 'VersionInvalid.csproj'
     Assert-CsprojPackageVersion -CsprojPath $invalidCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion 'not-a-version'
-    # Restore should fail with NU1105 because NuGet can't parse an invalid version string
+    # Restore must fail because NuGet cannot parse an invalid version string
     $restoreFailed = $false
     $restoreOutput = $null
     $restoreText = $null
@@ -685,24 +685,26 @@ try {
         throw "Expected restore to fail for invalid WASDK version 'not-a-version'"
     }
     $restoreText = $restoreOutput -join "`n"
-    # Finds NU1105, NETSDK1004, etc.
+    # Finds NU1105, MSB4181, NETSDK1004, etc.
     $errorCodes = @([regex]::Matches($restoreText, '\b(?:NU|NETSDK|MSB)\d{4,}\b') |
         ForEach-Object { $_.Value } |
         Select-Object -Unique)
-    if ($errorCodes.Count -gt 0) {
-        if ($errorCodes -notcontains 'NU1105') {
-            throw "Expected NU1105, got: $($errorCodes -join ', ')"
-        }
+    # The diagnostic NuGet emits for an unparseable version depends on the .NET SDK:
+    #   SDK 8.0.424 / 9.0.317 : no error code; message "'not-a-version' is not a
+    #                           valid version string."
+    #   SDK 10.0.400          : MSB4181 — RestoreTask returns false without logging
+    #                           the descriptive error, so no NU code surfaces at all.
+    # Accept any of these shapes. The assertion that matters is that restore fails
+    # (already enforced above); the code is a secondary signal, so a code appearing
+    # must not short-circuit the descriptive-message fallback.
+    $acceptedCodes = @('NU1105', 'MSB4181')
+    $sawAcceptedCode = @($errorCodes | Where-Object { $acceptedCodes -contains $_ }).Count -gt 0
+    if (-not $sawAcceptedCode -and $restoreText -notmatch 'not a valid version string') {
+        throw "Expected an invalid-version restore failure ($($acceptedCodes -join ' / ') or 'not a valid version string'), got codes: $($errorCodes -join ', ')`n$restoreText"
     }
-    else {
-        # No machine-readable code surfaced; use narrow fallback
-        if ($restoreText -notmatch 'not a valid version string') {
-            throw "Expected invalid version failure, got:`n$restoreText"
-        }
-    }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails with NU1105' -Status 'Succeeded' -Path $invalidPath
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails' -Status 'Succeeded' -Path $invalidPath
 
-    # Build (with --no-restore) should fail with NETSDK1005 since restore never succeeded
+    # Build (with --no-restore) should fail with NETSDK1004 since restore never succeeded
     $buildFailed = $false
     $buildOutput = $null
     try {
