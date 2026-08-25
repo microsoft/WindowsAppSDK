@@ -43,16 +43,44 @@ if (-not (sls -Path $vsixManifestPath -Pattern 'LocalDev'))
 }
 Write-Host "LocalDev is referenced in the VSIX manifest."
 
-$vs2026LocalDataVersions = Get-ChildItem -Path $LocalDevVsixPath -Directory | Where-Object { $_.Name -like "18.*" } | Select-Object -First 2
-$maximumVersion = [version]$vs2026LocalDataVersions[0].Name
-$latestVs2026LocalDataVersion = $vs2026LocalDataVersions[0]
+# Ensure clean template space by removing any dotnet winui templates on the machine because they also appear in VS
+$templatePackage = 'Microsoft.WindowsAppSDK.WinUI.CSharp.Templates'
+$installedTemplates = dotnet new uninstall 2>$null
 
-cd $latestVs2026LocalDataVersion
-Write-Host "Latest Visual Studio 2026 LocalDev VSIX folder found at: $($latestVs2026LocalDataVersion.FullName)"
+if ($installedTemplates -match [regex]::Escape($templatePackage))
+{
+    dotnet new uninstall $templatePackage
+}
 
-Get-ChildItem -Path . -Filter 'WindowsAppSDK*Dev17.LocalDev.dll' -File -Recurse -Force
+# Launch Visual Studio and get HWND for the first window of devenv
+Write-Host "Launching Visual Studio..."
+Start-Process -FilePath $devenv
+Write-Host "Launching WinApp UI Inspect for devenv..."
+winapp ui wait-for TitleBar -a devenv --timeout 10000
+$output = winapp ui list-windows -a devenv
+Write-Host "List of windows for devenv: $output"
+$firstHWND = $output | Select-String 'HWND (\d+):' | Select-Object -First 1 | ForEach-Object { $_.Matches[0].Groups[1].Value }
+Write-Host "First HWND for devenv: $firstHWND"
 
-# In the menu that begins, 
+# Create a new project menu
+Write-Host "Invoking 'Create a new project' menu in Visual Studio..."
+winapp ui wait-for "Create a new project" -a devenv -w $firstHWND
+$json = winapp ui inspect -a devenv -i "Create a new project" -w $firstHWND --json | ConvertFrom-Json
+$button = $json.windows[0].elements | Select-Object -ExpandProperty selector
+winapp ui invoke $button -w $firstHWND
+Write-Host "firstHWND: $firstHWND"
 
-# View VS
-# winapp ui inspect -a devenv
+# Create a new project in Visual Studio using the invoked menu
+#Write-Host "Creating the C# template"
+#$singleProjectTemplateButton = winapp ui inspect -a devenv -i "(Packaged)" -w $firstHWND --json
+#$singleProjectTemplateSelector = $singleProjectTemplateButton.windows[0].elements | Select-Object -ExpandProperty selector
+#winapp ui invoke $singleProjectTemplateSelector -w $firstHWND
+
+#$nextButton = winapp ui inspect -a devenv -i "Next" -w $firstHWND --json | ConvertFrom-Json
+#$nextButtonSelector = $nextButton.windows[0].elements | Select-Object -ExpandProperty selector
+#winapp ui invoke $nextButtonSelector -w $firstHWND
+
+# Create the new project
+# $createButton = winapp ui inspect -a devenv -i "Create" -w $firstHWND --json | ConvertFrom-Json
+# $createButtonSelector = $createButton.windows[0].elements | Select-Object -ExpandProperty selector
+# winapp ui invoke $createButtonSelector -w $firstHWND
