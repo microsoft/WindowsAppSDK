@@ -132,7 +132,7 @@ function Find-MSBuild {
     $range = '[{0},{1})' -f $MsBuildVersion, ($MsBuildVersion + 1)
     $msbuildPath = & $vswherePath -version $range -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe" 2>$null | Select-Object -First 1
     if (-not $msbuildPath -or -not (Test-Path $msbuildPath)) {
-        Write-Err "MSBuild.exe not found. Please install Visual Studio 2022+ with the '.NET desktop development' workload."
+        Write-Err "MSBuild.exe not found. Please install Visual Studio $MsBuildVersion with the '.NET desktop development' workload."
         exit 1
     }
 
