@@ -49,7 +49,7 @@
 .PARAMETER SkipRestore
     Skip NuGet restore (useful if you've already restored).
 
-.PARAMETER VsVersion
+.PARAMETER MsBuildVersion
     Visual Studio version to target for MSBuild. Default: 17 (Visual Studio 2022).
     Set to 18 for Visual Studio 2026.
 
