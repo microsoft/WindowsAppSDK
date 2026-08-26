@@ -94,13 +94,7 @@ private:
             const auto lastError{ ::GetLastError() };
             if (!required && (lastError == ERROR_MOD_NOT_FOUND))
             {
-                // ERROR_MOD_NOT_FOUND can also indicate a missing dependency of a DLL that is present.
-                wil::unique_hmodule resourceDllAsDataFile{
-                    ::LoadLibraryExW(c_resourceDllName, nullptr, LOAD_LIBRARY_AS_DATAFILE) };
-                if (!resourceDllAsDataFile && (::GetLastError() == ERROR_MOD_NOT_FOUND))
-                {
-                    return {};
-                }
+                return {};
             }
             THROW_HR_MSG(HRESULT_FROM_WIN32(lastError), "Unable to load resource dll. %ls", c_resourceDllName);
         }
