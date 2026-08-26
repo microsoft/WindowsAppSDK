@@ -456,11 +456,9 @@ function Get-LatestOfficialWasdkVersion {
     try {
         # SYSTEM_ACCESSTOKEN is a pipeline variable. Use nuget CLI when running outside of pipeline runs
         if ([string]::IsNullOrWhiteSpace($token)) {
-            Write-Warning "SYSTEM_ACCESSTOKEN is not set; cannot query package source for latest official Microsoft.WindowsAppSDK version."
-            Write-Host "Using NuGet CLI instead"
+            Write-Warning "SYSTEM_ACCESSTOKEN is not set; cannot query package source for latest official Microsoft.WindowsAppSDK version. Using NuGet CLI instead"
             $packageId = 'Microsoft.WindowsAppSDK'
             $sourceFeed = 'https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json'
-            $excludedVersionPrefixes = @('1.0.', '1.1.')
             $json = & dotnet package search $packageId `
                 --source $sourceFeed `
                 --exact-match `
