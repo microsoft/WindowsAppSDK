@@ -489,10 +489,6 @@ function Get-LatestOfficialWasdkVersion {
                 throw ($problems | ForEach-Object { $_.text } | Join-String -Separator "`n")
             }
 
-            if ($problems.Count -gt 0) {
-                throw ($problems.text -join [Environment]::NewLine)
-            }
-
             $versions = foreach ($result in @($response.searchResult)) {
                 foreach ($package in @($result.packages)) {
                     if ($package.id -ine $packageId) {
