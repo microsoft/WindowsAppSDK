@@ -92,6 +92,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsAppRuntime_BaseDirectoryIsolation = 63098302,
         AppContentSearchNewAPI_LafCheck = 63264582,
         LanguageModel_LanguageDetectionStatus = 63293066,
+
+        // 2.4.0
+        Package_GetPackageFilePath = 62800606,
     };
 
     /// Represents a version of the Windows App Runtime.

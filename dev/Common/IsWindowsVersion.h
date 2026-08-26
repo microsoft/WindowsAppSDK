@@ -1,10 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __ISWINDOWSVERSION_H
 #define __ISWINDOWSVERSION_H
 
 #include <VersionHelpers.h>
+
+#include <wil/resource.h>
 
 namespace WindowsVersion
 {
