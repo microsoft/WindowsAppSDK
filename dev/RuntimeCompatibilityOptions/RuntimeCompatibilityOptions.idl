@@ -92,6 +92,16 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsAppRuntime_BaseDirectoryIsolation = 63098302,
         AppContentSearchNewAPI_LafCheck = 63264582,
         LanguageModel_LanguageDetectionStatus = 63293066,
+
+        // 2.4.2
+        PointerInputProcessor_ReleaseCaptureOnDisposedIsland = 62943243,
+        NavigationView_UpdatePaneLayoutNegativeMaxHeight = 62995866,
+        PointerPositionPropertySet_UpdateWhilePressed = 62998965,
+        NavigationViewItem_DeferredFlyoutShowStaleState = 63007686,
+        KeyboardAccelerator_OemKeyNoFailFast = 63417306,
+        WindowsXamlManager_ActivationFactoryCacheResetRace = 63435928,
+        CommandBar_SpuriousOverflowButtonAtFractionalScale = 63435929,
+        CompositionEngine_SwitcherSeptemberFixes = 63494532,
     };
 
     /// Represents a version of the Windows App Runtime.
