@@ -8,7 +8,7 @@ $uiTimeout = 10000
 $languageFilterTimeout = 30000
 $templateTimeout = 15000
 $projectLoadTimeout = 60000
-$deploymentTimeout = 120000
+$deploymentTimeout = 10000
 $buildTimeout = 180000
 $testTimeout = 180000
 $exitCode = 0
@@ -105,6 +105,46 @@ function Wait-WinAppElement
     $arguments += @('--timeout', $Timeout)
 
     Invoke-WinAppRequired -Checkpoint "Wait for '$Identifier'" -Arguments $arguments
+}
+
+function Assert-WinAppTitleBar
+{
+    param(
+        [Parameter(Mandatory)]
+        [string]$AppName,
+
+        [int]$Timeout = $deploymentTimeout
+    )
+
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    $lastOutput = @()
+    Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Searching up to ${Timeout}ms for '$AppName' in the launched app."
+    do
+    {
+        $appProcess = Get-Process -Name $AppName -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($appProcess)
+        {
+            $lastOutput = & winapp ui search $AppName -a $AppName --json 2>&1
+            if ($LASTEXITCODE -eq 0)
+            {
+                Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Search found '$AppName' after $($stopwatch.ElapsedMilliseconds)ms (PID $($appProcess.Id))."
+                break
+            }
+        }
+
+        [System.Threading.Thread]::Sleep(250)
+    }
+    while ($stopwatch.ElapsedMilliseconds -lt $Timeout)
+
+    if (-not $appProcess -or $LASTEXITCODE -ne 0)
+    {
+        throw "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] WinApp UI search did not find '$AppName' in the launched app within ${Timeout}ms.$([Environment]::NewLine)$($lastOutput -join [Environment]::NewLine)"
+    }
+
+    $remainingTimeout = [Math]::Max(1, $Timeout - [int]$stopwatch.ElapsedMilliseconds)
+    Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Waiting up to ${remainingTimeout}ms for AppTitleBar in '$AppName'."
+    Wait-WinAppElement -Identifier 'AppTitleBar' -App $AppName -Timeout $remainingTimeout
+    Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Found AppTitleBar in '$AppName' after $($stopwatch.ElapsedMilliseconds)ms total."
 }
 
 function Wait-WinAppElementByNamePrefix
@@ -253,17 +293,33 @@ function Get-WinAppHWND
 {
     param(
         [Parameter(Mandatory)]
-        [string]$App
+        [string]$App,
+
+        [int]$Timeout = $uiTimeout
     )
 
-    $output = Invoke-WinAppRequired -Checkpoint "List '$App' windows" -Arguments @('ui', 'list-windows', '-a', $App) -PassThru
-    $hwnd = $output | Select-String 'HWND (\d+):' | Select-Object -First 1 | ForEach-Object { $_.Matches[0].Groups[1].Value }
-    if (-not $hwnd)
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    $lastOutput = @()
+    $titlePattern = '^HWND (\d+): "' + [regex]::Escape($App) + '"'
+    Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Waiting up to ${Timeout}ms for top-level window '$App'."
+    do
     {
-        throw "WinApp UI did not return an HWND for '$App'."
-    }
+        $lastOutput = & winapp ui list-windows -a $App 2>&1
+        if ($LASTEXITCODE -eq 0)
+        {
+            $window = $lastOutput | Select-String $titlePattern | Select-Object -First 1
+            if ($window)
+            {
+                Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Found top-level window '$App' after $($stopwatch.ElapsedMilliseconds)ms."
+                return $window.Matches[0].Groups[1].Value
+            }
+        }
 
-    return $hwnd
+        [System.Threading.Thread]::Sleep(250)
+    }
+    while ($stopwatch.ElapsedMilliseconds -lt $Timeout)
+
+    throw "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] WinApp UI did not return a top-level window titled '$App' within ${Timeout}ms.$([Environment]::NewLine)$($lastOutput -join [Environment]::NewLine)"
 }
 
 function Invoke-VisualStudioCommand
@@ -659,7 +715,7 @@ function Invoke-TemplateTest
             $debugButtonJson = ($rawJson -join [Environment]::NewLine) | ConvertFrom-Json
             $debugButtonSelector = $debugButtonJson.windows[0].elements[0].selector
             $windowTitle = $debugButtonJson.windows[0].title
-            if ($windowTitle -notmatch '([^\\/:*?""<>|]+)\s+-\s+Microsoft Visual Studio')
+            if ($windowTitle -notmatch '^(.+?)\s+-\s+.*Microsoft Visual Studio$')
             {
                 throw "Failed to extract app name from Visual Studio window title: $windowTitle"
             }
@@ -681,8 +737,10 @@ function Invoke-TemplateTest
             else
             {
                 $existingAppProcessIds = @(Get-Process -Name $appName -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+                Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Invoking Debug Target for '$appName'."
                 Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'invoke', $debugButtonSelector, '-w', $activeHWND)
-                Wait-WinAppElement -Identifier 'TitleBar' -App $appName -Timeout $deploymentTimeout
+                Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Debug Target invocation completed for '$appName'."
+                Assert-WinAppTitleBar -AppName $appName -Timeout $deploymentTimeout
                 $appProcessIds = @(Get-Process -Name $appName -ErrorAction SilentlyContinue | Where-Object { $_.Id -notin $existingAppProcessIds } | Select-Object -ExpandProperty Id)
                 $result.Deploy = 'Passed'
             }
