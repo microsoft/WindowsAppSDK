@@ -1,5 +1,3 @@
-# You must keep your mouse/keyboard still while script is running
-
 param(
     [string[]]$TemplateId
 )
@@ -15,6 +13,7 @@ $buildTimeout = 180000
 $testTimeout = 180000
 $exitCode = 0
 $testResults = [System.Collections.Generic.List[object]]::new()
+$testRunStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
 Add-Type -TypeDefinition @'
 using System;
@@ -744,6 +743,9 @@ function Write-TestReport
         [object[]]$Results,
 
         [Parameter(Mandatory)]
+        [TimeSpan]$TotalDuration,
+
+        [Parameter(Mandatory)]
         [string]$ReportPath
     )
 
@@ -891,8 +893,9 @@ catch
 }
 finally
 {
+    $testRunStopwatch.Stop()
     $reportPath = Join-Path $PSScriptRoot "TestResults\Test-Vsix-Templates-$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
-    Write-TestReport -Results $testResults.ToArray() -ReportPath $reportPath
+    Write-TestReport -Results $testResults.ToArray() -TotalDuration $testRunStopwatch.Elapsed -ReportPath $reportPath
     Write-Host "Report written to: $reportPath"
 
     if ($testResults | Where-Object Status -eq 'Failed')
