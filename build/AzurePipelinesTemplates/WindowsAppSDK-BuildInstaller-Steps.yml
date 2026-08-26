@@ -45,7 +45,7 @@ parameters:
 # latest run from the branch.
 - name: MaxNightlyAgeInDays
   type: number
-  default: 7
+  default: 30
 
 steps:
 - task: PowerShell@2
