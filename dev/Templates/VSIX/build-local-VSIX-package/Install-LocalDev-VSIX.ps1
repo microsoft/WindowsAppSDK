@@ -28,8 +28,8 @@
     Steps performed
     ---------------
       1. Discover all VS 17+ instances (vswhere)
-      2. Refuse to run if any devenv.exe is open (templates are cached at
-         startup; replacing the VSIX while VS is running has no effect)
+        2. Refuse to run if any devenv.exe is open, then stop lingering
+            MSBuild.exe nodes that would block extension replacement
       3. For each (VSIX, instance) pair: VSIXInstaller /quiet /instanceIds:<id>
          <vsix>     (no /admin, no elevation)
       4. Optionally invoke devenv /UpdateConfiguration to refresh the
@@ -172,8 +172,8 @@ if ($VsixPath -ne "") {
         exit 1
     }
 
-    $csVsix  = Get-ChildItem $VsixDir -Filter 'WindowsAppSDK.Cs.Extension.Dev17.LocalDev.*.vsix'  -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-    $cppVsix = Get-ChildItem $VsixDir -Filter 'WindowsAppSDK.Cpp.Extension.Dev17.LocalDev.*.vsix' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    $csVsix  = Get-ChildItem $VsixDir -Filter 'WindowsAppSDK.Cs.Extension.Dev17.LocalDev.*.vsix'  -ErrorAction SilentlyContinue | Sort-Object Name -Descending | Select-Object -First 1
+    $cppVsix = Get-ChildItem $VsixDir -Filter 'WindowsAppSDK.Cpp.Extension.Dev17.LocalDev.*.vsix' -ErrorAction SilentlyContinue | Sort-Object Name -Descending | Select-Object -First 1
 
     if ($Language -in @('CSharp','Both') -and $csVsix)  { $toInstall += $csVsix }
     if ($Language -in @('Cpp',   'Both') -and $cppVsix) { $toInstall += $cppVsix }
@@ -205,6 +205,13 @@ if ($vsProcs) {
     exit 1
 }
 Write-Step 'No Visual Studio instances running.'
+
+$msbuildProcs = Get-Process -Name 'MSBuild' -ErrorAction SilentlyContinue
+if ($msbuildProcs) {
+    Write-Step "Stopping $($msbuildProcs.Count) lingering MSBuild process(es)..."
+    $msbuildProcs | Stop-Process -Force
+    $msbuildProcs | Wait-Process -Timeout 30 -ErrorAction SilentlyContinue
+}
 
 #endregion
 
@@ -297,7 +304,7 @@ foreach ($vsix in $toInstall) {
         $hasError = $false
         if ($log) {
             $tail = Get-Content $log.FullName -Tail 80 -ErrorAction SilentlyContinue
-            $errLines = $tail | Select-String 'Install Error|InvalidOperationException.*(Uninstall|Installation).*failed'
+            $errLines = $tail | Select-String 'Install Error|VSIXInstaller\..*Exception|InvalidOperationException.*(Uninstall|Installation).*failed'
             if ($errLines) {
                 $hasError = $true
                 $failed += "$($vsix.Name) -> $($inst.DisplayName)"
