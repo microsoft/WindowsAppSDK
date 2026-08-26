@@ -403,6 +403,7 @@ function Invoke-MSBuildBuild {
 
     $args = @(
         $solutionFile
+        "/t:Rebuild"
         "/p:Configuration=$Configuration"
         "/p:Platform=Any CPU"
         "/p:Deployment=$DeploymentType"
@@ -575,7 +576,7 @@ function Copy-VsixOutput {
 
     # Deduplicate by filename (same VSIX may appear in multiple locations)
     $seen = @{}
-    foreach ($vsix in $vsixFiles) {
+    foreach ($vsix in ($vsixFiles | Sort-Object LastWriteTime -Descending)) {
         if (-not $seen.ContainsKey($vsix.Name)) {
             $seen[$vsix.Name] = $vsix
             if (-not (Test-VsixContainsTemplates -Path $vsix.FullName)) {
