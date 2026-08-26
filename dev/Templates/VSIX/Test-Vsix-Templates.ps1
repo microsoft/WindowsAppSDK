@@ -754,8 +754,6 @@ function Write-TestReport
     $report = [System.Text.StringBuilder]::new()
     [void]$report.AppendLine('LocalDev C# VSIX Template Test Report')
     [void]$report.AppendLine("Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss K')")
-    [void]$report.AppendLine()
-    [void]$report.AppendLine(($Results | Select-Object Template, Load, Build, Deploy, Tests, Status, FailedCheckpoint, Duration | Format-Table -AutoSize | Out-String).TrimEnd())
 
     foreach ($result in $Results | Where-Object Status -eq 'Failed')
     {
@@ -776,6 +774,11 @@ function Write-TestReport
             [void]$report.AppendLine($result.DiagnosticCaptureErrors)
         }
     }
+
+    [void]$report.AppendLine()
+    [void]$report.AppendLine("Total duration: $TotalDuration")
+    [void]$report.AppendLine()
+    [void]$report.AppendLine(($Results | Select-Object Template, Load, Build, Deploy, Tests, Status, FailedCheckpoint, Duration | Format-Table -AutoSize | Out-String).TrimEnd())
 
     $reportDirectory = Split-Path $ReportPath
     if (-not (Test-Path $reportDirectory))
