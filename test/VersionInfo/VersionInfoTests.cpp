@@ -30,28 +30,25 @@ namespace Test::VersionInfo
 
         TEST_METHOD(VersionInfo_Release)
         {
-            try
-            {
-                auto release{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo::AsString() };
-                VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND), e.code());
-            }
+            using ReleaseInfo = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo;
+
+            VERIFY_ARE_EQUAL(uint16_t{}, ReleaseInfo::Major());
+            VERIFY_ARE_EQUAL(uint16_t{}, ReleaseInfo::Minor());
+            VERIFY_ARE_EQUAL(uint16_t{}, ReleaseInfo::Patch());
+            VERIFY_IS_TRUE(ReleaseInfo::VersionTag().empty());
+            VERIFY_ARE_EQUAL(L"0.0.0", ReleaseInfo::AsString());
         }
 
         TEST_METHOD(VersionInfo_Runtime)
         {
-            try
-            {
-                auto runtime{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo::AsString() };
-                VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND), e.code());
-            }
+            using RuntimeInfo = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo;
+
+            const auto version{ RuntimeInfo::Version() };
+            VERIFY_ARE_EQUAL(uint16_t{}, version.Major);
+            VERIFY_ARE_EQUAL(uint16_t{}, version.Minor);
+            VERIFY_ARE_EQUAL(uint16_t{}, version.Build);
+            VERIFY_ARE_EQUAL(uint16_t{}, version.Revision);
+            VERIFY_IS_TRUE(RuntimeInfo::AsString().empty());
         }
     };
 }
