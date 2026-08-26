@@ -1,4 +1,28 @@
+<#
+.SYNOPSIS
+Validates the LocalDev C# VSIX project templates in Visual Studio.
+
+.DESCRIPTION
+Creates, builds, and, where applicable, deploys each C# VSIX project template.
+By default, all templates are tested. Use -TemplateId to run a subset.
+
+.PARAMETER TemplateId
+One or more template IDs to test. Separate multiple IDs with commas. When this
+parameter is omitted, all templates are tested.
+
+.EXAMPLE
+PS> ./Test-Vsix-Templates.ps1 -TemplateId Microsoft.WinUI.Desktop.Cs.MvvmApp
+
+Runs only the WinUI MVVM App test.
+
+.EXAMPLE
+PS> ./Test-Vsix-Templates.ps1 -TemplateId Microsoft.WinUI.Desktop.Cs.ClassLibrary,Microsoft.WinUI.Desktop.Cs.UnitTestApp
+
+Runs the class library and unit test app tests.
+#>
+[CmdletBinding()]
 param(
+    [Parameter()]
     [string[]]$TemplateId
 )
 
