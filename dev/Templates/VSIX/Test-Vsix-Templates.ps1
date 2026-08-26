@@ -687,12 +687,14 @@ function Invoke-TemplateTest
                 $result.Deploy = 'Passed'
             }
 
+            $checkpoint = 'Stop debugging'
+            Stop-VisualStudioDebugging -ProcessId $visualStudioProcess.Id
+
             foreach ($appProcessId in $appProcessIds)
             {
                 Stop-Process -Id $appProcessId -Force -ErrorAction SilentlyContinue
             }
             $appProcessIds = @()
-            Stop-VisualStudioDebugging -ProcessId $visualStudioProcess.Id
         }
 
         $result.Status = 'Passed'
