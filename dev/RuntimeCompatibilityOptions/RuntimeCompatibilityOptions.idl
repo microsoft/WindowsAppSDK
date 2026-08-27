@@ -93,7 +93,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         AppContentSearchNewAPI_LafCheck = 63264582,
         LanguageModel_LanguageDetectionStatus = 63293066,
 
-        // 2.4.2
+        // 2.5.0
         PointerInputProcessor_ReleaseCaptureOnDisposedIsland = 62943243,
         NavigationView_UpdatePaneLayoutNegativeMaxHeight = 62995866,
         PointerPositionPropertySet_UpdateWhilePressed = 62998965,
