@@ -26,10 +26,23 @@
   <TemplateContent PreferedSolutionConfiguration="Debug|x64">
     <CustomParameters>
       <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
+      <CustomParameter Name="$WindowsAppSdkVersion$" Value="*" />
+      <CustomParameter Name="$WindowsSdkBuildToolsVersion$" Value="*" />
+      <CustomParameter Name="$WindowsSdkBuildToolsWinAppVersion$" Value="*" />
     </CustomParameters>
     <ProjectCollection>
       <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.Cs.WapProj.vstemplate</ProjectTemplateLink>
       <ProjectTemplateLink ProjectName="$projectname$" CopyParameters="true">BlankApp\WinUI.Desktop.Cs.BlankApp.vstemplate</ProjectTemplateLink>
     </ProjectCollection>
   </TemplateContent>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.Universal.TemplateWizards, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.Universal.TemplateWizards.PlatformVersion.Wizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
+    <SkipXamlCompilerCheck>true</SkipXamlCompilerCheck>
+    <UseWindowsSdkBuildToolsPackage>true</UseWindowsSdkBuildToolsPackage>
+    <UseSdkFallbackFile>true</UseSdkFallbackFile>
+  </WizardData>
 </VSTemplate>
