@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directories:
+      - "/"
+      - "/dev/MRTCore/mrt"
+      - "/dev/Templates/VSIX"
+      - "/dev/Templates/Source/ProjectTemplates/Desktop/CSharp/*"
+      - "/dev/Templates/Source/ProjectTemplates/Desktop/CSharp/PackagedApp/BlankApp"
+      - "/test/StaticValidationTests"
+      - "/tools/ProjectTemplates/dev.cs.dll.projection"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
