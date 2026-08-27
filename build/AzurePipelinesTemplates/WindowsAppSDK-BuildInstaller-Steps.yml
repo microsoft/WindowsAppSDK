@@ -40,6 +40,12 @@ parameters:
 - name: NightlyBranchName
   type: string
   default: 'refs/heads/release/dev/monobuild'
+# How far back the nightly search may reach. See
+# WindowsAppSDK-DownloadNightlyPackage-Steps.yml for why we search rather than take the
+# latest run from the branch.
+- name: MaxNightlyAgeInDays
+  type: number
+  default: 30
 
 steps:
 - task: PowerShell@2
@@ -75,29 +81,17 @@ steps:
       condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
   - ${{ else }}:
     ###
-    # This step downloads the WindowsAppSDK NuGet package from the Aggregator nightly
-    # pipeline (identified by the OfficialPipelineID variable) for use in building the
-    # VSIX. We pull the latest run from NightlyBranchName rather than a pinned
+    # Download the WindowsAppSDK NuGet package from the monobuild nightly for use in
+    # building the installer. We pull from NightlyBranchName rather than a pinned
     # LatestOfficialBuildID so PR build-validation runs always get a fresh package without
     # needing a build id supplied at queue time.
-    #
-    # The nightly runs commonly finish as PartiallySucceeded (some downstream test/SDL
-    # stages are not green) even though the packaging stage produced the artifact, so
-    # both allowPartiallySucceededBuilds and allowFailedBuilds must be true -- the task
-    # requires the pair to be set together to consider non-succeeded runs.
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download WindowsAppSDK From Latest Nightly'
-      inputs:
+    - template: WindowsAppSDK-DownloadNightlyPackage-Steps.yml
+      parameters:
         artifactName: ${{ parameters.artifactName }}
         targetPath: '$(System.ArtifactsDirectory)'
-        source: 'specific'
-        project: $(System.TeamProjectId)
-        pipeline: 190463
-        runVersion: 'latestFromBranch'
-        runBranch: '${{ parameters.NightlyBranchName }}'
-        allowPartiallySucceededBuilds: true
-        allowFailedBuilds: true
-    
+        nightlyBranchName: ${{ parameters.NightlyBranchName }}
+        maxNightlyAgeInDays: ${{ parameters.MaxNightlyAgeInDays }}
+
 ###
 # Install the internal licensing support for release-signed packages. This can always be present in
 # pipeline builds. The installer code will automatically degrade / skip licenses in non-release builds
