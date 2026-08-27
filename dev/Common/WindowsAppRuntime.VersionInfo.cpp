@@ -24,24 +24,16 @@ namespace Microsoft::WindowsAppRuntime::VersionInfo
 class RuntimeInformation
 {
 public:
-    static HRESULT GetFrameworkPackageFamilyName(PCWSTR* packageFamilyName)
+    static const std::wstring& GetFrameworkPackageFamilyName()
     {
         if (!g_test_frameworkPackageFamilyName.empty())
         {
-            *packageFamilyName = g_test_frameworkPackageFamilyName.c_str();
-            return S_OK;
+            return g_test_frameworkPackageFamilyName;
         }
 
         const uint32_t c_frameworkPackageFamilyNameResourceId{ 10002 };
-        static OptionalResourceString frameworkPackageFamilyName{ c_frameworkPackageFamilyNameResourceId };
-        if (!frameworkPackageFamilyName.Module)
-        {
-            return HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND);
-        }
-
-        *packageFamilyName = frameworkPackageFamilyName.Value.c_str();
-        RETURN_HR_IF_MSG(E_UNEXPECTED, frameworkPackageFamilyName.Value.empty(), "WindowsAppSDK framework PackageFamilyName resource not valid (\"\")");
-        return S_OK;
+        static std::wstring frameworkPackageFamilyName{ LoadStringWFromResource(c_frameworkPackageFamilyNameResourceId) };
+        return frameworkPackageFamilyName;
     }
 
     static const std::wstring& GetMainPackageFamilyName()
@@ -52,8 +44,7 @@ public:
         }
 
         const uint32_t c_mainPackageFamilyNameResourceId{ 10002 };
-        static wil::unique_hmodule module{ LoadResourceModule(true) };
-        static std::wstring mainPackageFamilyName{ LoadStringWFromResource(module.get(), c_mainPackageFamilyNameResourceId) };
+        static std::wstring mainPackageFamilyName{ LoadStringWFromResource(c_mainPackageFamilyNameResourceId) };
         return mainPackageFamilyName;
     }
 
@@ -77,25 +68,21 @@ public:
     }
 
 private:
-    struct OptionalResourceString
+    static std::wstring LoadStringWFromResource(uint32_t id)
     {
-        explicit OptionalResourceString(uint32_t id) :
-            Module{ LoadResourceModule(false) },
-            Value{ Module ? LoadStringWFromResource(Module.get(), id) : std::wstring{} }
-        {
-        }
+        const auto string{ LoadStringAFromResource(id) };
+        return ::Microsoft::Utf8::ToUtf16<std::wstring>(string.c_str());
+    }
 
-        wil::unique_hmodule Module;
-        std::wstring Value;
-    };
-
-    static std::wstring LoadStringWFromResource(HMODULE module, uint32_t id)
+    static std::string LoadStringAFromResource(uint32_t id)
     {
+        static wil::unique_hmodule module{ LoadResourceModule(true) };
+
         const uint32_t c_ResourceMaxLength{ 1024 };
         char resourceValue[c_ResourceMaxLength]{};
-        const auto resourceValueLength{ ::LoadStringA(module, id, resourceValue, ARRAYSIZE(resourceValue)) };
+        const auto resourceValueLength{ ::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)) };
         THROW_LAST_ERROR_IF_MSG(resourceValueLength == 0, "Failed to load resource string. id: %u", id);
-        return ::Microsoft::Utf8::ToUtf16<std::wstring>(resourceValue);
+        return resourceValue;
     }
 
     static wil::unique_hmodule LoadResourceModule(bool required)
@@ -120,7 +107,10 @@ STDAPI WindowsAppRuntime_VersionInfo_MSIX_Framework_PackageFamilyName_Get(
     PCWSTR* packageFamilyName) noexcept try
 {
     *packageFamilyName = nullptr;
-    return ::Microsoft::WindowsAppRuntime::VersionInfo::RuntimeInformation::GetFrameworkPackageFamilyName(packageFamilyName);
+    const auto& frameworkPackageFamilyName{ ::Microsoft::WindowsAppRuntime::VersionInfo::RuntimeInformation::GetFrameworkPackageFamilyName() };
+    *packageFamilyName = frameworkPackageFamilyName.c_str();
+    RETURN_HR_IF_MSG(E_UNEXPECTED, frameworkPackageFamilyName.empty(), "WindowsAppSDK framework PackageFamilyName resource not valid (\"\")");
+    return S_OK;
 }
 CATCH_RETURN();
 
