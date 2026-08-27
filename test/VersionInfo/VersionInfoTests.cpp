@@ -57,6 +57,8 @@ namespace Test::VersionInfo
 
         TEST_METHOD(VersionInfo_SelfContained)
         {
+            // Bootstrap injects the framework package family name, bypassing the resource lookup.
+            // Clear it to exercise component-only deployment, then restore it for fixture cleanup.
             auto restoreTestInitialization{ wil::scope_exit([] {
                 if (MddCore::Win11::IsSupported())
                 {
