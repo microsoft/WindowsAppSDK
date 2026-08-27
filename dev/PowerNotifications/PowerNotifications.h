@@ -350,13 +350,13 @@ namespace winrt::Microsoft::Windows::System::Power
             // Maps the legacy two-state EnergySaverStatus onto the v2 enum. Standard is unreachable on this path.
             static Power::EnergySaverStatus2 MapLegacyToEnergySaverStatus2(::EnergySaverStatus legacyStatus)
             {
-                switch (static_cast<Power::EnergySaverStatus>(legacyStatus))
+                switch (legacyStatus)
                 {
-                case Power::EnergySaverStatus::On:
+                case On:
                     return Power::EnergySaverStatus2::HighSavings;
-                case Power::EnergySaverStatus::Off:
-                case Power::EnergySaverStatus::Disabled:
+                case Off:
                     return Power::EnergySaverStatus2::Off;
+                case Disabled:
                 default:
                     return Power::EnergySaverStatus2::Unknown;
                 }
