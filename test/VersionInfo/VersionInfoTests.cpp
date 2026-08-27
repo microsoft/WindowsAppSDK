@@ -3,6 +3,8 @@
 
 #include "pch.h"
 
+#include <WindowsAppRuntime.SelfContained.h>
+
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
@@ -49,6 +51,11 @@ namespace Test::VersionInfo
             VERIFY_ARE_EQUAL(uint16_t{}, version.Build);
             VERIFY_ARE_EQUAL(uint16_t{}, version.Revision);
             VERIFY_IS_TRUE(RuntimeInfo::AsString().empty());
+        }
+
+        TEST_METHOD(VersionInfo_SelfContained)
+        {
+            VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
         }
     };
 }
