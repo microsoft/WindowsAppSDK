@@ -3,7 +3,9 @@
 
 #include "pch.h"
 
+#include <MddWin11.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -55,6 +57,21 @@ namespace Test::VersionInfo
 
         TEST_METHOD(VersionInfo_SelfContained)
         {
+            auto restoreTestInitialization{ wil::scope_exit([] {
+                if (MddCore::Win11::IsSupported())
+                {
+                    ::WindowsAppRuntime::VersionInfo::TestInitialize(
+                        TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+                }
+                else
+                {
+                    ::WindowsAppRuntime::VersionInfo::TestInitialize(
+                        TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                        TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+                }
+            }) };
+
+            ::WindowsAppRuntime::VersionInfo::TestShutdown();
             VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
         }
     };
