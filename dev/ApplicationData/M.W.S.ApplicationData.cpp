@@ -17,6 +17,11 @@
 
 #include "Validate.h"
 
+namespace wil
+{
+    typedef unique_any<::ApplicationDataState, decltype(&::ApplicationData_Close), ::ApplicationData_Close> unique_application_data_state;
+}
+
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::SharedLocal) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::SharedLocal));
@@ -118,7 +123,19 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             return winrt::hstring{};
         }
-        return StorageFolderToPath(m_applicationData.LocalCacheFolder());
+
+        wil::unique_application_data_state applicationDataState{ OpenApplicationData() };
+        WCHAR path[MAX_PATH]{};
+        UINT32 pathLength{ ARRAYSIZE(path) };
+        const HRESULT hr{ ApplicationData_GetLocalCachePath(applicationDataState.get(), &pathLength, path) };
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ path };
+        }
+        THROW_HR_IF_MSG(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), "%ls", m_packageFamilyName.c_str());
+        auto longPath{ std::make_unique<WCHAR[]>(pathLength) };
+        THROW_IF_FAILED_MSG(ApplicationData_GetLocalCachePath(applicationDataState.get(), &pathLength, path), "%ls", m_packageFamilyName.c_str());
+        return winrt::hstring(longPath.get());
     }
     hstring ApplicationData::LocalPath()
     {
@@ -126,7 +143,19 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             return winrt::hstring{};
         }
-        return StorageFolderToPath(m_applicationData.LocalFolder());
+
+        wil::unique_application_data_state applicationDataState{ OpenApplicationData() };
+        WCHAR path[MAX_PATH]{};
+        UINT32 pathLength{ ARRAYSIZE(path) };
+        const HRESULT hr{ ApplicationData_GetLocalPath(applicationDataState.get(), &pathLength, path) };
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ path };
+        }
+        THROW_HR_IF_MSG(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), "%ls", m_packageFamilyName.c_str());
+        auto longPath{ std::make_unique<WCHAR[]>(pathLength) };
+        THROW_IF_FAILED_MSG(ApplicationData_GetLocalPath(applicationDataState.get(), &pathLength, path), "%ls", m_packageFamilyName.c_str());
+        return winrt::hstring(longPath.get());
     }
     hstring ApplicationData::MachinePath()
     {
@@ -157,7 +186,19 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             return winrt::hstring{};
         }
-        return StorageFolderToPath(m_applicationData.TemporaryFolder());
+
+        wil::unique_application_data_state applicationDataState{ OpenApplicationData() };
+        WCHAR path[MAX_PATH]{};
+        UINT32 pathLength{ ARRAYSIZE(path) };
+        const HRESULT hr{ ApplicationData_GetTemporaryPath(applicationDataState.get(), &pathLength, path) };
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ path };
+        }
+        THROW_HR_IF_MSG(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), "%ls", m_packageFamilyName.c_str());
+        auto longPath{ std::make_unique<WCHAR[]>(pathLength) };
+        THROW_IF_FAILED_MSG(ApplicationData_GetTemporaryPath(applicationDataState.get(), &pathLength, path), "%ls", m_packageFamilyName.c_str());
+        return winrt::hstring(longPath.get());
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::LocalCacheFolder()
     {
@@ -241,13 +282,23 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::GetPublisherCachePath(hstring const& folderName)
     {
-        auto folder{ GetPublisherCacheFolder(folderName) };
-        winrt::hstring path;
-        if (folder)
+        if (!m_applicationData)
         {
-            path = folder.Path();
+            return winrt::hstring{};
         }
-        return path;
+
+        wil::unique_application_data_state applicationDataState{ OpenApplicationData() };
+        WCHAR path[MAX_PATH]{};
+        UINT32 pathLength{ ARRAYSIZE(path) };
+        const HRESULT hr{ ApplicationData_GetPublisherCachePath(applicationDataState.get(), folderName.c_str(), &pathLength, path)};
+        if (SUCCEEDED(hr))
+        {
+            return winrt::hstring{ path };
+        }
+        THROW_HR_IF_MSG(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), "%ls", m_packageFamilyName.c_str());
+        auto longPath{ std::make_unique<WCHAR[]>(pathLength) };
+        THROW_IF_FAILED_MSG(ApplicationData_GetPublisherCachePath(applicationDataState.get(), folderName.c_str(),  &pathLength, path), "%ls", m_packageFamilyName.c_str());
+        return winrt::hstring(longPath.get());
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {
@@ -330,5 +381,14 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Foundation::String::IsNullOrEmpty(string.c_str()), "Product not valid (%ls)", string.c_str());
         THROW_HR_IF_MSG(E_INVALIDARG, ::Microsoft::Windows::Storage::is_prohibited_string(string.c_str()), "Product not valid (%ls)", string.c_str());
+    }
+
+    ::ApplicationDataState ApplicationData::OpenApplicationData()
+    {
+        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentProcessToken()) };
+        PSID userSid{ tokenUser->User.Sid };
+        ::ApplicationDataState applicationDataState{};
+        THROW_IF_FAILED(::ApplicationData_Open(userSid, m_packageFamilyName.c_str(), &applicationDataState));
+        return applicationDataState;
     }
 }
