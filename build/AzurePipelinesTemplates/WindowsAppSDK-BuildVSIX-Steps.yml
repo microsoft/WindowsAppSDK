@@ -39,6 +39,13 @@ parameters:
   default: false
 
 steps:
+# Supports both root and subfolder Foundation checkouts.
+- template: AzurePipelinesTemplates\WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
+  parameters:
+    componentTsaOptionsPath: '$(Build.SourcesDirectory)\$(FoundationRepoPath).config\tsaoptions.json'
+    areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+    outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+
 - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
   - task: DownloadPipelineArtifact@2
     displayName: 'Download WindowsAppSDK From Current Build'

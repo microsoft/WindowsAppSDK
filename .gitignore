@@ -403,3 +403,6 @@ build/override/
 # WindowsAppSDK specific files
 Microsoft.WinUI.AppX.targets
 !dev/vsix/**/*.pubxml
+# Project templates ship publish profiles as template content, so they must be
+# committed despite the blanket *.pubxml rule above.
+!dev/Templates/**/*.pubxml
