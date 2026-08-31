@@ -327,6 +327,7 @@ namespace winrt::Microsoft::Windows::System::Power
             Power::EnergySaverStatus2 EnergySaverStatus2()
             {
                 UpdateValuesIfNecessary(energySaverStatus2Func);
+                std::scoped_lock<std::mutex> lock(m_mutex);
                 return m_cachedEnergySaverStatus2;
             }
 
@@ -343,7 +344,11 @@ namespace winrt::Microsoft::Windows::System::Power
             // Fallback-path callback: the legacy UDK reports a two-state value that we map onto the v2 enum.
             void EnergySaverStatus2Changed_Callback(::EnergySaverStatus energySaverStatus)
             {
-                m_cachedEnergySaverStatus2 = MapLegacyToEnergySaverStatus2(energySaverStatus);
+                auto newValue{ MapLegacyToEnergySaverStatus2(energySaverStatus) };
+                {
+                    std::scoped_lock<std::mutex> lock(m_mutex);
+                    m_cachedEnergySaverStatus2 = newValue;
+                }
                 RaiseEvent(energySaverStatus2Func);
             }
 
