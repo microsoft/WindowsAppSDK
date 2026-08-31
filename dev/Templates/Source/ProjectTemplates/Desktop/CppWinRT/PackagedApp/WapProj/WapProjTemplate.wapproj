@@ -43,10 +43,10 @@
 
   <PropertyGroup>
     <ProjectGuid>$guid1$</ProjectGuid>
-    <TargetPlatformVersion>$targetplatformversion$</TargetPlatformVersion>
-    <TargetPlatformMinVersion>$targetplatformminversion$</TargetPlatformMinVersion>
+    <TargetPlatformVersion>$ext_targetplatformversion$</TargetPlatformVersion>
+    <TargetPlatformMinVersion>$ext_targetplatformminversion$</TargetPlatformMinVersion>
     <DefaultLanguage>$currentuiculturename$</DefaultLanguage>
-    $if$($includeKeyFile$==true)
+    $if$($ext_includeKeyFile$==true)
     <PackageCertificateKeyFile>$projectname$_TemporaryKey.pfx</PackageCertificateKeyFile>
     $endif$
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
@@ -56,7 +56,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    $if$($includeKeyFile$==true)
+    $if$($ext_includeKeyFile$==true)
     <None Include="$projectname$_TemporaryKey.pfx" />
     $endif$
   </ItemGroup>
