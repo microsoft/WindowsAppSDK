@@ -79,22 +79,26 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         auto factory{ Factory() };
         if (IsEnergySaverStatus2ApiPresent())
         {
-            factory->m_cachedEnergySaverStatus2 = ReadOsEnergySaverStatus2();
             factory->m_energySaverStatus2ChangedRevoker = OsPowerManager::EnergySaverStatus2Changed(
                 winrt::auto_revoke,
                 [](auto&&, auto&&)
                 {
                     auto factory{ Factory() };
-                    factory->m_cachedEnergySaverStatus2 = ReadOsEnergySaverStatus2();
+                    auto newValue{ ReadOsEnergySaverStatus2() };
+                    {
+                        std::scoped_lock<std::mutex> lock(factory->m_mutex);
+                        factory->m_cachedEnergySaverStatus2 = newValue;
+                    }
                     factory->RaiseEvent(factory->energySaverStatus2Func);
                 });
+            factory->m_cachedEnergySaverStatus2 = ReadOsEnergySaverStatus2();
         }
         else
         {
-            factory->m_cachedEnergySaverStatus2 = ReadLegacyEnergySaverStatus2();
             THROW_IF_FAILED(PowerNotifications_RegisterEnergySaverStatusChangedListener(
                 &PowerManager::EnergySaverStatus2Changed_Callback,
                 &factory->m_energySaverStatus2FallbackHandle));
+            factory->m_cachedEnergySaverStatus2 = ReadLegacyEnergySaverStatus2();
         }
     }
 
