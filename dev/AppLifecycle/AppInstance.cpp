@@ -152,7 +152,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
         else
         {
-            THROW_HR_IF(E_UNEXPECTED, !m_instanceHandle);
+            THROW_HR_IF(E_INVALIDARG, !m_instanceHandle);
 
             // Create a monitor thread to handle cleaning up this instance if the backing process terminates.
             auto onInstanceTerminated = [](_In_ void* context, _In_ BOOLEAN /*reason*/) -> void
