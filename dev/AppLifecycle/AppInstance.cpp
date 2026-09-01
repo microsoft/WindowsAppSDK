@@ -96,7 +96,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return { kind, data };
     }
 
-    AppInstance::AppInstance(uint32_t processId)
+    AppInstance::AppInstance() :
+        AppInstance(GetCurrentProcessId(), {})
+    {
+    }
+
+    AppInstance::AppInstance(uint32_t processId, wil::unique_handle processHandle) :
+        m_instanceHandle(std::move(processHandle))
     {
         m_processId = processId;
         m_isCurrent = (GetCurrentProcessId() == processId);
@@ -146,7 +152,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
         else
         {
-            m_instanceHandle.reset(OpenProcess(SYNCHRONIZE, FALSE, processId));
+            THROW_HR_IF(E_UNEXPECTED, !m_instanceHandle);
 
             // Create a monitor thread to handle cleaning up this instance if the backing process terminates.
             auto onInstanceTerminated = [](_In_ void* context, _In_ BOOLEAN /*reason*/) -> void
@@ -277,7 +283,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         auto initInstance = []
         {
-            s_current = winrt::make_self<AppInstance>(GetCurrentProcessId());
+            s_current = winrt::make_self<AppInstance>();
         };
 
         wil::init_once(s_initOnce, initInstance);
@@ -318,10 +324,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
             else
             {
-                wil::unique_handle process(::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
+                wil::unique_handle process(::OpenProcess(SYNCHRONIZE, FALSE, pid));
                 if (process != nullptr)
                 {
-                    instances.Append(make<AppInstance>(pid));
+                    instances.Append(make<AppInstance>(pid, std::move(process)));
                 }
                 else
                 {
