@@ -15,6 +15,11 @@
 #include "PushNotificationManager.h"
 #include "AppNotificationManager.h"
 
+#include <FrameworkUdk/Containment.h>
+
+// 63876312: Prevent AppInstance::GetInstances from registering an invalid process handle.
+#define WINAPPSDK_CHANGEID_63876312 63876312
+
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
@@ -152,7 +157,15 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
         else
         {
-            THROW_HR_IF(E_INVALIDARG, !m_instanceHandle);
+            if (!m_instanceHandle)
+            {
+                m_instanceHandle.reset(OpenProcess(SYNCHRONIZE, FALSE, processId));
+            }
+
+            if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63876312>())
+            {
+                THROW_HR_IF(E_INVALIDARG, !m_instanceHandle);
+            }
 
             // Create a monitor thread to handle cleaning up this instance if the backing process terminates.
             auto onInstanceTerminated = [](_In_ void* context, _In_ BOOLEAN /*reason*/) -> void
@@ -296,6 +309,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // Force the singleton init.
         GetCurrent();
 
+        const bool processHandleFixEnabled{
+            WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_63876312>() };
+
         IVector<Microsoft::Windows::AppLifecycle::AppInstance> instances{ winrt::single_threaded_vector<Microsoft::Windows::AppLifecycle::AppInstance>() };
 
         // Grab the list of processes while under the lock, and then drop it since we'll be calling out to other code.
@@ -324,10 +340,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
             else
             {
-                wil::unique_handle process(::OpenProcess(SYNCHRONIZE, FALSE, pid));
+                const DWORD desiredAccess{
+                    processHandleFixEnabled ? SYNCHRONIZE : PROCESS_QUERY_LIMITED_INFORMATION };
+                wil::unique_handle process(::OpenProcess(desiredAccess, FALSE, pid));
                 if (process != nullptr)
                 {
-                    instances.Append(make<AppInstance>(pid, std::move(process)));
+                    wil::unique_handle instanceHandle;
+                    if (processHandleFixEnabled)
+                    {
+                        instanceHandle = std::move(process);
+                    }
+                    instances.Append(make<AppInstance>(pid, std::move(instanceHandle)));
                 }
                 else
                 {
