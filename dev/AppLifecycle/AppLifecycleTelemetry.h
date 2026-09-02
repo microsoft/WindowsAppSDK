@@ -36,7 +36,7 @@ public:
         CATCH_LOG()
 
         DEFINE_TAGGED_COMPLIANT_MEASURES_EVENT_PARAM1(DequeueRedirectionRequest, PDT_ProductAndServicePerformance, GUID, requestId);
-        DEFINE_TAGGED_COMPLIANT_MEASURES_EVENT_PARAM1(RedrectionActivatedEvent, PDT_ProductAndServicePerformance, GUID, requestId);
+        DEFINE_TAGGED_COMPLIANT_MEASURES_EVENT_PARAM1(RedirectionActivatedEvent, PDT_ProductAndServicePerformance, GUID, requestId);
         DEFINE_TAGGED_COMPLIANT_MEASURES_EVENT_PARAM1(RequestCleanupEvent, PDT_ProductAndServicePerformance, GUID, requestId);
     END_ACTIVITY_CLASS();
 
@@ -53,6 +53,6 @@ public:
         CATCH_LOG()
 
         DEFINE_TAGGED_COMPLIANT_MEASURES_EVENT_PARAM1(InnerActivatedEvent, PDT_ProductAndServicePerformance, GUID, requestId);
-    END_ACTIVITY_CLASS()
+    END_ACTIVITY_CLASS();
 
 };
