@@ -1,0 +1,3 @@
+Copyright 2026 Microsoft Corporation
+
+Licensed under the MIT License. See the LICENSE file in the repository root.
