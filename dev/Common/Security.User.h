@@ -46,6 +46,21 @@ inline PWSTR SidToString(PSID sid)
     THROW_IF_WIN32_BOOL_FALSE(::ConvertSidToStringSidW(sid, &sidString));
     return sidString;
 }
+
+/// @return a new sid. Allocated via LocalAlloc; use LocalFree to deallocate
+inline wil::unique_any_psid CopySid(PSID source)
+{
+    if (!source)
+    {
+        return null;
+    }
+
+    const auto size{ ::GetLengthSid(source) };
+    wil::unique_any_psid copy{ static_cast<PSID>(::LocalAlloc(LMEM_FIXED, size))};
+    THROW_IF_NULL_ALLOC(copy);
+    THROW_IF_WIN32_BOOL_FALSE(::CopySid(size, copy.get(), source));
+    return copy;
+}
 }
 
 #endif // __SECURITY_USER_H
