@@ -764,6 +764,50 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
+        TEST_METHOD(AppNotificationBuilderAddButtonWithApostropheInContent)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddButton(winrt::AppNotificationButton(L"Don't miss this")
+                .AddArgument(L"key", L"value"))
+            };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='Don&apos;t miss this' arguments='key=value'/></actions></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddButtonWithXmlSpecialCharsInContent)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddButton(winrt::AppNotificationButton(LR"(&"'<>)")
+                .AddArgument(L"key", L"value"))
+            };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='&amp;&quot;&apos;&lt;&gt;' arguments='key=value'/></actions></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddButtonWithAmpersandInContent)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddButton(winrt::AppNotificationButton(L"Save & Close")
+                .AddArgument(L"action", L"save"))
+            };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='Save &amp; Close' arguments='action=save'/></actions></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddButtonWithAngleBracketsInContent)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddButton(winrt::AppNotificationButton(L"<Click Here>")
+                .AddArgument(L"key", L"value"))
+            };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='&lt;Click Here&gt;' arguments='key=value'/></actions></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
         TEST_METHOD(AppNotificationBuilderWithIsCallingPreviewSupportedIsFalse)
         {
             if (!::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
