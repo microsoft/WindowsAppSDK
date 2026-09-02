@@ -25,6 +25,7 @@
 #include <WindowsAppRuntime.SelfContained.h>
 #include <Microsoft.RoApi.h>
 #include <ShellLocalization.h>
+#include "AppNotificationConferencingConfig.h"
 #include <filesystem>
 #include <NotificationPlatformActivation.h>
 
@@ -434,7 +435,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             notification.Payload(),
             notification.Tag(),
             notification.Group(),
-            winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) };
+            AppNotificationConferencingConfig::IsCallingPreviewSupported()) };
 
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 
