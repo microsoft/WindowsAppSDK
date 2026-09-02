@@ -3,7 +3,7 @@
 
 namespace Microsoft.Windows.AppLifecycle
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract AppLifecycleContract {};
 
     [contract(AppLifecycleContract, 1)]
@@ -65,6 +65,9 @@ namespace Microsoft.Windows.AppLifecycle
     [contract(AppLifecycleContract, 1)]
     runtimeclass AppActivationArguments
     {
+        [contract(AppLifecycleContract, 3)]
+        AppActivationArguments(ExtendedActivationKind kind, IInspectable data);
+
         ExtendedActivationKind Kind { get; };
         IInspectable Data{ get; };
     };
