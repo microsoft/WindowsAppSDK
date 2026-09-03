@@ -110,6 +110,12 @@ Version information is compiled into `Microsoft.WindowsAppRuntime.Insights.Resou
 product is assembled (i.e. when the version is defined). The VersionInfo API retrieves this
 information via an internal API.
 
+This resource DLL is distributed by the Windows App SDK Runtime package because it describes the
+version of the assembled runtime, not the version of an individual component. If an application
+uses component packages without the Runtime package, runtime version information is unavailable.
+In that case numeric properties return zero, `RuntimeInfo.AsString` and `ReleaseInfo.VersionTag`
+return an empty string, and `ReleaseInfo.AsString` returns `0.0.0`.
+
 # 6. API Details
 
 ```c# (but really MIDL3)

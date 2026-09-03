@@ -53,7 +53,11 @@ public:
     {
         if (!g_versionInfo)
         {
-            static wil::unique_hmodule module{ LoadResourceModule() };
+            static wil::unique_hmodule module{ LoadResourceModule(false) };
+            if (!module)
+            {
+                return nullptr;
+            }
 
             auto getVersionInfo{ GetProcAddressByFunctionDeclaration(module.get(), WindowsAppRuntime_GetVersionInfo) };
             THROW_LAST_ERROR_IF_NULL(getVersionInfo);
@@ -72,7 +76,7 @@ private:
 
     static std::string LoadStringAFromResource(uint32_t id)
     {
-        static wil::unique_hmodule module{ LoadResourceModule() };
+        static wil::unique_hmodule module{ LoadResourceModule(true) };
 
         const uint32_t c_ResourceMaxLength{ 1024 };
         char resourceValue[c_ResourceMaxLength]{};
@@ -81,11 +85,19 @@ private:
         return resourceValue;
     }
 
-    static wil::unique_hmodule LoadResourceModule()
+    static wil::unique_hmodule LoadResourceModule(bool required)
     {
         const PCWSTR c_resourceDllName{ L"Microsoft.WindowsAppRuntime.Insights.Resource.dll" };
         wil::unique_hmodule resourceDllHandle(::LoadLibraryW(c_resourceDllName));
-        THROW_LAST_ERROR_IF_NULL_MSG(resourceDllHandle, "Unable to load resource dll. %ls", c_resourceDllName);
+        if (!resourceDllHandle)
+        {
+            const auto lastError{ ::GetLastError() };
+            if (!required && (lastError == ERROR_MOD_NOT_FOUND))
+            {
+                return {};
+            }
+            THROW_HR_MSG(HRESULT_FROM_WIN32(lastError), "Unable to load resource dll. %ls", c_resourceDllName);
+        }
         return resourceDllHandle;
     }
 };
