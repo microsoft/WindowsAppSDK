@@ -3,6 +3,10 @@
 
 #include "pch.h"
 
+#include <MddWin11.h>
+#include <WindowsAppRuntime.SelfContained.h>
+#include <WindowsAppRuntime.VersionInfo.h>
+
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
@@ -30,28 +34,47 @@ namespace Test::VersionInfo
 
         TEST_METHOD(VersionInfo_Release)
         {
-            try
-            {
-                auto release{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo::AsString() };
-                VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND), e.code());
-            }
+            using ReleaseInfo = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo;
+
+            VERIFY_ARE_EQUAL(uint16_t{}, ReleaseInfo::Major());
+            VERIFY_ARE_EQUAL(uint16_t{}, ReleaseInfo::Minor());
+            VERIFY_ARE_EQUAL(uint16_t{}, ReleaseInfo::Patch());
+            VERIFY_IS_TRUE(ReleaseInfo::VersionTag().empty());
+            VERIFY_ARE_EQUAL(L"0.0.0", ReleaseInfo::AsString());
         }
 
         TEST_METHOD(VersionInfo_Runtime)
         {
-            try
-            {
-                auto runtime{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo::AsString() };
-                VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND), e.code());
-            }
+            using RuntimeInfo = winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo;
+
+            const auto version{ RuntimeInfo::Version() };
+            VERIFY_ARE_EQUAL(uint16_t{}, version.Major);
+            VERIFY_ARE_EQUAL(uint16_t{}, version.Minor);
+            VERIFY_ARE_EQUAL(uint16_t{}, version.Build);
+            VERIFY_ARE_EQUAL(uint16_t{}, version.Revision);
+            VERIFY_IS_TRUE(RuntimeInfo::AsString().empty());
+        }
+
+        TEST_METHOD(VersionInfo_SelfContained)
+        {
+            // Bootstrap injects the framework package family name, bypassing the resource lookup.
+            // Clear it to exercise component-only deployment, then restore it for fixture cleanup.
+            auto restoreTestInitialization{ wil::scope_exit([] {
+                if (MddCore::Win11::IsSupported())
+                {
+                    ::WindowsAppRuntime::VersionInfo::TestInitialize(
+                        TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+                }
+                else
+                {
+                    ::WindowsAppRuntime::VersionInfo::TestInitialize(
+                        TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                        TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+                }
+            }) };
+
+            ::WindowsAppRuntime::VersionInfo::TestShutdown();
+            VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
         }
     };
 }
