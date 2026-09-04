@@ -26,6 +26,24 @@ extern "C"
         void* data;
     };
 
+    // Versioned extension of MrmResourceData used by the *NoCopy loader variants. MrmResourceData
+    // itself is a frozen public ABI and must never grow, so the additional 'isView' state lives on
+    // this separate struct. The leading 'size'/'data' members intentionally mirror MrmResourceData
+    // in the same order so the two remain layout-compatible. Only the *NoCopy exports (and
+    // MrmFreeResourceData) read or write this type, so no legacy caller ever sees the larger size.
+    struct MrmResourceData2
+    {
+        UINT32 size;
+        void* data;
+
+        // When TRUE, 'data' is a non-owning view directly into the memory-mapped, read-only PRI
+        // owned by the resource manager. In that case the caller must keep the resource manager
+        // alive for as long as 'data' is used, and must NOT free 'data' (MrmFreeResourceData is a
+        // no-op for views). When FALSE (the default for zero-initialized instances) 'data' is a heap
+        // allocation owned by the caller, freed via MrmFreeResourceData.
+        BOOL isView;
+    };
+
     STDAPI MrmCreateResourceManager(_In_ PCWSTR priFileName, _Out_ MrmManagerHandle* resourceManager);
     STDAPI_(void) MrmDestroyResourceManager(_In_opt_ MrmManagerHandle resourceManager);
 
@@ -123,8 +141,36 @@ extern "C"
         _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
         _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierValues);
 
+    // No-copy loader variants. For embedded/binary resources these publish a non-owning view
+    // (MrmResourceData2::isView == TRUE) directly into the memory-mapped PRI instead of allocating
+    // and copying a private heap buffer. The caller must keep 'resourceManager' alive while the
+    // returned view is in use and must free the result with MrmFreeResourceData (which is a no-op
+    // for views). String/path resources are unaffected and behave exactly as the copying variants.
+    STDAPI MrmLoadStringOrEmbeddedResourceNoCopy(
+        _In_ MrmManagerHandle resourceManager,
+        _In_opt_ MrmContextHandle resourceContext,
+        _In_opt_ MrmMapHandle resourceMap,
+        _In_ PCWSTR resourceId,
+        _Out_ MrmType* resourceType,
+        _Outptr_result_maybenull_ PWSTR* resourceString,
+        _Out_ MrmResourceData2* data);
+
+    STDAPI MrmLoadStringOrEmbeddedResourceByIndexNoCopy(
+        _In_ MrmManagerHandle resourceManager,
+        _In_opt_ MrmContextHandle resourceContext,
+        _In_opt_ MrmMapHandle resourceMap,
+        UINT32 index,
+        _Out_ MrmType* resourceType,
+        _Outptr_ PWSTR* resourceName,
+        _Outptr_result_maybenull_ PWSTR* resourceString,
+        _Out_ MrmResourceData2* data);
+
     STDAPI_(void*) MrmAllocateBuffer(size_t size);
     STDAPI_(void) MrmFreeResource(_In_opt_ void* resource);
+
+    // Frees an MrmResourceData2 produced by a *NoCopy loader. Safe for both owned buffers (frees
+    // 'data') and views (no-op). Must be used to free results of the *NoCopy variants.
+    STDAPI_(void) MrmFreeResourceData(_Inout_opt_ MrmResourceData2* data);
 
     STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath);
 

@@ -6,6 +6,8 @@
 #include "ResourceCandidate.g.cpp"
 #include "ResourceContext.h"
 
+#include <MemoryBuffer.h> // for ::Windows::Foundation::IMemoryBufferByteAccess
+
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
 ResourceCandidate::ResourceCandidate(ResourceCandidateKind kind, hstring data) : m_stringData(std::move(data)), m_kind(kind)
@@ -38,6 +40,31 @@ ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::Window
     m_kind = ResourceCandidateKind::EmbeddedData;
 }
 
+ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, embedded_resoure_ptr&& data, uint32_t size)
+    : m_resourceManagerHandle(manager), m_resourceContext(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id), m_loadedBlob(std::move(data)), m_loadedBlobSize(size), m_kind(ResourceCandidateKind::EmbeddedData)
+{
+}
+
+ResourceCandidate::ResourceCandidate(Microsoft::Windows::ApplicationModel::Resources::ResourceManager manager, MrmManagerHandle managerHandle, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, array_view<uint8_t const> data)
+    : m_blobView(data.data()), m_blobViewSize(static_cast<uint32_t>(data.size())), m_kind(ResourceCandidateKind::EmbeddedData),
+      m_resourceManager(manager), m_resourceManagerHandle(managerHandle), m_resourceContext(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id)
+{
+}
+
+winrt::array_view<uint8_t const> ResourceCandidate::EmbeddedBytes() const noexcept
+{
+    if (m_blobView != nullptr)
+    {
+        return {m_blobView, m_blobView + m_blobViewSize};
+    }
+    if (m_loadedBlob != nullptr)
+    {
+        auto const first = static_cast<uint8_t const*>(m_loadedBlob.get());
+        return {first, first + m_loadedBlobSize};
+    }
+    return {m_blobData.begin(), m_blobData.end()};
+}
+
 hstring ResourceCandidate::ValueAsString()
 {
     if (m_kind == ResourceCandidateKind::String || m_kind == ResourceCandidateKind::FilePath)
@@ -51,9 +78,107 @@ com_array<uint8_t> ResourceCandidate::ValueAsBytes()
 {
     if (m_kind == ResourceCandidateKind::EmbeddedData)
     {
-        return com_array<uint8_t>(m_blobData.begin(), m_blobData.end());
+        auto const bytes = EmbeddedBytes();
+        return com_array<uint8_t>(bytes.begin(), bytes.end());
     }
     throw_hresult(HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH));
+}
+
+namespace
+{
+    using winrt::Windows::Foundation::IInspectable;
+    using winrt::Windows::Foundation::IMemoryBuffer;
+    using winrt::Windows::Foundation::IMemoryBufferReference;
+    using winrt::Windows::Foundation::TypedEventHandler;
+
+    // Non-owning, read-only reference into a ResourceCandidate's embedded bytes. Holds the candidate
+    // strongly so the backing memory (heap-owned or the memory-mapped PRI pinned transitively by the
+    // candidate's ResourceManager) stays valid for as long as this reference is open.
+    struct ResourceMemoryBufferReference : winrt::implements<ResourceMemoryBufferReference,
+        IMemoryBufferReference, winrt::Windows::Foundation::IClosable, ::Windows::Foundation::IMemoryBufferByteAccess>
+    {
+        explicit ResourceMemoryBufferReference(winrt::com_ptr<ResourceCandidate> owner) noexcept
+            : m_owner(std::move(owner))
+        {
+        }
+
+        uint32_t Capacity() const noexcept
+        {
+            return m_owner ? static_cast<uint32_t>(m_owner->EmbeddedBytes().size()) : 0;
+        }
+
+        winrt::event_token Closed(TypedEventHandler<IMemoryBufferReference, IInspectable> const& handler)
+        {
+            return m_closed.add(handler);
+        }
+
+        void Closed(winrt::event_token const& token) noexcept { m_closed.remove(token); }
+
+        void Close()
+        {
+            if (m_owner)
+            {
+                m_owner = nullptr;
+                m_closed(*this, nullptr);
+            }
+        }
+
+        HRESULT __stdcall GetBuffer(uint8_t** value, uint32_t* capacity) noexcept override
+        {
+            if ((value == nullptr) || (capacity == nullptr))
+            {
+                return E_POINTER;
+            }
+            if (!m_owner)
+            {
+                *value = nullptr;
+                *capacity = 0;
+                return RO_E_CLOSED;
+            }
+            auto const view = m_owner->EmbeddedBytes();
+            *value = const_cast<uint8_t*>(view.data());
+            *capacity = static_cast<uint32_t>(view.size());
+            return S_OK;
+        }
+
+    private:
+        winrt::com_ptr<ResourceCandidate> m_owner;
+        winrt::event<TypedEventHandler<IMemoryBufferReference, IInspectable>> m_closed;
+    };
+
+    // Read-only IMemoryBuffer that projects a ResourceCandidate's embedded bytes with no copy. Each
+    // CreateReference() hands out a reference sharing the same pinned candidate.
+    struct ResourceMemoryBuffer : winrt::implements<ResourceMemoryBuffer,
+        IMemoryBuffer, winrt::Windows::Foundation::IClosable>
+    {
+        explicit ResourceMemoryBuffer(winrt::com_ptr<ResourceCandidate> owner) noexcept
+            : m_owner(std::move(owner))
+        {
+        }
+
+        IMemoryBufferReference CreateReference()
+        {
+            if (!m_owner)
+            {
+                throw winrt::hresult_error(RO_E_CLOSED);
+            }
+            return winrt::make<ResourceMemoryBufferReference>(m_owner);
+        }
+
+        void Close() noexcept { m_owner = nullptr; }
+
+    private:
+        winrt::com_ptr<ResourceCandidate> m_owner;
+    };
+}
+
+winrt::Windows::Foundation::IMemoryBuffer ResourceCandidate::ValueAsMemoryBuffer()
+{
+    if (m_kind != ResourceCandidateKind::EmbeddedData)
+    {
+        throw_hresult(HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH));
+    }
+    return winrt::make<ResourceMemoryBuffer>(get_strong());
 }
 
 Microsoft::Windows::ApplicationModel::Resources::ResourceCandidateKind ResourceCandidate::Kind() { return m_kind; }
