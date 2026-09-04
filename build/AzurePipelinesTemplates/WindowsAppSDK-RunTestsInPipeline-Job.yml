@@ -50,6 +50,25 @@ jobs:
     # at Microsoft.Guardian.ResponseFileManager.CreateResponseFile(IList`1 arguments, String formatterName, ResponseFileOptions options, String outputPathOverride)
     # at Microsoft.Guardian.CliAnalyzerResponseFileManager.SetupResponseFile(CliAnalyzerConfig analyzeConfig, ToolConfig toolConfig)
     ob_sdl_binskim_enabled: false
+    # Disable CodeQL on the arm64 test images only (AB#63506192).
+    #
+    # The CodeQL service accepts a single upload job per (repository, commit, language), so every job that
+    # has the CodeQL 3000 tasks auto-injected races to claim each detected language. On the arm64 test
+    # images the CodeQL Windows tracer cannot inject into the parent process, and 'codeql database init'
+    # fails outright:
+    #
+    #   A fatal error occurred: Injecting Windows tracer failed [exit code: 0] with message: Could not inject into parent.
+    #   ##[warning]Database failed to initialize!
+    #
+    # Because init is invoked once for all detected languages as a single --db-cluster with --begin-tracing
+    # (required by cpp/csharp), that failure fails *every* language in the cluster - including javascript,
+    # which needs no build tracing at all. When an arm64 leg wins the race for 'javascript' the claim is
+    # released without a database, the real producers are then told the upload is "redundant", and no
+    # javascript snapshot is produced for that commit at all.
+    #
+    # The x64/x86 legs of this same template are the primary producers of the javascript, csharp and
+    # powershell snapshots, so CodeQL is deliberately left enabled for them. See https://aka.ms/codeql3000-faq
+    Codeql.Enabled: $[ iif(eq(variables['buildPlatform'], 'arm64'), 'false', 'true') ]
   steps:
     - checkout: self
       path: s
