@@ -22,7 +22,7 @@ namespace WindowsAppSDK.Cs.Extension.Dev17 {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class VSPackage {
@@ -370,105 +370,6 @@ namespace WindowsAppSDK.Cs.Extension.Dev17 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installing NuGet packages into project....
-        /// </summary>
-        internal static string _1044 {
-            get {
-                return ResourceManager.GetString("1044", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operation in progress....
-        /// </summary>
-        internal static string _1045 {
-            get {
-                return ResourceManager.GetString("1045", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Missing Package Reference(s).
-        /// </summary>
-        internal static string _1046 {
-            get {
-                return ResourceManager.GetString("1046", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to add references to the following packages for {0}: {1}. Please add package references before building..
-        /// </summary>
-        internal static string _1047 {
-            get {
-                return ResourceManager.GetString("1047", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [{0}] Unable to add references to the following packages: {1}. This is an environment error. Please add package references before building the project..
-        /// </summary>
-        internal static string _1048 {
-            get {
-                return ResourceManager.GetString("1048", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Manage NuGet Packages.
-        /// </summary>
-        internal static string _1049 {
-            get {
-                return ResourceManager.GetString("1049", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to See error details.
-        /// </summary>
-        internal static string _1050 {
-            get {
-                return ResourceManager.GetString("1050", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Missing Package References for {0}:.
-        /// </summary>
-        internal static string _1051 {
-            get {
-                return ResourceManager.GetString("1051", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please manually add package references before building..
-        /// </summary>
-        internal static string _1052 {
-            get {
-                return ResourceManager.GetString("1052", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to General.
-        /// </summary>
-        internal static string _1053 {
-            get {
-                return ResourceManager.GetString("1053", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No output information available..
-        /// </summary>
-        internal static string _1054 {
-            get {
-                return ResourceManager.GetString("1054", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to WinUI TabView App.
         /// </summary>
         internal static string _1055 {
@@ -519,6 +420,33 @@ namespace WindowsAppSDK.Cs.Extension.Dev17 {
         internal static string _1061 {
             get {
                 return ResourceManager.GetString("1061", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WinUI MVVM App.
+        /// </summary>
+        internal static string _1062 {
+            get {
+                return ResourceManager.GetString("1062", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Experimental] WinUI MVVM App.
+        /// </summary>
+        internal static string _1063 {
+            get {
+                return ResourceManager.GetString("1063", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A project template for creating a WinUI app structured with the MVVM pattern using the CommunityToolkit.Mvvm package..
+        /// </summary>
+        internal static string _1064 {
+            get {
+                return ResourceManager.GetString("1064", resourceCulture);
             }
         }
     }
