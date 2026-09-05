@@ -27,7 +27,7 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="2.1.0-stable-27200.1051.260826-1517.1">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="2.1.0-stable-27200.1053.260904-1642.1">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>0b8ae1e93bdc350ada54646c0e1b4a9a659a8555</Sha>
     </Dependency>
@@ -35,7 +35,7 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>dab68714e23fb962077c24b66173d8fc33f9a62d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="2.1.0-stable-27200.1051.260826-1517.1">
+    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="2.1.0-stable-27200.1053.260904-1642.1">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>0b8ae1e93bdc350ada54646c0e1b4a9a659a8555</Sha>
     </Dependency>
@@ -43,7 +43,7 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
       <Sha>2e5d355241392cf5331ebaa2c6e5c554c7852ceb</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.8">
+    <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.8-stable-Rolling.20260904.2">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>0b8ae1e93bdc350ada54646c0e1b4a9a659a8555</Sha>
     </Dependency>
