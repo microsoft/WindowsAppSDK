@@ -148,7 +148,6 @@ namespace winrt::Microsoft::Windows::System::Power
             EventType m_systemSuspendStatusChangedEvent;
 
             EnergySaverStatusRegistration m_energySaverStatusHandle{};
-            EnergySaverStatusRegistration m_energySaverStatus2FallbackHandle{};
             EnergySaverStatus2ChangedRevoker m_energySaverStatus2ChangedRevoker{};
             std::optional<bool> m_energySaverStatus2Available{};
             CompositeBatteryStatusRegistration m_batteryStatusHandle{};
@@ -351,22 +350,6 @@ namespace winrt::Microsoft::Windows::System::Power
                 }
                 RaiseEvent(energySaverStatus2Func);
             }
-
-            // Maps the legacy two-state EnergySaverStatus onto the v2 enum. Standard is unreachable on this path.
-            static Power::EnergySaverStatus2 MapLegacyToEnergySaverStatus2(::EnergySaverStatus legacyStatus)
-            {
-                switch (legacyStatus)
-                {
-                case On:
-                    return Power::EnergySaverStatus2::HighSavings;
-                case Off:
-                    return Power::EnergySaverStatus2::Off;
-                case Disabled:
-                default:
-                    return Power::EnergySaverStatus2::Unknown;
-                }
-            }
-
             // BatteryStatus Functions
             void ProcessCompositeBatteryStatus(const CompositeBatteryStatus& compositeBatteryStatus)
             {
@@ -779,11 +762,6 @@ namespace winrt::Microsoft::Windows::System::Power
             static void EnergySaverStatusChanged_Callback(::EnergySaverStatus energySaverStatus)
             {
                 return Factory()->EnergySaverStatusChanged_Callback(energySaverStatus);
-            }
-
-            static void EnergySaverStatus2Changed_Callback(::EnergySaverStatus energySaverStatus)
-            {
-                return Factory()->EnergySaverStatus2Changed_Callback(energySaverStatus);
             }
 
             static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus compositeBatteryStatus)
