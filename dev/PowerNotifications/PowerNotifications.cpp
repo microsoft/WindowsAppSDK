@@ -62,13 +62,6 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         return static_cast<Power::EnergySaverStatus2>(OsPowerManager::EnergySaverStatus2());
     }
 
-    static Power::EnergySaverStatus2 ReadLegacyEnergySaverStatus2()
-    {
-        ::EnergySaverStatus legacyStatus{};
-        THROW_IF_FAILED(PowerNotifications_GetEnergySaverStatus(&legacyStatus));
-        return factory_implementation::PowerManager::MapLegacyToEnergySaverStatus2(legacyStatus);
-    }
-
     EventType& EnergySaverStatus2_Event()
     {
         return Factory()->m_energySaverStatus2ChangedEvent;
@@ -95,10 +88,7 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         }
         else
         {
-            THROW_IF_FAILED(PowerNotifications_RegisterEnergySaverStatusChangedListener(
-                &PowerManager::EnergySaverStatus2Changed_Callback,
-                &factory->m_energySaverStatus2FallbackHandle));
-            factory->m_cachedEnergySaverStatus2 = ReadLegacyEnergySaverStatus2();
+            factory->m_cachedEnergySaverStatus2 = Power::EnergySaverStatus2::Unknown;
         }
     }
 
@@ -108,11 +98,6 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         if (IsEnergySaverStatus2ApiPresent())
         {
             factory->m_energySaverStatus2ChangedRevoker.revoke();
-        }
-        else
-        {
-            THROW_IF_FAILED(PowerNotifications_UnregisterEnergySaverStatusChangedListener(
-                factory->m_energySaverStatus2FallbackHandle));
         }
     }
 
@@ -125,7 +110,7 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         }
         else
         {
-            factory->m_cachedEnergySaverStatus2 = ReadLegacyEnergySaverStatus2();
+            factory->m_cachedEnergySaverStatus2 = Power::EnergySaverStatus2::Unknown;
         }
     }
 
