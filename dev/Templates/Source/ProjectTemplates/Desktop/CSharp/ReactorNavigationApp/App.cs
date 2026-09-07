@@ -47,7 +47,6 @@ class App : Component
         };
 
         var titleBar = TitleBar("$projectname$")
-            .Icon("ms-appx:///Assets/AppIcon.ico")
             .WithNavigation(nav)
             .PaneToggleButtonVisible(true)
             .PaneToggleRequested(() => setIsPaneOpen(!isPaneOpen))
