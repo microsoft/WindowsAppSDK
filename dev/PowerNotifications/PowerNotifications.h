@@ -316,12 +316,6 @@ namespace winrt::Microsoft::Windows::System::Power
                 RemoveCallback(energySaverStatusFunc, token);
             }
 
-            void EnergySaverStatusChanged_Callback(::EnergySaverStatus energySaverStatus)
-            {
-                m_cachedEnergySaverStatus = energySaverStatus;
-                RaiseEvent(energySaverStatusFunc);
-            }
-
             // EnergySaverStatus2 Functions
             Power::EnergySaverStatus2 EnergySaverStatus2()
             {
@@ -338,17 +332,6 @@ namespace winrt::Microsoft::Windows::System::Power
             void EnergySaverStatus2Changed(const event_token& token)
             {
                 RemoveCallback(energySaverStatus2Func, token);
-            }
-
-            // Fallback-path callback: the legacy UDK reports a two-state value that we map onto the v2 enum.
-            void EnergySaverStatus2Changed_Callback(::EnergySaverStatus energySaverStatus)
-            {
-                auto newValue{ MapLegacyToEnergySaverStatus2(energySaverStatus) };
-                {
-                    std::scoped_lock<std::mutex> lock(m_mutex);
-                    m_cachedEnergySaverStatus2 = newValue;
-                }
-                RaiseEvent(energySaverStatus2Func);
             }
             // BatteryStatus Functions
             void ProcessCompositeBatteryStatus(const CompositeBatteryStatus& compositeBatteryStatus)
