@@ -34,7 +34,6 @@ class App : Component
         var (state, dispatch) = UseReducer<CounterState, CounterMessage>(Update, new CounterState(0));
 
         var titleBar = TitleBar("$projectname$")
-            .Icon("ms-appx:///Assets/AppIcon.ico")
             .Flex(shrink: 0);
 
         var content = VStack(16,

@@ -14,7 +14,6 @@ class App : Component
     public override Element Render()
     {
         var titleBar = TitleBar("$projectname$")
-            .Icon("ms-appx:///Assets/AppIcon.ico")
             .Flex(shrink: 0);
 
         // This is the main content area of your application.
