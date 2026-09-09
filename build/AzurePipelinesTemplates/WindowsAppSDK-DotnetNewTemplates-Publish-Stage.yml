@@ -2,52 +2,182 @@ parameters:
 - name: pool
   type: object
   default:
-    vmImage: 'windows-latest'
-- name: dependsOnStage
+    type: windows
+- name: buildRunId
+  type: number
+- name: buildPipelineId
+  type: number
+  default: 186691
+- name: artifactName
   type: string
-  default: 'DotnetNewTemplates_Build'
+  default: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+- name: expectedPackageId
+  type: string
+  default: 'Microsoft.WindowsAppSDK.WinUI.CSharp.Templates'
+- name: expectedPackageVersion
+  type: string
+  default: '0.0.7-alpha'
 
 stages:
-- stage: DotnetNewTemplates_Publish
-  displayName: 'Publish dotnet new templates to NuGet.org'
-  dependsOn:
-  - ${{ parameters.dependsOnStage }}
+- stage: DotnetNewTemplates_Prepare
+  displayName: 'Prepare dotnet new templates release'
   jobs:
-  - job: PublishNuGetOrg
-    displayName: 'Publish dotnet new template pack to NuGet.org'
+  - job: PrepareReleaseArtifact
+    displayName: 'Prepare verified NuGet package'
     pool: ${{ parameters.pool }}
     variables:
-      ob_outputDirectory: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
-      ob_artifactBaseName: 'dotnet-new-template-pack'
-      dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+      ob_outputDirectory: '$(Build.ArtifactStagingDirectory)'
+      ob_artifactBaseName: 'DotnetNewTemplatesReleasePackages'
+      dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
     steps:
-    - checkout: self
-
-    - download: current
-      displayName: 'Download dotnet new template pack artifact'
-      artifact: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+    - checkout: none
 
     - task: PowerShell@2
-      displayName: 'Verify dotnet new template pack artifact exists'
+      displayName: 'Validate official build run'
       inputs:
         targetType: inline
         script: |
-          $artifactPath = '$(dotnetTemplatesArtifactPath)'
-          if (-not (Test-Path $artifactPath)) {
-            throw "Expected artifact directory '$artifactPath' was not found in the downloaded drop artifact."
-          }
-          $packages = Get-ChildItem -Path $artifactPath -Filter *.nupkg -File -Recurse
-          if (-not $packages) {
-            throw "No .nupkg files were found under '$artifactPath'."
-          }
-          Write-Host "Found the following packages ready for publish:"
-          $packages | ForEach-Object { Write-Host " - $($_.FullName)" }
+          $headers = @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" }
+          $buildUrl = "$(System.CollectionUri)$(System.TeamProjectId)/_apis/build/builds/${{ parameters.buildRunId }}?api-version=7.1"
+          $build = Invoke-RestMethod -Uri $buildUrl -Headers $headers
 
-    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+          if ($build.definition.id -ne ${{ parameters.buildPipelineId }}) {
+            throw "Build ${{ parameters.buildRunId }} belongs to pipeline $($build.definition.id), not ${{ parameters.buildPipelineId }}."
+          }
+          if ($build.status -ne 'completed' -or $build.result -ne 'succeeded') {
+            throw "Build ${{ parameters.buildRunId }} must be completed and succeeded; status is '$($build.status)' and result is '$($build.result)'."
+          }
+          if ($build.sourceBranch -ne 'refs/heads/main') {
+            throw "Build ${{ parameters.buildRunId }} must originate from refs/heads/main; source branch is '$($build.sourceBranch)'."
+          }
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download official dotnet new templates artifact'
+      inputs:
+        source: 'specific'
+        project: '$(System.TeamProjectId)'
+        pipeline: ${{ parameters.buildPipelineId }}
+        runVersion: 'specific'
+        runId: ${{ parameters.buildRunId }}
+        artifact: '${{ parameters.artifactName }}'
+        targetPath: '$(dotnetTemplatesArtifactPath)'
+        patterns: |
+          **/*.nupkg
+
+    - task: PowerShell@2
+      displayName: 'Verify NuGet release package'
+      inputs:
+        targetType: inline
+        script: |
+          $packages = @(
+            Get-ChildItem -Path '$(dotnetTemplatesArtifactPath)' -Filter '${{ parameters.expectedPackageId }}.*.nupkg' -File -Recurse |
+              Where-Object Name -NotLike '*.symbols.nupkg'
+          )
+          if ($packages.Count -ne 1) {
+            throw "Expected exactly one ${{ parameters.expectedPackageId }} package; found $($packages.Count)."
+          }
+
+          $expectedFileName = '${{ parameters.expectedPackageId }}.${{ parameters.expectedPackageVersion }}.nupkg'
+          if ($packages[0].Name -cne $expectedFileName) {
+            throw "Expected package '$expectedFileName', found '$($packages[0].Name)'."
+          }
+
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($packages[0].FullName)
+          try {
+            $nuspecEntries = @($archive.Entries | Where-Object FullName -Like '*.nuspec')
+            if ($nuspecEntries.Count -ne 1) {
+              throw "Expected exactly one .nuspec in $($packages[0].Name); found $($nuspecEntries.Count)."
+            }
+
+            $reader = [System.IO.StreamReader]::new($nuspecEntries[0].Open())
+            try {
+              [xml]$nuspec = $reader.ReadToEnd()
+            }
+            finally {
+              $reader.Dispose()
+            }
+          }
+          finally {
+            $archive.Dispose()
+          }
+
+          $namespace = $nuspec.DocumentElement.NamespaceURI
+          if ([string]::IsNullOrEmpty($namespace)) {
+            $metadata = $nuspec.SelectSingleNode('/package/metadata')
+            $actualPackageId = $metadata.SelectSingleNode('id').InnerText
+            $actualPackageVersion = $metadata.SelectSingleNode('version').InnerText
+          }
+          else {
+            $namespaceManager = [System.Xml.XmlNamespaceManager]::new($nuspec.NameTable)
+            $namespaceManager.AddNamespace('n', $namespace)
+            $metadata = $nuspec.SelectSingleNode('/n:package/n:metadata', $namespaceManager)
+            $actualPackageId = $metadata.SelectSingleNode('n:id', $namespaceManager).InnerText
+            $actualPackageVersion = $metadata.SelectSingleNode('n:version', $namespaceManager).InnerText
+          }
+
+          if ($actualPackageId -cne '${{ parameters.expectedPackageId }}') {
+            throw "Expected package ID '${{ parameters.expectedPackageId }}', found '$actualPackageId'."
+          }
+          if ($actualPackageVersion -cne '${{ parameters.expectedPackageVersion }}') {
+            throw "Expected package version '${{ parameters.expectedPackageVersion }}', found '$actualPackageVersion'."
+          }
+
+          Write-Host "Verifying package $($packages[0].FullName)"
+          & nuget.exe verify $packages[0].FullName -All
+          if ($LASTEXITCODE -ne 0) {
+            throw "NuGet signature verification failed for $($packages[0].FullName)."
+          }
+
+    - task: CopyFiles@2
+      displayName: 'Stage verified release package'
+      inputs:
+        SourceFolder: '$(dotnetTemplatesArtifactPath)'
+        Contents: |
+          **/${{ parameters.expectedPackageId }}.*.nupkg
+          !**/${{ parameters.expectedPackageId }}.*.symbols.nupkg
+        TargetFolder: '$(ob_outputDirectory)'
+
+- stage: DotnetNewTemplates_Publish
+  displayName: 'Publish dotnet new templates to NuGet.org'
+  dependsOn:
+  - DotnetNewTemplates_Prepare
+  variables:
+    ob_release_environment: Production
+  jobs:
+  - job: WaitForPublishApproval
+    displayName: 'Manual Approval'
+    pool:
+      type: server
+    timeoutInMinutes: 1440
+    steps:
+    - task: ManualValidation@0
+      displayName: 'Verify artifacts before NuGet.org publish'
+      timeoutInMinutes: 1440
+      inputs:
+        notifyUsers: ''
+        instructions: 'Verify the DotnetNewTemplatesReleasePackages artifact before publishing it to NuGet.org.'
+
+  - job: PublishNuGetOrg
+    displayName: 'Publish dotnet new template pack to NuGet.org'
+    dependsOn: WaitForPublishApproval
+    pool:
+      type: release
+    templateContext:
+      inputs:
+      - input: pipelineArtifact
+        artifactName: DotnetNewTemplatesReleasePackages
+        targetPath: '$(Build.SourcesDirectory)\VerifiedReleasePackages'
+        itemPattern: |
+          **/*.nupkg
+    steps:
+    - task: NuGetCommand@2
       displayName: 'Publish dotnet new templates to NuGet.org'
       inputs:
         command: 'push'
-        packagesToPush: '$(dotnetTemplatesArtifactPath)\*.nupkg'
+        packagesToPush: '$(Build.SourcesDirectory)\VerifiedReleasePackages\**\${{ parameters.expectedPackageId }}.*.nupkg;!$(Build.SourcesDirectory)\VerifiedReleasePackages\**\${{ parameters.expectedPackageId }}.*.symbols.nupkg'
         verbosityPush: 'Detailed'
         nuGetFeedType: 'external'
         publishFeedCredentials: 'NugetOrg'
