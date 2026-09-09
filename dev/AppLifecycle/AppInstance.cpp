@@ -341,7 +341,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             else
             {
                 const DWORD desiredAccess{
-                    processHandleFixEnabled ? SYNCHRONIZE : PROCESS_QUERY_LIMITED_INFORMATION };
+                    processHandleFixEnabled ? static_cast<DWORD>(SYNCHRONIZE) :
+                    static_cast<DWORD>(PROCESS_QUERY_LIMITED_INFORMATION) };
                 wil::unique_handle process(::OpenProcess(desiredAccess, FALSE, pid));
                 if (process != nullptr)
                 {
