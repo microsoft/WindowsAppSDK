@@ -43,8 +43,60 @@ extends:
       WindowsHostVersion:
         Version: 2022
     stages:
+    - stage: DotnetNewTemplates_Prepare
+      displayName: 'Prepare dotnet new templates release'
+      jobs:
+      - job: PrepareReleaseArtifact
+        displayName: 'Prepare verified NuGet package'
+        pool:
+          type: windows
+        variables:
+          ob_outputDirectory: '$(Build.ArtifactStagingDirectory)'
+          ob_artifactBaseName: 'DotnetNewTemplatesReleasePackages'
+          dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
+        steps:
+        - checkout: none
+
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download official dotnet new templates artifact'
+          inputs:
+            source: 'specific'
+            project: '$(System.TeamProjectId)'
+            pipeline: ${{ parameters.BuildPipelineId }}
+            runVersion: 'specific'
+            runId: ${{ parameters.BuildRunId }}
+            artifact: '${{ parameters.ArtifactName }}'
+            targetPath: '$(dotnetTemplatesArtifactPath)'
+            patterns: |
+              **/*.nupkg
+
+        - task: PowerShell@2
+          displayName: 'Verify NuGet release package'
+          inputs:
+            targetType: inline
+            script: |
+              $packages = @(Get-ChildItem -Path '$(dotnetTemplatesArtifactPath)' -Filter '*.nupkg' -File -Recurse)
+              if ($packages.Count -ne 1) {
+                throw "Expected exactly one dotnet template package; found $($packages.Count)."
+              }
+
+              Write-Host "Verifying package $($packages[0].FullName)"
+              & nuget.exe verify $packages[0].FullName -All
+              if ($LASTEXITCODE -ne 0) {
+                throw "NuGet signature verification failed for $($packages[0].FullName)."
+              }
+
+        - task: CopyFiles@2
+          displayName: 'Stage verified release package'
+          inputs:
+            SourceFolder: '$(dotnetTemplatesArtifactPath)'
+            Contents: '**/*.nupkg'
+            TargetFolder: '$(ob_outputDirectory)'
+
     - stage: DotnetNewTemplates_Approval
       displayName: 'Approve NuGet.org publish'
+      dependsOn:
+      - DotnetNewTemplates_Prepare
       jobs:
       - job: WaitForPublishApproval
         displayName: 'Manual Approval'
