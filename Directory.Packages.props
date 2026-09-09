@@ -67,7 +67,6 @@
     <MicrosoftWebWebView2Version>1.0.2903.40</MicrosoftWebWebView2Version>
     <MicrosoftTelemetryInboxNativeVersion>10.0.19041.1-191206-1406.vb-release.x86fre</MicrosoftTelemetryInboxNativeVersion>
     <MicrosoftWindowsAppSDKProtobufVersion>3.21.12</MicrosoftWindowsAppSDKProtobufVersion>
-    <MicrosoftWindowsAppSDKVersion>1.6.250408002</MicrosoftWindowsAppSDKVersion>
   </PropertyGroup>
 
   <!-- ═══════════════════════════════════════════════════════════════════════
@@ -123,10 +122,5 @@
     <PackageVersion Include="NuGet.VisualStudio.Contracts" Version="17.14.0" />
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
-  </ItemGroup>
-
-  <!-- Self-reference for compat tests -->
-  <ItemGroup Label="Self-Reference">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="$(MicrosoftWindowsAppSDKVersion)" />
   </ItemGroup>
 </Project>
