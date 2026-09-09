@@ -16,17 +16,9 @@ resources:
     ref: refs/heads/main
 
 parameters:
-- name: "BuildPipelineId"
-  displayName: "Build pipeline definition ID (from WindowsAppSDK-DotnetNewTemplates pipeline)"
-  type: number
-  default: 186691
 - name: "BuildRunId"
-  displayName: "Build run ID to download artifact from"
+  displayName: "Official WindowsAppSDK-DotnetNewTemplates build run ID"
   type: number
-- name: "ArtifactName"
-  displayName: "Artifact name from the build pipeline"
-  type: string
-  default: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
 
 variables:
 - template: WindowsAppSDK-CommonVariables.yml
@@ -59,10 +51,10 @@ extends:
           inputs:
             source: 'specific'
             project: '$(System.TeamProjectId)'
-            pipeline: ${{ parameters.BuildPipelineId }}
+            pipeline: 186691
             runVersion: 'specific'
             runId: ${{ parameters.BuildRunId }}
-            artifact: '${{ parameters.ArtifactName }}'
+            artifact: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
             targetPath: '$(dotnetTemplatesArtifactPath)'
             patterns: |
               **/*.nupkg
