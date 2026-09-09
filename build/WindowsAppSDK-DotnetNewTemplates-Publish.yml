@@ -72,9 +72,12 @@ extends:
           inputs:
             targetType: inline
             script: |
-              $packages = @(Get-ChildItem -Path '$(dotnetTemplatesArtifactPath)' -Filter '*.nupkg' -File -Recurse)
+              $packages = @(
+                Get-ChildItem -Path '$(dotnetTemplatesArtifactPath)' -Filter 'Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg' -File -Recurse |
+                  Where-Object Name -NotLike '*.symbols.nupkg'
+              )
               if ($packages.Count -ne 1) {
-                throw "Expected exactly one dotnet template package; found $($packages.Count)."
+                throw "Expected exactly one Microsoft.WindowsAppSDK.WinUI.CSharp.Templates package; found $($packages.Count)."
               }
 
               Write-Host "Verifying package $($packages[0].FullName)"
@@ -87,7 +90,9 @@ extends:
           displayName: 'Stage verified release package'
           inputs:
             SourceFolder: '$(dotnetTemplatesArtifactPath)'
-            Contents: '**/*.nupkg'
+            Contents: |
+              **/Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg
+              !**/Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.symbols.nupkg
             TargetFolder: '$(ob_outputDirectory)'
 
     - stage: DotnetNewTemplates_Publish
@@ -127,7 +132,7 @@ extends:
           displayName: 'Publish dotnet new templates to NuGet.org'
           inputs:
             command: 'push'
-            packagesToPush: '$(Build.SourcesDirectory)\VerifiedReleasePackages\**\*.nupkg'
+            packagesToPush: '$(Build.SourcesDirectory)\VerifiedReleasePackages\**\Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg;!$(Build.SourcesDirectory)\VerifiedReleasePackages\**\Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.symbols.nupkg'
             verbosityPush: 'Detailed'
             nuGetFeedType: 'external'
             publishFeedCredentials: 'NugetOrg'
