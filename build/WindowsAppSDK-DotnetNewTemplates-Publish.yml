@@ -1,16 +1,19 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# Standalone (non-OneBranch) pipeline for publishing dotnet new templates to NuGet.org.
-# This pipeline is separate from the OneBranch build pipeline because OneBranch agents
-# block outbound internet access, which prevents pushing packages to NuGet.org.
-#
 # Usage:
 #   1. Run the OneBranch build pipeline (WindowsAppSDK-DotnetNewTemplates.yml) first.
 #   2. Note the build ID from that run.
 #   3. Run this pipeline, providing the build ID as a parameter.
 
 trigger: none
+
+resources:
+  repositories:
+  - repository: templates
+    type: git
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
 
 parameters:
 - name: "BuildPipelineId"
