@@ -43,6 +43,8 @@ extends:
           ob_outputDirectory: '$(Build.ArtifactStagingDirectory)'
           ob_artifactBaseName: 'DotnetNewTemplatesReleasePackages'
           dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
+          expectedPackageId: 'Microsoft.WindowsAppSDK.WinUI.CSharp.Templates'
+          expectedPackageVersion: '0.0.7-alpha'
         steps:
         - checkout: none
 
@@ -65,11 +67,57 @@ extends:
             targetType: inline
             script: |
               $packages = @(
-                Get-ChildItem -Path '$(dotnetTemplatesArtifactPath)' -Filter 'Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg' -File -Recurse |
+                Get-ChildItem -Path '$(dotnetTemplatesArtifactPath)' -Filter '$(expectedPackageId).*.nupkg' -File -Recurse |
                   Where-Object Name -NotLike '*.symbols.nupkg'
               )
               if ($packages.Count -ne 1) {
-                throw "Expected exactly one Microsoft.WindowsAppSDK.WinUI.CSharp.Templates package; found $($packages.Count)."
+                throw "Expected exactly one $(expectedPackageId) package; found $($packages.Count)."
+              }
+
+              $expectedFileName = '$(expectedPackageId).$(expectedPackageVersion).nupkg'
+              if ($packages[0].Name -cne $expectedFileName) {
+                throw "Expected package '$expectedFileName', found '$($packages[0].Name)'."
+              }
+
+              Add-Type -AssemblyName System.IO.Compression.FileSystem
+              $archive = [System.IO.Compression.ZipFile]::OpenRead($packages[0].FullName)
+              try {
+                $nuspecEntries = @($archive.Entries | Where-Object FullName -Like '*.nuspec')
+                if ($nuspecEntries.Count -ne 1) {
+                  throw "Expected exactly one .nuspec in $($packages[0].Name); found $($nuspecEntries.Count)."
+                }
+
+                $reader = [System.IO.StreamReader]::new($nuspecEntries[0].Open())
+                try {
+                  [xml]$nuspec = $reader.ReadToEnd()
+                }
+                finally {
+                  $reader.Dispose()
+                }
+              }
+              finally {
+                $archive.Dispose()
+              }
+
+              $namespace = $nuspec.DocumentElement.NamespaceURI
+              if ([string]::IsNullOrEmpty($namespace)) {
+                $metadata = $nuspec.SelectSingleNode('/package/metadata')
+                $actualPackageId = $metadata.SelectSingleNode('id').InnerText
+                $actualPackageVersion = $metadata.SelectSingleNode('version').InnerText
+              }
+              else {
+                $namespaceManager = [System.Xml.XmlNamespaceManager]::new($nuspec.NameTable)
+                $namespaceManager.AddNamespace('n', $namespace)
+                $metadata = $nuspec.SelectSingleNode('/n:package/n:metadata', $namespaceManager)
+                $actualPackageId = $metadata.SelectSingleNode('n:id', $namespaceManager).InnerText
+                $actualPackageVersion = $metadata.SelectSingleNode('n:version', $namespaceManager).InnerText
+              }
+
+              if ($actualPackageId -cne '$(expectedPackageId)') {
+                throw "Expected package ID '$(expectedPackageId)', found '$actualPackageId'."
+              }
+              if ($actualPackageVersion -cne '$(expectedPackageVersion)') {
+                throw "Expected package version '$(expectedPackageVersion)', found '$actualPackageVersion'."
               }
 
               Write-Host "Verifying package $($packages[0].FullName)"
