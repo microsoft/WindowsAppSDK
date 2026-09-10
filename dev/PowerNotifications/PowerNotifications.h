@@ -4,8 +4,10 @@
 #pragma once
 
 #include <mutex>
+#include <optional>
 #include <powersetting.h>
 #include <Microsoft.Windows.System.Power.PowerManager.g.h>
+#include <winrt/Windows.System.Power.h>
 #include <frameworkudk\PowerNotificationsPal.h>
 #include <WindowsAppRuntimeInsights.h>
 
@@ -27,6 +29,8 @@ namespace winrt::Microsoft::Windows::System::Power
     using PowerEventHandler =
         winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
     using EventType = winrt::event<PowerEventHandler>;
+    using EnergySaverStatus2ChangedRevoker =
+        winrt::Windows::System::Power::PowerManager::EnergySaverStatus2Changed_revoker;
 
     // Forward-declarations
     namespace implementation
@@ -37,6 +41,11 @@ namespace winrt::Microsoft::Windows::System::Power
         void EnergySaverStatus_Register();
         void EnergySaverStatus_Unregister();
         void EnergySaverStatus_Update();
+
+        EventType& EnergySaverStatus2_Event();
+        void EnergySaverStatus2_Register();
+        void EnergySaverStatus2_Unregister();
+        void EnergySaverStatus2_Update();
 
         EventType& BatteryStatus_Event();
         void BatteryStatus_Register();
@@ -117,6 +126,7 @@ namespace winrt::Microsoft::Windows::System::Power
             std::atomic<ULONG> m_powerModeVersion;
             Power::SystemSuspendStatus m_systemSuspendStatus{ SystemSuspendStatus::Uninitialized };
             ::EnergySaverStatus m_cachedEnergySaverStatus{ Uninitalized };
+            Power::EnergySaverStatus2 m_cachedEnergySaverStatus2{ Power::EnergySaverStatus2::Unknown };
             CompositeBatteryStatus m_cachedCompositeBatteryStatus{};
             Power::BatteryStatus m_batteryStatus{ Power::BatteryStatus::NotPresent };
             Power::BatteryStatus m_oldBatteryStatus{ Power::BatteryStatus::NotPresent };
@@ -124,6 +134,7 @@ namespace winrt::Microsoft::Windows::System::Power
             Power::PowerSupplyStatus m_oldPowerSupplyStatus{ Power::PowerSupplyStatus::Adequate };
 
             EventType m_energySaverStatusChangedEvent;
+            EventType m_energySaverStatus2ChangedEvent;
             EventType m_batteryStatusChangedEvent;
             EventType m_powerSupplyStatusChangedEvent;
             EventType m_remainingChargePercentChangedEvent;
@@ -137,6 +148,8 @@ namespace winrt::Microsoft::Windows::System::Power
             EventType m_systemSuspendStatusChangedEvent;
 
             EnergySaverStatusRegistration m_energySaverStatusHandle{};
+            EnergySaverStatus2ChangedRevoker m_energySaverStatus2ChangedRevoker{};
+            std::optional<bool> m_energySaverStatus2Available{};
             CompositeBatteryStatusRegistration m_batteryStatusHandle{};
             PowerConditionRegistration m_powerSourceKindHandle{};
             DischargeTimeRegistration m_dischargeTimeHandle{};
@@ -152,6 +165,13 @@ namespace winrt::Microsoft::Windows::System::Power
                 &Power::implementation::EnergySaverStatus_Unregister,
                 &Power::implementation::EnergySaverStatus_Update,
                 L"EnergySaverStatus" };
+
+            PowerFunctionDetails energySaverStatus2Func{
+                &Power::implementation::EnergySaverStatus2_Event,
+                &Power::implementation::EnergySaverStatus2_Register,
+                &Power::implementation::EnergySaverStatus2_Unregister,
+                &Power::implementation::EnergySaverStatus2_Update,
+                L"EnergySaverStatus2" };
 
             PowerFunctionDetails compositeBatteryStatusFunc{
                 &Power::implementation::BatteryStatus_Event,
@@ -296,12 +316,23 @@ namespace winrt::Microsoft::Windows::System::Power
                 RemoveCallback(energySaverStatusFunc, token);
             }
 
-            void EnergySaverStatusChanged_Callback(::EnergySaverStatus energySaverStatus)
+            // EnergySaverStatus2 Functions
+            Power::EnergySaverStatus2 EnergySaverStatus2()
             {
-                m_cachedEnergySaverStatus = energySaverStatus;
-                RaiseEvent(energySaverStatusFunc);
+                UpdateValuesIfNecessary(energySaverStatus2Func);
+                std::scoped_lock<std::mutex> lock(m_mutex);
+                return m_cachedEnergySaverStatus2;
             }
 
+            event_token EnergySaverStatus2Changed(const PowerEventHandler& handler)
+            {
+                return AddCallback(energySaverStatus2Func, handler);
+            }
+
+            void EnergySaverStatus2Changed(const event_token& token)
+            {
+                RemoveCallback(energySaverStatus2Func, token);
+            }
             // BatteryStatus Functions
             void ProcessCompositeBatteryStatus(const CompositeBatteryStatus& compositeBatteryStatus)
             {
@@ -653,6 +684,11 @@ namespace winrt::Microsoft::Windows::System::Power
             static Power::EnergySaverStatus EnergySaverStatus()
             {
                 return Factory()->EnergySaverStatus();
+            }
+
+            static Power::EnergySaverStatus2 EnergySaverStatus2()
+            {
+                return Factory()->EnergySaverStatus2();
             }
 
             static Power::BatteryStatus BatteryStatus()

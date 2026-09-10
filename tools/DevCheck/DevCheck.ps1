@@ -234,7 +234,7 @@ $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 
 # Windows SDKs to check/install by -CheckWindowsSDK and -InstallWindowsSDK
 $global:windows_sdks = (('10.0.17763.0', 'https://go.microsoft.com/fwlink/p/?LinkID=2033908'),
-                        ('10.0.26100.4654', 'https://go.microsoft.com/fwlink/p/?LinkID=2327008'))
+                        ('10.0.26100.8876', 'https://go.microsoft.com/fwlink/?linkid=2372509'))
 
 # Nuget Restore paths/filenames (relative to project root directory)
 $global:nuget_restore_filenames = ('.')
