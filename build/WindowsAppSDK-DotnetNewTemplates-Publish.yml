@@ -16,7 +16,7 @@ resources:
     ref: refs/heads/main
 
 extends:
-  template: v2/Microsoft.Official.CrossPlat.yml@templates
+  template: v2/OneBranch.Official.CrossPlat.yml@templates
   parameters:
     release:
       category: NonAzure
