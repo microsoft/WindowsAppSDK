@@ -2,9 +2,6 @@ parameters:
 - name: SignOutput
   type: boolean
   default: false
-- name: IsOneBranch
-  type: boolean
-  default: false
 - name: IsOfficial
   type: boolean
   default: false 
@@ -14,6 +11,12 @@ parameters:
 - name: UseCurrentBuild
   type: boolean
   default: false 
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. PublishSymbol-Steps is invoked
+# WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
+  type: boolean
+  default: false
 - name: OptionalVSIXVersion
   # if blank, the project template will select the version matching the Windows App SDK
   # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
@@ -22,29 +25,61 @@ parameters:
 - name: EnableExperimentalVSIXFeatures
   type: boolean
   default: false
+# Name of the upstream NuGet+MSIX pipeline artifact to download. The monobuild's
+# Aggregate stage publishes 'WindowsAppSDK-NuGet-And-MSIX' (hyphens); the legacy
+# Aggregator pipeline used 'WindowsAppSDK_Nuget_And_MSIX' (underscores). Default
+# preserves the legacy name so non-monobuild callers don't need to opt in.
+- name: artifactName
+  type: string
+  default: 'WindowsAppSDK-NuGet-And-MSIX'
+# When true, skip the artifact download step entirely. The caller is responsible
+# for ensuring $(parameters.artifactName) content is already present at
+# $(System.ArtifactsDirectory) before ExtractWindowsAppSDKVersion runs. Used by
+# the monobuild's CreateVSIX stage so it can download with rebuild-aware variables
+# ($(_useBuildOutputFromBuildId) / $(_useBuildOutputFromPipeline)) that honor
+# useBuildOutput_BuildId / useBuildOutput_RebuildStage queue-time overrides.
+- name: SkipArtifactDownload
+  type: boolean
+  default: false
+# Defaults true to preserve official-build behavior.
+# Set to false in PR build-validation runs to skip pushing to the symbol server.
+- name: PublishSymbols
+  type: boolean
+  default: true
+# Branch (in the Aggregator pipeline's repo) to pull the latest Windows App SDK
+# nuget from when UseCurrentBuild is false. The Aggregator nightly runs daily on
+# 'main', so default there. Override if the active publishing branch changes.
+- name: NightlyBranchName
+  type: string
+  default: 'refs/heads/release/dev/monobuild-2.0-experimental'
+# How far back the nightly search may reach. See
+# WindowsAppSDK-DownloadNightlyPackage-Steps.yml for why we search rather than take the
+# latest run from the branch.
+- name: MaxNightlyAgeInDays
+  type: number
+  default: 7
 
 steps:
-- ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Current Build'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
-- ${{ else }}:
-  ###
-  # This step downloads the WindowsAppSDK NuGet package from a pipeline
-  # variables: OfficialPipelineID LatestOfficialBuildID
-  # for use in building the VSIX
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Latest Nightly'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
-      source: 'specific'
-      project: $(System.TeamProjectId)
-      pipeline: $(OfficialPipelineID) 
-      pipelineId: $(LatestOfficialBuildID) 
-    
+- ${{ if eq(parameters.SkipArtifactDownload, false) }}:
+  - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Current Build'
+      inputs:
+        artifactName: ${{ parameters.artifactName }}
+        targetPath: '$(System.ArtifactsDirectory)'
+  - ${{ else }}:
+    ###
+    # Download the WindowsAppSDK NuGet package from the monobuild nightly for use in
+    # building the VSIX. We pull from NightlyBranchName rather than a pinned
+    # LatestOfficialBuildID so PR build-validation runs always get a fresh package without
+    # needing a build id supplied at queue time.
+    - template: WindowsAppSDK-DownloadNightlyPackage-Steps.yml
+      parameters:
+        artifactName: ${{ parameters.artifactName }}
+        targetPath: '$(System.ArtifactsDirectory)'
+        nightlyBranchName: ${{ parameters.NightlyBranchName }}
+        maxNightlyAgeInDays: ${{ parameters.MaxNightlyAgeInDays }}
+
 - task: PowerShell@2
   name: ExtractWindowsAppSDKVersion
   displayName: Extract WindowsAppSDKVersion
@@ -184,6 +219,7 @@ steps:
 
   - template: WindowsAppSDK-SignPackageContents-steps.yml
     parameters:
+      IsMonobuild: ${{ parameters.IsMonobuild }}
       inputPackageDirectory: '$(Agent.TempDirectory)/UnsignedVSIX'
       outputPackageDirectory: '$(ob_outputDirectory)'
       packageType: 'vsix'
@@ -196,9 +232,10 @@ steps:
       codeSignPattern: |
         **/WindowsAppSDK.*.Extension.*.dll
         
-- ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
-    parameters:
+- template: WindowsAppSDK-PublishSymbol-Wrapper.yml
+  parameters:
+    IsMonobuild: ${{ parameters.IsMonobuild }}
+    InnerParams:
       SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
 
@@ -234,8 +271,3 @@ steps:
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if ne(parameters.IsOneBranch, 'true') }}:
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'
