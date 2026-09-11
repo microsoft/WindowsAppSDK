@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+#include <Windows.h>
+
 // Forward-declare the various AutoInitialize functions
 namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
 {
@@ -38,6 +40,24 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Common
 
         static void Initialize()
         {
+            // HybridDeploy: URFW reads the app's SxS manifest and expands
+            // %MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY% inside <file loadFrom>.
+            // Set it before Bootstrap runs so the framework DLL's DllMain can load
+            // the catalog with correct pinned-DLL paths.
+#if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_HYBRIDDEPLOYSETUP
+            WCHAR exePath[MAX_PATH]{};
+            if (::GetModuleFileNameW(nullptr, exePath, ARRAYSIZE(exePath)) > 0)
+            {
+                // Strip filename, keep trailing backslash for concatenation.
+                WCHAR* lastBackslash{ wcsrchr(exePath, L'\\') };
+                if (lastBackslash != nullptr)
+                {
+                    *(lastBackslash + 1) = L'\0';
+                    ::SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", exePath);
+                }
+            }
+#endif
+
             // Call the AutoInitialize functions, as needed, starting with those initializing the WindowsAppRuntime
 #if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP
             Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap::AutoInitialize::Initialize();
