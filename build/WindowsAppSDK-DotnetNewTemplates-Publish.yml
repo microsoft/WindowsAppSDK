@@ -2,11 +2,25 @@
 # Licensed under the MIT License.
 #
 # Usage:
-#   1. Run the OneBranch build pipeline (WindowsAppSDK-DotnetNewTemplates.yml) first.
-#   2. Note the build ID from that run.
-#   3. Run this pipeline, providing the build ID as a parameter.
+#   1. Merge changes through a compliant PR to the governed branch.
+#   2. Run build definition 186691 (WindowsAppSDK-DotnetNewTemplates.yml)
+#      with signing enabled.
+#   3. Run this pipeline with that build ID and ArmPublishToNugetOrg enabled.
+#   4. Approve the verified ReleasePackages artifact to publish it unchanged.
 
 trigger: none
+
+parameters:
+- name: "BuildRunId"
+  displayName: "Official build run ID from definition 186691"
+  type: number
+- name: "ArmPublishToNugetOrg"
+  displayName: "Arm publish of the verified package to NuGet.org"
+  type: boolean
+  default: false
+
+variables:
+- template: WindowsAppSDK-CommonVariables.yml
 
 resources:
   repositories:
@@ -26,33 +40,16 @@ extends:
         Version: 2022
         Network: R1
     stages:
-    - stage: DotnetNewTemplates_Approval
-      displayName: 'Approve NuGet.org publish'
+    - stage: DotnetNewTemplates_Prepare
+      displayName: 'Prepare verified dotnet new template package'
       jobs:
-      - job: WaitForPublishApproval
-        displayName: 'Manual Approval'
-        pool: server
-        timeoutInMinutes: 1440
-        steps:
-        - task: ManualValidation@0
-          displayName: 'Verify artifacts before NuGet.org publish'
-          timeoutInMinutes: 1440
-          inputs:
-            notifyUsers: ''
-            instructions: |
-              Please verify the .nupkg in the ${{ parameters.ArtifactName }} folder before continuing the publish to NuGet.org:
-              https://dev.azure.com/microsoft/ProjectReunion/_build/results?buildId=${{ parameters.BuildRunId }}&view=artifacts&pathAsName=false&type=publishedArtifacts
-
-    - stage: DotnetNewTemplates_Publish
-      displayName: 'Publish dotnet new templates to NuGet.org'
-      dependsOn:
-      - DotnetNewTemplates_Approval
-      jobs:
-      - job: PublishNuGetOrg
-        displayName: 'Publish dotnet new template pack to NuGet.org'
+      - job: PrepareReleasePackage
+        displayName: 'Download and verify official build artifact'
         pool:
           type: windows
         variables:
+          ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\ReleasePackages'
+          ob_artifactBaseName: 'ReleasePackages'
           dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
         steps:
         - checkout: none
@@ -62,49 +59,96 @@ extends:
           inputs:
             source: 'specific'
             project: '$(System.TeamProjectId)'
-            pipeline: ${{ parameters.BuildPipelineId }}
+            definition: '186691'
             runVersion: 'specific'
-            runId: ${{ parameters.BuildRunId }}
-            artifact: '${{ parameters.ArtifactName }}'
-            targetPath: '$(dotnetTemplatesArtifactPath)'
+            pipelineId: ${{ parameters.BuildRunId }}
+            artifact: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+            path: '$(dotnetTemplatesArtifactPath)'
 
         - task: PowerShell@2
-          displayName: 'Verify dotnet new template pack artifact exists'
+          displayName: 'Verify NuGet package signature'
           inputs:
             targetType: inline
             script: |
+              Set-StrictMode -Version 2.0
+              $ErrorActionPreference = 'Stop'
+
               $artifactPath = '$(dotnetTemplatesArtifactPath)'
               if (-not (Test-Path $artifactPath)) {
                 throw "Expected artifact directory '$artifactPath' was not found."
               }
-              $packages = Get-ChildItem -Path $artifactPath -Filter *.nupkg -File -Recurse
-              if (-not $packages) {
-                throw "No .nupkg files were found under '$artifactPath'."
+
+              $packages = @(
+                Get-ChildItem -Path $artifactPath -Filter 'Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg' -File -Recurse |
+                  Where-Object { $_.Name -notlike '*.symbols.nupkg' }
+              )
+              if ($packages.Count -ne 1) {
+                throw "Expected exactly one Microsoft.WindowsAppSDK.WinUI.CSharp.Templates package under '$artifactPath', but found $($packages.Count)."
               }
-              Write-Host "Found the following packages ready for publish:"
-              $packages | ForEach-Object { Write-Host " - $($_.FullName)" }
 
-        - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-          displayName: 'Publish dotnet new templates to NuGet.org'
+              $package = $packages[0]
+              Write-Host "Verifying package: $($package.FullName)"
+              $verificationOutput = @(& nuget.exe verify $package.FullName -All 2>&1)
+              $verificationExitCode = $LASTEXITCODE
+              $verificationOutput | ForEach-Object { Write-Host $_ }
+              $verificationSummary = $verificationOutput -join [Environment]::NewLine
+              if (($verificationExitCode -ne 0) -or ($verificationSummary -notmatch 'Finished with 0 errors')) {
+                throw "NuGet signature verification failed for '$($package.FullName)' with exit code $verificationExitCode."
+              }
+
+              Write-Host "##vso[task.setvariable variable=VerifiedPackageDirectory]$($package.DirectoryName)"
+              Write-Host "##vso[task.setvariable variable=VerifiedPackageName]$($package.Name)"
+              exit 0
+
+        - task: CopyFiles@2
+          displayName: 'Copy verified package to release artifact'
           inputs:
-            command: 'push'
-            packagesToPush: '$(dotnetTemplatesArtifactPath)\*.nupkg'
-            verbosityPush: 'Detailed'
-            nuGetFeedType: 'external'
-            publishFeedCredentials: 'NugetOrg'
+            SourceFolder: '$(VerifiedPackageDirectory)'
+            Contents: '$(VerifiedPackageName)'
+            TargetFolder: '$(ob_outputDirectory)'
 
-parameters:
-- name: "BuildPipelineId"
-  displayName: "Build pipeline definition ID (from WindowsAppSDK-DotnetNewTemplates pipeline)"
-  type: number
-  default: 186691
-- name: "BuildRunId"
-  displayName: "Build run ID to download artifact from"
-  type: number
-- name: "ArtifactName"
-  displayName: "Artifact name from the build pipeline"
-  type: string
-  default: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+    - stage: DotnetNewTemplates_Release
+      displayName: 'Release dotnet new templates to NuGet.org'
+      dependsOn: DotnetNewTemplates_Prepare
+      variables:
+        ob_release_environment: Production
+      jobs:
+      - job: VerifyReleasePackage
+        displayName: 'Manually verify ReleasePackages artifact'
+        pool:
+          type: server
+        timeoutInMinutes: 1440
+        steps:
+        - task: ManualValidation@0
+          displayName: 'Approve verified package for NuGet.org'
+          timeoutInMinutes: 1440
+          inputs:
+            notifyUsers: ''
+            instructions: |
+              Verify the ReleasePackages artifact prepared from official build ${{ parameters.BuildRunId }}:
+              https://dev.azure.com/microsoft/ProjectReunion/_build/results?buildId=$(Build.BuildId)&view=artifacts&pathAsName=false&type=publishedArtifacts
 
-variables:
-- template: WindowsAppSDK-CommonVariables.yml
+      - ${{ if eq(parameters.ArmPublishToNugetOrg, true) }}:
+        - job: PublishNuGetOrg
+          displayName: 'Publish verified dotnet new template pack to NuGet.org'
+          dependsOn: VerifyReleasePackage
+          pool:
+            type: release
+          templateContext:
+            inputs:
+            - input: pipelineArtifact
+              artifactName: ReleasePackages
+              targetPath: '$(Build.SourcesDirectory)\VerifiedReleasePackages'
+              itemPattern: |
+                **/Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg
+          steps:
+          - checkout: none
+
+          - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+            displayName: 'Publish dotnet new templates to NuGet.org'
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Build.SourcesDirectory)\VerifiedReleasePackages\**\Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg;!$(Build.SourcesDirectory)\VerifiedReleasePackages\**\*.symbols.nupkg'
+              verbosityPush: 'Detailed'
+              nuGetFeedType: 'external'
+              publishFeedCredentials: 'NugetOrg'

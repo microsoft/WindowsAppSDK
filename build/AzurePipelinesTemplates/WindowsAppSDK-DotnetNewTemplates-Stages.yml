@@ -40,6 +40,8 @@ stages:
     dependsOn: []
     pool: ${{ parameters.pool }}
     variables:
+      # This name is the release contract consumed by
+      # WindowsAppSDK-DotnetNewTemplates-Publish.yml.
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
       templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
       # Set by the "Compute package version" step below.
@@ -160,5 +162,4 @@ stages:
         nuGetFeedType: 'internal'
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
         allowPackageConflicts: true
-
 

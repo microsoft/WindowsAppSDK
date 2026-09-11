@@ -119,5 +119,6 @@ extends:
           type: windows
         dependsOnStage: 'DotnetNewTemplates_Build'
 
-    # NuGet.org publishing is handled by the separate governed release pipeline:
-    # WindowsAppSDK-DotnetNewTemplates-Publish.yml
+    # NuGet.org publishing is handled by WindowsAppSDK-DotnetNewTemplates-Publish.yml.
+    # That release pipeline accepts only this definition's governed artifact and
+    # independently verifies the CP-401405 signature before approval and publish.
