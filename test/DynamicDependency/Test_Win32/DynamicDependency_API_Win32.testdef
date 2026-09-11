@@ -5,7 +5,8 @@
             "Filename": "DynamicDependency_Test_Win32.dll",
             "Parameters": "",
             "Architectures": ["x64", "arm64"],
-            "Status": "Enabled"
+            "Status": "Enabled",
+            "MaxReruns": 3
         }
     ]
 }
