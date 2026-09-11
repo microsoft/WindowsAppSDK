@@ -11,12 +11,6 @@ parameters:
 - name: artifactName
   type: string
   default: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
-- name: expectedPackageId
-  type: string
-  default: 'Microsoft.WindowsAppSDK.WinUI.CSharp.Templates'
-- name: expectedPackageVersion
-  type: string
-  default: '0.0.7-alpha'
 
 stages:
 - stage: DotnetNewTemplates_Prepare
@@ -30,14 +24,19 @@ stages:
       ob_artifactBaseName: 'DotnetNewTemplatesReleasePackages'
       dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
     steps:
-    - checkout: none
+    - checkout: self
+      fetchDepth: 1
+      persistCredentials: false
 
     - task: PowerShell@2
       displayName: 'Validate official build run'
       inputs:
         targetType: inline
         script: |
-          $headers = @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" }
+          $headers = @{
+            Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN"
+            Accept = 'application/json'
+          }
           $buildUrl = "$(System.CollectionUri)$(System.TeamProjectId)/_apis/build/builds/${{ parameters.buildRunId }}?api-version=7.1"
           $build = Invoke-RestMethod -Uri $buildUrl -Headers $headers
 
@@ -50,6 +49,46 @@ stages:
           if ($build.sourceBranch -ne 'refs/heads/main') {
             throw "Build ${{ parameters.buildRunId }} must originate from refs/heads/main; source branch is '$($build.sourceBranch)'."
           }
+
+          $signOutput = $false
+          if (-not [bool]::TryParse([string]$build.templateParameters.SignOutput, [ref]$signOutput) -or -not $signOutput) {
+            throw "Build ${{ parameters.buildRunId }} must set SignOutput=true."
+          }
+          $expectedRepositoryId = '$(Build.Repository.ID)'
+          if ($build.repository.type -ne 'TfsGit' -or $build.repository.id -ne $expectedRepositoryId) {
+            throw "Build ${{ parameters.buildRunId }} must originate from repository $expectedRepositoryId; source repository is '$($build.repository.id)'."
+          }
+
+          $projectPath = '/dev/Templates/Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj'
+          $escapedPath = [uri]::EscapeDataString($projectPath)
+          $escapedVersion = [uri]::EscapeDataString($build.sourceVersion)
+          $projectUrl = "$(System.CollectionUri)$(System.TeamProjectId)/_apis/git/repositories/$($build.repository.id)/items?path=$escapedPath&versionDescriptor.version=$escapedVersion&versionDescriptor.versionType=commit&includeContent=true&api-version=7.1"
+          $projectResponse = Invoke-WebRequest -Uri $projectUrl -Headers $headers -UseBasicParsing
+          $projectItem = $projectResponse.Content | ConvertFrom-Json
+          if ([string]::IsNullOrWhiteSpace([string]$projectItem.content)) {
+            throw "Could not read $projectPath from source commit $($build.sourceVersion)."
+          }
+
+          $project = [xml]([string]($projectItem.content))
+          $packageIdNodes = @($project.SelectNodes('/Project/PropertyGroup/PackageId'))
+          $versionNodes = @($project.SelectNodes('/Project/PropertyGroup/Version'))
+          if ($packageIdNodes.Count -ne 1 -or [string]::IsNullOrWhiteSpace($packageIdNodes[0].InnerText)) {
+            throw "Expected exactly one non-empty <PackageId> in $projectPath; found $($packageIdNodes.Count)."
+          }
+          if ($versionNodes.Count -ne 1 -or [string]::IsNullOrWhiteSpace($versionNodes[0].InnerText)) {
+            throw "Expected exactly one non-empty <Version> in $projectPath; found $($versionNodes.Count)."
+          }
+
+          $packageId = $packageIdNodes[0].InnerText.Trim()
+          $packageVersion = $versionNodes[0].InnerText.Trim()
+          if ($packageId.Contains('$(') -or $packageVersion.Contains('$(')) {
+            throw "PackageId and Version must be literal values in $projectPath."
+          }
+
+          Write-Host "Validated source build ${{ parameters.buildRunId }} at commit $($build.sourceVersion)."
+          Write-Host "Expected package: $packageId $packageVersion"
+          Write-Host "##vso[task.setvariable variable=ExpectedPackageId]$packageId"
+          Write-Host "##vso[task.setvariable variable=ExpectedPackageVersion]$packageVersion"
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -71,15 +110,17 @@ stages:
       inputs:
         targetType: inline
         script: |
+          $expectedPackageId = '$(ExpectedPackageId)'
+          $expectedPackageVersion = '$(ExpectedPackageVersion)'
           $packages = @(
-            Get-ChildItem -Path '$(dotnetTemplatesArtifactPath)' -Filter '${{ parameters.expectedPackageId }}.*.nupkg' -File -Recurse |
+            Get-ChildItem -Path '$(dotnetTemplatesArtifactPath)' -Filter "$expectedPackageId.*.nupkg" -File -Recurse |
               Where-Object Name -NotLike '*.symbols.nupkg'
           )
           if ($packages.Count -ne 1) {
-            throw "Expected exactly one ${{ parameters.expectedPackageId }} package; found $($packages.Count)."
+            throw "Expected exactly one $expectedPackageId package; found $($packages.Count)."
           }
 
-          $expectedFileName = '${{ parameters.expectedPackageId }}.${{ parameters.expectedPackageVersion }}.nupkg'
+          $expectedFileName = "$expectedPackageId.$expectedPackageVersion.nupkg"
           if ($packages[0].Name -cne $expectedFileName) {
             throw "Expected package '$expectedFileName', found '$($packages[0].Name)'."
           }
@@ -107,22 +148,28 @@ stages:
           $namespace = $nuspec.DocumentElement.NamespaceURI
           if ([string]::IsNullOrEmpty($namespace)) {
             $metadata = $nuspec.SelectSingleNode('/package/metadata')
-            $actualPackageId = $metadata.SelectSingleNode('id').InnerText
-            $actualPackageVersion = $metadata.SelectSingleNode('version').InnerText
+            $packageIdNode = $metadata.SelectSingleNode('id')
+            $packageVersionNode = $metadata.SelectSingleNode('version')
           }
           else {
             $namespaceManager = [System.Xml.XmlNamespaceManager]::new($nuspec.NameTable)
             $namespaceManager.AddNamespace('n', $namespace)
             $metadata = $nuspec.SelectSingleNode('/n:package/n:metadata', $namespaceManager)
-            $actualPackageId = $metadata.SelectSingleNode('n:id', $namespaceManager).InnerText
-            $actualPackageVersion = $metadata.SelectSingleNode('n:version', $namespaceManager).InnerText
+            $packageIdNode = $metadata.SelectSingleNode('n:id', $namespaceManager)
+            $packageVersionNode = $metadata.SelectSingleNode('n:version', $namespaceManager)
           }
 
-          if ($actualPackageId -cne '${{ parameters.expectedPackageId }}') {
-            throw "Expected package ID '${{ parameters.expectedPackageId }}', found '$actualPackageId'."
+          if (-not $metadata -or -not $packageIdNode -or -not $packageVersionNode) {
+            throw "Package metadata must contain id and version elements."
           }
-          if ($actualPackageVersion -cne '${{ parameters.expectedPackageVersion }}') {
-            throw "Expected package version '${{ parameters.expectedPackageVersion }}', found '$actualPackageVersion'."
+
+          $actualPackageId = $packageIdNode.InnerText
+          $actualPackageVersion = $packageVersionNode.InnerText
+          if ($actualPackageId -cne $expectedPackageId) {
+            throw "Expected package ID '$expectedPackageId', found '$actualPackageId'."
+          }
+          if ($actualPackageVersion -cne $expectedPackageVersion) {
+            throw "Expected package version '$expectedPackageVersion', found '$actualPackageVersion'."
           }
 
           Write-Host "Verifying package $($packages[0].FullName)"
@@ -136,8 +183,8 @@ stages:
       inputs:
         SourceFolder: '$(dotnetTemplatesArtifactPath)'
         Contents: |
-          **/${{ parameters.expectedPackageId }}.*.nupkg
-          !**/${{ parameters.expectedPackageId }}.*.symbols.nupkg
+          **/$(ExpectedPackageId).*.nupkg
+          !**/$(ExpectedPackageId).*.symbols.nupkg
         TargetFolder: '$(ob_outputDirectory)'
 
 - stage: DotnetNewTemplates_Publish
@@ -158,7 +205,11 @@ stages:
       timeoutInMinutes: 1440
       inputs:
         notifyUsers: ''
-        instructions: 'Verify the DotnetNewTemplatesReleasePackages artifact before publishing it to NuGet.org.'
+        instructions: |
+          Verify the DotnetNewTemplatesReleasePackages artifact in this publish run before publishing it to NuGet.org:
+          $(System.CollectionUri)$(System.TeamProjectId)/_build/results?buildId=$(Build.BuildId)&view=artifacts&pathAsName=false&type=publishedArtifacts
+          The package was prepared from official build ${{ parameters.buildRunId }}.
+        onTimeout: reject
 
   - job: PublishNuGetOrg
     displayName: 'Publish dotnet new template pack to NuGet.org'
@@ -173,11 +224,23 @@ stages:
         itemPattern: |
           **/*.nupkg
     steps:
+    - task: PowerShell@2
+      displayName: 'Validate release package input'
+      inputs:
+        targetType: inline
+        script: |
+          $packages = @(Get-ChildItem -Path '$(Build.SourcesDirectory)\VerifiedReleasePackages' -Filter '*.nupkg' -File -Recurse)
+          $releasePackages = @($packages | Where-Object Name -NotLike '*.symbols.nupkg')
+          if ($packages.Count -ne 1 -or $releasePackages.Count -ne 1) {
+            throw "Expected exactly one non-symbol NuGet package in the verified release artifact; found $($releasePackages.Count) release packages and $($packages.Count) total packages."
+          }
+          Write-Host "Publishing verified package $($releasePackages[0].FullName)"
+
     - task: NuGetCommand@2
       displayName: 'Publish dotnet new templates to NuGet.org'
       inputs:
         command: 'push'
-        packagesToPush: '$(Build.SourcesDirectory)\VerifiedReleasePackages\**\${{ parameters.expectedPackageId }}.*.nupkg;!$(Build.SourcesDirectory)\VerifiedReleasePackages\**\${{ parameters.expectedPackageId }}.*.symbols.nupkg'
+        packagesToPush: '$(Build.SourcesDirectory)\VerifiedReleasePackages\**\*.nupkg;!$(Build.SourcesDirectory)\VerifiedReleasePackages\**\*.symbols.nupkg'
         verbosityPush: 'Detailed'
         nuGetFeedType: 'external'
         publishFeedCredentials: 'NugetOrg'
