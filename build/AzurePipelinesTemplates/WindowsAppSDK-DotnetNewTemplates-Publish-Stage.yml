@@ -24,7 +24,9 @@ stages:
       ob_artifactBaseName: 'DotnetNewTemplatesReleasePackages'
       dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
     steps:
-    - checkout: none
+    - checkout: self
+      fetchDepth: 1
+      persistCredentials: false
 
     - task: PowerShell@2
       displayName: 'Validate official build run'
