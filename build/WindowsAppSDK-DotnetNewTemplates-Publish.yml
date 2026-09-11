@@ -29,6 +29,7 @@ extends:
     release:
       category: NonAzure
     featureFlags:
+      EnableCDPxPAT: false
       WindowsHostVersion:
         Version: 2022
     stages:
