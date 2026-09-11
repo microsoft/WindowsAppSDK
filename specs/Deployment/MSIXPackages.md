@@ -175,7 +175,7 @@ where
 * ReleaseMajor = project release major version number. See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
 * ShortVersionTag = short form of the VersionTag
 
-ShortVersionTag is derived from a VersionTag by combining the 1st letter and up to the last 2 digit (depending on build number) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
+ShortVersionTag is derived from a VersionTag by combining the 1st letter and up to 2 trailing base-36 characters (0-9, A-Z) of the channel build string for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
 
 ## 3.3. Package Naming - Singleton
 
