@@ -205,7 +205,10 @@ stages:
       timeoutInMinutes: 1440
       inputs:
         notifyUsers: ''
-        instructions: 'Verify the DotnetNewTemplatesReleasePackages artifact prepared from official build ${{ parameters.buildRunId }} before publishing it to NuGet.org.'
+        instructions: |
+          Verify the DotnetNewTemplatesReleasePackages artifact in this publish run before publishing it to NuGet.org:
+          $(System.CollectionUri)$(System.TeamProjectId)/_build/results?buildId=$(Build.BuildId)&view=artifacts&pathAsName=false&type=publishedArtifacts
+          The package was prepared from official build ${{ parameters.buildRunId }}.
         onTimeout: reject
 
   - job: PublishNuGetOrg
