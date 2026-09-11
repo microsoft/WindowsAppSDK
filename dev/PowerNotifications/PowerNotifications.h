@@ -6,6 +6,7 @@
 #include <mutex>
 #include <powersetting.h>
 #include <Microsoft.Windows.System.Power.PowerManager.g.h>
+#include <Microsoft.Windows.System.Power.SystemSuspendStatusChangedEventArgs.g.h>
 #include <frameworkudk\PowerNotificationsPal.h>
 #include <WindowsAppRuntimeInsights.h>
 
@@ -27,11 +28,17 @@ namespace winrt::Microsoft::Windows::System::Power
     using PowerEventHandler =
         winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
     using EventType = winrt::event<PowerEventHandler>;
+    
+    using SystemSuspendStatusChangedEventHandler =
+        winrt::Windows::Foundation::TypedEventHandler<winrt::Windows::Foundation::IInspectable, 
+            winrt::Microsoft::Windows::System::Power::SystemSuspendStatusChangedEventArgs>;
+    using SystemSuspendStatusChangedEventType = winrt::event<SystemSuspendStatusChangedEventHandler>;
 
     // Forward-declarations
     namespace implementation
     {
         struct PowerManager;
+        struct SystemSuspendStatusChangedEventArgs;
 
         EventType& EnergySaverStatus_Event();
         void EnergySaverStatus_Register();
@@ -86,6 +93,10 @@ namespace winrt::Microsoft::Windows::System::Power
         void SystemSuspendStatus_Register();
         void SystemSuspendStatus_Unregister();
 
+        SystemSuspendStatusChangedEventType& SystemSuspendStatus2_Event();
+        void SystemSuspendStatus2_Register();
+        void SystemSuspendStatus2_Unregister();
+
         // A place holder for an empty function, since not all events have every function defined
         void NoOperation() {}
 
@@ -135,6 +146,7 @@ namespace winrt::Microsoft::Windows::System::Power
             EventType m_userPresenceStatusChangedEvent;
             EventType m_systemAwayModeStatusChangedEvent;
             EventType m_systemSuspendStatusChangedEvent;
+            SystemSuspendStatusChangedEventType m_systemSuspendStatusChanged2Event;
 
             EnergySaverStatusRegistration m_energySaverStatusHandle{};
             CompositeBatteryStatusRegistration m_batteryStatusHandle{};
@@ -224,6 +236,11 @@ namespace winrt::Microsoft::Windows::System::Power
                 L"SystemSuspendStatus" };
 
             bool RegisteredForEvents(const EventType& eventObj)
+            {
+                return eventObj ? true : false;
+            }
+
+            bool RegisteredForEvents(const SystemSuspendStatusChangedEventType& eventObj)
             {
                 return eventObj ? true : false;
             }
@@ -607,32 +624,110 @@ namespace winrt::Microsoft::Windows::System::Power
 
             event_token SystemSuspendStatusChanged(const PowerEventHandler& handler)
             {
-                return AddCallback(systemSuspendFunc, handler);
+                try
+                {
+                    PowerNotificationsTelemetry::AddCallbackTrace(L"SystemSuspendStatusChanged");
+                    std::scoped_lock<std::mutex> lock(m_mutex);
+                    // Register if neither event has listeners
+                    if (!RegisteredForEvents(m_systemSuspendStatusChangedEvent) && 
+                        !RegisteredForEvents(m_systemSuspendStatusChanged2Event))
+                    {
+                        SystemSuspendStatus_Register();
+                    }
+                    return m_systemSuspendStatusChangedEvent.add(handler);
+                }
+                catch (std::exception& ex)
+                {
+                    PowerNotificationsTelemetry::FailureTrace(L"SystemSuspendStatusChanged", L"AddCallback", ex.what());
+                    throw ex;
+                }
             }
 
             void SystemSuspendStatusChanged(const event_token& token)
             {
-                RemoveCallback(systemSuspendFunc, token);
+                std::scoped_lock<std::mutex> lock(m_mutex);
+                m_systemSuspendStatusChangedEvent.remove(token);
+                // Unregister only if both events have no listeners
+                if (!RegisteredForEvents(m_systemSuspendStatusChangedEvent) && 
+                    !RegisteredForEvents(m_systemSuspendStatusChanged2Event))
+                {
+                    SystemSuspendStatus_Unregister();
+                }
+            }
+
+            event_token SystemSuspendStatusChanged2(const SystemSuspendStatusChangedEventHandler& handler)
+            {
+                try
+                {
+                    PowerNotificationsTelemetry::AddCallbackTrace(L"SystemSuspendStatusChanged2");
+                    std::scoped_lock<std::mutex> lock(m_mutex);
+                    // Register if neither event has listeners
+                    if (!RegisteredForEvents(m_systemSuspendStatusChangedEvent) && 
+                        !RegisteredForEvents(m_systemSuspendStatusChanged2Event))
+                    {
+                        SystemSuspendStatus_Register();
+                    }
+                    return m_systemSuspendStatusChanged2Event.add(handler);
+                }
+                catch (std::exception& ex)
+                {
+                    PowerNotificationsTelemetry::FailureTrace(L"SystemSuspendStatusChanged2", L"AddCallback", ex.what());
+                    throw ex;
+                }
+            }
+
+            void SystemSuspendStatusChanged2(const event_token& token)
+            {
+                std::scoped_lock<std::mutex> lock(m_mutex);
+                m_systemSuspendStatusChanged2Event.remove(token);
+                // Unregister only if both events have no listeners
+                if (!RegisteredForEvents(m_systemSuspendStatusChangedEvent) && 
+                    !RegisteredForEvents(m_systemSuspendStatusChanged2Event))
+                {
+                    SystemSuspendStatus_Unregister();
+                }
+            }
+
+            winrt::fire_and_forget RaiseSystemSuspendStatusEvent(Power::SystemSuspendStatus status)
+            {
+                auto lifetime = get_strong();
+                co_await winrt::resume_background();
+                
+                // Raise old event (without args)
+                m_systemSuspendStatusChangedEvent(nullptr, nullptr);
+                
+                // Raise new event (with args)
+                auto args = winrt::make<implementation::SystemSuspendStatusChangedEventArgs>(status);
+                m_systemSuspendStatusChanged2Event(nullptr, args);
             }
 
             void SystemSuspendStatusChanged_Callback(ULONG PowerEvent)
             {
                 using namespace Power;
+                Power::SystemSuspendStatus newStatus = SystemSuspendStatus::Uninitialized;
+                
                 if (PowerEvent == PBT_APMSUSPEND)
                 {
-                    m_systemSuspendStatus = SystemSuspendStatus::Entering;
-                    RaiseEvent(systemSuspendFunc);
+                    newStatus = SystemSuspendStatus::Entering;
                 }
                 else if (PowerEvent == PBT_APMRESUMEAUTOMATIC)
                 {
-                    m_systemSuspendStatus = SystemSuspendStatus::AutoResume;
-                    RaiseEvent(systemSuspendFunc);
+                    newStatus = SystemSuspendStatus::AutoResume;
                 }
                 else if (PowerEvent == PBT_APMRESUMESUSPEND)
                 {
-                    m_systemSuspendStatus = SystemSuspendStatus::ManualResume;
-                    RaiseEvent(systemSuspendFunc);
+                    newStatus = SystemSuspendStatus::ManualResume;
                 }
+                else
+                {
+                    return; // Unknown event, ignore
+                }
+                
+                // Update the stored status for the property getter
+                m_systemSuspendStatus = newStatus;
+                
+                // Raise both old and new events with the correct status
+                RaiseSystemSuspendStatusEvent(newStatus);
             }
 
         };
@@ -640,6 +735,16 @@ namespace winrt::Microsoft::Windows::System::Power
 
     namespace implementation
     {
+        struct SystemSuspendStatusChangedEventArgs : SystemSuspendStatusChangedEventArgsT<SystemSuspendStatusChangedEventArgs>
+        {
+            SystemSuspendStatusChangedEventArgs(Power::SystemSuspendStatus status) : m_status(status) {}
+
+            Power::SystemSuspendStatus Status() const { return m_status; }
+
+        private:
+            Power::SystemSuspendStatus m_status;
+        };
+
         struct PowerManager
         {
             PowerManager() = delete;
