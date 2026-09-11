@@ -19,6 +19,8 @@ name: $(version)
 # https://aka.ms/obpipelines/triggers
 trigger: none
 
+# Use WindowsAppSDK-DotnetNewTemplates-Dev.yml to test unmerged branch changes.
+# This Official pipeline remains the only producer accepted by the release flow.
 parameters:
 - name: "PublishDotnetNewTemplatesToInternalFeed"
   displayName: "Publish dotnet new templates to internal feed"
