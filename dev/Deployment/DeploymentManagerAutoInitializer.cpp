@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include <Windows.h>
+#include <windows.h>
 #include <stdlib.h>
 
 #include <winrt/Windows.Foundation.h>
