@@ -115,6 +115,14 @@ namespace CommonTestCode
         }
     }
 
+    [System.Runtime.InteropServices.ComImport]
+    [System.Runtime.InteropServices.Guid("5B0D3235-4DBA-4D44-865E-8F1D0E4FD04D")]
+    [System.Runtime.InteropServices.InterfaceType(System.Runtime.InteropServices.ComInterfaceType.InterfaceIsIUnknown)]
+    internal unsafe interface IMemoryBufferByteAccess
+    {
+        void GetBuffer(out byte* buffer, out uint capacity);
+    }
+
     public class ResourceManagerTest
     {
         public static void ValueAsStringTest_StringResource_Succeeds()
@@ -150,6 +158,114 @@ namespace CommonTestCode
             Verify.AreEqual((uint)ex.HResult, 0x80073b0d); // HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH)
             resourceData = resourceManager.MainResourceMap.TryGetValue("Files/Controls/AlbumBasicInfoControl.xbf").ValueAsBytes;
             Verify.AreEqual(resourceData.Length, 15002);
+        }
+
+        public static void ValueAsMemoryBufferTest_Succeeds()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var resourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Controls/AlbumBasicInfoControl.xbf");
+
+            // The zero-copy accessor must expose exactly the same bytes as the copying ValueAsBytes.
+            var expected = resourceCandidate.ValueAsBytes;
+            Verify.AreEqual(expected.Length, 15002);
+
+            using (var buffer = resourceCandidate.ValueAsMemoryBuffer())
+            using (var reference = buffer.CreateReference())
+            {
+                Verify.AreEqual(reference.Capacity, (uint)expected.Length);
+                unsafe
+                {
+                    byte* data;
+                    uint capacity;
+                    ((IMemoryBufferByteAccess)reference).GetBuffer(out data, out capacity);
+                    Verify.AreEqual(capacity, (uint)expected.Length);
+                    Verify.IsTrue(data != null);
+
+                    bool bytesMatch = true;
+                    for (int i = 0; i < expected.Length; i++)
+                    {
+                        if (data[i] != expected[i])
+                        {
+                            bytesMatch = false;
+                            break;
+                        }
+                    }
+                    Verify.IsTrue(bytesMatch);
+                }
+            }
+        }
+
+        public static void ValueAsMemoryBufferTest_NonEmbeddedResource_Throws()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+
+            // String and file-path candidates have no embedded blob, so the accessor must fail the
+            // same way ValueAsBytes does (ERROR_MRM_RESOURCE_TYPE_MISMATCH).
+            Windows.Foundation.IMemoryBuffer buffer;
+
+            var stringCandidate = resourceManager.MainResourceMap.GetValue("resources/IDS_MANIFEST_MUSIC_APP_NAME");
+            var ex = Verify.Throws<Exception>(() => buffer = stringCandidate.ValueAsMemoryBuffer());
+            Verify.AreEqual((uint)ex.HResult, 0x80073b0d); // HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH)
+
+            var fileCandidate = resourceManager.MainResourceMap.GetValue("Files/Assets/AppList.png");
+            ex = Verify.Throws<Exception>(() => buffer = fileCandidate.ValueAsMemoryBuffer());
+            Verify.AreEqual((uint)ex.HResult, 0x80073b0d);
+        }
+
+        public static void ValueAsMemoryBufferTest_OutlivesCandidate()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+
+            // The buffer holds a strong reference to the backing resource data, so it must remain
+            // readable even after the only candidate reference is dropped and collected.
+            Windows.Foundation.IMemoryBuffer buffer;
+            byte[] expected;
+            {
+                var resourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Controls/AlbumBasicInfoControl.xbf");
+                expected = resourceCandidate.ValueAsBytes;
+                buffer = resourceCandidate.ValueAsMemoryBuffer();
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+
+            using (var reference = buffer.CreateReference())
+            {
+                Verify.AreEqual(reference.Capacity, (uint)expected.Length);
+                unsafe
+                {
+                    byte* data;
+                    uint capacity;
+                    ((IMemoryBufferByteAccess)reference).GetBuffer(out data, out capacity);
+                    Verify.AreEqual(capacity, (uint)expected.Length);
+                    Verify.IsTrue(data != null);
+                    Verify.AreEqual(data[0], expected[0]);
+                    Verify.AreEqual(data[expected.Length - 1], expected[expected.Length - 1]);
+                }
+            }
+
+            buffer.Dispose();
+        }
+
+        public static void ValueAsMemoryBufferTest_CloseReleases()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var resourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Controls/AlbumBasicInfoControl.xbf");
+
+            var buffer = resourceCandidate.ValueAsMemoryBuffer();
+            var reference = buffer.CreateReference();
+            Verify.AreNotEqual(reference.Capacity, 0u);
+
+            // Closing the reference forgets the backing pointer; capacity collapses to zero.
+            reference.Dispose();
+            Verify.AreEqual(reference.Capacity, 0u);
+
+            // Closing the buffer prevents creating further references.
+            buffer.Dispose();
+            Windows.Foundation.IMemoryBufferReference closed;
+            var ex = Verify.Throws<Exception>(() => closed = buffer.CreateReference());
+            Verify.AreEqual((uint)ex.HResult, 0x80000013); // RO_E_CLOSED
         }
 
         public static void GetKindTest()

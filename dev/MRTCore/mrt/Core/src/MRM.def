@@ -20,6 +20,9 @@ EXPORTS
     MrmLoadStringOrEmbeddedFromResourceUri
     MrmLoadStringOrEmbeddedResourceByIndex
     MrmLoadStringOrEmbeddedResourceByIndexWithQualifierValues
+    MrmLoadStringOrEmbeddedResourceNoCopy
+    MrmLoadStringOrEmbeddedResourceByIndexNoCopy
     MrmAllocateBuffer
     MrmFreeResource
+    MrmFreeResourceData
     MrmGetFilePathFromName
