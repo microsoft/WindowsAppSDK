@@ -51,15 +51,3 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return isSupported;
     }
 }
-
-// This function (not in the "implementation" namespace) is not defined when the feature is disabled,
-// resulting in a linker error. Define the function for that scenario.
-#if WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_CALLINGPREVIEWSUPPORT_FEATURE_CALLINGPREVIEWSUPPORT_ENABLED != 1
-namespace winrt::Microsoft::Windows::AppNotifications
-{
-    bool AppNotificationConferencingConfig::IsCallingPreviewSupported()
-    {
-        return false;
-    }
-}
-#endif
