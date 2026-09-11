@@ -10,7 +10,7 @@ parameters:
 - name: BuildType
   displayName: "Build Type"
   type: string
-  default: 'stable'
+  default: 'experimental'
 - name: PrOrNightly
   displayName: "PR or Nightly"
   type: string

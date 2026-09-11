@@ -58,7 +58,7 @@ parameters:
 - name: BuildType
   displayName: "Build Type"
   type: string
-  default: 'stable'
+  default: 'experimental'
   values:
   - 'stable'
   - 'experimental'

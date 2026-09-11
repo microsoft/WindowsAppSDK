@@ -5,7 +5,7 @@
 parameters:
   - name: BuildType
     type: string
-    default: 'stable'
+    default: 'experimental'
 
 variables:
   # Foundation per-component pipeline artifact download variables.
