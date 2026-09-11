@@ -54,8 +54,9 @@ stages:
           if (-not [bool]::TryParse([string]$build.templateParameters.SignOutput, [ref]$signOutput) -or -not $signOutput) {
             throw "Build ${{ parameters.buildRunId }} must set SignOutput=true."
           }
-          if ($build.repository.type -ne 'TfsGit' -or [string]::IsNullOrWhiteSpace($build.repository.id)) {
-            throw "Build ${{ parameters.buildRunId }} must originate from an Azure Repos Git repository."
+          $expectedRepositoryId = '$(Build.Repository.ID)'
+          if ($build.repository.type -ne 'TfsGit' -or $build.repository.id -ne $expectedRepositoryId) {
+            throw "Build ${{ parameters.buildRunId }} must originate from repository $expectedRepositoryId; source repository is '$($build.repository.id)'."
           }
 
           $projectPath = '/dev/Templates/Dotnet/WinAppSdk.CSharp.DotnetNewTemplates.csproj'
@@ -220,6 +221,18 @@ stages:
         itemPattern: |
           **/*.nupkg
     steps:
+    - task: PowerShell@2
+      displayName: 'Validate release package input'
+      inputs:
+        targetType: inline
+        script: |
+          $packages = @(Get-ChildItem -Path '$(Build.SourcesDirectory)\VerifiedReleasePackages' -Filter '*.nupkg' -File -Recurse)
+          $releasePackages = @($packages | Where-Object Name -NotLike '*.symbols.nupkg')
+          if ($packages.Count -ne 1 -or $releasePackages.Count -ne 1) {
+            throw "Expected exactly one non-symbol NuGet package in the verified release artifact; found $($releasePackages.Count) release packages and $($packages.Count) total packages."
+          }
+          Write-Host "Publishing verified package $($releasePackages[0].FullName)"
+
     - task: NuGetCommand@2
       displayName: 'Publish dotnet new templates to NuGet.org'
       inputs:
