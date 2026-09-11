@@ -130,7 +130,29 @@ namespace Test::Bootstrap
                 TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
         }
 
-        VERIFY_SUCCEEDED(MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion));
+        // AB#62489699: On slow/loaded test agents (observed on the x86 Win10 22H2 stage) the State
+        // Repository can still be indexing the DDLM package we just installed when the bootstrapper
+        // enumerates it, so MddBootstrapInitialize fails with STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED
+        // (0x80670016). This is transient and clears once indexing completes, so retry with a bounded
+        // backoff. Only this specific HRESULT is retried; any other failure is verified immediately and
+        // is not masked.
+        constexpr HRESULT c_stateRepositoryDependencyNotResolved{ static_cast<HRESULT>(0x80670016) }; // STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED
+        constexpr UINT32 c_maxInitAttempts{ 10 };
+        constexpr DWORD c_initRetryDelayMs{ 300 };
+        HRESULT initHR{ E_FAIL };
+        for (UINT32 attempt = 1; attempt <= c_maxInitAttempts; ++attempt)
+        {
+            initHR = MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion);
+            if (SUCCEEDED(initHR) || (initHR != c_stateRepositoryDependencyNotResolved) || (attempt == c_maxInitAttempts))
+            {
+                break;
+            }
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"MddBootstrapInitialize returned STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED (0x%X); State Repository likely still indexing the just-installed package. Attempt %u/%u. Retrying after %ums.",
+                initHR, attempt, c_maxInitAttempts, c_initRetryDelayMs));
+            Sleep(c_initRetryDelayMs);
+        }
+        VERIFY_SUCCEEDED(initHR);
         s_bootstrapDll = std::move(bootstrapDll);
     }
 
