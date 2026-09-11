@@ -54,6 +54,13 @@ extends:
         steps:
         - checkout: none
 
+        - task: PowerShell@2
+          displayName: 'Block release while producer is NonOfficial'
+          inputs:
+            targetType: inline
+            script: |
+              throw "Build definition 186691 is temporarily NonOfficial. Restore WindowsAppSDK-DotnetNewTemplates.yml to Microsoft.Official before releasing to NuGet.org."
+
         - task: DownloadPipelineArtifact@2
           displayName: 'Download dotnet new template pack artifact'
           inputs:

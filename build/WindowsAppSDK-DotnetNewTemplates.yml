@@ -1,5 +1,5 @@
 #####################################################################################################################################
-#                                               OneBranch Pipelines - Official                                                      #
+#                                             OneBranch Pipelines - NonOfficial                                                     #
 #####################################################################################################################################
 #                                                                                                                                   #
 # This pipeline was created by EasyStart from a sample located at:                                                                  #
@@ -19,17 +19,11 @@ name: $(version)
 # https://aka.ms/obpipelines/triggers
 trigger: none
 
-# Use WindowsAppSDK-DotnetNewTemplates-Dev.yml to test unmerged branch changes.
-# This Official pipeline remains the only producer accepted by the release flow.
 parameters:
 - name: "PublishDotnetNewTemplatesToInternalFeed"
   displayName: "Publish dotnet new templates to internal feed"
   type: boolean
   default: false
-- name: "SignOutput"
-  displayName: "Sign the NuGet package with ESRP"
-  type: boolean
-  default: true
 variables:
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
@@ -50,7 +44,8 @@ resources:
       ref: refs/heads/main
 
 extends:
-  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
+  # Restore Microsoft.Official before enabling signing or external release.
+  template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     featureFlags:
       EnableCDPxPAT: false      
@@ -112,8 +107,8 @@ extends:
         pool:
           type: windows
         publishToInternalFeed: ${{ parameters.PublishDotnetNewTemplatesToInternalFeed }}
-        SignOutput: ${{ parameters.SignOutput }}
-        IsPRBuild: false
+        SignOutput: false
+        IsPRBuild: true
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
       parameters:
@@ -121,6 +116,4 @@ extends:
           type: windows
         dependsOnStage: 'DotnetNewTemplates_Build'
 
-    # NuGet.org publishing is handled by WindowsAppSDK-DotnetNewTemplates-Publish.yml.
-    # That release pipeline accepts only this definition's governed artifact and
-    # independently verifies the CP-401405 signature before approval and publish.
+    # External release is blocked while this pipeline is NonOfficial.
