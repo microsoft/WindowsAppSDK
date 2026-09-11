@@ -2,10 +2,16 @@ parameters:
 - name: pool
   type: object
   default:
-    vmImage: 'windows-latest'
+    type: windows
 - name: dependsOnStage
   type: string
   default: 'DotnetNewTemplates_Build'
+- name: buildPipelineId
+  type: number
+- name: buildRunId
+  type: number
+- name: artifactName
+  type: string
 
 stages:
 - stage: DotnetNewTemplates_Publish
@@ -17,15 +23,22 @@ stages:
     displayName: 'Publish dotnet new template pack to NuGet.org'
     pool: ${{ parameters.pool }}
     variables:
-      ob_outputDirectory: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+      ob_outputDirectory: '$(Pipeline.Workspace)\BuildArtifact'
       ob_artifactBaseName: 'dotnet-new-template-pack'
-      dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+      dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
     steps:
     - checkout: self
 
-    - download: current
+    - task: DownloadPipelineArtifact@2
       displayName: 'Download dotnet new template pack artifact'
-      artifact: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+      inputs:
+        source: 'specific'
+        project: '$(System.TeamProjectId)'
+        pipeline: ${{ parameters.buildPipelineId }}
+        runVersion: 'specific'
+        runId: ${{ parameters.buildRunId }}
+        artifact: '${{ parameters.artifactName }}'
+        targetPath: '$(dotnetTemplatesArtifactPath)'
 
     - task: PowerShell@2
       displayName: 'Verify dotnet new template pack artifact exists'
@@ -47,7 +60,7 @@ stages:
       displayName: 'Publish dotnet new templates to NuGet.org'
       inputs:
         command: 'push'
-        packagesToPush: '$(dotnetTemplatesArtifactPath)\*.nupkg'
+        packagesToPush: '$(dotnetTemplatesArtifactPath)\**\*.nupkg'
         verbosityPush: 'Detailed'
         nuGetFeedType: 'external'
         publishFeedCredentials: 'NugetOrg'

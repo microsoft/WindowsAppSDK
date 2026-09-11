@@ -118,7 +118,5 @@ extends:
           type: windows
         dependsOnStage: 'DotnetNewTemplates_Build'
 
-    # NuGet.org publishing is handled by the separate non-OneBranch pipeline:
+    # NuGet.org publishing is handled by the separate OneBranch pipeline:
     # WindowsAppSDK-DotnetNewTemplates-Publish.yml
-    # OneBranch agents block outbound internet, so a standalone pipeline with
-    # standard Azure-hosted agents is used for the NuGet.org push.
