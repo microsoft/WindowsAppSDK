@@ -560,6 +560,8 @@ private:
 template<typename VALUE, typename CallBackCompareFunc = VoidComparerFunc, typename CallbackHashFunc = VoidHashFunc>
 class DefPointerList : public DefList<VALUE*, CallBackCompareFunc, CallbackHashFunc>
 {
+private:
+    using Base = DefList<VALUE*, CallBackCompareFunc, CallbackHashFunc>;
 public:
     static HRESULT CreateInstance(_Outptr_ DefPointerList<VALUE, CallBackCompareFunc, CallbackHashFunc>** result)
     {
@@ -607,10 +609,10 @@ public:
 
     virtual ~DefPointerList()
     {
-        for (int i = 0; i < DefList::Count(); i++)
+        for (int i = 0; i < Base::Count(); i++)
         {
             const VALUE* pMember = nullptr;
-            if (TryGetValue(i, &pMember))
+            if (Base::TryGetValue(i, &pMember))
             {
                 delete (pMember);
             }
