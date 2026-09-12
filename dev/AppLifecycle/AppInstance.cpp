@@ -60,7 +60,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
         }
 
-        return { L"", L""};
+        return { L"", L"" };
     }
 
     std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
