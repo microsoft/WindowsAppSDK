@@ -122,6 +122,46 @@ namespace Test::PowerNotifications
             PowerManager::EnergySaverStatusChanged(token);
         }
 
+        TEST_METHOD(GetEnergySaverStatus2)
+        {
+            auto value = PowerManager::EnergySaverStatus2();
+            VERIFY_IS_TRUE(value == EnergySaverStatus2::Unknown ||
+                           value == EnergySaverStatus2::Off ||
+                           value == EnergySaverStatus2::Standard ||
+                           value == EnergySaverStatus2::HighSavings);
+        }
+
+        TEST_METHOD(EnergySaverStatus2Callback)
+        {
+            wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
+            THROW_LAST_ERROR_IF_NULL(event.get());
+            auto value = EnergySaverStatus2::Unknown;
+            auto token = PowerManager::EnergySaverStatus2Changed([&](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/)
+                {
+                    value = PowerManager::EnergySaverStatus2();
+                    SetEvent(event.get());
+                });
+
+            if (WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0)
+            {
+                VERIFY_IS_TRUE(value == EnergySaverStatus2::Unknown ||
+                               value == EnergySaverStatus2::Off ||
+                               value == EnergySaverStatus2::Standard ||
+                               value == EnergySaverStatus2::HighSavings);
+            }
+            PowerManager::EnergySaverStatus2Changed(token);
+        }
+
+        TEST_METHOD(EnergySaverStatus2SeededOnSubscribe)
+        {
+            auto directValue = PowerManager::EnergySaverStatus2();
+            auto token = PowerManager::EnergySaverStatus2Changed([](const auto&, winrt::Windows::Foundation::IInspectable /*obj*/) {});
+            auto subscribedValue = PowerManager::EnergySaverStatus2();
+            PowerManager::EnergySaverStatus2Changed(token);
+
+            VERIFY_ARE_EQUAL(subscribedValue, directValue);
+        }
+
         TEST_METHOD(GetPowerSourceKind)
         {
             auto value = PowerManager::PowerSourceKind();
