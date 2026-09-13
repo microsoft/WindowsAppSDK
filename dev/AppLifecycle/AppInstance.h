@@ -18,7 +18,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     struct AppInstance : AppInstanceT<AppInstance>
     {
         // No interface public methods.
-        AppInstance(uint32_t processId);
+        AppInstance();
+        AppInstance(uint32_t processId, wil::unique_handle processHandle);
         ~AppInstance()
         {
             if (m_terminationWatcherWaitHandle)
