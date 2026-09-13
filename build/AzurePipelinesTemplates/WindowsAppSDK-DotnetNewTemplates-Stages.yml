@@ -150,6 +150,24 @@ stages:
           KeyCode: 'CP-401405'
           UseMinimatch: true
 
+    - task: PowerShell@2
+      displayName: 'Verify dotnet template package'
+      inputs:
+        targetType: inline
+        script: |
+          $packages = @(Get-ChildItem -Path '$(ob_outputDirectory)' -Filter '*.nupkg' -File)
+          if ($packages.Count -ne 1) {
+            throw "Expected exactly one dotnet template package; found $($packages.Count)."
+          }
+
+          Write-Host "Found package $($packages[0].FullName)"
+          if ([System.Convert]::ToBoolean('${{ parameters.SignOutput }}')) {
+            & nuget.exe verify $packages[0].FullName -All
+            if ($LASTEXITCODE -ne 0) {
+              throw "NuGet signature verification failed for $($packages[0].FullName)."
+            }
+          }
+
     - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
       displayName: 'Publish dotnet template pack to internal feed'
       condition: and(succeeded(), eq('${{ parameters.publishToInternalFeed }}', 'true'))
@@ -160,5 +178,4 @@ stages:
         nuGetFeedType: 'internal'
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
         allowPackageConflicts: true
-
 
