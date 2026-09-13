@@ -8,7 +8,34 @@
 // JavaScript has no `out` parameters so APIs with return a result object,
 // e.g. { hr, packageDependencyId } where `hr` is the raw HRESULT (>= 0 means success).
 //
-// Requires 64-bit Node on Windows and:  npm install koffi
+// Requires 64-bit Node on Windows and koffi => npm install koffi
+
+// Dynamic Dependency API surface
+// • PackageFamilyName.Verify(pfn)
+// • PackageDependency.TryCreate / TryCreate2 / Delete / Add / Add2 / Remove / GetResolvedPackageFullName / GetResolvedPackageFullName2 / GetIdForContext / Find / GetInfo / GetProcesses / IsSupported
+// • PackageGraph.RevisionId
+// • Enums: CreatePackageDependencyOptions, PackageDependencyLifetimeKind, AddPackageDependencyOptions(2), PackageDependencyProcessorArchitectures, Rank
+// • Helpers: PackageVersion.pack/unpack, succeeded/failed/throwIfFailed
+//
+// Usage:
+//   const dd = require('./MsixDynamicDependency');
+//   const { hr, packageDependencyId } = dd.PackageDependency.TryCreate({
+//     packageFamilyName: 'Microsoft.VCLibs.140.00.UWPDesktop_8wekyb3d8bbwe',
+//     minVersion: dd.PackageVersion.pack(14),
+//   });
+
+// Key koffi techniques used (each verified experimentally):
+//
+// • koffi.disposable('HeapPWSTR','str16', freeHeap) - auto-decodes callee-allocated PWSTR out-params to JS strings and auto- HeapFree's them (matches the C# Marshal.PtrToStringUni + HeapFree).
+// • Named opaque pointers (DdOpaque*) for PACKAGEDEPENDENCY_CONTEXT /array bases, because raw void** outputs come back as un-re-decodable addresses.
+// • koffi.decode(base, koffi.array('str16'|'uint32', count)) for the Find / GetProcesses arrays.
+// • FILETIME ? Date conversion; _In_ FILETIME* for TryCreate2, _Out_ FILETIME* for GetInfo.
+
+// Verified lifecycle (real Microsoft.VCLibs... framework pkg):
+//   TryCreate -> GetInfo -> Find -> Add -> GetIdForContext -> GetProcesses -> Remove -> Delete -> TryCreate2
+// All return hr == 0.
+//
+// Run node MsixDynamicDependency.js for a built-in smoke test.
 
 'use strict';
 
