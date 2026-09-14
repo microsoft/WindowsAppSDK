@@ -31,3 +31,7 @@ EXPORTS
     ContainmentTestInitialize
 
     WindowsAppRuntime_EnsureIsLoaded
+
+    GetPackageFilePath
+    GetPackageFilePathInPackageGraph
+    IsPackageFeatureSupported

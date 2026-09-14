@@ -94,6 +94,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         LanguageModel_LanguageDetectionStatus = 63293066,
 
         // 2.5.0
+        Package_GetPackageFilePath = 62800606,
         PointerInputProcessor_ReleaseCaptureOnDisposedIsland = 62943243,
         NavigationView_UpdatePaneLayoutNegativeMaxHeight = 62995866,
         PointerPositionPropertySet_UpdateWhilePressed = 62998965,
