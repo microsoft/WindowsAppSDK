@@ -103,6 +103,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsXamlManager_ActivationFactoryCacheResetRace = 63435928,
         CommandBar_SpuriousOverflowButtonAtFractionalScale = 63435929,
         CompositionEngine_SwitcherSeptemberFixes = 63494532,
+        WinUI_WindowWidthHeight = 63077767,
+
+        // 2.4.1
+        InkCanvas_InkingSupport = 63503009,
+        TableView_TabularBinaryActivation = 63518980,
     };
 
     /// Represents a version of the Windows App Runtime.

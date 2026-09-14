@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
+#include <regex>
 #include <DeploymentManager.h>
 #include <DeploymentResult.h>
 #include <DeploymentActivityContext.h>
@@ -75,17 +76,22 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
     }
 
+    // Derives the short channel tag used in the Main/Singleton package family names
+    // (e.g. L"-experimentalA" -> L"-eA"). Must match the build-time derivation in
+    // CreateBuildInfo.ps1 (regex ^([a-z.]+)([A-Z0-9]{0,2})$). See AB#62727253.
     std::wstring ExtractFormattedVersionTag(const std::wstring& versionTag)
     {
         std::wstring result{};
         if (versionTag.size() > 1)
         {
             result = std::wstring(L"-") + versionTag[1];
-        }
-        unsigned int numberBeforeUnderscore{};
-        if (swscanf_s(versionTag.c_str(), L"%*[^0-9]%u", &numberBeforeUnderscore) == 1)
-        {
-            result += std::to_wstring(numberBeforeUnderscore);
+
+            static const std::wregex c_versionTagPattern{ L"^-[a-z.]+([A-Z0-9]{0,2})$" };
+            std::wsmatch match{};
+            if (std::regex_match(versionTag, match, c_versionTagPattern))
+            {
+                result += match[1].str();
+            }
         }
         return result;
     }

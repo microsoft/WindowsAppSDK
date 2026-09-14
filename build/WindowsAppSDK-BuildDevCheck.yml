@@ -22,7 +22,7 @@ resources:
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/release/2.0-stable
+      ref: refs/heads/release/2.0-experimental
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates

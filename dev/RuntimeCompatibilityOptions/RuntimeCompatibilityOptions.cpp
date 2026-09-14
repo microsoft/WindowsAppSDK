@@ -56,6 +56,7 @@ namespace
         WinAppSDK_2_3_0 = WinAppSDKReleaseVersionFromValues(2, 3, 0),
         WinAppSDK_2_3_3 = WinAppSDKReleaseVersionFromValues(2, 3, 3),
         WinAppSDK_2_5_0 = WinAppSDKReleaseVersionFromValues(2, 5, 0),
+        WinAppSDK_2_4_1 = WinAppSDKReleaseVersionFromValues(2, 4, 1),
         WinAppSDK_Latest = 999999999,
         WinAppSDK_Security = 0,
     };
@@ -176,6 +177,11 @@ namespace
         63098302, // WindowsAppRuntime_BaseDirectoryIsolation
         63264582, // AppContentSearchNewAPI_LafCheck
         63293066, // LanguageModel_LanguageDetectionStatus
+        63077767, // WinUI_WindowWidthHeight
+    };
+    constexpr UINT32 s_changes_2_4_1[] = {
+        63503009, // InkCanvas_InkingSupport
+        63518980, // TableView_TabularBinaryActivation
     };
     constexpr UINT32 s_changes_2_5_0[] = {
         62943243, // PointerInputProcessor_ReleaseCaptureOnDisposedIsland
@@ -193,6 +199,7 @@ namespace
         MakeGroup(s_changes_2_3_0, WinAppSDKReleaseVersion::WinAppSDK_2_3_0),
         MakeGroup(s_changes_2_3_3, WinAppSDKReleaseVersion::WinAppSDK_2_3_3),
         MakeGroup(s_changes_2_5_0, WinAppSDKReleaseVersion::WinAppSDK_2_5_0),
+        MakeGroup(s_changes_2_4_1, WinAppSDKReleaseVersion::WinAppSDK_2_4_1),
     };
     constexpr size_t s_catalogGroupsProdCount{ std::size(s_catalogGroupsProd) };
 
