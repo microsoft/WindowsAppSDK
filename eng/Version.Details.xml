@@ -27,25 +27,25 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="2.1.0-stable-27200.1051.260826-1517.1">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="2.1.0-stable-27200.1055.260911-1037.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>0b8ae1e93bdc350ada54646c0e1b4a9a659a8555</Sha>
+      <Sha>202b7ee0eaa9d69c0edbca0f0b00c9bd3a221e92</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="2.0.0-stable.20260827.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>dab68714e23fb962077c24b66173d8fc33f9a62d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="2.1.0-stable-27200.1051.260826-1517.1">
+    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="2.1.0-stable-27200.1055.260911-1037.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>0b8ae1e93bdc350ada54646c0e1b4a9a659a8555</Sha>
+      <Sha>202b7ee0eaa9d69c0edbca0f0b00c9bd3a221e92</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WindowsAppSDK.Base" Version="2.0.4">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
       <Sha>2e5d355241392cf5331ebaa2c6e5c554c7852ceb</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.8">
+    <Dependency Name="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.10-stable-Rolling.20260911.1">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>0b8ae1e93bdc350ada54646c0e1b4a9a659a8555</Sha>
+      <Sha>202b7ee0eaa9d69c0edbca0f0b00c9bd3a221e92</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
