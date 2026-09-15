@@ -52,7 +52,7 @@ inline wil::unique_any_psid CopySid(PSID source)
 {
     if (!source)
     {
-        return null;
+        return nullptr;
     }
 
     const auto size{ ::GetLengthSid(source) };
