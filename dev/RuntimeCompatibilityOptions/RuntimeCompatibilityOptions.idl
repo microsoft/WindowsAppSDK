@@ -88,15 +88,33 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         InputPointerSource_DepartingScrollInputCrashFix = 62785439,
         StoragePickers_RestoreFocusAfterDialogCloses = 63006068,
         ResourceManager_RestoreDefaultFallbackPath = 63048673,
+        WinUI_WindowWidthHeight = 63077767,
         InputPointerSource_OSHaptics = 63096865,
         WindowsAppRuntime_BaseDirectoryIsolation = 63098302,
         AppContentSearchNewAPI_LafCheck = 63264582,
         LanguageModel_LanguageDetectionStatus = 63293066,
-        WinUI_WindowWidthHeight = 63077767,
 
         // 2.4.1
         InkCanvas_InkingSupport = 63503009,
         TableView_TabularBinaryActivation = 63518980,
+
+        // 2.5.0
+        Package_GetPackageFilePath = 62800606,
+        PointerInputProcessor_ReleaseCaptureOnDisposedIsland = 62943243,
+        NavigationView_UpdatePaneLayoutNegativeMaxHeight = 62995866,
+        PointerPositionPropertySet_UpdateWhilePressed = 62998965,
+        NavigationViewItem_DeferredFlyoutShowStaleState = 63007686,
+        KeyboardAccelerator_OemKeyNoFailFast = 63417306,
+        WindowsXamlManager_ActivationFactoryCacheResetRace = 63435928,
+        CommandBar_SpuriousOverflowButtonAtFractionalScale = 63435929,
+        CompositionEngine_SwitcherSeptemberFixes = 63494532,
+
+        // 2.5.2
+        WinUI_SetThemeResourceBinding = 63265396,
+        WinUI_DataTemplateFromDelegate = 63853939,
+        Charts_ExperimentalControlApi = 63941814,
+        WinUI_ResourceGraphExpiredDependencyPruning = 63991279,
+        WinUI_OrphanedObjectGCCollection = 64006293,
     };
 
     /// Represents a version of the Windows App Runtime.

@@ -56,6 +56,8 @@ namespace
         WinAppSDK_2_3_0 = WinAppSDKReleaseVersionFromValues(2, 3, 0),
         WinAppSDK_2_3_3 = WinAppSDKReleaseVersionFromValues(2, 3, 3),
         WinAppSDK_2_4_1 = WinAppSDKReleaseVersionFromValues(2, 4, 1),
+        WinAppSDK_2_5_0 = WinAppSDKReleaseVersionFromValues(2, 5, 0),
+        WinAppSDK_2_5_2 = WinAppSDKReleaseVersionFromValues(2, 5, 2),
         WinAppSDK_Latest = 999999999,
         WinAppSDK_Security = 0,
     };
@@ -172,15 +174,32 @@ namespace
         62785439, // InputPointerSource_DepartingScrollInputCrashFix
         63006068, // StoragePickers_RestoreFocusAfterDialogCloses
         63048673, // ResourceManager_RestoreDefaultFallbackPath
+        63077767, // WinUI_WindowWidthHeight
         63096865, // InputPointerSource_OSHaptics
         63098302, // WindowsAppRuntime_BaseDirectoryIsolation
         63264582, // AppContentSearchNewAPI_LafCheck
         63293066, // LanguageModel_LanguageDetectionStatus
-        63077767, // WinUI_WindowWidthHeight
     };
     constexpr UINT32 s_changes_2_4_1[] = {
         63503009, // InkCanvas_InkingSupport
         63518980, // TableView_TabularBinaryActivation
+    };
+    constexpr UINT32 s_changes_2_5_0[] = {
+        62943243, // PointerInputProcessor_ReleaseCaptureOnDisposedIsland
+        62995866, // NavigationView_UpdatePaneLayoutNegativeMaxHeight
+        62998965, // PointerPositionPropertySet_UpdateWhilePressed
+        63007686, // NavigationViewItem_DeferredFlyoutShowStaleState
+        63417306, // KeyboardAccelerator_OemKeyNoFailFast
+        63435928, // WindowsXamlManager_ActivationFactoryCacheResetRace
+        63435929, // CommandBar_SpuriousOverflowButtonAtFractionalScale
+        63494532, // CompositionEngine_SwitcherSeptemberFixes
+    };
+    constexpr UINT32 s_changes_2_5_2[] = {
+        63265396, // WinUI_SetThemeResourceBinding
+        63853939, // WinUI_DataTemplateFromDelegate
+        63941814, // Charts_ExperimentalControlApi
+        63991279, // WinUI_ResourceGraphExpiredDependencyPruning
+        64006293, // WinUI_OrphanedObjectGCCollection
     };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
         MakeGroup(s_changes_2_1_0, WinAppSDKReleaseVersion::WinAppSDK_2_1_0),
@@ -188,6 +207,8 @@ namespace
         MakeGroup(s_changes_2_3_0, WinAppSDKReleaseVersion::WinAppSDK_2_3_0),
         MakeGroup(s_changes_2_3_3, WinAppSDKReleaseVersion::WinAppSDK_2_3_3),
         MakeGroup(s_changes_2_4_1, WinAppSDKReleaseVersion::WinAppSDK_2_4_1),
+        MakeGroup(s_changes_2_5_0, WinAppSDKReleaseVersion::WinAppSDK_2_5_0),
+        MakeGroup(s_changes_2_5_2, WinAppSDKReleaseVersion::WinAppSDK_2_5_2),
     };
     constexpr size_t s_catalogGroupsProdCount{ std::size(s_catalogGroupsProd) };
 
