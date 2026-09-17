@@ -64,7 +64,7 @@ variables:
       value: '201186'
   - ${{ if eq(parameters.sourcePipeline, 'Monobuild-Official') }}:
     - name: sourcePipelineId
-      value: '190464'
+      value: '196647'
   - ${{ if eq(parameters.sourcePipeline, 'Foundation-PR') }}:
     - name: sourcePipelineId
       value: '189940'
