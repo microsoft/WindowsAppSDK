@@ -43,6 +43,7 @@ parameters:
     default: 'Monobuild-Nightly'
     values:
       - 'Monobuild-Nightly'
+      - 'Monobuild-Test'
       - 'Monobuild-Official'
       - 'Foundation-PR'
   - name: sourceBuildId
@@ -58,6 +59,9 @@ variables:
   - ${{ if eq(parameters.sourcePipeline, 'Monobuild-Nightly') }}:
     - name: sourcePipelineId
       value: '190463'
+  - ${{ if eq(parameters.sourcePipeline, 'Monobuild-Test') }}:
+    - name: sourcePipelineId
+      value: '201186'
   - ${{ if eq(parameters.sourcePipeline, 'Monobuild-Official') }}:
     - name: sourcePipelineId
       value: '190464'
@@ -163,6 +167,7 @@ extends:
         parameters:
           componentName: 'Foundation'
           sourceBuildId: ${{ parameters.sourceBuildId }}
+          retryParentTestGate: ${{ eq(parameters.sourcePipeline, 'Monobuild-Official') }}
           dependsOn:
             - Test_x86
             - Test_x64
