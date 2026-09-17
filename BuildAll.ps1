@@ -247,6 +247,7 @@ Try {
             {
                 write-host "Building WindowsAppRuntime.sln for configuration $configurationToRun and platform:$platformToRun"
                 & $msBuildPath /restore `
+                                /m `
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
@@ -298,6 +299,7 @@ Try {
             {
                 write-host "Building MrtCore.sln for configuration $configurationForMrtAndAnyCPU and platform:$platformToRun"
                 & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
+                                /m `
                                 /p:Configuration=$configurationForMrtAndAnyCPU `
                                 /p:Platform=$platformToRun `
                                 /p:RestoreConfigFile=NuGet.config `
