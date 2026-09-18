@@ -24,6 +24,7 @@
   <PropertyGroup>
     <!-- Getting errors. Disable for now -->
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">

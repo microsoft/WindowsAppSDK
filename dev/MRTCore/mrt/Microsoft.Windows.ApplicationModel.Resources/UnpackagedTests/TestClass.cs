@@ -301,6 +301,54 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        public void ResourceManager_ValueAsMemoryBufferTest_Succeeds()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_Succeeds();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsMemoryBufferTest_NonEmbeddedResource_Throws()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_NonEmbeddedResource_Throws();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsMemoryBufferTest_OutlivesCandidate()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_OutlivesCandidate();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsMemoryBufferTest_CloseReleases()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_CloseReleases();
+        }
+
+        [TestMethod]
         public void ResourceManager_GetKindTest()
         {
             if (m_rs5)
