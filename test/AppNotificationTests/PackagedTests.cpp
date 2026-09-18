@@ -78,6 +78,11 @@ void PackagedTests::VerifyShowToast()
     BaseTestSuite::VerifyShowToast();
 }
 
+void PackagedTests::VerifyShowToastTwiceFailsWithNotificationPosted()
+{
+    BaseTestSuite::VerifyShowToastTwiceFailsWithNotificationPosted();
+}
+
 void PackagedTests::VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
 {
     BaseTestSuite::VerifyUpdateToastProgressDataUsingValidTagAndValidGroup();
