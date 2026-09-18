@@ -14,12 +14,40 @@ $ErrorActionPreference = 'Stop'
 
 $FullBuildOutput = "$($BuildOutputDir)\$($Configuration)\$($Platform)"
 $FullPublishDir = "$($PublishDir)\$($Configuration)\$($Platform)"
+$FullManagedBuildOutput = $FullBuildOutput
+$FullDeploymentAgentBuildOutput = $FullBuildOutput
+
+if ($Platform -ieq 'arm64ec')
+{
+    # Managed projections are architecture-neutral and intentionally build through the
+    # solution's ARM64 mappings. DeploymentAgent has no usable ARM64EC output; use x64
+    # for this executable only because ARM64EC processes can load x64, but not ARM64.
+    $FullManagedBuildOutput = "$($BuildOutputDir)\$($Configuration)\arm64"
+    $FullDeploymentAgentBuildOutput = "$($BuildOutputDir)\$($Configuration)\x64"
+}
 
 if (!(Test-Path $FullPublishDir)) { mkdir $FullPublishDir }
 
 
 function PublishFile {
     Param($source, $destinationDir, [switch]$IfExists = $false)
+
+    $sourcePath = [string]$source
+    $buildOutputPrefix = "$FullBuildOutput\"
+    if (($Platform -ieq 'arm64ec') -and
+        $sourcePath.StartsWith($buildOutputPrefix, [StringComparison]::OrdinalIgnoreCase))
+    {
+        $relativeSource = $sourcePath.Substring($buildOutputPrefix.Length)
+        if ($relativeSource -like 'DeploymentAgent\*')
+        {
+            $source = Join-Path $FullDeploymentAgentBuildOutput $relativeSource
+        }
+        elseif (($relativeSource -like '*.Projection\*') -or
+                ($relativeSource -like 'Microsoft.WindowsAppRuntime.Bootstrap.Net\*'))
+        {
+            $source = Join-Path $FullManagedBuildOutput $relativeSource
+        }
+    }
 
     if ((-not $IfExists) -or (Test-Path $source))
     {
