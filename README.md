@@ -42,6 +42,7 @@
 * [FAQ](docs/faq.md)
 * [Contribution guide](docs/contributor-guide.md)
 * [Roadmap](./docs/roadmap.md)
+* [Release lifecycle data (JSON)](./docs/releases.json)
 * Windows App SDK family repositories
   * [WinUI](https://github.com/microsoft/microsoft-ui-xaml)
   * [C++/WinRT](https://github.com/microsoft/CppWinRT) and [C#/WinRT](https://github.com/microsoft/CsWinRT)
