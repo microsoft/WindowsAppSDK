@@ -48,7 +48,7 @@ resources:
       ref: refs/heads/main
 
 extends:
-  template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
+  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     featureFlags:
       EnableCDPxPAT: false      
@@ -111,6 +111,7 @@ extends:
           type: windows
         publishToInternalFeed: ${{ parameters.PublishDotnetNewTemplatesToInternalFeed }}
         SignOutput: ${{ parameters.SignOutput }}
+        IsPRBuild: false
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
       parameters:
@@ -118,7 +119,5 @@ extends:
           type: windows
         dependsOnStage: 'DotnetNewTemplates_Build'
 
-    # NuGet.org publishing is handled by the separate non-OneBranch pipeline:
+    # NuGet.org publishing is handled by the separate governed release pipeline:
     # WindowsAppSDK-DotnetNewTemplates-Publish.yml
-    # OneBranch agents block outbound internet, so a standalone pipeline with
-    # standard Azure-hosted agents is used for the NuGet.org push.
