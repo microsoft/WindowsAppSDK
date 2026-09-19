@@ -8,6 +8,11 @@
 #include "WindowsAppRuntime.VersionInfo.h"
 #include "WindowsAppRuntime.SelfContained.h"
 
+#include <FrameworkUdk/Containment.h>
+
+// 64191138: Fix unable to load Microsoft.WindowsAppRuntime.Insights.Resource.dll
+#define WINAPPSDK_CHANGEID_64191138 64191138
+
 STDAPI WindowsAppRuntime_IsSelfContained(
     BOOL* isSelfContained) noexcept try
 {
@@ -16,7 +21,8 @@ STDAPI WindowsAppRuntime_IsSelfContained(
     PCWSTR frameworkPackageFamilyName{};
     const auto getFrameworkPackageFamilyNameResult{
         WindowsAppRuntime_VersionInfo_MSIX_Framework_PackageFamilyName_Get(&frameworkPackageFamilyName) };
-    if (getFrameworkPackageFamilyNameResult == HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND))
+    if ((getFrameworkPackageFamilyNameResult == HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND)) &&
+        WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_64191138>())
     {
         // The aggregate runtime resource is not deployed with component-only self-contained apps.
         *isSelfContained = TRUE;

@@ -5,9 +5,14 @@
 
 #include <Microsoft.Utf8.h>
 
+#include <FrameworkUdk/Containment.h>
+
 #include "WindowsAppRuntime.VersionInfo.h"
 
 #include "MddWin11.h"
+
+// 64191138: Fix unable to load Microsoft.WindowsAppRuntime.Insights.Resource.dll
+#define WINAPPSDK_CHANGEID_64191138 64191138
 
 // Function prototype of the function exported by the resource DLL
 // (defined later in the build pipeline so we can't #include a header from there)
@@ -53,7 +58,8 @@ public:
     {
         if (!g_versionInfo)
         {
-            static wil::unique_hmodule module{ LoadResourceModule(false) };
+            static wil::unique_hmodule module{
+                LoadResourceModule(!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_64191138>()) };
             if (!module)
             {
                 return nullptr;
