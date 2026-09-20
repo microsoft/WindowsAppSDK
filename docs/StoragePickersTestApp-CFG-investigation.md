@@ -124,7 +124,7 @@ automatically. No standalone linker override was added.
 
 ### Actual BinSkim artifacts
 
-The corrected x86, x64, and ARM64 stages succeeded. Their BinSkim **4.4.9** SARIF
+The corrected x86, x64, ARM64, and PREFast x64 stages succeeded. Their BinSkim **4.4.9** SARIF
 reports were downloaded and checked for the actual `StoragePickersTestApp.exe`,
 not just an empty error list:
 
@@ -133,10 +133,42 @@ not just an empty error list:
 | `Build_x86` | 2 | 0 | 2 |
 | `Build_x64` | 2 | 0 | 2 |
 | `Build_arm64` | 2 | 0 | 2 |
+| `PREfast_x64` | 2 | 0 | 2 |
 
 For each architecture, the `BuildOutput` and `out` executables have identical
 SHA-256 hashes, and both have scan observations. The remaining BA2024 warnings
 confirm that these binaries were not excluded or their analysis suppressed.
 
-At this checkpoint, the `PREfast_x64` gate and overall pipeline completion are
-still pending; a complete successful run is not yet claimed.
+All four original failing `Guardian: Post Analysis` tasks succeeded, with zero
+errors (logs 1068, 1095, 1015, and 1694 respectively). The eight original BA2008
+findings are eliminated without suppressions.
+
+## Downstream regression exposed by the successful build
+
+The successful native stages allowed the runtime tests to execute. The first
+verification run then exposed a second regression from the same original
+ApplicationData optimization: the existing
+`PublisherCacheFolderAndPath_Main` test failed on modern Windows x64 and x86
+configurations. The build is therefore not claimed as an overall success.
+
+For the folder name `Does.Not.Exist`, `GetPublisherCacheFolder` returned no folder,
+but `GetPublisherCachePath` returned a nonempty publisher-cache path. The test
+correctly expected an empty string. The failure is in
+[ApplicationDataTests.cpp](../test/ApplicationData/ApplicationDataTests.cpp), not
+in `StoragePickersTestApp`.
+
+The optimization replaced the previous folder-based implementation with
+`ApplicationData_GetPublisherCachePath`. The native helper did not preserve the
+same missing-folder behavior. This violates the equivalence documented in
+[ApplicationData.idl](../dev/ApplicationData/ApplicationData.idl) and the
+[ApplicationData specification](../specs/applicationdata/ApplicationData.md).
+
+The focused correction in
+[M.W.S.ApplicationData.cpp](../dev/ApplicationData/M.W.S.ApplicationData.cpp)
+reuses the existing `StorageFolderToPath(GetPublisherCacheFolder(folderName))`
+path. This preserves missing-folder and framework-package behavior and continues
+to propagate other errors through the existing folder API. The other path
+optimizations are unchanged; no test expectation is relaxed.
+
+A second verification run is required for this correction. Full-pipeline success
+is still pending.

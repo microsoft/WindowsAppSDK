@@ -282,23 +282,8 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::GetPublisherCachePath(hstring const& folderName)
     {
-        if (!m_applicationData)
-        {
-            return winrt::hstring{};
-        }
-
-        wil::unique_application_data_state applicationDataState{ OpenApplicationData() };
-        WCHAR path[MAX_PATH]{};
-        UINT32 pathLength{ ARRAYSIZE(path) };
-        const HRESULT hr{ ApplicationData_GetPublisherCachePath(applicationDataState.get(), folderName.c_str(), &pathLength, path)};
-        if (SUCCEEDED(hr))
-        {
-            return winrt::hstring{ path };
-        }
-        THROW_HR_IF_MSG(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), "%ls", m_packageFamilyName.c_str());
-        auto longPath{ std::make_unique<WCHAR[]>(pathLength) };
-        THROW_IF_FAILED_MSG(ApplicationData_GetPublisherCachePath(applicationDataState.get(), folderName.c_str(),  &pathLength, path), "%ls", m_packageFamilyName.c_str());
-        return winrt::hstring(longPath.get());
+        // Preserve folder validation and the empty path for a missing folder.
+        return StorageFolderToPath(GetPublisherCacheFolder(folderName));
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {
