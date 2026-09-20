@@ -1,4 +1,9 @@
-# StoragePickersTestApp: Control Flow Guard build failure
+# Foundation pipeline investigation: CFG and publisher cache paths
+
+The original build failure was caused by removing Control Flow Guard from the
+isolated StoragePickersTestApp project. Fixing that blocker exposed a separate
+publisher-cache path regression in the same source change. Both corrections are
+verified by the successful full [build 158111841](https://microsoft.visualstudio.com/ProjectReunion/_build/results?buildId=158111841&view=results).
 
 ## Failing build and source
 
@@ -94,16 +99,16 @@ The local machine has Visual Studio 2026 targets, not the original build's
 complete VS 2022 / v143 environment and restored packages. This inspection is
 therefore not a substitute for rebuilding and scanning the actual executable.
 
-## Verification pipeline
+## First verification: CFG correction
 
 [Build 158107847](https://microsoft.visualstudio.com/ProjectReunion/_build/results?buildId=158107847&view=results)
-(`3.0.0-ci.experimental95`) runs the exact correction commit
-`1a11a66a9de818db6910cfa2860525a997130285`. It uses the original pipeline
+(`3.0.0-ci.experimental95`) ran the exact correction commit
+`1a11a66a9de818db6910cfa2860525a997130285`. It used the original pipeline
 definition and revision with `runStaticAnalysis=true`, `BuildSampleApps=false`,
 `TestSampleApps=false`, and `TestOnArm64=false`.
 
-The application directory differs from the original failing source by only the
-restored CFG line. No BinSkim or Guardian policy was modified. External governed
+The StoragePickersTestApp directory differs from the original failing source by
+only the restored CFG line. No BinSkim or Guardian policy was modified. External governed
 template references are floating and advanced between the two runs, so the
 compiler commands and scanned artifacts were also checked directly rather than
 relying only on an overall pipeline status.
@@ -124,9 +129,9 @@ automatically. No standalone linker override was added.
 
 ### Actual BinSkim artifacts
 
-The corrected x86, x64, ARM64, and PREFast x64 stages succeeded. Their BinSkim **4.4.9** SARIF
-reports were downloaded and checked for the actual `StoragePickersTestApp.exe`,
-not just an empty error list:
+The corrected x86, x64, ARM64, and PREFast x64 stages succeeded. Their BinSkim
+**4.4.9** SARIF reports were downloaded and checked for the actual
+`StoragePickersTestApp.exe`, not just an empty error list:
 
 | Stage | Scanned executable copies | BA2008 findings | Existing BA2024 findings |
 | --- | --- | --- | --- |
@@ -137,7 +142,7 @@ not just an empty error list:
 
 For each architecture, the `BuildOutput` and `out` executables have identical
 SHA-256 hashes, and both have scan observations. The remaining BA2024 warnings
-confirm that these binaries were not excluded or their analysis suppressed.
+also confirm that these binaries were included in the scan.
 
 All four original failing `Guardian: Post Analysis` tasks succeeded, with zero
 errors (logs 1068, 1095, 1015, and 1694 respectively). The eight original BA2008
@@ -150,6 +155,9 @@ verification run then exposed a second regression from the same original
 ApplicationData optimization: the existing
 `PublisherCacheFolderAndPath_Main` test failed on modern Windows x64 and x86
 configurations. The build is therefore not claimed as an overall success.
+After retaining the completed security-gate evidence and the five failing test
+cases, this superseded run was canceled. Its overall result is `canceled`, not
+`succeeded`; the replacement run kept the full test matrix enabled.
 
 For the folder name `Does.Not.Exist`, `GetPublisherCacheFolder` returned no folder,
 but `GetPublisherCachePath` returned a nonempty publisher-cache path. The test
@@ -170,5 +178,70 @@ path. This preserves missing-folder and framework-package behavior and continues
 to propagate other errors through the existing folder API. The other path
 optimizations are unchanged; no test expectation is relaxed.
 
-A second verification run is required for this correction. Full-pipeline success
-is still pending.
+## Final verification: both corrections
+
+[Build 158111841](https://microsoft.visualstudio.com/ProjectReunion/_build/results?buildId=158111841&view=results)
+(`3.0.0-ci.experimental96`) completed **succeeded** at
+`2026-09-20T11:05:19Z`, using commit
+`2c79640247baa0f81ff894a28eca36cc555a18bc`.
+
+It used definition 188465, revision 19, with the original parameters, including
+`runStaticAnalysis=true`. No test, scan, suppression, or pipeline condition was
+weakened. Fourteen stages succeeded. Only `UpdateFoundationLibrary` was skipped
+under the existing pipeline conditions.
+
+### Final binary analysis
+
+All four original failure gates succeeded with zero errors. The final commit's
+BinSkim 4.4.9 SARIF reports were independently downloaded and checked again:
+
+| Stage | Guardian log ID | Scanned copies | BA2008 findings |
+| --- | --- | --- | --- |
+| `Build_x86` | 1062 | 2 | 0 |
+| `Build_x64` | 1089 | 2 | 0 |
+| `Build_arm64` | 1032 | 2 | 0 |
+| `PREfast_x64` | 1925 | 2 | 0 |
+
+Each pair consists of the real `BuildOutput` and `out` executable, with matching
+SHA-256 hashes and scan observations. Existing BA2024 warnings remain outside
+the scope of these corrections.
+
+### Final runtime tests
+
+All published test results were read with pagination, rather than relying only
+on a green stage indicator:
+
+| Metric | Result |
+| --- | --- |
+| OS/architecture test matrices | 12 |
+| Total test results | 13,788 |
+| Passed | 10,889 |
+| Skipped / not applicable | 2,899 |
+| Failed / incomplete | 0 |
+
+Every previously failing `PublisherCacheFolderAndPath_Main` case was matched by
+matrix and test name and verified as **Passed**, not skipped:
+
+| Architecture | OS matrix | Before | After |
+| --- | --- | --- | --- |
+| x86 | Windows 11 Professional 25H2, zh-CN | Failed | Passed |
+| x64 | Windows 11 Enterprise MultiSession 24H2 | Failed | Passed |
+| x64 | Windows Server 2025 DataCenter | Failed | Passed |
+| x64 | Windows 11 Enterprise 24H2 | Failed | Passed |
+| x64 | Windows 11 Enterprise 25H2 | Failed | Passed |
+
+The corresponding framework-package cases also passed. The original test
+assertions are unchanged. The Win10 checked-OS matrix completed successfully in
+this final run as well.
+
+## Investigation checkpoints
+
+| Commit | Result |
+| --- | --- |
+| `dec432ea` | Imported the failing source and recorded the CFG diagnosis |
+| `1a11a66a` | Restored the single CFG setting and verified all six MSBuild configurations |
+| `e9d75d21` | Recorded actual compiler/linker switches and binary scan evidence |
+| `2c796402` | Restored publisher-cache availability semantics; full pipeline verified |
+
+The final report-only update does not change the product code, tests, or pipeline
+configuration that was validated at `2c796402`.
