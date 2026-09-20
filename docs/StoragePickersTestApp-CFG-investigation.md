@@ -72,7 +72,31 @@ Keep `RandomizedBaseAddress=true`. No BinSkim suppression, scan exclusion, or
 pipeline policy change is required. The other removed optimization settings
 are not part of this correction.
 
-## Verification status
+## Controlled local verification
 
-The original failure, source regression, and missing compiler/linker switches
-have been verified. Corrected-build validation is not yet complete.
+The reproduced project was evaluated before and after restoring only the CFG
+metadata. The installed MSBuild / Visual C++ targets evaluated the actual
+project, and `ComputeLinkSwitches` was invoked with an inspection-only link
+input. No compiler or linker was executed by this inspection.
+
+| Configuration | Platform | Guarded compiler inputs before / after | Link CFG before / after |
+| --- | --- | --- | --- |
+| Debug | Win32 | 0/5 -> 5/5 | unset -> `true` |
+| Debug | x64 | 0/5 -> 5/5 | unset -> `true` |
+| Debug | ARM64 | 0/5 -> 5/5 | unset -> `true` |
+| Release | Win32 | 0/5 -> 5/5 | unset -> `true` |
+| Release | x64 | 0/5 -> 5/5 | unset -> `true` |
+| Release | ARM64 | 0/5 -> 5/5 | unset -> `true` |
+
+This establishes that the one-line restoration supplies both compiler metadata
+and the automatically derived linker setting for all six configurations.
+The local machine has Visual Studio 2026 targets, not the original build's
+complete VS 2022 / v143 environment and restored packages. This inspection is
+therefore not a substitute for rebuilding and scanning the actual executable.
+
+## Pipeline verification status
+
+Corrected-build validation is not yet complete. The comparison uses the original
+pipeline definition with `runStaticAnalysis=true`, `BuildSampleApps=false`,
+`TestSampleApps=false`, and `TestOnArm64=false`. The original BinSkim and Guardian
+policies remain unchanged.
