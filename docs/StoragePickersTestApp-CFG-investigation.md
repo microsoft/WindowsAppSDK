@@ -94,9 +94,49 @@ The local machine has Visual Studio 2026 targets, not the original build's
 complete VS 2022 / v143 environment and restored packages. This inspection is
 therefore not a substitute for rebuilding and scanning the actual executable.
 
-## Pipeline verification status
+## Verification pipeline
 
-Corrected-build validation is not yet complete. The comparison uses the original
-pipeline definition with `runStaticAnalysis=true`, `BuildSampleApps=false`,
-`TestSampleApps=false`, and `TestOnArm64=false`. The original BinSkim and Guardian
-policies remain unchanged.
+[Build 158107847](https://microsoft.visualstudio.com/ProjectReunion/_build/results?buildId=158107847&view=results)
+(`3.0.0-ci.experimental95`) runs the exact correction commit
+`1a11a66a9de818db6910cfa2860525a997130285`. It uses the original pipeline
+definition and revision with `runStaticAnalysis=true`, `BuildSampleApps=false`,
+`TestSampleApps=false`, and `TestOnArm64=false`.
+
+The application directory differs from the original failing source by only the
+restored CFG line. No BinSkim or Guardian policy was modified. External governed
+template references are floating and advanced between the two runs, so the
+compiler commands and scanned artifacts were also checked directly rather than
+relying only on an overall pipeline status.
+
+### Actual compiler and linker commands
+
+The original x64 build log (958) and corrected x64 build log (957) both use MSVC
+**14.44.35207**.
+
+| Executable build commands | Original | Corrected |
+| --- | --- | --- |
+| Compiler commands containing `/guard:cf` | 0 of 5 | 5 of 5 |
+| Linker commands containing `/guard:cf` | 0 of 2 | 2 of 2 |
+| Linker commands containing `/DYNAMICBASE` | 2 of 2 | 2 of 2 |
+
+Both the intermediate WinMD link and final executable link now receive CFG
+automatically. No standalone linker override was added.
+
+### Actual BinSkim artifacts
+
+The corrected x86, x64, and ARM64 stages succeeded. Their BinSkim **4.4.9** SARIF
+reports were downloaded and checked for the actual `StoragePickersTestApp.exe`,
+not just an empty error list:
+
+| Stage | Scanned executable copies | BA2008 findings | Existing BA2024 findings |
+| --- | --- | --- | --- |
+| `Build_x86` | 2 | 0 | 2 |
+| `Build_x64` | 2 | 0 | 2 |
+| `Build_arm64` | 2 | 0 | 2 |
+
+For each architecture, the `BuildOutput` and `out` executables have identical
+SHA-256 hashes, and both have scan observations. The remaining BA2024 warnings
+confirm that these binaries were not excluded or their analysis suppressed.
+
+At this checkpoint, the `PREfast_x64` gate and overall pipeline completion are
+still pending; a complete successful run is not yet claimed.
