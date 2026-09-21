@@ -876,17 +876,52 @@ function Write-TestReport
 # updated for VS 2026 unless it is a hot bug
 $vswhere = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
 
-$installPath = & $vswhere -version "[18.0,19.0)" -latest -property installationPath
-$devenv = Join-Path $installPath 'Common7\IDE\devenv.exe'
-
 try
 {
+    if (-not (Test-Path $vswhere -PathType Leaf))
+    {
+        throw "Visual Studio Installer's vswhere.exe was not found at '$vswhere'. Install or repair the Visual Studio Installer, then rerun this script."
+    }
+
+    $installPath = & $vswhere -version "[18.0,19.0)" -latest -property installationPath
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "vswhere.exe failed with exit code $LASTEXITCODE while searching for Visual Studio 2026 (version 18.x)."
+    }
+
+    $usingPrereleaseVisualStudio = $false
+    if ([string]::IsNullOrWhiteSpace($installPath))
+    {
+        Write-Host 'No stable Visual Studio 2026 installation was found. Checking prerelease installations...'
+        $installPath = & $vswhere -version "[18.0,19.0)" -prerelease -latest -property installationPath
+        if ($LASTEXITCODE -ne 0)
+        {
+            throw "vswhere.exe failed with exit code $LASTEXITCODE while searching for a prerelease Visual Studio 2026 installation (version 18.x)."
+        }
+        $usingPrereleaseVisualStudio = -not [string]::IsNullOrWhiteSpace($installPath)
+    }
+
+    if ([string]::IsNullOrWhiteSpace($installPath))
+    {
+        throw 'Visual Studio 2026 (version 18.x) was not found among stable or prerelease installations. Install Visual Studio 2026 with the workloads required by the WinUI templates, then rerun this script.'
+    }
+
+    $devenv = Join-Path $installPath 'Common7\IDE\devenv.exe'
     if (-not (Test-Path $devenv -PathType Leaf))
     {
-        throw 'Visual Studio 2026 is not installed. Please install it before running this script.'
+        throw "Visual Studio 2026 was found at '$installPath', but devenv.exe is missing at '$devenv'. Repair the Visual Studio installation, then rerun this script."
     }
     Write-Host "Visual Studio 2026 is installed at: $installPath"
+    if ($usingPrereleaseVisualStudio)
+    {
+        Write-Host 'Using a prerelease Visual Studio 2026 installation because no stable installation was found.'
+    }
     Write-Host "Devenv path: $devenv"
+
+    if (-not (Get-Command winapp -ErrorAction SilentlyContinue))
+    {
+        throw "The 'winapp' command was not found on PATH. Install WinApp CLI and verify that 'winapp --version' succeeds before rerunning this script."
+    }
 
     if (Get-Process -Name 'devenv' -ErrorAction SilentlyContinue)
     {
@@ -895,25 +930,37 @@ try
 
 # LocalDev is installed per-user at $env:LocalAppData\Microsoft\VisualStudio\<version>\Extensions\<random>
 # TODO: Add C++ LocalDev VSIX DLL search
-$localDevCsVsixDll = Get-ChildItem -Path "$env:localappdata" -Filter 'WindowsAppSDK.Cs.Extension.Dev17.dll' -File -Recurse | Select-Object -ExpandProperty FullName
+    $localDevCsVsixDlls = @(Get-ChildItem -Path $env:LocalAppData -Filter 'WindowsAppSDK.Cs.Extension.Dev17.dll' -File -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
 
-    if (-not (Test-Path $localDevCsVsixDll -PathType Leaf))
+    if ($localDevCsVsixDlls.Count -eq 0)
     {
-        throw 'LocalDev CS VSIX DLL is not installed. Please install it before running this script using dev/templates/VSIX/build-local-vsix-package/build-install-localdev-vsix.ps1.'
+        throw "The LocalDev C# VSIX is not installed for the current user; 'WindowsAppSDK.Cs.Extension.Dev17.dll' was not found under '$env:LocalAppData'. Install it with 'dev\Templates\VSIX\build-local-VSIX-package\build-install-localdev-vsix.ps1', then rerun this script."
     }
+    if ($localDevCsVsixDlls.Count -gt 1)
+    {
+        throw "Multiple LocalDev C# VSIX installations were found. Uninstall stale copies so exactly one remains, then rerun this script.$([Environment]::NewLine)$($localDevCsVsixDlls -join [Environment]::NewLine)"
+    }
+
+    $localDevCsVsixDll = $localDevCsVsixDlls[0]
     Write-Host "LocalDev CS VSIX DLL is installed at: $localDevCsVsixDll"
 
 # Verify the VSIX there is localdev (it should be by install path, but this proves it)
-$vsixManifestPath = Get-ChildItem -Path (Split-Path $localDevCsVsixDll) -Filter 'extension.vsixmanifest' -File -Recurse | Select-Object -ExpandProperty FullName
-    if (-not (Test-Path $vsixManifestPath -PathType Leaf))
+    $vsixManifestPaths = @(Get-ChildItem -Path (Split-Path $localDevCsVsixDll) -Filter 'extension.vsixmanifest' -File -Recurse | Select-Object -ExpandProperty FullName)
+    if ($vsixManifestPaths.Count -eq 0)
     {
-        throw 'VSIX manifest is not found. Please ensure the LocalDev VSIX is correctly installed.'
+        throw "The LocalDev C# VSIX DLL was found at '$localDevCsVsixDll', but no extension.vsixmanifest was found beside it. Reinstall the LocalDev VSIX and rerun this script."
     }
+    if ($vsixManifestPaths.Count -gt 1)
+    {
+        throw "Multiple VSIX manifests were found beside '$localDevCsVsixDll'; the installation is ambiguous. Reinstall the LocalDev VSIX and rerun this script.$([Environment]::NewLine)$($vsixManifestPaths -join [Environment]::NewLine)"
+    }
+
+    $vsixManifestPath = $vsixManifestPaths[0]
     Write-Host "VSIX manifest is located at: $vsixManifestPath"
 
     if (-not (Select-String -Path $vsixManifestPath -Pattern 'LocalDev'))
     {
-        throw 'LocalDev is not referenced in the VSIX manifest. Please ensure the LocalDev VSIX is correctly installed.'
+        throw "The VSIX manifest at '$vsixManifestPath' does not identify a LocalDev installation. Install the LocalDev VSIX with 'dev\Templates\VSIX\build-local-VSIX-package\build-install-localdev-vsix.ps1', then rerun this script."
     }
     Write-Host 'LocalDev is referenced in the VSIX manifest.'
 
