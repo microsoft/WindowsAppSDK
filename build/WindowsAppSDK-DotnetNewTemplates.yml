@@ -24,6 +24,10 @@ parameters:
   displayName: "Publish dotnet new templates to internal feed"
   type: boolean
   default: false
+- name : "SignOutput"
+  displayName: "Sign the NuGet package with ESRP"
+  type: boolean
+  default: true
 variables:
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
@@ -107,7 +111,7 @@ extends:
         pool:
           type: windows
         publishToInternalFeed: ${{ parameters.PublishDotnetNewTemplatesToInternalFeed }}
-        SignOutput: false
+        SignOutput: ${{ parameters.SignOutput }}
         IsPRBuild: true
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
