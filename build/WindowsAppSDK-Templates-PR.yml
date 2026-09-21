@@ -95,9 +95,15 @@ extends:
       # the PR target branch; manual/non-PR runs default to true so they still build.
       # The downstream stages condition on this output, so non-Templates PRs get a
       # fast success and the required check is always reported.
+      #
+      # Fork PRs cannot access the protected feeds used by the mandatory OneBranch
+      # tools-installer pre-job. Skip before allocating an agent so those PRs can
+      # report a result without exposing feed credentials. Template changes from a
+      # fork must be validated from a trusted branch in microsoft/WindowsAppSDK.
       - stage: EvaluateTemplatesPaths
         displayName: 'Detect dev/Templates changes'
         dependsOn: []
+        condition: ne(variables['System.PullRequest.IsFork'], True)
         jobs:
           - job: Evaluate
             pool:
@@ -155,7 +161,7 @@ extends:
           SignOutput: false
           IsPRBuild: true
           dependsOn: [EvaluateTemplatesPaths]
-          condition: eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True')
+          condition: and(ne(variables['System.PullRequest.IsFork'], True), eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True'))
 
       # Smoke-test: scaffold every template from the pack and dotnet build each.
       - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
@@ -164,7 +170,7 @@ extends:
             type: windows
           dependsOnStage: 'DotnetNewTemplates_Build'
           dependsOn: [EvaluateTemplatesPaths]
-          condition: eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True')
+          condition: and(ne(variables['System.PullRequest.IsFork'], True), eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True'))
           WindowsAppSdkVersion: ${{ parameters.WindowsAppSDKVersion }}
 
       # Build-validate the VSIX. Runs the production VSIX pack steps so
@@ -175,4 +181,4 @@ extends:
           pool:
             type: windows
           dependsOn: [EvaluateTemplatesPaths]
-          condition: eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True')
+          condition: and(ne(variables['System.PullRequest.IsFork'], True), eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True'))
