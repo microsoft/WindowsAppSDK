@@ -31,8 +31,6 @@ variables:
   ob_sdl_msbuildOverride: true
   ob_sdl_prefast_runDuring: 'Guardian'
   ob_sdl_checkCompliantCompilerWarnings: true
-  ob_sdl_apiscan_enabled: false
-  ob_sdl_prefast_enabled: false
   # BinSkim exclusions. Glob patterns use forward slashes because BinSkim normalizes paths
   # to forward slashes before matching (error output like
   # "File: out/Release/x86/WindowsAppSDK.Test.NetCore/net6/api-ms-win-core-*.dll" confirms this).
