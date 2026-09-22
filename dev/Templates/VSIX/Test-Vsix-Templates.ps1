@@ -13,6 +13,27 @@ to run a subset.
 One or more template IDs to test. Separate multiple IDs with commas. When this
 parameter is omitted, all templates are tested.
 
+.PARAMETER UiTimeout
+Timeout in milliseconds for general Visual Studio UI operations.
+
+.PARAMETER LanguageFilterTimeout
+Timeout in milliseconds for the C# language filter to become available.
+
+.PARAMETER TemplateTimeout
+Timeout in milliseconds for a project template to appear in the New Project dialog.
+
+.PARAMETER ProjectLoadTimeout
+Timeout in milliseconds for a created project to load.
+
+.PARAMETER DeploymentTimeout
+Timeout in milliseconds for a deployed application to start and display its title bar.
+
+.PARAMETER BuildTimeout
+Timeout in milliseconds for a project build to complete.
+
+.PARAMETER TestTimeout
+Timeout in milliseconds for unit tests to complete.
+
 .EXAMPLE
 PS> ./Test-Vsix-Templates.ps1 -TemplateId Microsoft.WinUI.Desktop.Cs.MvvmApp
 
@@ -22,22 +43,48 @@ Runs only the WinUI MVVM App test.
 PS> ./Test-Vsix-Templates.ps1 -TemplateId Microsoft.WinUI.Desktop.Cs.ClassLibrary,Microsoft.WinUI.Desktop.Cs.UnitTestApp
 
 Runs the class library and unit test app tests.
+
+.EXAMPLE
+PS> ./Test-Vsix-Templates.ps1 -TemplateTimeout 120000
+
+Runs all template tests and allows up to two minutes for each template to appear.
 #>
 [CmdletBinding()]
 param(
     [Parameter()]
-    [string[]]$TemplateId
+    [string[]]$TemplateId,
+
+    [Parameter()]
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$UiTimeout = 10000,
+
+    [Parameter()]
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$LanguageFilterTimeout = 30000,
+
+    [Parameter()]
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$TemplateTimeout = 15000,
+
+    [Parameter()]
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$ProjectLoadTimeout = 60000,
+
+    [Parameter()]
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$DeploymentTimeout = 10000,
+
+    [Parameter()]
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$BuildTimeout = 180000,
+
+    [Parameter()]
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$TestTimeout = 180000
 )
 
 $ErrorActionPreference = 'Stop'
 
-$uiTimeout = 10000
-$languageFilterTimeout = 30000
-$templateTimeout = 15000
-$projectLoadTimeout = 60000
-$deploymentTimeout = 10000
-$buildTimeout = 180000
-$testTimeout = 180000
 $exitCode = 0
 $testResults = [System.Collections.Generic.List[object]]::new()
 $testRunStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
