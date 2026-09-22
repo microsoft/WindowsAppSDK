@@ -1,10 +1,13 @@
 <#
 .SYNOPSIS
-Validates the LocalDev C# VSIX project templates in Visual Studio.
+Validates the Windows App SDK C# VSIX project templates in Visual Studio.
 
 .DESCRIPTION
 Creates, builds, and, where applicable, deploys each C# VSIX project template.
-By default, all templates are tested. Use -TemplateId to run a subset.
+Stable Visual Studio installations use the per-user LocalDev VSIX. When the
+script falls back to prerelease Visual Studio, it uses the workload-installed
+C# templates component. By default, all templates are tested. Use -TemplateId
+to run a subset.
 
 .PARAMETER TemplateId
 One or more template IDs to test. Separate multiple IDs with commas. When this
@@ -834,7 +837,7 @@ function Write-TestReport
     )
 
     $report = [System.Text.StringBuilder]::new()
-    [void]$report.AppendLine('LocalDev C# VSIX Template Test Report')
+    [void]$report.AppendLine('Windows App SDK C# VSIX Template Test Report')
     [void]$report.AppendLine("Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss K')")
 
     foreach ($result in $Results | Where-Object Status -eq 'Failed')
@@ -875,6 +878,7 @@ function Write-TestReport
 # VS 2026 appears as "18". The alternative would be "2022", but the templates are only
 # updated for VS 2026 unless it is a hot bug
 $vswhere = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
+$csharpTemplatesComponent = 'Microsoft.WindowsAppSDK.Cs.Dev17'
 
 try
 {
@@ -893,12 +897,26 @@ try
     if ([string]::IsNullOrWhiteSpace($installPath))
     {
         Write-Host 'No stable Visual Studio 2026 installation was found. Checking prerelease installations...'
-        $installPath = & $vswhere -version "[18.0,19.0)" -prerelease -latest -property installationPath
+        $prereleaseInstallPath = & $vswhere -version "[18.0,19.0)" -prerelease -latest -property installationPath
         if ($LASTEXITCODE -ne 0)
         {
             throw "vswhere.exe failed with exit code $LASTEXITCODE while searching for a prerelease Visual Studio 2026 installation (version 18.x)."
         }
-        $usingPrereleaseVisualStudio = -not [string]::IsNullOrWhiteSpace($installPath)
+
+        if (-not [string]::IsNullOrWhiteSpace($prereleaseInstallPath))
+        {
+            $installPath = & $vswhere -version "[18.0,19.0)" -prerelease -latest -requires $csharpTemplatesComponent -property installationPath
+            if ($LASTEXITCODE -ne 0)
+            {
+                throw "vswhere.exe failed with exit code $LASTEXITCODE while checking prerelease Visual Studio 2026 for the C# templates component '$csharpTemplatesComponent'."
+            }
+            if ([string]::IsNullOrWhiteSpace($installPath))
+            {
+                throw "Prerelease Visual Studio 2026 was found at '$prereleaseInstallPath', but it does not include the Windows App SDK C# templates component '$csharpTemplatesComponent'. Add the component through Visual Studio Installer, then rerun this script."
+            }
+
+            $usingPrereleaseVisualStudio = $true
+        }
     }
 
     if ([string]::IsNullOrWhiteSpace($installPath))
@@ -928,41 +946,55 @@ try
         throw 'Visual Studio is already running. Close all Visual Studio instances so this test can target and clean up only the instance it launches.'
     }
 
-# LocalDev is installed per-user at $env:LocalAppData\Microsoft\VisualStudio\<version>\Extensions\<random>
-# TODO: Add C++ LocalDev VSIX DLL search
-    $localDevCsVsixDlls = @(Get-ChildItem -Path $env:LocalAppData -Filter 'WindowsAppSDK.Cs.Extension.Dev17.dll' -File -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
-
-    if ($localDevCsVsixDlls.Count -eq 0)
+    if ($usingPrereleaseVisualStudio)
     {
-        throw "The LocalDev C# VSIX is not installed for the current user; 'WindowsAppSDK.Cs.Extension.Dev17.dll' was not found under '$env:LocalAppData'. Install it with 'dev\Templates\VSIX\build-local-VSIX-package\build-install-localdev-vsix.ps1', then rerun this script."
+        $templateVsixKind = 'component'
+        $templateVsixRoot = Join-Path $installPath 'Common7\IDE\Extensions'
+        $expectedVsixIdentity = 'Identity Id="Microsoft.WindowsAppSDK.Cs.Dev17"'
+        $missingVsixMessage = "The prerelease Visual Studio installation reports component '$csharpTemplatesComponent', but 'WindowsAppSDK.Cs.Extension.Dev17.dll' was not found under '$templateVsixRoot'. Repair the component through Visual Studio Installer, then rerun this script."
     }
-    if ($localDevCsVsixDlls.Count -gt 1)
+    else
     {
-        throw "Multiple LocalDev C# VSIX installations were found. Uninstall stale copies so exactly one remains, then rerun this script.$([Environment]::NewLine)$($localDevCsVsixDlls -join [Environment]::NewLine)"
+        # LocalDev is installed per-user at $env:LocalAppData\Microsoft\VisualStudio\<version>\Extensions\<random>.
+        $templateVsixKind = 'LocalDev'
+        $templateVsixRoot = $env:LocalAppData
+        $expectedVsixIdentity = 'Identity Id="Microsoft.WindowsAppSDK.Cs.Dev17.LocalDev"'
+        $missingVsixMessage = "The LocalDev C# VSIX is not installed for the current user; 'WindowsAppSDK.Cs.Extension.Dev17.dll' was not found under '$templateVsixRoot'. Install it with 'dev\Templates\VSIX\build-local-VSIX-package\build-install-localdev-vsix.ps1', then rerun this script."
     }
 
-    $localDevCsVsixDll = $localDevCsVsixDlls[0]
-    Write-Host "LocalDev CS VSIX DLL is installed at: $localDevCsVsixDll"
+    # TODO: Add C++ VSIX DLL search.
+    $templateVsixDlls = @(Get-ChildItem -Path $templateVsixRoot -Filter 'WindowsAppSDK.Cs.Extension.Dev17.dll' -File -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
 
-# Verify the VSIX there is localdev (it should be by install path, but this proves it)
-    $vsixManifestPaths = @(Get-ChildItem -Path (Split-Path $localDevCsVsixDll) -Filter 'extension.vsixmanifest' -File -Recurse | Select-Object -ExpandProperty FullName)
+    if ($templateVsixDlls.Count -eq 0)
+    {
+        throw $missingVsixMessage
+    }
+    if ($templateVsixDlls.Count -gt 1)
+    {
+        throw "Multiple Windows App SDK C# $templateVsixKind VSIX installations were found under '$templateVsixRoot'. Remove or repair stale copies so exactly one remains, then rerun this script.$([Environment]::NewLine)$($templateVsixDlls -join [Environment]::NewLine)"
+    }
+
+    $templateVsixDll = $templateVsixDlls[0]
+    Write-Host "Windows App SDK C# $templateVsixKind VSIX DLL is installed at: $templateVsixDll"
+
+    $vsixManifestPaths = @(Get-ChildItem -Path (Split-Path $templateVsixDll) -Filter 'extension.vsixmanifest' -File -Recurse | Select-Object -ExpandProperty FullName)
     if ($vsixManifestPaths.Count -eq 0)
     {
-        throw "The LocalDev C# VSIX DLL was found at '$localDevCsVsixDll', but no extension.vsixmanifest was found beside it. Reinstall the LocalDev VSIX and rerun this script."
+        throw "The Windows App SDK C# $templateVsixKind VSIX DLL was found at '$templateVsixDll', but no extension.vsixmanifest was found beside it. Repair or reinstall the VSIX and rerun this script."
     }
     if ($vsixManifestPaths.Count -gt 1)
     {
-        throw "Multiple VSIX manifests were found beside '$localDevCsVsixDll'; the installation is ambiguous. Reinstall the LocalDev VSIX and rerun this script.$([Environment]::NewLine)$($vsixManifestPaths -join [Environment]::NewLine)"
+        throw "Multiple VSIX manifests were found beside '$templateVsixDll'; the installation is ambiguous. Repair or reinstall the VSIX and rerun this script.$([Environment]::NewLine)$($vsixManifestPaths -join [Environment]::NewLine)"
     }
 
     $vsixManifestPath = $vsixManifestPaths[0]
     Write-Host "VSIX manifest is located at: $vsixManifestPath"
 
-    if (-not (Select-String -Path $vsixManifestPath -Pattern 'LocalDev'))
+    if (-not (Select-String -Path $vsixManifestPath -Pattern $expectedVsixIdentity -SimpleMatch))
     {
-        throw "The VSIX manifest at '$vsixManifestPath' does not identify a LocalDev installation. Install the LocalDev VSIX with 'dev\Templates\VSIX\build-local-VSIX-package\build-install-localdev-vsix.ps1', then rerun this script."
+        throw "The VSIX manifest at '$vsixManifestPath' does not contain the expected $templateVsixKind identity '$expectedVsixIdentity'. Repair or reinstall the Windows App SDK C# templates and rerun this script."
     }
-    Write-Host 'LocalDev is referenced in the VSIX manifest.'
+    Write-Host "The VSIX manifest identifies the expected Windows App SDK C# $templateVsixKind installation."
 
 # Ensure clean template space by removing any dotnet winui templates on the machine because they also appear in VS
 $templatePackage = 'Microsoft.WindowsAppSDK.WinUI.CSharp.Templates'
