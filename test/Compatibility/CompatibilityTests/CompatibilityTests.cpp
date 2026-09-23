@@ -242,5 +242,32 @@ namespace Test::CompatibilityTests
             VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<55555>()));    // explicit only
             VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<99999>()));     // neither
         }
+
+        // Bug 61688595 gates the AppNotificationManager::Show and
+        // AppInstance::GetInstances noexcept-worker refactor. The change ID is declared
+        // locally at those callsites and is deliberately not part of the catalog, so it
+        // is enabled by default and only an app's explicit DisabledChanges list turns it
+        // off - which restores the pre-61688595 throwing hot paths.
+        static constexpr UINT32 c_changeId_NoexceptHotPaths{ 61688595 };
+
+        TEST_METHOD(VerifyNoexceptHotPathsChangeEnabledByDefault)
+        {
+            winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
+            options.Apply();
+
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<c_changeId_NoexceptHotPaths>()));
+        }
+
+        TEST_METHOD(VerifyNoexceptHotPathsChangeCanBeDisabled)
+        {
+            winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeCompatibilityOptions options;
+            options.DisabledChanges().Append((WAR::RuntimeCompatibilityChange)c_changeId_NoexceptHotPaths);
+            options.Apply();
+
+            VERIFY_IS_FALSE((WinAppSdk::Containment::IsChangeEnabled<c_changeId_NoexceptHotPaths>()));
+
+            // A neighbouring ID must be unaffected.
+            VERIFY_IS_TRUE((WinAppSdk::Containment::IsChangeEnabled<c_changeId_NoexceptHotPaths + 1>()));
+        }
     };
 }
