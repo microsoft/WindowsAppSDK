@@ -34,6 +34,26 @@ Timeout in milliseconds for a project build to complete.
 .PARAMETER TestTimeout
 Timeout in milliseconds for unit tests to complete.
 
+.PARAMETER VisualStudioInstallPath
+Exact Visual Studio installation directory to test. When omitted, vswhere
+selects the latest installation in VisualStudioVersionRange.
+
+.PARAMETER VisualStudioVersionRange
+vswhere version range used when VisualStudioInstallPath is omitted.
+
+.PARAMETER IncludePrerelease
+Includes prerelease Visual Studio installations during discovery. When omitted,
+the script preserves its existing behavior of preferring stable Visual Studio
+and falling back to prerelease when no stable installation is available.
+
+.PARAMETER VsixDeploymentKind
+Expected C# templates deployment. Auto uses the workload component for a
+prerelease Visual Studio installation and LocalDev otherwise.
+
+.PARAMETER ResultsDirectory
+Directory where the test report is written. Relative paths are resolved from
+the script directory. The default is TestResults beside this script.
+
 .EXAMPLE
 PS> ./Test-Vsix-Templates.ps1 -TemplateId Microsoft.WinUI.Desktop.Cs.MvvmApp
 
@@ -80,9 +100,27 @@ param(
 
     [Parameter()]
     [ValidateRange(1, [int]::MaxValue)]
-    [int]$TestTimeout = 180000
+    [int]$TestTimeout = 180000,
+
+    [Parameter()]
+    [string]$VisualStudioInstallPath,
+
+    [Parameter()]
+    [ValidateNotNullOrEmpty()]
+    [string]$VisualStudioVersionRange = '[18.0,19.0)',
+
+    [Parameter()]
+    [switch]$IncludePrerelease,
+
+    [Parameter()]
+    [ValidateSet('Auto', 'LocalDev', 'Component')]
+    [string]$VsixDeploymentKind = 'Auto',
+
+    [Parameter()]
+    [string]$ResultsDirectory
 )
 
+Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
 $exitCode = 0
@@ -326,7 +364,14 @@ function Set-NewProjectLanguageFilter
         throw "WinApp UI did not find the 'C#' language option within ${languageFilterTimeout}ms."
     }
 
-    Invoke-WinAppRequired -Checkpoint "Select 'C#' language option" -Arguments @('ui', 'click', $csharpOption.selector, '-a', 'devenv', '-w', $Window)
+    if ($csharpOption.isInvokable)
+    {
+        Invoke-WinAppRequired -Checkpoint "Select 'C#' language option" -Arguments @('ui', 'invoke', $csharpOption.selector, '-a', 'devenv', '-w', $Window)
+    }
+    else
+    {
+        Invoke-WinAppRequired -Checkpoint "Select 'C#' language option" -Arguments @('ui', 'click', $csharpOption.selector, '-a', 'devenv', '-w', $Window)
+    }
 }
 
 function Get-DevenvHWND
@@ -686,7 +731,7 @@ function Start-UnitTestRun
                 } | Select-Object -First 1
                 if ($runAllButton)
                 {
-                    Invoke-WinAppRequired -Checkpoint 'Run all unit tests' -Arguments @('ui', 'click', $runAllButton.selector, '-a', 'devenv', '-w', $Window)
+                    Invoke-WinAppRequired -Checkpoint 'Run all unit tests' -Arguments @('ui', 'invoke', $runAllButton.selector, '-a', 'devenv', '-w', $Window)
                     return
                 }
             }
@@ -789,7 +834,7 @@ function Invoke-TemplateTest
             $debugButtonJson = ($rawJson -join [Environment]::NewLine) | ConvertFrom-Json
             $debugButtonSelector = $debugButtonJson.windows[0].elements[0].selector
             $windowTitle = $debugButtonJson.windows[0].title
-            if ($windowTitle -notmatch '^(.+?)\s+-\s+.*Microsoft Visual Studio$')
+            if ($windowTitle -notmatch '^(.+?)\s+-\s+.*Microsoft Visual Studio(?:\s+main)?$')
             {
                 throw "Failed to extract app name from Visual Studio window title: $windowTitle"
             }
@@ -921,11 +966,7 @@ function Write-TestReport
     Write-Host $report.ToString()
 }
 
-# Check VS 2026 is installed on the machine
-# VS 2026 appears as "18". The alternative would be "2022", but the templates are only
-# updated for VS 2026 unless it is a hot bug
 $vswhere = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
-$csharpTemplatesComponent = 'Microsoft.WindowsAppSDK.Cs.Dev17'
 
 try
 {
@@ -934,53 +975,65 @@ try
         throw "Visual Studio Installer's vswhere.exe was not found at '$vswhere'. Install or repair the Visual Studio Installer, then rerun this script."
     }
 
-    $installPath = & $vswhere -version "[18.0,19.0)" -latest -property installationPath
-    if ($LASTEXITCODE -ne 0)
+    $selectedInstance = $null
+    if ($VisualStudioInstallPath)
     {
-        throw "vswhere.exe failed with exit code $LASTEXITCODE while searching for Visual Studio 2026 (version 18.x)."
-    }
-
-    $usingPrereleaseVisualStudio = $false
-    if ([string]::IsNullOrWhiteSpace($installPath))
-    {
-        Write-Host 'No stable Visual Studio 2026 installation was found. Checking prerelease installations...'
-        $prereleaseInstallPath = & $vswhere -version "[18.0,19.0)" -prerelease -latest -property installationPath
+        $resolvedInstallPath = (Resolve-Path -LiteralPath $VisualStudioInstallPath -ErrorAction Stop).Path.TrimEnd('\')
+        $instancesJson = & $vswhere -all -prerelease -format json
         if ($LASTEXITCODE -ne 0)
         {
-            throw "vswhere.exe failed with exit code $LASTEXITCODE while searching for a prerelease Visual Studio 2026 installation (version 18.x)."
+            throw "vswhere.exe failed with exit code $LASTEXITCODE while validating Visual Studio installation '$resolvedInstallPath'."
         }
-
-        if (-not [string]::IsNullOrWhiteSpace($prereleaseInstallPath))
+        $selectedInstance = @($instancesJson | ConvertFrom-Json) |
+            Where-Object { $_.installationPath.TrimEnd('\') -eq $resolvedInstallPath } |
+            Select-Object -First 1
+        if (-not $selectedInstance)
         {
-            $installPath = & $vswhere -version "[18.0,19.0)" -prerelease -latest -requires $csharpTemplatesComponent -property installationPath
+            throw "VisualStudioInstallPath '$resolvedInstallPath' is not a Visual Studio installation registered with Visual Studio Installer."
+        }
+    }
+    else
+    {
+        $discoveryArguments = @('-version', $VisualStudioVersionRange, '-latest', '-format', 'json')
+        if ($IncludePrerelease)
+        {
+            $discoveryArguments += '-prerelease'
+        }
+        $instancesJson = & $vswhere @discoveryArguments
+        if ($LASTEXITCODE -ne 0)
+        {
+            throw "vswhere.exe failed with exit code $LASTEXITCODE while searching version range '$VisualStudioVersionRange'."
+        }
+        $selectedInstance = @($instancesJson | ConvertFrom-Json) | Select-Object -First 1
+
+        if (-not $selectedInstance -and -not $IncludePrerelease)
+        {
+            Write-Host "No stable Visual Studio installation was found in version range '$VisualStudioVersionRange'. Checking prerelease installations..."
+            $instancesJson = & $vswhere -version $VisualStudioVersionRange -prerelease -latest -format json
             if ($LASTEXITCODE -ne 0)
             {
-                throw "vswhere.exe failed with exit code $LASTEXITCODE while checking prerelease Visual Studio 2026 for the C# templates component '$csharpTemplatesComponent'."
+                throw "vswhere.exe failed with exit code $LASTEXITCODE while searching prerelease version range '$VisualStudioVersionRange'."
             }
-            if ([string]::IsNullOrWhiteSpace($installPath))
-            {
-                throw "Prerelease Visual Studio 2026 was found at '$prereleaseInstallPath', but it does not include the Windows App SDK C# templates component '$csharpTemplatesComponent'. Add the component through Visual Studio Installer, then rerun this script."
-            }
-
-            $usingPrereleaseVisualStudio = $true
+            $selectedInstance = @($instancesJson | ConvertFrom-Json) | Select-Object -First 1
         }
     }
 
-    if ([string]::IsNullOrWhiteSpace($installPath))
+    if (-not $selectedInstance)
     {
-        throw 'Visual Studio 2026 (version 18.x) was not found among stable or prerelease installations. Install Visual Studio 2026 with the workloads required by the WinUI templates, then rerun this script.'
+        throw "Visual Studio was not found in version range '$VisualStudioVersionRange'. Install a supported Visual Studio instance with the workloads required by the WinUI templates, then rerun this script."
     }
+
+    $installPath = $selectedInstance.installationPath
+    $usingPrereleaseVisualStudio = $selectedInstance.PSObject.Properties.Name -contains 'isPrerelease' -and [bool]$selectedInstance.isPrerelease
+    $visualStudioDescription = "$($selectedInstance.displayName) $($selectedInstance.installationVersion)"
 
     $devenv = Join-Path $installPath 'Common7\IDE\devenv.exe'
     if (-not (Test-Path $devenv -PathType Leaf))
     {
-        throw "Visual Studio 2026 was found at '$installPath', but devenv.exe is missing at '$devenv'. Repair the Visual Studio installation, then rerun this script."
+        throw "Visual Studio was found at '$installPath', but devenv.exe is missing at '$devenv'. Repair the Visual Studio installation, then rerun this script."
     }
-    Write-Host "Visual Studio 2026 is installed at: $installPath"
-    if ($usingPrereleaseVisualStudio)
-    {
-        Write-Host 'Using a prerelease Visual Studio 2026 installation because no stable installation was found.'
-    }
+    Write-Host "Selected Visual Studio: $visualStudioDescription"
+    Write-Host "Visual Studio installation: $installPath"
     Write-Host "Devenv path: $devenv"
 
     if (-not (Get-Command winapp -ErrorAction SilentlyContinue))
@@ -993,12 +1046,22 @@ try
         throw 'Visual Studio is already running. Close all Visual Studio instances so this test can target and clean up only the instance it launches.'
     }
 
-    if ($usingPrereleaseVisualStudio)
+    $resolvedVsixDeploymentKind = if ($VsixDeploymentKind -eq 'Auto')
+    {
+        if ($usingPrereleaseVisualStudio) { 'Component' } else { 'LocalDev' }
+    }
+    else
+    {
+        $VsixDeploymentKind
+    }
+    Write-Host "Expected C# templates deployment: $resolvedVsixDeploymentKind"
+
+    if ($resolvedVsixDeploymentKind -eq 'Component')
     {
         $templateVsixKind = 'component'
         $templateVsixRoot = Join-Path $installPath 'Common7\IDE\Extensions'
         $expectedVsixIdentity = 'Identity Id="Microsoft.WindowsAppSDK.Cs.Dev17"'
-        $missingVsixMessage = "The prerelease Visual Studio installation reports component '$csharpTemplatesComponent', but 'WindowsAppSDK.Cs.Extension.Dev17.dll' was not found under '$templateVsixRoot'. Repair the component through Visual Studio Installer, then rerun this script."
+        $missingVsixMessage = "The component C# VSIX was not found under '$templateVsixRoot'. Install or repair the Windows App SDK C# templates component through Visual Studio Installer, then rerun this script."
     }
     else
     {
@@ -1107,7 +1170,19 @@ catch
 finally
 {
     $testRunStopwatch.Stop()
-    $reportPath = Join-Path $PSScriptRoot "TestResults\Test-Vsix-Templates-$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+    $resolvedResultsDirectory = if ([string]::IsNullOrWhiteSpace($ResultsDirectory))
+    {
+        Join-Path $PSScriptRoot 'TestResults'
+    }
+    elseif ([IO.Path]::IsPathRooted($ResultsDirectory))
+    {
+        $ResultsDirectory
+    }
+    else
+    {
+        Join-Path $PSScriptRoot $ResultsDirectory
+    }
+    $reportPath = Join-Path $resolvedResultsDirectory "Test-Vsix-Templates-$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
     Write-TestReport -Results $testResults.ToArray() -TotalDuration $testRunStopwatch.Elapsed -ReportPath $reportPath
     Write-Host "Report written to: $reportPath"
 
