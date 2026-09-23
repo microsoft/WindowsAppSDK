@@ -219,6 +219,20 @@ void BaseTestSuite::VerifyShowToast()
     VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 }
 
+void BaseTestSuite::VerifyShowToastTwiceFailsWithNotificationPosted()
+{
+    RegisterWithAppNotificationManager();
+
+    AppNotification toast{ CreateToastNotification() };
+    AppNotificationManager::Default().Show(toast);
+    VERIFY_ARE_NOT_EQUAL(0u, toast.Id());
+
+    // Bug 61688595: Show() routes through the noexcept ShowImpl worker (or, when the
+    // contained change is disabled, the legacy throwing body). Either way, re-showing an
+    // already-posted notification must surface WPN_E_NOTIFICATION_POSTED to the caller.
+    VERIFY_THROWS_HR(AppNotificationManager::Default().Show(toast), WPN_E_NOTIFICATION_POSTED);
+}
+
 void BaseTestSuite::VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
 {
     RegisterWithAppNotificationManager();
