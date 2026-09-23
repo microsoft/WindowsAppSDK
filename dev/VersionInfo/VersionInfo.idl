@@ -10,19 +10,19 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     [contract(VersionInfoContract, 1)]
     static runtimeclass ReleaseInfo
     {
-        /// The major version of the Windows App SDK release.
+        /// The major version of the Windows App SDK release, or 0 if runtime version information is unavailable.
         static UInt16 Major{ get; };
 
-        /// The minor version of the Windows App SDK release.
+        /// The minor version of the Windows App SDK release, or 0 if runtime version information is unavailable.
         static UInt16 Minor{ get; };
 
-        /// The patch version of the Windows App SDK release.
+        /// The patch version of the Windows App SDK release, or 0 if runtime version information is unavailable.
         static UInt16 Patch{ get; };
 
-        /// The Windows App SDK release's version tag; for example, "preview2", or empty string for stable.
+        /// The Windows App SDK release's version tag; for example, "preview2", or empty if stable or runtime version information is unavailable.
         static String VersionTag{ get; };
 
-        /// The version of the Windows App SDK runtime; for example, "1.1-preview2" or "1.2.3".
+        /// The version of the Windows App SDK runtime; for example, "1.1-preview2" or "1.2.3", or "0.0.0" if runtime version information is unavailable.
         static String AsString{ get; };
     };
 
@@ -30,10 +30,10 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     [contract(VersionInfoContract, 1)]
     static runtimeclass RuntimeInfo
     {
-        /// The version of the Windows App SDK runtime; for example, { Major=1000, Minor=446, Build=804, Revision=0 }
+        /// The version of the Windows App SDK runtime; for example, { Major=1000, Minor=446, Build=804, Revision=0 }, or all zeros if runtime version information is unavailable.
         static Windows.ApplicationModel.PackageVersion Version{ get; };
 
-        /// The version of the Windows App SDK runtime; for example, "1000.446.804.0"
+        /// The version of the Windows App SDK runtime; for example, "1000.446.804.0", or empty if runtime version information is unavailable.
         static String AsString{ get; };
     };
 }
