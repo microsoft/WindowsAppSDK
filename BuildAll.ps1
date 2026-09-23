@@ -158,14 +158,17 @@ if(-not (test-path "$buildOverridePath"))
     new-item -path "$buildOverridePath" -itemtype "directory"
 }
 
-function NugetRestore([string] $Label, [string] $Target)
+function NugetRestore([string] $Label, [string] $Target, [string] $RestorePlatform = $Platform)
 {
+    $restoreMsBuildArgs = $env:NUGET_RESTORE_MSBUILD_ARGS
     if ($AzureBuildStep -ne "all")
     {
-        $env:NUGET_RESTORE_MSBUILD_ARGS = "/binaryLogger:BuildOutput\binlogs\$Label.restore.$Platform.$Configuration.binlog /p:Platform=$Platform /p:Configuration=$Configuration"
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/binaryLogger:BuildOutput\binlogs\$Label.restore.$RestorePlatform.$Configuration.binlog /p:Platform=$RestorePlatform /p:Configuration=$Configuration"
     }
     nuget restore $Target -configfile NuGet.config
-    if ($lastexitcode -ne 0)
+    $restoreExitCode = $lastexitcode
+    $env:NUGET_RESTORE_MSBUILD_ARGS = $restoreMsBuildArgs
+    if ($restoreExitCode -ne 0)
     {
         write-host "ERROR: nuget.exe restore $Label FAILED."
         exit 1
@@ -205,6 +208,13 @@ Try {
     {
         NugetRestore "WindowsAppRuntime" "WindowsAppRuntime.sln"
         NugetRestore "Microsoft.WindowsAppRuntime.Bootstrap.Net" "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
+        if ($Platform -ieq "arm64ec")
+        {
+            # Most managed projects intentionally map ARM64EC to arm64 in WindowsAppRuntime.sln.
+            # nuget.exe applies the command-line Platform globally instead of honoring those
+            # solution mappings, so retain the ARM64EC restore above and add the mapped restore.
+            NugetRestore "WindowsAppRuntime.arm64" "WindowsAppRuntime.sln" "arm64"
+        }
 
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
@@ -240,6 +250,7 @@ Try {
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
+                                /p:WindowsAppSDKNativeOutputPlatform=$platformToRun `
                                 /p:RestoreConfigFile=NuGet.config `
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
@@ -527,22 +538,6 @@ Try {
                     'native\PushNotificationsLongRunningTask.ProxyStub.dll',
                     'native\RestartAgent.exe') `
                 -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
-        }
-
-        # Populate ARM64EC folders with x64 content
-        if ($platform.Split(",") -contains "x64")
-        {
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\lib\native\x64" `
-                -dest "$ComponentBasePath\lib\native\arm64ec"
-
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\runtimes\win-x64" `
-                -dest "$ComponentBasePath\runtimes\win-arm64ec"
-
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\runtimes-framework\win-x64" `
-                -dest "$ComponentBasePath\runtimes-framework\win-arm64ec"
         }
 
         Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"

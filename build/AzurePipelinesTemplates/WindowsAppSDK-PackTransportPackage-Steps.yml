@@ -38,7 +38,7 @@ steps:
   # when no override is set, making this equivalent to source: current.
   # Artifact names follow the monobuild spec (Mono-Build-Pipeline-Migration.md §6.3):
   # Build-Foundation-<plat>-Release for native and AnyCPU, Build-Foundation-MRT-<plat>-Release for MRT.
-  - ${{ each platform in split('x64;x86;arm64;anycpu', ';') }}:
+  - ${{ each platform in split('x64;x86;arm64;arm64ec;anycpu', ';') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation ${{ platform }}'
       inputs:
@@ -54,7 +54,7 @@ steps:
           targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   # ── Download MRT build artifacts ──
-  - ${{ each platform in split('x64;x86;arm64', ';') }}:
+  - ${{ each platform in split('x64;x86;arm64;arm64ec', ';') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download MRT ${{ platform }}'
       inputs:
@@ -97,7 +97,7 @@ steps:
         workingDirectory: '$(Build.SourcesDirectory)\WindowsAppSDK'
       ${{ else }}:
         filePath: 'BuildAll.ps1'
-      arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
+      arguments: -Platform "x86,x64,arm64,arm64ec" -Configuration "release" -AzureBuildStep "StageFiles"
 
   - task: CopyFiles@2
     displayName: 'Copy symbols to artifact staging directory'
