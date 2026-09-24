@@ -1432,7 +1432,7 @@ public:
         _In_ const HierarchicalSchemaSectionBuilder* linkToSchema,
         _In_ PCWSTR linkToResourceName);
 
-    virtual HierarchicalSchemaSectionBuilder* IResourceLinkBuilder::GetSchema() const { return m_pPrimarySchema; }
+    virtual HierarchicalSchemaSectionBuilder* GetSchema() const { return m_pPrimarySchema; }
 
     ~PriSectionBuilder();
 
