@@ -46,11 +46,11 @@
        ValueOrDefault resolves to $(WindowsAppSDKVersionPinned) when set (mono-build),
        otherwise falls back to the pinned version literal. -->
   <PropertyGroup Label="WindowsAppSDK Package Version Properties">
-    <MicrosoftWindowsAppSDKBasePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.6-dev.experimental1'))</MicrosoftWindowsAppSDKBasePackageVersion>
-    <MicrosoftFrameworkUdkPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-27300.1896.260713-1015.0'))</MicrosoftFrameworkUdkPackageVersion>
-    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-27300.1896.260713-1015.0'))</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
-    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-Rolling.20260713.2'))</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
-    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '1.7.0-main.20241009.0'))</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKBasePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.4.0-dev.experimental12'))</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftFrameworkUdkPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.4.0-dev.experimental12'))</MicrosoftFrameworkUdkPackageVersion>
+    <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.4.0-dev.experimental12'))</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.4.0-dev.experimental12'))</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.4.0-dev.experimental12'))</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
   </PropertyGroup>
 
   <!-- External package versions -->
