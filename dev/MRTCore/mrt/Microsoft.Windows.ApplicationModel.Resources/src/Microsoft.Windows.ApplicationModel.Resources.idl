@@ -3,7 +3,7 @@
 
 namespace Microsoft.Windows.ApplicationModel.Resources
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract MrtCoreContract{};
 
     [contract(MrtCoreContract, 1)]
@@ -96,6 +96,13 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         String ValueAsString { get; };
         byte[] ValueAsBytes { get; };
         ResourceCandidateKind Kind { get; };
+
+        // Zero-copy accessor for embedded/binary resources: returns a read-only IMemoryBuffer that
+        // projects the resource bytes directly (no copy). The buffer (and any reference created from
+        // it) pins the backing resource data for its lifetime; callers must Close it when done. Throws
+        // for Kind != EmbeddedData candidates. Prefer this over ValueAsBytes to avoid a per-call copy.
+        [contract(MrtCoreContract, 3)]
+        Windows.Foundation.IMemoryBuffer ValueAsMemoryBuffer();
 
         IMapView<String, String> QualifierValues { get; };
     }
