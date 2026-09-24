@@ -58,6 +58,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         void UnregisterHelper();
 
+        // noexcept HRESULT-returning worker for Show. The public Show boundary is
+        // intentionally thin so a failed HRESULT does not trigger the deep C++/WinRT
+        // projection rethrow path that exhausted the stack via WIL's FormatMessage-based
+        // exception logging (Bug 61688595).
+        HRESULT ShowImpl(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification) noexcept;
+
         wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;
         wil::srwlock m_lock;
         winrt::event<NotificationActivationEventHandler> m_notificationHandlers;
