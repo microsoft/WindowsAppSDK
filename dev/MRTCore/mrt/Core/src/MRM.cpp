@@ -3,6 +3,7 @@
 
 #include <Windows.h>
 #include <Pathcch.h>
+#include <appmodel.h>
 #include "wil/win32_helpers.h"
 #include "wil/filesystem.h"
 #include "mrm/BaseInternal.h"
@@ -19,6 +20,8 @@
 #include <string>
 #include <cstdlib>
 
+#include "wil/resource.h"
+
 using namespace Microsoft::Resources;
 
 typedef struct _MrmObjects
@@ -27,7 +30,16 @@ typedef struct _MrmObjects
     UnifiedResourceView* unifiedView = nullptr;
     const PriFile* priFile = nullptr;
     ProviderResolver* resolver = nullptr;
+    // Serializes the on-demand merge of package-graph resources into the unified view.
+    // Shared for the (common) resolve path; exclusive only while merging, mirroring the
+    // reader/writer locking System MRT uses around its on-demand PRI load.
+    wil::srwlock packageGraphLock;
 } MrmObjects;
+
+// Resolves a resource root map name to a package in the app's dependency graph and merges
+// that package's resources into the unified view on demand. Declared here so the flat
+// resource-resolution APIs can fall back to it. See the definition for details.
+static HRESULT MergePackageResourceFilesForMapName(_In_ UnifiedResourceView* unifiedView, _In_ PCWSTR rootResourceMapName);
 
 constexpr wchar_t ResourceUriPrefix[] = L"ms-resource://";
 constexpr unsigned int ResourceUriPrefixLength = ARRAYSIZE(ResourceUriPrefix) - 1;
@@ -274,7 +286,32 @@ static HRESULT LoadResourceCandidate(
         }
         else
         {
-            RETURN_IF_FAILED(resourceManagerObjects->priFile->GetResourceMapById(rootResourceMap, &internalResourceMap));
+            // Resolve the named root resource map from the application PRI first. If it
+            // isn't present there, follow System MRT: treat the root map name as a package
+            // identity in the app's dependency graph and load that package's resources
+            // (together with any applicable resource packages) on demand, then resolve the
+            // map from the unified view. Root names that don't correspond to a package in
+            // the graph remain unresolved, matching System MRT.
+            HRESULT resourceMapHr = resourceManagerObjects->priFile->GetResourceMapById(rootResourceMap, &internalResourceMap);
+            if (resourceMapHr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+            {
+                // Fast path under a shared lock: another thread may have already merged the
+                // matching package into the unified view.
+                {
+                    auto lock = resourceManagerObjects->packageGraphLock.lock_shared();
+                    resourceMapHr = resourceManagerObjects->unifiedView->GetResourceMapById(rootResourceMap, &internalResourceMap);
+                }
+
+                if (resourceMapHr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+                {
+                    // Merge under an exclusive lock, then resolve. MergePackageResourceFilesForMapName
+                    // is idempotent, so a merge that raced ahead of us is a harmless no-op.
+                    auto lock = resourceManagerObjects->packageGraphLock.lock_exclusive();
+                    (void)MergePackageResourceFilesForMapName(resourceManagerObjects->unifiedView, rootResourceMap);
+                    resourceMapHr = resourceManagerObjects->unifiedView->GetResourceMapById(rootResourceMap, &internalResourceMap);
+                }
+            }
+            RETURN_IF_FAILED(resourceMapHr);
         }
 
         RETURN_IF_FAILED_WITH_EXPECTED(internalResourceMap->GetResource(relativeResourceId, &namedResource), HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
@@ -507,6 +544,126 @@ static void DestroyResourceManager(_In_ void* resourceManager)
     return;
 }
 
+// Returns true if the given path refers to an existing file (not a directory).
+static bool ResourcePriFileExists(_In_ PCWSTR priFilePath)
+{
+    const DWORD attributes = GetFileAttributesW(priFilePath);
+    return (attributes != INVALID_FILE_ATTRIBUTES) && ((attributes & FILE_ATTRIBUTE_DIRECTORY) == 0);
+}
+
+// Returns the length of the package "Name" segment of a package full name, i.e. the text
+// before the first '_' in "<Name>_<Version>_<Architecture>_<ResourceId>_<PublisherId>".
+// Returns 0 if the full name is malformed (no '_'), so callers can ignore it.
+static int GetPackageNameSegmentLength(_In_ PCWSTR packageFullName)
+{
+    const wchar_t* underscore = wcschr(packageFullName, L'_');
+    return (underscore != nullptr) ? static_cast<int>(underscore - packageFullName) : 0;
+}
+
+// Resolves a resource root map name to the package(s) in the app's dependency graph whose
+// identity matches it, and merges those packages' resources.pri into the unified view as
+// referenced (named) resource maps. This mirrors System MRT: a resource root map name
+// identifies a package by identity - its package "Name", which is also the authored
+// resource-map name - and that package's resources are loaded on demand. Because a main
+// package and its resource packages (language/scale/DPI splits) share the same package
+// Name, matching on Name pulls in the resource packages too, which is how a package's
+// merged resources are obtained. Root names that don't correspond to a package in the
+// graph are left unresolved, matching System MRT. Best effort and a no-op for unpackaged
+// apps, which have no package graph.
+static HRESULT MergePackageResourceFilesForMapName(_In_ UnifiedResourceView* unifiedView, _In_ PCWSTR rootResourceMapName)
+{
+    // Enumerate the head package and the full dependency graph that can contribute
+    // resources: framework/static, dynamic, optional, host-runtime, and resource
+    // packages - the same set System MRT considers. PACKAGE_INFORMATION_BASIC keeps the
+    // query cheap since only each package's identity and install path are required.
+    //
+    // The graph is re-enumerated on each cross-package miss rather than cached for the
+    // resource manager's lifetime, because the app's package graph can change at runtime
+    // (for example when dynamic dependencies are added) and a cached snapshot could go
+    // stale. Re-enumeration only runs on the cold path: once a package is merged, later
+    // lookups of its maps resolve directly from the unified view without reaching here.
+    const UINT32 filter = PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_OPTIONAL | PACKAGE_FILTER_HOSTRUNTIME |
+                          PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_FILTER_RESOURCE | PACKAGE_INFORMATION_BASIC;
+
+    UINT32 bufferLength = 0;
+    UINT32 packageCount = 0;
+    const LONG sizeResult = GetCurrentPackageInfo(filter, &bufferLength, nullptr, &packageCount);
+    if ((sizeResult == APPMODEL_ERROR_NO_PACKAGE) || (sizeResult == ERROR_SUCCESS))
+    {
+        // Running unpackaged (or with an empty package graph): there is nothing to
+        // merge, so preserve the existing single-PRI behavior.
+        return S_OK;
+    }
+    RETURN_HR_IF(HRESULT_FROM_WIN32(sizeResult), sizeResult != ERROR_INSUFFICIENT_BUFFER);
+
+    std::unique_ptr<BYTE[]> buffer(new (std::nothrow) BYTE[bufferLength]);
+    RETURN_IF_NULL_ALLOC(buffer.get());
+    RETURN_IF_WIN32_ERROR(GetCurrentPackageInfo(filter, &bufferLength, buffer.get(), &packageCount));
+
+    // The application's own resources.pri is already loaded as the primary map; skip it.
+    StringResult applicationPriPath;
+    PCWSTR applicationPriPathRef = nullptr;
+    if (SUCCEEDED(unifiedView->GetApplicationFileInfo(&applicationPriPath, nullptr, nullptr, nullptr)))
+    {
+        applicationPriPathRef = applicationPriPath.GetRef();
+    }
+
+    const PACKAGE_INFO* packages = reinterpret_cast<const PACKAGE_INFO*>(buffer.get());
+    for (UINT32 i = 0; i < packageCount; i++)
+    {
+        const PACKAGE_INFO& package = packages[i];
+        PCWSTR packagePath = package.path;
+        PCWSTR packageFullName = package.packageFullName;
+        if ((packagePath == nullptr) || (*packagePath == L'\0') || (packageFullName == nullptr))
+        {
+            continue;
+        }
+
+        // Match the requested root map name against the package identity. Mirror System MRT,
+        // which compares the package full name case-sensitively and the package "Name"
+        // case-insensitively. The Name segment is derived from the full name so it does not
+        // depend on PACKAGE_INFORMATION_FULL identity fields being populated.
+        bool matches = (CompareStringOrdinal(packageFullName, -1, rootResourceMapName, -1, FALSE) == CSTR_EQUAL);
+        if (!matches)
+        {
+            const int nameLength = GetPackageNameSegmentLength(packageFullName);
+            matches = (nameLength > 0) && (CompareStringOrdinal(packageFullName, nameLength, rootResourceMapName, -1, TRUE) == CSTR_EQUAL);
+        }
+        if (!matches)
+        {
+            continue;
+        }
+
+        const size_t priPathLength = wcslen(packagePath) + 1 + ARRAYSIZE(ResourcesPriFileName);
+        std::unique_ptr<wchar_t[]> priPath(new (std::nothrow) wchar_t[priPathLength]);
+        RETURN_IF_NULL_ALLOC(priPath.get());
+
+        if (FAILED(PathCchCombineEx(priPath.get(), priPathLength, packagePath, ResourcesPriFileName, PATHCCH_ALLOW_LONG_PATHS)))
+        {
+            continue;
+        }
+
+        if ((applicationPriPathRef != nullptr) &&
+            (CompareStringOrdinal(priPath.get(), -1, applicationPriPathRef, -1, TRUE) == CSTR_EQUAL))
+        {
+            continue;
+        }
+
+        if (!ResourcePriFileExists(priPath.get()))
+        {
+            continue;
+        }
+
+        // Best effort: a package whose resources cannot be loaded should not fail
+        // resolution for the rest of the graph.
+        const ManagedResourceMap* referencedMap = nullptr;
+        int referencedFileIndex = -1;
+        (void)unifiedView->GetOrAddReferencedFile(priPath.get(), packagePath, &referencedMap, &referencedFileIndex);
+    }
+
+    return S_OK;
+}
+
 STDAPI MrmCreateResourceManager(_In_ PCWSTR priFileName, _Out_ MrmManagerHandle* resourceManager)
 {
     *resourceManager = nullptr;
@@ -702,7 +859,32 @@ STDAPI MrmGetChildResourceMap(
         }
         else
         {
-            RETURN_IF_FAILED(resourceManagerObjects->priFile->GetResourceMapById(rootResourceMap, &internalRootResourceMap));
+            // Resolve the named root map from the application PRI first, then follow
+            // System MRT: treat the root map name as a package identity in the app's
+            // dependency graph, load that package's resources (and any applicable resource
+            // packages) on demand, and resolve the subtree/property bag from the unified
+            // view. Root names that don't correspond to a package in the graph remain
+            // unresolved, matching System MRT.
+            HRESULT rootMapHr = resourceManagerObjects->priFile->GetResourceMapById(rootResourceMap, &internalRootResourceMap);
+            if (rootMapHr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+            {
+                // Fast path under a shared lock: another thread may have already merged the
+                // matching package into the unified view.
+                {
+                    auto lock = resourceManagerObjects->packageGraphLock.lock_shared();
+                    rootMapHr = resourceManagerObjects->unifiedView->GetResourceMapById(rootResourceMap, &internalRootResourceMap);
+                }
+
+                if (rootMapHr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+                {
+                    // Merge under an exclusive lock, then resolve. MergePackageResourceFilesForMapName
+                    // is idempotent, so a merge that raced ahead of us is a harmless no-op.
+                    auto lock = resourceManagerObjects->packageGraphLock.lock_exclusive();
+                    (void)MergePackageResourceFilesForMapName(resourceManagerObjects->unifiedView, rootResourceMap);
+                    rootMapHr = resourceManagerObjects->unifiedView->GetResourceMapById(rootResourceMap, &internalRootResourceMap);
+                }
+            }
+            RETURN_IF_FAILED(rootMapHr);
         }
 
         originalMapSubtree = internalRootResourceMap->GetRootSubtree();
