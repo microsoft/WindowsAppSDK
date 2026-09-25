@@ -11,6 +11,10 @@
 
     Mono-build override: when $(WindowsAppSDKVersionPinned) is set, all internal WinAppSDK
     package versions are pinned to that value instead of their fallback defaults.
+
+    When this repository is checked out beneath a mono-build package configuration, the parent
+    package-version file is imported last for LKG overrides. Its CPM settings and item list are
+    suppressed so this repository retains its own package inventory and metadata.
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
@@ -123,4 +127,14 @@
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <_WindowsAppSDKParentDirectoryPackagesProps Condition="'$(WindowsAppSDKUseParentPackageVersions)' == 'true'">$([MSBuild]::GetPathOfFileAbove('WindowsAppSDK.ParentPackageVersions.props', '$(MSBuildThisFileDirectory)..\'))</_WindowsAppSDKParentDirectoryPackagesProps>
+    <WindowsAppSDKImportLkgPropertiesOnly Condition="'$(_WindowsAppSDKParentDirectoryPackagesProps)' != ''">true</WindowsAppSDKImportLkgPropertiesOnly>
+  </PropertyGroup>
+  <Import Project="$(_WindowsAppSDKParentDirectoryPackagesProps)" Condition="'$(_WindowsAppSDKParentDirectoryPackagesProps)' != ''" />
+  <PropertyGroup Condition="'$(_WindowsAppSDKParentDirectoryPackagesProps)' != ''">
+    <MicrosoftWindowsAppSDKBasePackageVersion>$(MicrosoftWindowsAppSDKBasePackagePackageVersion)</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$(MicrosoftWindowsAppSDKInteractiveExperiencesPackagePackageVersion)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+  </PropertyGroup>
 </Project>
