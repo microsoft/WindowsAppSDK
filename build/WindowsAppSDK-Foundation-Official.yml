@@ -96,6 +96,11 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
+    # Data-only alias pinned to main so source analysis always uses the centrally maintained TSA config.
+    - repository: WindowsAppSDKTsaConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
@@ -122,6 +127,13 @@ extends:
       enabled: false
 
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
+      # sdl_sources reads the central TSA area path from the WindowsAppSDKTsaConfig checkout (replicated by
+      # checkout_all_repos) instead of the committed root .config/tsaoptions.json; build-job TSA is unaffected.
+      perStage:
+        sdl_sources:
+          checkout_all_repos: true
+          tsa:
+            configFile: $(Build.SourcesDirectory)\ext_repos\WindowsAppSDKTsaConfig\TSAOptions\tsaoptions.foundation.json
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
@@ -151,6 +163,20 @@ extends:
         break: false
 
     stages:
+
+    # Compile-time discovery only: checkout_all_repos replicates repositories named in a checkout step into the
+    # injected sdl_sources job. condition:false keeps the discovery job from executing.
+    - stage: SourceAnalysisTsaConfig
+      dependsOn: []
+      jobs:
+      - job: DiscoverTsaConfigCheckout
+        condition: false
+        pool:
+          type: windows
+          isCustom: true
+          name: 'ProjectReunionESPool-2022'
+        steps:
+        - checkout: WindowsAppSDKTsaConfig
 
     - ${{ if eq(parameters.validateRuntimeCompatibility, 'true') }}:
       - stage: ManualValidation_RuntimeCompatibility
