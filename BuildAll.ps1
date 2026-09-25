@@ -191,9 +191,23 @@ Try {
             $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
         }
         Write-Host "BuildNumber : " $env:BUILD_BUILDNUMBER
-        $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
-        $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
-        $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+        # The pipeline-name scheme $(date:yyMM).$(date:dd)$(rev:rrr) yields a >=10-char build number, so
+        # the fixed end-offsets below are valid. The mono-build instead passes a short semantic build
+        # number (e.g. "2.0.0"), where Foundation is versioned from $(WindowsAppSDKFormattedVersion).
+        # Guard the offsets so a <10-char number can't throw "StartIndex cannot be less than zero".
+        if ($env:BUILD_BUILDNUMBER.length -ge 10)
+        {
+            $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+            $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+            $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+        }
+        else
+        {
+            Write-Host "BUILD_BUILDNUMBER '$env:BUILD_BUILDNUMBER' has no embedded date (mono-build); using zero build/revision."
+            $yymm = '0000'
+            $dd = '00'
+            $revision = '000'
+        }
 
         $WindowsAppSDKVersionProperty = "/p:WindowsAppSDKVersionBuild=$yymm /p:WindowsAppSDKVersionRevision=$dd$revision"
 
