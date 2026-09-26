@@ -88,55 +88,36 @@ if ([string]::IsNullOrEmpty($ComponentPackageVersion))
     Write-Host "Updating ComponentPackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in Directory.Packages.props: $ComponentPackageVersion"
 }
 
-# Build a lookup of package versions from Directory.Packages.props for nuspec dependency updates.
-# The XML defines properties in PropertyGroups and references them in PackageVersion items.
-# Internal packages have IsInternal="true" metadata; when -WindowsAppSDKVersionPinned is set,
-# those use the pinned version (matching MSBuild behavior).
+# Build a lookup of evaluated package versions from Directory.Packages.props for nuspec
+# dependency updates. MSBuild evaluation is required because the package versions may come
+# from an imported WindowsAppSDK.PackageVersion.props supplied by the mono-build.
 $dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
-[xml]$dppXmlForVersions = [xml](Get-Content -Path $dppPath -Raw)
-
-# First, build a property lookup from all PropertyGroups.
-# Properties may contain ValueOrDefault expressions — extract the fallback value,
-# or use the pinned version when WindowsAppSDKVersionPinned is set.
-$msbuildProps = @{}
-$vodPattern = [regex]"ValueOrDefault\([^,]+,\s*'([^']+)'\)"
-foreach ($pg in $dppXmlForVersions.Project.PropertyGroup) {
-    foreach ($prop in $pg.ChildNodes) {
-        if ($prop.NodeType -eq 'Element' -and -not [string]::IsNullOrEmpty($prop.InnerText)) {
-            $value = $prop.InnerText
-            $vodMatch = $vodPattern.Match($value)
-            if ($vodMatch.Success) {
-                if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
-                    $value = $WindowsAppSDKVersionPinned
-                } else {
-                    $value = $vodMatch.Groups[1].Value
-                }
-            }
-            $msbuildProps[$prop.Name] = $value
-        }
-    }
+$msbuildArguments = @(
+    'msbuild',
+    $dppPath,
+    '-nologo',
+    '-verbosity:quiet',
+    '-getItem:PackageVersion'
+)
+if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+    $msbuildArguments += "-p:WindowsAppSDKVersionPinned=$WindowsAppSDKVersionPinned"
 }
 
-# Then resolve PackageVersion items
+$evaluationOutput = & dotnet @msbuildArguments
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to evaluate package versions from '$dppPath'."
+}
+
+$evaluation = ($evaluationOutput | Out-String | ConvertFrom-Json)
 $internalPackageVersions = @{}
-foreach ($ig in $dppXmlForVersions.Project.ItemGroup) {
-    foreach ($pv in $ig.SelectNodes("*[local-name()='PackageVersion']")) {
-        $pkgName = $pv.GetAttribute("Include")
-        $versionExpr = $pv.GetAttribute("Version")
-
-        # Resolve $(PropertyName) references
-        $resolved = $versionExpr
-        if ($versionExpr -match '\$\(') {
-            foreach ($propMatch in [regex]::Matches($versionExpr, '\$\(([^)]+)\)')) {
-                $propName = $propMatch.Groups[1].Value
-                if ($msbuildProps.ContainsKey($propName)) {
-                    $resolved = $msbuildProps[$propName]
-                }
-            }
-        }
-
-        $internalPackageVersions[$pkgName] = $resolved
+foreach ($packageVersion in @($evaluation.Items.PackageVersion)) {
+    if ($internalPackageVersions.ContainsKey($packageVersion.Identity)) {
+        throw "Duplicate evaluated PackageVersion item '$($packageVersion.Identity)' in '$dppPath'."
     }
+    if ([string]::IsNullOrWhiteSpace($packageVersion.Version)) {
+        throw "Evaluated PackageVersion '$($packageVersion.Identity)' has no Version."
+    }
+    $internalPackageVersions[$packageVersion.Identity] = $packageVersion.Version
 }
 if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
     Write-Host "Pinned internal WindowsAppSDK packages to version '$WindowsAppSDKVersionPinned' for nuspec dependency rewriting."
