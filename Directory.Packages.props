@@ -12,14 +12,14 @@
     Mono-build override: when $(WindowsAppSDKVersionPinned) is set, all internal WinAppSDK
     package versions are pinned to that value instead of their fallback defaults.
 
-    When this repository is checked out beneath a mono-build package configuration, the parent
-    Directory.Packages.props is imported last and supplies the package inventory and versions.
+    When this repository is checked out beneath a mono-build package configuration,
+    WindowsAppSDK.PackageVersion.props is imported last and supplies internal package versions.
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <WindowsAppSDKParentDirectoryPackagesProps>$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)..\'))</WindowsAppSDKParentDirectoryPackagesProps>
+    <WindowsAppSDKPackageVersionProps>$([MSBuild]::GetPathOfFileAbove('WindowsAppSDK.PackageVersion.props', '$(MSBuildThisFileDirectory)..\'))</WindowsAppSDKPackageVersionProps>
   </PropertyGroup>
 
   <!-- ═══════════════════════════════════════════════════════════════════════
@@ -49,7 +49,7 @@
        and by eng/PackageReference/*.csproj PackageDownload items.
        ValueOrDefault resolves to $(WindowsAppSDKVersionPinned) when set (mono-build),
        otherwise falls back to the pinned version literal. -->
-  <PropertyGroup Label="WindowsAppSDK Package Version Properties" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''">
+  <PropertyGroup Label="WindowsAppSDK Package Version Properties" Condition="'$(WindowsAppSDKPackageVersionProps)' == ''">
     <MicrosoftWindowsAppSDKBasePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.6-dev.experimental1'))</MicrosoftWindowsAppSDKBasePackageVersion>
     <MicrosoftFrameworkUdkPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-27300.1896.260713-1015.0'))</MicrosoftFrameworkUdkPackageVersion>
     <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-27300.1896.260713-1015.0'))</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
@@ -73,13 +73,19 @@
     <MicrosoftWindowsAppSDKProtobufVersion>3.21.12</MicrosoftWindowsAppSDKProtobufVersion>
   </PropertyGroup>
 
+  <Import Project="$(WindowsAppSDKPackageVersionProps)" Condition="'$(WindowsAppSDKPackageVersionProps)' != ''" />
+  <PropertyGroup Condition="'$(WindowsAppSDKPackageVersionProps)' != ''">
+    <MicrosoftWindowsAppSDKBasePackageVersion>$(MicrosoftWindowsAppSDKBasePackagePackageVersion)</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$(MicrosoftWindowsAppSDKInteractiveExperiencesPackagePackageVersion)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
+  </PropertyGroup>
+
   <!-- ═══════════════════════════════════════════════════════════════════════
        CPM PackageVersion items: reference the properties above.
        Each version is defined exactly once (in the PropertyGroups).
        ═══════════════════════════════════════════════════════════════════════ -->
 
   <!-- WindowsAppSDK packages — IsInternal metadata is used by build/RestoreInternalPackages.proj -->
-  <ItemGroup Label="WindowsAppSDK Packages" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''">
+  <ItemGroup Label="WindowsAppSDK Packages">
     <PackageVersion Include="Microsoft.WindowsAppSDK.Base" Version="$(MicrosoftWindowsAppSDKBasePackageVersion)" IsInternal="true" />
     <PackageVersion Include="Microsoft.FrameworkUdk" Version="$(MicrosoftFrameworkUdkPackageVersion)" IsInternal="true" />
     <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)" IsInternal="true" />
@@ -89,28 +95,28 @@
 
   <!-- Build tooling and SDK -->
   <ItemGroup Label="Build Tools and SDK">
-    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(MicrosoftWindowsSDKBuildToolsVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
-    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="$(MicrosoftWindowsSDKBuildToolsMSIXVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
-    <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(MicrosoftWindowsCppWinRTVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
-    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
-    <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(MicrosoftWindowsImplementationLibraryVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(MicrosoftWindowsSDKBuildToolsVersion)" />
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="$(MicrosoftWindowsSDKBuildToolsMSIXVersion)" />
+    <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(MicrosoftWindowsCppWinRTVersion)" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(MicrosoftWindowsImplementationLibraryVersion)" />
   </ItemGroup>
 
   <!-- Source link -->
   <ItemGroup Label="Source Link">
-    <PackageVersion Include="Microsoft.Build.Tasks.Git" Version="$(MicrosoftBuildTasksGitVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
-    <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
+    <PackageVersion Include="Microsoft.Build.Tasks.Git" Version="$(MicrosoftBuildTasksGitVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
   </ItemGroup>
 
   <!-- Test frameworks -->
   <ItemGroup Label="Test Frameworks">
-    <PackageVersion Include="Microsoft.Taef" Version="$(MicrosoftTaefVersion)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
+    <PackageVersion Include="Microsoft.Taef" Version="$(MicrosoftTaefVersion)" />
   </ItemGroup>
 
   <!-- Runtime dependencies -->
   <ItemGroup Label="Runtime Dependencies">
-    <PackageVersion Include="Microsoft.Web.WebView2" Version="$(MicrosoftWebWebView2Version)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' == ''" />
+    <PackageVersion Include="Microsoft.Web.WebView2" Version="$(MicrosoftWebWebView2Version)" />
     <PackageVersion Include="Microsoft.Telemetry.Inbox.Native" Version="$(MicrosoftTelemetryInboxNativeVersion)" />
     <PackageVersion Include="Microsoft.WindowsAppSDK.Protobuf" Version="$(MicrosoftWindowsAppSDKProtobufVersion)" />
   </ItemGroup>
@@ -128,16 +134,4 @@
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
-  <Import Project="$(WindowsAppSDKParentDirectoryPackagesProps)" Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' != ''" />
-  <PropertyGroup Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' != ''">
-    <MicrosoftWindowsAppSDKBasePackageVersion>$(MicrosoftWindowsAppSDKBasePackagePackageVersion)</MicrosoftWindowsAppSDKBasePackageVersion>
-    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$(MicrosoftWindowsAppSDKInteractiveExperiencesPackagePackageVersion)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(WindowsAppSDKParentDirectoryPackagesProps)' != ''">
-    <PackageVersion Update="Microsoft.FrameworkUdk" IsInternal="true" />
-    <PackageVersion Update="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" IsInternal="true" />
-    <PackageVersion Update="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" IsInternal="true" />
-    <PackageVersion Update="Microsoft.WindowsAppSDK.Base" IsInternal="true" />
-    <PackageVersion Update="Microsoft.WindowsAppSDK.InteractiveExperiences" IsInternal="true" />
-  </ItemGroup>
 </Project>
