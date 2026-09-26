@@ -19,7 +19,7 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <WindowsAppSDKPackageVersionProps>$([MSBuild]::GetPathOfFileAbove('WindowsAppSDK.PackageVersion.props', '$(MSBuildThisFileDirectory)..\'))</WindowsAppSDKPackageVersionProps>
+    <WindowsAppSDKPackageVersionProps>$([MSBuild]::GetPathOfFileAbove('WindowsAppSDK.PackageVersion.props', '$(MSBuildThisFileDirectory)'))</WindowsAppSDKPackageVersionProps>
   </PropertyGroup>
 
   <!-- ═══════════════════════════════════════════════════════════════════════
