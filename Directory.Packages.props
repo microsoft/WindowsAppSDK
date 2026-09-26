@@ -11,11 +11,15 @@
 
     Mono-build override: when $(WindowsAppSDKVersionPinned) is set, all internal WinAppSDK
     package versions are pinned to that value instead of their fallback defaults.
+
+    When this repository is checked out beneath a mono-build package configuration,
+    WindowsAppSDK.PackageVersion.props is imported last and supplies internal package versions.
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <WindowsAppSDKPackageVersionProps>$([MSBuild]::GetPathOfFileAbove('WindowsAppSDK.PackageVersion.props', '$(MSBuildThisFileDirectory)..\'))</WindowsAppSDKPackageVersionProps>
   </PropertyGroup>
 
   <!-- ═══════════════════════════════════════════════════════════════════════
@@ -45,7 +49,7 @@
        and by eng/PackageReference/*.csproj PackageDownload items.
        ValueOrDefault resolves to $(WindowsAppSDKVersionPinned) when set (mono-build),
        otherwise falls back to the pinned version literal. -->
-  <PropertyGroup Label="WindowsAppSDK Package Version Properties">
+  <PropertyGroup Label="WindowsAppSDK Package Version Properties" Condition="'$(WindowsAppSDKPackageVersionProps)' == ''">
     <MicrosoftWindowsAppSDKBasePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '2.0.6-dev.experimental1'))</MicrosoftWindowsAppSDKBasePackageVersion>
     <MicrosoftFrameworkUdkPackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-27300.1896.260713-1015.0'))</MicrosoftFrameworkUdkPackageVersion>
     <MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>$([MSBuild]::ValueOrDefault('$(WindowsAppSDKVersionPinned)', '3.0.0-experimental-27300.1896.260713-1015.0'))</MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion>
@@ -67,6 +71,12 @@
     <MicrosoftWebWebView2Version>1.0.2903.40</MicrosoftWebWebView2Version>
     <MicrosoftTelemetryInboxNativeVersion>10.0.19041.1-191206-1406.vb-release.x86fre</MicrosoftTelemetryInboxNativeVersion>
     <MicrosoftWindowsAppSDKProtobufVersion>3.21.12</MicrosoftWindowsAppSDKProtobufVersion>
+  </PropertyGroup>
+
+  <Import Project="$(WindowsAppSDKPackageVersionProps)" Condition="'$(WindowsAppSDKPackageVersionProps)' != ''" />
+  <PropertyGroup Condition="'$(WindowsAppSDKPackageVersionProps)' != ''">
+    <MicrosoftWindowsAppSDKBasePackageVersion>$(MicrosoftWindowsAppSDKBasePackagePackageVersion)</MicrosoftWindowsAppSDKBasePackageVersion>
+    <MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>$(MicrosoftWindowsAppSDKInteractiveExperiencesPackagePackageVersion)</MicrosoftWindowsAppSDKInteractiveExperiencesPackageVersion>
   </PropertyGroup>
 
   <!-- ═══════════════════════════════════════════════════════════════════════
@@ -123,4 +133,5 @@
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
+
 </Project>
