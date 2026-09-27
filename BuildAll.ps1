@@ -88,58 +88,101 @@ if ([string]::IsNullOrEmpty($ComponentPackageVersion))
     Write-Host "Updating ComponentPackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in Directory.Packages.props: $ComponentPackageVersion"
 }
 
-# Build a lookup of package versions from Directory.Packages.props for nuspec dependency updates.
-# The XML defines properties in PropertyGroups and references them in PackageVersion items.
-# Internal packages have IsInternal="true" metadata; when -WindowsAppSDKVersionPinned is set,
-# those use the pinned version (matching MSBuild behavior).
-$dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
-[xml]$dppXmlForVersions = [xml](Get-Content -Path $dppPath -Raw)
-
-# First, build a property lookup from all PropertyGroups.
-# Properties may contain ValueOrDefault expressions — extract the fallback value,
-# or use the pinned version when WindowsAppSDKVersionPinned is set.
-$msbuildProps = @{}
-$vodPattern = [regex]"ValueOrDefault\([^,]+,\s*'([^']+)'\)"
-foreach ($pg in $dppXmlForVersions.Project.PropertyGroup) {
-    foreach ($prop in $pg.ChildNodes) {
-        if ($prop.NodeType -eq 'Element' -and -not [string]::IsNullOrEmpty($prop.InnerText)) {
-            $value = $prop.InnerText
-            $vodMatch = $vodPattern.Match($value)
-            if ($vodMatch.Success) {
-                if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
-                    $value = $WindowsAppSDKVersionPinned
-                } else {
-                    $value = $vodMatch.Groups[1].Value
-                }
-            }
-            $msbuildProps[$prop.Name] = $value
-        }
-    }
-}
-
-# Then resolve PackageVersion items
 $internalPackageVersions = @{}
-foreach ($ig in $dppXmlForVersions.Project.ItemGroup) {
-    foreach ($pv in $ig.SelectNodes("*[local-name()='PackageVersion']")) {
-        $pkgName = $pv.GetAttribute("Include")
-        $versionExpr = $pv.GetAttribute("Version")
+if (($AzureBuildStep -eq 'all') -or ($AzureBuildStep -eq 'PackNuget')) {
+    # Build a lookup of package versions for nuspec dependency updates. Process both the local
+    # CPM file and the optional shared props file because raw XML does not evaluate MSBuild imports.
+    $dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
+    [xml]$dppXmlForVersions = Get-Content -Path $dppPath -Raw
+    $msbuildProps = @{}
+    $vodPattern = [regex]"ValueOrDefault\([^,]+,\s*'([^']+)'\)"
 
-        # Resolve $(PropertyName) references
-        $resolved = $versionExpr
-        if ($versionExpr -match '\$\(') {
-            foreach ($propMatch in [regex]::Matches($versionExpr, '\$\(([^)]+)\)')) {
-                $propName = $propMatch.Groups[1].Value
-                if ($msbuildProps.ContainsKey($propName)) {
-                    $resolved = $msbuildProps[$propName]
+    function Add-VersionProperties([xml]$PropsXml, [bool]$HasSharedProps, [bool]$ApplyImportConditions) {
+        foreach ($propertyGroup in $PropsXml.Project.PropertyGroup) {
+            if ($ApplyImportConditions) {
+                $condition = $propertyGroup.GetAttribute('Condition')
+                if (($condition -match 'WindowsAppSDKPackageVersionProps.*!=' -and -not $HasSharedProps) -or
+                    ($condition -match 'WindowsAppSDKPackageVersionProps.*==' -and $HasSharedProps)) {
+                    continue
                 }
             }
-        }
 
-        $internalPackageVersions[$pkgName] = $resolved
+            foreach ($property in $propertyGroup.ChildNodes) {
+                if ($property.NodeType -ne 'Element' -or [string]::IsNullOrWhiteSpace($property.InnerText)) {
+                    continue
+                }
+
+                $value = $property.InnerText
+                $vodMatch = $vodPattern.Match($value)
+                if ($vodMatch.Success) {
+                    $value = if ([string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+                        $vodMatch.Groups[1].Value
+                    } else {
+                        $WindowsAppSDKVersionPinned
+                    }
+                }
+                $msbuildProps[$property.Name] = $value
+            }
+        }
     }
-}
-if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
-    Write-Host "Pinned internal WindowsAppSDK packages to version '$WindowsAppSDKVersionPinned' for nuspec dependency rewriting."
+
+    function Resolve-VersionExpression([string]$Value) {
+        $resolved = $Value
+        foreach ($propertyMatch in [regex]::Matches($Value, '\$\(([^)]+)\)')) {
+            $propertyName = $propertyMatch.Groups[1].Value
+            if (-not $msbuildProps.ContainsKey($propertyName)) {
+                throw "Package version property '$propertyName' was not found."
+            }
+            $resolved = $resolved.Replace($propertyMatch.Value, $msbuildProps[$propertyName])
+        }
+        return $resolved
+    }
+
+    $sharedPropsPath = $null
+    $searchDirectory = Split-Path $dppPath -Parent
+    while (-not [string]::IsNullOrWhiteSpace($searchDirectory)) {
+        $candidate = Join-Path $searchDirectory 'WindowsAppSDK.PackageVersion.props'
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            $sharedPropsPath = $candidate
+            break
+        }
+        $parentDirectory = Split-Path $searchDirectory -Parent
+        if ($parentDirectory -eq $searchDirectory) {
+            break
+        }
+        $searchDirectory = $parentDirectory
+    }
+
+    Add-VersionProperties $dppXmlForVersions ($null -ne $sharedPropsPath) $true
+    if ($sharedPropsPath) {
+        [xml]$sharedPropsXml = Get-Content -LiteralPath $sharedPropsPath -Raw
+        Add-VersionProperties $sharedPropsXml $true $false
+        Add-VersionProperties $dppXmlForVersions $true $true
+    }
+
+    foreach ($itemGroup in $dppXmlForVersions.Project.ItemGroup) {
+        foreach ($packageVersionItem in $itemGroup.SelectNodes("*[local-name()='PackageVersion']")) {
+            $packageId = $packageVersionItem.GetAttribute('Include')
+            if ($internalPackageVersions.ContainsKey($packageId)) {
+                throw "Duplicate PackageVersion item '$packageId' in '$dppPath'."
+            }
+
+            $isInternal = $packageVersionItem.GetAttribute('IsInternal') -eq 'true'
+            $resolvedVersion = if ($isInternal -and -not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+                $WindowsAppSDKVersionPinned
+            } else {
+                Resolve-VersionExpression $packageVersionItem.GetAttribute('Version')
+            }
+            if ([string]::IsNullOrWhiteSpace($resolvedVersion) -or $resolvedVersion -match '\$\(') {
+                throw "PackageVersion '$packageId' did not resolve to a version: '$resolvedVersion'."
+            }
+            $internalPackageVersions[$packageId] = $resolvedVersion
+        }
+    }
+
+    if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+        Write-Host "Pinned internal WindowsAppSDK packages to version '$WindowsAppSDKVersionPinned' for nuspec dependency rewriting."
+    }
 }
 
 $configurationForMrtAndAnyCPU = "Release"
