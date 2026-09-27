@@ -91,9 +91,14 @@ if ([string]::IsNullOrEmpty($ComponentPackageVersion))
 # Build a lookup of evaluated package versions from Directory.Packages.props for nuspec
 # dependency updates. MSBuild evaluation is required because the package versions may come
 # from an imported WindowsAppSDK.PackageVersion.props supplied by the mono-build.
+$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
+write-host "VCToolsInstallDir: $VCToolsInstallDir"
+
+$msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
+write-host "msBuildPath: $msBuildPath"
+
 $dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
 $msbuildArguments = @(
-    'msbuild',
     $dppPath,
     '-nologo',
     '-verbosity:quiet',
@@ -103,9 +108,9 @@ if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
     $msbuildArguments += "-p:WindowsAppSDKVersionPinned=$WindowsAppSDKVersionPinned"
 }
 
-$evaluationOutput = & dotnet @msbuildArguments
+$evaluationOutput = & $msBuildPath @msbuildArguments
 if ($LASTEXITCODE -ne 0) {
-    throw "Failed to evaluate package versions from '$dppPath'."
+    throw "Failed to evaluate package versions from '$dppPath':`n$($evaluationOutput | Out-String)"
 }
 
 $evaluation = ($evaluationOutput | Out-String | ConvertFrom-Json)
@@ -125,12 +130,6 @@ if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
 
 $configurationForMrtAndAnyCPU = "Release"
 $MRTSourcesDirectory = "dev\MRTCore"
-
-$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
-write-host "VCToolsInstallDir: $VCToolsInstallDir"
-
-$msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
-write-host "msBuildPath: $msBuildPath"
 
 # Generate overrides
 # Make sure override directory exists.
