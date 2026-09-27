@@ -160,17 +160,17 @@ if ($sharedPropsPath) {
 
 $internalPackageVersions = @{}
 foreach ($itemGroup in $dppXmlForVersions.Project.ItemGroup) {
-    foreach ($packageVersion in $itemGroup.SelectNodes("*[local-name()='PackageVersion']")) {
-        $packageId = $packageVersion.GetAttribute('Include')
+    foreach ($packageVersionItem in $itemGroup.SelectNodes("*[local-name()='PackageVersion']")) {
+        $packageId = $packageVersionItem.GetAttribute('Include')
         if ($internalPackageVersions.ContainsKey($packageId)) {
             throw "Duplicate PackageVersion item '$packageId' in '$dppPath'."
         }
 
-        $isInternal = $packageVersion.GetAttribute('IsInternal') -eq 'true'
+        $isInternal = $packageVersionItem.GetAttribute('IsInternal') -eq 'true'
         $resolvedVersion = if ($isInternal -and -not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
             $WindowsAppSDKVersionPinned
         } else {
-            Resolve-VersionExpression $packageVersion.GetAttribute('Version')
+            Resolve-VersionExpression $packageVersionItem.GetAttribute('Version')
         }
         if ([string]::IsNullOrWhiteSpace($resolvedVersion) -or $resolvedVersion -match '\$\(') {
             throw "PackageVersion '$packageId' did not resolve to a version: '$resolvedVersion'."
