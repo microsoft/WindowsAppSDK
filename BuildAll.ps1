@@ -88,41 +88,95 @@ if ([string]::IsNullOrEmpty($ComponentPackageVersion))
     Write-Host "Updating ComponentPackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in Directory.Packages.props: $ComponentPackageVersion"
 }
 
-# Build a lookup of evaluated package versions from Directory.Packages.props for nuspec
-# dependency updates. MSBuild evaluation is required because the package versions may come
-# from an imported WindowsAppSDK.PackageVersion.props supplied by the mono-build.
-$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
-write-host "VCToolsInstallDir: $VCToolsInstallDir"
-
-$msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
-write-host "msBuildPath: $msBuildPath"
-
+# Build a lookup of package versions for nuspec dependency updates. Process both the local
+# CPM file and the optional shared props file because raw XML does not evaluate MSBuild imports.
 $dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
-$msbuildArguments = @(
-    $dppPath,
-    '-nologo',
-    '-verbosity:quiet',
-    '-getItem:PackageVersion'
-)
-if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
-    $msbuildArguments += "-p:WindowsAppSDKVersionPinned=$WindowsAppSDKVersionPinned"
+[xml]$dppXmlForVersions = Get-Content -Path $dppPath -Raw
+$msbuildProps = @{}
+$vodPattern = [regex]"ValueOrDefault\([^,]+,\s*'([^']+)'\)"
+
+function Add-VersionProperties([xml]$PropsXml, [bool]$HasSharedProps, [bool]$ApplyImportConditions) {
+    foreach ($propertyGroup in $PropsXml.Project.PropertyGroup) {
+        if ($ApplyImportConditions) {
+            $condition = $propertyGroup.GetAttribute('Condition')
+            if (($condition -match 'WindowsAppSDKPackageVersionProps.*!=' -and -not $HasSharedProps) -or
+                ($condition -match 'WindowsAppSDKPackageVersionProps.*==' -and $HasSharedProps)) {
+                continue
+            }
+        }
+
+        foreach ($property in $propertyGroup.ChildNodes) {
+            if ($property.NodeType -ne 'Element' -or [string]::IsNullOrWhiteSpace($property.InnerText)) {
+                continue
+            }
+
+            $value = $property.InnerText
+            $vodMatch = $vodPattern.Match($value)
+            if ($vodMatch.Success) {
+                $value = if ([string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+                    $vodMatch.Groups[1].Value
+                } else {
+                    $WindowsAppSDKVersionPinned
+                }
+            }
+            $msbuildProps[$property.Name] = $value
+        }
+    }
 }
 
-$evaluationOutput = & $msBuildPath @msbuildArguments
-if ($LASTEXITCODE -ne 0) {
-    throw "Failed to evaluate package versions from '$dppPath':`n$($evaluationOutput | Out-String)"
+function Resolve-VersionExpression([string]$Value) {
+    $resolved = $Value
+    foreach ($propertyMatch in [regex]::Matches($Value, '\$\(([^)]+)\)')) {
+        $propertyName = $propertyMatch.Groups[1].Value
+        if (-not $msbuildProps.ContainsKey($propertyName)) {
+            throw "Package version property '$propertyName' was not found."
+        }
+        $resolved = $resolved.Replace($propertyMatch.Value, $msbuildProps[$propertyName])
+    }
+    return $resolved
 }
 
-$evaluation = ($evaluationOutput | Out-String | ConvertFrom-Json)
+$sharedPropsPath = $null
+$searchDirectory = Split-Path $dppPath -Parent
+while (-not [string]::IsNullOrWhiteSpace($searchDirectory)) {
+    $candidate = Join-Path $searchDirectory 'WindowsAppSDK.PackageVersion.props'
+    if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+        $sharedPropsPath = $candidate
+        break
+    }
+    $parentDirectory = Split-Path $searchDirectory -Parent
+    if ($parentDirectory -eq $searchDirectory) {
+        break
+    }
+    $searchDirectory = $parentDirectory
+}
+
+Add-VersionProperties $dppXmlForVersions ($null -ne $sharedPropsPath) $true
+if ($sharedPropsPath) {
+    [xml]$sharedPropsXml = Get-Content -LiteralPath $sharedPropsPath -Raw
+    Add-VersionProperties $sharedPropsXml $true $false
+    Add-VersionProperties $dppXmlForVersions $true $true
+}
+
 $internalPackageVersions = @{}
-foreach ($packageVersion in @($evaluation.Items.PackageVersion)) {
-    if ($internalPackageVersions.ContainsKey($packageVersion.Identity)) {
-        throw "Duplicate evaluated PackageVersion item '$($packageVersion.Identity)' in '$dppPath'."
+foreach ($itemGroup in $dppXmlForVersions.Project.ItemGroup) {
+    foreach ($packageVersion in $itemGroup.SelectNodes("*[local-name()='PackageVersion']")) {
+        $packageId = $packageVersion.GetAttribute('Include')
+        if ($internalPackageVersions.ContainsKey($packageId)) {
+            throw "Duplicate PackageVersion item '$packageId' in '$dppPath'."
+        }
+
+        $isInternal = $packageVersion.GetAttribute('IsInternal') -eq 'true'
+        $resolvedVersion = if ($isInternal -and -not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+            $WindowsAppSDKVersionPinned
+        } else {
+            Resolve-VersionExpression $packageVersion.GetAttribute('Version')
+        }
+        if ([string]::IsNullOrWhiteSpace($resolvedVersion) -or $resolvedVersion -match '\$\(') {
+            throw "PackageVersion '$packageId' did not resolve to a version: '$resolvedVersion'."
+        }
+        $internalPackageVersions[$packageId] = $resolvedVersion
     }
-    if ([string]::IsNullOrWhiteSpace($packageVersion.Version)) {
-        throw "Evaluated PackageVersion '$($packageVersion.Identity)' has no Version."
-    }
-    $internalPackageVersions[$packageVersion.Identity] = $packageVersion.Version
 }
 if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
     Write-Host "Pinned internal WindowsAppSDK packages to version '$WindowsAppSDKVersionPinned' for nuspec dependency rewriting."
@@ -130,6 +184,12 @@ if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
 
 $configurationForMrtAndAnyCPU = "Release"
 $MRTSourcesDirectory = "dev\MRTCore"
+
+$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
+write-host "VCToolsInstallDir: $VCToolsInstallDir"
+
+$msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
+write-host "msBuildPath: $msBuildPath"
 
 # Generate overrides
 # Make sure override directory exists.
