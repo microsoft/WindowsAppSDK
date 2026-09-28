@@ -5,6 +5,12 @@ parameters:
 - name: IsOfficial
   type: boolean
   default: false 
+# Gates the public SymWeb/MSDL symbol publish inside WindowsAppSDK-PublishSymbol-Steps.yml.
+# Default true preserves standalone per-component behavior; the monobuild passes false while
+# the public symbol-publish service connection is being sorted.
+- name: PublishPublicSymbols
+  type: boolean
+  default: true
 - name: runStaticAnalysis
   type: boolean
   default: true
@@ -241,6 +247,7 @@ steps:
     InnerParams:
       SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
+      PublishPublicSymbols: ${{ parameters.PublishPublicSymbols }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
