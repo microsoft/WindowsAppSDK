@@ -8,6 +8,7 @@ namespace Microsoft.Windows.System.Power
 
     // Enums duplicated from IPowerManagerStatics
     [contract(PowerNotificationsContract, 1)]
+    [deprecated("EnergySaverStatus is deprecated. Use EnergySaverStatus2 instead.", deprecate, 3)]
     enum EnergySaverStatus
     {
         Uninitialized = 0,
@@ -93,7 +94,9 @@ namespace Microsoft.Windows.System.Power
     static runtimeclass PowerManager
     {
         // Properties and events duplicated from IPowerManagerStatics.
+        [deprecated("EnergySaverStatus is deprecated. Use EnergySaverStatus2 instead.", deprecate, 3)]
         static EnergySaverStatus EnergySaverStatus{ get; };
+        [deprecated("EnergySaverStatusChanged is deprecated. Use EnergySaverStatus2Changed instead.", deprecate, 3)]
         static event Windows.Foundation.EventHandler<Object> EnergySaverStatusChanged;
 
         static BatteryStatus BatteryStatus{ get; };

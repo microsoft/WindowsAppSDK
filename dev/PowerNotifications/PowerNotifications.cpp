@@ -70,35 +70,35 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
     void EnergySaverStatus2_Register()
     {
         auto factory{ Factory() };
-        if (IsEnergySaverStatus2ApiPresent())
+        if (!IsEnergySaverStatus2ApiPresent())
         {
-            factory->m_energySaverStatus2ChangedRevoker = OsPowerManager::EnergySaverStatus2Changed(
-                winrt::auto_revoke,
-                [](auto&&, auto&&)
+            THROW_HR(E_NOTIMPL);
+        }
+
+        factory->m_energySaverStatus2ChangedRevoker = OsPowerManager::EnergySaverStatus2Changed(
+            winrt::auto_revoke,
+            [](auto&&, auto&&)
+            {
+                auto factory{ Factory() };
+                auto newValue{ ReadOsEnergySaverStatus2() };
                 {
-                    auto factory{ Factory() };
-                    auto newValue{ ReadOsEnergySaverStatus2() };
-                    {
-                        std::scoped_lock<std::mutex> lock(factory->m_mutex);
-                        factory->m_cachedEnergySaverStatus2 = newValue;
-                    }
-                    factory->RaiseEvent(factory->energySaverStatus2Func);
-                });
-            factory->m_cachedEnergySaverStatus2 = ReadOsEnergySaverStatus2();
-        }
-        else
-        {
-            factory->m_cachedEnergySaverStatus2 = Power::EnergySaverStatus2::Unknown;
-        }
+                    std::scoped_lock<std::mutex> lock(factory->m_mutex);
+                    factory->m_cachedEnergySaverStatus2 = newValue;
+                }
+                factory->RaiseEvent(factory->energySaverStatus2Func);
+            });
+        factory->m_cachedEnergySaverStatus2 = ReadOsEnergySaverStatus2();
     }
 
     void EnergySaverStatus2_Unregister()
     {
         auto factory{ Factory() };
-        if (IsEnergySaverStatus2ApiPresent())
+        if (!IsEnergySaverStatus2ApiPresent())
         {
-            factory->m_energySaverStatus2ChangedRevoker.revoke();
+            THROW_HR(E_NOTIMPL);
         }
+
+        factory->m_energySaverStatus2ChangedRevoker.revoke();
     }
 
     void EnergySaverStatus2_Update()
