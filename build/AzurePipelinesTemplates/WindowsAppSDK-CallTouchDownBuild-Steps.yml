@@ -26,7 +26,7 @@ steps:
     environment: 'PRODEXT'
     teamId: ${{ parameters.TeamID }}
     authType: 'FederatedIdentity'
-    FederatedIdentityServiceConnection: "WindowsAppSDKSigningConnectionTest"
+    FederatedIdentityServiceConnection: "WinAppSDKAzureResourceManager"
     localizationTarget: true
     isPreview: false
     resourceFilePath: ${{ parameters.ResourceFilePath }}
