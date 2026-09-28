@@ -316,6 +316,12 @@ namespace winrt::Microsoft::Windows::System::Power
                 RemoveCallback(energySaverStatusFunc, token);
             }
 
+            void EnergySaverStatusChanged_Callback(::EnergySaverStatus energySaverStatus)
+            {
+                m_cachedEnergySaverStatus = energySaverStatus;
+                RaiseEvent(energySaverStatusFunc);
+            }
+
             // EnergySaverStatus2 Functions
             Power::EnergySaverStatus2 EnergySaverStatus2()
             {
