@@ -6,6 +6,12 @@ parameters:
 - name: sourceSubdirectory
   type: string
   default: 'WindowsAppSDK'
+- name: checkoutRepository
+  type: string
+  default: 'self'
+- name: checkoutPath
+  type: string
+  default: 's/WindowsAppSDK'
 - name: publishToInternalFeed
   type: boolean
   default: true
@@ -45,8 +51,8 @@ stages:
       # Set by the "Compute package version" step below.
       PackVersionFull: ''
     steps:
-    - checkout: WindowsAppSDKFoundation
-      path: s/WindowsAppSDK
+    - checkout: ${{ parameters.checkoutRepository }}
+      path: ${{ parameters.checkoutPath }}
 
     - task: PowerShell@2
       displayName: 'Ensure test certificate for signing'

@@ -126,6 +126,9 @@ extends:
       parameters:
         pool:
           type: windows
+        checkoutRepository: WindowsAppSDKFoundation
+        checkoutPath: s
+        sourceSubdirectory: '.'
         publishToInternalFeed: ${{ parameters.PublishDotnetNewTemplatesToInternalFeed }}
         SignOutput: ${{ parameters.SignOutput }}
 
@@ -133,6 +136,9 @@ extends:
       parameters:
         pool:
           type: windows
+        checkoutRepository: WindowsAppSDKFoundation
+        checkoutPath: s
+        sourceSubdirectory: '.'
         dependsOnStage: 'DotnetNewTemplates_Build'
 
     # NuGet.org publishing is handled by the separate non-OneBranch pipeline:
