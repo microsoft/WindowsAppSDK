@@ -49,11 +49,9 @@ variables:
 - template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
   parameters:
-    PrOrNightly: 'ci'
+    TagPrefix: 'ci'
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
 - template: WindowsAppSDK-CommonVariables.yml
-  parameters:
-    PrOrNightly: 'devtest'
 - template: AzurePipelinesTemplates\WindowsAppSDK-VersionVariables.yml
   parameters:
     PrOrNightly: 'devtest'
