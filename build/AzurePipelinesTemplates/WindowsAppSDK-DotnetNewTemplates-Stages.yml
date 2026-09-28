@@ -45,7 +45,8 @@ stages:
       # Set by the "Compute package version" step below.
       PackVersionFull: ''
     steps:
-    - checkout: self
+    - checkout: WindowsAppSDKFoundation
+      path: s/WindowsAppSDK
 
     - task: PowerShell@2
       displayName: 'Ensure test certificate for signing'

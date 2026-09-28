@@ -56,7 +56,8 @@ stages:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\test-results'
       templateArtifactDir: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
     steps:
-    - checkout: self
+    - checkout: WindowsAppSDKFoundation
+      path: s/WindowsAppSDK
 
     - download: current
       displayName: 'Download template pack artifact'

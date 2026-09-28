@@ -28,6 +28,10 @@ parameters:
   displayName: "Sign the NuGet package with ESRP"
   type: boolean
   default: true
+- name: FoundationBranch
+  displayName: "Foundation source branch"
+  type: string
+  default: "release/dev/monobuild"
 variables:
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WindowsAppSDKConfig
@@ -46,6 +50,11 @@ resources:
       type: git
       name: OS/WinAppSDK
       ref: refs/heads/release/dev/monobuild
+    - repository: WindowsAppSDKFoundation
+      type: github
+      endpoint: WinAppSDK-Github
+      name: microsoft/WindowsAppSDK
+      ref: refs/heads/${{ parameters.FoundationBranch }}
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
@@ -61,19 +70,18 @@ extends:
     platform:
       name: 'windows_undocked' # windows undocked
 
-    # The GitHub source is checked out before network isolation starts. Keep it
-    # shallow so the build-container checkout can reuse it without an outbound
-    # unshallow fetch after isolation is active.
-    git:
-      fetchDepth: 1
-      submodules: false
-
     cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
       enabled: false
 
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
+      sourceRepositoriesToScan:
+        include:
+        - repository: WindowsAppSDKFoundation
+      perStage:
+        sdl_sources:
+          checkout_all_repos: true
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
       suppression:
         suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
