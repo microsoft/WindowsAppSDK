@@ -143,7 +143,7 @@ stages:
         workingDirectory: '$(templateProjectDir)'
 
     - ${{ if eq(parameters.SignOutput, true) }}:
-      - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
         parameters:
           FolderPath: '$(ob_outputDirectory)'
           Pattern: '*.nupkg'
@@ -160,5 +160,3 @@ stages:
         nuGetFeedType: 'internal'
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
         allowPackageConflicts: true
-
-

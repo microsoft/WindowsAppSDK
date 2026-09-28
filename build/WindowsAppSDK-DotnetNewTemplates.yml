@@ -29,8 +29,8 @@ parameters:
   type: boolean
   default: true
 variables:
-- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
-- template: WindowsAppSDK-CommonVariables.yml
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WindowsAppSDKConfig
 
 resources:
   repositories:
@@ -40,12 +40,12 @@ resources:
       ref: refs/heads/main
     - repository: WindowsAppSDKConfig
       type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild
     - repository: WindowsAppSDKVersionConfig
       type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
@@ -60,6 +60,13 @@ extends:
 
     platform:
       name: 'windows_undocked' # windows undocked
+
+    # The GitHub source is checked out before network isolation starts. Keep it
+    # shallow so the build-container checkout can reuse it without an outbound
+    # unshallow fetch after isolation is active.
+    git:
+      fetchDepth: 1
+      submodules: false
 
     cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
       enabled: false
