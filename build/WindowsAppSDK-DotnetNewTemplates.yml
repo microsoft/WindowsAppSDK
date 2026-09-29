@@ -67,6 +67,13 @@ extends:
       enabled: false
 
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
+      # Legacy evidence packaging uses the GitHub repository ID as a NuGet package ID, but
+      # GitHub repository IDs contain a slash. Use the official template's V2 evidence path,
+      # which supports open-source repository identifiers without weakening evidence collection.
+      evidence:
+        enabled: false
+      evidenceV2:
+        enabled: true
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
