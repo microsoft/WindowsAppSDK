@@ -31,6 +31,7 @@ parameters:
 variables:
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WindowsAppSDKConfig
+- template: WindowsAppSDK-CommonVariables.yml
 
 resources:
   repositories:
