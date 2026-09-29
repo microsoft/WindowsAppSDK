@@ -55,8 +55,6 @@ extends:
       WindowsHostVersion:
         Version: 2022
         Network: R1
-      networkisolation:
-        policy: Preferred,ESRP
 
     platform:
       name: 'windows_undocked' # windows undocked
