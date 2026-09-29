@@ -61,6 +61,9 @@ parameters:
 - name: MaxNightlyAgeInDays
   type: number
   default: 7
+- name: nightlyPipelineId
+  type: string
+  default: '190463'
 
 steps:
 - ${{ if eq(parameters.SkipArtifactDownload, false) }}:
@@ -80,6 +83,7 @@ steps:
       parameters:
         artifactName: ${{ parameters.artifactName }}
         targetPath: '$(System.ArtifactsDirectory)'
+        nightlyPipelineId: ${{ parameters.nightlyPipelineId }}
         nightlyBranchName: ${{ parameters.NightlyBranchName }}
         maxNightlyAgeInDays: ${{ parameters.MaxNightlyAgeInDays }}
 
@@ -273,4 +277,3 @@ steps:
     Contents: 'overview.md'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
-

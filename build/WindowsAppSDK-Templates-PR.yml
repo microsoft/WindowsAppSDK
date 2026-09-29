@@ -28,15 +28,7 @@ parameters:
 #   - CommonVariables: WindowsContainerImage (required by 1ES OneBranch for
 #     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
 #     are inert here because we disable those scanners in globalSdl below.
-#
-# OfficialPipelineID is the Aggregator nightly definition id (WinAppSDK-Build-Nightly,
-# OneBranch) that produces the WindowsAppSDK_Nuget_And_MSIX artifact daily on 'main'.
-# The VSIX build-validation stage consumes it with runVersion 'latestFromBranch' to pull
-# the latest nightly nuget, so no per-run build id is required. Defined here (not in the
-# ADO UI) so it is version-controlled and reviewable.
 variables:
-- name: OfficialPipelineID
-  value: 118002
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
@@ -175,3 +167,5 @@ extends:
             type: windows
           dependsOn: [EvaluateTemplatesPaths]
           condition: eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True')
+          # Use pipeline ID 190463 for the monobuild package artifact.
+          nightlyPipelineId: '190463'
