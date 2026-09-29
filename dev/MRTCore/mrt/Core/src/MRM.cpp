@@ -446,7 +446,7 @@ static HRESULT LoadStringOrEmbeddedResource(
             return E_UNEXPECTED;
         }
 
-        // When the caller opted into a no-copy load AND the blob is a reference directly into the
+        // When the caller requested a view and the blob is a reference directly into the
         // memory-mapped PRI (rather than an owned buffer produced by e.g. a decompressing reader),
         // publish that pointer as a non-owning view. The pages are read-only and remain valid for
         // the lifetime of the resource manager, which the caller is required to keep alive. If the
@@ -964,7 +964,7 @@ STDAPI MrmLoadStringOrEmbeddedResourceByIndexWithQualifierValues(
 
 STDAPI_(void*) MrmAllocateBuffer(size_t size) { return Def_Alloc(size); }
 
-STDAPI MrmLoadStringOrEmbeddedResourceNoCopy(
+STDAPI MrmLoadStringOrEmbeddedResourceAsView(
     _In_ MrmManagerHandle resourceManager,
     _In_opt_ MrmContextHandle resourceContext,
     _In_opt_ MrmMapHandle resourceMap,
@@ -997,7 +997,7 @@ STDAPI MrmLoadStringOrEmbeddedResourceNoCopy(
     return S_OK;
 }
 
-STDAPI MrmLoadStringOrEmbeddedResourceByIndexNoCopy(
+STDAPI MrmLoadStringOrEmbeddedResourceByIndexAsView(
     _In_ MrmManagerHandle resourceManager,
     _In_opt_ MrmContextHandle resourceContext,
     _In_opt_ MrmMapHandle resourceMap,

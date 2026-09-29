@@ -392,12 +392,12 @@ public:
         MrmDestroyResourceManager(resourceManager);
     }
 
-    TEST_METHOD(ReadStringOrEmbeddedResourceNoCopyReturnsView)
+    TEST_METHOD(ReadStringOrEmbeddedResourceAsViewReturnsView)
     {
         MrmManagerHandle resourceManager;
         VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
 
-        // The no-copy variant should return a non-owning view directly into the memory-mapped PRI,
+        // The view-aware variant should return a non-owning view directly into the memory-mapped PRI,
         // whose bytes are identical to those returned by the copying variant.
         MrmType copyType;
         wchar_t* copyString;
@@ -410,7 +410,7 @@ public:
         MrmType viewType;
         wchar_t* viewString;
         MrmResourceData2 viewData {};
-        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceNoCopy(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &viewType, &viewString, &viewData), S_OK);
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceAsView(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &viewType, &viewString, &viewData), S_OK);
         VERIFY_IS_NULL(viewString);
         VERIFY_IS_TRUE(viewType == MrmType_Embedded);
         VERIFY_IS_TRUE(viewData.isView);
@@ -432,16 +432,16 @@ public:
         MrmDestroyResourceManager(resourceManager);
     }
 
-    TEST_METHOD(ReadStringOrEmbeddedResourceNoCopyStringIsNotAView)
+    TEST_METHOD(ReadStringOrEmbeddedResourceAsViewStringIsNotAView)
     {
         MrmManagerHandle resourceManager;
         VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
 
-        // String resources are unaffected by the no-copy path: no blob, not a view.
+        // String resources are unaffected by the view-aware path: no blob, not a view.
         MrmType resourceType;
         wchar_t* resourceString;
         MrmResourceData2 resourceData {};
-        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceNoCopy(resourceManager, nullptr, nullptr, L"resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceType, &resourceString, &resourceData), S_OK);
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceAsView(resourceManager, nullptr, nullptr, L"resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceType, &resourceString, &resourceData), S_OK);
 
         VERIFY_IS_NOT_NULL(resourceString);
         VERIFY_IS_TRUE(resourceType == MrmType_String);
@@ -454,7 +454,7 @@ public:
         MrmDestroyResourceManager(resourceManager);
     }
 
-    TEST_METHOD(ReadStringOrEmbeddedResourceByIndexNoCopyReturnsView)
+    TEST_METHOD(ReadStringOrEmbeddedResourceByIndexAsViewReturnsView)
     {
         MrmManagerHandle resourceManager;
         VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
@@ -466,7 +466,7 @@ public:
         VERIFY_ARE_EQUAL(MrmGetResourceCount(resourceManager, resourceMap, &resourceCount), S_OK);
         VERIFY_IS_TRUE(resourceCount > 0);
 
-        // Walk the map by index and, for the first embedded resource, verify the no-copy variant
+        // Walk the map by index and, for the first embedded resource, verify the view-aware variant
         // yields a view whose bytes match the copying variant.
         bool verifiedEmbedded = false;
         for (UINT32 index = 0; index < resourceCount && !verifiedEmbedded; index++)
@@ -475,7 +475,7 @@ public:
             wchar_t* viewName = nullptr;
             wchar_t* viewString = nullptr;
             MrmResourceData2 viewData {};
-            VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceByIndexNoCopy(resourceManager, nullptr, resourceMap, index, &viewType, &viewName, &viewString, &viewData), S_OK);
+            VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceByIndexAsView(resourceManager, nullptr, resourceMap, index, &viewType, &viewName, &viewString, &viewData), S_OK);
 
             if (viewType == MrmType_Embedded)
             {

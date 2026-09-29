@@ -97,10 +97,10 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         byte[] ValueAsBytes { get; };
         ResourceCandidateKind Kind { get; };
 
-        // Zero-copy accessor for embedded/binary resources: returns a read-only IMemoryBuffer that
-        // projects the resource bytes directly (no copy). The buffer (and any reference created from
-        // it) pins the backing resource data for its lifetime; callers must Close it when done. Throws
-        // for Kind != EmbeddedData candidates. Prefer this over ValueAsBytes to avoid a per-call copy.
+        // Returns a read-only IMemoryBuffer that projects embedded resource bytes directly. Each
+        // reference independently retains the resource data in memory until it is closed or
+        // destroyed. Throws when Kind is not EmbeddedData. Prefer this over ValueAsBytes for
+        // optimal performance.
         [contract(MrtCoreContract, 3)]
         Windows.Foundation.IMemoryBuffer ValueAsMemoryBuffer();
 

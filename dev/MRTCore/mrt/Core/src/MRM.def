@@ -20,8 +20,8 @@ EXPORTS
     MrmLoadStringOrEmbeddedFromResourceUri
     MrmLoadStringOrEmbeddedResourceByIndex
     MrmLoadStringOrEmbeddedResourceByIndexWithQualifierValues
-    MrmLoadStringOrEmbeddedResourceNoCopy
-    MrmLoadStringOrEmbeddedResourceByIndexNoCopy
+    MrmLoadStringOrEmbeddedResourceAsView
+    MrmLoadStringOrEmbeddedResourceByIndexAsView
     MrmAllocateBuffer
     MrmFreeResource
     MrmFreeResourceData
