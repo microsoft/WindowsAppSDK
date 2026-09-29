@@ -56,6 +56,8 @@ extends:
       WindowsHostVersion:
         Version: 2022
         Network: R1
+      # Keep the governed network-isolation default so isolation remains enabled while
+      # declared open-source repositories such as GitHub stay available to checkout tasks.
 
     platform:
       name: 'windows_undocked' # windows undocked
