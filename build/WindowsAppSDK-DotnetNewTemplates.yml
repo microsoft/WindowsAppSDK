@@ -14,7 +14,7 @@
 #                                                                                                                                   #
 #####################################################################################################################################
 
-name: $(version)
+name: $(pipelineName)
 
 # https://aka.ms/obpipelines/triggers
 trigger: none
@@ -29,7 +29,8 @@ parameters:
   type: boolean
   default: true
 variables:
-- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WindowsAppSDKConfig
 - template: WindowsAppSDK-CommonVariables.yml
 
 resources:
@@ -40,21 +41,24 @@ resources:
       ref: refs/heads/main
     - repository: WindowsAppSDKConfig
       type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild
     - repository: WindowsAppSDKVersionConfig
       type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild
 
 extends:
-  template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
+  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
         Version: 2022
         Network: R1
+      # Use Microsoft.Official.yml's governed network-isolation default. This keeps the pipeline
+      # aligned with official template requirements while allowing declared open-source
+      # repositories such as GitHub to remain available to checkout tasks.
 
     platform:
       name: 'windows_undocked' # windows undocked
@@ -63,6 +67,13 @@ extends:
       enabled: false
 
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
+      # Legacy evidence packaging uses the GitHub repository ID as a NuGet package ID, but
+      # GitHub repository IDs contain a slash. Use the official template's V2 evidence path,
+      # which supports open-source repository identifiers without weakening evidence collection.
+      evidence:
+        enabled: false
+      evidenceV2:
+        enabled: true
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
@@ -109,6 +120,9 @@ extends:
       parameters:
         pool:
           type: windows
+        checkoutRepository: self
+        checkoutPath: s
+        sourceSubdirectory: '.'
         publishToInternalFeed: ${{ parameters.PublishDotnetNewTemplatesToInternalFeed }}
         SignOutput: ${{ parameters.SignOutput }}
 
@@ -116,6 +130,9 @@ extends:
       parameters:
         pool:
           type: windows
+        checkoutRepository: self
+        checkoutPath: s
+        sourceSubdirectory: '.'
         dependsOnStage: 'DotnetNewTemplates_Build'
 
     # NuGet.org publishing is handled by the separate non-OneBranch pipeline:
