@@ -56,8 +56,9 @@ extends:
       WindowsHostVersion:
         Version: 2022
         Network: R1
-      # Keep the governed network-isolation default so isolation remains enabled while
-      # declared open-source repositories such as GitHub stay available to checkout tasks.
+      # Use Microsoft.Official.yml's governed network-isolation default. This keeps the pipeline
+      # aligned with official template requirements while allowing declared open-source
+      # repositories such as GitHub to remain available to checkout tasks.
 
     platform:
       name: 'windows_undocked' # windows undocked
