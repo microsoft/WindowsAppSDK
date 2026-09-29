@@ -52,7 +52,7 @@ extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     featureFlags:
-      EnableCDPxPAT: false      
+      EnableCDPxPAT: false
       WindowsHostVersion:
         Version: 2022
         Network: R1
