@@ -133,8 +133,10 @@ from the memory-mapped `.pri`.
 The returned `IMemoryBuffer` (and every
 [`IMemoryBufferReference`](https://learn.microsoft.com/uwp/api/windows.foundation.imemorybufferreference)
 you create from it) is **read-only**, and retains the resource data in memory until the last buffer or
-reference is closed or destroyed. Access the raw pointer by querying the reference for
-[`IMemoryBufferByteAccess`](https://learn.microsoft.com/windows/win32/winrt/imemorybufferbyteaccess).
+reference is closed or destroyed. You can access the raw pointer by querying the reference for
+[`IMemoryBufferByteAccess`](https://learn.microsoft.com/windows/win32/winrt/imemorybufferbyteaccess). In
+C++/WinRT, you can use the `data()` and `Capacity()` helpers added on the reference by C++/WinRT. In C#/WinRT,
+you can use `WindowsRuntimeMarshal.TryGetDataUnsafe()`.
 
 ### Remarks
 
@@ -143,7 +145,7 @@ reference is closed or destroyed. Access the raw pointer by querying the referen
   is `EmbeddedData`. For any other kind it throws `HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH)`
   (`0x80073B0D`), matching the behavior of `ValueAsBytes` on non-embedded candidates. The
   `ValueAsBytes` documentation should also state this restriction.
-* **Lifetime.** The pointer returned by `IMemoryBufferByteAccess.GetBuffer` is valid only while the
+* **Lifetime.** The pointer accessed via the `IMemoryBufferReference` is valid only while the
   `IMemoryBufferReference` it came from is alive and has not been closed. Keep both the buffer and the
   reference alive for the entire time you read the bytes, and `Close`/`Dispose` them (or use a `using`
   / `winrt` scope) when you are done to ensure the underlying memory can be released promptly.
@@ -216,12 +218,12 @@ resources are unaffected: they are returned through `resourceString` with `data`
 
 Not every embedded resource can be returned as a view. If the resource was materialized into its own buffer by
 the loader (for example a compressed resource that had to be decompressed), the function transparently
-falls back to returning an **owned** buffer (`isView` is zero) so the pointer can never dangle.
-Callers therefore must not assume `isView` is nonzero for embedded resources. Always release the
-descriptor with `MrmFreeResourceData`, which handles both cases.
+falls back to returning an **owned** buffer (`isView` is zero). Callers therefore must not assume `isView`
+is nonzero for embedded resources. `MrmFreeResourceData` handles both cases.
 
-Release `data` with `MrmFreeResourceData` when done. While `isView` is nonzero, keep `resourceManager`
-alive for as long as you use `data`.
+Always release `data` with `MrmFreeResourceData`, and free `resourceString` with
+`MrmFreeResource` when done. While `isView` is nonzero, keep `resourceManager` alive for as long
+as you use `data`.
 
 ### MrmLoadStringOrEmbeddedResourceByIndexAsView
 
@@ -248,10 +250,10 @@ variant.
 Not every embedded resource can be returned as a view. If the resource was materialized into its own buffer by
 the loader (for example a compressed resource that had to be decompressed), the function transparently
 falls back to returning an **owned** buffer (`isView` is zero) so the pointer can never dangle.
-Callers therefore must not assume `isView` is nonzero for embedded resources. Always release the
-descriptor with `MrmFreeResourceData`, which handles both cases.
+Callers therefore must not assume `isView` is nonzero for embedded resources. `MrmFreeResourceData` handles
+both cases.
 
-Release `data` with `MrmFreeResourceData`, and free `resourceName` and `resourceString` with
+Always release `data` with `MrmFreeResourceData`, and free `resourceName` and `resourceString` with
 `MrmFreeResource` when done. While `isView` is nonzero, keep `resourceManager` alive for as long
 as you use `data`.
 
