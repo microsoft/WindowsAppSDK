@@ -60,10 +60,13 @@ stages:
     timeoutInMinutes: 60
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\test-results'
+      ob_git_fetchDepth: 1
       templateArtifactDir: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
     steps:
     - checkout: ${{ parameters.checkoutRepository }}
       path: ${{ parameters.checkoutPath }}
+      fetchDepth: 1
+      fetchTags: false
 
     - download: current
       displayName: 'Download template pack artifact'

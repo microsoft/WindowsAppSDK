@@ -47,12 +47,15 @@ stages:
     pool: ${{ parameters.pool }}
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
+      ob_git_fetchDepth: 1
       templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
       # Set by the "Compute package version" step below.
       PackVersionFull: ''
     steps:
     - checkout: ${{ parameters.checkoutRepository }}
       path: ${{ parameters.checkoutPath }}
+      fetchDepth: 1
+      fetchTags: false
 
     - task: PowerShell@2
       displayName: 'Ensure test certificate for signing'
