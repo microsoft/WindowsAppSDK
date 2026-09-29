@@ -32,6 +32,8 @@ variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
+- name: WindowsContainerImage
+  value: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
 
 name: TemplatesPR-$(Date:yyyyMMdd)$(Rev:.r)
 
