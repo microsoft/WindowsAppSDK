@@ -716,10 +716,12 @@ try {
         throw "Expected build to fail for invalid WASDK version 'not-a-version'"
     }
     $buildText = $buildOutput -join "`n"
-    if ($buildText -notmatch 'NETSDK1004') {
-        throw "Expected NETSDK1004 (assets file missing, please run restore) for invalid WASDK version 'not-a-version', but got:`n$buildText"
+    # Depending on the SDK, the failed restore either leaves no assets file (NETSDK1004)
+    # or a partial assets file without the requested target (NETSDK1005).
+    if (($buildText -notmatch 'NETSDK1004') -and ($buildText -notmatch 'NETSDK1005')) {
+        throw "Expected NETSDK1004 or NETSDK1005 after the invalid-version restore failure, but got:`n$buildText"
     }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails with NETSDK1004' -Status 'Succeeded' -Path $invalidPath
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails after incomplete restore' -Status 'Succeeded' -Path $invalidPath
 
     # Scenario 6: Valid version format but nonexistent package
     $nonexistentPath = Join-Path -Path $workingRoot -ChildPath 'VersionNonexistent'
