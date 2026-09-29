@@ -239,12 +239,13 @@ steps:
       codeSignPattern: |
         **/WindowsAppSDK.*.Extension.*.dll
         
-- template: WindowsAppSDK-PublishSymbol-Wrapper.yml
-  parameters:
-    IsMonobuild: ${{ parameters.IsMonobuild }}
-    InnerParams:
-      SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
-      IsOfficial: ${{ parameters.IsOfficial }}
+- ${{ if eq(parameters.PublishSymbols, true) }}:
+  - template: WindowsAppSDK-PublishSymbol-Wrapper.yml
+    parameters:
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+        IsOfficial: ${{ parameters.IsOfficial }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
