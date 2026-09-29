@@ -647,13 +647,14 @@ try {
     Assert-CsprojPackageVersion -CsprojPath $preReleaseCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.8.0-preview1'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pre-release version content' -Status 'Succeeded' -Path $preReleasePath
 
-    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails with NU1105
+    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore rejects the package version
     Write-Step 'Testing invalid version handling...'
     $invalidPath = Join-Path -Path $workingRoot -ChildPath 'VersionInvalid'
     Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionInvalid', '-o', $invalidPath, '--wasdk-version', 'not-a-version', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with invalid version'
     $invalidCsproj = Join-Path -Path $invalidPath -ChildPath 'VersionInvalid.csproj'
     Assert-CsprojPackageVersion -CsprojPath $invalidCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion 'not-a-version'
-    # Restore should fail with NU1105 because NuGet can't parse an invalid version string
+    # NuGet normally reports NU1105. .NET 10.0.400 can instead hide that inner diagnostic
+    # behind MSB4181 when RestoreTask returns false without logging the NuGet error.
     $restoreFailed = $false
     $restoreOutput = $null
     $restoreText = $null
@@ -682,18 +683,16 @@ try {
     $errorCodes = @([regex]::Matches($restoreText, '\b(?:NU|NETSDK|MSB)\d{4,}\b') |
         ForEach-Object { $_.Value } |
         Select-Object -Unique)
-    if ($errorCodes.Count -gt 0) {
-        if ($errorCodes -notcontains 'NU1105') {
-            throw "Expected NU1105, got: $($errorCodes -join ', ')"
-        }
-    }
-    else {
+    $hasNuGetInvalidVersionError = $errorCodes -contains 'NU1105'
+    $hasDotnet10RestoreWrapper = ($errorCodes -contains 'MSB4181') -and
+        ($restoreText -like '*The "RestoreTask" task returned false but did not log an error*')
+    if (-not $hasNuGetInvalidVersionError -and -not $hasDotnet10RestoreWrapper) {
         # No machine-readable code surfaced; use narrow fallback
-        if ($restoreText -notmatch 'not a valid version string') {
+        if (($errorCodes.Count -gt 0) -or ($restoreText -notmatch 'not a valid version string')) {
             throw "Expected invalid version failure, got:`n$restoreText"
         }
     }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails with NU1105' -Status 'Succeeded' -Path $invalidPath
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore rejects version' -Status 'Succeeded' -Path $invalidPath
 
     # Build (with --no-restore) should fail with NETSDK1005 since restore never succeeded
     $buildFailed = $false
