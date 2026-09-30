@@ -61,6 +61,9 @@ parameters:
 - name: MaxNightlyAgeInDays
   type: number
   default: 7
+- name: nightlyPipelineId
+  type: string
+  default: '190463'
 
 steps:
 - ${{ if eq(parameters.SkipArtifactDownload, false) }}:
@@ -80,6 +83,7 @@ steps:
       parameters:
         artifactName: ${{ parameters.artifactName }}
         targetPath: '$(System.ArtifactsDirectory)'
+        nightlyPipelineId: ${{ parameters.nightlyPipelineId }}
         nightlyBranchName: ${{ parameters.NightlyBranchName }}
         maxNightlyAgeInDays: ${{ parameters.MaxNightlyAgeInDays }}
 
@@ -125,6 +129,12 @@ steps:
         }
       }
       Exit 1
+
+- task: UseDotNet@2
+  displayName: 'Use .NET SDK 10.0.111'
+  inputs:
+    packageType: 'sdk'
+    version: '10.0.111'
 
 - task: NuGetAuthenticate@1
 
@@ -235,12 +245,13 @@ steps:
       codeSignPattern: |
         **/WindowsAppSDK.*.Extension.*.dll
         
-- template: WindowsAppSDK-PublishSymbol-Wrapper.yml
-  parameters:
-    IsMonobuild: ${{ parameters.IsMonobuild }}
-    InnerParams:
-      SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
-      IsOfficial: ${{ parameters.IsOfficial }}
+- ${{ if eq(parameters.PublishSymbols, true) }}:
+  - template: WindowsAppSDK-PublishSymbol-Wrapper.yml
+    parameters:
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        SearchPattern: '$(FoundationRepoPath)dev\Templates\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+        IsOfficial: ${{ parameters.IsOfficial }}
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
@@ -273,4 +284,3 @@ steps:
     Contents: 'overview.md'
     flattenFolders: true
     TargetFolder: '$(ob_outputDirectory)'
-
