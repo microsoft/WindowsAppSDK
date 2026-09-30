@@ -1,0 +1,173 @@
+# Templates PR Validation Pipeline
+#
+# PR validation for changes under dev/Templates/**.
+# Reuses the build/pack + test stages from the main pipeline
+# (WindowsAppSDK-DotnetNewTemplates.yml). Nothing is signed; nothing is
+# published. PR-stamped versions keep PR artifacts from colliding with
+# canonical packages -- see each stage for the exact format.
+#
+# Triggered via the existing "/azp run" comment, same as TransportPackage-Foundation-PR.
+# Stays its own independent pipeline; "/azp run" just fans out to every PR-enabled
+# pipeline. To be a required GitHub check, it must report on EVERY PR -- so there is
+# NO path filter. Instead the EvaluateTemplatesPaths gate below diffs against the PR
+# target branch and, when nothing under dev/Templates/** changed, skips the heavy
+# build/test/VSIX stages and reports a fast success. Configure only branch filters
+# (refs/heads/main, refs/heads/release/*) in the ADO UI; do NOT add a path filter.
+
+trigger: none
+
+parameters:
+- name: WindowsAppSDKVersion
+  displayName: 'WindowsAppSDK version for template validation (* = latest stable)'
+  type: string
+  default: '*'
+
+# Shared variable templates:
+#   - Foundation-TestConfig: test matrices reused from the main pipeline.
+#   - Versions: MajorVersion / MinorVersion / PatchVersion (consumed by CommonVariables).
+#   - CommonVariables: WindowsContainerImage (required by 1ES OneBranch for
+#     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
+#     are inert here because we disable those scanners in globalSdl below.
+variables:
+- template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: WindowsAppSDK-CommonVariables.yml
+- name: WindowsContainerImage
+  value: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
+
+name: TemplatesPR-$(Date:yyyyMMdd)$(Rev:.r)
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    - repository: WindowsAppSDKConfig
+      # adding config for WindowsAppSDK-VSIXTemplates-BuildValidation-Stage
+      type: git
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild-2.0-stable
+    - repository: WindowsAppSDKVersionConfig
+      type: git
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild-2.0-stable
+
+extends:
+  template: v2/Microsoft.NonOfficial.yml@templates
+  parameters:
+    featureFlags:
+      EnableCDPxPAT: false
+      WindowsHostVersion:
+        Version: 2022
+        Network: R1
+
+    platform:
+      name: 'windows_undocked'
+
+    cloudvault:
+      enabled: false
+
+    # Skip heavy SDL tools for PR validation; the main pipeline
+    # (WindowsAppSDK-DotnetNewTemplates.yml) covers them on canonical builds.
+    globalSdl:
+      tsa:
+        enabled: false
+      isNativeCode: false
+      psscriptanalyzer:
+        enable: false
+      binskim:
+        enabled: false
+      prefast:
+        enabled: false
+      apiscan:
+        enabled: false
+
+    stages:
+      # Gate: only do real work when this PR touched dev/Templates/**. Diffs against
+      # the PR target branch; manual/non-PR runs default to true so they still build.
+      # The downstream stages condition on this output, so non-Templates PRs get a
+      # fast success and the required check is always reported.
+      - stage: EvaluateTemplatesPaths
+        displayName: 'Detect dev/Templates changes'
+        dependsOn: []
+        jobs:
+          - job: Evaluate
+            pool:
+              type: windows
+            variables:
+              ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\evaluate'
+            steps:
+              - checkout: self
+                fetchDepth: 0
+              - task: PowerShell@2
+                name: detect
+                displayName: 'Detect dev/Templates changes'
+                inputs:
+                  targetType: inline
+                  workingDirectory: '$(Build.SourcesDirectory)'
+                  script: |
+                    # The repo is checked out under a WindowsAppSDK subfolder
+                    # (1ES convention, matching the other Templates stages which
+                    # all reference $(Build.SourcesDirectory)\WindowsAppSDK). The
+                    # task cwd is not the repo root, so point git at it with -C.
+                    #
+                    # git writes normal progress (e.g. "From https://github.com/...")
+                    # to stderr even on success, so keep ErrorActionPreference at
+                    # Continue -- otherwise that stderr becomes a terminating
+                    # NativeCommandError. Fail-fast is enforced via $LASTEXITCODE +
+                    # throw, so a real git failure still turns the gate red.
+                    $ErrorActionPreference = 'Continue'
+                    $repo = Join-Path $env:BUILD_SOURCESDIRECTORY 'WindowsAppSDK'
+                    Write-Host "Using repo: $repo"
+
+                    # Non-PR runs (manual queue) build everything.
+                    $changed = 'True'
+                    if ($env:BUILD_REASON -eq 'PullRequest') {
+                      $target = $env:SYSTEM_PULLREQUEST_TARGETBRANCH
+                      $fetchOut = git -C $repo fetch --no-tags origin $target 2>&1
+                      if ($LASTEXITCODE -ne 0) { throw "git fetch failed (exit $LASTEXITCODE) for target '$target': $fetchOut" }
+                      $files = git -C $repo diff --name-only FETCH_HEAD HEAD 2>&1
+                      if ($LASTEXITCODE -ne 0) { throw "git diff failed (exit $LASTEXITCODE): $files" }
+                      $hit = $files | Where-Object { $_ -like 'dev/Templates/*' }
+                      $changed = if ($hit) { 'True' } else { 'False' }
+                    }
+                    Write-Host "templatesChanged=$changed"
+                    Write-Host "##vso[task.setvariable variable=templatesChanged;isOutput=true]$changed"
+                    exit 0
+
+      # Build + pack the templates NuGet. IsPRBuild=true makes the stage stamp
+      # every pack as <csproj-Version>-<yyyy>-<MMdd>-<HHmm>-pr<PR# or 0> so the
+      # .nupkg filename uniquely identifies the run (manual replays without a
+      # PR# fall back to pr0 + timestamp).
+      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
+        parameters:
+          pool:
+            type: windows
+          publishToInternalFeed: false
+          SignOutput: false
+          IsPRBuild: true
+          dependsOn: [EvaluateTemplatesPaths]
+          condition: eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True')
+
+      # Smoke-test: scaffold every template from the pack and dotnet build each.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
+        parameters:
+          pool:
+            type: windows
+          dependsOnStage: 'DotnetNewTemplates_Build'
+          dependsOn: [EvaluateTemplatesPaths]
+          condition: eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True')
+          WindowsAppSdkVersion: ${{ parameters.WindowsAppSDKVersion }}
+
+      # Build-validate the VSIX. Runs the production VSIX pack steps so
+      # VSIX-pack regressions (e.g. VSSDK1300 path overflow) surface at PR
+      # time. See WindowsAppSDK-VSIXTemplates-BuildValidation-Stage.yml.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-VSIXTemplates-BuildValidation-Stage.yml@self
+        parameters:
+          pool:
+            type: windows
+          dependsOn: [EvaluateTemplatesPaths]
+          condition: eq(dependencies.EvaluateTemplatesPaths.outputs['Evaluate.detect.templatesChanged'], 'True')
+          # Use pipeline ID 190463 for the monobuild package artifact.
+          nightlyPipelineId: '190463'
