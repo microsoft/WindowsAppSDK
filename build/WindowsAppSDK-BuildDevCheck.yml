@@ -18,7 +18,7 @@ resources:
     - repository: WinAppSDK
       type: git
       name: OS/WinAppSDK
-      ref: refs/heads/release/dev/monobuild
+      ref: refs/heads/release/dev/monobuild-2.0-stable
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
