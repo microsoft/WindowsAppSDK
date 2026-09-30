@@ -29,8 +29,8 @@ parameters:
 #     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
 #     are inert here because we disable those scanners in globalSdl below.
 variables:
-- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
 - name: WindowsContainerImage
   value: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
@@ -46,12 +46,12 @@ resources:
     - repository: WindowsAppSDKConfig
       # adding config for WindowsAppSDK-VSIXTemplates-BuildValidation-Stage
       type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild-2.0-experimental
     - repository: WindowsAppSDKVersionConfig
       type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild-2.0-experimental
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates
