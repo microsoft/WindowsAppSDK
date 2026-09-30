@@ -56,6 +56,7 @@ namespace
         WinAppSDK_2_3_0 = WinAppSDKReleaseVersionFromValues(2, 3, 0),
         WinAppSDK_2_3_3 = WinAppSDKReleaseVersionFromValues(2, 3, 3),
         WinAppSDK_2_5_0 = WinAppSDKReleaseVersionFromValues(2, 5, 0),
+        WinAppSDK_2_6_0 = WinAppSDKReleaseVersionFromValues(2, 6, 0),
         WinAppSDK_Latest = 999999999,
         WinAppSDK_Security = 0,
     };
@@ -187,12 +188,31 @@ namespace
         63435929, // CommandBar_SpuriousOverflowButtonAtFractionalScale
         63494532, // CompositionEngine_SwitcherSeptemberFixes
     };
+    constexpr UINT32 s_changes_2_6_0[] = {
+        61688595, // AppNotification_AppInstance_FixStackOverflowCrash
+        62800606, // Package_GetPackageFilePath
+        63503009, // InkCanvas_InkingSupport
+        63805144, // CCoreServices_InputServicesTeardownOrder
+        63876312, // AppLifecycle_GetInstancesProcessHandleFix
+        63993469, // DispatcherQueue_CaptureCallbackErrorContext
+        64039911, // ContentIsland_InitializationFailureCleanup
+        64173443, // SwitcherSystemBackdropBrushSupport
+        64176041, // SwitcherColdWrappingWUCToMUC
+        64184211, // LanguageModel_RemoveLimitedAccessFeatureRequirement
+        64191138, // VersionInfo_MissingInsightsResourceDll
+        64236972, // AIFabric_Tip_APIClassName_ReasonName
+        64290699, // ItemsView_InvalidBringIntoViewAnchor
+        64299104, // DispatcherQueueTimer_CaptureTickErrorContext
+        64300276, // InputPointerSource_SystemEngineDPIOffset
+        64312861, // WebView2_HandleMoveFocusInvalidArgument
+    };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
         MakeGroup(s_changes_2_1_0, WinAppSDKReleaseVersion::WinAppSDK_2_1_0),
         MakeGroup(s_changes_2_1_5, WinAppSDKReleaseVersion::WinAppSDK_2_1_5),
         MakeGroup(s_changes_2_3_0, WinAppSDKReleaseVersion::WinAppSDK_2_3_0),
         MakeGroup(s_changes_2_3_3, WinAppSDKReleaseVersion::WinAppSDK_2_3_3),
         MakeGroup(s_changes_2_5_0, WinAppSDKReleaseVersion::WinAppSDK_2_5_0),
+        MakeGroup(s_changes_2_6_0, WinAppSDKReleaseVersion::WinAppSDK_2_6_0),
     };
     constexpr size_t s_catalogGroupsProdCount{ std::size(s_catalogGroupsProd) };
 
