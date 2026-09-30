@@ -59,5 +59,50 @@ namespace MrtCoreCsWinRTTests
                 Assert.AreEqual(expected[expected.Length - 1], bytes[bytes.Length - 1]);
             }
         }
+
+        [TestMethod]
+        public unsafe void BufferClosePreservesExistingReferenceAndReturnsEmptyNewReference()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var candidate = resourceManager.MainResourceMap.GetValue("Files/Controls/AlbumBasicInfoControl.xbf");
+            var expected = candidate.ValueAsBytes;
+
+            using var buffer = candidate.ValueAsMemoryBuffer();
+            using var existingReference = buffer.CreateReference();
+            buffer.Dispose();
+
+            Assert.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(existingReference, out IntPtr data, out uint capacity));
+            Assert.AreNotEqual(IntPtr.Zero, data);
+            Assert.AreEqual((uint)expected.Length, capacity);
+
+            using var emptyReference = buffer.CreateReference();
+            Assert.AreEqual(0u, emptyReference.Capacity);
+            Assert.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(emptyReference, out data, out capacity));
+            Assert.AreEqual(IntPtr.Zero, data);
+            Assert.AreEqual(0u, capacity);
+        }
+
+        [TestMethod]
+        public void ReferenceCloseRaisesClosedBeforeInvalidatingData()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var candidate = resourceManager.MainResourceMap.GetValue("Files/Controls/AlbumBasicInfoControl.xbf");
+
+            using var buffer = candidate.ValueAsMemoryBuffer();
+            var reference = buffer.CreateReference();
+            var capacityBeforeClose = reference.Capacity;
+            var closedRaised = false;
+
+            reference.Closed += (sender, args) =>
+            {
+                closedRaised = true;
+                Assert.AreEqual(capacityBeforeClose, sender.Capacity);
+            };
+
+            reference.Dispose();
+
+            Assert.IsTrue(closedRaised);
+            Assert.AreEqual(0u, reference.Capacity);
+        }
     }
 }

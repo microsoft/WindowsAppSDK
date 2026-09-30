@@ -51,11 +51,13 @@
     <Reference Include="Wex.Logger.Interop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\Wex.Logger.Interop.dll</HintPath>
     </Reference>
-    <Reference Include="Windows.Foundation.FoundationContract">
-      <HintPath>C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd</HintPath>
+    <Reference Include="$(WindowsSdkDir)References\$(WindowsSDKVersion)Windows.Foundation.FoundationContract\*\Windows.Foundation.FoundationContract.winmd">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>false</Private>
     </Reference>
-    <Reference Include="Windows.Foundation.UniversalApiContract">
-      <HintPath>C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd</HintPath>
+    <Reference Include="$(WindowsSdkDir)References\$(WindowsSDKVersion)Windows.Foundation.UniversalApiContract\*\Windows.Foundation.UniversalApiContract.winmd">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

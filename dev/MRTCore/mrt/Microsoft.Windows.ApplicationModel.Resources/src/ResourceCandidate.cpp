@@ -91,6 +91,30 @@ namespace
     using winrt::Windows::Foundation::IMemoryBufferReference;
     using winrt::Windows::Foundation::TypedEventHandler;
 
+    struct ResourceCandidateOwnerTracker
+    {
+        explicit ResourceCandidateOwnerTracker(winrt::com_ptr<ResourceCandidate> owner = {}) noexcept
+            : m_owner(std::move(owner))
+        {
+        }
+
+        winrt::com_ptr<ResourceCandidate> Owner() const noexcept
+        {
+            auto const guard = winrt::slim_shared_lock_guard(m_lock);
+            return m_owner;
+        }
+
+        winrt::com_ptr<ResourceCandidate> Reset() noexcept
+        {
+            auto const guard = winrt::slim_lock_guard(m_lock);
+            return std::exchange(m_owner, nullptr);
+        }
+
+    private:
+        mutable winrt::slim_mutex m_lock;
+        winrt::com_ptr<ResourceCandidate> m_owner;
+    };
+
     // Non-owning, read-only reference into a ResourceCandidate's embedded bytes. Holds the candidate
     // strongly so the backing memory (heap-owned or the memory-mapped PRI pinned transitively by the
     // candidate's ResourceManager) stays valid for as long as this reference is open.
@@ -100,11 +124,13 @@ namespace
         explicit ResourceMemoryBufferReference(winrt::com_ptr<ResourceCandidate> owner) noexcept
             : m_owner(std::move(owner))
         {
+            NonDelegatingAddRef();
         }
 
         uint32_t Capacity() const noexcept
         {
-            return m_owner ? static_cast<uint32_t>(m_owner->EmbeddedBytes().size()) : 0;
+            auto const owner = m_owner.Owner();
+            return owner ? static_cast<uint32_t>(owner->EmbeddedBytes().size()) : 0;
         }
 
         winrt::event_token Closed(TypedEventHandler<IMemoryBufferReference, IInspectable> const& handler)
@@ -114,13 +140,25 @@ namespace
 
         void Closed(winrt::event_token const& token) noexcept { m_closed.remove(token); }
 
-        void Close()
+        decltype(std::declval<implements>().Release()) __stdcall Release() noexcept override
         {
-            if (m_owner)
+            auto count = NonDelegatingRelease();
+            if (count == 1)
             {
-                m_owner = nullptr;
-                m_closed(*this, nullptr);
+                count = Close(count);
             }
+            return count;
+        }
+
+        uint32_t Close(uint32_t count = 0)
+        {
+            if (!m_notified.exchange(true, std::memory_order_relaxed))
+            {
+                m_closed(*this, nullptr);
+                auto owner = m_owner.Reset();
+                count = NonDelegatingRelease();
+            }
+            return count;
         }
 
         HRESULT __stdcall GetBuffer(uint8_t** value, uint32_t* capacity) noexcept override
@@ -129,20 +167,22 @@ namespace
             {
                 return E_POINTER;
             }
-            if (!m_owner)
+            auto const owner = m_owner.Owner();
+            if (!owner)
             {
                 *value = nullptr;
                 *capacity = 0;
-                return RO_E_CLOSED;
+                return S_OK;
             }
-            auto const view = m_owner->EmbeddedBytes();
+            auto const view = owner->EmbeddedBytes();
             *value = const_cast<uint8_t*>(view.data());
             *capacity = static_cast<uint32_t>(view.size());
             return S_OK;
         }
 
     private:
-        winrt::com_ptr<ResourceCandidate> m_owner;
+        ResourceCandidateOwnerTracker m_owner;
+        std::atomic<bool> m_notified{false};
         winrt::event<TypedEventHandler<IMemoryBufferReference, IInspectable>> m_closed;
     };
 
@@ -158,17 +198,16 @@ namespace
 
         IMemoryBufferReference CreateReference()
         {
-            if (!m_owner)
-            {
-                throw winrt::hresult_error(RO_E_CLOSED);
-            }
-            return winrt::make<ResourceMemoryBufferReference>(m_owner);
+            return winrt::make<ResourceMemoryBufferReference>(m_owner.Owner());
         }
 
-        void Close() noexcept { m_owner = nullptr; }
+        void Close() noexcept
+        {
+            auto owner = m_owner.Reset();
+        }
 
     private:
-        winrt::com_ptr<ResourceCandidate> m_owner;
+        ResourceCandidateOwnerTracker m_owner;
     };
 }
 

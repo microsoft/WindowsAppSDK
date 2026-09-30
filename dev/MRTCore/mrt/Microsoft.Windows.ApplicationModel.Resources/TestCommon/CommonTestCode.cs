@@ -257,15 +257,29 @@ namespace CommonTestCode
             var reference = buffer.CreateReference();
             Verify.AreNotEqual(reference.Capacity, 0u);
 
-            // Closing the reference forgets the backing pointer; capacity collapses to zero.
+            bool closedRaised = false;
+            reference.Closed += (sender, args) =>
+            {
+                closedRaised = true;
+                Verify.AreNotEqual(sender.Capacity, 0u);
+            };
+
+            // Closed is raised while the data is still accessible, then the reference becomes empty.
             reference.Dispose();
+            Verify.IsTrue(closedRaised);
             Verify.AreEqual(reference.Capacity, 0u);
 
-            // Closing the buffer prevents creating further references.
+            // Existing references remain valid after the parent buffer closes.
+            reference = buffer.CreateReference();
             buffer.Dispose();
-            Windows.Foundation.IMemoryBufferReference closed;
-            var ex = Verify.Throws<Exception>(() => closed = buffer.CreateReference());
-            Verify.AreEqual((uint)ex.HResult, 0x80000013); // RO_E_CLOSED
+            Verify.AreNotEqual(reference.Capacity, 0u);
+            reference.Dispose();
+
+            // A reference created from a closed buffer is already empty.
+            using (var closed = buffer.CreateReference())
+            {
+                Verify.AreEqual(closed.Capacity, 0u);
+            }
         }
 
         public static void GetKindTest()
