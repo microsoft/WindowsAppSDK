@@ -66,6 +66,20 @@ parameters:
   default: '190463'
 
 steps:
+# Supports both root and subfolder Foundation checkouts.
+- ${{ if eq(parameters.IsMonobuild, true) }}:
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@self
+    parameters:
+      componentTsaOptionsPath: '$(Build.SourcesDirectory)\$(FoundationRepoPath).config\tsaoptions.json'
+      areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+      outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+- ${{ else }}:
+  - template: AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      componentTsaOptionsPath: '$(Build.SourcesDirectory)\$(FoundationRepoPath).config\tsaoptions.json'
+      areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+      outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+
 - ${{ if eq(parameters.SkipArtifactDownload, false) }}:
   - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
     - task: DownloadPipelineArtifact@2

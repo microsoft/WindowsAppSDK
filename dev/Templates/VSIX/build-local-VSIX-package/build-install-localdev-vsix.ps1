@@ -26,6 +26,10 @@
 .PARAMETER UninstallFirst
     Run VSIXInstaller /uninstall before installing for a clean reinstall.
 
+.PARAMETER MsBuildVersion
+    Visual Studio version to target for MSBuild. Default: 17 (Visual Studio 2022).
+    Set to 18 for Visual Studio 2026.
+
 .EXAMPLE
     .\build-install-localdev-vsix.ps1
     # Build + install LocalDev C# + C++ to all VS 17+.
@@ -44,7 +48,10 @@ param(
 
     [string]$VsVersionRange = '[17.0,)',
 
-    [switch]$UninstallFirst
+    [switch]$UninstallFirst,
+
+    [ValidateSet(17, 18)]
+    [double]$MsBuildVersion = 17
 )
 
 Set-StrictMode -Version 2.0
@@ -86,7 +93,7 @@ if ($SkipBuild) {
     }
     Push-Location $scriptDir
     try {
-        & $buildScript -Deployment LocalDev
+        & $buildScript -Deployment LocalDev -MsBuildVersion $MsBuildVersion
         if ($LASTEXITCODE -ne 0) {
             Write-Err "Build-VSIX-Local.ps1 exited with code $LASTEXITCODE"
             exit $LASTEXITCODE

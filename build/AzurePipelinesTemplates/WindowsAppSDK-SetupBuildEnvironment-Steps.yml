@@ -1,4 +1,10 @@
 steps:
+- template: AzurePipelinesTemplates\WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
+  parameters:
+    componentTsaOptionsPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+    areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+    outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+
 - task: UseDotNet@2
   displayName: Use .NET Core SDK 6
   inputs:

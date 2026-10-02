@@ -24,6 +24,11 @@
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
+  <CustomParameters>
+    <CustomParameter Name="$WindowsAppSdkVersion$" Value="*" />
+    <CustomParameter Name="$DotNetVersion$" Value="*"/>
+    <CustomParameter Name="$WindowsSdkBuildToolsVersion$" Value="*" />
+  </CustomParameters>
   <TemplateContent PreferedSolutionConfiguration="Debug|x64">
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="win-arm64.pubxml">Properties\PublishProfiles\win-arm64.pubxml</ProjectItem>

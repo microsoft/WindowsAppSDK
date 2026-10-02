@@ -130,30 +130,23 @@ namespace Test::Bootstrap
                 TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
         }
 
-        // MddBootstrapInitialize racily fails with STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED
-        // (0x80270254, APPX-facility) on x86 Win10 22H2 test agents when the DDLM was
-        // installed moments ago and the OS package state hasn't fully propagated to all the
-        // caches the bootstrap's FindDDLMViaEnumeration consults. Pre-poll attempts to mirror
-        // the bootstrap's preconditions weren't sufficient because the OS race spans multiple
-        // internal caches with independent invalidation timing. Bounded retry on this
-        // specific HRESULT is the simplest viable mitigation - any other failure here is a
-        // real bug and surfaces immediately.
-        constexpr HRESULT c_bootstrapRaceHr{ static_cast<HRESULT>(0x80270254L) };
-        HRESULT bootstrapHr{ S_OK };
+        constexpr HRESULT c_applicationNotRegistered{ static_cast<HRESULT>(0x80270254L) };
         constexpr int c_maxAttempts{ 5 };
-        DWORD backoffMs{ 1000 };
+        DWORD retryDelayInMilliseconds{ 1000 };
+        HRESULT bootstrapHr{ S_OK };
         for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
         {
             bootstrapHr = MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion);
-            if (SUCCEEDED(bootstrapHr) || bootstrapHr != c_bootstrapRaceHr || attempt == c_maxAttempts)
+            if (SUCCEEDED(bootstrapHr) || (bootstrapHr != c_applicationNotRegistered) || (attempt == c_maxAttempts))
             {
                 break;
             }
+
             WEX::Logging::Log::Comment(WEX::Common::String().Format(
-                L"MddBootstrapInitialize attempt %d/%d failed with 0x80270254; sleeping %u ms before retry",
-                attempt, c_maxAttempts, backoffMs));
-            Sleep(backoffMs);
-            backoffMs = (std::min<DWORD>)(backoffMs * 2, 8000);
+                L"MddBootstrapInitialize attempt %d/%d failed with 0x%08X; retrying in %u ms",
+                attempt, c_maxAttempts, static_cast<unsigned int>(bootstrapHr), retryDelayInMilliseconds));
+            Sleep(retryDelayInMilliseconds);
+            retryDelayInMilliseconds *= 2;
         }
         VERIFY_SUCCEEDED(bootstrapHr);
         s_bootstrapDll = std::move(bootstrapDll);
