@@ -1,5 +1,0 @@
-{
-    "msbuild-sdks": {
-        "Microsoft.Build.NoTargets" : "1.0.88"
-    }
-}

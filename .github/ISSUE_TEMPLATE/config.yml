@@ -1,9 +1,0 @@
-blank_issues_enabled: true
-contact_links:
-    about: Suggest a new feature or idea, or vote on existing ideas
-  - name: Question
-    url: https://github.com/microsoft/WindowsAppSDK/discussions/new?category=q-a
-    about: Ask a question
-  - name: Discussion
-    url: https://github.com/microsoft/WindowsAppSDK/discussions/new?category=general
-    about: Start a discussion

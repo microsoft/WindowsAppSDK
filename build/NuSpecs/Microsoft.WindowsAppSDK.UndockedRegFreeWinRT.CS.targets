@@ -1,9 +1,0 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-    <Target Name="GenerateUndockedRegFreeWinRTCS" BeforeTargets="BeforeCompile">
-        <ItemGroup>
-            <Compile Include="$(MSBuildThisFileDirectory)..\include\UndockedRegFreeWinRT-AutoInitializer.cs" />
-        </ItemGroup>
-    </Target>
-
-</Project>
