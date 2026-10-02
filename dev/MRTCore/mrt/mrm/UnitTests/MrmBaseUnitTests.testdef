@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Mrm Base Unit Tests (TAEF)",
+            "Filename": "MrmBaseUnitTests.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}

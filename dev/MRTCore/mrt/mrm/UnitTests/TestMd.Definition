@@ -1,0 +1,35 @@
+{
+    "$schema": "http://universaltest/schema/testmddefinition-5.json",
+    "Package": {
+        "ComponentName": "Test-Windows-MRT",
+        "SubComponentName": "MrmCore-UnitTests"
+    },
+    "Execution": {
+        "Type": "TAEF",
+        "Parameter": "/runas:User"
+    },
+    "Dependencies": {
+      "Files": [
+        {
+          "SourcePath": "$(MAKEDIR)\\files\\buffersize.htm",
+          "DestinationFolderPath": "$(TEST_DEPLOY_BIN)\\Files"
+        },
+        {
+          "SourcePath": "$(MAKEDIR)\\files\\buffersizeminusone.htm",
+          "DestinationFolderPath": "$(TEST_DEPLOY_BIN)\\Files"
+        },
+        {
+          "SourcePath": "$(MAKEDIR)\\files\\buffersizeplusone.htm",
+          "DestinationFolderPath": "$(TEST_DEPLOY_BIN)\\Files"
+        },
+        {
+          "SourcePath": "$(MAKEDIR)\\files\\twicebuffersize.htm",
+          "DestinationFolderPath": "$(TEST_DEPLOY_BIN)\\Files"
+        },
+        {
+          "SourcePath": "$(MAKEDIR)\\files\\twicebuffersizeplussome.htm",
+          "DestinationFolderPath": "$(TEST_DEPLOY_BIN)\\Files"
+        }
+      ]
+    }
+}

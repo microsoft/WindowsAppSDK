@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "BadgeNotification API",
+            "Filename": "BadgeNotificationTest.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}

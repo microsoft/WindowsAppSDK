@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.SDK.BuildTools.MSIX.$(MicrosoftWindowsSDKBuildToolsMSIXVersion)\build\Microsoft.Windows.SDK.BuildTools.MSIX.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.SDK.BuildTools.MSIX.$(MicrosoftWindowsSDKBuildToolsMSIXVersion)\build\Microsoft.Windows.SDK.BuildTools.MSIX.props')" />
+  <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
+  <Import Project="$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
+  <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" />
+  <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64EC">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{B73AD907-6164-4294-88FB-F3C9C10DA1F1}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Microsoft.WindowsAppRuntime</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <CppWinRTModernIDL>true</CppWinRTModernIDL>
+    <CppWinRTFastAbi>true</CppWinRTFastAbi>
+    <CppWinRTOptimized>true</CppWinRTOptimized>
+    <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
+    <CppWinRTNamespaceMergeDepth>9</CppWinRTNamespaceMergeDepth>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+    <Import Project="..\AccessControl\AccessControl.vcxitems" Label="AccessControl" />
+    <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
+    <Import Project="..\ApplicationData\ApplicationData.vcxitems" Label="Shared" />
+    <Import Project="..\PushNotifications\PushNotifications.vcxitems" Label="PushNotifications" />
+    <Import Project="..\AppNotifications\AppNotifications.vcxitems" Label="AppNotifications" />
+    <Import Project="..\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems" Label="AppNotificationBuilder" />
+    <Import Project="..\DynamicDependency\API\DynamicDependency.vcxitems" Label="Shared" />
+    <Import Project="..\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems" Label="Shared" />
+    <Import Project="..\Common\Common.vcxitems" Label="Shared" />
+    <Import Project="..\PowerNotifications\PowerNotifications.vcxitems" Label="Shared" />
+    <Import Project="..\Deployment\Deployment.vcxitems" Label="Deployment" />
+    <Import Project="..\Licensing\Licensing.vcxitems" Label="Shared" />
+    <Import Project="..\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems" Label="EnvironmentManager" />
+    <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
+    <Import Project="..\OAuth\OAuth.vcxitems" Label="OAuth" />
+    <Import Project="..\VersionInfo\VersionInfo.vcxitems" Label="VersionInfo" />
+    <Import Project="..\PackageManager\API\PackageManager.vcxitems" Label="Shared" />
+    <Import Project="..\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems" Label="Shared" />
+    <Import Project="..\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems" />
+    <Import Project="..\Notifications\BadgeNotifications\BadgeNotifications.vcxitems" Label="BadgeNotifications" />
+    <Import Project="..\Notifications\BaseNotifications\BaseNotifications.vcxitems" Label="BaseNotifications" />
+    <Import Project="..\RuntimeCompatibilityOptions\RuntimeCompatibilityOptions.vcxitems" Label="Shared" />
+    <Import Project="..\Interop\StoragePickers\StoragePickers.vcxitems" />
+    <Import Project="..\Decimal\Decimal.vcxitems" Label="Shared" />
+    <Import Project="..\Package\Package.vcxitems" Label="Shared" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>WIN32;_DEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>_DEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>WIN32;NDEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableUAC>false</EnableUAC>
+      <!-- The Windows SDK has no ARM64EC rometadata import library; ARM64EC can link its x64 flavor. -->
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;shell32.lib;$(WindowsSdkDir)Lib\$(TargetPlatformVersion)\um\x64\rometadata.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;shell32.dll;rometadata.dll;xmllite.dll;userenv.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="COMExports.cpp" />
+    <ClCompile Include="WindowsAppRuntime_EnsureIsLoaded.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WindowsAppRunTime.rc">
+      <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="WindowsAppRuntime.def" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Detours\Detours.vcxproj">
+      <Project>{d6bc25c5-1aa7-4c4a-a02c-b42dedbfea33}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
+      <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\MRTCore\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj">
+      <Project>{9b3b03bc-1bc0-43ea-b3ff-d5214f3cf5cf}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">
+      <Project>{bf3fced0-cadb-490a-93a7-4d90e1f45ab0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
+      <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.SDK.BuildTools.MSIX.$(MicrosoftWindowsSDKBuildToolsMSIXVersion)\build\Microsoft.Windows.SDK.BuildTools.MSIX.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.SDK.BuildTools.MSIX.$(MicrosoftWindowsSDKBuildToolsMSIXVersion)\build\Microsoft.Windows.SDK.BuildTools.MSIX.targets')" />
+  </ImportGroup>
+  <!-- CppWinRT ships no ARM64EC cppwinrt_fast_forwarder.lib (verified through 3.0.260715.1), so the
+       $(Platform)-derived path in Microsoft.Windows.CppWinRT.targets does not resolve and the link
+       fails with LNK1181. ARM64EC uses the x64 ABI and link.exe accepts x64 inputs for
+       /MACHINE:ARM64EC, so fall back to the x64 flavor when the package has no ARM64EC library.
+       This keeps -fastabi enabled: disabling it for ARM64EC alone would change the generated
+       vtable layout and break ABI parity with the x64/arm64 builds of the same WinRT types.
+       Must stay after the CppWinRT.targets import, which is where the original value is appended. -->
+  <ItemDefinitionGroup Condition="'$(Platform)' == 'ARM64EC' And '$(CppWinRTFastAbi)' == 'true' And !Exists('$(CppWinRTPackageDir)build\native\lib\$(Platform)\cppwinrt_fast_forwarder.lib')">
+    <Link>
+      <AdditionalDependencies>$([MSBuild]::Unescape($([System.String]::Copy('%(AdditionalDependencies)').Replace('\lib\$(Platform)\cppwinrt_fast_forwarder.lib', '\lib\x64\cppwinrt_fast_forwarder.lib'))))</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Target Name="MakeStrippedMetadata" AfterTargets="CppWinRTMergeProjectWinMDInputs" BeforeTargets="ClCompile">
+    <PropertyGroup>
+      <_MdMergeParameters>-v @(CppWinRTMdMergeMetadataDirectories->'-metadata_dir "%(RelativeDir)."', ' ')</_MdMergeParameters>
+      <_MdMergeParameters>$(_MdMergeParameters) -o "$(OutDir)StrippedWinMD" @(CppWinRTMdMergeInputs->'-i "%(Identity)"', ' ') -partial -n:9 -createPublicMetadata -transformExperimental:transform</_MdMergeParameters>
+    </PropertyGroup>
+    <Exec Command="$(MdMergePath)mdmerge $(_MdMergeParameters)" />
+  </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage\$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.SDK.BuildTools.MSIX.$(MicrosoftWindowsSDKBuildToolsMSIXVersion)\build\Microsoft.Windows.SDK.BuildTools.MSIX.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.SDK.BuildTools.MSIX.$(MicrosoftWindowsSDKBuildToolsMSIXVersion)\build\Microsoft.Windows.SDK.BuildTools.MSIX.props'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.SDK.BuildTools.MSIX.$(MicrosoftWindowsSDKBuildToolsMSIXVersion)\build\Microsoft.Windows.SDK.BuildTools.MSIX.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.SDK.BuildTools.MSIX.$(MicrosoftWindowsSDKBuildToolsMSIXVersion)\build\Microsoft.Windows.SDK.BuildTools.MSIX.targets'))" />
+  </Target>
+  <!-- Include header files from the dev chunks -->
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h" DestinationFolder="$(OutDir)" />
+  </Target>
+</Project>

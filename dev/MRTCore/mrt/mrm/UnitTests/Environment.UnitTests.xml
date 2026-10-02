@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="VersionCompatibilityTests">
+        <ParameterTypes>
+            <ParameterType Name="ShouldBeIdentical">Boolean</ParameterType>
+            <ParameterType Name="ShouldBeCompatible">Boolean</ParameterType>
+            <ParameterType Name="ExpectedCompatError">String</ParameterType>
+            <ParameterType Name="Env1DisplayName">String</ParameterType>
+            <ParameterType Name="Env1UniqueName">String</ParameterType>
+            <ParameterType Name="Env1MajorVersion">int</ParameterType>
+            <ParameterType Name="Env1MinorVersion">int</ParameterType>
+            <ParameterType Name="Env1QualifierTypeNamesList">String</ParameterType>
+            <ParameterType Name="Env1QualifierNamesList">String</ParameterType>
+            <ParameterType Name="Env1QualifierTypesList">String</ParameterType>
+            <ParameterType Name="Env1QualifierRuntimePrioritiesList">String</ParameterType>
+            <ParameterType Name="Env1QualifierBuildPrioritiesList">String</ParameterType>
+            <ParameterType Name="Env1ItemTypeNamesList">String</ParameterType>
+            <ParameterType Name="Env1ResourceValueTypeNamesList">String</ParameterType>
+            <ParameterType Name="Env1ResourceValueLocatorNamesList">String</ParameterType>
+            <ParameterType Name="Env1ConditionOperatorNamesList">String</ParameterType>
+            <ParameterType Name="Env2DisplayName">String</ParameterType>
+            <ParameterType Name="Env2UniqueName">String</ParameterType>
+            <ParameterType Name="Env2MajorVersion">int</ParameterType>
+            <ParameterType Name="Env2MinorVersion">int</ParameterType>
+            <ParameterType Name="Env2QualifierTypeNamesList">String</ParameterType>
+            <ParameterType Name="Env2QualifierNamesList">String</ParameterType>
+            <ParameterType Name="Env2QualifierTypesList">String</ParameterType>
+            <ParameterType Name="Env2QualifierRuntimePrioritiesList">String</ParameterType>
+            <ParameterType Name="Env2QualifierBuildPrioritiesList">String</ParameterType>
+            <ParameterType Name="Env2ItemTypeNamesList">String</ParameterType>
+            <ParameterType Name="Env2ResourceValueTypeNamesList">String</ParameterType>
+            <ParameterType Name="Env2ResourceValueLocatorNamesList">String</ParameterType>
+            <ParameterType Name="Env2ConditionOperatorNamesList">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="CaseInsensitive" Description="Test that case doesn't affect identity">
+            <Parameter Name="ShouldBeIdentical">true</Parameter>
+            <Parameter Name="ShouldBeCompatible">true</Parameter>
+            <Parameter Name="Env1DisplayName">TestEnvironment</Parameter>
+            <Parameter Name="Env1UniqueName">test://test/1</Parameter>
+            <Parameter Name="Env1MajorVersion">1</Parameter>
+            <Parameter Name="Env1MinorVersion">0</Parameter>
+            <Parameter Name="Env1QualifierTypeNamesList">LanguageList</Parameter>
+            <Parameter Name="Env1QualifierNamesList">Language</Parameter>
+            <Parameter Name="Env1QualifierTypesList">LanguageList</Parameter>
+            <Parameter Name="Env1QualifierRuntimePrioritiesList">900</Parameter>
+            <Parameter Name="Env1QualifierBuildPrioritiesList">900</Parameter>
+            <Parameter Name="Env1ItemTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueLocatorNamesList">Internal</Parameter>
+            <Parameter Name="Env2QualifierTypeNamesList">languagelist</Parameter>
+            <Parameter Name="Env2QualifierNamesList">LANGUAGE</Parameter>
+            <Parameter Name="Env2QualifierTypesList">LanguageLIST</Parameter>
+            <Parameter Name="Env2QualifierRuntimePrioritiesList">900</Parameter>
+            <Parameter Name="Env2QualifierBuildPrioritiesList">900</Parameter>
+            <Parameter Name="Env2ItemTypeNamesList">STRING; path</Parameter>
+            <Parameter Name="Env2ResourceValueTypeNamesList">string; PATH</Parameter>
+            <Parameter Name="Env2ResourceValueLocatorNamesList">INTErnal</Parameter>
+        </Row>
+        <Row Name="SimpleBackCompat" Description="Test Simple Backward Compatibility">
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">true</Parameter>
+            <Parameter Name="Env1DisplayName">TestEnvironment</Parameter>
+            <Parameter Name="Env1UniqueName">test://test/1</Parameter>
+            <Parameter Name="Env1MajorVersion">1</Parameter>
+            <Parameter Name="Env1MinorVersion">0</Parameter>
+            <Parameter Name="Env1QualifierTypeNamesList">LanguageList</Parameter>
+            <Parameter Name="Env1QualifierNamesList">Language</Parameter>
+            <Parameter Name="Env1QualifierTypesList">LanguageList</Parameter>
+            <Parameter Name="Env1QualifierRuntimePrioritiesList">900</Parameter>
+            <Parameter Name="Env1QualifierBuildPrioritiesList">900</Parameter>
+            <Parameter Name="Env1ItemTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueLocatorNamesList">Internal</Parameter>
+
+            <Parameter Name="Env2MinorVersion">1</Parameter>
+            <Parameter Name="Env2QualifierTypeNamesList">
+                LanguageList; ScreenResolution</Parameter>
+            <Parameter Name="Env2QualifierNamesList">Language; 
+                ScreenDPI</Parameter>
+            <Parameter Name="Env2QualifierTypesList">
+                LanguageList; ScreenResolution
+            </Parameter>
+            <Parameter Name="Env2QualifierRuntimePrioritiesList">
+                900; 800
+            </Parameter>
+            <Parameter Name="Env2QualifierBuildPrioritiesList">
+                900; 800
+            </Parameter>
+        </Row>
+        <Row Name="NoForwardCompatVersion" Description="Test Forward Compatibility Fails on Minor Version">
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>
+            <Parameter Name="Env1DisplayName">TestEnvironment</Parameter>
+            <Parameter Name="Env1UniqueName">test://test/1</Parameter>
+            <Parameter Name="Env1MajorVersion">1</Parameter>
+            <Parameter Name="Env1MinorVersion">1</Parameter>
+            <Parameter Name="Env1QualifierTypeNamesList">LanguageList</Parameter>
+            <Parameter Name="Env1QualifierNamesList">Language</Parameter>
+            <Parameter Name="Env1QualifierTypesList">LanguageList</Parameter>
+            <Parameter Name="Env1QualifierRuntimePrioritiesList">900</Parameter>
+            <Parameter Name="Env1QualifierBuildPrioritiesList">900</Parameter>
+            <Parameter Name="Env1ItemTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueLocatorNamesList">Internal</Parameter>
+
+            <Parameter Name="Env2MinorVersion">0</Parameter>
+        </Row>
+        <Row Name="NoStringsRemoved" Description="Test that Environments with strings removed are not compatible">
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>
+            <Parameter Name="ExpectedCompatError">0xdef00032</Parameter>
+            <Parameter Name="Env1DisplayName">TestEnvironment</Parameter>
+            <Parameter Name="Env1UniqueName">test://test/1</Parameter>
+            <Parameter Name="Env1MajorVersion">1</Parameter>
+            <Parameter Name="Env1MinorVersion">0</Parameter>
+            <Parameter Name="Env1QualifierTypeNamesList">LanguageList; 
+                ScreenResolution</Parameter>
+            <Parameter Name="Env1QualifierNamesList">Language; 
+                ScreenDPI</Parameter>
+            <Parameter Name="Env1QualifierTypesList">LanguageList; 
+                ScreenResolution</Parameter>
+            <Parameter Name="Env1QualifierRuntimePrioritiesList">900;800</Parameter>
+            <Parameter Name="Env1QualifierBuildPrioritiesList">900;800</Parameter>
+            <Parameter Name="Env1ItemTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueLocatorNamesList">Internal</Parameter>
+
+            <Parameter Name="Env2MinorVersion">1</Parameter>
+            <Parameter Name="Env2QualifierTypeNamesList">LanguageList</Parameter>
+            <Parameter Name="Env2QualifierNamesList">Language</Parameter>
+            <Parameter Name="Env2QualifierTypesList">LanguageList</Parameter>
+            <Parameter Name="Env2QualifierRuntimePrioritiesList">900</Parameter>
+            <Parameter Name="Env2QualifierBuildPrioritiesList">900</Parameter>
+        </Row>
+        <Row Name="NoQualifierTypeChanges" Description="Test that Environments with qualifier types changed are not compatible">
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>
+            <Parameter Name="Env1DisplayName">TestEnvironment</Parameter>
+            <Parameter Name="Env1UniqueName">test://test/1</Parameter>
+            <Parameter Name="Env1MajorVersion">1</Parameter>
+            <Parameter Name="Env1MinorVersion">0</Parameter>
+            <Parameter Name="Env1QualifierTypeNamesList">LanguageList; 
+                ScreenResolution</Parameter>
+            <Parameter Name="Env1QualifierNamesList">Language; 
+                ScreenDPI</Parameter>
+            <Parameter Name="Env1QualifierTypesList">LanguageList; 
+                ScreenResolution</Parameter>
+            <Parameter Name="Env1QualifierRuntimePrioritiesList">900;800</Parameter>
+            <Parameter Name="Env1QualifierBuildPrioritiesList">900;800</Parameter>
+            <Parameter Name="Env1ItemTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueLocatorNamesList">Internal</Parameter>
+
+            <Parameter Name="Env2MinorVersion">1</Parameter>
+            <Parameter Name="Env2QualifierNamesList">Language; 
+                ScreenDPI</Parameter>
+            <Parameter Name="Env2QualifierTypesList">ScreenResolution; 
+                ScreenResolution</Parameter>
+                <Parameter Name="Env2QualifierRuntimePrioritiesList">900; 800</Parameter>
+                <Parameter Name="Env2QualifierBuildPrioritiesList">900; 800</Parameter>
+        </Row>
+        <Row Name="NoQualifierRuntimePriorityChanges" Description="Test that Environments with qualifier runtime priority changes are not compatible">
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>            
+            <Parameter Name="Env1DisplayName">TestEnvironment</Parameter>
+            <Parameter Name="Env1UniqueName">test://test/1</Parameter>
+            <Parameter Name="Env1MajorVersion">1</Parameter>
+            <Parameter Name="Env1MinorVersion">0</Parameter>
+            <Parameter Name="Env1QualifierTypeNamesList">LanguageList; 
+                ScreenResolution</Parameter>
+            <Parameter Name="Env1QualifierNamesList">Language; 
+                ScreenDPI</Parameter>
+            <Parameter Name="Env1QualifierTypesList">LanguageList; 
+                ScreenResolution</Parameter>
+            <Parameter Name="Env1QualifierRuntimePrioritiesList">900;800</Parameter>
+            <Parameter Name="Env1QualifierBuildPrioritiesList">900;800</Parameter>
+            <Parameter Name="Env1ItemTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueLocatorNamesList">Internal</Parameter>
+
+            <Parameter Name="Env2MinorVersion">1</Parameter>
+            <Parameter Name="Env2QualifierNamesList">Language; 
+                ScreenDPI</Parameter>
+            <Parameter Name="Env2QualifierTypesList">LanguageList; 
+                ScreenResolution</Parameter>
+            <Parameter Name="Env2QualifierRuntimePrioritiesList">900; 850</Parameter>
+            <Parameter Name="Env2QualifierBuildPrioritiesList">900; 850</Parameter>
+        </Row>
+        <Row Name="AddedQualifiers" Description="Test that Environments with qualifiers added to the end are compatible">
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">true</Parameter>
+            <Parameter Name="Env1DisplayName">TestEnvironment</Parameter>
+            <Parameter Name="Env1UniqueName">test://test/1</Parameter>
+            <Parameter Name="Env1MajorVersion">1</Parameter>
+            <Parameter Name="Env1MinorVersion">0</Parameter>
+            <Parameter Name="Env1QualifierTypeNamesList">
+                LanguageList;
+                ScreenResolution
+            </Parameter>
+            <Parameter Name="Env1QualifierNamesList">
+                Language;
+                ScreenDPI
+            </Parameter>
+            <Parameter Name="Env1QualifierTypesList">
+                LanguageList;
+                ScreenResolution
+            </Parameter>
+            <Parameter Name="Env1QualifierRuntimePrioritiesList">900;800</Parameter>
+            <Parameter Name="Env1QualifierBuildPrioritiesList">900;800</Parameter>
+            <Parameter Name="Env1ItemTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueTypeNamesList">String; Path</Parameter>
+            <Parameter Name="Env1ResourceValueLocatorNamesList">Internal</Parameter>
+
+            <Parameter Name="Env2MinorVersion">2</Parameter>
+            <Parameter Name="Env2QualifierTypeNamesList">
+                LanguageList;
+                ScreenResolution;
+                RegionId;
+                LayoutDirectionType;
+            </Parameter>
+            <Parameter Name="Env2QualifierNamesList">
+                Language;
+                ScreenDPI;
+                HomeRegion;
+                LayoutDirection;
+            </Parameter>
+            <Parameter Name="Env2QualifierTypesList">
+                LanguageList;
+                ScreenResolution;
+                RegionId;
+                LayoutDirectionType;
+            </Parameter>
+            <Parameter Name="Env2QualifierRuntimePrioritiesList">900; 800; 700; 750</Parameter>
+            <Parameter Name="Env2QualifierBuildPrioritiesList">900; 800; 700; 750</Parameter>
+        </Row>
+    </Table>
+</Data>
+

@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "PurojekutoTenpuret tests for feature Tokucho",
+            "Filename": "PurojekutoTenpuret.dll",
+            "Parameters": "",
+            "Architectures": ["x86", "x64", "arm64"],
+            "Status": "Enabled",
+        }
+    ]
+}

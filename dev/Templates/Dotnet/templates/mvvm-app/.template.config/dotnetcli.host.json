@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "dotnetVersion": {
+      "longName": "dotnet-version",
+      "shortName": "tfm",
+      "description": "Base TFM for the WinUI project (for example net10.0)."
+    },
+    "targetPlatformMinVersion": {
+      "longName": "target-platform-min-version",
+      "shortName": "tpmv",
+      "description": "Minimum supported Windows version."
+    },
+    "publisherDn": {
+      "longName": "publisher-dn",
+      "shortName": "publisher",
+      "description": "Publisher distinguished name stored in Package.appxmanifest."
+    },
+    "publisherDisplay": {
+      "longName": "publisher-display",
+      "shortName": "publisherName",
+      "description": "Publisher display name stored in Package.appxmanifest."
+    },
+    "windowsAppSdkVersion": {
+      "longName": "wasdk-version",
+      "shortName": "wasdkv",
+      "description": "Pin to a specific Windows App SDK NuGet version. Leave empty for latest."
+    },
+    "windowsSdkBuildToolsVersion": {
+      "longName": "build-tools-version",
+      "shortName": "btv",
+      "description": "Pin to a specific Windows SDK BuildTools NuGet version. Leave empty for latest."
+    },
+    "windowsSdkBuildToolsWinAppVersion": {
+      "longName": "winapp-version",
+      "shortName": "wav",
+      "description": "Pin to a specific Windows SDK BuildTools WinApp NuGet version. Leave empty for latest."
+    },
+    "communityToolkitMvvmVersion": {
+      "longName": "mvvm-toolkit-version",
+      "shortName": "mtv",
+      "description": "Pin to a specific CommunityToolkit.Mvvm NuGet version. Leave empty for latest."
+    }
+  }
+}

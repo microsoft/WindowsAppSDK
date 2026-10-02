@@ -1,0 +1,260 @@
+#####################################################################################################################################
+#                                               OneBranch Pipelines - Official                                                      #
+#####################################################################################################################################
+#                                                                                                                                   #
+# This pipeline was created by EasyStart from a sample located at:                                                                  #
+#                               https://aka.ms/obpipelines/easystart/samples                                                        #
+#                                                                                                                                   #
+# Windows Undocked Wiki:        https://www.osgwiki.com/wiki/Windows_Undocked_Template                                              #
+# General OB Documentation:     https://aka.ms/obpipelines                                                                          #
+# Build MSBuild project:        https://dev.azure.com/onebranch/OneBranch/_wiki/wikis/OneBranch.wiki/6045/Build-MSBuild-project     #
+# Yaml Schema:                  https://aka.ms/obpipelines/yaml/schema                                                              #
+# Retail Tasks:                 https://aka.ms/obpipelines/tasks                                                                    #
+# Support:                      https://aka.ms/onebranchsup                                                                         #
+#                                                                                                                                   #
+#####################################################################################################################################
+
+name: $(pipelineName)
+
+# https://aka.ms/obpipelines/triggers
+trigger: none
+
+parameters:
+- name: "PublishToMaestro"
+  type: boolean
+  default: true
+- name: "IgnoreFailures"
+  type: boolean
+  default: false
+- name: "SignOutput"
+  type: boolean
+  default: true
+- name: runStaticAnalysis
+  displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
+  type: boolean
+  default: true
+- name: "BuildSampleApps"
+  displayName: "Run Build Sample Apps Stage"
+  type: boolean
+  default: true
+- name: "TestSampleApps"
+  displayName: "Test launch of Sample apps separately in the TestSampleApps Stage"
+  type: boolean
+  default: true
+- name: "TestOnArm64"
+  displayName: "Enable running of tests on arm64 platform (Default: true)"
+  type: boolean
+  default: true
+- name: "MaestroDependOnTestSamples"
+  displayName: "Whether Maestro publishing should depend on successful Sample tests"
+  type: boolean
+  default: false
+- name: "validateRuntimeCompatibility"
+  displayName: "Validate Runtime Compatibility Enums (Servicing builds only)"
+  type: boolean
+  default: true
+- name: "CheckApiChanges"
+  displayName: "Run WindowsAppSDK-CheckApiChanges stage"
+  type: boolean
+  default: true
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+  values:
+  - 'stable'
+  - 'experimental'
+  - 'preview'
+- name: RunUpdateLibraryJob
+  displayName: "Run the Update Library Variable Group Job"
+  type: boolean
+  default: true
+
+variables:
+- template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-TSAVariables.yml@WinAppSDK
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
+- template: WindowsAppSDK-CommonVariables.yml
+- group: WinAppSDK-Foundation-Build-Variables
+- name: maxParallelForBuildSamplesCompatJob_x64
+  value: 20
+- name: maxParallelForBuildSamplesCompatJob_arm64
+  value: 20
+
+name: $(MajorVersion).$(FoundationMinorVersionResolved).$(FoundationPatchVersionResolved)-$(NugetBuildTypePrefix)$(channel)$(Revision)
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    - repository: WinAppSDK
+      type: git
+      name: OS/WinAppSDK
+      ref: refs/heads/release/dev/monobuild
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    # Data-only alias pinned to main so source analysis always uses the centrally maintained TSA config.
+    - repository: WindowsAppSDKTsaConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKVersionConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKSamples
+      type: github
+      endpoint: 'WinAppSDK-Github'
+      name: microsoft/WindowsAppSDK-Samples
+      ref: $(SamplesBranch)
+
+extends:
+  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    featureFlags:
+      EnableCDPxPAT: false      
+      WindowsHostVersion:
+        Version: 2022
+        Network: R1
+
+    platform:
+      name: 'windows_undocked' # windows undocked
+
+    cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
+      enabled: false
+
+    globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
+      # sdl_sources reads the central TSA area path from the WindowsAppSDKTsaConfig checkout (replicated by
+      # checkout_all_repos) instead of the committed root .config/tsaoptions.json; build-job TSA is unaffected.
+      perStage:
+        sdl_sources:
+          checkout_all_repos: true
+          tsa:
+            configFile: $(Build.SourcesDirectory)\ext_repos\WindowsAppSDKTsaConfig\TSAOptions\tsaoptions.foundation.json
+      tsa:
+        enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
+      isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\OneBranch.gdnsuppress
+      asyncSdl: # https://aka.ms/obpipelines/asyncsdl
+        enabled: false
+      binskim:
+        enabled: true
+        break: true
+        analyzeTargetGlob: $(BinskimExclusionForFoundationRepo)
+      prefast:
+        ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+          enabled: true
+        ${{ else }}:
+          enabled: false
+        break: true
+        # Use "severity: 'Warning'" to be more sensitive, break on Warnings+Errors.
+        # Use "severity: 'Note'" to be even more sensitive, break on Notes+Warnings+Errors.
+        # Use "severity: 'Default'" to get back to default, i.e., break on Errors. Can't get less sensitive than that.
+        severity: Default
+        # Use "exclusionsFile: <<FILE PATH>>" to apply a local exclusion file.
+      apiscan:
+        # We will enable APIScan on a per-job basis downstream as needed.
+        enabled: false
+        # TODO: Once we've cleared away all existing errors, consider setting this to true.
+        break: false
+
+    stages:
+
+    # Compile-time discovery only: checkout_all_repos replicates repositories named in a checkout step into the
+    # injected sdl_sources job. condition:false keeps the discovery job from executing.
+    - stage: SourceAnalysisTsaConfig
+      dependsOn: []
+      jobs:
+      - job: DiscoverTsaConfigCheckout
+        condition: false
+        pool:
+          type: windows
+          isCustom: true
+          name: 'ProjectReunionESPool-2022'
+        steps:
+        - checkout: WindowsAppSDKTsaConfig
+
+    - ${{ if eq(parameters.validateRuntimeCompatibility, 'true') }}:
+      - stage: ManualValidation_RuntimeCompatibility
+        displayName: 'Manual Validation - RuntimeCompatibilityChange Enums'
+        # Only run this validation for release branches
+        condition: contains(variables['Build.SourceBranch'], 'release/')
+        dependsOn: []
+        jobs:
+        - job: waitForValidation
+          displayName: 'Wait for external validation'
+          pool: server
+          timeoutInMinutes: 120 # 2 hours timeout
+          steps:
+          - task: ManualValidation@0
+            displayName: 'Confirm RuntimeCompatibilityChange Enums Added'
+            inputs:
+              notifyUsers: ''
+              instructions: |
+                SERVICING BUILD - RuntimeCompatibilityChange VALIDATION
+
+                Verify dev/RuntimeCompatibilityOptions/RuntimeCompatibilityOptions.idl in Foundation
+
+                Unless none of the servicing changes have containment, Foundation MUST include the RuntimeCompatibilityChange
+                enum values associated with this servicing release before kicking off this official build.
+    
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        runApiScan: ${{ parameters.runStaticAnalysis }}
+        runPREFast: false
+        testMatrix: ${{ variables.PipelineTests }}
+    
+    - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+        parameters:
+          SignOutput: ${{ parameters.SignOutput }}
+          runApiScan: false
+          runPREFast: true
+          testMatrix: ${{ variables.PipelineTests }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        PublishPackage: true
+        IsOfficial: true
+        PrOrNightly: ''
+        BuildType: ${{ parameters.BuildType }}
+        RunUpdateLibraryJob: ${{ parameters.RunUpdateLibraryJob }}
+
+    - ${{ if eq( parameters.CheckApiChanges, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-CheckApiChanges-Stage.yml@self
+        parameters:
+          CompareAgainstExperimental: false
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-StaticValidationTest-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+      parameters:
+        testMatrix: ${{ variables.PipelineTests }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
+      parameters:
+        PublishToMaestro: ${{ parameters.PublishToMaestro }}
+        IgnoreFailures: ${{ parameters.IgnoreFailures }}
+        TestSampleApps: ${{ parameters.TestSampleApps }}
+        TestOnArm64: ${{ parameters.TestOnArm64 }}
+        MaestroDependOnTestSamples: ${{ parameters.MaestroDependOnTestSamples }}
+
+
+    - ${{ if eq( parameters.BuildSampleApps, true ) }}:
+      - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestSampleApps-Stage.yml@self
+        parameters:
+          TestSampleApps: ${{ parameters.TestSampleApps }}
+          TestOnArm64: ${{ parameters.TestOnArm64 }}
+          runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
+          maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
+          maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}

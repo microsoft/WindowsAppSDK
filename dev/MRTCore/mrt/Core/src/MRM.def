@@ -1,0 +1,25 @@
+LIBRARY
+
+EXPORTS
+    MrmCreateResourceManager
+    MrmDestroyResourceManager
+    MrmCreateResourceContext
+    MrmFreeQualifierNamesOrValues
+    MrmGetAllQualifierNames
+    MrmGetQualifier
+    MrmSetQualifier
+    MrmDestroyResourceContext
+    MrmGetChildResourceMap
+    MrmGetResourceCount
+    MrmLoadStringResource
+    MrmLoadStringResourceFromResourceUri
+    MrmLoadEmbeddedResource
+    MrmLoadEmbeddedResourceFromResourceUri
+    MrmLoadStringOrEmbeddedResource
+    MrmLoadStringOrEmbeddedResourceWithQualifierValues
+    MrmLoadStringOrEmbeddedFromResourceUri
+    MrmLoadStringOrEmbeddedResourceByIndex
+    MrmLoadStringOrEmbeddedResourceByIndexWithQualifierValues
+    MrmAllocateBuffer
+    MrmFreeResource
+    MrmGetFilePathFromName

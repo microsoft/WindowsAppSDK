@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleBuilderReaderTests">
+        <ParameterTypes>
+            <ParameterType Name="InitStrings" Array="true">String</ParameterType>
+            <ParameterType Name="BogusStrings" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNames" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedContents" Array="true">String</ParameterType>
+            <ParameterType Name="UnexpectedContents" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNumScopes">int</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopeChildren" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNumItems">int</ParameterType>
+            <ParameterType Name="ExpectedItems" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="NamingConventions" Description="Verify that various interesting legal and illegal names behave as expected">
+            <Parameter Name="InitStrings">
+                <Value>Resources/MyControl/Element.Field</Value>
+                <Value>Resources/MyControl/Element/Field</Value>
+                <Value>Resource/With/Semicolon;legal</Value>
+                <Value>Resource/With/Spaces is legal</Value>
+                <Value>Resource/With/Equals=legal</Value>
+                <Value>Resource/With/Dash-legal</Value>
+                <Value>Resource/With/[Brackets]</Value>
+                <Value>Resource/With/Colon:legal</Value>
+            </Parameter>
+            <Parameter Name="BogusStrings">
+                <Value>//Resources/String1</Value>
+                <Value>Resources/\String1</Value>
+                <Value>Resources/Bogus1/</Value>
+                <Value>Resources/../Resources/String1</Value>
+            </Parameter>
+            <!-- "", Resources, Resources/MyControl, Resources/MyControl/Element, Resource, Resource/With, Resources/Bogus1 -->
+            <Parameter Name="ExpectedContents">
+                <Value>Resources; 1; -1</Value>
+                <Value>Resources/MyControl; 2; -1</Value>
+                <Value>Resources/MyControl/Element; 3; -1</Value>
+                <Value>Resource; 4; -1</Value>
+                <Value>Resource/With; 5; -1</Value>
+                <Value>Resources/Bogus1; 6; -1</Value>
+                <Value>Resources/MyControl/Element.Field; -1; 0</Value>
+                <Value>Resources/MyControl/Element/Field; -1; 1</Value>
+                <!-- have to skip the semicolon because it's used as a list-separator by the test code -->
+                <Value>Resource/With/Spaces is legal; -1; 3</Value>
+                <Value>Resource/With/Equals=legal; -1; 4</Value>
+                <Value>Resource/With/Dash-legal; -1; 5</Value>
+                <Value>Resource/With/[Brackets]; -1; 6</Value>
+                <Value>Resource/With/Colon:legal; -1; 7</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumScopes">7</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Resources; 2</Value>
+                <Value>2; Resources/MyControl; 2</Value>
+                <Value>3; Resources/MyControl/Element; 1</Value>
+                <Value>4; Resource; 1</Value>
+                <Value>5; Resource/With; 6</Value>
+                <Value>6; Resources/Bogus1; 0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">8</Parameter>
+            <Parameter Name="ExpectedItems">
+                <Value>0; Resources/MyControl/Element.Field</Value>
+                <Value>1; Resources/MyControl/Element/Field</Value>
+                <!-- Have to skip the semi because it's used as a list separator by the test code -->
+                <Value>3; Resource/With/Spaces is legal</Value>
+                <Value>4; Resource/With/Equals=legal</Value>
+                <Value>5; Resource/With/Dash-legal</Value>
+                <Value>6; Resource/With/[Brackets]</Value>
+                <Value>7; Resource/With/Colon:legal</Value>
+            </Parameter>
+
+        </Row>
+        <Row Name="SimpleInOrder" Description="Simple Test with names added in order">
+            <Parameter Name="InitStrings">
+                <Value>Resources/String1</Value>
+                <Value>Resources/String2</Value>
+                <Value>Resources/String3</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNames">
+                <Value>1 ; Resources ; 1; -1 </Value>
+                <Value>2 ; Resources/String1 ; -1; 0 </Value>
+                <Value>3 ; Resources/String2 ; -1; 1 </Value>
+                <Value>4 ; Resources/String3 ; -1; 2 </Value>
+            </Parameter>
+            <Parameter Name="ExpectedContents">
+                <Value>Resources; 1; -1</Value>
+                <Value>Resources/String1; -1; 0</Value>
+                <Value>Resources/String2; -1; 1</Value>
+                <Value>Resources/String3; -1; 2</Value>
+            </Parameter>
+            <Parameter Name="UnexpectedContents">
+                <Value>Resources/String</Value>
+                <Value>String1</Value>
+                <Value>Resources/String11</Value>
+                <Value>Resource/String1</Value>
+                <Value>0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+               <Value>1; Resources; 3</Value>
+            </Parameter>
+            <Parameter Name="ExpectedScopeChildren">
+                <Value>1; String1; String2; String3</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">3</Parameter>
+            <Parameter Name="ExpectedItems">
+                <Value>0; Resources/String1</Value>
+                <Value>1; Resources/String2</Value>
+                <Value>2; Resources/String3</Value>
+            </Parameter>
+        </Row> 
+        <Row Name="SimpleOutOfOrder" Description="Simple Test with names added out of order">
+            <Parameter Name="InitStrings">
+                <Value>Resources/String3</Value>
+                <Value>Resources/String2</Value>
+                <Value>Resources/String1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNames">
+                <Value>1 ; Resources ; 1; -1 </Value>
+                <Value>2 ; Resources/String1 ; -1; 2 </Value>
+                <Value>3 ; Resources/String2 ; -1; 1 </Value>
+                <Value>4 ; Resources/String3 ; -1; 0 </Value>
+            </Parameter>
+            <Parameter Name="ExpectedContents">
+                <Value>Resources; 1; -1</Value>
+                <Value>Resources/String1; -1; 2</Value>
+                <Value>Resources/String2; -1; 1</Value>
+                <Value>Resources/String3; -1; 0</Value>
+            </Parameter>
+            <Parameter Name="UnexpectedContents">
+                <Value>Resources/String</Value>
+                <Value>String1</Value>
+                <Value>Resources/String11</Value>
+                <Value>Resource/String1</Value>
+                <Value>0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+               <Value>1; Resources; 3</Value>
+            </Parameter>
+            <Parameter Name="ExpectedScopeChildren">
+                <Value>1; String1; String2; String3</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">3</Parameter>
+            <Parameter Name="ExpectedItems">
+                <Value>0; Resources/String3</Value>
+                <Value>1; Resources/String2</Value>
+                <Value>2; Resources/String1</Value>
+            </Parameter>
+        </Row> 
+        <Row Name="SimpleLexicalVariants" Description="Simple Test with lexical variants that should be identical">
+            <Parameter Name="InitStrings">
+                <Value>Resources/String1</Value>
+                <Value>Resources/String2</Value>
+                <Value>Resources/String3</Value>
+                <Value>resources/string1</Value>
+                <Value>/resources/string1</Value>
+                <Value>/resources\string2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNames">
+                <Value>1 ; Resources ; 1; -1 </Value>
+                <Value>2 ; Resources/String1 ; -1; 0 </Value>
+                <Value>3 ; Resources/String2 ; -1; 1 </Value>
+                <Value>4 ; Resources/String3 ; -1; 2 </Value>
+            </Parameter>
+            <Parameter Name="ExpectedContents">
+                <Value>Resources; 1; -1</Value>
+                <Value>Resources/String1; -1; 0</Value>
+                <Value>Resources/String2; -1; 1</Value>
+                <Value>Resources/String3; -1; 2</Value>
+            </Parameter>
+            <Parameter Name="UnexpectedContents">
+                <Value>Resources/String</Value>
+                <Value>String1</Value>
+                <Value>Resources/String11</Value>
+                <Value>Resource/String1</Value>
+                <Value>0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+               <Value>1; Resources; 3</Value>
+            </Parameter>
+            <Parameter Name="ExpectedScopeChildren">
+                <Value>1; String1; String2; String3</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">3</Parameter>
+            <Parameter Name="ExpectedItems">
+                <Value>0; Resources/String1</Value>
+                <Value>1; Resources/String2</Value>
+                <Value>2; Resources/String3</Value>
+            </Parameter>
+        </Row> 
+    </Table>
+    <Table Id="LargeBuilderReaderTests">
+        <ParameterTypes>
+            <ParameterType Name="NumItems">int</ParameterType>
+            <ParameterType Name="NameFormat">String</ParameterType>
+            <ParameterType Name="ShouldSucceed">Boolean</ParameterType>
+        </ParameterTypes>
+        <Row Name="MediumData" Description="Medium sized data set to ensure everything works without pushing limits">
+            <Parameter Name="NumItems">30</Parameter>
+            <Parameter Name="ShouldSucceed">true</Parameter>
+        </Row>
+        <Row Name="65534Items" Description="65534 distinct names">
+            <Parameter Name="NumItems">65534</Parameter>
+            <Parameter Name="NameFormat">file1.dat%d</Parameter>
+            <Parameter Name="ShouldSucceed">true</Parameter>
+        </Row>
+        <Row Name="65535Items" Description="65535 distinct items">
+            <Parameter Name="NumItems">65535</Parameter>
+            <Parameter Name="NameFormat">file1.dat%d</Parameter>
+            <Parameter Name="ShouldSucceed">true</Parameter>
+        </Row>
+        <Row Name="80000Items" Description="80000 distinct items">
+            <Parameter Name="NumItems">80000</Parameter>
+            <Parameter Name="NameFormat">file1.dat%d</Parameter>
+            <Parameter Name="ShouldSucceed">true</Parameter>
+        </Row>
+    </Table>
+</Data>
+

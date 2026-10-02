@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleReferenceTests">
+        <ParameterTypes>
+            <ParameterType Name="MapSimpleId">String</ParameterType>
+            <ParameterType Name="MapMajorVersion">int</ParameterType>
+            <ParameterType Name="MapQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="MapQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="MapDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="MapNamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="MapCandidates" Array="true">String</ParameterType>
+            <ParameterType Name="BuildReferences" Array="true">String</ParameterType>
+            <ParameterType Name="LookupReferences" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="InternalStringReferences" Description="Builds internal references to a variety of string resources">
+            <Parameter Name="MapSimpleId">SimpleMap</Parameter>
+            <Parameter Name="MapMajorVersion">1</Parameter>
+            <Parameter Name="MapQualifiers">
+                <Value>#en; Language; en; *; 1.0</Value>
+                <Value>#de; Language; de</Value>
+            </Parameter>
+            <Parameter Name="MapQualifierSets">
+                <Value>$neutral</Value>
+                <Value>$en; #en</Value>
+                <Value>$de; #de</Value>
+            </Parameter>
+            <Parameter Name="MapDecisions">
+            </Parameter>
+            <Parameter Name="MapCandidates">
+                <Value>Resources/NeutralOnlyString; string; $neutral; NeutralOnlyString Neutral text</Value>
+                <Value>Resources/EnglishOnlyString; string; $en; EnglishOnlyString English text</Value>
+                <Value>Resources/GermanOnlyString; string; $de; GermanOnlyString German text</Value>
+                <Value>Resources/MultilingualString; string; $en; MultilingualString English text</Value>
+                <Value>Resources/MultilingualString; string; $de; MultilingualString German text</Value>
+            </Parameter>
+            <Parameter Name="Origin">internal</Parameter>
+            <Parameter Name="BuildReferences">
+                <!-- resource; expectedResult (0=success); flags; cbTotal; cchOriginName; cbPayload; origin; payload -->
+                <Value>Resources/NeutralOnlyString; 0; 0x100</Value>
+                <Value>Resources/EnglishOnlyString; 0; 0x100</Value>
+                <Value>Resources/GermanOnlyString; 0; 0x400</Value>
+                <Value>Resources/MultilingualString; 0; 0x400</Value>
+            </Parameter>
+            <Parameter Name="Context">Language; en-US</Parameter>
+            <Parameter Name="LookupReferences">
+                <!-- resource; supplyMapOnLookup; expectedResult (0=success); expectedValue -->
+                <Value>Resources/NeutralOnlyString; true; 0; NeutralOnlyString Neutral text</Value>
+                <Value>Resources/NeutralOnlyString; false; 0; NeutralOnlyString Neutral text</Value>
+                <Value>Resources/EnglishOnlyString; true; 0; EnglishOnlyString English text</Value>
+                <Value>Resources/EnglishOnlyString; false; 0; EnglishOnlyString English text</Value>
+                <Value>Resources/GermanOnlyString; true; 0x80073b0c</Value>
+                <Value>Resources/GermanOnlyString; false; 0xdef01060</Value>
+                <Value>Resources/MultilingualString; true; 0; MultilingualString English text</Value>
+                <Value>Resources/MultilingualString; false; 0xdef01060</Value>
+            </Parameter>
+        </Row>
+        <Row Name="PackageStringReferences" Description="Builds package references to a variety of string resources">
+            <Parameter Name="MapSimpleId">Map</Parameter>
+            <Parameter Name="MapMajorVersion">1</Parameter>
+            <Parameter Name="MapQualifiers">
+                <Value>#en; Language; en; *; 1.0</Value>
+                <Value>#de; Language; de</Value>
+            </Parameter>
+            <Parameter Name="MapQualifierSets">
+                <Value>$neutral</Value>
+                <Value>$en; #en</Value>
+                <Value>$de; #de</Value>
+            </Parameter>
+            <Parameter Name="MapDecisions"></Parameter>
+            <Parameter Name="MapCandidates">
+                <Value>Resources/NeutralOnlyString; string; $neutral; NeutralOnlyString Neutral text</Value>
+                <Value>Resources/EnglishOnlyString; string; $en; EnglishOnlyString English text</Value>
+                <Value>Resources/GermanOnlyString; string; $de; GermanOnlyString German text</Value>
+                <Value>Resources/MultilingualString; string; $en; MultilingualString English text</Value>
+                <Value>Resources/MultilingualString; string; $de; MultilingualString German text</Value>
+            </Parameter>
+            <Parameter Name="Origin">package; Map</Parameter>
+            <Parameter Name="BuildReferences">
+                <!-- resource; expectedResult (0=success); flags; cbTotal; cchOriginName; cbPayload; origin; payload -->
+                <Value>Resources/NeutralOnlyString; 0; 0x202</Value>
+                <Value>Resources/EnglishOnlyString; 0; 0x202</Value>
+                <Value>Resources/GermanOnlyString; 0; 0x202</Value>
+                <Value>Resources/MultilingualString; 0; 0x202</Value>
+            </Parameter>
+            <Parameter Name="Context">Language; en-US</Parameter>
+            <Parameter Name="LookupReferences">
+                <!-- resource; supplyMapOnLookup; expectedResult (0=success); expectedValue -->
+                <Value>Resources/NeutralOnlyString; true; 0; NeutralOnlyString Neutral text</Value>
+                <Value>Resources/NeutralOnlyString; false; 0xdef01060</Value>
+                <Value>Resources/EnglishOnlyString; true; 0; EnglishOnlyString English text</Value>
+                <Value>Resources/EnglishOnlyString; false; 0xdef01060</Value>
+                <Value>Resources/GermanOnlyString; true; 0x80073b0c</Value>
+                <Value>Resources/GermanOnlyString; false; 0xdef01060</Value>
+                <Value>Resources/MultilingualString; true; 0; MultilingualString English text</Value>
+                <Value>Resources/MultilingualString; false; 0xdef01060</Value>
+            </Parameter>
+        </Row>
+        <Row Name="InternalPathReferences" Description="Builds internal references to a variety of path resources">
+            <Parameter Name="MapSimpleId">SimpleMap</Parameter>
+            <Parameter Name="MapMajorVersion">1</Parameter>
+            <Parameter Name="MapQualifiers">
+                <Value>#en; Language; en; *; 1.0</Value>
+                <Value>#de; Language; de</Value>
+            </Parameter>
+            <Parameter Name="MapQualifierSets">
+                <Value>$neutral</Value>
+                <Value>$en; #en</Value>
+                <Value>$de; #de</Value>
+            </Parameter>
+            <Parameter Name="MapDecisions">
+            </Parameter>
+            <Parameter Name="MapCandidates">
+                <Value>Files/NeutralOnly.jpg; path; $neutral; NeutralOnly.jpg</Value>
+                <Value>Files/EnglishOnly.jpg; path; $en; en\EnglishOnly.jpg</Value>
+                <Value>Files/GermanOnly.jpg; path; $de; de\GermanOnly.jpg</Value>
+                <Value>Files/Multilingual.jpg; path; $en; en\Multilingual.jpg</Value>
+                <Value>Files/Multilingual.jpg; path; $de; de\Multilingual.jpg</Value>
+            </Parameter>
+            <Parameter Name="Origin">internal</Parameter>
+            <Parameter Name="BuildReferences">
+                <!-- resource; expectedResult (0=success); flags; cbTotal; cchOriginName; cbPayload; origin; payload -->
+                <Value>Files/NeutralOnly.jpg; 0; 0x100</Value>
+                <Value>Files/EnglishOnly.jpg; 0; 0x100</Value>
+                <Value>Files/GermanOnly.jpg; 0; 0x400</Value>
+                <Value>Files/Multilingual.jpg; 0; 0x400</Value>
+            </Parameter>
+            <Parameter Name="Context">Language; en-US</Parameter>
+            <Parameter Name="LookupReferences">
+                <!-- resource; supplyMapOnLookup; expectedResult (0=success); expectedValue -->
+                <Value>Files/NeutralOnly.jpg; true; 0; *\NeutralOnly.jpg</Value>
+                <Value>Files/NeutralOnly.jpg; false; 0; *\NeutralOnly.jpg</Value>
+                <Value>Files/EnglishOnly.jpg; true; 0; *\en\EnglishOnly.jpg</Value>
+                <Value>Files/EnglishOnly.jpg; false; 0; *\en\EnglishOnly.jpg</Value>
+                <Value>Files/GermanOnly.jpg; true; 0x80073b0c</Value>
+                <Value>Files/GermanOnly.jpg; false; 0xdef01060</Value>
+                <Value>Files/Multilingual.jpg; true; 0; *\en\Multilingual.jpg</Value>
+                <Value>Files/Multilingual.jpg; false; 0xdef01060</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="BlobFormatTests">
+        <ParameterTypes>
+            <ParameterType Name="MapSimpleId">String</ParameterType>
+            <ParameterType Name="MapMajorVersion">int</ParameterType>
+            <ParameterType Name="MapQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="MapQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="MapDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="MapNamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="MapCandidates" Array="true">String</ParameterType>
+            <ParameterType Name="ReferenceBlobs" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimpleMap" Description="Simple Map used to test blob format">
+            <Parameter Name="MapSimpleId">SimpleMap</Parameter>
+            <Parameter Name="MapMajorVersion">1</Parameter>
+            <Parameter Name="MapQualifiers">
+                <Value>#en; Language; en; *; 1.0</Value>
+                <Value>#de; Language; de</Value>
+            </Parameter>
+            <Parameter Name="MapQualifierSets">
+                <Value>$neutral</Value>
+                <Value>$en; #en</Value>
+                <Value>$de; #de</Value>
+            </Parameter>
+            <Parameter Name="MapDecisions">
+            </Parameter>
+            <Parameter Name="MapCandidates">
+                <Value>Resources/NeutralOnlyString; string; $neutral; NeutralOnlyString Neutral text</Value>
+                <Value>Resources/EnglishOnlyString; string; $en; EnglishOnlyString English text</Value>
+                <Value>Resources/GermanOnlyString; string; $de; GermanOnlyString German text</Value>
+                <Value>Resources/MultilingualString; string; $en; MultilingualString English text</Value>
+                <Value>Resources/MultilingualString; string; $de; MultilingualString German text</Value>
+            </Parameter>
+            <Parameter Name="ReferenceBlobs">
+                <!-- flags;cbTotal;cchOriginName;cbPayload;origin;payload;create status/resolve status -->
+                <!-- use '[]' to indicate no payload/origin -->
+                <!-- garbage values -->
+                <Value>0;0;0;0;[];[];0x80070057;0</Value>
+                <Value>0x0c;0xc;0xc;0xc;[];[];0x80070057;0</Value>
+                <!-- mismatched sizes -->
+                <Value>0x0200;0x08;0x0;0x0;[];[];0x80070057;0</Value>
+                <Value>0x0200;0x12;0x0;0x10;[];test;0x80070057;0</Value>
+                <Value>0x0400;0x0f;0x0;0x5;[];test;0x80070057;0</Value>
+                <!-- names and indexes that don't exist -->
+                <Value>0x0200;0x14;0x0;0x0A;[];blah;0;0x80073b17</Value>
+                <Value>0x0400;0x0C;0x0;0x04;[];#1234;0;0x80070284</Value>
+            </Parameter>
+        </Row>
+    </Table>
+
+</Data>

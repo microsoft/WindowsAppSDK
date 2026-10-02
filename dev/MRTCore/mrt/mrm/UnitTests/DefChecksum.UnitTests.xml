@@ -1,0 +1,305 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="AtomPoolChecksumTests">
+        <ParameterTypes>
+            <ParameterType Name="ShouldMatch">Boolean</ParameterType>
+            <ParameterType Name="Pool1Description">String</ParameterType>
+            <ParameterType Name="Pool2Description">String</ParameterType>
+            <ParameterType Name="Pool1IsCaseInsensitive">Boolean</ParameterType>
+            <ParameterType Name="Pool2IsCaseInsensitive">Boolean</ParameterType>
+            <ParameterType Name="Pool1Strings" Array="true">String</ParameterType>
+            <ParameterType Name="Pool2Strings" Array="true">String</ParameterType>
+            <ParameterType Name="Pool1CompareSize">Integer</ParameterType>
+            <ParameterType Name="Pool2CompareSize">Integer</ParameterType>
+        </ParameterTypes>
+        <Row Name="IdenticalMatch" Description="Verify identical atom pools get matching checksum">
+            <Parameter Name="ShouldMatch">true</Parameter>
+            <Parameter Name="Pool1Description">TestPool</Parameter>
+            <Parameter Name="Pool2Description">TestPool</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>Str1</Value>
+               <Value>Str2</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>Str1</Value>
+                <Value>Str2</Value>
+            </Parameter>
+        </Row>
+        <Row Name="Description" Description="Verify changing description affects checksum">
+            <Parameter Name="ShouldMatch">false</Parameter>
+            <Parameter Name="Pool1Description">TestPool1</Parameter>
+            <Parameter Name="Pool2Description">TestPool2</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>Str1</Value>
+               <Value>Str2</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>Str1</Value>
+                <Value>Str2</Value>
+            </Parameter>
+        </Row>
+        <Row Name="DescriptionCaseSensitivity" Description="Verify description effect on checksum is case-insensitive">
+            <Parameter Name="ShouldMatch">true</Parameter>
+            <Parameter Name="Pool1Description">TestPool1</Parameter>
+            <Parameter Name="Pool2Description">testpool1</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>Str1</Value>
+               <Value>Str2</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>Str1</Value>
+                <Value>Str2</Value>
+            </Parameter>
+        </Row>
+        <Row Name="CaseSensitive" Description="Verify checksum mismatch for case-sensitive pools that differ only by case">
+            <Parameter Name="ShouldMatch">false</Parameter>
+            <Parameter Name="Pool1Description">TestPool</Parameter>
+            <Parameter Name="Pool2Description">TestPool</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">false</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">false</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>str1</Value>
+               <Value>Str2</Value>
+               <Value>Str3</Value>
+               <Value>Str4</Value>
+               <Value>Str5</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>Str1</Value>
+                <Value>Str2</Value>
+                <Value>Str3</Value>
+                <Value>Str4</Value>
+                <Value>Str5</Value>
+            </Parameter>
+        </Row>
+        <Row Name="CaseSensitivityMismatch1" Description="Verify checksum mismatch for pools with identical lowercase contents but different case-sensitivity">
+            <Parameter Name="ShouldMatch">false</Parameter>
+            <Parameter Name="Pool1Description">TestPool</Parameter>
+            <Parameter Name="Pool2Description">TestPool</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">false</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>str1</Value>
+               <Value>str2</Value>
+               <Value>str3</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>str1</Value>
+                <Value>str2</Value>
+                <Value>str3</Value>
+            </Parameter>
+        </Row>
+        <Row Name="CaseSensitivityMismatch2" Description="Verify checksum mismatch for pools with identical uppercase contents but different case-sensitivity">
+            <Parameter Name="ShouldMatch">false</Parameter>
+            <Parameter Name="Pool1Description">TestPool</Parameter>
+            <Parameter Name="Pool2Description">TestPool</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">false</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>STR1</Value>
+               <Value>STR2</Value>
+               <Value>STR3</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+               <Value>STR1</Value>
+               <Value>STR2</Value>
+               <Value>STR3</Value>
+            </Parameter>
+        </Row>
+        <Row Name="CaseInsensitive" Description="Verify checksum match for case-insensitive pools that differ only by case">
+            <Parameter Name="ShouldMatch">true</Parameter>
+            <Parameter Name="Pool1Description">TestPool</Parameter>
+            <Parameter Name="Pool2Description">TestPool</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>str1</Value>
+               <Value>Str2</Value>
+               <Value>Str3</Value>
+               <Value>Str4</Value>
+               <Value>Str5</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>Str1</Value>
+                <Value>Str2</Value>
+                <Value>Str3</Value>
+                <Value>Str4</Value>
+                <Value>Str5</Value>
+            </Parameter>
+        </Row>
+        <Row Name="AddedStrings" Description="Verify checksum mismatch when strings added">
+            <Parameter Name="ShouldMatch">false</Parameter>
+            <Parameter Name="Pool1Description">TestPool</Parameter>
+            <Parameter Name="Pool2Description">TestPool</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>Str1</Value>
+               <Value>Str2</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>str1</Value>
+                <Value>Str2</Value>
+                <Value>Str3</Value>
+            </Parameter>
+        </Row>
+        <Row Name="AddedStringsCount" Description="Verify checksum match when strings added to pool but not to checksum">
+            <Parameter Name="ShouldMatch">true</Parameter>
+            <Parameter Name="Pool1Description">TestPool</Parameter>
+            <Parameter Name="Pool2Description">TestPool</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2CompareSize">2</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>Str1</Value>
+               <Value>Str2</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>str1</Value>
+                <Value>Str2</Value>
+                <Value>Str3</Value>
+            </Parameter>
+        </Row>
+        <Row Name="RemovedStrings" Description="Verify checksum mismatch when strings removed">
+            <Parameter Name="ShouldMatch">false</Parameter>
+            <Parameter Name="Pool1Description">TestPool</Parameter>
+            <Parameter Name="Pool2Description">TestPool</Parameter>
+            <Parameter Name="Pool1IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool2IsCaseInsensitive">true</Parameter>
+            <Parameter Name="Pool1Strings">
+               <Value>Str1</Value>
+               <Value>Str2</Value>
+               <Value>Str3</Value>
+            </Parameter>
+            <Parameter Name="Pool2Strings">
+                <Value>str1</Value>
+                <Value>Str2</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="StringListChecksumTests">
+        <ParameterTypes>
+            <ParameterType Name="VerifyMatch">Boolean</ParameterType>
+            <ParameterType Name="VerifyMismatch">Boolean</ParameterType>
+            <ParameterType Name="VerifyCaseInsensitiveMatch">Boolean</ParameterType>
+            <ParameterType Name="VerifyCaseInsensitiveMismatch">Boolean</ParameterType>
+            <ParameterType Name="VerifySortedMatch">Boolean</ParameterType>
+            <ParameterType Name="VerifySortedMismatch">Boolean</ParameterType>
+            <ParameterType Name="VerifySortedCaseInsensitiveMatch">Boolean</ParameterType>
+            <ParameterType Name="VerifySortedCaseInsensitiveMismatch">Boolean</ParameterType>
+            <ParameterType Name="Strings1" Array="true">String</ParameterType>
+            <ParameterType Name="Strings2" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="IdenticalMatch" Description="Verify identical string lists get matching checksum">
+            <Parameter Name="VerifyMatch">true</Parameter>
+            <Parameter Name="VerifyCaseInsensitiveMatch">true</Parameter>
+            <Parameter Name="VerifySortedMatch">true</Parameter>
+            <Parameter Name="VerifySortedCaseInsensitiveMatch">true</Parameter>
+            <Parameter Name="Strings1">
+               <Value>Str1</Value>
+               <Value>Str2</Value>
+            </Parameter>
+            <Parameter Name="Strings2">
+                <Value>Str1</Value>
+                <Value>Str2</Value>
+            </Parameter>
+        </Row>
+        <Row Name="CaseInsensitive" Description="Verify case sensitivity without changing order.">
+            <Parameter Name="VerifyMismatch">true</Parameter>
+            <Parameter Name="VerifyCaseInsensitiveMatch">true</Parameter>
+            <Parameter Name="VerifySortedMismatch">true</Parameter>
+            <Parameter Name="VerifySortedCaseInsensitiveMatch">true</Parameter>
+            <Parameter Name="Strings1">
+               <Value>str1</Value>
+               <Value>Str2</Value>
+               <Value>Str3</Value>
+               <Value>Str4</Value>
+               <Value>Str5</Value>
+            </Parameter>
+            <Parameter Name="Strings2">
+                <Value>Str1</Value>
+                <Value>Str2</Value>
+                <Value>Str3</Value>
+                <Value>Str4</Value>
+                <Value>Str5</Value>
+            </Parameter>
+        </Row>
+        <Row Name="Sorted" Description="Verify that sorted checksum matches for same contents but different order.">
+            <Parameter Name="VerifyMismatch">true</Parameter>
+            <Parameter Name="VerifyCaseInsensitiveMismatch">true</Parameter>
+            <Parameter Name="VerifySortedMatch">true</Parameter>
+            <Parameter Name="VerifySortedCaseInsensitiveMatch">true</Parameter>
+            <Parameter Name="Strings1">
+               <Value>Str1</Value>
+               <Value>Str2</Value>
+               <Value>Str3</Value>
+               <Value>Str4</Value>
+               <Value>Str5</Value>
+            </Parameter>
+            <Parameter Name="Strings2">
+                <Value>Str2</Value>
+                <Value>Str3</Value>
+                <Value>Str1</Value>
+                <Value>Str4</Value>
+                <Value>Str5</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SortedInsensitive" Description="Verify that sorted checksum matches for contents that vary on both case and order.">
+            <Parameter Name="VerifyMismatch">true</Parameter>
+            <Parameter Name="VerifyCaseInsensitiveMismatch">true</Parameter>
+            <Parameter Name="VerifySortedMismatch">true</Parameter>
+            <Parameter Name="VerifySortedCaseInsensitiveMatch">true</Parameter>
+            <Parameter Name="Strings1">
+               <Value>Str1</Value>
+               <Value>str2</Value>
+               <Value>Str3</Value>
+               <Value>Str4</Value>
+               <Value>str5</Value>
+            </Parameter>
+            <Parameter Name="Strings2">
+                <Value>Str2</Value>
+                <Value>Str3</Value>
+                <Value>Str1</Value>
+                <Value>Str4</Value>
+                <Value>Str5</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="FileChecksumTests">
+        <ParameterTypes>
+            <ParameterType Name="File">String</ParameterType>
+            <ParameterType Name="ExpectedChecksum">Integer</ParameterType>
+        </ParameterTypes>
+        <Row Name="Empty" Description="Hash empty file">
+            <Parameter Name="File">Files\Empty.htm</Parameter>
+            <Parameter Name="ExpectedChecksum">3781742995</Parameter>
+        </Row>
+        <Row Name="BufferSize" Description="Hash file whose size matches the buffer we use for reading">
+            <Parameter Name="File">Files\BufferSize.htm</Parameter>
+            <Parameter Name="ExpectedChecksum">386275307</Parameter>
+        </Row>
+        <Row Name="BufferSizeMinusOne" Description="Hash file whose size is one less than the size of the buffer we use for reading">
+            <Parameter Name="File">Files\BufferSizeMinusOne.htm</Parameter>
+            <Parameter Name="ExpectedChecksum">1222704166</Parameter>
+        </Row>
+        <Row Name="BufferSizePlusOne" Description="Hash file whose size is one more than the size of the buffer we use for reading">
+            <Parameter Name="File">Files\BufferSizePlusOne.htm</Parameter>
+            <Parameter Name="ExpectedChecksum">4077949684</Parameter>
+        </Row>
+        <Row Name="TwiceBufferSize" Description="Hash file whose size is twice the size of the buffer we use for reading">
+            <Parameter Name="File">Files\TwiceBufferSize.htm</Parameter>
+            <Parameter Name="ExpectedChecksum">4136945957</Parameter>
+        </Row>
+        <Row Name="TwiceBufferSizePlusSome" Description="Hash file whose size is more than twice the size of the buffer we use for reading">
+            <Parameter Name="File">Files\TwiceBufferSizePlusSome.htm</Parameter>
+            <Parameter Name="ExpectedChecksum">885578291</Parameter>
+        </Row>
+    </Table>
+</Data>
+

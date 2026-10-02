@@ -1,0 +1,836 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SingleMapViewTests">
+        <ParameterTypes>
+            <ParameterType Name="SimpleId">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SingleResource" Description="Build a map with one resource">
+            <Parameter Name="SimpleId">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems"></Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="MultiMapPriTests">
+        <ParameterTypes>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Primary_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Primary_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Primary_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Primary_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Primary_ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Secondary_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Secondary_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Secondary_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Secondary_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Secondary_ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimpleMultiPri" Description="Build a simple PRI with multiple indices and access it via an ApplicationResourceManager">
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Primary_SimpleId">Primary</Parameter>
+            <Parameter Name="Primary_MajorVersion">1</Parameter>
+            <Parameter Name="Primary_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="Primary_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Primary_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Primary_ExpectedNumScopes">2</Parameter>
+            <Parameter Name="Primary_ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="Primary_ExpectedNumItems"></Parameter>
+            <Parameter Name="Primary_ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="Primary_ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="Primary_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="Primary_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="Secondary_SimpleId">SimpleMap</Parameter>
+            <Parameter Name="Secondary_MajorVersion">1</Parameter>
+            <Parameter Name="Secondary_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+            </Parameter>
+            <Parameter Name="Secondary_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Secondary_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Secondary_ExpectedNumScopes">2</Parameter>
+            <Parameter Name="Secondary_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="Secondary_ExpectedNumItems">5</Parameter>
+            <Parameter Name="Secondary_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="Secondary_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Secondary_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Secondary_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="MultipleFileTests">
+        <ParameterTypes>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="File1Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="File1QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="File1Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="File2Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="File2QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="File2Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="File2ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="File2ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="File2ExpectedDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="File1FirstCandidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1FirstExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1FirstExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1FirstExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File2SecondCandidates" Array="true">String</ParameterType>
+            <ParameterType Name="File2SecondExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File2SecondExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File2SecondExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema2Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema2ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema2ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema2ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File2Schema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File2Schema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File2Schema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File2Schema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File2Schema2Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File2Schema2ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File2Schema2ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File2Schema2ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="TwoSingleIndexPriFiles" Description="Access Two Files with different schemas through a single AppResourceManager">
+            <Parameter Name="FileNames">File1; File2</Parameter>
+            <Parameter Name="File1MapNames">First</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions"></Parameter>
+            <Parameter Name="File1FirstSimpleId">First</Parameter>
+            <Parameter Name="File1FirstMajorVersion">1</Parameter>
+            <Parameter Name="File1FirstCandidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1FirstExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1FirstExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1FirstExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1FirstExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="File1FirstExpectedNumItems"></Parameter>
+            <Parameter Name="File1FirstExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="File1FirstExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1FirstExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="File1FirstExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File2MapNames">Second</Parameter>
+            <Parameter Name="File2SecondSimpleId">Second</Parameter>
+            <Parameter Name="File2SecondMajorVersion">1</Parameter>
+            <Parameter Name="File2SecondCandidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+            </Parameter>
+            <Parameter Name="File2SecondExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File2SecondExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File2SecondExpectedNumScopes">2</Parameter>
+            <Parameter Name="File2SecondExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="File2SecondExpectedNumItems">5</Parameter>
+            <Parameter Name="File2SecondExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="File2SecondExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="File2SecondExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="File2SecondExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+            </Parameter>
+        </Row>
+        <Row Name="TwoMultiIndexPriFiles" Description="Access Two Files with different multiple disjoint schemas through a single AppResourceManager">
+            <Parameter Name="FileNames">File1; File2</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#de=2; Language; de-DE</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$de=2; #de=0</Value>
+            </Parameter>
+            <Parameter Name="File1MapNames">Schema1; Schema2</Parameter>
+            <Parameter Name="Decisions"></Parameter>
+            <Parameter Name="File1Schema1SimpleId">Schema1</Parameter>
+            <Parameter Name="File1Schema1MajorVersion">1</Parameter>
+            <Parameter Name="File1Schema1Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1Schema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1Schema1ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1Schema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1Schema1ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="File1Schema1ExpectedNumItems"></Parameter>
+            <Parameter Name="File1Schema1ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="File1Schema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1Schema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="File1Schema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1Schema2SimpleId">Schema2</Parameter>
+            <Parameter Name="File1Schema2MajorVersion">2</Parameter>
+            <Parameter Name="File1Schema2Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item1; string; $de; Item 1 Deutscher Text</Value>
+            </Parameter>
+            <Parameter Name="File1Schema2ExpectedMajorVersion">2</Parameter>
+            <Parameter Name="File1Schema2ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1Schema2ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1Schema2ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="File1Schema2ExpectedNumItems">1</Parameter>
+            <Parameter Name="File1Schema2ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="File1Schema2ExpectedNumTotalValues">2</Parameter>
+            <Parameter Name="File1Schema2ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+            </Parameter>
+            <Parameter Name="File1Schema2ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item1; 1; string; $de; Item 1 Deutscher Text</Value>
+            </Parameter>
+            <Parameter Name="File2MapNames">Second</Parameter>
+            <Parameter Name="File2SecondSimpleId">Second</Parameter>
+            <Parameter Name="File2SecondMajorVersion">1</Parameter>
+            <Parameter Name="File2SecondCandidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+            </Parameter>
+            <Parameter Name="File2SecondExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File2SecondExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File2SecondExpectedNumScopes">2</Parameter>
+            <Parameter Name="File2SecondExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="File2SecondExpectedNumItems">5</Parameter>
+            <Parameter Name="File2SecondExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="File2SecondExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="File2SecondExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="File2SecondExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+            </Parameter>
+        </Row>
+        <Row Name="InconsistentDecisionInfos" Description="Access two files with inconsistent DecisionInfo sections via a single AppResourceManager">
+            <Parameter Name="FileNames">File1; File2</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#de=2; Language; de-DE</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$de=2; #de=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions"></Parameter>
+            <Parameter Name="File1Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#de=2; Language; de-DE</Value>
+            </Parameter>
+            <Parameter Name="File1QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$de=2; #de=0</Value>
+            </Parameter>
+            <Parameter Name="File1Decisions"></Parameter>
+            <Parameter Name="File1MapNames">Schema1; Schema2</Parameter>
+            <Parameter Name="File1Schema1SimpleId">Schema1</Parameter>
+            <Parameter Name="File1Schema1MajorVersion">1</Parameter>
+            <Parameter Name="File1Schema1Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1Schema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1Schema1ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1Schema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1Schema1ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="File1Schema1ExpectedNumItems"></Parameter>
+            <Parameter Name="File1Schema1ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="File1Schema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1Schema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="File1Schema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1Schema2SimpleId">Schema2</Parameter>
+            <Parameter Name="File1Schema2MajorVersion">2</Parameter>
+            <Parameter Name="File1Schema2Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item1; string; $de; Item 1 Deutscher Text</Value>
+            </Parameter>
+            <Parameter Name="File1Schema2ExpectedMajorVersion">2</Parameter>
+            <Parameter Name="File1Schema2ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1Schema2ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1Schema2ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="File1Schema2ExpectedNumItems">1</Parameter>
+            <Parameter Name="File1Schema2ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="File1Schema2ExpectedNumTotalValues">2</Parameter>
+            <Parameter Name="File1Schema2ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+            </Parameter>
+            <Parameter Name="File1Schema2ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item1; 1; string; $de; Item 1 Deutscher Text</Value>
+            </Parameter>
+            <Parameter Name="File2Qualifiers">
+                <Value>#de=1; Language; de-DE</Value>
+                <Value>#en=2; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="File2QualifierSets">
+                <Value>$de=1; #de=0</Value>
+                <Value>$en=2; #en=0</Value>
+            </Parameter>
+            <Parameter Name="File2Decisions"></Parameter>
+            <Parameter Name="File2MapNames">Second</Parameter>
+            <Parameter Name="File2SecondSimpleId">Second</Parameter>
+            <Parameter Name="File2SecondMajorVersion">1</Parameter>
+            <Parameter Name="File2SecondCandidates">
+                <Value>Collection1/Item1; string; $de; Item1 Deutscher Text</Value>
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+            </Parameter>
+            <Parameter Name="File2SecondExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File2SecondExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File2SecondExpectedNumScopes">2</Parameter>
+            <Parameter Name="File2SecondExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="File2SecondExpectedNumItems">5</Parameter>
+            <Parameter Name="File2SecondExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="File2SecondExpectedNumTotalValues">6</Parameter>
+            <Parameter Name="File2SecondExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="File2SecondExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item1; 1; string; $de; Item1 Deutscher Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="LoadUnloadTests">
+        <ParameterTypes>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDecisions" Array="true">String</ParameterType>
+            <!-- File1En - base schema, English -->
+            <ParameterType Name="File1EnSchema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1EnSchema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1EnSchema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1EnSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <!-- Schema1Unloaded - base schema, no resources loaded -->
+            <ParameterType Name="Schema1UnloadedExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Schema1UnloadedExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <!-- File1_1En - updated schema, English -->
+            <ParameterType Name="File1_1EnSchema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1_1EnSchema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1_1EnSchema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1_1EnSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <!-- File1De - base schema, German -->
+            <ParameterType Name="File1DeSchema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeSchema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeSchema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeUpgradedSchema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeUpgradedSchema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeUpgradedSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <!-- File1Fr - unrelated schema, French -->
+            <ParameterType Name="File2FrSchema2Candidates" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SingleFile" Description="Load, unload and reload a single file">
+            <Parameter Name="Qualifiers">
+                <Value>#en; Language; en-US</Value>
+                <Value>#de; Language; de-DE</Value>
+                <Value>#fr; Language; fr-FR</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en; #en</Value>
+                <Value>$de; #de</Value>
+                <Value>$fr; #fr</Value>
+            </Parameter>
+            <Parameter Name="Decisions"></Parameter>
+            <Parameter Name="FileNames">File1En; File1_1En; File1De; File2Fr</Parameter>
+            <!-- File1En - base schema, English -->
+            <Parameter Name="File1EnMapNames">Schema1</Parameter>
+            <Parameter Name="File1EnSchema1SimpleId">Schema1</Parameter>
+            <Parameter Name="File1EnSchema1MajorVersion">1</Parameter>
+            <Parameter Name="File1EnSchema1Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1EnSchema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+            </Parameter>
+            <Parameter Name="File1EnSchema1ExpectedNumItems">1</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="File1EnSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <!-- Schema1Unloaded - base schema, no resources loaded -->
+            <Parameter Name="Schema1UnloadedExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedNumScopes">2</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+            </Parameter>
+            <Parameter Name="Schema1UnloadedExpectedNumItems">1</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedNumTotalValues">0</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 0</Value>
+            </Parameter>
+            <Parameter Name="Schema1UnloadedResourceToResolve">Collection1/Item1</Parameter>
+            <!-- File1_1En - updated schema, English -->
+            <Parameter Name="File1_1EnMapNames">Schema1</Parameter>
+            <Parameter Name="File1_1EnSchema1BaselineSchema">File1En; Schema1</Parameter>
+            <Parameter Name="File1_1EnSchema1Candidates">
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedMinorVersion">1</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedScopes">
+                <Value>1; Collection1; 2</Value> 
+            </Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedNumItems">2</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedItemsList">Collection1/Item1; Collection1/Item2</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 0</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+            </Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+            </Parameter>
+            <!-- File1De - base schema, German -->
+            <Parameter Name="File1DeMapNames">Schema1</Parameter>
+            <Parameter Name="File1DeSchema1BaselineSchema">File1En; Schema1</Parameter>
+            <Parameter Name="File1DeSchema1Candidates">
+                <Value>Collection1/Item1; string; $de; Item1 Deutscher Text</Value>
+            </Parameter>
+            <Parameter Name="File1DeSchema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+            </Parameter>
+            <Parameter Name="File1DeSchema1ExpectedNumItems">1</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="File1DeSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $de; Item1 Deutscher Text</Value>
+            </Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedMinorVersion">1</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedScopes">
+                <Value>1; Collection1; 2</Value> 
+            </Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedNumItems">2</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedItemsList">Collection1/Item1; Collection1/Item2</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 0</Value>
+            </Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $de; Item1 Deutscher Text</Value>
+            </Parameter>
+            <!-- File2Fr - unrelated schema, French -->
+            <Parameter Name="File2FrMapNames">Schema2</Parameter>
+            <Parameter Name="File2FrSchema2SimpleId">Schema2</Parameter>
+            <Parameter Name="File2FrSchema2MajorVersion">1</Parameter>
+            <Parameter Name="File2FrSchema2Candidates">
+                <Value>Collection1/Item1; string; $fr; Item1 French Text</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="PackageRootTests">
+        <ParameterTypes>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDecisions" Array="true">String</ParameterType>
+            <!-- File1En - base schema, English -->
+            <ParameterType Name="File1EnSchema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1EnSchema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1EnSchema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1EnSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1EnAltSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <!-- Schema1Unloaded - base schema, no resources loaded -->
+            <ParameterType Name="Schema1UnloadedExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Schema1UnloadedExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <!-- File1_1En - updated schema, English -->
+            <ParameterType Name="File1_1EnSchema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1_1EnSchema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1_1EnSchema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1_1EnSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <!-- File1De - base schema, German -->
+            <ParameterType Name="File1DeSchema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeSchema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeSchema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeUpgradedSchema1ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeUpgradedSchema1ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="File1DeUpgradedSchema1ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <!-- File1Fr - unrelated schema, French -->
+            <ParameterType Name="File2FrSchema2Candidates" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SingleFile" Description="Load, unload and reload a single file">
+            <Parameter Name="Qualifiers">
+                <Value>#en; Language; en-US</Value>
+                <Value>#de; Language; de-DE</Value>
+                <Value>#fr; Language; fr-FR</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en; #en</Value>
+                <Value>$de; #de</Value>
+                <Value>$fr; #fr</Value>
+            </Parameter>
+            <Parameter Name="Decisions"></Parameter>
+            <Parameter Name="ExpectedQualifiers">
+                <Value>#en= 1; Language; en-US</Value>
+                <Value>#de= 2; Language; de-DE</Value>
+                <Value>#fr= 3; Language; fr-FR</Value>
+            </Parameter>
+            <Parameter Name="ExpectedQualifierSets">
+                <Value>$en= 1; #en</Value>
+                <Value>$de= 2; #de</Value>
+                <Value>$fr= 3; #fr</Value>
+            </Parameter>
+            <Parameter Name="ExpectedDecisions"></Parameter>
+            <Parameter Name="FileNames">File1En; File1_1En; File1De; File2Fr</Parameter>
+            <Parameter Name="File1EnPackageRoot">en-US</Parameter>
+            <!-- File1En - base schema, English -->
+            <Parameter Name="File1EnMapNames">Schema1</Parameter>
+            <Parameter Name="File1EnSchema1SimpleId">Schema1</Parameter>
+            <Parameter Name="File1EnSchema1MajorVersion">1</Parameter>
+            <Parameter Name="File1EnSchema1Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Files/images/logo.jpg; path; $en; images\logo.jpg</Value>
+                <Value>Files/images/qfeLogo.jpg; path; $en; c:\qfe\images\logo.jpg</Value>
+                <Value>Files/images/qfeLogo2.jpg; path; $en; \\qfesrv\images\logo.jpg</Value>
+            </Parameter>
+            <Parameter Name="File1EnSchema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedNumScopes">4</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                <Value>2; Files; 1</Value>
+                <Value>3; Files/images; 3</Value>
+            </Parameter>
+            <Parameter Name="File1EnSchema1ExpectedNumItems">4</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedItemsList">Collection1/Item1; Files/images/logo.jpg; Files/images/qfeLogo.jpg; Files/images/qfeLogo2.jpg</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedNumTotalValues">4</Parameter>
+            <Parameter Name="File1EnSchema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Files/images/logo.jpg; 1</Value>
+                <Value>2; Files/images/qfeLogo.jpg; 1</Value>
+                <Value>3; Files/images/qfeLogo2.jpg; 1</Value>
+            </Parameter>
+            <Parameter Name="File1EnSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Files/images/logo.jpg; 0; path; $en; en-US\images\logo.jpg</Value>
+                <Value>Files/images/qfeLogo.jpg; 0; path; $en; c:\qfe\images\logo.jpg</Value>
+                <Value>Files/images/qfeLogo2.jpg; 0; path; $en; \\qfesrv\images\logo.jpg</Value>
+            </Parameter>
+            <!-- File1EnAlt - base schema, English, alternate location -->
+            <Parameter Name="File1EnAltPackageRoot">qfe\en-US</Parameter>
+            <Parameter Name="File1EnAltSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Files/images/logo.jpg; 0; path; $en; qfe\en-US\images\logo.jpg</Value>
+                <Value>Files/images/qfeLogo.jpg; 0; path; $en; c:\qfe\images\logo.jpg</Value>
+                <Value>Files/images/qfeLogo2.jpg; 0; path; $en; \\qfesrv\images\logo.jpg</Value>
+            </Parameter>
+            <!-- File1EnDflt - base schema, English, default (NULL) location -->
+            <Parameter Name="File1EnDfltResourceToCheck">Files/images/logo.jpg</Parameter>
+            <Parameter Name="File1EnDfltExpectedSuffix">images\logo.jpg</Parameter>
+            <!-- Schema1Unloaded - base schema, no resources loaded -->
+            <Parameter Name="Schema1UnloadedExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedNumScopes">2</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+            </Parameter>
+            <Parameter Name="Schema1UnloadedExpectedNumItems">1</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedNumTotalValues">0</Parameter>
+            <Parameter Name="Schema1UnloadedExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 0</Value>
+            </Parameter>
+            <!-- File1_1En - updated schema, English -->
+            <Parameter Name="File1_1EnMapNames">Schema1</Parameter>
+            <Parameter Name="File1_1EnSchema1BaselineSchema">File1En; Schema1</Parameter>
+            <Parameter Name="File1_1EnSchema1Candidates">
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedMinorVersion">1</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedScopes">
+                <Value>1; Collection1; 2</Value> 
+            </Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedNumItems">2</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedItemsList">Collection1/Item1; Collection1/Item2</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 0</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+            </Parameter>
+            <Parameter Name="File1_1EnSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+            </Parameter>
+            <!-- File1De - base schema, German -->
+            <Parameter Name="File1DeMapNames">Schema1</Parameter>
+            <Parameter Name="File1DeSchema1BaselineSchema">File1En; Schema1</Parameter>
+            <Parameter Name="File1DeSchema1Candidates">
+                <Value>Collection1/Item1; string; $de; Item1 Deutscher Text</Value>
+            </Parameter>
+            <Parameter Name="File1DeSchema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+            </Parameter>
+            <Parameter Name="File1DeSchema1ExpectedNumItems">1</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1DeSchema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="File1DeSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $de; Item1 Deutscher Text</Value>
+            </Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedMinorVersion">1</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedNumScopes">2</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedScopes">
+                <Value>1; Collection1; 2</Value> 
+            </Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedNumItems">2</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedItemsList">Collection1/Item1; Collection1/Item2</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 0</Value>
+            </Parameter>
+            <Parameter Name="File1DeUpgradedSchema1ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $de; Item1 Deutscher Text</Value>
+            </Parameter>
+            <!-- File2Fr - unrelated schema, French -->
+            <Parameter Name="File2FrMapNames">Schema2</Parameter>
+            <Parameter Name="File2FrSchema2SimpleId">Schema2</Parameter>
+            <Parameter Name="File2FrSchema2MajorVersion">1</Parameter>
+            <Parameter Name="File2FrSchema2Candidates">
+                <Value>Collection1/Item1; string; $fr; Item1 French Text</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="MapLookupTests">
+        <ParameterTypes>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema1Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema2Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="File1Schema3Candidates" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimpleLatin1" Description="Simple latin1 map names">
+            <Parameter Name="Qualifiers">
+                <Value>#en; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en; #en</Value>
+            </Parameter>
+            <Parameter Name="Decisions"></Parameter>
+            <Parameter Name="FileNames">File1</Parameter>
+            <!-- File1 - base schema, English -->
+            <Parameter Name="File1PackageRoot">en-US</Parameter>
+            <Parameter Name="File1MapNames">Schema1;Schema2;Schema3</Parameter>
+            <Parameter Name="File1Schema1SimpleId">Schema1</Parameter>
+            <Parameter Name="File1Schema1MajorVersion">1</Parameter>
+            <Parameter Name="File1Schema1Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1Schema2SimpleId">SCHEMA2</Parameter>
+            <Parameter Name="File1Schema2MajorVersion">1</Parameter>
+            <Parameter Name="File1Schema2Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="File1Schema3SimpleId">schema3</Parameter>
+            <Parameter Name="File1Schema3MajorVersion">1</Parameter>
+            <Parameter Name="File1Schema3Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="FilesToLoad">File1.pri</Parameter>
+            <Parameter Name="ExpectedMapNames">Schema1; SCHEMA2; schema3; schema1; SchEma1; schema2; Schema2; SCHEMA3; sChEma3</Parameter>
+            <Parameter Name="UnexpectedMapNames">Schema1a; Schema</Parameter>
+        </Row>
+        <Row Name="SimpleNonLatin1" Description="Simple non-latin1 map names">
+            <Parameter Name="Qualifiers">
+                <Value>#en; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en; #en</Value>
+            </Parameter>
+            <Parameter Name="Decisions"></Parameter>
+            <Parameter Name="FileNames">File1</Parameter>
+            <!-- File1 - base schema, English -->
+            <Parameter Name="File1PackageRoot">en-US</Parameter>
+            <Parameter Name="File1MapNames">Schema1</Parameter>
+            <Parameter Name="File1Schema1SimpleId">Кириллица Название</Parameter>
+            <Parameter Name="File1Schema1MajorVersion">1</Parameter>
+            <Parameter Name="File1Schema1Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="FilesToLoad">File1.pri</Parameter>
+            <Parameter Name="ExpectedMapNames">Кириллица Название; кИРИЛЛИЦА нАЗВАНИЕ; кириллица название; КИРИЛЛИЦА НАЗВАНИЕ</Parameter>
+            <Parameter Name="UnexpectedMapNames">Schema1</Parameter>
+        </Row>
+    </Table>
+</Data>
+

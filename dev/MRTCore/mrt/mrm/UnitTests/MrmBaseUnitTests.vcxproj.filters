@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{c433f310-fbaa-40be-bac8-503b1d8bca5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content Files">
+      <UniqueIdentifier>{983a8a60-eec0-484a-8137-9d920944e72e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8b2c1e50-9179-4a0d-9bab-503e71b354f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StringResult.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BlobResult.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BlobResult_C.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StringResult_C.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomPool.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataItemsSection.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DefChecksum.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HNames.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggingTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestSections.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DecisionInfo.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HSchema.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PriBuilder.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PriFileManager.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RemapInfo.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceLink.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMap.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourcePackMerge.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceReference.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReverseFileMap.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testEnvironment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFileUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testHSchema.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestLinks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testPri.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testQualifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestReverseMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnifiedView.UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestSections.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testEnvironment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestFileUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testHSchema.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testLinks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testPri.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testQualifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testReverseMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="files\buffersize.htm">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="AtomPool.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="files\buffersizeminusone.htm">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="files\buffersizeplusone.htm">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="DataItemsSection.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="DefChecksum.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="HNames.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="files\twicebuffersize.htm">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="files\twicebuffersizeplussome.htm">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="DecisionInfo.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Environment.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="HSchema.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="PriBuilder.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="PriFileManager.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="ResourceLink.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="ResourceMap.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="ResourcePackMerge.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="ResourceReference.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="ReverseFileMap.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="UnifiedView.UnitTests.xml">
+      <Filter>Content Files</Filter>
+    </CopyFileToFolders>
+  </ItemGroup>
+</Project>

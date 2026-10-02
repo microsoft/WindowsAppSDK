@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+     <metadata minClientVersion="3.3">
+         <id>Microsoft.WindowsAppSDK.Protobuf</id>
+         <version>$version$</version>
+         <title>Microsoft.WindowsAppSDK.Protobuf</title>
+         <authors>Microsoft</authors>
+         <description>Windows App SDK packaging of Google's Protobuf. See https://github.com/microsoft/WindowsAppSDK/tree/main/tools/nuget/README.md for more details.</description>
+         <license type="file">LICENSE</license>
+         <requireLicenseAcceptance>false</requireLicenseAcceptance>
+         <projectUrl>https://aka.ms/windowsappsdk</projectUrl>
+         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+         <tags>Microsoft WindowsAppSDK Google Protobuf</tags>
+         <dependencies>
+            <group targetFramework="Windows1.0-arm64"/>
+            <group targetFramework="Windows1.0-x64"/>
+            <group targetFramework="Windows1.0-x86"/>
+         </dependencies>
+     </metadata>
+</package>

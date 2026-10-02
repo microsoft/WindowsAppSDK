@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{8828053C-D6EC-4744-8624-F8C676C2D4DF}</ItemsProjectGuid>
+    <ItemsProjectName>Common</ItemsProjectName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.IsPackagedProcess.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Package.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.PackageGraph.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExportLoader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IsWindowsVersion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Configuration.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.FileSystem.Path.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Foundation.String.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.RoApi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.TraceLogging.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Utf8.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTelemetryHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TelemetryHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_WindowsAppRuntime.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cs" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeAutoInitializer.cpp" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntimeBaseDirectoryAutoInitializer.cs" />
+  </ItemGroup>
+</Project>

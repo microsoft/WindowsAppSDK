@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <Platforms>x64;x86</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CSWinRTIncludes>Microsoft.Windows.Globalization;Microsoft.Windows.ApplicationModel.Resources</CSWinRTIncludes>
+    <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
+    <NoWarn>MSB3271</NoWarn>
+  </PropertyGroup>
+
+  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
+    <CsWinRTInputs Include="$(BaseOutputPath)/Microsoft.Windows.ApplicationModel.Resources/Microsoft.Windows.Globalization.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(RepoRoot)\build\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+  </ItemGroup>
+
+</Project>

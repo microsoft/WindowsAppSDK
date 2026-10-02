@@ -1,0 +1,1201 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleMapTests">
+        <ParameterTypes>
+            <ParameterType Name="DisplayName">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="ResourceLinks" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDescendentResources" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDescendentScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedLinkById" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SingleResource" Description="Build a map with one resource">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems"></Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">1</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SingleRange" Description="Build a map with a single range of resources">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English 
+                    Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English 
+                    Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 5</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">5</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SingleRangeWithGap" Description="Build a map with a single range of resources with one item missing">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">4</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 0</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 5</Value> 
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">5</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 0</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="MultiRange" Description="Build a map with multiple ranges of resources">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English 
+                    Text</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">3</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">9</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">2</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 5</Value>
+                <Value>1; Pad; 4</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">9</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Pad/Pad1; 0</Value>
+                <Value>6; Pad/Pad2; 0</Value>
+                <Value>7; Pad/Pad3; 0</Value>
+                <Value>8; Pad/Pad4; 0</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SimpleMapMultiCandidate" Description="Build a simple map with multiple candidates per named resource">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#de=2; Language; de-DE</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$de=2; #de=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item1; string; $de; Item 1 Deutscher 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">1</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="ExpectedNumTotalValues">2</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item1; 1; string; $de; Item 1 Deutscher 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">2</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">1</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 2</Value>
+            </Parameter>
+        </Row>        
+        <Row Name="BushyTree" Description="A bushy tree">
+            <Parameter Name="DisplayName">Bushy</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Resources/String1; string; $en; String1-English</Value>
+                <Value>Resources/String2; string; $en; String2-English</Value>
+                <Value>Resources/String3; string; $en; String3-English</Value>
+                <Value>Errors/Error1; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">13</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Resources; 3</Value> 
+                <Value>2; Errors; 1</Value>
+                <Value>3; Files; 2</Value>
+                <Value>4; Files/images; 3</Value>
+                <Value>5; Files/css; 1</Value>
+                <Value>6; Files/images/premium; 1</Value>
+                <Value>7; Files/images/trial; 1</Value>
+                <Value>8; Manifest; 2</Value>
+                <Value>9; Controls; 1</Value>
+                <Value>10; Controls/MyDialog; 2</Value>
+                <Value>11; Controls/MyDialog/Title</Value>
+                <Value>12; Controls/MyDialog/OkButton; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">13</Parameter>
+            <Parameter Name="ExpectedItemsList">Resources/String1; Resources/String2; Resources/String3; Errors/Error1; Files/images/logo.jpg; 
+                                                Files/css/MyUi.css; Files/images/premium/logo.jpg; Files/images/trial/logo.jpg;
+                                                Manifest/DisplayName; Manifest/SmallLogo; Controls/MyDialog/Title/Text; 
+                                                Controls/MyDialog/OkButton/Width; Controls/MyDialog/OkButton/Text
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">13</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Resources/String1; 1</Value>
+                <Value>1; Resources/String2; 1</Value>
+                <Value>2; Resources/String3; 1</Value>
+                <Value>3; Errors/Error1; 1</Value>
+                <Value>4; Files/images/logo.jpg; 1</Value>
+                <Value>5; Files/css/MyUi.css; 1</Value>
+                <Value>6; Files/images/premium/logo.jpg; 1</Value>
+                <Value>7; Files/images/trial/logo.jpg; 1</Value>
+                <Value>8; Manifest/DisplayName; 1</Value>
+                <Value>9; Manifest/SmallLogo; 1</Value>
+                <Value>10; Controls/MyDialog/Title/Text; 1</Value>
+                <Value>11; Controls/MyDialog/OkButton/Width; 1</Value>
+                <Value>12; Controls/MyDialog/OkButton/Text; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Resources/String1; 0; string; $en; String1-English</Value>
+                <Value>Resources/String2; 0; string; $en; String2-English</Value>
+                <Value>Resources/String3; 0; string; $en; String3-English</Value>
+                <Value>Errors/Error1; 0; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; 0; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; 0; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; 0; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; 0; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; 0; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; 0; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; 0; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">12</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Controls; 1</Value>
+                <Value>1; Controls/MyDialog; 2</Value>
+                <Value>2; Controls/MyDialog/OkButton; 2</Value>
+                <Value>3; Controls/MyDialog/Title; 1</Value>
+                <Value>4; Errors; 1</Value>
+                <Value>5; Files; 2</Value>
+                <Value>6; Files/css; 1</Value>
+                <Value>7; Files/images; 3</Value>
+                <Value>8; Files/images/premium; 1</Value>
+                <Value>9; Files/images/trial; 1</Value>
+                <Value>10; Manifest; 2</Value>
+                <Value>11; Resources; 3</Value> 
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">13</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Controls/MyDialog/OkButton/Text; 1</Value>
+                <Value>1; Controls/MyDialog/OkButton/Width; 1</Value>
+                <Value>2; Controls/MyDialog/Title/Text; 1</Value>
+                <Value>3; Errors/Error1; 1</Value>
+                <Value>4; Files/css/MyUi.css; 1</Value>
+                <Value>5; Files/images/logo.jpg; 1</Value>
+                <Value>6; Files/images/premium/logo.jpg; 1</Value>
+                <Value>7; Files/images/trial/logo.jpg; 1</Value>
+                <Value>8; Manifest/DisplayName; 1</Value>
+                <Value>9; Manifest/SmallLogo; 1</Value>
+                <Value>10; Resources/String1; 1</Value>
+                <Value>11; Resources/String2; 1</Value>
+                <Value>12; Resources/String3; 1</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="SimpleMapLinkTests">
+        <ParameterTypes>
+            <ParameterType Name="DisplayName">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="ResourceLinks" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDescendentResources" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDescendentScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedLinkById" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SingleSmallInternalLinkFromEmptyItem" Description="A single small internal link from an empty item">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6</Value>
+            </Parameter>
+            <Parameter Name="ResourceLinks">
+                <Value>Collection1/Item6; Collection1/Item1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumInternalLinks">1</Parameter>
+            <Parameter Name="ExpectedInternalLinks">0</Parameter>
+            <Parameter Name="ExpectedNumLinksById">1</Parameter>
+            <Parameter Name="ExpectedLinkById">
+                <Value>0; internal; 5; 0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 6</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">6</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5; Collection1/Item6
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 6</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">6</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SingleSmallInternalLinkFromMatchingItem" Description="A single small internal link from an item with matching candidate">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="ResourceLinks">
+                <Value>Collection1/Item6; Collection1/Item1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumInternalLinks">1</Parameter>
+            <Parameter Name="ExpectedInternalLinks">0</Parameter>
+            <Parameter Name="ExpectedNumLinksById">1</Parameter>
+            <Parameter Name="ExpectedLinkById">
+                <Value>0; internal; 5; 0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 6</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">6</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5; Collection1/Item6
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 6</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">6</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+        </Row>
+ <!-- this test is known to fail right now
+        <Row Name="SingleSmallInternalLinkFromConflictingItem" Description="A single small internal link from an item with conflicting candidate">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; string; $en; Item6 English Text</Value>
+            </Parameter>
+            <Parameter Name="ResourceLinks">
+                <Value>Collection1/Item6; Collection1/Item1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedBuildResult">0xdef01234</Parameter>
+            <Parameter Name="ExpectedNumInternalLinks">1</Parameter>
+            <Parameter Name="ExpectedInternalLinks">0</Parameter>
+            <Parameter Name="ExpectedNumLinksById">1</Parameter>
+            <Parameter Name="ExpectedLinkById">
+                <Value>0; internal; 5; 0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 6</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">6</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5; Collection1/Item6
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 6</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">6</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+        </Row>
+-->
+        <Row Name="SmallInternalLinkToLinkedItem" Description="A small internal link from an item that is also a link">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6</Value>
+                <Value>Collection1/Item7</Value>
+            </Parameter>
+            <Parameter Name="ResourceLinks">
+                <Value>Collection1/Item6; Collection1/Item1</Value>
+                <Value>Collection1/Item7; Collection1/Item6</Value>
+            </Parameter>
+            <Parameter Name="ExpectedBuildResult">LINK_TO_LINKED_RESOURCE</Parameter>
+        </Row>
+    </Table>
+    <Table Id="SimpleSubtreeTests">
+        <ParameterTypes>
+            <ParameterType Name="DisplayName">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDescendentResources" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDescendentScopes" Array="true">String</ParameterType>
+            <ParameterType Name="SubtreeTests" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="FullTree" Description="Use subtree validation on entire tree">
+            <Parameter Name="DisplayName">Bushy</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Resources/String1; string; $en; String1-English</Value>
+                <Value>Resources/String2; string; $en; String2-English</Value>
+                <Value>Resources/String3; string; $en; String3-English</Value>
+                <Value>Errors/Error1; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">13</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Resources; 3</Value> 
+                <Value>2; Errors; 1</Value>
+                <Value>3; Files; 2</Value>
+                <Value>4; Files/images; 3</Value>
+                <Value>5; Files/css; 1</Value>
+                <Value>6; Files/images/premium; 1</Value>
+                <Value>7; Files/images/trial; 1</Value>
+                <Value>8; Manifest; 2</Value>
+                <Value>9; Controls; 1</Value>
+                <Value>10; Controls/MyDialog; 2</Value>
+                <Value>11; Controls/MyDialog/Title</Value>
+                <Value>12; Controls/MyDialog/OkButton; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">13</Parameter>
+            <Parameter Name="ExpectedItemsList">Resources/String1; Resources/String2; Resources/String3; Errors/Error1; Files/images/logo.jpg; 
+                                                Files/css/MyUi.css; Files/images/premium/logo.jpg; Files/images/trial/logo.jpg;
+                                                Manifest/DisplayName; Manifest/SmallLogo; Controls/MyDialog/Title/Text; 
+                                                Controls/MyDialog/OkButton/Width; Controls/MyDialog/OkButton/Text
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">13</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Resources/String1; 1</Value>
+                <Value>1; Resources/String2; 1</Value>
+                <Value>2; Resources/String3; 1</Value>
+                <Value>3; Errors/Error1; 1</Value>
+                <Value>4; Files/images/logo.jpg; 1</Value>
+                <Value>5; Files/css/MyUi.css; 1</Value>
+                <Value>6; Files/images/premium/logo.jpg; 1</Value>
+                <Value>7; Files/images/trial/logo.jpg; 1</Value>
+                <Value>8; Manifest/DisplayName; 1</Value>
+                <Value>9; Manifest/SmallLogo; 1</Value>
+                <Value>10; Controls/MyDialog/Title/Text; 1</Value>
+                <Value>11; Controls/MyDialog/OkButton/Width; 1</Value>
+                <Value>12; Controls/MyDialog/OkButton/Text; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Resources/String1; 0; string; $en; String1-English</Value>
+                <Value>Resources/String2; 0; string; $en; String2-English</Value>
+                <Value>Resources/String3; 0; string; $en; String3-English</Value>
+                <Value>Errors/Error1; 0; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; 0; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; 0; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; 0; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; 0; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; 0; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; 0; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; 0; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="Subtree"></Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">12</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Controls; 1</Value>
+                <Value>1; Controls/MyDialog; 2</Value>
+                <Value>2; Controls/MyDialog/OkButton; 2</Value>
+                <Value>3; Controls/MyDialog/Title; 1</Value>
+                <Value>4; Errors; 1</Value>
+                <Value>5; Files; 2</Value>
+                <Value>6; Files/css; 1</Value>
+                <Value>7; Files/images; 3</Value>
+                <Value>8; Files/images/premium; 1</Value>
+                <Value>9; Files/images/trial; 1</Value>
+                <Value>10; Manifest; 2</Value>
+                <Value>11; Resources; 3</Value> 
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">13</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Controls/MyDialog/OkButton/Text; 1</Value>
+                <Value>1; Controls/MyDialog/OkButton/Width; 1</Value>
+                <Value>2; Controls/MyDialog/Title/Text; 1</Value>
+                <Value>3; Errors/Error1; 1</Value>
+                <Value>4; Files/css/MyUi.css; 1</Value>
+                <Value>5; Files/images/logo.jpg; 1</Value>
+                <Value>6; Files/images/premium/logo.jpg; 1</Value>
+                <Value>7; Files/images/trial/logo.jpg; 1</Value>
+                <Value>8; Manifest/DisplayName; 1</Value>
+                <Value>9; Manifest/SmallLogo; 1</Value>
+                <Value>10; Resources/String1; 1</Value>
+                <Value>11; Resources/String2; 1</Value>
+                <Value>12; Resources/String3; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SingleLevelFlat" Description="Navigate to a flat subtree one layer down">
+            <Parameter Name="DisplayName">Bushy</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Resources/String1; string; $en; String1-English</Value>
+                <Value>Resources/String2; string; $en; String2-English</Value>
+                <Value>Resources/String3; string; $en; String3-English</Value>
+                <Value>Errors/Error1; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">13</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Resources; 3</Value> 
+                <Value>2; Errors; 1</Value>
+                <Value>3; Files; 2</Value>
+                <Value>4; Files/images; 3</Value>
+                <Value>5; Files/css; 1</Value>
+                <Value>6; Files/images/premium; 1</Value>
+                <Value>7; Files/images/trial; 1</Value>
+                <Value>8; Manifest; 2</Value>
+                <Value>9; Controls; 1</Value>
+                <Value>10; Controls/MyDialog; 2</Value>
+                <Value>11; Controls/MyDialog/Title</Value>
+                <Value>12; Controls/MyDialog/OkButton; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">13</Parameter>
+            <Parameter Name="ExpectedItemsList">Resources/String1; Resources/String2; Resources/String3; Errors/Error1; Files/images/logo.jpg; 
+                                                Files/css/MyUi.css; Files/images/premium/logo.jpg; Files/images/trial/logo.jpg;
+                                                Manifest/DisplayName; Manifest/SmallLogo; Controls/MyDialog/Title/Text; 
+                                                Controls/MyDialog/OkButton/Width; Controls/MyDialog/OkButton/Text
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">13</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Resources/String1; 1</Value>
+                <Value>1; Resources/String2; 1</Value>
+                <Value>2; Resources/String3; 1</Value>
+                <Value>3; Errors/Error1; 1</Value>
+                <Value>4; Files/images/logo.jpg; 1</Value>
+                <Value>5; Files/css/MyUi.css; 1</Value>
+                <Value>6; Files/images/premium/logo.jpg; 1</Value>
+                <Value>7; Files/images/trial/logo.jpg; 1</Value>
+                <Value>8; Manifest/DisplayName; 1</Value>
+                <Value>9; Manifest/SmallLogo; 1</Value>
+                <Value>10; Controls/MyDialog/Title/Text; 1</Value>
+                <Value>11; Controls/MyDialog/OkButton/Width; 1</Value>
+                <Value>12; Controls/MyDialog/OkButton/Text; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Resources/String1; 0; string; $en; String1-English</Value>
+                <Value>Resources/String2; 0; string; $en; String2-English</Value>
+                <Value>Resources/String3; 0; string; $en; String3-English</Value>
+                <Value>Errors/Error1; 0; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; 0; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; 0; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; 0; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; 0; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; 0; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; 0; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; 0; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="Subtree">Resources</Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">0</Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">3</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; String1; 1</Value>
+                <Value>1; String2; 1</Value>
+                <Value>2; String3; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SingleLevelDeep" Description="Navigate to a deep subtree one level down">
+            <Parameter Name="DisplayName">Bushy</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Resources/String1; string; $en; String1-English</Value>
+                <Value>Resources/String2; string; $en; String2-English</Value>
+                <Value>Resources/String3; string; $en; String3-English</Value>
+                <Value>Errors/Error1; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">13</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Resources; 3</Value> 
+                <Value>2; Errors; 1</Value>
+                <Value>3; Files; 2</Value>
+                <Value>4; Files/images; 3</Value>
+                <Value>5; Files/css; 1</Value>
+                <Value>6; Files/images/premium; 1</Value>
+                <Value>7; Files/images/trial; 1</Value>
+                <Value>8; Manifest; 2</Value>
+                <Value>9; Controls; 1</Value>
+                <Value>10; Controls/MyDialog; 2</Value>
+                <Value>11; Controls/MyDialog/Title</Value>
+                <Value>12; Controls/MyDialog/OkButton; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">13</Parameter>
+            <Parameter Name="ExpectedItemsList">Resources/String1; Resources/String2; Resources/String3; Errors/Error1; Files/images/logo.jpg; 
+                                                Files/css/MyUi.css; Files/images/premium/logo.jpg; Files/images/trial/logo.jpg;
+                                                Manifest/DisplayName; Manifest/SmallLogo; Controls/MyDialog/Title/Text; 
+                                                Controls/MyDialog/OkButton/Width; Controls/MyDialog/OkButton/Text
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">13</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Resources/String1; 1</Value>
+                <Value>1; Resources/String2; 1</Value>
+                <Value>2; Resources/String3; 1</Value>
+                <Value>3; Errors/Error1; 1</Value>
+                <Value>4; Files/images/logo.jpg; 1</Value>
+                <Value>5; Files/css/MyUi.css; 1</Value>
+                <Value>6; Files/images/premium/logo.jpg; 1</Value>
+                <Value>7; Files/images/trial/logo.jpg; 1</Value>
+                <Value>8; Manifest/DisplayName; 1</Value>
+                <Value>9; Manifest/SmallLogo; 1</Value>
+                <Value>10; Controls/MyDialog/Title/Text; 1</Value>
+                <Value>11; Controls/MyDialog/OkButton/Width; 1</Value>
+                <Value>12; Controls/MyDialog/OkButton/Text; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Resources/String1; 0; string; $en; String1-English</Value>
+                <Value>Resources/String2; 0; string; $en; String2-English</Value>
+                <Value>Resources/String3; 0; string; $en; String3-English</Value>
+                <Value>Errors/Error1; 0; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; 0; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; 0; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; 0; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; 0; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; 0; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; 0; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; 0; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="Subtree">Files</Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">4</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; css; 1</Value>
+                <Value>1; images; 3</Value>
+                <Value>2; images/premium; 1</Value>
+                <Value>3; images/trial; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">4</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; css/MyUi.css; 1</Value>
+                <Value>1; images/logo.jpg; 1</Value>
+                <Value>2; images/premium/logo.jpg; 1</Value>
+                <Value>3; images/trial/logo.jpg; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="DeepSubtree" Description="Validate a subtree not immediately below the root">
+            <Parameter Name="DisplayName">Bushy</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Resources/String1; string; $en; String1-English</Value>
+                <Value>Resources/String2; string; $en; String2-English</Value>
+                <Value>Resources/String3; string; $en; String3-English</Value>
+                <Value>Errors/Error1; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">13</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Resources; 3</Value> 
+                <Value>2; Errors; 1</Value>
+                <Value>3; Files; 2</Value>
+                <Value>4; Files/images; 3</Value>
+                <Value>5; Files/css; 1</Value>
+                <Value>6; Files/images/premium; 1</Value>
+                <Value>7; Files/images/trial; 1</Value>
+                <Value>8; Manifest; 2</Value>
+                <Value>9; Controls; 1</Value>
+                <Value>10; Controls/MyDialog; 2</Value>
+                <Value>11; Controls/MyDialog/Title</Value>
+                <Value>12; Controls/MyDialog/OkButton; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">13</Parameter>
+            <Parameter Name="ExpectedItemsList">Resources/String1; Resources/String2; Resources/String3; Errors/Error1; Files/images/logo.jpg; 
+                                                Files/css/MyUi.css; Files/images/premium/logo.jpg; Files/images/trial/logo.jpg;
+                                                Manifest/DisplayName; Manifest/SmallLogo; Controls/MyDialog/Title/Text; 
+                                                Controls/MyDialog/OkButton/Width; Controls/MyDialog/OkButton/Text
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">13</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Resources/String1; 1</Value>
+                <Value>1; Resources/String2; 1</Value>
+                <Value>2; Resources/String3; 1</Value>
+                <Value>3; Errors/Error1; 1</Value>
+                <Value>4; Files/images/logo.jpg; 1</Value>
+                <Value>5; Files/css/MyUi.css; 1</Value>
+                <Value>6; Files/images/premium/logo.jpg; 1</Value>
+                <Value>7; Files/images/trial/logo.jpg; 1</Value>
+                <Value>8; Manifest/DisplayName; 1</Value>
+                <Value>9; Manifest/SmallLogo; 1</Value>
+                <Value>10; Controls/MyDialog/Title/Text; 1</Value>
+                <Value>11; Controls/MyDialog/OkButton/Width; 1</Value>
+                <Value>12; Controls/MyDialog/OkButton/Text; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Resources/String1; 0; string; $en; String1-English</Value>
+                <Value>Resources/String2; 0; string; $en; String2-English</Value>
+                <Value>Resources/String3; 0; string; $en; String3-English</Value>
+                <Value>Errors/Error1; 0; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; 0; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; 0; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; 0; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; 0; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; 0; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; 0; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; 0; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="Subtree">Controls/MyDialog</Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">2</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; OkButton; 2</Value>
+                <Value>1; Title; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">3</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; OkButton/Text; 1</Value>
+                <Value>1; OkButton/Width; 1</Value>
+                <Value>2; Title/Text; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="DeepSubtreeNav" Description="Navigate to a subtree not immediately below the root in multiple steps">
+            <Parameter Name="DisplayName">Bushy</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Resources/String1; string; $en; String1-English</Value>
+                <Value>Resources/String2; string; $en; String2-English</Value>
+                <Value>Resources/String3; string; $en; String3-English</Value>
+                <Value>Errors/Error1; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">13</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Resources; 3</Value> 
+                <Value>2; Errors; 1</Value>
+                <Value>3; Files; 2</Value>
+                <Value>4; Files/images; 3</Value>
+                <Value>5; Files/css; 1</Value>
+                <Value>6; Files/images/premium; 1</Value>
+                <Value>7; Files/images/trial; 1</Value>
+                <Value>8; Manifest; 2</Value>
+                <Value>9; Controls; 1</Value>
+                <Value>10; Controls/MyDialog; 2</Value>
+                <Value>11; Controls/MyDialog/Title</Value>
+                <Value>12; Controls/MyDialog/OkButton; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">13</Parameter>
+            <Parameter Name="ExpectedItemsList">Resources/String1; Resources/String2; Resources/String3; Errors/Error1; Files/images/logo.jpg; 
+                                                Files/css/MyUi.css; Files/images/premium/logo.jpg; Files/images/trial/logo.jpg;
+                                                Manifest/DisplayName; Manifest/SmallLogo; Controls/MyDialog/Title/Text; 
+                                                Controls/MyDialog/OkButton/Width; Controls/MyDialog/OkButton/Text
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">13</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Resources/String1; 1</Value>
+                <Value>1; Resources/String2; 1</Value>
+                <Value>2; Resources/String3; 1</Value>
+                <Value>3; Errors/Error1; 1</Value>
+                <Value>4; Files/images/logo.jpg; 1</Value>
+                <Value>5; Files/css/MyUi.css; 1</Value>
+                <Value>6; Files/images/premium/logo.jpg; 1</Value>
+                <Value>7; Files/images/trial/logo.jpg; 1</Value>
+                <Value>8; Manifest/DisplayName; 1</Value>
+                <Value>9; Manifest/SmallLogo; 1</Value>
+                <Value>10; Controls/MyDialog/Title/Text; 1</Value>
+                <Value>11; Controls/MyDialog/OkButton/Width; 1</Value>
+                <Value>12; Controls/MyDialog/OkButton/Text; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Resources/String1; 0; string; $en; String1-English</Value>
+                <Value>Resources/String2; 0; string; $en; String2-English</Value>
+                <Value>Resources/String3; 0; string; $en; String3-English</Value>
+                <Value>Errors/Error1; 0; string; $en; Error1-English</Value>
+                <Value>Files/images/logo.jpg; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Files/css/MyUi.css; 0; path; $en; en-US\MyUi.css</Value>
+                <Value>Files/images/premium/logo.jpg; 0; path; $en; en-US\premium\logo.jpg</Value>
+                <Value>Files/images/trial/logo.jpg; 0; path; $en; en-US\trial\logo.jpg</Value>
+                <Value>Manifest/DisplayName; 0; string; $en; DisplayName-English</Value>
+                <Value>Manifest/SmallLogo; 0; path; $en; en-US\logo.jpg</Value>
+                <Value>Controls/MyDialog/Title/Text; 0; string; $en; Title</Value>
+                <Value>Controls/MyDialog/OkButton/Width; 0; string; $en; 100</Value>
+                <Value>Controls/MyDialog/OkButton/Text; 0; string; $en; Button-English</Value>
+            </Parameter>
+            <Parameter Name="Subtree">Controls; MyDialog</Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">2</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; OkButton; 2</Value>
+                <Value>1; Title; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">3</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; OkButton/Text; 1</Value>
+                <Value>1; OkButton/Width; 1</Value>
+                <Value>2; Title/Text; 1</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="LargeDataTests">
+        <Row Name="MediumData" Description="Medium sized data set to ensure everything works without pushing limits">
+            <Parameter Name="NumResources">30</Parameter>
+            <Parameter Name="NumCandidatesPerResource">10</Parameter>
+        </Row>
+        <Row Name="ManyCandidatesPerResource" Description="Large number of candidates per resource">
+            <Parameter Name="NumResources">30</Parameter>
+            <Parameter Name="NumCandidatesPerResource">300</Parameter>
+        </Row>
+        <Row Name="ManyResources" Description="Large number of resources">
+            <Parameter Name="NumResources">30000</Parameter>
+            <Parameter Name="NumCandidatesPerResource">1</Parameter>
+        </Row>
+        <Row Name="ManyTotalCandidates" Description="Large total number of candidates">
+            <Parameter Name="NumResources">1000</Parameter>
+            <Parameter Name="NumCandidatesPerResource">110</Parameter>
+        </Row>
+    </Table>
+/Data>

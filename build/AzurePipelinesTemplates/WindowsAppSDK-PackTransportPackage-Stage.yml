@@ -1,0 +1,71 @@
+parameters:
+- name: "PublishPackage"
+  type: boolean
+  default: true
+- name: "SignOutput"
+  type: boolean
+  default: true
+- name: "IsOfficial"
+  type: boolean
+  default: false
+- name: "BuildMockWindowsAppSDK"
+  type: boolean
+  default: true
+- name: PrOrNightly
+  displayName: "PR or Nightly"
+  type: string
+  default: ''
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+- name: RunUpdateLibraryJob
+  displayName: "Run the Update Library Variable Group Job"
+  type: boolean
+  default: false
+
+stages:
+- stage: Pack
+  dependsOn: 
+    - Build_AnyCPU
+    - Build_x86
+    - Build_x64
+    - Build_arm64
+    - Build_arm64ec
+  condition:
+    # not(failed()) instead of succeeded() so Pack runs when Build stages are
+    # skipped via foundationUseBuildOutputFromBuildId (skipped != succeeded).
+    # Artifacts are downloaded from the previous build via _foundationBuildOutputBuildId.
+    not(failed())
+  jobs:
+  - job: NugetPackage
+    pool:
+      type: windows
+    timeoutInMinutes: 120
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_artifactBaseName: "TransportPackage"
+      ob_sdl_prefast_enabled: false
+      # Default to empty so $(WindowsAppSDKVersionPinned) resolves to empty string
+      # rather than being treated as a PowerShell command invocation.
+      # In the monobuild, DetermineVersion-Steps sets this via env var when a local feed exists.
+      WindowsAppSDKVersionPinned: ''
+    steps:
+    # WinAppSDK checkout needed for NuGetLicense files referenced by BuildAll.ps1
+    - checkout: WinAppSDK
+      fetchDepth: 1
+    - template: WindowsAppSDK-PackTransportPackage-Steps.yml
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOfficial: ${{ parameters.IsOfficial }}
+        PublishPackage: ${{ parameters.PublishPackage }}
+
+- stage: UpdateFoundationLibrary
+  dependsOn: Pack
+  condition: and(succeeded('Pack'), eq(${{ parameters.RunUpdateLibraryJob }}, true))
+  jobs:
+  - template: WindowsAppSDK-UpdateLibrary-Job.yml
+    parameters:
+      jobName: 'UpdateFoundationLibraryJob'
+      BuildType: ${{ parameters.BuildType }}
+      PrOrNightly: ${{ parameters.PrOrNightly }}

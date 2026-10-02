@@ -1,0 +1,44 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Windows.BadgeNotifications
+{
+    [contractversion(1)]
+    apicontract BadgeNotificationsContract {};
+
+    // Set of predefined glyphs that can be used to represent various statuses or notifications on an application's badge
+    [contract(BadgeNotificationsContract, 1)]
+    enum BadgeNotificationGlyph
+    {
+        None, // No glyph. A blank tile appears in the badge.
+        Activity, // A glyph representing an activity
+        Alarm, // A glyph representing an alarm
+        Alert, // A glyph representing an alert
+        Attention, // A glyph representing attention
+        Available, // A glyph representing availability
+        Away, // A glyph representing being away
+        Busy, // A glyph representing being busy
+        Error, // A glyph representing an error
+        NewMessage, // A glyph representing a new message
+        Paused, // A glyph representing being paused
+        Playing, // A glyph representing playing
+        Unavailable, // A glyph representing being unavailable
+    };
+
+    // The manager class which encompasses all Badge Notification API Functionality
+    [contract(BadgeNotificationsContract, 1)]
+    runtimeclass BadgeNotificationManager
+    {
+        // Gets a Default instance of a BadgeNotificationManager
+        static BadgeNotificationManager Current{ get; };
+
+        // Updates the badge on the app's icon on taskbar to display a numeric value.
+        void SetBadgeAsCount(UInt32 notificationCount);
+
+        // Updates the badge on the app's icon on taskbar to display a glyph.
+        void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue);
+
+        // Removes the Badge Notifications for the App from Action Center
+        void ClearBadge();
+    }
+}

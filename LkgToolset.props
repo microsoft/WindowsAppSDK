@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project ToolsVersion="14.0" TreatAsLocalProperty="Platform" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Enable synchronized LKG and internal MsUCRT consumption  -->
+  <PropertyGroup>
+    <UseInternalMSUniCrtPackage>true</UseInternalMSUniCrtPackage>
+    <UndockedSettingsLoaded>true</UndockedSettingsLoaded>
+  </PropertyGroup>
+
+  <!-- The LKG toolset only supports Platform=win32.  To work around, we TreatAsLocalProperty=Platform above to
+    enable overriding the global (command-line) Platform, explicitly import LKG's custom.props, and restore Platform. -->
+  <PropertyGroup Condition="'$(Platform)'=='x86'">
+    <WorkaroundLkgWin32>true</WorkaroundLkgWin32>
+    <Platform>Win32</Platform>
+    <CustomProps>$([MSBuild]::GetPathOfFileAbove('custom.props', '$(MSBuildThisFileDirectory)'))</CustomProps>
+  </PropertyGroup>
+  <Import Project="$(CustomProps)" Condition="Exists('$(CustomProps)') and '$(WorkaroundLkgWin32)'=='true'" />
+  <PropertyGroup Condition="'$(WorkaroundLkgWin32)'=='true'">
+    <Platform>x86</Platform>
+  </PropertyGroup>
+
+</Project>

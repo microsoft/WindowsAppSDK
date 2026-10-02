@@ -1,0 +1,31 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Windows.Security.AccessControl
+{
+    [contractversion(1)]
+    apicontract AccessControlContract {};
+
+    [contract(AccessControlContract, 1)]
+    struct AppContainerNameAndAccess
+    {
+        String appContainerName;
+        UInt32 accessMask;
+    };
+
+    [contract(AccessControlContract, 1)]
+    static runtimeclass SecurityDescriptorHelpers
+    {
+        static String GetSddlForAppContainerNames(
+            AppContainerNameAndAccess[] accessRequests,
+            String principalStringSid,
+            UInt32 principalAccessMask
+        );
+
+        static UInt8[] GetSecurityDescriptorBytesFromAppContainerNames(
+            AppContainerNameAndAccess[] accessRequests,
+            String principalStringSid,
+            UInt32 principalAccessMask
+        );
+    };
+}

@@ -1,0 +1,7 @@
+{
+    "Description" : "C++ EXE providing OOP COM object(s)",
+    "Libraries": "C++/WinRT, WIL",
+    "Name": {
+        "AllowedRegex": "^[A-Za-z][A-Za-z0-9_]*$"
+    }
+}

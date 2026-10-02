@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleAtomPoolTests">
+        <ParameterTypes>
+            <ParameterType Name="PoolIndex">int</ParameterType>
+            <ParameterType Name="IsCaseInsensitive">Boolean</ParameterType>
+            <ParameterType Name="InitStrings" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedStrings" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNumUniqueStrings">int</ParameterType>
+            <ParameterType Name="UnexpectedStrings" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimpleCaseSensitive" Description="Simple Case Sensitive Test">
+            <Parameter Name="IsCaseInsensitive">false</Parameter>
+            <Parameter Name="ExpectedNumUniqueStrings">5</Parameter>
+            <Parameter Name="PoolIndex">1</Parameter>
+            <Parameter Name="ExpectedStrings">
+               <Value>Str1=0</Value>
+               <Value>Str2=1</Value>
+               <Value>Str3=2</Value>
+               <Value>str1=3</Value>
+               <Value>str2=4</Value>
+            </Parameter>
+            <Parameter Name="UnexpectedStrings">
+                <Value>str3</Value>
+                <Value>sTr1</Value>
+                <Value>Str</Value>
+                <Value>Str11</Value>
+                <Value>Str4</Value>
+                <Value> Str2</Value>
+                <Value>Str2 </Value>
+            </Parameter>
+        </Row>
+        <Row Name="SimpleCaseInsensitive" Description="Simple Case Insensitive Test">
+            <Parameter Name="IsCaseInsensitive">true</Parameter>
+            <Parameter Name="ExpectedNumUniqueStrings">3</Parameter>
+            <Parameter Name="PoolIndex">1</Parameter>
+            <Parameter Name="ExpectedStrings">
+               <Value>Str1=0</Value>
+               <Value>Str2=1</Value>
+               <Value>Str3=2</Value>
+               <Value>str1=0</Value>
+               <Value>str2=1</Value>
+            </Parameter>
+            <Parameter Name="UnexpectedStrings">
+                <Value>Str</Value>
+                <Value>Str11</Value>
+                <Value>Str4</Value>
+                <Value> Str2</Value>
+                <Value>Str2 </Value>
+            </Parameter>
+
+        </Row>
+    </Table>
+    <Table Id="BigAtomPoolTests">
+        <ParameterTypes>
+            <ParameterType Name="PoolDescription">String</ParameterType>
+            <ParameterType Name="PoolIndex">int</ParameterType>
+            <ParameterType Name="IsCaseInsensitive">Boolean</ParameterType>
+            <ParameterType Name="NumAtoms">int</ParameterType>
+        </ParameterTypes>
+        <Row Name="2000_Atoms" Description="Create an atom pool with 2000 atoms">
+            <Parameter Name="PoolDescription">Test</Parameter>
+            <Parameter Name="PoolIndex">1</Parameter>
+            <Parameter Name="IsCaseInsensitive">true</Parameter>
+            <Parameter Name="NumAtoms">2000</Parameter>
+        </Row>
+    </Table>
+    <Table Id="SimpleStaticAtomPoolTests">
+        <ParameterTypes>
+            <ParameterType Name="PoolIndex">int</ParameterType>
+            <ParameterType Name="IsCaseInsensitive">Boolean</ParameterType>
+            <ParameterType Name="InitStrings" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedStrings" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNumUniqueStrings">int</ParameterType>
+            <ParameterType Name="UnexpectedStrings" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimpleCaseSensitive" Description="Simple Case Sensitive Test">
+            <Parameter Name="IsCaseInsensitive">false</Parameter>
+            <Parameter Name="ExpectedNumUniqueStrings">5</Parameter>
+            <Parameter Name="PoolIndex">1</Parameter>
+            <Parameter Name="ExpectedStrings">
+               <Value>Str1=0</Value>
+               <Value>Str2=1</Value>
+               <Value>Str3=2</Value>
+               <Value>str1=3</Value>
+               <Value>str2=4</Value>
+            </Parameter>
+            <Parameter Name="UnexpectedStrings">
+                <Value>str3</Value>
+                <Value>sTr1</Value>
+                <Value>Str</Value>
+                <Value>Str11</Value>
+                <Value>Str4</Value>
+                <Value> Str2</Value>
+                <Value>Str2 </Value>
+            </Parameter>
+        </Row>
+        <Row Name="SimpleCaseInsensitive" Description="Simple Case Insensitive Test">
+            <Parameter Name="IsCaseInsensitive">true</Parameter>
+            <Parameter Name="ExpectedNumUniqueStrings">3</Parameter>
+            <Parameter Name="PoolIndex">1</Parameter>
+            <Parameter Name="InitStrings">
+               <Value>Str1=0</Value>
+               <Value>Str2=1</Value>
+               <Value>Str3=2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedStrings">
+               <Value>Str1=0</Value>
+               <Value>Str2=1</Value>
+               <Value>Str3=2</Value>
+               <Value>str1=0</Value>
+               <Value>str2=1</Value>
+            </Parameter>
+            <Parameter Name="UnexpectedStrings">
+                <Value>Str</Value>
+                <Value>Str11</Value>
+                <Value>Str4</Value>
+                <Value> Str2</Value>
+                <Value>Str2 </Value>
+            </Parameter>
+
+        </Row>
+    </Table>
+</Data>
+

@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="BasicSingleFileTests">
+        <ParameterTypes>
+            <ParameterType Name="SimpleId">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimplePri" Description="Build a simple PRI and access it via a PriFileManager">
+            <Parameter Name="SimpleId">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#enUS; Language; en-US</Value>
+                <Value>#de; Language; de</Value>
+                <Value>#en; Language; en</Value>
+                <Value>#es; Language; es</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$enUS; #enUS</Value>
+                <Value>$de; #de</Value>
+                <Value>$en; #en</Value>
+                <Value>$es; #es</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>First/First0; string; $enUS; First0(en-US)</Value>
+                <Value>First/First0; string; $de; First0(de)</Value>
+                <Value>First/First1; string; $enUS; First1(en-US)</Value>
+                <Value>Second/Second0; path; $en; Second/en/Second0</Value>
+                <Value>Second/Second0; path; $es; Second/es/Second0</Value>
+                <Value>Second/Second1; path; $en; Second/en/Second1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">3</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; First; 2</Value>
+                <Value>2; Second; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumItems">4</Parameter>
+            <Parameter Name="ExpectedItemsList">
+                First/First0; First/First1; Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">6</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; First/First0; 2</Value>
+                <Value>1; First/First1; 1</Value>
+                <Value>2; Second/Second0; 2</Value>
+                <Value>3; Second/Second1; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>First/First0; 0; string; $de; First0(de)</Value>
+                <Value>First/First0; 1; string; $enUS; First0(en-US)</Value>
+                <Value>First/First1; 0; string; $enUS; First1(en-US)</Value>
+                <Value>Second/Second0; 0; path; $en; Second/en/Second0</Value>
+                <Value>Second/Second0; 1; path; $es; Second/es/Second0</Value>
+                <Value>Second/Second1; 0; path; $en; Second/en/Second1</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="BasicMultiFileTests">
+        <ParameterTypes>
+            <ParameterType Name="File1First_Instances" Array="true">String</ParameterType>
+            <ParameterType Name="File2Second_Instances" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimpleMultiPri" Description="Build several PRI files and access them via a PriFileManager">
+            <Parameter Name="FileNames">File1; File2</Parameter>
+            <Parameter Name="File1_IndexNames">First</Parameter>
+            <Parameter Name="File1First_DisplayName">First</Parameter>
+            <Parameter Name="File1First_CollectionNamesList">
+                First;
+                Second
+            </Parameter>
+            <Parameter Name="File1First_FirstItemNamesList">
+                First0; First1;
+                First2
+            </Parameter>
+            <Parameter Name="File1First_FirstItemTypesList">String</Parameter>
+            <Parameter Name="File1First_SecondItemNamesList">
+                Second0;
+                Second1
+            </Parameter>
+            <Parameter Name="File1First_SecondItemTypesList">Path</Parameter>
+            <Parameter Name="File1First_Instances">
+                <Value>
+                    First; First0; string; First0; Language; matches;
+                    en-US
+                </Value>
+                <Value>
+                    First; First0; string; Erste0; Language; matches;
+                    de
+                </Value>
+                <Value>
+                    First; First1; string; First1; Language; matches;
+                    en-US
+                </Value>
+                <Value>
+                    Second; Second0; path; Second0; Language; matches;
+                    en
+                </Value>
+                <Value>
+                    Second; Second0; path; Segundo0; Language; matches;
+                    es
+                </Value>
+                <Value>
+                    Second; Second1; path; Second1; Language; matches;
+                    en
+                </Value>
+            </Parameter>
+            <Parameter Name="File1First_Expected_CollectionNamesList">
+                First;
+                Second
+            </Parameter>
+            <Parameter Name="File1First_Expected_FirstItemNamesList">
+                First0;
+                First1; First2
+            </Parameter>
+            <Parameter Name="File1First_Expected_FirstItemTypesList">String</Parameter>
+            <Parameter Name="File1First_Expected_SecondItemNamesList">
+                Second0;
+                Second1
+            </Parameter>
+            <Parameter Name="File1First_Expected_SecondItemTypesList">Path</Parameter>
+
+            <Parameter Name="File2_IndexNames">Second</Parameter>
+            <Parameter Name="File2Second_DisplayName">Second</Parameter>
+            <Parameter Name="File2Second_CollectionNamesList">Extra</Parameter>
+            <Parameter Name="File2Second_ExtraItemNamesList">
+                Extra0;
+                Extra1
+            </Parameter>
+            <Parameter Name="File2Second_ExtraItemTypesList">String</Parameter>
+            <Parameter Name="File2Second_Instances">
+                <Value>
+                    Extra; Extra0; string; Extra 0; Language; matches;
+                    en-US
+                </Value>
+                <Value>
+                    Extra; Extra0; string; Extra 0 DE; Language;
+                    matches; de
+                </Value>
+                <Value>
+                    Extra; Extra1; string; Extra1; Language; matches;
+                    en-US
+                </Value>
+            </Parameter>
+            <Parameter Name="File2Second_Expected_CollectionNamesList">Extra</Parameter>
+            <Parameter Name="File2Second_Expected_ExtraItemNamesList">
+                Extra0;
+                Extra1;
+            </Parameter>
+            <Parameter Name="File2Second_Expected_ExtraItemTypesList">String</Parameter>
+        </Row>
+    </Table>
+    <Table Id="SingleFileTypedSectionTests">
+        <ParameterTypes>
+            <ParameterType Name="TypedIndex_Instances" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimplePri" Description="Build a simple PRI and access it via a PriFileManager">
+            <Parameter Name="PriName">Typed</Parameter>
+            <Parameter Name="Typed_IndexNames">Index</Parameter>
+            <Parameter Name="TypedIndex_CollectionNamesList">First; Second</Parameter>
+            <Parameter Name="TypedIndex_FirstItemNamesList">
+                First0; First1;
+                First2
+            </Parameter>
+            <Parameter Name="TypedIndex_FirstItemTypesList">String</Parameter>
+            <Parameter Name="TypedIndex_SecondItemNamesList">Second0; Second1</Parameter>
+            <Parameter Name="TypedIndex_SecondItemTypesList">Path</Parameter>
+            <Parameter Name="TypedIndex_Instances">
+                <Value>
+                    First; First0; string; First0; Language; matches;
+                    en-US
+                </Value>
+                <Value>
+                    First; First0; string; Erste0; Language; matches;
+                    de
+                </Value>
+                <Value>
+                    First; First1; string; First1; Language; matches;
+                    en-US
+                </Value>
+                <Value>
+                    Second; Second0; path; Second0; Language; matches;
+                    en
+                </Value>
+                <Value>
+                    Second; Second0; path; Segundo0; Language; matches;
+                    es
+                </Value>
+                <Value>
+                    Second; Second1; path; Second1; Language; matches;
+                    en
+                </Value>
+            </Parameter>
+
+            <Parameter Name="Typed_OtherSectionNames">TestDataItems</Parameter>
+            <Parameter Name="Typed_OtherSectionTypes">DataItem</Parameter>
+            <Parameter Name="Typed_TestDataItems_Count">2</Parameter>
+            <Parameter Name="Typed_TestDataItems0_Size">9</Parameter>
+            <Parameter Name="Typed_TestDataItems1_String">This is a test</Parameter>
+
+            <Parameter Name="Expected_TypedIndex_CollectionNamesList">
+                First;
+                Second
+            </Parameter>
+            <Parameter Name="Expected_TypedIndex_FirstItemNamesList">
+                First0; First1;
+                First2
+            </Parameter>
+            <Parameter Name="Expected_TypedIndex_FirstItemTypesList">String</Parameter>
+            <Parameter Name="Expected_TypedIndex_SecondItemNamesList">
+                Second0;
+                Second1
+            </Parameter>
+            <Parameter Name="Expected_SecondItemTypesList">Path</Parameter>
+        </Row>
+    </Table>
+</Data>
+

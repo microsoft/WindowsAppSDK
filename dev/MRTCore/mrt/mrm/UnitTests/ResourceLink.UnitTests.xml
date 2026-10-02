@@ -1,0 +1,288 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleLinkTests">
+        <ParameterTypes>
+            <ParameterType Name="DisplayName">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="TestResourceLinks" Array="true">String</ParameterType>
+            <ParameterType Name="TestExpectedLinkById" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDescendentResources" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDescendentScopes" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SingleSmallInternalLinkFromEmptyItem" Description="A single small internal link from an empty item">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6</Value>
+            </Parameter>
+            <Parameter Name="TestResourceLinks">
+                <Value>Collection1/Item6; Collection1/Item1</Value>
+            </Parameter>
+            <Parameter Name="TestExpectedNumInternalLinks">1</Parameter>
+            <Parameter Name="TestExpectedInternalLinks">0</Parameter>
+            <Parameter Name="TestExpectedNumLinksById">1</Parameter>
+            <Parameter Name="TestExpectedLinkById">
+                <Value>0; internal; 5; 0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 6</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">5</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="TwoSmallInternalLinksFromEmptyItems" Description="Two single small internal links from a empty items">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6</Value>
+                <Value>Collection1/Item7</Value>
+            </Parameter>
+            <Parameter Name="TestResourceLinks">
+                <Value>Collection1/Item6; Collection1/Item1</Value>
+                <Value>Collection1/Item7; Collection1/Item5</Value>
+            </Parameter>
+            <Parameter Name="TestExpectedNumInternalLinks">2</Parameter>
+            <Parameter Name="TestExpectedInternalLinks">0;4</Parameter>
+            <Parameter Name="TestExpectedNumLinksById">2</Parameter>
+            <Parameter Name="TestExpectedLinkById">
+                <Value>0; internal; 5; 0</Value>
+                <Value>1; internal; 6; 4</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 6</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">5</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+        </Row>
+        <Row Name="LinkFromMatchingItem" Description="Link for an item that has a matching value">
+            <Parameter Name="DisplayName">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="TestResourceLinks">
+                <Value>Collection1/Item6; Collection1/Item1</Value>
+            </Parameter>
+            <Parameter Name="TestExpectedNumInternalLinks">1</Parameter>
+            <Parameter Name="TestExpectedInternalLinks">0</Parameter>
+            <Parameter Name="TestExpectedNumLinksById">1</Parameter>
+            <Parameter Name="TestExpectedLinkById">
+                <Value>0; 0; internal; 5</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English Text</Value>
+                <Value>Collection1/Item6; 0; string; $en; Item1 English Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentScopes">1</Parameter>
+            <Parameter Name="ExpectedDescendentScopes">
+                <Value>0; Collection1; 6</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDescendentResources">5</Parameter>
+            <Parameter Name="ExpectedDescendentResources">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+                <Value>5; Collection1/Item6; 1</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="LargeDataTests">
+<!--    
+        <Row Name="MediumData" Description="Medium sized data set to ensure everything works without pushing limits">
+            <Parameter Name="NumResources">30</Parameter>
+            <Parameter Name="NumCandidatesPerResource">10</Parameter>
+        </Row>
+        <Row Name="ManyCandidatesPerResource" Description="Large number of candidates per resource">
+            <Parameter Name="NumResources">30</Parameter>
+            <Parameter Name="NumCandidatesPerResource">300</Parameter>
+        </Row>
+  -->
+        <ParameterTypes>
+            <ParameterType Name="NumResources">int</ParameterType>
+            <ParameterType Name="NumCandidatesPerResource">int</ParameterType>
+            <ParameterType Name="TestResourceLinks" Array="true">String</ParameterType>
+            <ParameterType Name="TestExpectedLinkById" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="LargeResourceLinks" Description="Test links to and from large resources">
+            <Parameter Name="NumResources">66000</Parameter>
+            <Parameter Name="NumCandidatesPerResource">1</Parameter>
+            <Parameter Name="TestResourceLinks">
+                <Value>Scope659/Res00; Scope0/Res01</Value>
+                <Value>Scope0/Res02; Scope659/Res01</Value>
+                <Value>Scope659/Res02; Scope659/Res03</Value>
+            </Parameter>
+            <Parameter Name="TestExpectedNumInternalLinks">3</Parameter>
+            <Parameter Name="TestExpectedInternalLinks">1;65901;65903</Parameter>
+            <Parameter Name="TestExpectedNumLinksById">3</Parameter>
+            <Parameter Name="TestExpectedLinkById">
+                <Value>0; internal; 2; 65901</Value>
+                <Value>1; internal; 65900; 1</Value>
+                <Value>2; internal; 65902; 65903</Value>
+            </Parameter>
+        </Row>
+        <Row Name="LargeAndSmallResourceLinks" Description="Test links to and from a mix of large and small resources">
+            <Parameter Name="NumResources">66000</Parameter>
+            <Parameter Name="NumCandidatesPerResource">1</Parameter>
+            <Parameter Name="TestResourceLinks">
+                <Value>Scope659/Res00; Scope0/Res01</Value>
+                <Value>Scope0/Res02; Scope659/Res01</Value>
+                <Value>Scope659/Res02; Scope659/Res03</Value>
+                <Value>Scope1/Res00; Scope2/Res00</Value>
+            </Parameter>
+            <Parameter Name="TestExpectedNumInternalLinks">4</Parameter>
+            <Parameter Name="TestExpectedInternalLinks">200;1;65901;65903</Parameter>
+            <Parameter Name="TestExpectedNumLinksById">4</Parameter>
+            <Parameter Name="TestExpectedLinkById">
+                <Value>0; internal; 2; 65901</Value>
+                <Value>1; internal; 100; 200</Value>
+                <Value>2; internal; 65900; 1</Value>
+                <Value>3; internal; 65902; 65903</Value>
+            </Parameter>
+        </Row>
+    </Table>
+/Data>

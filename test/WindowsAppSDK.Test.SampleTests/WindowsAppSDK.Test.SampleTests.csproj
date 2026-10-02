@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows10.0.18362</TargetFramework>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <OutDir>$(BaseOutputPath)\$(MSBuildProjectName)\</OutDir>
+    <GenerateProjectSpecificOutputFolder>False</GenerateProjectSpecificOutputFolder>
+    <Platforms>x86;x64;arm64</Platforms>
+    
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <WindowsAppSdkSelfContained>true</WindowsAppSdkSelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
+    <PackageReference Include="Microsoft.Taef" Version="10.75.221207001" />
+    <PackageReference Include="Microsoft.Windows.Apps.Test" Version="1.0.181205002" />
+  </ItemGroup>
+
+  <Target Name="CopyTestDefFiles" AfterTargets="AfterBuild">
+    <Copy SkipUnchangedFiles="true" SourceFiles="SampleTest.testdef" DestinationFolder="$(OutDir)" />
+  </Target>
+
+
+</Project>

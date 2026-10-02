@@ -1,0 +1,10 @@
+{
+    "$schema": "http://json.schemastore.org/vsix-publish",
+    "categories": [ "Other" ],
+    "identity": {
+        "internalName": "[ReplaceInternalName]"
+    },
+    "overview": "[ReplaceOverview]",
+    "publisher": "ProjectReunion",
+    "repo": "https://github.com/microsoft/WindowsAppSDK"
+}

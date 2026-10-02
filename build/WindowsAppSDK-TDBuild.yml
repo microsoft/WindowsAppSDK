@@ -1,0 +1,28 @@
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+parameters:
+- name: GitAction
+  type: string
+  default: 'COMMIT'
+  values:
+  - 'None'
+  - 'COMMIT'
+
+variables:
+- group: WinAppSDK-TouchDownBuild-Secrets
+
+jobs:
+- job: Localization
+  pool:
+    type: windows
+    isCustom: true
+    name: 'ProjectReunionESPool-2022'
+    demands: ImageOverride -equals MMS2022
+  steps:
+  - template: AzurePipelinesTemplates\WindowsAppSDK-CallTouchDownBuild-Steps.yml
+    parameters:
+      GitAction: ${{ parameters.GitAction }}
+      ResourceFilePath: |
+        dev\Templates\VSIX\Extension\Cpp\Common\VSPackage.resx
+        dev\Templates\VSIX\Extension\Cs\Common\VSPackage.resx
+        dev\Interop\StoragePickers\Strings\StoragePickers.resw
+      teamId: $(TdBuildTeamIDVSIX)

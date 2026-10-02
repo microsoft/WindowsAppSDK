@@ -1,0 +1,282 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleBuildTests">
+        <ParameterTypes>
+            <ParameterType Name="SimpleId">String</ParameterType>
+            <ParameterType Name="UniqueId">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="MinorVersion">int</ParameterType>
+            <ParameterType Name="ItemNamesList">String</ParameterType>
+            <ParameterType Name="ExpectedMajorVersion">int</ParameterType>
+            <ParameterType Name="ExpectedMinorVersion">int</ParameterType>
+            <ParameterType Name="ExpectedNumScopes">int</ParameterType>
+            <ParameterType Name="ExpectedNumItems">int</ParameterType>
+            <ParameterType Name="ExpectedScopeNamesList">String</ParameterType>
+            <ParameterType Name="ExpectedItemNamesList">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimpleBuild" Description="Build a simple schema">
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="ItemNamesList">First/First0; First/First1; 
+                First/First2; Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">3</Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedScopesList">First; Second</Parameter>
+            <Parameter Name="ExpectedItemsList">First/First0; First/First1; 
+                First/First2; Second/Second0; Second/Second1
+            </Parameter>
+        </Row>
+        <Row Name="DuplicateAdd" Description="Verify that items show up once regardless of how many times they're added or with which case">
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="ItemNamesList">First/First0; 
+                First/First1; first/First2; FIRST/fiRsT1; Second/Second0; 
+                Second/Second1; seConD/SECOND0
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">3</Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedScopesList">First; Second</Parameter>
+            <Parameter Name="ExpectedItemsList">First/First0; First/First1;
+                First/First2; Second/Second0; ; Second/Second1
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="VersionCompatibilityTests">
+        <Row Name="NewBuiltIdentical" Description="Test that building the same thing twice yields the same result">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S2_MajorVersion">1</Parameter>
+            <Parameter Name="S2_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">true</Parameter>
+            <Parameter Name="ShouldBeCompatible">true</Parameter>
+        </Row>
+        <Row Name="NewBuiltDifferentCase" Description="Test that building the same schema with different casing yields the same result">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S2_MajorVersion">1</Parameter>
+            <Parameter Name="S2_ItemNamesList"> first/FIRST0; FIRST/first1; 
+                sECOND/Second0; Second/sECOND1
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">true</Parameter>
+            <Parameter Name="ShouldBeCompatible">true</Parameter>
+        </Row>
+        <Row Name="NewBuiltDifferentScopeOrder" Description="Test that changing order of scopes yields an incompatible result">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S2_MajorVersion">1</Parameter>
+            <Parameter Name="S2_ItemNamesList"> Second/Second0; 
+                Second/Second1; First/First0; First/First1
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>
+        </Row>
+        <Row Name="NewBuiltDifferentItemOrder" Description="Test that changing order of items yields an incompatible result">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S2_MajorVersion">1</Parameter>
+            <Parameter Name="S2_ItemNamesList"> First/First0; First/First1; 
+                Second/Second1; Second/Second0
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>
+        </Row>
+        <Row Name="AddItemsSameVersion" Description="Test that adding items without bumping the version is incompatible">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S2_MajorVersion">1</Parameter>
+            <Parameter Name="S2_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1; Second/Second2
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>
+        </Row>
+        <Row Name="AddScopeSameVersion" Description="Test that adding a scope without bumping the version is incompatible">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S2_MajorVersion">1</Parameter>
+            <Parameter Name="S2_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1; Third/Third0
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>
+        </Row>
+    </Table>
+    <Table Id="ManagedSchemaTests">
+        <ParameterTypes>
+            <ParameterType Name="VersionedBuild">Boolean</ParameterType>
+            <ParameterType Name="ManagedChanges" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="Identical" Description="Test that identical schemas can be swapped back and forth without affecting generation">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S1_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="S1_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="S1_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="S1_ExpectedNumItems">4</Parameter>
+            <Parameter Name="S1_ExpectedScopesList">First; 
+                Second</Parameter>
+            <Parameter Name="S1_ExpectedItemsList">First/First0; 
+                First/First1; Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_VersionedBuild">true</Parameter>
+            <Parameter Name="S2_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_ExpectedItemsList">First/First0; 
+                First/First1; Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="S2_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="S2_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="S2_ExpectedNumItems">4</Parameter>
+            <Parameter Name="S2_ExpectedScopesList">First; 
+                Second</Parameter>
+            <Parameter Name="ShouldBeIdentical">true</Parameter>
+            <Parameter Name="ShouldBeCompatible">true</Parameter>
+            <Parameter Name="ManagedChanges">
+                <Value>S1; success; 1; S1_</Value>
+                <Value>S2; success; 1; S2_</Value>
+                <Value>S1; success; 1; S1_</Value>
+            </Parameter>
+        </Row>
+        <Row Name="LaterVersion" Description="Test adding a newer version works and bumps generation">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S1_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="S1_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="S1_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="S1_ExpectedNumItems">4</Parameter>
+            <Parameter Name="S1_ExpectedScopesList">First; 
+                Second</Parameter>
+            <Parameter Name="S1_ExpectedItemsList">First/First0; 
+                First/First1; Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_VersionedBuild">true</Parameter>
+            <Parameter Name="S2_ItemNamesList">First/First2</Parameter>
+            <Parameter Name="S2_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="S2_ExpectedMinorVersion">1</Parameter>
+            <Parameter Name="S2_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="S2_ExpectedNumItems">5</Parameter>
+            <Parameter Name="S2_ExpectedScopesList">First; 
+                Second</Parameter>
+            <Parameter Name="S2_ExpectedItemsList">First/First0; 
+                First/First1; Second/Second0; Second/Second1; First/First2
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">true</Parameter>
+            <Parameter Name="ManagedChanges">
+                <Value>S1; success; 1; S1_</Value>
+                <Value>S2; success; 2; S2_</Value>
+                <Value>S1; failure; 2; S2_</Value>
+            </Parameter>
+        </Row>
+        <Row Name="PriorVersion" Description="Test adding a prior version fails without changing generation">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_VersionedBuild">true</Parameter>
+            <Parameter Name="S2_ItemNamesList">First/First2</Parameter>
+            <Parameter Name="S1_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="S1_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="S1_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="S1_ExpectedNumItems">4</Parameter>
+            <Parameter Name="S1_ExpectedScopesList">First; 
+                Second</Parameter>
+            <Parameter Name="S1_ExpectedItemsList">First/First0; 
+                First/First1; Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="S2_ExpectedMinorVersion">1</Parameter>
+            <Parameter Name="S2_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="S2_ExpectedNumItems">5</Parameter>
+            <Parameter Name="S2_ExpectedScopesList">First; 
+                Second</Parameter>
+            <Parameter Name="S2_ExpectedItemsList">First/First0; 
+                First/First1; Second/Second0; Second/Second1; First/First2
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">true</Parameter>
+            <Parameter Name="ManagedChanges">
+                <Value>S2; success; 1; S2_</Value>
+                <Value>S1; failure; 1; S2_</Value>
+                <Value>S2; success; 1; S2_</Value>
+            </Parameter>
+        </Row>
+        <Row Name="Unrelated" Description="Test that changing to unrelated schemas fails without affecting generation">
+            <Parameter Name="S1_SimpleId">TestSchema</Parameter>
+            <Parameter Name="S1_MajorVersion">1</Parameter>
+            <Parameter Name="S1_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_VersionedBuild">false</Parameter>
+            <Parameter Name="S2_SimpleId">TestSchema2</Parameter>
+            <Parameter Name="S2_MajorVersion">1</Parameter>
+            <Parameter Name="S2_ItemNamesList"> First/First0; First/First1; 
+                Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S1_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="S1_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="S1_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="S1_ExpectedNumItems">4</Parameter>
+            <Parameter Name="S1_ExpectedScopesList">First; 
+                Second</Parameter>
+            <Parameter Name="S1_ExpectedItemsList">First/First0; 
+                First/First1; Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="S2_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="S2_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="S2_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="S2_ExpectedNumItems">4</Parameter>
+            <Parameter Name="S2_ExpectedScopesList">First; 
+                Second</Parameter>
+            <Parameter Name="S2_ExpectedItemsList">First/First0; 
+                First/First1; Second/Second0; Second/Second1
+            </Parameter>
+            <Parameter Name="ShouldBeIdentical">false</Parameter>
+            <Parameter Name="ShouldBeCompatible">false</Parameter>
+            <Parameter Name="ManagedChanges">
+                <Value>S1; failure; 1; S1_</Value>
+                <Value>S2; failure; 1; S1_</Value>
+                <Value>S1; success; 1; S1_</Value>
+            </Parameter>
+        </Row>
+    </Table>
+</Data>
+

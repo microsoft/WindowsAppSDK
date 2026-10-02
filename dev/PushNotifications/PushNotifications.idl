@@ -1,0 +1,101 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Windows.PushNotifications
+{
+    [contractversion(1)]
+    apicontract PushNotificationsContract {}
+
+    // Event args for the Push payload.
+    [contract(PushNotificationsContract, 1)]
+    runtimeclass PushNotificationReceivedEventArgs
+    {
+        // The Push payload
+        byte[] Payload { get; };
+
+        // Gets a deferral to allow push notification processing even if the system goes into low power mode.
+        Windows.ApplicationModel.Background.BackgroundTaskDeferral GetDeferral();
+
+        // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
+        event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
+    };
+
+    [contract(PushNotificationsContract, 1)]
+    enum PushNotificationChannelStatus
+    {
+        InProgress, // The request is in progress and there is no retry operation
+        InProgressRetry, // The request is in progress and is in a backoff retry state. Check ExtendedError for HRESULT for retryable error.
+        CompletedSuccess, // The request completed successfully
+        CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
+    };
+
+    // The PushNotificationChannel Progress result
+    [contract(PushNotificationsContract, 1)]
+    struct PushNotificationCreateChannelStatus
+    {
+        // Either InProgress or InProgressRetry status
+        PushNotificationChannelStatus status;
+
+        // The last extended error we failed Channel requests on that caused the inprogress retry status. E_PENDING if this is just progress status.
+        HRESULT extendedError;
+
+        // Total Retries so far
+        UInt32 retryCount;
+    };
+
+    [contract(PushNotificationsContract, 1)]
+    runtimeclass PushNotificationChannel
+    {
+        // The Channel Uri for app to Post a notification to.
+        Windows.Foundation.Uri Uri { get; };
+
+        // Expiration of the Channel
+        Windows.Foundation.DateTime ExpirationTime { get; };
+
+        // Unsubscribes the channel
+        void Close();
+    }
+
+    [contract(PushNotificationsContract, 1)]
+    runtimeclass PushNotificationCreateChannelResult
+    {
+        // The Push channel associated with the Result. Valid only if status is CompletedSuccess.
+        PushNotificationChannel Channel { get; };
+
+        // More detailed error code in addition to the ChannelStatus state.
+        HRESULT ExtendedError{ get; };
+
+        // The Status of the CreateChannel operation
+        PushNotificationChannelStatus Status { get; };
+    };
+
+    [contract(PushNotificationsContract, 1)]
+    runtimeclass PushNotificationManager
+    {
+        // Checks to see if the APIs are supported for the Desktop app
+        // Certain self-contained apps may not support Push Notification scenarios by design
+        static Boolean IsSupported();
+
+        // Gets a Default instance of a PushNotificationManager
+        static PushNotificationManager Default{ get; };
+
+        // Registers an application for Notifications
+        // For Unpackaged applications, registers support for protocol activations
+        // For packaged applications with Background Infrastructure support, registers Push Trigger with the Background Infrastructure
+        // For packaged applications without Background Infrastructure support, registers a COM Service
+        void Register();
+
+        // Packaged Apps: Force COM to launch a new process
+        // Unpackaged apps: Remove the Foreground Sink to force Long Running Process Singleton to launch a new process instance.
+        void Unregister();
+
+        // Disables Push completely for Packaged and Unpackaged apps. Register() needs to be called again for Push to work
+        void UnregisterAll();
+
+        // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
+        Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
+
+        // Event handler for Push Notifications
+        event Windows.Foundation.TypedEventHandler<PushNotificationManager, PushNotificationReceivedEventArgs> PushReceived;
+    };
+}

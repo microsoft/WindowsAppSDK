@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Check TargetPlatformMinVersion during build to block unsupported configurations. -->
+  <Target Name="MicrosoftWindowsAppSDKCheckTargetPlatformVersion" BeforeTargets="PrepareForBuild"
+      Condition="'$(TargetPlatformVersion)' != '' and '$(TargetPlatformMinVersion)' != '' and '$(SkipMicrosoftWindowsAppSDKCheckTargetPlatformVersion)'==''">
+    <PropertyGroup>
+      <MicrosoftWindowsAppSDKTargetPlatformMinCheckValue>$([System.Version]::Parse('$(TargetPlatformMinVersion)').Build)</MicrosoftWindowsAppSDKTargetPlatformMinCheckValue>
+    </PropertyGroup>
+    <Error
+        Text="Microsoft.WindowsAppSDK nuget package requires TargetPlatformMinVersion &gt;= 10.0.17763.0 (current project is $(MicrosoftWindowsAppSDKTargetPlatformMinCheckValue))"
+        Condition="$(MicrosoftWindowsAppSDKTargetPlatformMinCheckValue) &lt; 17763" />
+    <PropertyGroup>
+      <MicrosoftWindowsAppSDKTargetPlatformCheckValue>$([System.Version]::Parse('$(TargetPlatformVersion)').Build)</MicrosoftWindowsAppSDKTargetPlatformCheckValue>
+    </PropertyGroup>
+    <Error
+        Text="Microsoft.WindowsAppSDK nuget package requires TargetPlatformVersion &gt;= 10.0.18362.0 (current project is $(MicrosoftWindowsAppSDKTargetPlatformCheckValue))"
+        Condition="$(MicrosoftWindowsAppSDKTargetPlatformCheckValue) &lt; 18362" />
+  </Target>
+</Project>

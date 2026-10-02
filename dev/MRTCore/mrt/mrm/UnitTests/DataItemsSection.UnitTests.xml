@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleTests">
+        <Row Name="SimpleSmallBlobs" Description="Simple Small Blobs Test">
+            <Parameter Name="Item_Count">5</Parameter>
+            <Parameter Name="Item0_Size">1</Parameter>
+            <Parameter Name="Item1_Size">2</Parameter>
+            <Parameter Name="Item2_Size">3</Parameter>
+            <Parameter Name="Item3_Size">4</Parameter>
+            <Parameter Name="Item4_Size">5</Parameter>
+            <Parameter Name="Item_ExpectedSmallItemCount">5</Parameter>
+            <Parameter Name="Item_ExpectedLargeItemCount">0</Parameter>
+        </Row>
+        <Row Name="SimpleSmallBlobsAndStrings" Description="Simple Small Blobs and Strings Test">
+            <Parameter Name="Item_Count">10</Parameter>
+            <Parameter Name="Item0_Size">1</Parameter>
+            <Parameter Name="Item1_Size">2</Parameter>
+            <Parameter Name="Item2_Size">3</Parameter>
+            <Parameter Name="Item3_Size">4</Parameter>
+            <Parameter Name="Item4_Size">5</Parameter>
+            <Parameter Name="Item5_String">a</Parameter>
+            <Parameter Name="Item6_String">bc</Parameter>
+            <Parameter Name="Item7_String">def</Parameter>
+            <Parameter Name="Item8_String">ghij</Parameter>
+            <Parameter Name="Item9_String">klmno</Parameter>
+            <Parameter Name="Item_ExpectedSmallItemCount">10</Parameter>
+            <Parameter Name="Item_ExpectedLargeItemCount">0</Parameter>
+        </Row>
+        <Row Name="SimpleLargeBlobs" Description="Simple Large Blobs Test">
+            <Parameter Name="Item_Count">2</Parameter>
+            <Parameter Name="Item0_Size">33000</Parameter>
+            <Parameter Name="Item1_Size">40000</Parameter>
+            <Parameter Name="Item_ExpectedSmallItemCount">0</Parameter>
+            <Parameter Name="Item_ExpectedLargeItemCount">2</Parameter>
+        </Row>
+        <Row Name="SortBlobsByAlignment" Description="Verify that 64-bit alignment forces blobs into the large pool">
+            <Parameter Name="Item_Count">2</Parameter>
+            <Parameter Name="Item0_Size">16</Parameter>
+            <Parameter Name="Item0_Alignment">8</Parameter>
+            <Parameter Name="Item1_Size">16</Parameter>
+            <Parameter Name="Item0_ExpectedClass">large</Parameter>
+            <Parameter Name="Item1_ExpectedClass">small</Parameter>
+            <Parameter Name="Item_ExpectedSmallItemCount">1</Parameter>
+            <Parameter Name="Item_ExpectedLargeItemCount">1</Parameter>
+        </Row>
+        <Row Name="SimpleMixedBlobsAndStrings" Description="Simple Mixed Size Blob and String Test">
+            <Parameter Name="Item_Count">3</Parameter>
+            <Parameter Name="Item0_Size">12</Parameter>
+            <Parameter Name="Item1_Size">40000</Parameter>
+            <Parameter Name="Item2_String">This is a somewhat longer 
+                test string</Parameter>
+            <Parameter Name="Item_ExpectedSmallItemCount">2</Parameter>
+            <Parameter Name="Item_ExpectedLargeItemCount">1</Parameter>
+        </Row>
+    </Table>
+</Data>
+

@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleBuilderTests">
+        <ParameterTypes>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedDecisions" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <!--
+          Note that decision info sections are pre-initalized with 1 qualifier,
+          1 qualifier set and 2 decisions.  The counts and indexes below reflect that.
+          -->
+        <Row Name="SimpleDecisionInfo" Description="Build a simple decision info">
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#100=2; Scale; 100</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$100=2; #100=0</Value>
+                <Value>$en100=3; #en=0; #100=1</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+                <Value>@lang=2; $en=0</Value>
+                <Value>@scale=3; $100=0</Value>
+                <Value>@lang+scale=4; $en100=0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumQualifiers">3</Parameter>
+            <Parameter Name="ExpectedQualifiers">
+                <Value>#en=1; Language; en-US; 700</Value>
+                <Value>#100=2; Scale; 100; 200</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumQualifierSets">4</Parameter>
+            <Parameter Name="ExpectedQualifierSets">
+                <Value>$en=1; #en</Value>
+                <Value>$100=2; #100</Value>
+                <Value>$en100=3; #en; #100</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDecisions">5</Parameter>
+            <Parameter Name="ExpectedDecisions">
+                <Value>@lang=2; $en</Value>
+                <Value>@scale=3; $100</Value>
+                <Value>@lang+scale=4; $en100</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SimpleOutOfOrder1" Description="Build a simple decision info with conditions out-of-order">
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#100=2; Scale; 100</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$100=2; #100=0</Value>
+                <Value>$en100=3; #100=0; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+                <Value>@lang=2; $en=0</Value>
+                <Value>@scale=3; $100=0</Value>
+                <Value>@lang+scale=4; $en100=0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumQualifiers">3</Parameter>
+            <Parameter Name="ExpectedQualifiers">
+                <Value>#en=1; Language; en-US; 700</Value>
+                <Value>#100=2; Scale; 100; 200</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumQualifierSets">4</Parameter>
+            <Parameter Name="ExpectedQualifierSets">
+                <Value>$en=1; #en</Value>
+                <Value>$100=2; #100</Value>
+                <Value>$en100=3; #en; #100</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDecisions">5</Parameter>
+            <Parameter Name="ExpectedDecisions">
+                <Value>@lang=2; $en</Value>
+                <Value>@scale=3; $100</Value>
+                <Value>@lang+scale=4; $en100</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SimpleOutOfOrder2" Description="Build a simple decision info with qualifier sets out-of-order">
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#100=2; Scale; 100</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$100=2; #100=0</Value>
+                <Value>$en100=3; #en=0; #100=1</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+                <Value>@lang=2; $en=0</Value>
+                <Value>@scale=3; $100=0</Value>
+                <Value>@lang+scale=4; $100=0; $en=0; $en100=0</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumQualifiers">3</Parameter>
+            <Parameter Name="ExpectedQualifiers">
+                <Value>#en=1; Language; en-US; 700</Value>
+                <Value>#100=2; Scale; 100; 200</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumQualifierSets">4</Parameter>
+            <Parameter Name="ExpectedQualifierSets">
+                <Value>$en=1; #en</Value>
+                <Value>$100=2; #100</Value>
+                <Value>$en100=3; #en; #100</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDecisions">5</Parameter>
+            <Parameter Name="ExpectedDecisions">
+                <Value>@lang=2; $en</Value>
+                <Value>@scale=3; $100</Value>
+                <Value>@lang+scale=4; $en100; $en; $100</Value>
+            </Parameter>
+        </Row>
+        <Row Name="BiggerBuild" Description="Build a somewhat bigger decision info">
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#de=2; Language; de-DE</Value>
+                <Value>#100=3; Scale; 100</Value>
+                <Value>#140=4; scale; 140</Value>
+                <Value>#180=5; Scale; 180</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$de=2; #de=0</Value>
+                <Value>$en100=3; #en=0; #100=1</Value>
+                <Value>$de100=4; #de=0; #100=1</Value>
+                <Value>$en140=5; #en; #140</Value>
+                <Value>$en180=6; #en; #180</Value>
+                <Value>$de140=7; #de; #140</Value>
+                <Value>$de180=8; #de; #180</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+                <Value>@lang=2; $en=0; $de=1</Value>
+                <Value>@lang100=3; $en100; $de100</Value>
+                <Value>@lang+scale=4; $en100; $en140; $en180; $de100; $de140; 
+                    $de180
+                </Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumQualifiers">6</Parameter>
+            <Parameter Name="ExpectedQualifiers">
+                <Value>#en=1; Language; en-US; 700</Value>
+                <Value>#de=2; Language; de-DE; 700</Value>
+                <Value>#100=3; Scale; 100; 200</Value>
+                <Value>#140=4; scale; 140; 200</Value>
+                <Value>#180=5; Scale; 180; 200</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumQualifierSets">9</Parameter>
+            <Parameter Name="ExpectedQualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$de=2; #de=0</Value>
+                <Value>$en100=3; #en=0; #100=1</Value>
+                <Value>$de100=4; #de=0; #100=1</Value>
+                <Value>$en140=5; #en; #140</Value>
+                <Value>$en180=6; #en; #180</Value>
+                <Value>$de140=7; #de; #140</Value>
+                <Value>$de180=8; #de; #180</Value>
+            </Parameter>
+            <Parameter Name="ExpectedNumDecisions">5</Parameter>
+            <Parameter Name="ExpectedDecisions">
+                <Value>@lang=2; $en=0; $de=1</Value>
+                <Value>@lang100=3; $en100; $de100</Value>
+                <Value>@lang+scale=4; $en180; $en140; $en100; $de180; $de140; 
+                    $de100
+                </Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="MergeTests">
+        <ParameterTypes>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Merge1Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Merge1QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Merge1Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Merge2Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Merge2QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Merge2Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="MergedExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="MergedExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="MergedExpectedDecisions" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <!--
+          Note that decision info sections are pre-initalized with 1 qualifier,
+          1 qualifier set and 2 decisions.  The counts and indexes below reflect that.
+          -->
+        <Row Name="Identity" Description="Merge identical decision infos">
+            <Parameter Name="NumToMerge">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#100=2; Scale; 100</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$100=2; #100=0</Value>
+                <Value>$en100=3; #en=0; #100=1</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+                <Value>@lang=2; $en=0</Value>
+                <Value>@scale=3; $100=0</Value>
+                <Value>@lang+scale=4; $en100=0</Value>
+            </Parameter>
+            <Parameter Name="Merge1Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#100=2; Scale; 100</Value>
+            </Parameter>
+            <Parameter Name="Merge1QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$100=2; #100=0</Value>
+                <Value>$en100=3; #en=0; #100=1</Value>
+            </Parameter>
+            <Parameter Name="Merge1Decisions">
+                <Value>@lang=2; $en=0</Value>
+                <Value>@scale=3; $100=0</Value>
+                <Value>@lang+scale=4; $en100=0</Value>
+            </Parameter>
+            <Parameter Name="Merge1ExpectedQualifiersMap">0; 1; 2</Parameter>
+            <Parameter Name="Merge1ExpectedQualifierSetsMap">0; 1; 2; 
+                3</Parameter>
+            <Parameter Name="Merge1ExpectedDecisionsMap">0; 1; 2; 3; 
+                4</Parameter>
+            <Parameter Name="MergedExpectedNumQualifiers">2</Parameter>
+            <Parameter Name="MergedExpectedQualifiers">
+                <Value>#en=1; Language; en-US; 700</Value>
+                <Value>#100=2; Scale; 100; 200</Value>
+            </Parameter>
+            <Parameter Name="MergedExpectedNumQualifierSets">4</Parameter>
+            <Parameter Name="MergedExpectedQualifierSets">
+                <Value>$en=1; #en</Value>
+                <Value>$100=2; #100</Value>
+                <Value>$en100=3; #en; #100</Value>
+            </Parameter>
+            <Parameter Name="MergedExpectedNumDecisions">5</Parameter>
+            <Parameter Name="MergedExpectedDecisions">
+                <Value>@lang=2; $en</Value>
+                <Value>@scale=3; $100</Value>
+                <Value>@lang+scale=4; $en100</Value>
+            </Parameter>
+        </Row>
+        <Row Name="Reordered" Description="Merge identical decision infos">
+            <Parameter Name="NumToMerge">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#100=2; Scale; 100</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$100=2; #100=0</Value>
+                <Value>$en100=3; #en=0; #100=1</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+                <Value>@lang=2; $en=0</Value>
+                <Value>@scale=3; $100=0</Value>
+                <Value>@lang+scale=4; $en100=0</Value>
+            </Parameter>
+            <Parameter Name="Merge1Qualifiers">
+                <Value>#100=1; Scale; 100</Value>
+                <Value>#en=2; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="Merge1QualifierSets">
+                <Value>$100=1; #100=0</Value>
+                <Value>$en100=2; #en=0; #100=1</Value>
+                <Value>$en=3; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Merge1Decisions">
+                <Value>@scale=2; $100=0</Value>
+                <Value>@lang+scale=3; $en100=0</Value>
+                <Value>@lang=4; $en=0</Value>
+            </Parameter>
+            <Parameter Name="Merge1ExpectedQualifiersMap">0; 2; 1</Parameter>
+            <Parameter Name="Merge1ExpectedQualifierSetsMap">0; 2; 3; 1
+                </Parameter>
+            <Parameter Name="Merge1ExpectedDecisionsMap">0; 1; 3; 4; 
+                2</Parameter>
+            <Parameter Name="MergedExpectedNumQualifiers">2</Parameter>
+            <Parameter Name="MergedExpectedQualifiers">
+                <Value>#en=1; Language; en-US; 700</Value>
+                <Value>#100=2; Scale; 100; 200</Value>
+            </Parameter>
+            <Parameter Name="MergedExpectedNumQualifierSets">4</Parameter>
+            <Parameter Name="MergedExpectedQualifierSets">
+                <Value>$en=1; #en</Value>
+                <Value>$100=2; #100</Value>
+                <Value>$en100=3; #en; #100</Value>
+            </Parameter>
+            <Parameter Name="MergedExpectedNumDecisions">5</Parameter>
+            <Parameter Name="MergedExpectedDecisions">
+                <Value>@lang=2; $en</Value>
+                <Value>@scale=3; $100</Value>
+                <Value>@lang+scale=4; $en100</Value>
+            </Parameter>
+        </Row>
+    </Table>
+</Data>
+
