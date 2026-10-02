@@ -48,13 +48,15 @@ resources:
       ref: refs/heads/main
 
 extends:
-  template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
+  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     featureFlags:
       EnableCDPxPAT: false      
       WindowsHostVersion:
         Version: 2022
         Network: R1
+      networkisolation:
+        policy: Preferred,ESRP
 
     platform:
       name: 'windows_undocked' # windows undocked

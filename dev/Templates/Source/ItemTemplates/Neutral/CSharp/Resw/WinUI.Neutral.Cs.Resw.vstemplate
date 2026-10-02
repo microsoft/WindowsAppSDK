@@ -8,7 +8,7 @@
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Cs.Neutral.Resw</TemplateID>
     <TemplateGroupID>WinRT-Managed-UAP</TemplateGroupID>
-    <AppliesTo>CSharp + WindowsAppSDK</AppliesTo>
+    <AppliesTo>CSharp + (WindowsAppSDK | WinUI)</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <ShowByDefault>false</ShowByDefault>
     <TargetPlatformName>Windows</TargetPlatformName>

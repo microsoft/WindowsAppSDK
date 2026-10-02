@@ -453,31 +453,95 @@ function Get-LatestOfficialWasdkVersion {
     $sourceFeed = 'https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/flat2/microsoft.windowsappsdk/index.json'
     $excludedVersionPrefixes = @('2.63.')
     $token = $env:SYSTEM_ACCESSTOKEN
-    if ([string]::IsNullOrWhiteSpace($token)) {
-        Write-Warning "SYSTEM_ACCESSTOKEN is not set; cannot query the package source for versions."
-        return $null
-    }
     try {
-        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        $response = Invoke-RestMethod -Uri $sourceFeed -Headers @{ Authorization = "Bearer $token" } -TimeoutSec 30 -ErrorAction Stop
-        $latest = $null
-        foreach ($v in $response.versions) {
-            if ($v -match '-') { continue }   # skip prerelease
-            $excluded = $false
-            foreach ($p in $excludedVersionPrefixes) { if ($v.StartsWith($p)) { $excluded = $true; break } }
-            if ($excluded) { continue }
-            $parsed = $null
-            if (-not [version]::TryParse($v, [ref]$parsed)) { continue }
-            if (($null -eq $latest) -or ($parsed -gt $latest.Ver)) {
-                $latest = [pscustomobject]@{ Raw = $v; Ver = $parsed }
+        # SYSTEM_ACCESSTOKEN is a pipeline variable. Use nuget CLI when running outside of pipeline runs
+        if ([string]::IsNullOrWhiteSpace($token)) {
+            Write-Warning "SYSTEM_ACCESSTOKEN is not set; cannot query package source for latest official Microsoft.WindowsAppSDK version. Using NuGet CLI instead"
+            $packageId = 'Microsoft.WindowsAppSDK'
+            $sourceFeed = 'https://microsoft.pkgs.visualstudio.com/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json'
+            $json = & dotnet package search $packageId `
+                --source $sourceFeed `
+                --exact-match `
+                --format json `
+                --verbosity quiet
+
+            if ($LASTEXITCODE -ne 0) {
+                throw "dotnet package search failed with exit code $LASTEXITCODE."
             }
-        }
-        if ($latest) {
-            Write-Host "Latest official Microsoft.WindowsAppSDK = $($latest.Raw) (excluded prerelease and $($excludedVersionPrefixes -join ', ')*)"
+
+            $response = $json | ConvertFrom-Json
+
+            $problems = @()
+
+            if ($response.PSObject.Properties['problems']) {
+                $problems += @($response.problems)
+            }
+
+            foreach ($result in @($response.searchResult)) {
+                if ($result.PSObject.Properties['problems']) {
+                    $problems += @($result.problems)
+                }
+            }
+
+            if ($problems.Count -gt 0) {
+                throw ($problems | ForEach-Object { $_.text } | Join-String -Separator "`n")
+            }
+
+            $versions = foreach ($result in @($response.searchResult)) {
+                foreach ($package in @($result.packages)) {
+                    if ($package.id -ine $packageId) {
+                        continue
+                    }
+
+                    if ($package.PSObject.Properties['version']) {
+                        $package.version
+                    }
+                    elseif ($package.PSObject.Properties['latestVersion']) {
+                        $package.latestVersion
+                    }
+                }
+            }
+            $latest = $versions |
+                Where-Object {
+                    $version = $_
+                    -not ($excludedVersionPrefixes | Where-Object {
+                        $version.StartsWith($_)
+                    })
+                } |
+                ForEach-Object {
+                    [pscustomobject]@{
+                        Raw = $_
+                        Ver = [version]$_
+                    }
+                } |
+                Sort-Object Ver -Descending |
+                Select-Object -First 1
+
             return $latest.Raw
         }
-        Write-Warning "No official Microsoft.WindowsAppSDK version found on the package source."
-        return $null
+        else
+        {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+            $response = Invoke-RestMethod -Uri $sourceFeed -Headers @{ Authorization = "Bearer $token" } -TimeoutSec 30 -ErrorAction Stop
+            $latest = $null
+            foreach ($v in $response.versions) {
+                if ($v -match '-') { continue }   # skip prerelease
+                $excluded = $false
+                foreach ($p in $excludedVersionPrefixes) { if ($v.StartsWith($p)) { $excluded = $true; break } }
+                if ($excluded) { continue }
+                $parsed = $null
+                if (-not [version]::TryParse($v, [ref]$parsed)) { continue }
+                if (($null -eq $latest) -or ($parsed -gt $latest.Ver)) {
+                    $latest = [pscustomobject]@{ Raw = $v; Ver = $parsed }
+                }
+            }
+            if ($latest) {
+                Write-Host "Latest official Microsoft.WindowsAppSDK = $($latest.Raw) (excluded prerelease and $($excludedVersionPrefixes -join ', ')*)"
+                return $latest.Raw
+            }
+            Write-Warning "No official Microsoft.WindowsAppSDK version found on the package source."
+            return $null
+        }
     }
     catch {
         Write-Warning "Failed to query the package source for versions: $($_.Exception.Message)"
@@ -599,7 +663,14 @@ try {
         # acquires package identity) via UnitTestClient.Run(), not via
         # `dotnet test`. Validate it as an App so we still confirm the
         # template builds cleanly.
-        @{ ShortName = 'winui-unittest'; Kind = 'App' }
+        @{ ShortName = 'winui-unittest'; Kind = 'App' },
+        # Reactor (Microsoft.UI.Reactor) app templates: pure C#, unpackaged,
+        # dotnet-new-only. They build with the same App path below
+        # (-p:WindowsPackageType=None), and their .csproj already sets it.
+        @{ ShortName = 'reactor'; Kind = 'App' },
+        @{ ShortName = 'reactor-mvu'; Kind = 'App' },
+        @{ ShortName = 'reactor-navview'; Kind = 'App' },
+        @{ ShortName = 'reactor-tabview'; Kind = 'App' }
     )
 
     foreach ($template in $projectTemplates) {
@@ -647,13 +718,13 @@ try {
     Assert-CsprojPackageVersion -CsprojPath $preReleaseCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.8.0-preview1'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pre-release version content' -Status 'Succeeded' -Path $preReleasePath
 
-    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails with NU1105
+    # Scenario 5: Invalid version — scaffold succeeds but NuGet restore fails
     Write-Step 'Testing invalid version handling...'
     $invalidPath = Join-Path -Path $workingRoot -ChildPath 'VersionInvalid'
     Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionInvalid', '-o', $invalidPath, '--wasdk-version', 'not-a-version', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with invalid version'
     $invalidCsproj = Join-Path -Path $invalidPath -ChildPath 'VersionInvalid.csproj'
     Assert-CsprojPackageVersion -CsprojPath $invalidCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion 'not-a-version'
-    # Restore should fail with NU1105 because NuGet can't parse an invalid version string
+    # Restore must fail because NuGet cannot parse an invalid version string
     $restoreFailed = $false
     $restoreOutput = $null
     $restoreText = $null
@@ -678,24 +749,27 @@ try {
         throw "Expected restore to fail for invalid WASDK version 'not-a-version'"
     }
     $restoreText = $restoreOutput -join "`n"
-    # Finds NU1105, NETSDK1004, etc.
+    # Finds NU1105, MSB4181, NETSDK1004, etc.
     $errorCodes = @([regex]::Matches($restoreText, '\b(?:NU|NETSDK|MSB)\d{4,}\b') |
         ForEach-Object { $_.Value } |
         Select-Object -Unique)
-    if ($errorCodes.Count -gt 0) {
-        if ($errorCodes -notcontains 'NU1105') {
-            throw "Expected NU1105, got: $($errorCodes -join ', ')"
-        }
+    # The diagnostic NuGet emits for an unparseable version depends on the .NET SDK:
+    #   SDK 8.0.424 / 9.0.317 : no error code; message "'not-a-version' is not a
+    #                           valid version string."
+    #   SDK 10.0.400          : MSB4181 — RestoreTask returns false without logging
+    #                           the descriptive error, so no NU code surfaces at all.
+    # Accept any of these shapes. The assertion that matters is that restore fails
+    # (already enforced above); the code is a secondary signal, so a code appearing
+    # must not short-circuit the descriptive-message fallback.
+    $acceptedCodes = @('NU1105', 'MSB4181')
+    $sawAcceptedCode = @($errorCodes | Where-Object { $acceptedCodes -contains $_ }).Count -gt 0
+    if (-not $sawAcceptedCode -and $restoreText -notmatch 'not a valid version string') {
+        throw "Expected an invalid-version restore failure ($($acceptedCodes -join ' / ') or 'not a valid version string'), got codes: $($errorCodes -join ', ')`n$restoreText"
     }
-    else {
-        # No machine-readable code surfaced; use narrow fallback
-        if ($restoreText -notmatch 'not a valid version string') {
-            throw "Expected invalid version failure, got:`n$restoreText"
-        }
-    }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails with NU1105' -Status 'Succeeded' -Path $invalidPath
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: scaffold OK, restore fails' -Status 'Succeeded' -Path $invalidPath
 
-    # Build (with --no-restore) should fail with NETSDK1005 since restore never succeeded
+    # Build (with --no-restore) should fail because restore never produced usable
+    # assets for this project's target framework.
     $buildFailed = $false
     $buildOutput = $null
     try {
@@ -717,10 +791,17 @@ try {
         throw "Expected build to fail for invalid WASDK version 'not-a-version'"
     }
     $buildText = $buildOutput -join "`n"
-    if ($buildText -notmatch 'NETSDK1004') {
-        throw "Expected NETSDK1004 (assets file missing, please run restore) for invalid WASDK version 'not-a-version', but got:`n$buildText"
+    # Which diagnostic surfaces depends on whether the failed restore left an
+    # obj/project.assets.json behind:
+    #   NETSDK1004 - no assets file at all (restore wrote nothing).
+    #   NETSDK1005 - assets file exists but has no target for the project's TFM.
+    #                This is what .NET SDK 10 produces: NuGet's RestoreTask fails
+    #                (MSB4181) yet still writes a partial assets file.
+    # Both mean the same thing here: restore did not produce usable assets.
+    if ($buildText -notmatch 'NETSDK1004|NETSDK1005') {
+        throw "Expected NETSDK1004 (assets file missing) or NETSDK1005 (assets file has no target for the TFM) for invalid WASDK version 'not-a-version', but got:`n$buildText"
     }
-    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails with NETSDK1004' -Status 'Succeeded' -Path $invalidPath
+    Add-Result -Template 'winui' -Platform 'N/A' -Step 'invalid version: build fails without usable assets' -Status 'Succeeded' -Path $invalidPath
 
     # Scenario 6: Valid version format but nonexistent package
     $nonexistentPath = Join-Path -Path $workingRoot -ChildPath 'VersionNonexistent'
@@ -816,9 +897,10 @@ try {
     }
     $buildText = $buildOutput -join "`n"
     # Expect NU1301 (unable to load source) or NU1102 (package not found) or
-    # NETSDK1004 (assets file missing because restore never succeeded).
-    if ($buildText -notmatch 'NU1301|NU1102|NETSDK1004') {
-        throw "Expected NuGet resolution error (NU1301, NU1102, or NETSDK1004) when sources are unreachable, but got:`n$buildText"
+    # NETSDK1004/NETSDK1005 (restore never produced usable assets — 1004 when no
+    # assets file was written, 1005 when a partial one was, as .NET SDK 10 does).
+    if ($buildText -notmatch 'NU1301|NU1102|NETSDK1004|NETSDK1005') {
+        throw "Expected NuGet resolution error (NU1301, NU1102, NETSDK1004, or NETSDK1005) when sources are unreachable, but got:`n$buildText"
     }
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'unreachable source: build fails with NuGet error' -Status 'Succeeded' -Path $unreachablePath
 

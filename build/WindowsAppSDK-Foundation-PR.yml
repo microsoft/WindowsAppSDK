@@ -37,6 +37,7 @@ parameters: # parameters are shown up in ADO UI in a build queue time
 
 variables:
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-TSAVariables.yml@WindowsAppSDKConfig
 - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
 - template: WindowsAppSDK-CommonVariables.yml
   parameters:
