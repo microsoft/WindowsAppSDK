@@ -59,7 +59,7 @@ resources:
     - repository: WinAppSDK
       type: git
       name: OS/WinAppSDK
-      ref: refs/heads/release/dev/monobuild-2.0-stable
+      ref: refs/heads/release/2.0-stable
     - repository: WindowsAppSDKSamples
       type: github
       endpoint: 'WinAppSDK-Github'
