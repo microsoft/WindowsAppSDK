@@ -27,6 +27,12 @@
 #include <ShellLocalization.h>
 #include <filesystem>
 #include <NotificationPlatformActivation.h>
+#include <FrameworkUdk/Containment.h>
+
+// 61688595: Route AppNotificationManager::Show failures through a noexcept HRESULT worker so a
+// failure no longer unwinds through the deep C++/WinRT projection rethrow path that exhausted
+// the stack via WIL's FormatMessage-based exception logging chain.
+#define WINAPPSDK_CHANGEID_61688595 61688595
 
 using namespace std::literals;
 
@@ -421,13 +427,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
     CATCH_RETURN()
 
-        void AppNotificationManager::Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
+    void AppNotificationManager::ShowLegacy(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
     {
-        if (!IsSupported())
-        {
-            return;
-        }
-
         auto logTelemetry{ AppNotificationTelemetry::Show::Start(
             g_telemetryHelper,
             m_appId,
@@ -451,6 +452,56 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         notificationImpl->SetNotificationId(notificationId);
 
         logTelemetry.Stop();
+    }
+
+    HRESULT AppNotificationManager::ShowImpl(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification) noexcept try
+    {
+        auto logTelemetry{ AppNotificationTelemetry::Show::Start(
+            g_telemetryHelper,
+            m_appId,
+            notification.Payload(),
+            notification.Tag(),
+            notification.Group(),
+            winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) };
+
+        RETURN_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
+
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties = winrt::make_self<NotificationProperties>(notification);
+
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties = winrt::make_self<NotificationTransientProperties>(notification);
+
+        DWORD notificationId = 0;
+        RETURN_IF_FAILED(ToastNotifications_PostToast(m_appId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId));
+
+        RETURN_HR_IF(E_UNEXPECTED, notificationId == 0);
+
+        implementation::AppNotification* notificationImpl = get_self<implementation::AppNotification>(notification);
+        notificationImpl->SetNotificationId(notificationId);
+
+        logTelemetry.Stop();
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    void AppNotificationManager::Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
+    {
+        if (!IsSupported())
+        {
+            return;
+        }
+
+        if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61688595>())
+        {
+            // Pre-61688595 behavior: throw directly from the hot path.
+            ShowLegacy(notification);
+            return;
+        }
+
+        // Delegate to the noexcept ShowImpl worker and rethrow any failure HRESULT
+        // cleanly via wil::ResultException. This avoids the deep WIL
+        // FormatMessage-based exception logging chain that caused stack overflow on
+        // the hot path (Bug 61688595).
+        THROW_IF_FAILED(ShowImpl(notification));
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag, hstring const group)
