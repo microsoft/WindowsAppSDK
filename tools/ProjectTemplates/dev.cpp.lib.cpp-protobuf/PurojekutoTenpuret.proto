@@ -1,7 +1,0 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
-
-syntax = "proto3";
-
-package Microsoft.TokuchoDotNamespace.PurojekutoTenpuretNoFeaturePrefix;
-

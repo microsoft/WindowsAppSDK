@@ -1,7 +1,0 @@
-{
-    "Description" : "C++ Winmain exe",
-    "Libraries": "C++/WinRT, WIL",
-    "Name": {
-        "AllowedRegex": "^[A-Za-z][A-Za-z0-9_]*$"
-    }
-}

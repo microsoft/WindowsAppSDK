@@ -1,7 +1,0 @@
-{
-    "Description" : "C++ DLL providing inproc WinRT object(s)",
-    "Libraries": "C++/WinRT, WIL",
-    "Name": {
-        "AllowedRegex": "^[A-Za-z][A-Za-z0-9_]*$"
-    }
-}
