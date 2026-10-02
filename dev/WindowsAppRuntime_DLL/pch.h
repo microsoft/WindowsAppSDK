@@ -54,7 +54,10 @@
 #include <MsixDynamicDependency.h>
 
 #include <appmodel.identity.h>
+#include <appmodel.package.h>
 #include <appmodel.packagegraph.h>
+#include <exportloader.h>
+#include <iswindowsversion.h>
 #include <microsoft.configuration.h>
 #include <microsoft.filesystem.path.h>
 #include <microsoft.foundation.string.h>

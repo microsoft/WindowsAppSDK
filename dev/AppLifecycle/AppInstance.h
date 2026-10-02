@@ -18,7 +18,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     struct AppInstance : AppInstanceT<AppInstance>
     {
         // No interface public methods.
-        AppInstance(uint32_t processId);
+        AppInstance();
+        AppInstance(uint32_t processId, wil::unique_handle processHandle);
         ~AppInstance()
         {
             if (m_terminationWatcherWaitHandle)
@@ -53,6 +54,16 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         Microsoft::Windows::AppLifecycle::AppInstance FindForKey(std::wstring const& key);
         void EnqueueRedirectionRequestId(GUID id);
         GUID DequeueRedirectionRequestId();
+
+        // Throwing implementation of GetInstances. Called directly when contained change
+        // 61688595 is disabled, and via GetInstancesImpl when it is enabled.
+        static winrt::Windows::Foundation::Collections::IVector<Microsoft::Windows::AppLifecycle::AppInstance> GetInstancesWorker();
+
+        // noexcept HRESULT-returning worker for GetInstances. The public GetInstances
+        // boundary is intentionally thin so a failed HRESULT does not trigger the deep
+        // C++/WinRT projection rethrow path that exhausted the stack via WIL's
+        // FormatMessage-based exception logging (Bug 61688595).
+        static HRESULT GetInstancesImpl(winrt::Windows::Foundation::Collections::IVector<Microsoft::Windows::AppLifecycle::AppInstance>& instancesOut) noexcept;
 
         // Named object prefixes used to scope.
         std::wstring m_moduleName;

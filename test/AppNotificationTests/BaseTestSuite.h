@@ -27,6 +27,7 @@ class BaseTestSuite
         void VerifyToastSuppressDisplay();
         void VerifyToastExpiresOnReboot();
         void VerifyShowToast();
+        void VerifyShowToastTwiceFailsWithNotificationPosted();
         void VerifyUpdateToastProgressDataUsingValidTagAndValidGroup();
         void VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup();
         void VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup();

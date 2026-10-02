@@ -104,6 +104,28 @@ namespace {
 namespace PickerCommon {
     using namespace winrt;
 
+
+    DialogFocusRestorer::DialogFocusRestorer()
+    {
+        // Capture on the UI thread: GetFocus returns the focused window of the calling
+        // thread's message queue, which is the WinUI content island hosting the focused element.
+        m_focusedWindow = ::GetFocus();
+        m_dispatcherQueue = winrt::Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+    }
+
+    DialogFocusRestorer::~DialogFocusRestorer()
+    {
+        if (m_focusedWindow && m_dispatcherQueue)
+        {
+            HWND focusedWindow = m_focusedWindow;
+            // Marshal back to the UI thread so SetFocus runs on the thread that owns the window.
+            m_dispatcherQueue.TryEnqueue([focusedWindow]()
+            {
+                ::SetFocus(focusedWindow);
+            });
+        }
+    }
+
     bool IsHStringNullOrEmpty(winrt::hstring value)
     {
         return value.empty();
@@ -181,7 +203,7 @@ namespace PickerCommon {
             return;
         }
 
-        for (size_t i = 0; i < value.size(); i++)
+        for (std::uint32_t i = 0; i < value.size(); i++)
         {
             if (value[i] == L'\0')
             {
@@ -204,7 +226,7 @@ namespace PickerCommon {
                 PickerLocalization::GetStoragePickersLocalizationText(ImproperFileExtensionLocalizationKey));
         }
 
-        for (size_t i = 1; i < filter.size(); i++)
+        for (std::uint32_t i = 1; i < filter.size(); i++)
         {
             if (filter[i] == L'.' || filter[i] == L'*' || filter[i] == L'?')
             {
