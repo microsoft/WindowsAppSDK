@@ -16,6 +16,12 @@ parameters:
 - name: sourceSubdirectory
   type: string
   default: 'WindowsAppSDK'
+- name: checkoutRepository
+  type: string
+  default: 'self'
+- name: checkoutPath
+  type: string
+  default: 's/WindowsAppSDK'
 - name: dependsOnStage
   type: string
   default: 'DotnetNewTemplates_Build'
@@ -74,9 +80,13 @@ stages:
     timeoutInMinutes: 60
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\test-results'
+      ob_git_fetchDepth: 1
       templateArtifactDir: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
     steps:
-    - checkout: self
+    - checkout: ${{ parameters.checkoutRepository }}
+      path: ${{ parameters.checkoutPath }}
+      fetchDepth: 1
+      fetchTags: false
 
     - download: current
       displayName: 'Download template pack artifact'
