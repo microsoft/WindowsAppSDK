@@ -67,18 +67,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CppWinRT" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Windows.ImplementationLibrary" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ExtensionDependencies Condition=" '$(ExcludeRestorePackageImports)' != 'true' " Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
