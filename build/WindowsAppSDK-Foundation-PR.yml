@@ -39,6 +39,7 @@ parameters: # parameters are shown up in ADO UI in a build queue time
 
 variables:
 - template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-TSAVariables.yml@WinAppSDK
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
   parameters:
     TagPrefix: 'pr'
@@ -60,6 +61,10 @@ resources:
       type: git
       name: OS/WinAppSDK
       ref: refs/heads/release/dev/monobuild
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
     - repository: WindowsAppSDKSamples
       type: github
       endpoint: 'WinAppSDK-Github'

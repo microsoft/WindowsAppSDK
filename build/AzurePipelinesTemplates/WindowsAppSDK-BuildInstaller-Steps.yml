@@ -48,6 +48,20 @@ parameters:
   default: 30
 
 steps:
+# Supports both root and subfolder Foundation checkouts.
+- ${{ if eq(parameters.IsMonobuild, true) }}:
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@self
+    parameters:
+      componentTsaOptionsPath: '$(Build.SourcesDirectory)\$(foundationRepoPath).config\tsaoptions.json'
+      areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+      outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+- ${{ else }}:
+  - template: AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      componentTsaOptionsPath: '$(Build.SourcesDirectory)\$(foundationRepoPath).config\tsaoptions.json'
+      areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+      outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+
 - task: PowerShell@2
   name: InitializeSkipInstallerBuild
   displayName: 'Decide if we can skip this installer build job'
