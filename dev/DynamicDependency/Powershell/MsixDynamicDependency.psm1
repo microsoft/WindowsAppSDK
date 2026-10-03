@@ -558,7 +558,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
             packageFullName = null;
 
             IntPtr pfn = IntPtr.Zero;
-            int hr = GetResolvedPackageFullNameForPackageDependency(packageDependencyId, out pfn);
+            int hr = GetResolvedPackageFullNameForPackageDependency2(packageDependencyId, out pfn);
             if (hr >= 0)
             {
                 packageFullName = Marshal.PtrToStringUni(pfn);
