@@ -42,11 +42,11 @@ resources:
     - repository: WindowsAppSDKConfig
       type: git
       name: OS/WinAppSDK
-      ref: refs/heads/release/dev/monobuild-2.0-experimental
+      ref: refs/heads/release/2.0-experimental
     - repository: WindowsAppSDKVersionConfig
       type: git
       name: OS/WinAppSDK
-      ref: refs/heads/release/dev/monobuild-2.0-experimental
+      ref: refs/heads/release/2.0-experimental
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
