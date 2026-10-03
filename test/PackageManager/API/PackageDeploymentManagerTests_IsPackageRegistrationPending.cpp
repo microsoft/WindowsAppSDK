@@ -96,6 +96,10 @@ namespace Test::PackageManager::Tests
             VERIFY_SUCCEEDED(AAM->ActivateApplication(appUserModelId, eventName, AO_NONE, &processId));
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AppUserModleId:%s Arguments:%s ProcessId:%u", appUserModelId, eventName, processId));
 
+            // Keep a handle so we can wait for the app to exit after we signal it.
+            wil::unique_process_handle appProcess{ ::OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId) };
+            VERIFY_IS_TRUE(appProcess.is_valid());
+
             AddPackageDefer_Blacker();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -104,6 +108,10 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageRegistrationPending(packageFullName));
 
             VERIFY_IS_TRUE(LOG_IF_WIN32_BOOL_FALSE(::SetEvent(endOfTheLine.get())));
+
+            // Wait for the app to exit so its package is released before the next test's
+            // (un)install; otherwise the upgrade races it with 0x80073D02 ERROR_PACKAGES_IN_USE.
+            VERIFY_IS_TRUE(wil::handle_wait(appProcess.get(), 30000));
         }
 
         TEST_METHOD(IsPackageRegistrationPendingForUser_NoSuchPackage)
@@ -154,6 +162,10 @@ namespace Test::PackageManager::Tests
             VERIFY_SUCCEEDED(AAM->ActivateApplication(appUserModelId, eventName, AO_NONE, &processId));
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AppUserModleId:%s Arguments:%s ProcessId:%u", appUserModelId, eventName, processId));
 
+            // Keep a handle so we can wait for the app to exit after we signal it.
+            wil::unique_process_handle appProcess{ ::OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId) };
+            VERIFY_IS_TRUE(appProcess.is_valid());
+
             AddPackageDefer_Blacker();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -162,6 +174,10 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageRegistrationPendingForUser(winrt::hstring{}, packageFullName));
 
             VERIFY_IS_TRUE(LOG_IF_WIN32_BOOL_FALSE(::SetEvent(endOfTheLine.get())));
+
+            // Wait for the app to exit so its package is released before the next test's
+            // (un)install; otherwise the upgrade races it with 0x80073D02 ERROR_PACKAGES_IN_USE.
+            VERIFY_IS_TRUE(wil::handle_wait(appProcess.get(), 30000));
         }
     };
 }

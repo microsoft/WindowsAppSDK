@@ -16,7 +16,7 @@ parameters:
 - name: "BuildPipelineId"
   displayName: "Build pipeline definition ID (from WindowsAppSDK-DotnetNewTemplates pipeline)"
   type: number
-  default: 186691
+  default: 202202
 - name: "BuildRunId"
   displayName: "Build run ID to download artifact from"
   type: number
