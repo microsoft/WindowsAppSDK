@@ -16,7 +16,7 @@
             ItemTemplate                     yes        yes    single-file 'Add New Item' templates (Page, UserControl, ...)
 
             VsixOnlyProjectTemplate          no         yes    e.g. .wapproj-based packaging not usable from the CLI
-            DotnetNewOnlyProjectTemplate     yes        no     (framework slot; no instances today)
+            DotnetNewOnlyProjectTemplate     yes        no     e.g. the experimental Reactor (Microsoft.UI.Reactor) templates
 
             VsixOnlyItemTemplate             no         yes    (framework slot; no instances today)
             DotnetNewOnlyItemTemplate        yes        no     (framework slot; no instances today)
@@ -33,11 +33,16 @@
             RenameManifestFrom    Optional. Source-side manifest filename (typically
                                   Package-managed.appxmanifest) to repack as the reserved
                                   Package.appxmanifest. Leave unset for templates that have no manifest.
+            IncludeGitignore      Optional, dotnet-new project templates only. Defaults to true: the pack
+                                  adds the shared templates\gitignore.txt, which template.json renames to
+                                  .gitignore. Set to false for templates whose output must stay a single
+                                  file, such as a .NET file-based app.
     -->
 
     <ItemDefinitionGroup>
         <ProjectTemplate>
             <RenameManifestFrom></RenameManifestFrom>
+            <IncludeGitignore>true</IncludeGitignore>
         </ProjectTemplate>
         <ItemTemplate>
             <!-- No optional metadata today; listed for symmetry with the table above. -->
@@ -48,6 +53,7 @@
         </VsixOnlyProjectTemplate>
         <DotnetNewOnlyProjectTemplate>
             <RenameManifestFrom></RenameManifestFrom>
+            <IncludeGitignore>true</IncludeGitignore>
         </DotnetNewOnlyProjectTemplate>
 
         <VsixOnlyItemTemplate>
@@ -150,6 +156,26 @@
             <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\ReactorTabViewApp</SourceDir>
             <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\reactor-tabview-app</DotnetConfigDir>
             <RenameManifestFrom>Package-managed.appxmanifest</RenameManifestFrom>
+        </DotnetNewOnlyProjectTemplate>
+
+        <!--
+            The blank Reactor app as a single-file .NET 10 file-based app: the
+            whole template is ProjectTemplate.cs (renamed to <name>.cs), whose
+            #:package and #:property directives take the place of the .csproj. It
+            has no Package.appxmanifest (RenameManifestFrom unset): for 'dotnet run
+            <name>.cs', Microsoft.Windows.SDK.BuildTools.WinApp 0.7.0+ synthesizes
+            one from the directives and launches the app with package identity.
+            The file also references Microsoft.WindowsAppSDK: with
+            Microsoft.UI.Reactor 0.1.0-preview.16 alone, the Windows App SDK
+            defaults to self-contained and the build fails with
+            "WindowsAppSDKSelfContained requires a supported Windows architecture".
+            IncludeGitignore=false keeps the scaffolded output to that one file.
+        -->
+        <DotnetNewOnlyProjectTemplate Include="reactor.singlefile">
+            <BaseName>Reactor.Desktop.Cs.SingleFileApp</BaseName>
+            <SourceDir>$(MSBuildThisFileDirectory)Source\ProjectTemplates\Desktop\CSharp\ReactorSingleFileApp</SourceDir>
+            <DotnetConfigDir>$(MSBuildThisFileDirectory)Dotnet\templates\reactor-singlefile-app</DotnetConfigDir>
+            <IncludeGitignore>false</IncludeGitignore>
         </DotnetNewOnlyProjectTemplate>
     </ItemGroup>
 
