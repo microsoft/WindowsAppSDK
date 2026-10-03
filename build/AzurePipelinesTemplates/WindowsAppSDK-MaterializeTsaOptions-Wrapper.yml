@@ -1,0 +1,19 @@
+# Wrapper for WindowsAppSDK-MaterializeTsaOptions-Steps.yml that dispatches to either
+# @WinAppSDK (per-component pipelines) or @self (monobuild) at compile time.
+# This eliminates if/else duplication at each call site.
+
+parameters:
+  - name: IsMonobuild
+    type: boolean
+    default: false
+  - name: InnerParams
+    type: object
+    default: {}
+
+steps:
+  - ${{ if parameters.IsMonobuild }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@self
+      parameters: ${{ parameters.InnerParams }}
+  - ${{ else }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WinAppSDK
+      parameters: ${{ parameters.InnerParams }}

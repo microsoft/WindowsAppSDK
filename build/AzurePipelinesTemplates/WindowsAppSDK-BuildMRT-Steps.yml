@@ -17,6 +17,8 @@ parameters:
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+  parameters:
+    IsMonobuild: ${{ parameters.IsMonobuild }}
 
 - task: WinUndockNativeCompiler@1
   displayName: 'Setup native compiler version override'

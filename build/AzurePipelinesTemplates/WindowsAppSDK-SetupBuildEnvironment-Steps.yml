@@ -1,9 +1,16 @@
+parameters:
+- name: IsMonobuild
+  type: boolean
+  default: false
+
 steps:
-- template: AzurePipelinesTemplates\WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
+- template: WindowsAppSDK-MaterializeTsaOptions-Wrapper.yml
   parameters:
-    componentTsaOptionsPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
-    areaPath: '$(WinAppSDKCoreTsaAreaPath)'
-    outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+    IsMonobuild: ${{ parameters.IsMonobuild }}
+    InnerParams:
+      componentTsaOptionsPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+      areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+      outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
 
 - task: UseDotNet@2
   displayName: Use .NET Core SDK 6
