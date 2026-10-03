@@ -24,6 +24,8 @@ steps:
     arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+  parameters:
+    IsMonobuild: ${{ parameters.IsMonobuild }}
 
 - task: PowerShell@2
   name: BuildFoundation
