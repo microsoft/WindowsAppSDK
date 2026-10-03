@@ -4,14 +4,10 @@ parameters:
   default: false
 
 steps:
-# Only standalone Foundation pipelines materialize tsaoptions.json here. Under the mono-build this
-# template is loaded from the WinAppSDK monorepo, which does not declare the retired
-# WindowsAppSDKConfig repository resource (compile-time 'No repository found by name' failure) and
-# does not define $(WinAppSDKCoreTsaAreaPath) in these jobs, which would trip the template's own
-# guard at runtime. The mono-build materializes the root tsaoptions.json in its own stages.
-- ${{ if eq(parameters.IsMonobuild, false) }}:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
-    parameters:
+- template: WindowsAppSDK-MaterializeTsaOptions-Wrapper.yml
+  parameters:
+    IsMonobuild: ${{ parameters.IsMonobuild }}
+    InnerParams:
       componentTsaOptionsPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
       areaPath: '$(WinAppSDKCoreTsaAreaPath)'
       outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
