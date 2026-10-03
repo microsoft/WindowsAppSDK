@@ -5,6 +5,8 @@
 
 #include "Microsoft.Windows.Storage.ApplicationData.g.h"
 
+#include <FrameworkUdk/ApplicationData.h>
+
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
     struct ApplicationData : ApplicationDataT<ApplicationData>
@@ -42,6 +44,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         static hstring StorageFolderToPath(winrt::Windows::Storage::StorageFolder storageFolder);
         static void _VerifyPublisher(winrt::hstring const& string);
         static void _VerifyProduct(winrt::hstring const& string);
+        ::ApplicationDataState OpenApplicationData();
 
     private:
         winrt::Windows::Storage::ApplicationData m_applicationData;
