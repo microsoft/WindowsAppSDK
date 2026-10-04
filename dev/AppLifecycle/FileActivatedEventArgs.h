@@ -39,9 +39,36 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // using serialization to generate the encoded arguments for a file type association.
             if (!m_supportCommandTemplates)
             {
-                // Currently we only support one file in the array, because the
-                // activation method forces a new process for each item in the array.
+                // Single file from command-line activation. Multi-file coalescing is
+                // handled by the AppInstance redirection path using the vector constructor below.
                 m_files.Append(StorageFile::GetFileFromPathAsync(m_path.c_str()).get());
+            }
+        }
+
+        // Constructor for coalesced multi-file activations.
+        // Used when AppInstance merges rapid-fire file activation redirections
+        // (from opening multiple files at once) into a single activation event.
+        FileActivatedEventArgs(const winrt::hstring verb, IVector<IStorageItem> const& existingFiles)
+        {
+            if (verb.empty())
+            {
+                throw std::invalid_argument("verb");
+            }
+
+            if (!existingFiles || existingFiles.Size() == 0)
+            {
+                throw std::invalid_argument("existingFiles");
+            }
+
+            m_supportCommandTemplates = false;
+            m_kind = ActivationKind::File;
+            m_verb = std::move(verb);
+            m_path = existingFiles.GetAt(0).Path();
+            m_files = winrt::single_threaded_vector<IStorageItem>();
+
+            for (auto const& file : existingFiles)
+            {
+                m_files.Append(file);
             }
         }
 
