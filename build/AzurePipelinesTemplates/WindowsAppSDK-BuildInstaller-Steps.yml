@@ -39,7 +39,7 @@ parameters:
 # 'main', so default there. Override if the active publishing branch changes.
 - name: NightlyBranchName
   type: string
-  default: 'refs/heads/release/dev/monobuild-2.0-experimental'
+  default: 'refs/heads/release/2.0-experimental'
 # How far back the nightly search may reach. See
 # WindowsAppSDK-DownloadNightlyPackage-Steps.yml for why we search rather than take the
 # latest run from the branch.
