@@ -12,6 +12,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <WindowsSdkReferenceVersion>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</WindowsSdkReferenceVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -51,11 +52,11 @@
     <Reference Include="Wex.Logger.Interop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\Wex.Logger.Interop.dll</HintPath>
     </Reference>
-    <Reference Include="$(WindowsSdkDir)References\$(WindowsSDKVersion)Windows.Foundation.FoundationContract\*\Windows.Foundation.FoundationContract.winmd">
+    <Reference Include="$(WindowsSdkDir)References\$(WindowsSdkReferenceVersion)\Windows.Foundation.FoundationContract\*\Windows.Foundation.FoundationContract.winmd">
       <IsWinMDFile>true</IsWinMDFile>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(WindowsSdkDir)References\$(WindowsSDKVersion)Windows.Foundation.UniversalApiContract\*\Windows.Foundation.UniversalApiContract.winmd">
+    <Reference Include="$(WindowsSdkDir)References\$(WindowsSdkReferenceVersion)\Windows.Foundation.UniversalApiContract\*\Windows.Foundation.UniversalApiContract.winmd">
       <IsWinMDFile>true</IsWinMDFile>
       <Private>false</Private>
     </Reference>
@@ -92,6 +93,11 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets'))" />
+  </Target>
+  <Target Name="EnsureWindowsSdkContractReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(WindowsSdkReferenceVersion)' == ''" Text="No installed Windows 10 SDK could be found." />
+    <Error Condition="!Exists('$(WindowsSdkDir)References\$(WindowsSdkReferenceVersion)\Windows.Foundation.FoundationContract')" Text="Windows.Foundation.FoundationContract was not found in Windows SDK $(WindowsSdkReferenceVersion)." />
+    <Error Condition="!Exists('$(WindowsSdkDir)References\$(WindowsSdkReferenceVersion)\Windows.Foundation.UniversalApiContract')" Text="Windows.Foundation.UniversalApiContract was not found in Windows SDK $(WindowsSdkReferenceVersion)." />
   </Target>
   <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->
   <PropertyGroup>

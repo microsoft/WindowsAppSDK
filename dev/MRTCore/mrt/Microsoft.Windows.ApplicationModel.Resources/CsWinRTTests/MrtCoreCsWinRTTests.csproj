@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <Platforms>x64;x86</Platforms>
+    <Platforms>x64;x86;arm64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CsWinRTEnabled>false</CsWinRTEnabled>
     <IsTestProject>true</IsTestProject>
@@ -36,6 +36,10 @@
       <NativeDependency Include="$(BaseOutputPath)\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" />
     </ItemGroup>
     <Copy SkipUnchangedFiles="true" SourceFiles="@(NativeDependency)" DestinationFolder="$(OutDir)" />
+  </Target>
+
+  <Target Name="CopyTestDefFiles" AfterTargets="AfterBuild">
+    <Copy SkipUnchangedFiles="true" SourceFiles="MrtCoreCsWinRTTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 
 </Project>

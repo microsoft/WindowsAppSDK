@@ -92,16 +92,18 @@ namespace MrtCoreCsWinRTTests
             var reference = buffer.CreateReference();
             var capacityBeforeClose = reference.Capacity;
             var closedRaised = false;
+            var dataWasValidWhenClosedRaised = false;
 
             reference.Closed += (sender, args) =>
             {
                 closedRaised = true;
-                Assert.AreEqual(capacityBeforeClose, sender.Capacity);
+                dataWasValidWhenClosedRaised = sender.Capacity == capacityBeforeClose;
             };
 
             reference.Dispose();
 
             Assert.IsTrue(closedRaised);
+            Assert.IsTrue(dataWasValidWhenClosedRaised);
             Assert.AreEqual(0u, reference.Capacity);
         }
     }
