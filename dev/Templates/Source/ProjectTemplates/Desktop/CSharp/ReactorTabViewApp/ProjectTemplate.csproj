@@ -44,7 +44,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSdkBuildToolsVersion$" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSdkVersion$" />
     <!--
       Microsoft.Windows.SDK.BuildTools.WinApp adds first-class support for
       `dotnet run` on packaged apps: it hooks the .NET CLI Run target to
