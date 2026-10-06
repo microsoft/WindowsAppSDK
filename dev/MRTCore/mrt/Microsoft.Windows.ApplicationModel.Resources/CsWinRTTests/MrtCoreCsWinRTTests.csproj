@@ -7,12 +7,12 @@
     <CsWinRTEnabled>false</CsWinRTEnabled>
     <IsTestProject>true</IsTestProject>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <RuntimeIdentifier>win-$(Platform)</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
+    <PackageReference Include="Microsoft.Taef" Version="$(MicrosoftTaefVersion)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +40,13 @@
 
   <Target Name="CopyTestDefFiles" AfterTargets="AfterBuild">
     <Copy SkipUnchangedFiles="true" SourceFiles="MrtCoreCsWinRTTests.testdef" DestinationFolder="$(OutDir)" />
+  </Target>
+
+  <Target Name="CopyCoreClrProfile" AfterTargets="AfterBuild" DependsOnTargets="ResolveRuntimePackAssets">
+    <ItemGroup>
+      <CoreClrProfileFile Include="@(RuntimePackAsset)" Condition="'%(RuntimePackAsset.AssetType)' == 'runtime' Or '%(RuntimePackAsset.AssetType)' == 'native'" />
+    </ItemGroup>
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(CoreClrProfileFile)" DestinationFolder="$(OutDir)\net6" />
   </Target>
 
 </Project>

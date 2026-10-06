@@ -3,8 +3,9 @@
 
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Windows.ApplicationModel.Resources;
+using WEX.TestExecution;
+using WEX.TestExecution.Markup;
 
 namespace MrtCoreCsWinRTTests
 {
@@ -21,12 +22,12 @@ namespace MrtCoreCsWinRTTests
             using var buffer = candidate.ValueAsMemoryBuffer();
             using var reference = buffer.CreateReference();
 
-            Assert.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(reference, out IntPtr data, out uint capacity));
-            Assert.AreNotEqual(IntPtr.Zero, data);
-            Assert.AreEqual((uint)expected.Length, capacity);
+            Verify.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(reference, out IntPtr data, out uint capacity));
+            Verify.AreNotEqual(IntPtr.Zero, data);
+            Verify.AreEqual((uint)expected.Length, capacity);
 
             var bytes = new ReadOnlySpan<byte>((byte*)data, checked((int)capacity));
-            Assert.IsTrue(bytes.SequenceEqual(expected));
+            Verify.IsTrue(bytes.SequenceEqual(expected));
         }
 
         [TestMethod]
@@ -50,13 +51,13 @@ namespace MrtCoreCsWinRTTests
 
             using (reference)
             {
-                Assert.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(reference, out IntPtr data, out uint capacity));
-                Assert.AreNotEqual(IntPtr.Zero, data);
-                Assert.AreEqual((uint)expected.Length, capacity);
+                Verify.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(reference, out IntPtr data, out uint capacity));
+                Verify.AreNotEqual(IntPtr.Zero, data);
+                Verify.AreEqual((uint)expected.Length, capacity);
 
                 var bytes = new ReadOnlySpan<byte>((byte*)data, checked((int)capacity));
-                Assert.AreEqual(expected[0], bytes[0]);
-                Assert.AreEqual(expected[expected.Length - 1], bytes[bytes.Length - 1]);
+                Verify.AreEqual(expected[0], bytes[0]);
+                Verify.AreEqual(expected[expected.Length - 1], bytes[bytes.Length - 1]);
             }
         }
 
@@ -71,15 +72,15 @@ namespace MrtCoreCsWinRTTests
             using var existingReference = buffer.CreateReference();
             buffer.Dispose();
 
-            Assert.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(existingReference, out IntPtr data, out uint capacity));
-            Assert.AreNotEqual(IntPtr.Zero, data);
-            Assert.AreEqual((uint)expected.Length, capacity);
+            Verify.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(existingReference, out IntPtr data, out uint capacity));
+            Verify.AreNotEqual(IntPtr.Zero, data);
+            Verify.AreEqual((uint)expected.Length, capacity);
 
             using var emptyReference = buffer.CreateReference();
-            Assert.AreEqual(0u, emptyReference.Capacity);
-            Assert.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(emptyReference, out data, out capacity));
-            Assert.AreEqual(IntPtr.Zero, data);
-            Assert.AreEqual(0u, capacity);
+            Verify.AreEqual(0u, emptyReference.Capacity);
+            Verify.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(emptyReference, out data, out capacity));
+            Verify.AreEqual(IntPtr.Zero, data);
+            Verify.AreEqual(0u, capacity);
         }
 
         [TestMethod]
@@ -102,9 +103,9 @@ namespace MrtCoreCsWinRTTests
 
             reference.Dispose();
 
-            Assert.IsTrue(closedRaised);
-            Assert.IsTrue(dataWasValidWhenClosedRaised);
-            Assert.AreEqual(0u, reference.Capacity);
+            Verify.IsTrue(closedRaised);
+            Verify.IsTrue(dataWasValidWhenClosedRaised);
+            Verify.AreEqual(0u, reference.Capacity);
         }
     }
 }

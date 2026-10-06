@@ -1,7 +1,7 @@
 {
     "Tests": [
         {
-            "Description": "MRTCore CsWinRT Tests (MSTest)",
+            "Description": "MRTCore CsWinRT Tests (TAEF)",
             "Filename": "MrtCoreCsWinRTTests.dll",
             "Parameters": "",
             "Architectures": ["x64", "x86", "arm64"],
