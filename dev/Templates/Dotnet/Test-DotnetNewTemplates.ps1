@@ -1,15 +1,17 @@
 ﻿# Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-<#+
+<#
 .SYNOPSIS
 Validates the WinUI 3 dotnet new template pack end-to-end.
 
 .DESCRIPTION
 Builds (or consumes) the template NuGet package, reinstalls it locally, and
 scaffolds every WinUI 3 project and item template. Each generated project is
-built, and app templates are optionally launched via dotnet run using the
-recommended WinAppSDK self-contained properties.
+built; app templates build with -p:WindowsPackageType=None, so the packaged
+(single-project MSIX) path is not exercised. When launching is enabled, app
+templates are started directly from the built executable rather than via
+dotnet run, so they run without MSIX package identity.
 
 .PARAMETER PackagePath
 Path to an existing Microsoft.WindowsAppSDK.WinUI.CSharp.Templates .nupkg. When
@@ -664,9 +666,10 @@ try {
         # `dotnet test`. Validate it as an App so we still confirm the
         # template builds cleanly.
         @{ ShortName = 'winui-unittest'; Kind = 'App' },
-        # Reactor (Microsoft.UI.Reactor) app templates: pure C#, unpackaged,
-        # dotnet-new-only. They build with the same App path below
-        # (-p:WindowsPackageType=None), and their .csproj already sets it.
+        # Reactor (Microsoft.UI.Reactor) app templates: pure C#, dotnet-new-only.
+        # Like the other app templates they are packaged (single-project MSIX),
+        # and they build through the same App path below, which passes
+        # -p:WindowsPackageType=None; the .csproj itself does not set it.
         @{ ShortName = 'reactor'; Kind = 'App' },
         @{ ShortName = 'reactor-mvu'; Kind = 'App' },
         @{ ShortName = 'reactor-navview'; Kind = 'App' },
