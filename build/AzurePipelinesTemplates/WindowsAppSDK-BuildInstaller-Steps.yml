@@ -11,8 +11,57 @@ parameters:
 - name: UseCurrentBuild
   type: boolean
   default: false 
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. PublishSymbol-Steps and
+# EsrpCodeSigning-Steps are invoked WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
+  type: boolean
+  default: false
+# Name of the upstream NuGet+MSIX pipeline artifact to download. The monobuild's
+# Aggregate stage publishes 'WindowsAppSDK-NuGet-And-MSIX' (hyphens); the legacy
+# Aggregator pipeline used 'WindowsAppSDK_Nuget_And_MSIX' (underscores). Default
+# preserves the legacy name so non-monobuild callers don't need to opt in.
+- name: artifactName
+  type: string
+  default: 'WindowsAppSDK-NuGet-And-MSIX'
+# When true, skip the artifact download step entirely. The caller is responsible
+# for ensuring $(parameters.artifactName) content is already present at
+# $(System.ArtifactsDirectory) before this template's first MSBuild step. Used by
+# the monobuild's CreateInstaller stage so it can download the artifact with
+# rebuild-aware variables ($(_useBuildOutputFromBuildId) /
+# $(_useBuildOutputFromPipeline)) that honor useBuildOutput_BuildId /
+# useBuildOutput_RebuildStage queue-time overrides.
+- name: SkipArtifactDownload
+  type: boolean
+  default: false
+# Branch (in the Aggregator pipeline's repo) to pull the latest Windows App SDK
+# nuget from when UseCurrentBuild is false. The Aggregator nightly runs daily on
+# 'main', so default there. Override if the active publishing branch changes.
+- name: NightlyBranchName
+  type: string
+  default: 'refs/heads/release/main'
+# How far back the nightly search may reach. See
+# WindowsAppSDK-DownloadNightlyPackage-Steps.yml for why we search rather than take the
+# latest run from the branch.
+- name: MaxNightlyAgeInDays
+  type: number
+  default: 30
 
 steps:
+# Supports both root and subfolder Foundation checkouts.
+- ${{ if eq(parameters.IsMonobuild, true) }}:
+  - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@self
+    parameters:
+      componentTsaOptionsPath: '$(Build.SourcesDirectory)\$(foundationRepoPath).config\tsaoptions.json'
+      areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+      outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+- ${{ else }}:
+  - template: AzurePipelinesTemplates/WindowsAppSDK-MaterializeTsaOptions-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      componentTsaOptionsPath: '$(Build.SourcesDirectory)\$(foundationRepoPath).config\tsaoptions.json'
+      areaPath: '$(WinAppSDKCoreTsaAreaPath)'
+      outputPath: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+
 - task: PowerShell@2
   name: InitializeSkipInstallerBuild
   displayName: 'Decide if we can skip this installer build job'
@@ -36,41 +85,39 @@ steps:
   # Don't bother doing this step if we are not validating a test OS image. All steps below work as usual.
   condition: and(succeeded(), eq(variables.EnableTestImageValidation , true))
 
-- ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Current Build'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
-    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
-- ${{ else }}:
-  ###
-  # This step downloads the WindowsAppSDK NuGet package from a pipeline
-  # variables: OfficialPipelineID LatestOfficialBuildID
-  # for use in building the Installers
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK From Latest Nightly'
-    inputs:
-      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
-      targetPath: '$(System.ArtifactsDirectory)'
-      source: 'specific'
-      project: $(System.TeamProjectId)
-      pipeline: $(OfficialPipelineID) 
-      pipelineId: $(LatestOfficialBuildID) 
-    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
-    
+- ${{ if eq(parameters.SkipArtifactDownload, false) }}:
+  - ${{ if eq(parameters.UseCurrentBuild, 'true') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download WindowsAppSDK From Current Build'
+      inputs:
+        artifactName: ${{ parameters.artifactName }}
+        targetPath: '$(System.ArtifactsDirectory)'
+      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+  - ${{ else }}:
+    ###
+    # Download the WindowsAppSDK NuGet package from the monobuild nightly for use in
+    # building the installer. We pull from NightlyBranchName rather than a pinned
+    # LatestOfficialBuildID so PR build-validation runs always get a fresh package without
+    # needing a build id supplied at queue time.
+    - template: WindowsAppSDK-DownloadNightlyPackage-Steps.yml
+      parameters:
+        artifactName: ${{ parameters.artifactName }}
+        targetPath: '$(System.ArtifactsDirectory)'
+        nightlyBranchName: ${{ parameters.NightlyBranchName }}
+        maxNightlyAgeInDays: ${{ parameters.MaxNightlyAgeInDays }}
+
 ###
 # Install the internal licensing support for release-signed packages. This can always be present in
 # pipeline builds. The installer code will automatically degrade / skip licenses in non-release builds
 
 # Future: this stage only requires a the app licensing internal package, but is downloading all transport packages
 # used for aggregation consider refactoring for efficiency.
-- task: PowerShell@2
-  name: ConvertVersionDetailsToPackageConfig
-  displayName: "Convert VersionDetails To PackageConfig"
+- task: MSBuild@1
+  name: GeneratePackagesConfig
+  displayName: "Generate packages.config from CPM"
   inputs:
-    filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\$(foundationRepoPath)build\packages.config'
+    solution: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\RestoreWinAppSDKDependencies.proj'
+    msbuildArguments: '/t:GeneratePackagesConfig'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: NuGetCommand@2
@@ -288,19 +335,23 @@ steps:
     failOnAlert: false
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
-- template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
+- template: WindowsAppSDK-PublishSymbol-Wrapper.yml
   parameters:
-    SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
-    IsOfficial: ${{ parameters.IsOfficial }}
-    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+    IsMonobuild: ${{ parameters.IsMonobuild }}
+    InnerParams:
+      SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
+      IsOfficial: ${{ parameters.IsOfficial }}
+      condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
-      Pattern: WindowsAppRuntimeInstall*.exe
-      UseMinimatch: true
-      KeyCode: 'CP-230012'
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
+        Pattern: WindowsAppRuntimeInstall*.exe
+        UseMinimatch: true
+        KeyCode: 'CP-230012'
 
 - task: CopyFiles@2
   displayName: 'Publish Installer'
