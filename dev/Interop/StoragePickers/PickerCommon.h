@@ -8,6 +8,7 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Microsoft.UI.Windowing.h>
+#include <winrt/Microsoft.UI.Dispatching.h>
 
 namespace PickerCommon {
     winrt::hstring GetPathFromShellItem(winrt::com_ptr<IShellItem> shellItem);
@@ -31,6 +32,59 @@ namespace PickerCommon {
     void ValidateSuggestedFileName(winrt::hstring const& suggestedFileName);
     void ValidateFolderPath(winrt::hstring const& path, std::string const& propertyName);
     void ValidateInitialFileTypeIndex(int const& value);
+
+    // Restores keyboard focus to the WinUI window after a COM file dialog closes.
+    //
+    // These dialogs run on a background thread (winrt::resume_background), so the SetFocus they
+    // perform on close comes from a thread that does not own the window and is ignored, leaving the
+    // window unable to receive key presses until the user clicks it again (issue #6505).
+    //
+    // Construct this RAII helper on the UI thread before switching to the background thread: it
+    // captures the focused window at construction and, on destruction, marshals SetFocus back to
+    // the UI thread via its DispatcherQueue, restoring focus once the dialog has closed.
+    struct DialogFocusRestorer
+    {
+        DialogFocusRestorer();
+        ~DialogFocusRestorer();
+        DialogFocusRestorer(DialogFocusRestorer const&) = delete;
+        DialogFocusRestorer& operator=(DialogFocusRestorer const&) = delete;
+
+    private:
+        HWND m_focusedWindow{ nullptr };
+        winrt::Microsoft::UI::Dispatching::DispatcherQueue m_dispatcherQueue{ nullptr };
+    };
+
+    // Shows the WSL node in the navigation pane of COM file dialogs that hide it by default.
+    // The WSL node was hidden in FileSavePicker (IFileSaveDialog) and FolderPicker (IFileOpenDialog + FOS_PICKFOLDERS + FOS_FORCEFILESYSTEM);
+    // It takes time for the navigation pane to load nodes.
+    // This handler checks the root nodes and looks for the WSL node in children nodes.
+    // When finds the existing hidden WSL node, makes it visible.
+    struct WslNodeRevealer : winrt::implements<WslNodeRevealer, IFileDialogEvents>
+    {
+        bool m_revealed{ false };
+        bool m_timerPending{ false };
+        int m_pollCount{ 0 };
+        HWND m_timerHwnd{ nullptr };
+        winrt::com_ptr<INameSpaceTreeControl> m_nstc;
+        winrt::com_ptr<IShellItem> m_wslItem;
+
+        // looking for the navigation node for 1 second at most
+        static constexpr UINT s_pollIntervalMs{ 10 };
+        static constexpr int s_maxPollCount{ 100 };
+
+        static void CALLBACK PollTimerProc(HWND, UINT, UINT_PTR timerId, DWORD) noexcept;
+        void RevealWslNodeWhenReady(HWND hwnd) noexcept;
+        void CancelPendingReveal() noexcept;
+        HRESULT TryStartReveal(IFileDialog* pfd) noexcept;
+
+        IFACEMETHODIMP OnFolderChange(IFileDialog* pfd) noexcept override;
+        IFACEMETHODIMP OnFileOk(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnFolderChanging(IFileDialog*, IShellItem*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnSelectionChange(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnShareViolation(IFileDialog*, IShellItem*, FDE_SHAREVIOLATION_RESPONSE*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnTypeChange(IFileDialog*) noexcept override { return S_OK; }
+        IFACEMETHODIMP OnOverwrite(IFileDialog*, IShellItem*, FDE_OVERWRITE_RESPONSE*) noexcept override { return S_OK; }
+    };
 
     struct PickerParameters {
         HWND HWnd{};

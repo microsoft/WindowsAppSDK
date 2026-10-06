@@ -11,6 +11,7 @@ namespace WindowsAppRuntimeInstallerTests
     void RemovePackage(const std::wstring& packageFullName, bool ignoreFailures=true);
     void TryRemoveProvisionedPackage(const std::wstring& packageFamilyName);
     void RemoveAllPackages(bool ignoreFailures=true);
+    bool VerifyAllPackagesRemoved();
     bool IsPackageRegistered(const std::wstring& packageFullName);
     winrt::Windows::System::ProcessorArchitecture GetSystemArchitecture();
     std::filesystem::path GetModulePath(HMODULE hmodule = nullptr);

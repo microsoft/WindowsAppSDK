@@ -4,8 +4,6 @@
 #include <Windows.h>
 #include <stdlib.h>
 
-#include <wil/cppwinrt.h>
-
 // Ensure the including PE file has an import reference to
 // the WindowsAppSDK runtime DLL and thus gets loaded when
 // the including PE file gets loaded.

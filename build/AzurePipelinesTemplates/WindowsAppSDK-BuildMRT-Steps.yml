@@ -2,23 +2,27 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: runApiScan
   type: boolean
   default: true
 - name: runPREfast
   type: boolean
   default: false
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. EsrpCodeSigning-Steps is invoked
+# WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
+  type: boolean
+  default: false
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
   parameters:
-    IsOneBranch: ${{ parameters.IsOneBranch }}
+    IsMonobuild: ${{ parameters.IsMonobuild }}
 
 - task: WinUndockNativeCompiler@1
   displayName: 'Setup native compiler version override'
+  condition: and(succeeded(), ne(variables['buildPlatform'], 'arm64ec'))
   inputs:
     microsoftDropReadPat: $(System.AccessToken)
     compilerPackageName: $(localCompilerOverridePackageName)
@@ -26,6 +30,17 @@ steps:
     slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore\mrt
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
+
+- task: WinUndockNativeCompiler@1
+  displayName: 'Setup native compiler version override (arm64ec, no UCRT)'
+  condition: and(succeeded(), eq(variables['buildPlatform'], 'arm64ec'))
+  inputs:
+    microsoftDropReadPat: $(System.AccessToken)
+    compilerPackageName: $(localCompilerOverridePackageName)
+    compilerPackageVersion: $(localCompilerOverridePackageVersion)
+    slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore\mrt
+    includeUCRT: false
     platform: $(buildPlatform)
 
 - task: PowerShell@2
@@ -79,16 +94,18 @@ steps:
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      FolderPath: '$(build.SourcesDirectory)\BuildOutput'
-      UseMinimatch: true
-      Pattern: |
-        **/*.winmd
-        **/*.dll
-        **/*.exe
-      KeyCode: 'CP-230012'
-      displayName: 'Authenticode CodeSign Binaries'
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+        UseMinimatch: true
+        Pattern: |
+          **/*.winmd
+          **/*.dll
+          **/*.exe
+        KeyCode: 'CP-230012'
+        displayName: 'Authenticode CodeSign Binaries'
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
@@ -97,9 +114,3 @@ steps:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: PublishBuildArtifacts@1
-    condition: always()
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'

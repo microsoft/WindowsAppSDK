@@ -10,18 +10,18 @@ namespace AppModel::PackageGraph
 {
 inline HRESULT GetCurrentPackageGraph(
     const UINT32 flags,
-    uint32_t& packageInfoCount,
+    std::uint32_t& packageInfoCount,
     const PACKAGE_INFO*& packageInfo,
     wil::unique_cotaskmem_ptr<BYTE[]>& buffer)
 {
    packageInfoCount = 0;
     packageInfo = nullptr;
 
-    uint32_t bufferLength{};
+    std::uint32_t bufferLength{};
     LONG rc{ ::GetCurrentPackageInfo(flags, &bufferLength, nullptr, &packageInfoCount) };
     if ((rc == APPMODEL_ERROR_NO_PACKAGE) || (packageInfoCount == 0))
    {
-        // No packages. We�re done
+        // No packages. We're done
         return S_OK;
     }
     RETURN_HR_IF(HRESULT_FROM_WIN32(rc), rc != ERROR_INSUFFICIENT_BUFFER);

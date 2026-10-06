@@ -22,9 +22,6 @@ parameters:
 - name: buildPlatform
   type: string
   default: x64
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -56,7 +53,8 @@ jobs:
   steps:
     - checkout: self
       path: s
-    - checkout: WindowsAppSDKConfig
+    - checkout: WinAppSDK
+      fetchDepth: 1
 
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:
@@ -67,4 +65,3 @@ jobs:
         callingStage: ${{ parameters.callingStage }}
         samplesArtifactName: ${{ parameters.samplesArtifactName }}
         sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}
-        IsOneBranch: ${{ parameters.IsOneBranch }}

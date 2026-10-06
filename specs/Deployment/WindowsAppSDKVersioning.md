@@ -1,3 +1,5 @@
+> **See also:** [Component Versioning Across Channels](../../docs/Coding-Guidelines/ComponentVersioning.md) — interim policy for keeping the WindowsAppSDK aggregate metapackage upgradable across channels (no component package downgrades) until the monobuild `WindowsAppSDKVersionPinned` scheme ships.
+
 Since we will now match the release version with the MSIX, it is worth explaining how that is going to increment.
 * Major will increase when a stable or preview release contains Breaking Changes from the previous Stable release. This will happen 
 no more than once per year.

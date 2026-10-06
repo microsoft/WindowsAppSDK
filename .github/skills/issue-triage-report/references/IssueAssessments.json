@@ -1,0 +1,11 @@
+{
+  "assessments": {
+    "1234": {
+      "severityTier": "high",
+      "isBlocker": false,
+      "reasoning": "Example entry. Update for your triage run."
+    }
+  },
+  "generatedAt": "2026-04-14T00:00:00Z",
+  "assessedBy": "Copilot"
+}

@@ -169,12 +169,11 @@ New properties and methods to access per-machine data:
 
 Unpackaged applications can use the ApplicationData API to access app data stores in the classic locations:
 
-|Packaged                        |Unpackaged                                                         |
-|--------------------------------|-------------------------------------------------------------------|
-|ApplicationData.LocalCachePath  |`%LOCALAPPDATA%\<publisher>\<product>`                              |
+|Packaged                        |Unpackaged                                                           |
+|--------------------------------|---------------------------------------------------------------------|
+|ApplicationData.LocalCachePath  |`%LOCALAPPDATA%\<publisher>\<product>`                               |
 |ApplicationData.LocalPath       |`%LOCALAPPDATA%\<publisher>\<product>`                               |
 |ApplicationData.MachinePath     |`%ProgramData%\<publisher>\<product>`                                |
-|ApplicationData.RoamingPath     |`%APPDATA%`                                                          |
 |ApplicationData.TemporaryPath   |`[GetTempPath2W()](https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-gettemppath2w)\<publisher>\<product>`<sup>1,2</sup>|
 |ApplicationData.LocalSettings   |`HKCU\SOFTWARE\Classes\Local Settings\Software\<publisher>\<product>`|
 |ApplicationData.RoamingSettings |`HKCU\SOFTWARE\<publisher>\<product>`                                |
@@ -256,9 +255,6 @@ Per https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingf
       is Azure App Service. Azure App Service is widely supported, well documented, reliable, and
       supports cross-platform/cross-ecosystem scenarios such as iOS, Android and web. Settings
       stored here no longer roam (as of Windows 11), but the settings store is still available.
-
-We provide `RoamingFolder` and `RoamingSettings` equivalents but they're only as functional as
-Windows provides (i.e. no data roaming on Windows after 1909 aka 19H2 aka 10.0.18363.0).
 
 We don't provide equivalents to Windows.Storage.ApplicationData's...
 
