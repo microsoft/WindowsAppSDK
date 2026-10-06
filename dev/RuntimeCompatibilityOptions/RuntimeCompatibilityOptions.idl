@@ -94,7 +94,6 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         LanguageModel_LanguageDetectionStatus = 63293066,
 
         // 2.5.0
-        Package_GetPackageFilePath = 62800606,
         PointerInputProcessor_ReleaseCaptureOnDisposedIsland = 62943243,
         NavigationView_UpdatePaneLayoutNegativeMaxHeight = 62995866,
         PointerPositionPropertySet_UpdateWhilePressed = 62998965,
@@ -103,6 +102,24 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WindowsXamlManager_ActivationFactoryCacheResetRace = 63435928,
         CommandBar_SpuriousOverflowButtonAtFractionalScale = 63435929,
         CompositionEngine_SwitcherSeptemberFixes = 63494532,
+
+        // 2.6.0
+        AppNotification_AppInstance_FixStackOverflowCrash = 61688595,
+        Package_GetPackageFilePath = 62800606,
+        InkCanvas_InkingSupport = 63503009,
+        CCoreServices_InputServicesTeardownOrder = 63805144,
+        AppLifecycle_GetInstancesProcessHandleFix = 63876312,
+        DispatcherQueue_CaptureCallbackErrorContext = 63993469,
+        ContentIsland_InitializationFailureCleanup = 64039911,
+        SwitcherSystemBackdropBrushSupport = 64173443,
+        SwitcherColdWrappingWUCToMUC = 64176041,
+        LanguageModel_RemoveLimitedAccessFeatureRequirement = 64184211,
+        VersionInfo_MissingInsightsResourceDll = 64191138,
+        AIFabric_Tip_APIClassName_ReasonName = 64236972,
+        ItemsView_InvalidBringIntoViewAnchor = 64290699,
+        DispatcherQueueTimer_CaptureTickErrorContext = 64299104,
+        InputPointerSource_SystemEngineDPIOffset = 64300276,
+        WebView2_HandleMoveFocusInvalidArgument = 64312861,
     };
 
     /// Represents a version of the Windows App Runtime.
