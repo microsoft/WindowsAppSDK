@@ -7,7 +7,7 @@
     <CsWinRTEnabled>false</CsWinRTEnabled>
     <IsTestProject>true</IsTestProject>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
-    <RuntimeIdentifier>win-$(Platform)</RuntimeIdentifier>
+    <RuntimeIdentifier>win-$(Platform.ToLowerInvariant())</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
   </PropertyGroup>
 
