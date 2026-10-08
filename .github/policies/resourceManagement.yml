@@ -81,7 +81,7 @@ configuration:
           label: needs-triage
 
 
-    - description: Remove needs-triage from Closed items
+    - description: Remove attention labels from Closed items
       if:
       - payloadType: Issues
       - isAction:
@@ -89,6 +89,8 @@ configuration:
       then:
       - removeLabel:
           label: needs-triage
+      - removeLabel:
+          label: needs-area-owner-attention
 
 
     - description: Add needs-triage to closed item if commented on by external user
