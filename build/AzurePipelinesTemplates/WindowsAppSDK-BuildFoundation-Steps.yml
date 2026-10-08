@@ -2,13 +2,16 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: runApiScan
   type: boolean
   default: true
 - name: runPREfast
+  type: boolean
+  default: false
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. The shared EsrpCodeSigning-Steps
+# template is invoked WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
   type: boolean
   default: false
 
@@ -17,7 +20,7 @@ steps:
   inputs:
     nuGetServiceConnections: 'TelemetryInternal'
 
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+- task: NuGetCommand@2
   displayName: 'NuGet restore of packages'
   inputs:
     command: 'custom'
@@ -25,20 +28,20 @@ steps:
 
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
   parameters:
-    IsOneBranch: ${{ parameters.IsOneBranch }}
+    IsMonobuild: ${{ parameters.IsMonobuild }}
 
 - task: NuGetAuthenticate@1
 
   # Copy MSIX license installation header into the correct source location.
   # Restore transport package dependencies. This is only enbaled in release-signed builds.
-- task: PowerShell@2
-  name: ConvertVersionDetailsToPackageConfig
-  displayName: "Convert VersionDetails To PackageConfig"
+- task: MSBuild@1
+  name: GeneratePackagesConfig
+  displayName: "Generate packages.config from CPM"
   inputs:
-    filePath: '$(REPOROOT)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(REPOROOT)\eng\Version.Details.xml' -packageConfigPath '$(REPOROOT)\build\packages.config'
+    solution: '$(REPOROOT)\build\RestoreWinAppSDKDependencies.proj'
+    msbuildArguments: '/t:GeneratePackagesConfig'
 
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+- task: NuGetCommand@2
   displayName: RestoreNuGetPackages
   retryCountOnTaskFailure: 10
   inputs:
@@ -59,6 +62,7 @@ steps:
 
 - task: WinUndockNativeCompiler@1
   displayName: 'Setup native compiler version override'
+  condition: and(succeeded(), ne(variables['buildPlatform'], 'arm64ec'))
   inputs:
     microsoftDropReadPat: $(System.AccessToken)
     compilerPackageName: $(localCompilerOverridePackageName)
@@ -66,6 +70,17 @@ steps:
     slnDirectory: $(Build.SourcesDirectory)
     includeUCRT: true
     ucrtFeedPat: $(System.AccessToken)
+    platform: $(buildPlatform)
+
+- task: WinUndockNativeCompiler@1
+  displayName: 'Setup native compiler version override (arm64ec, no UCRT)'
+  condition: and(succeeded(), eq(variables['buildPlatform'], 'arm64ec'))
+  inputs:
+    microsoftDropReadPat: $(System.AccessToken)
+    compilerPackageName: $(localCompilerOverridePackageName)
+    compilerPackageVersion: $(localCompilerOverridePackageVersion)
+    slnDirectory: $(Build.SourcesDirectory)
+    includeUCRT: false
     platform: $(buildPlatform)
 
 - task: PowerShell@2
@@ -137,16 +152,18 @@ steps:
   #  continueOnError: true
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      FolderPath: '$(build.SourcesDirectory)\BuildOutput'
-      UseMinimatch: true
-      Pattern: |
-        **/*.winmd
-        **/*.dll
-        **/*.exe
-      KeyCode: 'CP-230012'
-      displayName: 'Authenticode CodeSign Binaries'
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+        UseMinimatch: true
+        Pattern: |
+          **/*.winmd
+          **/*.dll
+          **/*.exe
+        KeyCode: 'CP-230012'
+        displayName: 'Authenticode CodeSign Binaries'
 
 # Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
 # so the CopyFiles below are to move all the vPack files to the right locations
@@ -159,7 +176,10 @@ steps:
 
 - task: CopyFiles@2
   displayName: Stage redist files for publish
-  condition: always()
+  # arm64ec skips the redist downloads above (no arm64ec vc_redist/dotnet/VCLibs exist), so
+  # $(build.SourcesDirectory)\redist is never created for that leg; guard so CopyFiles doesn't
+  # fail with "Not found SourceFolder". Nothing consumes an arm64ec redist downstream.
+  condition: and(always(), ne(variables['buildPlatform'], 'arm64ec'))
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\redist'
     TargetFolder: '$(ob_outputDirectory)\redist'
@@ -172,9 +192,3 @@ steps:
     Contents: Microsoft.Taef.*\**
     TargetFolder: '$(ob_outputDirectory)\redist'
 
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: PublishBuildArtifacts@1
-    condition: always()
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'

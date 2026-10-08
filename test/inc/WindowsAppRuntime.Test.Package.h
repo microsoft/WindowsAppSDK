@@ -6,6 +6,11 @@
 
 #include <appmodel.h>
 
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <IsWindowsVersion.h>
+
 #include <WindowsAppRuntime.Test.FileSystem.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.ApplicationModel.h>
@@ -17,22 +22,19 @@
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_BUILD      1967
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_REVISION   333
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING     L"4.1.1967.333"
-#define WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING     L"4.1"
+#define WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING     L"4"
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
 
-#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.4.1"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME      L"WindowsAppRuntime.Test.DDLM"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME      L"WindowsAppRuntime.Test.DynDep.DataStore.4.1"
-#define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME L"WindowsAppRuntime.Test.Singleton"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.4"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME           L"WindowsAppRuntime.Test.DDLM"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME           L"WindowsAppRuntime.Test.DynDep.DataStore.4"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME      L"WindowsAppRuntime.Test.Singleton"
 
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.1.0-Test"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_MAIN_PACKAGE_NAME      L"MicrosoftCorporationII.WinAppRuntime.Main.1.0-T"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"MicrosoftCorporationII.WinAppRuntime.Singleton-T"
 
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING
 #define MSIX_PACKAGE_ARCHITECTURE_ARM       L"arm"
 #define MSIX_PACKAGE_ARCHITECTURE_ARM64     L"arm64"
 #define MSIX_PACKAGE_ARCHITECTURE_NEUTRAL   L"neutral"
@@ -49,6 +51,10 @@
 #else
 #   error "Unknown processor architecture"
 #endif
+
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX L"." WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID    WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FAMILYNAME     WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
@@ -95,7 +101,7 @@ namespace DynamicDependencyDataStore
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
     constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore." WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 namespace WindowsAppRuntimeMain = DynamicDependencyDataStore;
 
@@ -282,7 +288,14 @@ inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
         WIN32_FILE_ATTRIBUTE_DATA data{};
         const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
         const auto lastError{ ::GetLastError() };
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
+        if (ok)
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):TRUE", msix.c_str()));
+        }
+        else
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):FALSE LastError:%u", msix.c_str(), lastError));
+        }
 
         std::error_code errorcode{};
         auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
@@ -311,28 +324,222 @@ inline winrt::Windows::Foundation::Uri GetAppxManifestPackageUri(PCWSTR packageF
     return winrt::Windows::Foundation::Uri{ path.c_str() };
 }
 
+inline void WaitForPackageEnumerable(PCWSTR packageFullName)
+{
+    // After AddPackageAsync's async operation completes, the OS-side
+    // PackageManager index can lag briefly before the just-registered
+    // package becomes visible to family-scoped enumeration AND its on-disk
+    // state reports Status.VerifyIsOK(). MddBootstrapInitialize ->
+    // PackageDeploymentResolver::Find resolves the DDLM via exactly that
+    // path (FindPackagesForUserWithPackageTypes + Status.VerifyIsOK), so a
+    // FindPackageForUser-by-full-name poll uses the wrong cache and returns
+    // too early. Mirror the resolver's enumeration here so AddPackage only
+    // returns once the OS will satisfy MddBootstrapInitialize.
+    //
+    // PackageFullName format: <Name>_<Version>_<Architecture>_<ResourceId>_<PublisherId>
+    // FamilyName format:      <Name>_<PublisherId>  (parts[0] + "_" + parts[4])
+    std::wstring fullName{ packageFullName };
+    std::vector<std::wstring> parts;
+    {
+        size_t start{ 0 };
+        for (size_t i{ 0 }; i <= fullName.size(); ++i)
+        {
+            if (i == fullName.size() || fullName[i] == L'_')
+            {
+                parts.emplace_back(fullName.substr(start, i - start));
+                start = i + 1;
+            }
+        }
+    }
+    if (parts.size() < 5)
+    {
+        WEX::Logging::Log::Warning(WEX::Common::String().Format(
+            L"WaitForPackageEnumerable('%s'): unparseable full name (parts=%zu); skipping wait",
+            packageFullName, parts.size()));
+        return;
+    }
+    const winrt::hstring familyName{ parts[0] + L"_" + parts[4] };
+    const winrt::hstring fullNameH{ packageFullName };
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    const auto packageTypes{
+        winrt::Windows::Management::Deployment::PackageTypes::Framework |
+        winrt::Windows::Management::Deployment::PackageTypes::Main };
+
+    constexpr DWORD c_pollIntervalMs{ 100 };
+    constexpr DWORD c_timeoutMs{ 30000 };
+    const DWORD startTick{ GetTickCount() };
+    for (;;)
+    {
+        bool found{ false };
+        bool statusOk{ false };
+        try
+        {
+            auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring{}, familyName, packageTypes) };
+            if (packages)
+            {
+                for (const auto& candidate : packages)
+                {
+                    if (candidate.Id().FullName() == fullNameH)
+                    {
+                        found = true;
+                        statusOk = candidate.Status().VerifyIsOK();
+                        break;
+                    }
+                }
+            }
+        }
+        catch (...)
+        {
+            // PackageManager occasionally throws transient access errors
+            // during the index-update window; treat as not-yet-visible.
+        }
+        if (found && statusOk)
+        {
+            return;
+        }
+        const DWORD elapsed{ GetTickCount() - startTick };
+        if (elapsed >= c_timeoutMs)
+        {
+            WEX::Logging::Log::Warning(WEX::Common::String().Format(
+                L"WaitForPackageEnumerable('%s', family='%s') timed out after %u ms (found=%d statusOk=%d); downstream bootstrap may race",
+                packageFullName, familyName.c_str(), elapsed, found ? 1 : 0, statusOk ? 1 : 0));
+            return;
+        }
+        Sleep(c_pollIntervalMs);
+    }
+}
+
 inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
 
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageManager.AddPackageAsync(): uri=%ls", msixUri.ToString().c_str()));
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
-    auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
+
+    // AddPackageAsync intermittently fails on the test agents with transient
+    // deployment errors (most often 0x80073D02 ERROR_INSTALL_RESOURCES_BUSY)
+    // when the previous test's package teardown hasn't fully released file
+    // handles. There's no precondition we can poll for here (the deployment
+    // service holds an internal lock); the documented mitigation is to back
+    // off and reissue. Bounded to 5 attempts so a genuine non-transient
+    // failure still surfaces quickly.
+    //
+    // ERROR_PACKAGES_IN_USE (0x80073D02) specifically means the deployment
+    // service found a running process from an earlier-version package in the
+    // same family (e.g. a test that activated the app and is still winding
+    // down, or a not-yet-completed deferred registration from a prior test)
+    // and is refusing to register over it. Backing off and reissuing with
+    // the same DeploymentOptions::None can spin through all 5 attempts
+    // without ever making progress if that process takes longer than the
+    // backoff window to exit and release its package lock. Once we've seen
+    // this specific error, switch to
+    // DeploymentOptions::ForceTargetApplicationShutdown on the next retry so
+    // the deployment service force-closes the blocking process itself
+    // instead of us guessing how long to wait; this is the option the
+    // platform documents for exactly this error. The first attempt stays
+    // non-destructive (DeploymentOptions::None) so a clean install never
+    // forcibly terminates anything. This can only ever close a process left
+    // over from an earlier, already-finished test - the app a given test is
+    // actively exercising is never installed via this helper while it's
+    // running. Precedent: Shared.cpp's and TestSetupAndTeardownHelper.h's
+    // InstallPackage() helpers already pass ForceApplicationShutdown
+    // unconditionally on every install for the same reason; this is scoped
+    // to only escalate after a confirmed in-use failure instead.
+    winrt::Windows::Management::Deployment::DeploymentResult deploymentResult{ nullptr };
+    constexpr int c_maxAttempts{ 5 };
+    DWORD backoffMs{ 1000 };
+    for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
+    {
+        deploymentResult = packageManager.AddPackageAsync(msixUri, nullptr, options).get();
+        const HRESULT hr{ deploymentResult.ExtendedErrorCode() };
+        if (SUCCEEDED(hr))
+        {
+            if (attempt > 1)
+            {
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                    L"AddPackageAsync('%s') succeeded on attempt %d", packageFullName, attempt));
+            }
+            break;
+        }
+        // Bounded retry on the documented transient install errors.
+        const bool isPackageInUse{ hr == HRESULT_FROM_WIN32(ERROR_PACKAGES_IN_USE) };
+        const bool isTransient{
+            isPackageInUse ||
+            hr == HRESULT_FROM_WIN32(ERROR_INSTALL_POLICY_FAILURE) ||
+            hr == HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION) };
+        if (!isTransient || attempt == c_maxAttempts)
+        {
+            break;
+        }
+        if (isPackageInUse && (options == winrt::Windows::Management::Deployment::DeploymentOptions::None))
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"AddPackageAsync('%s') attempt %d/%d failed with ERROR_PACKAGES_IN_USE; retrying with DeploymentOptions::ForceTargetApplicationShutdown",
+                packageFullName, attempt, c_maxAttempts));
+            options = winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown;
+        }
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(
+            L"AddPackageAsync('%s') attempt %d/%d failed with transient HRESULT 0x%08X %s; sleeping %u ms before retry",
+            packageFullName, attempt, c_maxAttempts, hr, deploymentResult.ErrorText().c_str(), backoffMs));
+        Sleep(backoffMs);
+        backoffMs = (std::min<DWORD>)(backoffMs * 2, 8000);
+    }
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+
+    // Wait for the deployment to be visible to FindPackageForUser before
+    // returning so callers (notably MddBootstrapInitialize) don't race the
+    // OS package index.
+    WaitForPackageEnumerable(packageFullName);
 }
 
-inline void AddPackageDefer(PCWSTR packageDirName, PCWSTR packageFullName)
+inline void AddPackageByUri(
+    winrt::Windows::Foundation::Uri packageUri,
+    PCWSTR packageFullName,
+    bool DeferRegistrationWhenPackagesAreInUse = false,
+    PCWSTR externalLocation = nullptr)
 {
-    auto msixUri{ GetMsixPackageUri(packageDirName) };
+    // AddPackageByUri added in 20H1
+    VERIFY_IS_TRUE(::WindowsVersion::IsWindows10_20H1OrGreater());
 
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     winrt::Windows::Management::Deployment::AddPackageOptions options;
-    options.DeferRegistrationWhenPackagesAreInUse(true);
-    auto deploymentResult{ packageManager.AddPackageByUriAsync(msixUri, options).get() };
-    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageByUriAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    options.DeferRegistrationWhenPackagesAreInUse(DeferRegistrationWhenPackagesAreInUse);
+    if (externalLocation)
+    {
+        auto externalLocationUri{ winrt::Windows::Foundation::Uri{ externalLocation } };
+        options.ExternalLocationUri(externalLocationUri);
+    }
+    auto deploymentResult{ packageManager.AddPackageByUriAsync(packageUri, options).get() };
+    if (externalLocation)
+    {
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(),
+                         WEX::Common::String().Format(L"AddPackageByUriAsync('%s', ExtLoc='%s') = 0x%0X %s",
+                                                      packageFullName, externalLocation ? externalLocation : L"<null>", deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
+    else
+    {
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageByUriAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
 }
 
-inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+inline void AddPackageByUri(
+    PCWSTR packageDirName,
+    PCWSTR packageFullName,
+    bool DeferRegistrationWhenPackagesAreInUse = false,
+    PCWSTR externalLocation = nullptr)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
+    AddPackageByUri(msixUri, packageFullName, DeferRegistrationWhenPackagesAreInUse, externalLocation);
+}
+
+inline void AddPackageDefer(PCWSTR packageDirName, PCWSTR packageFullName, PCWSTR externalLocation = nullptr)
+{
+    AddPackageByUri(packageDirName, packageFullName, true, externalLocation);
+}
+
+inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName, PCWSTR externalLocation = nullptr)
 {
     if (IsPackageRegistered(packageFullName))
     {
@@ -341,11 +548,18 @@ inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
     else
     {
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageIfNecessary: %s not registered, adding...", packageFullName));
-        AddPackage(packageDirName, packageFullName);
+        if (externalLocation)
+        {
+            AddPackageByUri(packageDirName, packageFullName, false, externalLocation);
+        }
+        else
+        {
+            AddPackage(packageDirName, packageFullName);
+        }
     }
 }
 
-inline void AddPackageDeferIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+inline void AddPackageDeferIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName, PCWSTR externalLocation = nullptr)
 {
     if (IsPackageRegistered(packageFullName))
     {
@@ -354,7 +568,7 @@ inline void AddPackageDeferIfNecessary(PCWSTR packageDirName, PCWSTR packageFull
     else
     {
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageDeferIfNecessary: %s not registered, adding...", packageFullName));
-        AddPackageDefer(packageDirName, packageFullName);
+        AddPackageDefer(packageDirName, packageFullName, externalLocation);
     }
 }
 
@@ -368,7 +582,44 @@ inline void StagePackage(PCWSTR packageDirName, PCWSTR packageFullName)
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"StagePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
 }
 
-inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+inline void StagePackageByUri(
+    winrt::Windows::Foundation::Uri packageUri,
+    PCWSTR packageFullName,
+    PCWSTR externalLocation = nullptr)
+{
+    // StagePackageByUri added in 20H1
+    VERIFY_IS_TRUE(::WindowsVersion::IsWindows10_20H1OrGreater());
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    winrt::Windows::Management::Deployment::StagePackageOptions options;
+    if (externalLocation)
+    {
+        auto externalLocationUri{ winrt::Windows::Foundation::Uri{ externalLocation } };
+        options.ExternalLocationUri(externalLocationUri);
+    }
+    auto deploymentResult{ packageManager.StagePackageByUriAsync(packageUri, options).get() };
+    if (externalLocation)
+    {
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(),
+                         WEX::Common::String().Format(L"StagePackageAsync('%s', ExtLoc='%s') = 0x%0X %s",
+                                                      packageFullName, externalLocation, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
+    else
+    {
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"StagePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
+}
+
+inline void StagePackageByUri(
+    PCWSTR packageDirName,
+    PCWSTR packageFullName,
+    PCWSTR externalLocation = nullptr)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
+    StagePackageByUri(msixUri, packageFullName, externalLocation);
+}
+
+inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName, PCWSTR externalLocation=nullptr)
 {
     if (IsPackageAvailable(packageFullName))
     {
@@ -377,7 +628,14 @@ inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullNam
     else
     {
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"StagePackageIfNecessary: %s not staged, staging...", packageFullName));
-        StagePackage(packageDirName, packageFullName);
+        if (externalLocation)
+        {
+            StagePackageByUri(packageDirName, packageFullName, externalLocation);
+        }
+        else
+        {
+            StagePackage(packageDirName, packageFullName);
+        }
     }
 }
 
@@ -408,10 +666,16 @@ inline void RemovePackage(PCWSTR packageFullName)
 {
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
-    if (!deploymentResult)
+    const HRESULT hr{ deploymentResult.ExtendedErrorCode() };
+    // Callers use RemovePackage() to ensure a package is absent, frequently on one that isn't
+    // installed — so "not installed" is the desired end state, not a failure. Any other
+    // non-success (e.g. ERROR_PACKAGES_IN_USE) is a real removal error and must surface, so we
+    // don't fall back to the old `if (!deploymentResult)` that silently swallowed everything.
+    if (hr == HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND))
     {
-        VERIFY_FAIL(WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+        return;
     }
+    VERIFY_SUCCEEDED(hr, WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, hr, deploymentResult.ErrorText().c_str()));
 }
 
 inline void RemovePackageIfNecessary(PCWSTR packageFullName)

@@ -14,7 +14,7 @@
 #                                                                                                                                   #
 #####################################################################################################################################
 
-name: $(version)
+name: $(pipelineName)
 
 # https://aka.ms/obpipelines/triggers
 trigger: none
@@ -38,9 +38,14 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   default: true
 
 variables:
-- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-TSAVariables.yml@WinAppSDK
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
+  parameters:
+    TagPrefix: 'pr'
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
 - template: WindowsAppSDK-CommonVariables.yml
+- group: WinAppSDK-Foundation-Build-Variables
 - name: maxParallelForBuildSamplesCompatJob_x64
   value: 20
 - name: maxParallelForBuildSamplesCompatJob_arm64
@@ -52,17 +57,17 @@ resources:
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
-    - repository: WindowsAppSDKConfig
+    - repository: WinAppSDK
       type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
-    - repository: WindowsAppSDKVersionConfig
+      name: OS/WinAppSDK
+      ref: refs/heads/release/main
+    - repository: WindowsAppSDKConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
     - repository: WindowsAppSDKSamples
       type: github
-      endpoint: 'GitHub - benkuhn - 2-18'
+      endpoint: 'WinAppSDK-Github'
       name: microsoft/WindowsAppSDK-Samples
       ref: $(SamplesBranch)
 
@@ -117,6 +122,7 @@ extends:
         SignOutput: false
         runApiScan: ${{ parameters.runStaticAnalysis }}
         runPREFast: false
+        testMatrix: ${{ variables.PipelineTests }}
     
     - ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
       - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
@@ -124,6 +130,7 @@ extends:
           SignOutput: false
           runApiScan: false
           runPREFast: true
+          testMatrix: ${{ variables.PipelineTests }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
@@ -146,3 +153,7 @@ extends:
           runStaticAnalysis: ${{ parameters.runStaticAnalysis }}
           maxParallel_x64: ${{ variables.maxParallelForBuildSamplesCompatJob_x64 }}
           maxParallel_arm64: ${{ variables.maxParallelForBuildSamplesCompatJob_arm64 }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml@self

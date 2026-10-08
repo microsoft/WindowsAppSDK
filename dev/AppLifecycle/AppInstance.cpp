@@ -96,7 +96,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return { kind, data };
     }
 
-    AppInstance::AppInstance(uint32_t processId)
+    AppInstance::AppInstance() :
+        AppInstance(GetCurrentProcessId(), {})
+    {
+    }
+
+    AppInstance::AppInstance(uint32_t processId, wil::unique_handle processHandle) :
+        m_instanceHandle(std::move(processHandle))
     {
         m_processId = processId;
         m_isCurrent = (GetCurrentProcessId() == processId);
@@ -146,7 +152,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
         else
         {
-            m_instanceHandle.reset(OpenProcess(SYNCHRONIZE, FALSE, processId));
+            THROW_HR_IF(E_INVALIDARG, !m_instanceHandle);
 
             // Create a monitor thread to handle cleaning up this instance if the backing process terminates.
             auto onInstanceTerminated = [](_In_ void* context, _In_ BOOLEAN /*reason*/) -> void
@@ -277,7 +283,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         auto initInstance = []
         {
-            s_current = winrt::make_self<AppInstance>(GetCurrentProcessId());
+            s_current = winrt::make_self<AppInstance>();
         };
 
         wil::init_once(s_initOnce, initInstance);
@@ -285,7 +291,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_current.as<Microsoft::Windows::AppLifecycle::AppInstance>();
     }
 
-    IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstances()
+    HRESULT AppInstance::GetInstancesImpl(IVector<Microsoft::Windows::AppLifecycle::AppInstance>& instancesOut) noexcept try
     {
         // Force the singleton init.
         GetCurrent();
@@ -318,10 +324,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
             else
             {
-                wil::unique_handle process(::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
+                wil::unique_handle process(::OpenProcess(SYNCHRONIZE, FALSE, pid));
                 if (process != nullptr)
                 {
-                    instances.Append(make<AppInstance>(pid));
+                    instances.Append(make<AppInstance>(pid, std::move(process)));
                 }
                 else
                 {
@@ -332,6 +338,19 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
         }
 
+        instancesOut = instances;
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstances()
+    {
+        // Delegate to the noexcept GetInstancesImpl worker and rethrow any failure
+        // HRESULT cleanly via wil::ResultException. This avoids the deep WIL
+        // FormatMessage-based exception logging chain that caused stack overflow on
+        // the hot path (Bug 61688595).
+        IVector<Microsoft::Windows::AppLifecycle::AppInstance> instances{ nullptr };
+        THROW_IF_FAILED(GetInstancesImpl(instances));
         return instances;
     }
 

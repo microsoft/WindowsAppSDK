@@ -104,7 +104,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
-        
+
+        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+        PickerCommon::DialogFocusRestorer focusRestorer{};
+
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
@@ -119,6 +122,19 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         parameters.ConfigureDialog(dialog);
         dialog->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
+
+        // Register event handler to show the WSL node in the navigation pane.
+        // Use SUCCEEDED() instead of check_hresult() so the picker still opens if registration fails.
+        auto wslRevealer = winrt::make_self<PickerCommon::WslNodeRevealer>();
+        DWORD adviseCookie{};
+        bool wslAdvised = SUCCEEDED(dialog->Advise(wslRevealer.as<IFileDialogEvents>().get(), &adviseCookie));
+        auto unadvise = wil::scope_exit([&] {
+            if (wslAdvised)
+            {
+                dialog->Unadvise(adviseCookie);
+            }
+            wslRevealer->CancelPendingReveal();
+        });
 
         if (FAILED(dialog->Show(parameters.HWnd)) || cancellationToken())
         {
@@ -151,7 +167,10 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         PickerCommon::PickerParameters parameters{};
         CaptureParameters(parameters);
-        
+
+        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+        PickerCommon::DialogFocusRestorer focusRestorer{};
+
         auto cancellationToken = co_await winrt::get_cancellation_token();
         cancellationToken.enable_propagation(true);
         co_await winrt::resume_background();
@@ -169,6 +188,19 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         FILEOPENDIALOGOPTIONS dialogOptions;
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_ALLOWMULTISELECT));
+
+        // Register event handler to show the WSL node in the navigation pane.
+        // Use SUCCEEDED() instead of check_hresult() so the picker still opens if registration fails.
+        auto wslRevealer = winrt::make_self<PickerCommon::WslNodeRevealer>();
+        DWORD adviseCookie{};
+        bool wslAdvised = SUCCEEDED(dialog->Advise(wslRevealer.as<IFileDialogEvents>().get(), &adviseCookie));
+        auto unadvise = wil::scope_exit([&] {
+            if (wslAdvised)
+            {
+                dialog->Unadvise(adviseCookie);
+            }
+            wslRevealer->CancelPendingReveal();
+        });
 
         if (FAILED(dialog->Show(parameters.HWnd)) || cancellationToken())
         {

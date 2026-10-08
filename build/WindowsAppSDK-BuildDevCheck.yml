@@ -6,7 +6,7 @@ parameters:
   default: true
 
 variables:
-- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
 - template: ${{variables['System.DefaultWorkingDirectory']}}\build\WindowsAppSDK-CommonVariables.yml
 
 resources:
@@ -15,14 +15,10 @@ resources:
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
-    - repository: WindowsAppSDKConfig
+    - repository: WinAppSDK
       type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
-    - repository: WindowsAppSDKVersionConfig
-      type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
+      name: OS/WinAppSDK
+      ref: refs/heads/release/main
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
@@ -73,7 +69,7 @@ extends:
             TargetFolder: '$(Build.SourcesDirectory)\PackLocation'
             flattenFolders: false
 
-        - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+        - task: NuGetCommand@2
           displayName: 'Pack DevCheckPackage'
           inputs:
             command: 'pack'
@@ -83,7 +79,7 @@ extends:
             packDestination: '$(ob_outputDirectory)'
 
         - ${{ if eq(parameters.PushPackageToInternalFeed, 'true') }}:
-          - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+          - task: NuGetCommand@2
             displayName: 'NuGet push package to Project.Reunion.nuget.internal'
             inputs:
               command: 'push'

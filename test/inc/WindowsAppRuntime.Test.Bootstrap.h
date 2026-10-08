@@ -16,11 +16,11 @@ namespace Test::Bootstrap
 {
     enum class Packages
     {
-        None = 0,
-        Framework = 0x0001,
-        Main = 0x0002,
-        DDLM = 0x0004,
-        Singleton = 0x0008,
+        None         = 0,
+        Framework    = 0x0001,
+        Main         = 0x0002,
+        DDLM         = 0x0004,
+        Singleton    = 0x0008,
 
         Default = Framework | Main | DDLM | Singleton,
     };
@@ -130,7 +130,25 @@ namespace Test::Bootstrap
                 TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
         }
 
-        VERIFY_SUCCEEDED(MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion));
+        constexpr HRESULT c_applicationNotRegistered{ static_cast<HRESULT>(0x80270254L) };
+        constexpr int c_maxAttempts{ 5 };
+        DWORD retryDelayInMilliseconds{ 1000 };
+        HRESULT bootstrapHr{ S_OK };
+        for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
+        {
+            bootstrapHr = MddBootstrapInitialize(version_MajorMinor, nullptr, minVersion);
+            if (SUCCEEDED(bootstrapHr) || (bootstrapHr != c_applicationNotRegistered) || (attempt == c_maxAttempts))
+            {
+                break;
+            }
+
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"MddBootstrapInitialize attempt %d/%d failed with 0x%08X; retrying in %u ms",
+                attempt, c_maxAttempts, static_cast<unsigned int>(bootstrapHr), retryDelayInMilliseconds));
+            Sleep(retryDelayInMilliseconds);
+            retryDelayInMilliseconds *= 2;
+        }
+        VERIFY_SUCCEEDED(bootstrapHr);
         s_bootstrapDll = std::move(bootstrapDll);
     }
 

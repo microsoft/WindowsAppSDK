@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <DefaultName>ResourceDictionary.xaml</DefaultName>
+    <Name ID="1009" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1011" Package="FIXME-PACKAGEGUID" />
+    <Icon>WinUI.Neutral.CppWinRT.ResourceDictionary.ico</Icon>
+    <ProjectType>VC</ProjectType>
+    <TemplateID>WinUI.Neutral.CppWinRT.ResourceDictionary</TemplateID>
+    <TemplateGroupID>WinRT-Native-UAP</TemplateGroupID>
+    <AppliesTo>VisualC + (WindowsAppSDK | WinUI)</AppliesTo>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <ShowByDefault>false</ShowByDefault>
+    <TargetPlatformName>Windows</TargetPlatformName>
+    <LanguageTag>cpp</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <ProjectTypeTag>desktop</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem OpenInEditor="true" ReplaceParameters="true" ItemType="Page" TargetFileName="$fileinputname$.xaml">ResourceDictionary.xaml</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

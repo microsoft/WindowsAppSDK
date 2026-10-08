@@ -17,7 +17,7 @@
     JSON string containing the current array of issues from gh CLI.
 
 .PARAMETER PreviousStatePath
-    Path to the previous state file. Defaults to 'Generated Files/triageMeeting/previous-state.json'.
+    Path to the previous state file. Defaults to 'Generated-Files/triageMeeting/previous-state.json'.
 
 .PARAMETER OutputFormat
     Output format: 'json' or 'summary'. Defaults to 'json'.
@@ -35,7 +35,7 @@ param(
     [string]$CurrentIssuesJson,
 
     [Parameter()]
-    [string]$PreviousStatePath = "Generated Files/triageMeeting/previous-state.json",
+    [string]$PreviousStatePath = "Generated-Files/triageMeeting/previous-state.json",
 
     [Parameter()]
     [ValidateSet('json', 'summary')]

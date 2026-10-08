@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <stdint.h>
 #include <stdlib.h>
+
 #include <MddBootstrap.h>
 #include <WindowsAppSDK-VersionInfo.h>
 

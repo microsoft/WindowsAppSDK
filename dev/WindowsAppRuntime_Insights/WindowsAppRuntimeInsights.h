@@ -13,8 +13,18 @@
 
 #include <wil/resource.h>
 #include <string>
+#include <appmodel.h>
     namespace Microsoft::WindowsAppRuntime::Insights
     {
+    enum class TraceLoggingInformationFlags : std::uint32_t
+    {
+        None = 0,
+        IsDebuggerPresent = 0x00000001,
+        IsPackagedProcess = 0x00000002,
+        IsSelfContained = 0x00000004,
+    };
+    DEFINE_ENUM_FLAG_OPERATORS(TraceLoggingInformationFlags)
+
     class RuntimeInformation
     {
     public:
@@ -30,6 +40,55 @@
             const uint32_t c_channelResourceId{ 10001 };
             static std::string channel{ LoadStringFromResource(c_channelResourceId) };
             return channel;
+        }
+
+        // Inlined from the canonical implementations (see for reference):
+        //   IsPackagedProcess: dev/Common/AppModel.Identity.IsPackagedProcess.h
+        //   IsSelfContained:   dev/Common/WindowsAppRuntime.SelfContained.h / .cpp
+        // Duplicated here to avoid exposing those headers as public API.
+        static std::uint32_t TraceLoggingInformationFlags()
+        {
+            static std::uint32_t flags{ []() -> std::uint32_t {
+                auto f{ Insights::TraceLoggingInformationFlags::None };
+
+                if (wil::details::IsDebuggerPresent())
+                {
+                    f |= Insights::TraceLoggingInformationFlags::IsDebuggerPresent;
+                }
+
+                {
+                    UINT32 n{};
+                    const auto rc{ ::GetCurrentPackageFullName(&n, nullptr) };
+                    if ((rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER))
+                    {
+                        LOG_HR(HRESULT_FROM_WIN32(rc));
+                    }
+                    else if (rc == ERROR_INSUFFICIENT_BUFFER)
+                    {
+                        f |= Insights::TraceLoggingInformationFlags::IsPackagedProcess;
+                    }
+                }
+
+                {
+                    auto module{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
+                    if (module)
+                    {
+                        using IsSelfContainedFn = HRESULT(__stdcall*)(BOOL*);
+                        auto fn{ reinterpret_cast<IsSelfContainedFn>(::GetProcAddress(module, "WindowsAppRuntime_IsSelfContained")) };
+                        if (fn)
+                        {
+                            BOOL result{};
+                            if (SUCCEEDED_LOG(fn(&result)) && result)
+                            {
+                                f |= Insights::TraceLoggingInformationFlags::IsSelfContained;
+                            }
+                        }
+                    }
+                }
+
+                return static_cast<std::uint32_t>(f);
+            }() };
+            return flags;
         }
 
     private:
@@ -60,7 +119,7 @@
             TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
             TraceLoggingString(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeVersion().c_str(), "Version"), \
             TraceLoggingString(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeChannel().c_str(), "WindowsAppSDKChannel"), \
-            TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
+            TraceLoggingUInt32(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::TraceLoggingInformationFlags(), "Flags"), \
             TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 
     #include <wil/tracelogging.h>

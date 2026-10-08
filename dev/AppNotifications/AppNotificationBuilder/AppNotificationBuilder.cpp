@@ -103,7 +103,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls'/>", imageUri.ToString().c_str());
+        m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls'/>", EncodeXml(imageUri.ToString()).c_str());
         return *this;
     }
 
@@ -111,7 +111,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         if (imageCrop == AppNotificationImageCrop::Circle)
         {
-            m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' hint-crop='circle'/>", imageUri.ToString().c_str());
+            m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' hint-crop='circle'/>", EncodeXml(imageUri.ToString()).c_str());
         }
         else
         {
@@ -126,14 +126,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetInlineImage");
 
         std::wstring hintCrop{ imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
-        m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' alt='%ls'%ls/>", imageUri.ToString().c_str(), EncodeXml(alternateText).c_str(), hintCrop.c_str());
+        m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' alt='%ls'%ls/>", EncodeXml(imageUri.ToString()).c_str(), EncodeXml(alternateText).c_str(), hintCrop.c_str());
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls'/>", imageUri.ToString().c_str());
+        m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls'/>", EncodeXml(imageUri.ToString()).c_str());
         return *this;
     }
 
@@ -141,7 +141,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         if (imageCrop == AppNotificationImageCrop::Circle)
         {
-            m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls' hint-crop='circle'/>", imageUri.ToString().c_str());
+            m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls' hint-crop='circle'/>", EncodeXml(imageUri.ToString()).c_str());
         }
         else
         {
@@ -156,14 +156,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetAppLogoOverride");
 
         std::wstring hintCrop{ imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
-        m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls' alt='%ls'%ls/>", imageUri.ToString().c_str(), EncodeXml(alternateText).c_str(), hintCrop.c_str());
+        m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls' alt='%ls'%ls/>", EncodeXml(imageUri.ToString()).c_str(), EncodeXml(alternateText).c_str(), hintCrop.c_str());
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetHeroImage(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ls'/>", imageUri.ToString().c_str());
+        m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ls'/>", EncodeXml(imageUri.ToString()).c_str());
         return *this;
     }
 
@@ -171,19 +171,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetHeroImage");
 
-        m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ls' alt='%ls'/>", imageUri.ToString().c_str(), EncodeXml(alternateText).c_str());
+        m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ls' alt='%ls'/>", EncodeXml(imageUri.ToString()).c_str(), EncodeXml(alternateText).c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri)
     {
-        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ls'/>", audioUri.ToString().c_str());
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ls'/>", EncodeXml(audioUri.ToString()).c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri, AppNotificationAudioLooping const& loop)
     {
-        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ls' loop='%ls'/>", audioUri.ToString().c_str(), loop == AppNotificationAudioLooping::Loop ? L"true" : L"false");
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ls' loop='%ls'/>", EncodeXml(audioUri.ToString()).c_str(), loop == AppNotificationAudioLooping::Loop ? L"true" : L"false");
         return *this;
     }
 

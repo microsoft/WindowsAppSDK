@@ -2,10 +2,13 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: false
-- name: "IsOneBranch"
-  type: boolean
-  default: true
 - name: runPREfast
+  type: boolean
+  default: false
+# When true, this template is being invoked from the monobuild context where
+# the WindowsAppSDK monorepo IS the self repo. EsrpCodeSigning-Steps is invoked
+# WITHOUT the @WinAppSDK suffix.
+- name: IsMonobuild
   type: boolean
   default: false
 
@@ -14,7 +17,7 @@ steps:
   inputs:
     nuGetServiceConnections: 'TelemetryInternal'
 
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+- task: NuGetCommand@2
   displayName: 'NuGet restore of packages'
   inputs:
     command: 'custom'
@@ -22,7 +25,7 @@ steps:
 
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
   parameters:
-    IsOneBranch: ${{ parameters.IsOneBranch }}
+    IsMonobuild: ${{ parameters.IsMonobuild }}
 
 - task: PowerShell@2
   name: BuildFoundation
@@ -58,16 +61,18 @@ steps:
     failOnAlert: false #changed true to false, temporary workaround for component governance blocking pipeline due to low .NET version
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      FolderPath: '$(build.SourcesDirectory)\BuildOutput'
-      UseMinimatch: true
-      Pattern: |
-        **/*.winmd
-        **/*.dll
-        **/*.exe
-      KeyCode: 'CP-230012'
-      displayName: 'Authenticode CodeSign Binaries'
+      IsMonobuild: ${{ parameters.IsMonobuild }}
+      InnerParams:
+        FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+        UseMinimatch: true
+        Pattern: |
+          **/*.winmd
+          **/*.dll
+          **/*.exe
+        KeyCode: 'CP-230012'
+        displayName: 'Authenticode CodeSign Binaries'
 
 # Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
 # so the CopyFiles below are to move all the vPack files to the right locations
@@ -77,8 +82,3 @@ steps:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if not( parameters.IsOneBranch ) }}:
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(ob_outputDirectory)'
-      artifactName: '$(ob_artifactBaseName)'

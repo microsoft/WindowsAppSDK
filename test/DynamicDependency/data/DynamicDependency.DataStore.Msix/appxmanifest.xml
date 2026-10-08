@@ -10,19 +10,19 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="WindowsAppRuntime.Test.DynDep.DataStore.4.1"
+    Name="WindowsAppRuntime.Test.DynDep.DataStore.4"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>WindowsAppRuntime.Test.DynDep.DataStore v4.1 (aka MicrosoftCorporationII.WinAppRuntime.Main) fake for tests</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.DynDep.DataStore v4.* (aka MicrosoftCorporationII.WinAppRuntime.Main) fake for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="Microsoft.WindowsAppRuntime.4.1" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.4" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -34,7 +34,7 @@
       Executable="DynamicDependency.DataStore.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="WindowsAppRuntime.Test.DynDep.DataStore.4.1"
+        DisplayName="WindowsAppRuntime.Test.DynDep.DataStore.4"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="Windows App SDK Test DynamicDependency DataStore"

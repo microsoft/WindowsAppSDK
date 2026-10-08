@@ -98,7 +98,7 @@ function Get-Tests
         foreach ($testConfig in $testJson.Tests)
         {
             $testConfig | Write-Host
-            if ($testConfig -contains 'Type')
+            if ($testConfig.PSObject.Properties.Name -contains 'Type')
             {
                 $testType = $testConfig.Type
             }

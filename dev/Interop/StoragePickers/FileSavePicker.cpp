@@ -154,6 +154,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         CaptureParameters(parameters);
 
+        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+        PickerCommon::DialogFocusRestorer focusRestorer{};
+
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedFolder = m_suggestedFolder;
         auto suggestedFileName = m_suggestedFileName;
@@ -187,6 +190,19 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
         FILEOPENDIALOGOPTIONS dialogOptions;
         check_hresult(dialog->GetOptions(&dialogOptions));
         check_hresult(dialog->SetOptions(dialogOptions | FOS_STRICTFILETYPES));
+
+        // Register event handler to show the WSL node in the navigation pane.
+        // Use SUCCEEDED() instead of check_hresult() so the picker still opens if registration fails.
+        auto wslRevealer = winrt::make_self<PickerCommon::WslNodeRevealer>();
+        DWORD adviseCookie{};
+        bool wslAdvised = SUCCEEDED(dialog->Advise(wslRevealer.as<IFileDialogEvents>().get(), &adviseCookie));
+        auto unadvise = wil::scope_exit([&] {
+            if (wslAdvised)
+            {
+                dialog->Unadvise(adviseCookie);
+            }
+            wslRevealer->CancelPendingReveal();
+        });
 
         if (FAILED(dialog->Show(parameters.HWnd)))
         {

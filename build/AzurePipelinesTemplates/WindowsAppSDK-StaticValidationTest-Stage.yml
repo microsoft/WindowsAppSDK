@@ -13,6 +13,8 @@ stages:
       type: windows
       isCustom: true
       name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
+      # If we just let the pool give us MMS2022, we will get an error saying an artifact for 1ESPT is missing.
+      demands: ImageOverride -equals MMS2022-1ES-GPT      
     timeoutInMinutes: 120
     steps:
     - task: NuGetAuthenticate@1
@@ -22,17 +24,13 @@ stages:
       inputs:
         targetType: filePath
         filePath: tools\DevCheck\DevCheck.ps1
-        arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
+        arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -ShowSystemInfo
         workingDirectory: '$(Build.SourcesDirectory)'
 
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation'
       inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
+        source: current
         artifactName: "TransportPackage"
         targetPath: $(System.ArtifactsDirectory)
 

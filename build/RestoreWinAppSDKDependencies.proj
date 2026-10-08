@@ -1,0 +1,45 @@
+<!-- Copyright (c) Microsoft Corporation. Licensed under the MIT License. -->
+<!--
+    RestoreInternalPackages.proj - Generates packages.config from internal
+    PackageVersion items (IsInternal="true") in Directory.Packages.props.
+
+    Usage:
+      msbuild build\RestoreInternalPackages.proj /t:GeneratePackagesConfig
+      nuget restore build\packages.config -PackagesDirectory packages -ConfigFile NuGet.config
+-->
+<Project DefaultTargets="GeneratePackagesConfig" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Import Directory.Packages.props for PackageVersion items with IsInternal metadata -->
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Packages.props" />
+
+  <PropertyGroup>
+    <PackagesConfigPath Condition="'$(PackagesConfigPath)' == ''">$(MSBuildThisFileDirectory)packages.config</PackagesConfigPath>
+  </PropertyGroup>
+
+  <Target Name="GeneratePackagesConfig">
+    <!-- Filter to only internal packages -->
+    <ItemGroup>
+      <_InternalPackage Include="@(PackageVersion)" Condition="'%(PackageVersion.IsInternal)' == 'true'" />
+    </ItemGroup>
+
+    <!-- Write packages.config -->
+    <WriteLinesToFile File="$(PackagesConfigPath)" Lines='&lt;?xml version="1.0" encoding="utf-8"?&gt;' Overwrite="true" />
+    <WriteLinesToFile File="$(PackagesConfigPath)" Lines="&lt;packages&gt;" Overwrite="false" />
+    <WriteLinesToFile File="$(PackagesConfigPath)"
+      Lines='  &lt;package id="%(_InternalPackage.Identity)" version="%(_InternalPackage.Version)" targetFramework="native" /&gt;'
+      Overwrite="false" />
+    <WriteLinesToFile File="$(PackagesConfigPath)" Lines="&lt;/packages&gt;" Overwrite="false" />
+
+    <Message Importance="High" Text="Generated $(PackagesConfigPath)" />
+    <Message Importance="High" Text="  %(_InternalPackage.Identity) = %(_InternalPackage.Version)" />
+
+    <!-- Pipeline variables for AppLicensing (used by downstream copy tasks) -->
+    <Message Importance="High"
+      Text="##vso[task.setvariable variable=AppLicensingInternalPackageName]%(_InternalPackage.Identity)"
+      Condition="'%(_InternalPackage.Identity)' == 'Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage'" />
+    <Message Importance="High"
+      Text="##vso[task.setvariable variable=AppLicensingInternalPackageVersion]%(_InternalPackage.Version)"
+      Condition="'%(_InternalPackage.Identity)' == 'Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage'" />
+  </Target>
+
+</Project>
