@@ -7,10 +7,10 @@
 trigger: none
 
 parameters:
-- name: WindowsAppSDKVersion
-  displayName: 'WindowsAppSDK version for template validation (* = latest stable)'
-  type: string
-  default: '*'
+  - name: WindowsAppSDKVersion
+    displayName: 'WindowsAppSDK version for template validation (* = latest stable)'
+    type: string
+    default: '*'
 
 # Shared variable templates:
 #   - Foundation-TestConfig: test matrices reused from the main pipeline.
@@ -19,12 +19,12 @@ parameters:
 #     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
 #     are inert here because we disable those scanners in globalSdl below.
 variables:
-- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-- template: AzurePipelinesTemplates\WindowsAppSDK-TSAVariables.yml@WindowsAppSDKConfig
-- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
-- template: WindowsAppSDK-CommonVariables.yml
-- name: WindowsContainerImage
-  value: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
+  - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+  - template: AzurePipelinesTemplates\WindowsAppSDK-TSAVariables.yml@WindowsAppSDKConfig
+  - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+  - template: WindowsAppSDK-CommonVariables.yml
+  - name: WindowsContainerImage
+    value: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
 
 name: TemplatesPR-$(Date:yyyyMMdd)$(Rev:.r)
 
