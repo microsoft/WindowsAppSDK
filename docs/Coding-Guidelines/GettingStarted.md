@@ -31,7 +31,7 @@ in the Start Menu and select `Run as Administrator`) to update your development 
 * Verify nuget.exe is available (and download if necessary).
 * Verify Visual Studio is installed with the required components.
 * Verify Windows 10 SDK 10.0.17763.0 is installed (and install if necessary).
-* Verify Windows 11 SDK 10.0.26100.4654+ is installed (and install if necessary).
+* Verify Windows 11 SDK 10.0.26100.8876+ is installed (and install if necessary).
 * Verify a password-protected test certificate exists and add it to the certificate store (or create if necessary). Used to sign test packages for inner-loop development and testing.
 * Install the TAEF service (TE.Service). Used by TAEF to enable test functionality (e.g. RunAs).
 * Verify the project's dependencies are sanctioned and using the correct version(s).
