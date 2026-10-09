@@ -57,6 +57,20 @@ configuration:
           reply: This issue has been marked as duplicate and has not had any activity for **3 days**. It will be closed for housekeeping purposes.
       - closeIssue
 
+    - description: Close pull requests after 365 days of inactivity
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isPullRequest
+      - isOpen
+      - noActivitySince:
+          days: 365
+      actions:
+      - addReply:
+          reply: This PR hasn't seen any activity for **365 days**, so we're closing it due to inactivity. If you still want to merge this into WindowsAppSDK, you can reopen it. When reopening, please merge `main` into your PR branch or rebase your branch onto `main`.
+      - closeIssue
+
 
     eventResponderTasks:
 
