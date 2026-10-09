@@ -71,6 +71,7 @@
     <MicrosoftWebWebView2Version>1.0.2903.40</MicrosoftWebWebView2Version>
     <MicrosoftTelemetryInboxNativeVersion>10.0.19041.1-191206-1406.vb-release.x86fre</MicrosoftTelemetryInboxNativeVersion>
     <MicrosoftWindowsAppSDKProtobufVersion>3.21.12</MicrosoftWindowsAppSDKProtobufVersion>
+    <MicrosoftNETCoreUniversalWindowsPlatformVersion>6.2.10</MicrosoftNETCoreUniversalWindowsPlatformVersion>
   </PropertyGroup>
 
   <Import Project="$(WindowsAppSDKPackageVersionProps)" Condition="'$(WindowsAppSDKPackageVersionProps)' != ''" />
@@ -116,6 +117,7 @@
 
   <!-- Runtime dependencies -->
   <ItemGroup Label="Runtime Dependencies">
+    <PackageVersion Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="$(MicrosoftNETCoreUniversalWindowsPlatformVersion)" />
     <PackageVersion Include="Microsoft.Web.WebView2" Version="$(MicrosoftWebWebView2Version)" />
     <PackageVersion Include="Microsoft.Telemetry.Inbox.Native" Version="$(MicrosoftTelemetryInboxNativeVersion)" />
     <PackageVersion Include="Microsoft.WindowsAppSDK.Protobuf" Version="$(MicrosoftWindowsAppSDKProtobufVersion)" />
