@@ -105,7 +105,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\test\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\dev\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,7 +120,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\test\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\dev\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,7 +135,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\test\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\dev\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,7 +150,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\test\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\dev\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -165,7 +165,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\test\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\dev\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -180,7 +180,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\test\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\dev\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -219,7 +219,7 @@
     <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
+    <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -56,7 +56,7 @@ variables:
 - template: Build/WindowsAppSDK/WindowsAppSDK-Foundation-TestConfig.yml@WinAppSDK
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-Versions.yml@WinAppSDK
   parameters:
-    PrOrNightly: 'ci'
+    TagPrefix: 'ci'
 - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-CommonVariables.yml@WinAppSDK
 - template: WindowsAppSDK-CommonVariables.yml
 - group: WinAppSDK-Foundation-Build-Variables
@@ -76,7 +76,7 @@ resources:
     - repository: WinAppSDK
       type: git
       name: OS/WinAppSDK
-      ref: refs/heads/release/dev/monobuild-2.0-experimental
+      ref: refs/heads/release/2.0-experimental
     - repository: WindowsAppSDKSamples
       type: github
       endpoint: 'WinAppSDK-Github'
