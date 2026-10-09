@@ -57,6 +57,25 @@ configuration:
           reply: This issue has been marked as duplicate and has not had any activity for **3 days**. It will be closed for housekeeping purposes.
       - closeIssue
 
+    - description: Request author feedback on inactive pull requests open for over 30 days
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isPullRequest
+      - isOpen
+      - created:
+          before: 30
+      - noActivitySince:
+          days: 14
+      - isNotLabeledWith:
+          label: needs-author-feedback
+      actions:
+      - addReply:
+          reply: This PR has been open for 30 days. Are you still interested in merging this PR? If so, please make sure your branch is up to date with the latest `main` by merging `main` into your branch or rebasing onto `main`.
+      - addLabel:
+          label: needs-author-feedback
+
     - description: Close pull requests after 365 days of inactivity
       frequencies:
       - hourly:
