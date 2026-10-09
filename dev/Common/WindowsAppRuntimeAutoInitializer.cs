@@ -14,6 +14,14 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Common
         [global::System.Runtime.CompilerServices.ModuleInitializer]
         internal static void InitializeWindowsAppSDK()
         {
+            // HybridDeploy: URFW reads the app's SxS manifest and expands
+            // %MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY% inside <file loadFrom>.
+            // Set it before Bootstrap runs so the framework DLL's DllMain can load
+            // the catalog with correct pinned-DLL paths.
+#if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_HYBRIDDEPLOYSETUP
+            global::System.Environment.SetEnvironmentVariable("MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", global::System.AppContext.BaseDirectory);
+#endif
+
             // Call the AutoInitialize functions, as needed, starting with those initializing the WindowsAppRuntime
 #if MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP
             Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS.AutoInitialize.AccessWindowsAppSDK();
