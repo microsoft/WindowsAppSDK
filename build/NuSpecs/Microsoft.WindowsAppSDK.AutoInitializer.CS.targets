@@ -6,6 +6,10 @@
       <DefineConstants Condition="'$(WindowsAppSdkBootstrapInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BOOTSTRAP</DefineConstants>
       <DefineConstants Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_DEPLOYMENTMANAGER</DefineConstants>
       <DefineConstants Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_UNDOCKEDREGFREEWINRT</DefineConstants>
+      <!-- The resource base directory (%MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY%, used by the app
+           manifest's SxS DLL redirection and by MRTCore) is published for self-contained apps. It shares
+           the self-contained trigger with undocked reg-free WinRT initialization. See issue #5987. -->
+      <DefineConstants Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_BASEDIRECTORY</DefineConstants>
       <DefineConstants Condition="'$(WindowsAppSdkCompatibilityInitialize)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_AUTOINITIALIZE_COMPATIBILITY</DefineConstants>
   </PropertyGroup>
 
@@ -13,6 +17,7 @@
   <Target Name="WindowsAppRuntimeAutoInitializer" BeforeTargets="BeforeCompile">
     <ItemGroup>
         <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppRuntimeAutoInitializer.cs" />
+        <Compile Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)'=='true'" Include="$(MSBuildThisFileDirectory)..\include\WindowsAppRuntimeBaseDirectoryAutoInitializer.cs" />
     </ItemGroup>
   </Target>
 

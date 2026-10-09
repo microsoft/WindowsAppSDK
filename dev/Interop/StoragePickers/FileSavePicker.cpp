@@ -154,6 +154,9 @@ namespace winrt::Microsoft::Windows::Storage::Pickers::implementation
 
         CaptureParameters(parameters);
 
+        // Capture focus on the UI thread so it can be restored after the dialog closes (issue #6505).
+        PickerCommon::DialogFocusRestorer focusRestorer{};
+
         auto defaultFileExtension = m_defaultFileExtension;
         auto suggestedFolder = m_suggestedFolder;
         auto suggestedFileName = m_suggestedFileName;

@@ -16,8 +16,8 @@ namespace Test::ApplicationData::Tests
 {
     const auto Main_PackageFamilyName{ ::TP::DynamicDependencyDataStore::c_PackageFamilyName };
 
-    const winrt::hstring Publisher{ L"ApplicationDataTests" };
-    const winrt::hstring Product{ L"UnpackagedApplicationDataTests" };
+    const winrt::hstring Publisher{ L"TestApplicationDataUnpackaged_Contoso" };
+    const winrt::hstring Product{ L"SupermarketPointOfSale" };
 
     class UnpackagedApplicationDataTests
     {
@@ -94,14 +94,20 @@ namespace Test::ApplicationData::Tests
             }
         }
 
+        static std::filesystem::path GetResources_Registry()
+        {
+            return std::filesystem::path{ L"SOFTWARE\\Classes\\Local Settings\\Software" } / Publisher.c_str();
+        }
+
         void DeleteResources_Registry()
         {
-            const auto regkey{ std::filesystem::path{ L"SOFTWARE" } / Publisher.c_str() };
+            const auto regkey{ GetResources_Registry() };
             const auto hr{ HRESULT_FROM_WIN32(::RegDeleteTreeW(HKEY_CURRENT_USER, regkey.c_str())) };
             if (!wil::reg::is_registry_not_found(hr))
             {
-                VERIFY_SUCCEEDED(hr, WEX::Common::String().Format(L"RegDeleteTreeW HKEY_CURRENT_USER\\%s", regkey.c_str()));
+                VERIFY_SUCCEEDED(hr, WEX::Common::String().Format(L"RegDeleteTreeW HKCU\\%s", regkey.c_str()));
             }
+            VERIFY_IS_FALSE(RegistryKeyExists(regkey), WEX::Common::String().Format(L"HKCU\\%s", regkey.c_str()));
         }
 
         std::filesystem::path ToLongPath(const winrt::hstring& path)
@@ -161,6 +167,16 @@ namespace Test::ApplicationData::Tests
         {
             const std::filesystem::directory_entry directoryEntry{ path };
             return directoryEntry.is_directory();
+        }
+
+        static bool RegistryKeyExists(std::filesystem::path const& path)
+        {
+            wil::unique_hkey currentUserKey;
+            THROW_IF_WIN32_ERROR(::RegOpenCurrentUser(KEY_READ | KEY_WRITE, currentUserKey.put()));
+            wil::unique_hkey key;
+            const auto hr{ wil::reg::open_unique_key_nothrow(currentUserKey.get(), path.c_str(), key, wil::reg::key_access::readwrite) };
+            VERIFY_IS_TRUE(SUCCEEDED(hr) || ::wil::reg::is_registry_not_found(hr), WEX::Common::String().Format(L"open(%s) = 0x%08X", path.c_str(), hr));
+            return SUCCEEDED(hr);
         }
 
         std::filesystem::path UserLocalPath(winrt::hstring const& publisher)
@@ -359,6 +375,11 @@ namespace Test::ApplicationData::Tests
 
             auto container{ localSettings.CreateContainer(foodAndStuff, winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Always) };
             VERIFY_ARE_EQUAL(foodAndStuff, container.Name());
+            {
+                const auto regkey{ GetResources_Registry() };
+                const auto foodAndStuffRegkey{ regkey / Product.c_str() / foodAndStuff.c_str() };
+                VERIFY_IS_TRUE(RegistryKeyExists(foodAndStuffRegkey), WEX::Common::String().Format(L"HKCU\\%s", foodAndStuffRegkey.c_str()));
+            }
             //
             VERIFY_ARE_EQUAL(0u, containers.Size());
             VERIFY_IS_FALSE(containers.HasKey(foodAndStuff));
@@ -477,7 +498,7 @@ namespace Test::ApplicationData::Tests
             const winrt::hstring invalidBackslash{ L"foo\\bar" };
             try
             {
-                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalidBackslash, disposition) };
+                [[maybe_unused]] auto invalidContainer{ localSettings.CreateContainer(invalidBackslash, disposition) };
                 VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidBackslash.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
@@ -497,7 +518,7 @@ namespace Test::ApplicationData::Tests
             VERIFY_IS_NOT_NULL(maxLengthContainer);
             try
             {
-                [[maybe_unused]] auto container{ localSettings.CreateContainer(nameTooLong, disposition) };
+                [[maybe_unused]] auto invalidContainer{ localSettings.CreateContainer(nameTooLong, disposition) };
                 VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", nameTooLong.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
@@ -508,7 +529,7 @@ namespace Test::ApplicationData::Tests
             const winrt::hstring invalidDot{ L"." };
             try
             {
-                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalidDot, disposition) };
+                [[maybe_unused]] auto invalidContainer{ localSettings.CreateContainer(invalidDot, disposition) };
                 VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidDot.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
@@ -519,7 +540,7 @@ namespace Test::ApplicationData::Tests
             const winrt::hstring invalidDotDot{ L".." };
             try
             {
-                [[maybe_unused]] auto container{ localSettings.CreateContainer(invalidDotDot, disposition) };
+                [[maybe_unused]] auto invalidContainer{ localSettings.CreateContainer(invalidDotDot, disposition) };
                 VERIFY_FAIL(WEX::Common::String().Format(L"Success is not expected -- Publisher:%s Product:%s", invalidDotDot.c_str(), Product.c_str()));
             }
             catch (winrt::hresult_error& e)
@@ -593,7 +614,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(ContainerOperations)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             VERIFY_IS_NOT_NULL(applicationData);
 
             auto localSettings{ applicationData.LocalSettings() };
@@ -665,7 +686,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Values_ScalarTypes)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
             auto values{ localSettings.Values() };
             values.Clear();
@@ -780,7 +801,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Values_ArrayTypes)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
             auto values{ localSettings.Values() };
             values.Clear();
@@ -1049,7 +1070,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Values_PropertySetOperations)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
             auto values{ localSettings.Values() };
             values.Clear();
@@ -1116,7 +1137,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Values_MapChangedEvent)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
             auto values{ localSettings.Values() };
             values.Clear();
@@ -1170,7 +1191,7 @@ namespace Test::ApplicationData::Tests
 
         TEST_METHOD(Close_ThrowsAfterClose)
         {
-            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(L"TestApplicationData_Contoso", L"SupermarketPointOfSale") };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             auto localSettings{ applicationData.LocalSettings() };
 
             // Create a child container to test Close on

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="$safeprojectname$.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:$safeprojectname$"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="$projectname$"
+    mc:Ignorable="d">
+    <Window.SystemBackdrop>
+        <MicaBackdrop Kind="BaseAlt" />
+    </Window.SystemBackdrop>
+
+    <Grid>
+        <TabView
+            x:Name="TabControl"
+            VerticalAlignment="Stretch"
+            AddTabButtonClick="TabControl_AddTabButtonClick"
+            IsAddTabButtonVisible="True"
+            TabCloseRequested="TabControl_TabCloseRequested">
+            <TabView.TabStripHeader>
+                <Grid>
+                    <Image
+                        Width="16"
+                        Margin="16,4,12,0"
+                        VerticalAlignment="Center"
+                        Source="/Assets/AppIcon.ico" />
+                </Grid>
+            </TabView.TabStripHeader>
+            <TabView.TabStripFooter>
+                <Grid x:Name="CustomDragRegion" />
+            </TabView.TabStripFooter>
+        </TabView>
+    </Grid>
+</Window>

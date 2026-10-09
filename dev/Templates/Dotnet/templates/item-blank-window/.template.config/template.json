@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": ["Windows", "WinUI", "Item"],
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.Window",
+  "name": "WinUI Blank Window (Item)",
+  "shortName": ["winui-window", "winui3-window", "wasdk-item-blankwin"],
+  "sourceName": "BlankWindow",
+  "defaultName": "BlankWindow",
+  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "preferNameDirectory": false,
+  "constraints": {
+    "windows-only": {
+      "type": "os",
+      "args": "Windows"
+    },
+    "csharp-only": {
+      "type": "project-capability",
+      "args": "CSharp"
+    },
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": [ "[8.0,)" ]
+    }
+  },
+  "symbols": {
+    "rootNamespace": {
+      "type": "bind",
+      "binding": "msbuild:RootNamespace",
+      "replaces": "$rootnamespace$",
+      "defaultValue": "AppNamespace",
+      "description": "Namespace for the generated item."
+    },
+    "safeItemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "safe_name",
+      "replaces": "$safeitemname$"
+    },
+    "itemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$itemname$"
+    },
+    "fileInputName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$fileinputname$"
+    }
+  },
+  "constraints": {
+    "winuiProject": {
+      "type": "project-capability",
+      "args": "CSharp & Msix"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "BlankWindow.xaml" },
+    { "path": "BlankWindow.xaml.cs" }
+  ],
+  "forms": {
+    "safe_name": {
+      "identifier": "safe_name"
+    },
+    "identity": {
+      "identifier": "identity"
+    }
+  }
+}

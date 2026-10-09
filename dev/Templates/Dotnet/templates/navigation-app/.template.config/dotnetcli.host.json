@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "dotnetVersion": {
+      "longName": "dotnet-version",
+      "shortName": "tfm"
+    },
+    "targetPlatformMinVersion": {
+      "longName": "target-platform-min-version",
+      "shortName": "tpmv"
+    },
+    "publisherDn": {
+      "longName": "publisher-dn",
+      "shortName": "publisher"
+    },
+    "publisherDisplay": {
+      "longName": "publisher-display",
+      "shortName": "publisherName"
+    },
+    "windowsAppSdkVersion": {
+      "longName": "wasdk-version",
+      "shortName": "wasdkv"
+    },
+    "windowsSdkBuildToolsVersion": {
+      "longName": "build-tools-version",
+      "shortName": "btv"
+    },
+    "windowsSdkBuildToolsWinAppVersion": {
+      "longName": "winapp-version",
+      "shortName": "wav"
+    }
+  }
+}

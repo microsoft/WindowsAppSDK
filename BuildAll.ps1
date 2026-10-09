@@ -1,4 +1,4 @@
-<#
+﻿<#
 This script is to build the Foundation transport package that will be used to generate the windows app sdk package.
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
 
@@ -9,6 +9,9 @@ Configuration: Comma delimited string of configurations to run.
 AzureBuildStep: Only used by the pipeline to perform tasks such as signing in between the steps
 OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
+WindowsAppSDKVersionPinned: Mono-build pinned version for internal Microsoft.WindowsAppSDK.*
+    packages. When set, internal package versions in nuspec dependencies are rewritten
+    to this value instead of the ValueOrDefault fallbacks from Directory.Packages.props.
 Clean: Performs a clean on BuildOutput, Obj, and build\override
 
 Note about building in different environments.
@@ -26,6 +29,11 @@ Param(
     [string]$OutputDirectory = (Split-Path $MyInvocation.MyCommand.Path) + "\BuildOutput",
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
+    # When running in the monobuild, the pipeline passes a pinned version string that
+    # overrides the ValueOrDefault fallback versions in Directory.Packages.props for
+    # all internal WindowsAppSDK packages. This PowerShell script cannot evaluate
+    # MSBuild property expressions, so the pinned value must be supplied explicitly.
+    [string]$WindowsAppSDKVersionPinned = "",
     [switch]$Clean = $false
 )
 
@@ -33,6 +41,7 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
+
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
 $ComponentBasePath = "BuildOutput/ComponentNuget"
@@ -59,21 +68,121 @@ if ($Clean)
     Exit
 }
 
-# Find the Version Value provided by WindowsAppSDKConfig in Version.Details.xml
-# The version field of Microsoft.WindowsAppSDK.Version is the value provided byWindowsAppSDKConfig
-[xml]$versionDetailsPath = Get-Content -Path "$env:Build_SourcesDirectory\eng\Version.Details.xml"
-$versionFromConfig = $versionDetailsPath.Dependencies.ToolsetDependencies.Dependency | Where-Object { $_.Name -eq "Microsoft.WindowsAppSDK.Version" }
+# Find the Version Value from Directory.Packages.props (CPM)
+# MicrosoftWindowsAppSDKVersionPackageVersion is the pipeline version metadata property.
+[xml]$dppXml = Get-Content -Path "$env:Build_SourcesDirectory\Directory.Packages.props"
+$ns = New-Object System.Xml.XmlNamespaceManager($dppXml.NameTable)
+$ns.AddNamespace("ms", "http://schemas.microsoft.com/developer/msbuild/2003")
+$versionNode = $dppXml.SelectSingleNode("//ms:MicrosoftWindowsAppSDKVersionPackageVersion", $ns)
+$versionFromProps = if ($versionNode) { $versionNode.InnerText } else { $null }
 if ([string]::IsNullOrEmpty($PackageVersion))
 {
-    $PackageVersion = $versionFromConfig.Version;
-    Write-Host "Updating PackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $PackageVersion"
+    $PackageVersion = $versionFromProps;
+    Write-Host "Updating PackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in Directory.Packages.props: $PackageVersion"
 }
 
 if ([string]::IsNullOrEmpty($ComponentPackageVersion))
 {
-    Write-Host $versionFromConfig.Version
-    $ComponentPackageVersion = $versionFromConfig.Version;
-    Write-Host "Updating ComponentPackageVersion from Microsoft.WindowsAppSDK.Version in eng\Version.Details.xml: $ComponentPackageVersion"
+    Write-Host $versionFromProps
+    $ComponentPackageVersion = $versionFromProps;
+    Write-Host "Updating ComponentPackageVersion from MicrosoftWindowsAppSDKVersionPackageVersion in Directory.Packages.props: $ComponentPackageVersion"
+}
+
+$internalPackageVersions = @{}
+if (($AzureBuildStep -eq 'all') -or ($AzureBuildStep -eq 'PackNuget')) {
+    # Build a lookup of package versions for nuspec dependency updates. Process both the local
+    # CPM file and the optional shared props file because raw XML does not evaluate MSBuild imports.
+    $dppPath = Join-Path $env:Build_SourcesDirectory 'Directory.Packages.props'
+    [xml]$dppXmlForVersions = Get-Content -Path $dppPath -Raw
+    $msbuildProps = @{}
+    $vodPattern = [regex]"ValueOrDefault\([^,]+,\s*'([^']+)'\)"
+
+    function Add-VersionProperties([xml]$PropsXml, [bool]$HasSharedProps, [bool]$ApplyImportConditions) {
+        foreach ($propertyGroup in $PropsXml.Project.PropertyGroup) {
+            if ($ApplyImportConditions) {
+                $condition = $propertyGroup.GetAttribute('Condition')
+                if (($condition -match 'WindowsAppSDKPackageVersionProps.*!=' -and -not $HasSharedProps) -or
+                    ($condition -match 'WindowsAppSDKPackageVersionProps.*==' -and $HasSharedProps)) {
+                    continue
+                }
+            }
+
+            foreach ($property in $propertyGroup.ChildNodes) {
+                if ($property.NodeType -ne 'Element' -or [string]::IsNullOrWhiteSpace($property.InnerText)) {
+                    continue
+                }
+
+                $value = $property.InnerText
+                $vodMatch = $vodPattern.Match($value)
+                if ($vodMatch.Success) {
+                    $value = if ([string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+                        $vodMatch.Groups[1].Value
+                    } else {
+                        $WindowsAppSDKVersionPinned
+                    }
+                }
+                $msbuildProps[$property.Name] = $value
+            }
+        }
+    }
+
+    function Resolve-VersionExpression([string]$Value) {
+        $resolved = $Value
+        foreach ($propertyMatch in [regex]::Matches($Value, '\$\(([^)]+)\)')) {
+            $propertyName = $propertyMatch.Groups[1].Value
+            if (-not $msbuildProps.ContainsKey($propertyName)) {
+                throw "Package version property '$propertyName' was not found."
+            }
+            $resolved = $resolved.Replace($propertyMatch.Value, $msbuildProps[$propertyName])
+        }
+        return $resolved
+    }
+
+    $sharedPropsPath = $null
+    $searchDirectory = Split-Path $dppPath -Parent
+    while (-not [string]::IsNullOrWhiteSpace($searchDirectory)) {
+        $candidate = Join-Path $searchDirectory 'WindowsAppSDK.PackageVersion.props'
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            $sharedPropsPath = $candidate
+            break
+        }
+        $parentDirectory = Split-Path $searchDirectory -Parent
+        if ($parentDirectory -eq $searchDirectory) {
+            break
+        }
+        $searchDirectory = $parentDirectory
+    }
+
+    Add-VersionProperties $dppXmlForVersions ($null -ne $sharedPropsPath) $true
+    if ($sharedPropsPath) {
+        [xml]$sharedPropsXml = Get-Content -LiteralPath $sharedPropsPath -Raw
+        Add-VersionProperties $sharedPropsXml $true $false
+        Add-VersionProperties $dppXmlForVersions $true $true
+    }
+
+    foreach ($itemGroup in $dppXmlForVersions.Project.ItemGroup) {
+        foreach ($packageVersionItem in $itemGroup.SelectNodes("*[local-name()='PackageVersion']")) {
+            $packageId = $packageVersionItem.GetAttribute('Include')
+            if ($internalPackageVersions.ContainsKey($packageId)) {
+                throw "Duplicate PackageVersion item '$packageId' in '$dppPath'."
+            }
+
+            $isInternal = $packageVersionItem.GetAttribute('IsInternal') -eq 'true'
+            $resolvedVersion = if ($isInternal -and -not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+                $WindowsAppSDKVersionPinned
+            } else {
+                Resolve-VersionExpression $packageVersionItem.GetAttribute('Version')
+            }
+            if ([string]::IsNullOrWhiteSpace($resolvedVersion) -or $resolvedVersion -match '\$\(') {
+                throw "PackageVersion '$packageId' did not resolve to a version: '$resolvedVersion'."
+            }
+            $internalPackageVersions[$packageId] = $resolvedVersion
+        }
+    }
+
+    if (-not [string]::IsNullOrEmpty($WindowsAppSDKVersionPinned)) {
+        Write-Host "Pinned internal WindowsAppSDK packages to version '$WindowsAppSDKVersionPinned' for nuspec dependency rewriting."
+    }
 }
 
 $configurationForMrtAndAnyCPU = "Release"
@@ -92,14 +201,17 @@ if(-not (test-path "$buildOverridePath"))
     new-item -path "$buildOverridePath" -itemtype "directory"
 }
 
-function NugetRestore([string] $Label, [string] $Target)
+function NugetRestore([string] $Label, [string] $Target, [string] $RestorePlatform = $Platform)
 {
+    $restoreMsBuildArgs = $env:NUGET_RESTORE_MSBUILD_ARGS
     if ($AzureBuildStep -ne "all")
     {
-        $env:NUGET_RESTORE_MSBUILD_ARGS = "/binaryLogger:BuildOutput\binlogs\$Label.restore.$Platform.$Configuration.binlog /p:Platform=$Platform /p:Configuration=$Configuration"
+        $env:NUGET_RESTORE_MSBUILD_ARGS = "/binaryLogger:BuildOutput\binlogs\$Label.restore.$RestorePlatform.$Configuration.binlog /p:Platform=$RestorePlatform /p:Configuration=$Configuration"
     }
     nuget restore $Target -configfile NuGet.config
-    if ($lastexitcode -ne 0)
+    $restoreExitCode = $lastexitcode
+    $env:NUGET_RESTORE_MSBUILD_ARGS = $restoreMsBuildArgs
+    if ($restoreExitCode -ne 0)
     {
         write-host "ERROR: nuget.exe restore $Label FAILED."
         exit 1
@@ -113,7 +225,7 @@ Try {
     .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
     .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
-    if ($AzureBuildStep -ne "all")
+    if ($AzureBuildStep -ne "all" -and $AzureBuildStep -ne "BuildTemplates")
     {
         # Some builds have "-branchname" appended, but when this happens the environment variable
         # TFS_BUILDNUMBER has the un-modified version.
@@ -139,6 +251,13 @@ Try {
     {
         NugetRestore "WindowsAppRuntime" "WindowsAppRuntime.sln"
         NugetRestore "Microsoft.WindowsAppRuntime.Bootstrap.Net" "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
+        if ($Platform -ieq "arm64ec")
+        {
+            # Most managed projects intentionally map ARM64EC to arm64 in WindowsAppRuntime.sln.
+            # nuget.exe applies the command-line Platform globally instead of honoring those
+            # solution mappings, so retain the ARM64EC restore above and add the mapped restore.
+            NugetRestore "WindowsAppRuntime.arm64" "WindowsAppRuntime.sln" "arm64"
+        }
 
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
@@ -174,6 +293,7 @@ Try {
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun `
                                 /p:Platform=$platformToRun `
+                                /p:WindowsAppSDKNativeOutputPlatform=$platformToRun `
                                 /p:RestoreConfigFile=NuGet.config `
                                 /binaryLogger:"BuildOutput/binlogs/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
@@ -274,6 +394,11 @@ Try {
             new-item -path "$ComponentBasePath\build\native" -itemtype "directory"
         }
 
+        if(-not (test-path "$ComponentBasePath\build\cmake"))
+        {
+            new-item -path "$ComponentBasePath\build\cmake" -itemtype "directory"
+        }
+
         # Copy WindowsAppRuntime.sln files
         foreach($configurationToRun in $configuration.Split(","))
         {
@@ -371,10 +496,10 @@ Try {
         }
         else
         {
-            $componentLicenseFilePath = "WindowsAppSDKConfig\NuGetLicense\preview\license.txt"
+            $componentLicenseFilePath = "WinAppSDK\Build\WindowsAppSDK\NuGetLicense\preview\license.txt"
             if ($env:Channel -eq 'stable')
             {
-                $componentLicenseFilePath = "WindowsAppSDKConfig\NuGetLicense\release\license.txt"
+                $componentLicenseFilePath = "WinAppSDK\Build\WindowsAppSDK\NuGetLicense\release\license.txt"
             }
         }
 
@@ -458,23 +583,8 @@ Try {
                 -TargetDir "$ComponentBasePath\runtimes-framework\win-$platformToRun"
         }
 
-        # Populate ARM64EC folders with x64 content
-        if ($platform.Split(",") -contains "x64")
-        {
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\lib\native\x64" `
-                -dest "$ComponentBasePath\lib\native\arm64ec"
-
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\runtimes\win-x64" `
-                -dest "$ComponentBasePath\runtimes\win-arm64ec"
-
-            build\Scripts\RobocopyWrapper.ps1 `
-                -Source "$ComponentBasePath\runtimes-framework\win-x64" `
-                -dest "$ComponentBasePath\runtimes-framework\win-arm64ec"
-        }
-
         Copy-Item -Path "$nuSpecsPath\package.appxfragment" -Destination "$ComponentBasePath\runtimes-framework\package.appxfragment"
+        Copy-Item -Path "$nuSpecsPath\microsoft.windowsappsdk.foundation-config.cmake" -Destination "$ComponentBasePath\build\cmake\microsoft.windowsappsdk.foundation-config.cmake"
 
         # Populate Intellisense files
         $IntellisensePath = "$PSScriptRoot\build\NuSpecs\Intellisense"
@@ -567,17 +677,16 @@ Try {
         [xml]$publicNuspec = Get-Content -Path $nuspecPath
         $publicNuspec.package.metadata.version = $ComponentPackageVersion
 
-        # Update dependency versions in the nuspec
+        # Update dependency versions in the nuspec from Directory.Packages.props (CPM)
         foreach ($dependency in $publicNuspec.package.metadata.dependencies.dependency)
         {
-            $buildDependency = $versionDetailsPath.Dependencies.ProductDependencies.Dependency | Where-Object { $_.Name -eq $dependency.Id }
-            if (-not($buildDependency))
+            if (-not $internalPackageVersions.ContainsKey($dependency.Id))
             {
-                write-host "ERROR: NuGet package dependency $($dependency.Id) not found."
+                write-host "ERROR: NuGet package dependency $($dependency.Id) not found in Directory.Packages.props."
                 exit 1
             }
 
-            $_dependencyMinVersion = $buildDependency.Version
+            $_dependencyMinVersion = $internalPackageVersions[$dependency.Id]
             $_numericVersion = $_dependencyMinVersion -replace '[-+].*$', ''  # Remove suffix
             $_parsedVersion = [System.Version]$_numericVersion
             $_dependencyMaxVersion = "$($_parsedVersion.Major + 1).0.0"
@@ -592,6 +701,50 @@ Try {
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
+            exit 1
+        }
+    }
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildTemplates"))
+    {
+        #------------------
+        #    Build WinUI template artifacts:
+        #      - dotnet-new NuGet (Microsoft.WindowsAppSDK.WinUI.CSharp.Templates.*.nupkg)
+        #      - templates VSIX  (Standalone + Component, x C# + C++ = 4 .vsix)
+        #
+        #    All artifacts land in <repo>\localpackages\ so a single dev workflow
+        #    (the docs, the csproj's <PackageOutputPath> default, the NuGet.config
+        #    "localpackages" feed, and Test-DotnetNewTemplates.ps1) all agree on
+        #    one path. .vsix files coexist fine; NuGet only sees *.nupkg.
+        #------------------
+        $templatesOutputDir = Join-Path $env:Build_SourcesDirectory "localpackages"
+        if (-not (Test-Path $templatesOutputDir))
+        {
+            New-Item -ItemType Directory -Path $templatesOutputDir -Force | Out-Null
+        }
+
+        write-host "Packing dotnet-new templates (Microsoft.WindowsAppSDK.WinUI.CSharp.Templates) ..."
+        & dotnet pack "dev\Templates\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj" `
+            --configuration $Configuration `
+            --output $templatesOutputDir
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: dotnet pack WinAppSdk.CSharp.DotnetNewTemplates.csproj FAILED."
+            exit 1
+        }
+
+        # Templates VSIX (Standalone + Component, matching CI). The
+        # Microsoft.WindowsAppSDK version used for restore comes from
+        # dev\Templates\Directory.Build.props (<WindowsAppSdkVersion> default)
+        # - single source of truth.
+        write-host "Building templates VSIX (Standalone + Component) ..."
+        & "dev\Templates\VSIX\build-local-VSIX-package\Build-VSIX-Local.ps1" `
+            -Configuration $Configuration `
+            -Deployment   Both `
+            -RepoRoot     $env:Build_SourcesDirectory `
+            -OutputDir    $templatesOutputDir
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: Build-VSIX-Local.ps1 FAILED."
             exit 1
         }
     }

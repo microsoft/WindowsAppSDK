@@ -7,7 +7,7 @@
 
 #include "Validate.h"
 
-namespace Microsoft::Windows::Storage
+namespace winrt::Microsoft::Windows::Storage::implementation
 {
     namespace
     {
@@ -835,9 +835,8 @@ namespace Microsoft::Windows::Storage
         for (const auto& keyData : wil::make_range(wil::reg::key_iterator{ m_key.get() }, wil::reg::key_iterator{}))
         {
             auto subKey{ wil::reg::open_shared_key(m_key.get(), keyData.name.c_str(), wil::reg::key_access::readwrite) };
-            auto subContainer{ std::make_shared<UnpackagedApplicationDataContainer>(std::move(subKey), winrt::hstring{ keyData.name }, m_locality) };
-            auto wrappedContainer{ winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(subContainer) };
-            map.Insert(winrt::hstring{ keyData.name }, wrappedContainer);
+            auto subContainer{ winrt::make<UnpackagedApplicationDataContainer>(std::move(subKey), winrt::hstring{ keyData.name }, m_locality) };
+            map.Insert(winrt::hstring{ keyData.name }, subContainer);
         }
         return map;
     }
@@ -879,14 +878,12 @@ namespace Microsoft::Windows::Storage
         if (disposition == winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Existing)
         {
             auto subKey{ wil::reg::open_shared_key(m_key.get(), name.c_str(), wil::reg::key_access::readwrite) };
-            auto subContainer{ std::make_shared<UnpackagedApplicationDataContainer>(std::move(subKey), name, m_locality) };
-            return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(subContainer);
+            return winrt::make<UnpackagedApplicationDataContainer>(std::move(subKey), name, m_locality);
         }
         else
         {
             auto subKey{ wil::reg::create_shared_key(m_key.get(), name.c_str(), wil::reg::key_access::readwrite) };
-            auto subContainer{ std::make_shared<UnpackagedApplicationDataContainer>(std::move(subKey), name, m_locality) };
-            return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(subContainer);
+            return winrt::make<UnpackagedApplicationDataContainer>(std::move(subKey), name, m_locality);
         }
     }
 
