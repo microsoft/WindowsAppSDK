@@ -63,6 +63,7 @@
     <MicrosoftWindowsSDKBuildToolsMSIXVersion>1.7.20250829.1</MicrosoftWindowsSDKBuildToolsMSIXVersion>
     <MicrosoftWindowsCppWinRTVersion>2.0.230706.1</MicrosoftWindowsCppWinRTVersion>
     <MicrosoftWindowsCsWinRTPackageVersion>2.1.1</MicrosoftWindowsCsWinRTPackageVersion>
+    <MicrosoftWindowsCsWinRTv3PackageVersion>3.0.0-preview.260614.2</MicrosoftWindowsCsWinRTv3PackageVersion>
     <MicrosoftWindowsImplementationLibraryVersion>1.0.240803.1</MicrosoftWindowsImplementationLibraryVersion>
     <MicrosoftBuildTasksGitVersion>1.1.1</MicrosoftBuildTasksGitVersion>
     <MicrosoftSourceLinkCommonVersion>1.1.1</MicrosoftSourceLinkCommonVersion>
@@ -98,7 +99,8 @@
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(MicrosoftWindowsSDKBuildToolsVersion)" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="$(MicrosoftWindowsSDKBuildToolsMSIXVersion)" />
     <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(MicrosoftWindowsCppWinRTVersion)" />
-    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" Condition="!$(TargetFramework.StartsWith('net10.0'))" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTv3PackageVersion)" Condition="$(TargetFramework.StartsWith('net10.0'))" />
     <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(MicrosoftWindowsImplementationLibraryVersion)" />
   </ItemGroup>
 

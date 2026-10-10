@@ -18,7 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\projection\Microsoft.Windows.ApplicationModel.Resources.Projection.csproj" ReferenceOutputAssembly="false" />
     <Reference Include="Microsoft.Windows.ApplicationModel.Resources.Projection">
-      <HintPath>$(BaseOutputPath)\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll</HintPath>
+      <HintPath>$(BaseOutputPath)\Microsoft.Windows.ApplicationModel.Resources.Projection\net6.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.Resources.Projection.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>

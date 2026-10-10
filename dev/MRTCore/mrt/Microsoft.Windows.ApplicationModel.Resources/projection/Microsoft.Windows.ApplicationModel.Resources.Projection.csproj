@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+    <TargetFrameworks>net6.0-windows10.0.17763.0;net10.0-windows10.0.17763.1</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <Platforms>x64;x86;arm64</Platforms>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -12,6 +13,12 @@
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
+  <!-- GeneratedFilesDir needs TFM to avoid conflicts between target frameworks -->
+  <PropertyGroup Condition="'$(TargetFramework)' != ''">
+    <GeneratedFilesDir>$(BaseIntermediateOutputPath)$(TargetFramework)\Generated Files\</GeneratedFilesDir>
+  </PropertyGroup>
+
+  <!-- CsWinRT package: version resolved by Directory.Packages.props based on TFM -->
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
@@ -24,6 +31,12 @@
     <CSWinRTIncludes>Microsoft.Windows.Globalization;Microsoft.Windows.ApplicationModel.Resources</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
     <NoWarn>MSB3271</NoWarn>
+  </PropertyGroup>
+
+  <!-- CsWinRT 3.0 settings (net10 only) -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.17763.1'">
+    <CsWinRTGenerateReferenceProjection>true</CsWinRTGenerateReferenceProjection>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <!-- Configure the release build binary to be as required by internal API scanning tools. -->
