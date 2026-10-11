@@ -23,7 +23,9 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
     <WindowsSdkPackageVersion Condition="'$(TargetFramework)' == '' or !$(TargetFramework.StartsWith('net10.0'))">10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
-    <WindowsSdkPackageVersion Condition="$(TargetFramework.StartsWith('net10.0'))">10.0.17763.85-preview.RS5-RELEASE</WindowsSdkPackageVersion>
+    <!-- CsWinRT 3.0 (net10): Windows SDK projection package must match the TFM's Windows SDK version. -->
+    <WindowsSdkPackageVersion Condition="$(TargetFramework.StartsWith('net10.0')) and !$(TargetFramework.Contains('windows10.0.26100'))">10.0.17763.85-preview.RS5-RELEASE</WindowsSdkPackageVersion>
+    <WindowsSdkPackageVersion Condition="$(TargetFramework.StartsWith('net10.0')) and $(TargetFramework.Contains('windows10.0.26100'))">10.0.26100.85-preview.ge-release-svc-prod3</WindowsSdkPackageVersion>
     <WindowsAppSDKNativeOutputPlatform Condition="'$(WindowsAppSDKNativeOutputPlatform)' == ''">$(PlatformTarget)</WindowsAppSDKNativeOutputPlatform>
     <WindowsAppSDKNativeWinMDPath>$(RepoRoot)\BuildOutput\$(Configuration)\$(WindowsAppSDKNativeOutputPlatform)\WindowsAppRuntime_DLL\StrippedWinMD</WindowsAppSDKNativeWinMDPath>
 

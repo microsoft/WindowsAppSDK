@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0-windows10.0.19041.0;net10.0-windows10.0.19041.1</TargetFrameworks>
+    <TargetFrameworks>net6.0-windows10.0.19041.0;net10.0-windows10.0.26100.1</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <Platforms>x86;x64;arm64</Platforms>
     <ImplicitUsings>disable</ImplicitUsings>
