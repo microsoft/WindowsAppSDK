@@ -471,7 +471,7 @@ Try {
 
         # If AnyCPU generates another dll it needs to be added here.
         Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\net6.0-windows10.0.19041.0\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net6.0-windows10.0.17763.0"
-        Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\net10.0-windows10.0.19041.1\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net10.0-windows10.0.26100.1"
+        Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\net10.0-windows10.0.26100.1\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net10.0-windows10.0.26100.1"
 
         #------------------
         #    Move other files and prepare manifest and appxmanifest.xml
