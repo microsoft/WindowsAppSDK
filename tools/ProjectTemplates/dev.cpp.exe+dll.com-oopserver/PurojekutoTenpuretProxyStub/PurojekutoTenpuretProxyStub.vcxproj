@@ -29,6 +29,10 @@
       <Configuration>Release</Configuration>
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64EC">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -171,6 +175,7 @@
            TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile
         -->
       <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64EC'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="$(IntDir)\PurojekutoTenpuretNoProxyStubSuffix_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -188,6 +193,7 @@
            TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile
         -->
       <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64EC'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="$(IntDir)\PurojekutoTenpuretNoProxyStubSuffix_p.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -205,6 +211,7 @@
            TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile
         -->
       <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64EC'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

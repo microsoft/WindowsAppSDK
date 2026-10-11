@@ -5,6 +5,15 @@
     <TargetFramework>net6.0</TargetFramework>
     <RuntimeIdentifier>win10-$(Platform)</RuntimeIdentifier>
     <RuntimeIdentifier Condition="'$(Platform)'=='AnyCpu'" >win10-x86</RuntimeIdentifier>
+    <!-- There is no 'win10-arm64ec' RuntimeIdentifier: ARM64EC is a compilation/ABI target for
+         native code, not a .NET RID. Managed code always runs as ARM64 on ARM64EC processes, so
+         the ARM64 RID is the correct mapping.
+         This is required even though the solution maps this project to Release|ARM64 for the
+         Release|ARM64EC solution configuration: BuildAll.ps1 restores via nuget.exe, which
+         enumerates every project in the .sln and evaluates it with the global /p:Platform=arm64ec
+         regardless of solution configuration mapping. Without this, restore fails with
+         NETSDK1083 and then silently skips ALL NETCore projects, cascading into NETSDK1004. -->
+    <RuntimeIdentifier Condition="'$(Platform)'=='arm64ec'">win10-arm64</RuntimeIdentifier>
     <IsPackable>false</IsPackable>
     <OutDir>$(BaseOutputPath)\$(MSBuildProjectName)\net6\</OutDir>
     <GenerateProjectSpecificOutputFolder>False</GenerateProjectSpecificOutputFolder>
