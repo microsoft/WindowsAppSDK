@@ -38,6 +38,7 @@ function PublishFile {
     {
         $relativeSource = $sourcePath.Substring($buildOutputPrefix.Length)
         if (($relativeSource -like '*.Projection\*') -or
+                ($relativeSource -like 'Microsoft.Windows.Foundation\*') -or
                 ($relativeSource -like 'Microsoft.WindowsAppRuntime.Bootstrap.Net\*'))
         {
             $source = Join-Path $FullManagedBuildOutput $relativeSource
