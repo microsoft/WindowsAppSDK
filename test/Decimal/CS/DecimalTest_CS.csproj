@@ -45,7 +45,11 @@
     <NoWarn>1701;1702;1718</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!-- Reference the same assemblies the Foundation NuGet package ships for each TFM. -->
+  <ItemGroup Condition="!$(TargetFramework.StartsWith('net10.0'))">
+    <ProjectReference Include="$(RepoRoot)\dev\Projections\CS\Microsoft.Windows.Foundation.Projection\Microsoft.Windows.Foundation.Projection.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net10.0'))">
     <ProjectReference Include="$(RepoRoot)\dev\Projections\CS\Microsoft.Windows.Foundation\Microsoft.Windows.Foundation.csproj" />
   </ItemGroup>
 

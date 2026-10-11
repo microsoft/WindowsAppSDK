@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\CsWinRTProjection.props" />
+  <Import Project="..\CsWinRTProjection.props" />
 
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.Foundation</CSWinRTIncludes>
@@ -14,7 +14,7 @@
 
   <!-- Include DecimalExtensions.cs for .NET 6 only (CsWinRT 3.0 requires it to be a projection only assembly) -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows10.0.17763.0'">
-    <Compile Include="..\DecimalExtensions.cs" Link="DecimalExtensions.cs" />
+    <Compile Include="..\Microsoft.Windows.Foundation\DecimalExtensions.cs" Link="DecimalExtensions.cs" />
   </ItemGroup>
 
 </Project>
