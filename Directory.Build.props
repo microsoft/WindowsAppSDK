@@ -23,7 +23,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
     <WindowsSdkPackageVersion Condition="'$(TargetFramework)' == '' or !$(TargetFramework.StartsWith('net10.0'))">10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
-    <!-- CsWinRT 3.0: all net10 projects target net10.0-windows10.0.26100.1. -->
+    <!-- CsWinRT 3.0 Windows SDK projection for net10 (net10.0-windows10.0.26100.1). -->
     <WindowsSdkPackageVersion Condition="$(TargetFramework.StartsWith('net10.0'))">10.0.26100.86-preview.ge-release-svc-prod3</WindowsSdkPackageVersion>
     <WindowsAppSDKNativeOutputPlatform Condition="'$(WindowsAppSDKNativeOutputPlatform)' == ''">$(PlatformTarget)</WindowsAppSDKNativeOutputPlatform>
     <WindowsAppSDKNativeWinMDPath>$(RepoRoot)\BuildOutput\$(Configuration)\$(WindowsAppSDKNativeOutputPlatform)\WindowsAppRuntime_DLL\StrippedWinMD</WindowsAppSDKNativeWinMDPath>
@@ -105,9 +105,8 @@
   </PropertyGroup>
 
   <!-- 'Clean As We Go' if necessary (specified). Prevents build agents from running out of disk space.
-       For multi-target projects (TargetFrameworks is set), skip the outer build where TargetFramework is empty
-       because IntermediateOutputPath equals BaseIntermediateOutputPath and deleting it removes project.assets.json
-       needed by later project references with different global properties such as being triggered by ARM64 in CI. -->
+       Skipped for the outer build of multi-targeted projects: its IntermediateOutputPath is the shared obj root,
+       which still holds project.assets.json needed by later builds of the project. -->
   <Target Name="CleanIntermediateFiles" AfterTargets="Build" Condition="'$(WindowsAppSDKCleanIntermediateFiles)' == 'true'">
     <RemoveDir Directories="$(IntermediateOutputPath)" Condition="'$(TargetFrameworks)' == '' OR '$(TargetFramework)' != ''" />
   </Target>

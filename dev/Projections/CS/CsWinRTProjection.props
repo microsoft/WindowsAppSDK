@@ -8,7 +8,6 @@
   <!-- Multi-target output path fix: prevents TFM doubling and syncs OutDir. -->
   <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
 
-  <!-- Multi-target: .NET 6 (CsWinRT 2.x) + .NET 10 (CsWinRT 3.0) -->
   <PropertyGroup>
     <TargetFrameworks>net6.0-windows10.0.17763.0;net10.0-windows10.0.26100.1</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
@@ -76,13 +75,8 @@
   </ItemGroup>
 
   <!--
-    Fix CsWinRT 3.0 reference assembly path for P2P resolution.
-
-    CsWinRT sets _CsWinRTRefAssemblyPath to $(IntermediateOutputPath)$(AssemblyName).dll,
-    but CleanIntermediateFiles deletes the obj directory after Build to save CI disk space.
-    The reference assembly is already copied to $(OutDir)ref\ during _CopyOutOfDateSourceItemsToOutputDirectory,
-    so redirect _CsWinRTRefAssemblyPath there. This mirrors how .NET SDK's ProduceReferenceAssembly
-    uses $(OutDir)ref\ via $(TargetRefPath) for P2P resolution.
+    CsWinRT 3.0 points P2P references at the reference projection in obj, which CleanIntermediateFiles deletes.
+    Use the copy in the output folder instead.
   -->
   <Target Name="_FixCsWinRTRefAssemblyPath"
           BeforeTargets="CsWinRTGetForwarderTargetPathWithTargetPlatformMoniker"

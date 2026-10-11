@@ -4,27 +4,15 @@
   Shared properties that should be imported from C# projects that are multi-targeting.
 -->
 <Project>
-  <!--
-    .NET 10 SDK defaults TargetRefPath to $(IntermediateOutputPath)ref\ instead of $(OutDir)ref\.
-    CleanIntermediateFiles deletes the obj directory after Build, so reference assemblies must
-    be in the output directory to survive for P2P resolution.
-  -->
+  <!-- Keep reference assemblies in the output folder (not obj) so they survive CleanIntermediateFiles for P2P references. -->
   <PropertyGroup>
     <ProduceReferenceAssemblyInOutDir>true</ProduceReferenceAssemblyInOutDir>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' != ''">
     <!--
-      EnsureOutputLayout.props sets OutDir=$(BaseOutputPath), which causes the SDK's
-      targets to set OutDirWasSpecified=true. This prevents the SDK from syncing
-      OutDir=$(OutputPath), so OutDir lacks the TFM that the SDK appends to OutputPath
-      for multi-target builds causing issues with project references.
-
-      Clear OutDir and OutDirWasSpecified so the .NET SDK sets OutDir=$(OutputPath) during
-      property evaluation. This ensures $(TargetPath) includes the TFM.
-
-      Disable GenerateProjectSpecificOutputFolder since OutputPath already contains
-      the project name, preventing the .NET SDK from appending it a second time.
+      EnsureOutputLayout.props sets OutDir, which stops the SDK from adding the TFM to it.
+      Clear it so OutDir = OutputPath (which includes the TFM), and avoid appending the project name twice.
     -->
     <OutDir></OutDir>
     <OutDirWasSpecified></OutDirWasSpecified>
