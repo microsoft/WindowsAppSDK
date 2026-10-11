@@ -1,27 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
-  <PropertyGroup>
-    <TargetFrameworks>net6.0-windows10.0.17763.0;net10.0-windows10.0.17763.1</TargetFrameworks>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <Platforms>x64;x86;arm64</Platforms>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-    <IsTrimmable>true</IsTrimmable>
-  </PropertyGroup>
-
-  <!-- GeneratedFilesDir needs TFM to avoid conflicts between target frameworks -->
-  <PropertyGroup Condition="'$(TargetFramework)' != ''">
-    <GeneratedFilesDir>$(BaseIntermediateOutputPath)$(TargetFramework)\Generated Files\</GeneratedFilesDir>
-  </PropertyGroup>
-
-  <!-- CsWinRT package: version resolved by Directory.Packages.props based on TFM -->
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" />
-  </ItemGroup>
+  <Import Project="$(RepoRoot)\dev\Projections\CS\CsWinRTProjection.props" />
 
   <ItemGroup>
     <ProjectReference Include="$(MRTCoreRoot)\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj" />
@@ -29,29 +7,11 @@
 
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.Globalization;Microsoft.Windows.ApplicationModel.Resources</CSWinRTIncludes>
-    <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
-    <NoWarn>MSB3271</NoWarn>
-  </PropertyGroup>
-
-  <!-- CsWinRT 3.0 settings (net10 only) -->
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.17763.1'">
-    <CsWinRTGenerateReferenceProjection>true</CsWinRTGenerateReferenceProjection>
-    <IsAotCompatible>true</IsAotCompatible>
-  </PropertyGroup>
-
-  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DebugType>pdbonly</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>$(NoWarn);MSB3271</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
     <CsWinRTInputs Include="$(BaseOutputPath)/Microsoft.Windows.ApplicationModel.Resources/Microsoft.Windows.Globalization.winmd" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="$(RepoRoot)\build\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
 </Project>
