@@ -99,8 +99,9 @@
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="$(MicrosoftWindowsSDKBuildToolsVersion)" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="$(MicrosoftWindowsSDKBuildToolsMSIXVersion)" />
     <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(MicrosoftWindowsCppWinRTVersion)" />
-    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" Condition="!$(TargetFramework.StartsWith('net10.0'))" />
-    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTv3PackageVersion)" Condition="$(TargetFramework.StartsWith('net10.0'))" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <!-- .NET 10 TFMs use CsWinRT 3.0. -->
+    <PackageVersion Update="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTv3PackageVersion)" Condition="$(TargetFramework.StartsWith('net10.0'))" />
     <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="$(MicrosoftWindowsImplementationLibraryVersion)" />
   </ItemGroup>
 
