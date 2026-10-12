@@ -145,6 +145,7 @@ extern "C"
     // The caller must always release the result with MrmFreeResourceData. If 'isView' is nonzero,
     // the caller must keep the required 'resourceManager' argument alive while using 'data'.
     // String/path resources are unaffected and behave exactly as the existing loader variants.
+    // These variants return E_NOTIMPL when runtime compatibility change 64594238 is disabled.
     STDAPI MrmLoadStringOrEmbeddedResourceAsView(
         _In_ MrmManagerHandle resourceManager,
         _In_opt_ MrmContextHandle resourceContext,
@@ -169,6 +170,7 @@ extern "C"
 
     // Releases an MrmResourceData2 produced by an *AsView loader and clears the descriptor. This
     // must be called after every successful load; it frees owned buffers and safely releases views.
+    // Cleanup remains available regardless of runtime compatibility containment.
     STDAPI_(void) MrmFreeResourceData(_Inout_opt_ MrmResourceData2* data);
 
     STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath);

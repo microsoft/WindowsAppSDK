@@ -7,6 +7,10 @@
 #include "ResourceContext.h"
 
 #include <MemoryBuffer.h> // for ::Windows::Foundation::IMemoryBufferByteAccess
+#include <FrameworkUdk/Containment.h>
+
+// Bug 64594238: Zero-copy embedded resource loading and ValueAsMemoryBuffer.
+#define WINAPPSDK_CHANGEID_64594238 64594238
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
@@ -78,8 +82,15 @@ com_array<uint8_t> ResourceCandidate::ValueAsBytes()
 {
     if (m_kind == ResourceCandidateKind::EmbeddedData)
     {
-        auto const bytes = EmbeddedBytes();
-        return com_array<uint8_t>(bytes.begin(), bytes.end());
+        if (WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_64594238>())
+        {
+            auto const bytes = EmbeddedBytes();
+            return com_array<uint8_t>(bytes.begin(), bytes.end());
+        }
+        else
+        {
+            return com_array<uint8_t>(m_blobData.begin(), m_blobData.end());
+        }
     }
     throw_hresult(HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH));
 }
@@ -213,6 +224,11 @@ namespace
 
 winrt::Windows::Foundation::IMemoryBuffer ResourceCandidate::ValueAsMemoryBuffer()
 {
+    if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_64594238>())
+    {
+        throw winrt::hresult_not_implemented();
+    }
+
     if (m_kind != ResourceCandidateKind::EmbeddedData)
     {
         throw_hresult(HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH));

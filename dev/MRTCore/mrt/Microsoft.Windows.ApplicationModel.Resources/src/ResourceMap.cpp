@@ -9,6 +9,11 @@
 #include "ResourceContext.h"
 #include "ResourceManager.h"
 
+#include <FrameworkUdk/Containment.h>
+
+// Bug 64594238: Zero-copy embedded resource loading and ValueAsMemoryBuffer.
+#define WINAPPSDK_CHANGEID_64594238 64594238
+
 using namespace winrt::Windows::Foundation::Collections;
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
@@ -79,16 +84,33 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
 
     MrmType resourceType;
     wchar_t* resourceString;
-    MrmResourceData2 resourceData {};
+    MrmResourceData resourceData {};
+    MrmResourceData2 resourceData2 {};
 
-    HRESULT hr = MrmLoadStringOrEmbeddedResourceAsView(
-        m_resourceManagerHandle,
-        resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
-        m_resourceMapHandle,
-        resource.c_str(),
-        &resourceType,
-        &resourceString,
-        &resourceData);
+    const bool zeroCopyChangeEnabled = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_64594238>();
+    HRESULT hr;
+    if (zeroCopyChangeEnabled)
+    {
+        hr = MrmLoadStringOrEmbeddedResourceAsView(
+            m_resourceManagerHandle,
+            resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+            m_resourceMapHandle,
+            resource.c_str(),
+            &resourceType,
+            &resourceString,
+            &resourceData2);
+    }
+    else
+    {
+        hr = MrmLoadStringOrEmbeddedResource(
+            m_resourceManagerHandle,
+            resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+            m_resourceMapHandle,
+            resource.c_str(),
+            &resourceType,
+            &resourceString,
+            &resourceData);
+    }
     if (IsResourceNotFound(hr))
     {
         Resources::ResourceCandidate candidate = m_resourceManager.as<ResourceManager>()->HandleResourceNotFound(resourceContext, resource);
@@ -108,31 +130,45 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
     {
     case MrmType_Embedded:
     {
-        if (resourceData.isView)
+        if (zeroCopyChangeEnabled)
         {
-            // resourceData.data is a non-owning view into the memory-mapped PRI. Pass the strong
-            // resource manager reference so the mapping stays alive for the candidate's lifetime.
-            auto const first = static_cast<uint8_t const*>(resourceData.data);
+            if (resourceData2.isView)
+            {
+                // resourceData2.data is a non-owning view into the memory-mapped PRI. Pass the strong
+                // resource manager reference so the mapping stays alive for the candidate's lifetime.
+                auto const first = static_cast<uint8_t const*>(resourceData2.data);
+                return winrt::make<ResourceCandidate>(
+                    m_resourceManager,
+                    m_resourceManagerHandle,
+                    resourceContext,
+                    m_resourceMapHandle,
+                    static_cast<uint32_t>(-1),
+                    resource,
+                    winrt::array_view<uint8_t const>(first, first + resourceData2.size));
+            }
+
+            // Loader returned an owned buffer (e.g. a decompressed blob); adopt it without re-copying.
+            embedded_resoure_ptr resourceContainer(resourceData2.data);
             return winrt::make<ResourceCandidate>(
-                m_resourceManager,
                 m_resourceManagerHandle,
                 resourceContext,
                 m_resourceMapHandle,
                 static_cast<uint32_t>(-1),
                 resource,
-                winrt::array_view<uint8_t const>(first, first + resourceData.size));
+                std::move(resourceContainer),
+                resourceData2.size);
         }
-
-        // Loader returned an owned buffer (e.g. a decompressed blob); adopt it without re-copying.
-        embedded_resoure_ptr resourceContainer(resourceData.data);
-        return winrt::make<ResourceCandidate>(
-            m_resourceManagerHandle,
-            resourceContext,
-            m_resourceMapHandle,
-            static_cast<uint32_t>(-1),
-            resource,
-            std::move(resourceContainer),
-            resourceData.size);
+        else
+        {
+            embedded_resoure_ptr resourceContainer(resourceData.data);
+            return winrt::make<ResourceCandidate>(
+                m_resourceManagerHandle,
+                resourceContext,
+                m_resourceMapHandle,
+                static_cast<uint32_t>(-1),
+                resource,
+                winrt::array_view<uint8_t>(reinterpret_cast<byte*>(resourceContainer.get()), reinterpret_cast<byte*>(resourceContainer.get()) + resourceData.size));
+        }
     }
     case MrmType_String:
     {
@@ -196,17 +232,34 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
     MrmType resourceType;
     wchar_t* resourceName;
     wchar_t* resourceString;
-    MrmResourceData2 resourceData {};
+    MrmResourceData resourceData {};
+    MrmResourceData2 resourceData2 {};
 
-    winrt::check_hresult(MrmLoadStringOrEmbeddedResourceByIndexAsView(
-        m_resourceManagerHandle,
-        resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
-        m_resourceMapHandle,
-        index,
-        &resourceType,
-        &resourceName,
-        &resourceString,
-        &resourceData));
+    const bool zeroCopyChangeEnabled = WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_64594238>();
+    if (zeroCopyChangeEnabled)
+    {
+        winrt::check_hresult(MrmLoadStringOrEmbeddedResourceByIndexAsView(
+            m_resourceManagerHandle,
+            resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+            m_resourceMapHandle,
+            index,
+            &resourceType,
+            &resourceName,
+            &resourceString,
+            &resourceData2));
+    }
+    else
+    {
+        winrt::check_hresult(MrmLoadStringOrEmbeddedResourceByIndex(
+            m_resourceManagerHandle,
+            resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+            m_resourceMapHandle,
+            index,
+            &resourceType,
+            &resourceName,
+            &resourceString,
+            &resourceData));
+    }
 
     string_resoure_ptr resourceNameContainter(resourceName);
 
@@ -215,23 +268,38 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
     case MrmType_Embedded:
     {
         Resources::ResourceCandidate candidate{nullptr};
-        if (resourceData.isView)
+        if (zeroCopyChangeEnabled)
         {
-            // resourceData.data is a non-owning view into the memory-mapped PRI. Pass the strong
-            // resource manager reference so the mapping stays alive for the candidate's lifetime.
-            auto const first = static_cast<uint8_t const*>(resourceData.data);
-            candidate = winrt::make<ResourceCandidate>(
-                m_resourceManager,
-                m_resourceManagerHandle,
-                resourceContext,
-                m_resourceMapHandle,
-                index,
-                hstring(),
-                winrt::array_view<uint8_t const>(first, first + resourceData.size));
+            if (resourceData2.isView)
+            {
+                // resourceData2.data is a non-owning view into the memory-mapped PRI. Pass the strong
+                // resource manager reference so the mapping stays alive for the candidate's lifetime.
+                auto const first = static_cast<uint8_t const*>(resourceData2.data);
+                candidate = winrt::make<ResourceCandidate>(
+                    m_resourceManager,
+                    m_resourceManagerHandle,
+                    resourceContext,
+                    m_resourceMapHandle,
+                    index,
+                    hstring(),
+                    winrt::array_view<uint8_t const>(first, first + resourceData2.size));
+            }
+            else
+            {
+                // Loader returned an owned buffer (e.g. a decompressed blob); adopt it without re-copying.
+                embedded_resoure_ptr resourceContainer(resourceData2.data);
+                candidate = winrt::make<ResourceCandidate>(
+                    m_resourceManagerHandle,
+                    resourceContext,
+                    m_resourceMapHandle,
+                    index,
+                    hstring(),
+                    std::move(resourceContainer),
+                    resourceData2.size);
+            }
         }
         else
         {
-            // Loader returned an owned buffer (e.g. a decompressed blob); adopt it without re-copying.
             embedded_resoure_ptr resourceContainer(resourceData.data);
             candidate = winrt::make<ResourceCandidate>(
                 m_resourceManagerHandle,
@@ -239,8 +307,7 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
                 m_resourceMapHandle,
                 index,
                 hstring(),
-                std::move(resourceContainer),
-                resourceData.size);
+                winrt::array_view<uint8_t>(reinterpret_cast<byte*>(resourceContainer.get()), reinterpret_cast<byte*>(resourceContainer.get()) + resourceData.size));
         }
 
         return winrt::make<winrt::impl::key_value_pair<IKeyValuePair<hstring, Resources::ResourceCandidate>>>(resourceName, candidate);

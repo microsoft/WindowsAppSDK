@@ -32,6 +32,9 @@
 // See https://github.com/microsoft/WindowsAppSDK/issues/5987.
 #define WINAPPSDK_CHANGEID_63098302 63098302
 
+// Bug 64594238: Zero-copy embedded resource loading and ValueAsMemoryBuffer.
+#define WINAPPSDK_CHANGEID_64594238 64594238
+
 using namespace Microsoft::Resources;
 
 typedef struct _MrmObjects
@@ -990,6 +993,8 @@ STDAPI MrmLoadStringOrEmbeddedResourceAsView(
     data->size = 0;
     data->isView = FALSE;
 
+    RETURN_HR_IF(E_NOTIMPL, !WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_64594238>());
+
     MrmResourceData base{};
     bool isView = false;
     if (IsResourceUri(resourceId))
@@ -1023,6 +1028,8 @@ STDAPI MrmLoadStringOrEmbeddedResourceByIndexAsView(
     data->data = nullptr;
     data->size = 0;
     data->isView = FALSE;
+
+    RETURN_HR_IF(E_NOTIMPL, !WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_64594238>());
 
     MrmResourceData base{};
     bool isView = false;
