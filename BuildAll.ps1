@@ -162,6 +162,11 @@ if (($AzureBuildStep -eq 'all') -or ($AzureBuildStep -eq 'PackNuget')) {
 
     foreach ($itemGroup in $dppXmlForVersions.Project.ItemGroup) {
         foreach ($packageVersionItem in $itemGroup.SelectNodes("*[local-name()='PackageVersion']")) {
+            # Update items (e.g. per-TFM overrides) modify an existing Include and aren't nuspec dependencies.
+            if (-not $packageVersionItem.HasAttribute('Include')) {
+                continue
+            }
+
             $packageId = $packageVersionItem.GetAttribute('Include')
             if ($internalPackageVersions.ContainsKey($packageId)) {
                 throw "Duplicate PackageVersion item '$packageId' in '$dppPath'."
