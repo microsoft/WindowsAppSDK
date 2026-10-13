@@ -272,6 +272,17 @@ A single-file app (`reactor-singlefile`) has no `.csproj`: set them with
 `#:property` directives in the `.cs` file instead (for example
 `#:property WinAppRunNoLaunch=true`), or pass them to `dotnet run` with `-p:`.
 
+## Debugging in VS Code
+
+The app templates include a `.vscode/launch.json` with a **WinApp: Launch and
+Attach** configuration, so you can press <kbd>F5</kbd> in VS Code to build,
+deploy, and debug the generated app with full MSIX package identity —
+equivalent to F5 in Visual Studio.
+
+This requires the
+[WinApp extension](https://marketplace.visualstudio.com/items?itemName=Microsoft-WinAppCLI.winapp),
+which contributes the `winapp` debug type used by that configuration.
+
 ## Prerequisites
 
 - [.NET SDK](https://dotnet.microsoft.com/download) — `net10.0` or `net11.0`
