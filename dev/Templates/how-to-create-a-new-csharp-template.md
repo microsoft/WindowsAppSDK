@@ -27,18 +27,10 @@ dev/Templates/Source/ProjectTemplates/Desktop/CSharp/<Name>/
     <Name>.ico                           (used by VSIX)
     <Name>.png                           (used by VSIX)
     <Name>.vstemplate                    (used by VSIX)
-    .vscode/launch.json                  (app templates only)
-    .vscode/extensions.json              (app templates only)
+    .vscode/launch.json                  (VS Code F5 debug; app templates only)
+    .vscode/extensions.json              (VS Code F5 debug; app templates only)
     App.xaml / MainWindow.xaml / ...
 ```
-
-If the template is a **runnable app** (not a class library, unit test, or
-runtime component), add a `.vscode/` folder so the generated app is
-F5-debuggable in VS Code. Copy both files verbatim from an existing app
-template such as `NavigationApp`: `launch.json` holds the `winapp` debug
-configuration, and `extensions.json` recommends the extension that
-contributes that debug type. Both are packed automatically by the recursive
-`SourceDir` copy — no `templates.props` or csproj change is needed.
 
 For an item template, use `Source/ItemTemplates/Neutral/CSharp/<Name>/`
 with the same shape (no `.png`).
