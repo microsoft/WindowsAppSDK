@@ -15,6 +15,14 @@
   "description": "Creates a WinUI 3 NavigationView starter app with MSIX packaging.",
   "preferNameDirectory": true,
   "symbols": {
+    "hostIdentifier": {
+      "type": "bind",
+      "binding": "HostIdentifier"
+    },
+    "isCli": {
+      "type": "computed",
+      "value": "hostIdentifier == 'dotnetcli'"
+    },
     "safeProjectName": {
       "type": "derived",
       "valueSource": "name",
@@ -148,6 +156,10 @@
   "sources": [
     {
       "modifiers": [
+        {
+          "condition": "(!isCli)",
+          "exclude": [ ".vscode/**" ]
+        },
         {
           "replacements": [
             {
