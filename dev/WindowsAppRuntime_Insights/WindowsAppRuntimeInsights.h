@@ -33,6 +33,12 @@
         static std::string WindowsAppRuntimeVersion()
         {
             const uint32_t c_versionResourceId{ 10000 };
+            // Bootstrap starts its initialize activity before it loads the runtime.
+            // Leave an unavailable value uncached so a later activity can resolve it.
+            if (!::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll"))
+            {
+                return {};
+            }
             static std::string version{ LoadStringFromResource(c_versionResourceId) };
             return version;
         }
@@ -40,6 +46,10 @@
         static std::string WindowsAppRuntimeChannel()
         {
             const uint32_t c_channelResourceId{ 10001 };
+            if (!::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll"))
+            {
+                return {};
+            }
             static std::string channel{ LoadStringFromResource(c_channelResourceId) };
             return channel;
         }
