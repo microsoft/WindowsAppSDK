@@ -23,9 +23,18 @@
 #include <wil\resource.h>
 #include <winrt\Windows.Foundation.h>
 #include <winrt\Windows.Foundation.Collections.h>
+#include <winrt\Windows.Foundation.Metadata.h>
 #include <winrt\Windows.Management.Deployment.h>
 
 #include <WindowsAppRuntime.Test.Bootstrap.h>
 namespace TP = ::Test::Packages;
+
+#define VERIFY_THROWS_HR(expression, hr)        \
+            VERIFY_THROWS_SPECIFIC(expression,          \
+                winrt::hresult_error,                   \
+                [&](winrt::hresult_error e) -> bool     \
+                {                                       \
+                    return (e.code() == hr);    \
+                })
 
 #endif //PCH_H

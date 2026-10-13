@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "winrt/Microsoft.Windows.System.Power.h"
+#include "EnergySaverStatus2TestHelpers.h"
 
 using namespace std::chrono_literals;
 using namespace winrt::Microsoft::Windows::System::Power;
@@ -138,6 +139,21 @@ namespace Test::PowerNotifications
             VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
             VERIFY_ARE_EQUAL(value, EnergySaverStatus::Disabled);
             PowerManager::EnergySaverStatusChanged(token);
+        }
+
+        TEST_METHOD(GetEnergySaverStatus2)
+        {
+            EnergySaverStatus2TestHelpers::Verify_GetEnergySaverStatus2();
+        }
+
+        TEST_METHOD(EnergySaverStatus2Callback)
+        {
+            EnergySaverStatus2TestHelpers::Verify_EnergySaverStatus2Callback();
+        }
+
+        TEST_METHOD(EnergySaverStatus2SeededOnSubscribe)
+        {
+            EnergySaverStatus2TestHelpers::Verify_EnergySaverStatus2SeededOnSubscribe();
         }
 
         TEST_METHOD(GetPowerSourceKind)
