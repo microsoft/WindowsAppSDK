@@ -156,6 +156,17 @@ These properties are provided by the
 [`Microsoft.Windows.SDK.BuildTools.WinApp`](https://www.nuget.org/packages/Microsoft.Windows.SDK.BuildTools.WinApp)
 NuGet package, which is referenced automatically by the project templates.
 
+## Debugging in VS Code
+
+The app templates include a `.vscode/launch.json` with a **WinApp: Launch and
+Attach** configuration, so you can press <kbd>F5</kbd> in VS Code to build,
+deploy, and debug the generated app with full MSIX package identity —
+equivalent to F5 in Visual Studio.
+
+This requires the
+[WinApp extension](https://marketplace.visualstudio.com/items?itemName=Microsoft-WinAppCLI.winapp),
+which contributes the `winapp` debug type used by that configuration.
+
 ## Prerequisites
 
 - [.NET SDK](https://dotnet.microsoft.com/download) — `net8.0`, `net9.0`, or `net10.0`
