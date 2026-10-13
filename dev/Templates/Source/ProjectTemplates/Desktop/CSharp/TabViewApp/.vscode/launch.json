@@ -1,0 +1,10 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "winapp",
+			"request": "launch",
+			"name": "WinApp: Launch and Attach"
+		}
+	]
+}
