@@ -13,13 +13,13 @@ The recommended way to create a WinUI 3 app is the
 ```powershell
 winapp new -t winui -n MyApp
 cd MyApp
-winapp run
+dotnet run
 ```
 
 `winapp new` installs this template pack on demand and scaffolds the app.
-`winapp run` builds and launches it with full MSIX package identity, so
-features that require it (notifications, background tasks, Windows AI APIs,
-etc.) work the same as they would in a Visual Studio F5 deploy.
+`dotnet run` launches it with full MSIX package identity, so features that
+require it (notifications, background tasks, Windows AI APIs, etc.) work the
+same as they would in a Visual Studio F5 deploy.
 
 ## Installation
 
@@ -117,24 +117,26 @@ inside a WinUI project folder or when `--project` points to one.
 ```powershell
 winapp new -t winui -n MyApp
 cd MyApp
-winapp run
+
+# dotnet build
+dotnet run
 ```
 
 `winapp new` is interactive by default — run it with no arguments to pick a
-template and a name from a list. `winapp run` builds the project, registers a
-loose-layout MSIX, gives the app package identity, and launches it via AUMID
-activation — equivalent to F5 in Visual Studio.
+template and a name from a list. `dotnet run` registers a loose-layout MSIX,
+gives the app package identity, and launches it via AUMID activation —
+equivalent to F5 in Visual Studio.
 
 ### Quickstart a new Reactor app
 
 ```powershell
 winapp new -t reactor -n MyReactorApp
 cd MyReactorApp
-winapp run
+dotnet run
 ```
 
 Reactor apps are pure C# (no XAML) and packaged (single-project MSIX), so
-`winapp run` registers a loose-layout package and launches the app with full
+`dotnet run` registers a loose-layout package and launches the app with full
 MSIX package identity — equivalent to F5 in Visual Studio. See the
 [Reactor documentation](https://github.com/microsoft/microsoft-ui-reactor) to
 learn the component model, hooks, and layout system. Swap `reactor` for
@@ -170,23 +172,10 @@ Supported choices: `net8.0`, `net9.0`, `net10.0`. If you omit
 your installed .NET SDK. You can also edit `<TargetFramework>` in the
 generated `.csproj` afterward.
 
-### Customizing how the app launches
+### Customizing `dotnet run` behavior
 
-`winapp run` exposes the common options as flags:
-
-| Flag                      | Effect                                                                                     |
-|---------------------------|--------------------------------------------------------------------------------------------|
-| `--args <args>`           | Arguments passed to the app on launch (e.g. `--args "--my-flag value"`)                     |
-| `--with-alias`            | Launch via `uap5:ExecutionAlias` so stdin/stdout stay in the terminal                       |
-| `--no-launch`             | Register the package but don't launch (useful when attaching a different debugger first)    |
-| `--debug-output`          | Capture `OutputDebugString` and crash dumps; cannot be combined with another debugger       |
-| `-c`, `--configuration`   | Build configuration (default `Debug`)                                                       |
-| `--arch <arch>`           | Target architecture (`x64`, `arm64`, or `x86`)                                              |
-
-Run `winapp run --help` for the full list.
-
-The same behaviors are available to `dotnet run`. Set any of these MSBuild
-properties inside a `<PropertyGroup>` in the generated `.csproj`:
+Set any of these MSBuild properties inside a `<PropertyGroup>` in the
+generated `.csproj` to tweak how `dotnet run` launches the app:
 
 | Property                       | Default | Effect                                                                                         |
 |--------------------------------|---------|------------------------------------------------------------------------------------------------|
@@ -216,7 +205,7 @@ which contributes the `winapp` debug type used by that configuration.
 - [winapp CLI](https://github.com/microsoft/WinAppCli) — `winget install Microsoft.winappcli --source winget`
 - [.NET SDK](https://dotnet.microsoft.com/download) — `net8.0`, `net9.0`, or `net10.0`
 - Windows 10 version 1809 (build 17763) or later
-- **Developer Mode enabled** — required to register the loose-layout package.
+- **Developer Mode enabled** — required for `dotnet run` to register the loose-layout package.
   Settings → System → For developers → Developer Mode → On.
 
 ## Resources
