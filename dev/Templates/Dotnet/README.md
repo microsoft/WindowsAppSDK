@@ -11,12 +11,13 @@ The recommended way to create a WinUI 3 app is the
 [winapp CLI](https://github.com/microsoft/WinAppCli):
 
 ```powershell
-winapp new -t winui -n MyApp
+winapp new
 cd MyApp
 dotnet run
 ```
 
-`winapp new` installs this template pack on demand and scaffolds the app.
+`winapp new` is interactive — it prompts for a template and a name (`MyApp`
+above), installs this template pack on demand, and scaffolds the app.
 `dotnet run` launches it with full MSIX package identity, so features that
 require it (notifications, background tasks, Windows AI APIs, etc.) work the
 same as they would in a Visual Studio F5 deploy.
