@@ -61,8 +61,7 @@ whose UI mirrors the matching WinUI 3 XAML templates.
 | `reactor-navview`  | Reactor app with a `NavigationView` shell and multiple pages         |
 | `reactor-tabview`  | Reactor app with a `TabView` shell whose tabs live in the title bar  |
 
-Each also has a `winui-reactor*` alias (e.g. `winui-reactor`, `winui-reactor-mvu`)
-so they show up alongside the other WinUI templates.
+Each also has a `winui-reactor*` alias (e.g. `winui-reactor`, `winui-reactor-mvu`).
 
 Reactor apps are packaged (single-project MSIX) and reference the
 [`Microsoft.UI.Reactor`](https://www.nuget.org/packages/Microsoft.UI.Reactor)
