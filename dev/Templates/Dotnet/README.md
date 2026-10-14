@@ -30,18 +30,14 @@ winget install Microsoft.winappcli --source winget
 ```
 
 `winapp new` installs this template pack automatically the first time you use
-it, so there is nothing else to set up. The CLI is also bundled with the
-[WinApp VS Code extension](https://marketplace.visualstudio.com/items?itemName=Microsoft-WinAppCLI.winapp),
-and can be installed [from npm](https://www.npmjs.com/package/@microsoft/winappcli)
-or [downloaded from GitHub Releases](https://github.com/microsoft/WinAppCli/releases/latest).
+it, so there is nothing else to set up.
 
 ### Installing the template pack directly
 
-This is a standard `dotnet new` template pack. Install it by hand if you want
-the templates without the CLI, or to use the
+To use the
 [item templates](#add-items-to-an-existing-project) or
 [explicit package versions](#choosing-a-target-framework), which `winapp new`
-does not expose:
+does not yet expose, install the `dotnet new` WinUI template pack:
 
 ```shell
 dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
