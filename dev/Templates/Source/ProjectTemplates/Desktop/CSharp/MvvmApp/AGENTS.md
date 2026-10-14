@@ -3,38 +3,21 @@
 This is a WinUI 3 app built with the
 [Windows App SDK](https://learn.microsoft.com/windows/apps/windows-app-sdk/).
 
-## Build and run
+## Use the WinApp CLI
 
-```powershell
-dotnet build
-dotnet run
-```
-
-`dotnet run` registers a loose-layout MSIX and launches the app with full
-package identity — equivalent to F5 in Visual Studio. This requires Developer
-Mode to be enabled. In VS Code, press <kbd>F5</kbd> instead (see
-`.vscode/launch.json`).
-
-## Writing UI code
-
-Search for a working example before writing a control from scratch:
-
-```powershell
-winapp find-ui "tabbed layout"
-winapp find-ui --id gallery-tabview-1    # fetch the XAML/C# for a result
-```
-
-## Use the winapp CLI
-
-[winapp](https://github.com/microsoft/WinAppCli) handles the Windows-specific
-parts of app development. Install it with:
+The [WinApp CLI](https://github.com/microsoft/WinAppCli) handles the
+Windows-specific parts of app development. Install it with:
 
 ```powershell
 winget install Microsoft.winappcli --source winget
 ```
 
+A sample of the commands it provides:
+
 | Command | Use it to |
 |---------|-----------|
+| `winapp run` | Build and launch the app with full MSIX package identity |
+| `winapp find-ui "<query>"` | Find a working WinUI code example before writing a control from scratch |
 | `winapp ui inspect -a <app>` | Inspect the running app's UI element tree |
 | `winapp ui invoke\|set-value\|send-keys` | Drive the UI to verify a change works |
 | `winapp ui screenshot -a <app>` | Capture the window as a PNG |
@@ -46,7 +29,8 @@ Prefer these over hand-rolled scripts for packaging, signing, and UI verificatio
 
 ## Discovering commands
 
-Every command documents itself — check the help before guessing at syntax:
+The list above is only a sample. Every command documents itself — check the
+help before guessing at syntax:
 
 ```powershell
 winapp --help
