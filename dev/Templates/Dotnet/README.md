@@ -1,17 +1,47 @@
 # Windows App SDK WinUI 3 C# Templates
 
 Official WinUI 3 project and item templates for the
-[Windows App SDK](https://learn.microsoft.com/windows/apps/windows-app-sdk/),
-designed for use with the .NET CLI (`dotnet new`). This template pack provides
-the same starting points available in Visual Studio — blank apps, navigation
-views, MVVM scaffolding, tab-view shells, class libraries, unit test projects,
-and common WinUI UI items — right from the command line.
+[Windows App SDK](https://learn.microsoft.com/windows/apps/windows-app-sdk/).
+This template pack provides the same starting points available in Visual
+Studio — blank apps, navigation views, MVVM scaffolding, tab-view shells,
+class libraries, unit test projects, and common WinUI UI items — right from
+the command line.
 
-`dotnet run` launches the generated app with full MSIX package identity, so
+The recommended way to create a WinUI 3 app is the
+[winapp CLI](https://github.com/microsoft/WinAppCli):
+
+```powershell
+winapp new -t winui -n MyApp
+cd MyApp
+winapp run
+```
+
+`winapp new` installs this template pack on demand and scaffolds the app.
+`winapp run` builds and launches it with full MSIX package identity, so
 features that require it (notifications, background tasks, Windows AI APIs,
 etc.) work the same as they would in a Visual Studio F5 deploy.
 
 ## Installation
+
+Install the winapp CLI with WinGet:
+
+```powershell
+winget install Microsoft.winappcli --source winget
+```
+
+`winapp new` installs this template pack automatically the first time you use
+it, so there is nothing else to set up. The CLI is also bundled with the
+[WinApp VS Code extension](https://marketplace.visualstudio.com/items?itemName=Microsoft-WinAppCLI.winapp),
+and can be installed [from npm](https://www.npmjs.com/package/@microsoft/winappcli)
+or [downloaded from GitHub Releases](https://github.com/microsoft/WinAppCli/releases/latest).
+
+### Installing the template pack directly
+
+This is a standard `dotnet new` template pack. Install it by hand if you want
+the templates without the CLI, or to use the
+[item templates](#add-items-to-an-existing-project) or
+[explicit package versions](#choosing-a-target-framework), which `winapp new`
+does not expose:
 
 ```shell
 dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
@@ -21,7 +51,7 @@ dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
 
 ### Project Templates
 
-Get below list via `dotnet new list winui`
+Get below list via `winapp new --list`
 
 | Short Name        | Description                                                              |
 |-------------------|--------------------------------------------------------------------------|
@@ -48,7 +78,7 @@ declarative, React-style way to build WinUI 3 apps in **pure C# — no XAML**.
 These templates scaffold a runnable, single-project MSIX-packaged Reactor app
 whose UI mirrors the matching WinUI 3 XAML templates.
 
-Get the list via `dotnet new list reactor`
+Get the list via `winapp new --list`
 
 | Short Name         | Description                                                          |
 |--------------------|----------------------------------------------------------------------|
@@ -58,15 +88,16 @@ Get the list via `dotnet new list reactor`
 | `reactor-tabview`  | Reactor app with a `TabView` shell whose tabs live in the title bar  |
 
 Each also has a `winui-reactor*` alias (e.g. `winui-reactor`, `winui-reactor-mvu`)
-so they show up under `dotnet new list winui` alongside the other WinUI templates.
+so they show up alongside the other WinUI templates.
 
 Reactor apps are packaged (single-project MSIX) and reference the
 [`Microsoft.UI.Reactor`](https://www.nuget.org/packages/Microsoft.UI.Reactor)
 preview NuGet package. They require .NET 10 or later. Like the WinUI templates,
-they reference `Microsoft.Windows.SDK.BuildTools.WinApp` so `dotnet run` launches
-the app with full MSIX package identity. Pin a specific Reactor package version
-at scaffold time with `--reactor-version`, or the Windows App SDK version with
-`--wasdk-version`.
+they reference `Microsoft.Windows.SDK.BuildTools.WinApp` so the app launches
+with full MSIX package identity. Pin a specific Reactor package version at
+scaffold time with `--reactor-version`, or the Windows App SDK version with
+`--wasdk-version` — both are `dotnet new` parameters, so use
+[`dotnet new`](#installing-the-template-pack-directly) when you need them.
 
 ### Item Templates
 
@@ -88,26 +119,26 @@ inside a WinUI project folder or when `--project` points to one.
 ### Quickstart a new WinUI 3 APP
 
 ```powershell
-dotnet new winui -n MyApp
+winapp new -t winui -n MyApp
 cd MyApp
-
-# dotnet build
-dotnet run
+winapp run
 ```
 
-`dotnet run` registers a loose-layout MSIX, gives the app package identity,
-and launches it via AUMID activation — equivalent to F5 in Visual Studio.
+`winapp new` is interactive by default — run it with no arguments to pick a
+template and a name from a list. `winapp run` builds the project, registers a
+loose-layout MSIX, gives the app package identity, and launches it via AUMID
+activation — equivalent to F5 in Visual Studio.
 
 ### Quickstart a new Reactor app
 
 ```powershell
-dotnet new reactor -n MyReactorApp
+winapp new -t reactor -n MyReactorApp
 cd MyReactorApp
-dotnet run
+winapp run
 ```
 
 Reactor apps are pure C# (no XAML) and packaged (single-project MSIX), so
-`dotnet run` registers a loose-layout package and launches the app with full
+`winapp run` registers a loose-layout package and launches the app with full
 MSIX package identity — equivalent to F5 in Visual Studio. See the
 [Reactor documentation](https://github.com/microsoft/microsoft-ui-reactor) to
 learn the component model, hooks, and layout system. Swap `reactor` for
@@ -115,6 +146,9 @@ learn the component model, hooks, and layout system. Swap `reactor` for
 shell.
 
 ### Add items to an existing project
+
+Item templates are added with `dotnet new`, which requires the template pack to
+be [installed directly](#installing-the-template-pack-directly):
 
 ```powershell
 dotnet new winui-page         -n SettingsPage      --project .\MyApp.csproj
@@ -125,8 +159,9 @@ dotnet new winui-dialog       -n ConfirmDialog     --project .\MyApp.csproj
 
 ### Choosing a Target Framework
 
-Generated projects target `net{N}.0-windows10.0.26100.0`, where `{N}` is
-selected at scaffold time via `--dotnet-version`:
+Generated projects target `net{N}.0-windows10.0.26100.0`. `winapp new`
+scaffolds against your installed .NET SDK's target framework. To choose one
+explicitly, scaffold with `dotnet new` and pass `--dotnet-version`:
 
 ```shell
 dotnet new winui --dotnet-version net8.0  -n MyApp
@@ -139,10 +174,23 @@ Supported choices: `net8.0`, `net9.0`, `net10.0`. If you omit
 your installed .NET SDK. You can also edit `<TargetFramework>` in the
 generated `.csproj` afterward.
 
-### Customizing `dotnet run` behavior
+### Customizing how the app launches
 
-Set any of these MSBuild properties inside a `<PropertyGroup>` in the
-generated `.csproj` to tweak how `dotnet run` launches the app:
+`winapp run` exposes the common options as flags:
+
+| Flag                      | Effect                                                                                     |
+|---------------------------|--------------------------------------------------------------------------------------------|
+| `--args <args>`           | Arguments passed to the app on launch (e.g. `--args "--my-flag value"`)                     |
+| `--with-alias`            | Launch via `uap5:ExecutionAlias` so stdin/stdout stay in the terminal                       |
+| `--no-launch`             | Register the package but don't launch (useful when attaching a different debugger first)    |
+| `--debug-output`          | Capture `OutputDebugString` and crash dumps; cannot be combined with another debugger       |
+| `-c`, `--configuration`   | Build configuration (default `Debug`)                                                       |
+| `--arch <arch>`           | Target architecture (`x64`, `arm64`, or `x86`)                                              |
+
+Run `winapp run --help` for the full list.
+
+The same behaviors are available to `dotnet run`. Set any of these MSBuild
+properties inside a `<PropertyGroup>` in the generated `.csproj`:
 
 | Property                       | Default | Effect                                                                                         |
 |--------------------------------|---------|------------------------------------------------------------------------------------------------|
@@ -169,13 +217,15 @@ which contributes the `winapp` debug type used by that configuration.
 
 ## Prerequisites
 
+- [winapp CLI](https://github.com/microsoft/WinAppCli) — `winget install Microsoft.winappcli --source winget`
 - [.NET SDK](https://dotnet.microsoft.com/download) — `net8.0`, `net9.0`, or `net10.0`
 - Windows 10 version 1809 (build 17763) or later
-- **Developer Mode enabled** — required for `dotnet run` to register the loose-layout package.
+- **Developer Mode enabled** — required to register the loose-layout package.
   Settings → System → For developers → Developer Mode → On.
 
 ## Resources
 
+- [winapp CLI](https://github.com/microsoft/WinAppCli)
 - [Windows App SDK documentation](https://learn.microsoft.com/windows/apps/windows-app-sdk/)
 - [WinUI 3 documentation](https://learn.microsoft.com/windows/apps/winui/winui3/)
 - [Release notes](https://github.com/microsoft/WindowsAppSDK/releases)
