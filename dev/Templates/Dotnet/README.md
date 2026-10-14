@@ -20,16 +20,12 @@ winget install Microsoft.winappcli --source winget
 ```
 
 `winapp new` installs this template pack automatically the first time you use
-it, so there is nothing else to set up. To install the pack on its own:
-
-```shell
-dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
-```
+it, so there is nothing else to set up.
 
 ## Available Templates
 
-Run `winapp new --list` to see every template available — the project templates,
-the Reactor templates, and the item templates all come from this one pack.
+Run `winapp new --list` to see every project template available — both the
+WinUI templates and the Reactor ones below.
 
 ### Project Templates
 
@@ -96,17 +92,15 @@ inside a WinUI project folder or when `--project` points to one.
 ### Quickstart a new WinUI 3 APP
 
 ```powershell
-winapp new -t winui -n MyApp
+winapp new -n "MyApp"
 cd MyApp
 
 # dotnet build
 dotnet run
 ```
 
-`winapp new` is interactive by default — run it with no arguments to pick a
-template and a name from a list. `dotnet run` registers a loose-layout MSIX,
-gives the app package identity, and launches it via AUMID activation —
-equivalent to F5 in Visual Studio.
+`dotnet run` registers a loose-layout MSIX, gives the app package identity,
+and launches it via AUMID activation — equivalent to F5 in Visual Studio.
 
 ### Quickstart a new Reactor app
 
