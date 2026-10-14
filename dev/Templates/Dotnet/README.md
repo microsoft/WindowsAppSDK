@@ -7,38 +7,20 @@ Studio — blank apps, navigation views, MVVM scaffolding, tab-view shells,
 class libraries, unit test projects, and common WinUI UI items — right from
 the command line.
 
-The recommended way to create a WinUI 3 app is the
-[winapp CLI](https://github.com/microsoft/WinAppCli):
-
-```powershell
-winapp new
-cd MyApp
-dotnet run
-```
-
-`winapp new` is interactive — it prompts for a template and a name (`MyApp`
-above), installs this template pack on demand, and scaffolds the app.
-`dotnet run` launches it with full MSIX package identity, so features that
-require it (notifications, background tasks, Windows AI APIs, etc.) work the
-same as they would in a Visual Studio F5 deploy.
+`dotnet run` launches the generated app with full MSIX package identity, so
+features that require it (notifications, background tasks, Windows AI APIs,
+etc.) work the same as they would in a Visual Studio F5 deploy.
 
 ## Installation
 
-Install the winapp CLI with WinGet:
+Install the WinApp CLI with WinGet:
 
 ```powershell
 winget install Microsoft.winappcli --source winget
 ```
 
 `winapp new` installs this template pack automatically the first time you use
-it, so there is nothing else to set up.
-
-### Installing the template pack directly
-
-To use the
-[item templates](#add-items-to-an-existing-project) or
-[explicit package versions](#choosing-a-target-framework), which `winapp new`
-does not yet expose, install the `dotnet new` WinUI template pack:
+it, so there is nothing else to set up. To install the pack on its own:
 
 ```shell
 dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
@@ -46,9 +28,10 @@ dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates
 
 ## Available Templates
 
-### Project Templates
+Run `winapp new --list` to see every template available — the project templates,
+the Reactor templates, and the item templates all come from this one pack.
 
-Get below list via `winapp new --list`
+### Project Templates
 
 | Short Name        | Description                                                              |
 |-------------------|--------------------------------------------------------------------------|
@@ -74,8 +57,6 @@ Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 declarative, React-style way to build WinUI 3 apps in **pure C# — no XAML**.
 These templates scaffold a runnable Reactor app with optional MSIX packaging
 whose UI mirrors the matching WinUI 3 XAML templates.
-
-Get the list via `winapp new --list`
 
 | Short Name         | Description                                                          |
 |--------------------|----------------------------------------------------------------------|
@@ -181,9 +162,6 @@ the app outgrows one file, `dotnet project convert MyReactorApp.cs` turns it
 into a regular project.
 
 ### Add items to an existing project
-
-Item templates are added with `dotnet new`, which requires the template pack to
-be [installed directly](#installing-the-template-pack-directly):
 
 ```powershell
 dotnet new winui-page         -n SettingsPage      --project .\MyApp.csproj
@@ -318,7 +296,7 @@ which contributes the `winapp` debug type used by that configuration.
 
 ## Prerequisites
 
-- [winapp CLI](https://github.com/microsoft/WinAppCli) — `winget install Microsoft.winappcli --source winget`
+- [WinApp CLI](https://github.com/microsoft/WinAppCli) - `winget install Microsoft.winappcli --source winget`
 - [.NET SDK](https://dotnet.microsoft.com/download) — `net10.0` or `net11.0`
 - Windows 10 version 1809 (build 17763) or later
 - **Developer Mode enabled** — required for `dotnet run` to register the loose-layout package.
@@ -326,7 +304,7 @@ which contributes the `winapp` debug type used by that configuration.
 
 ## Resources
 
-- [winapp CLI](https://github.com/microsoft/WinAppCli)
+- [WinApp CLI](https://github.com/microsoft/WinAppCli)
 - [Windows App SDK documentation](https://learn.microsoft.com/windows/apps/windows-app-sdk/)
 - [WinUI 3 documentation](https://learn.microsoft.com/windows/apps/winui/winui3/)
 - [Release notes](https://github.com/microsoft/WindowsAppSDK/releases)

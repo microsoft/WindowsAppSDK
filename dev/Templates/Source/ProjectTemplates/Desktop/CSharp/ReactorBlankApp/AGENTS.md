@@ -6,39 +6,21 @@ This is a WinUI 3 app built with
 The UI is declared in **pure C# — there is no XAML in this project**, so don't
 add `.xaml` files or convert components to XAML.
 
-## Build and run
+## Use the WinApp CLI
 
-```powershell
-dotnet build
-dotnet run
-```
-
-`dotnet run` registers a loose-layout MSIX and launches the app with full
-package identity — equivalent to F5 in Visual Studio. This requires Developer
-Mode to be enabled. In VS Code, press <kbd>F5</kbd> instead (see
-`.vscode/launch.json`).
-
-## Writing UI code
-
-Search the Reactor samples for a working example. Pass `--source reactor` so
-you get C# Reactor components rather than XAML, which won't fit this project:
-
-```powershell
-winapp find-ui "tabbed layout" --source reactor
-winapp find-ui --id <id>                 # fetch the C# for a result
-```
-
-## Use the winapp CLI
-
-[winapp](https://github.com/microsoft/WinAppCli) handles the Windows-specific
-parts of app development. Install it with:
+The [WinApp CLI](https://github.com/microsoft/WinAppCli) handles the
+Windows-specific parts of app development. Install it with:
 
 ```powershell
 winget install Microsoft.winappcli --source winget
 ```
 
+A sample of the commands it provides:
+
 | Command | Use it to |
 |---------|-----------|
+| `winapp run` | Build and launch the app with full MSIX package identity |
+| `winapp find-ui "<query>" --source reactor` | Find a working Reactor code example before writing a component from scratch |
 | `winapp ui inspect -a <app>` | Inspect the running app's UI element tree |
 | `winapp ui invoke\|set-value\|send-keys` | Drive the UI to verify a change works |
 | `winapp ui screenshot -a <app>` | Capture the window as a PNG |
@@ -50,7 +32,8 @@ Prefer these over hand-rolled scripts for packaging, signing, and UI verificatio
 
 ## Discovering commands
 
-Every command documents itself — check the help before guessing at syntax:
+The list above is only a sample. Every command documents itself — check the
+help before guessing at syntax:
 
 ```powershell
 winapp --help
