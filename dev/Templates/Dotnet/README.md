@@ -65,8 +65,17 @@ Reactor apps are packaged (single-project MSIX) and reference the
 preview NuGet package. They require .NET 10 or later. Like the WinUI templates,
 they reference `Microsoft.Windows.SDK.BuildTools.WinApp` so `dotnet run` launches
 the app with full MSIX package identity. Pin a specific Reactor package version
-at scaffold time with `--reactor-version`, or the Windows App SDK version with
-`--wasdk-version`.
+at scaffold time with `--reactor-version`.
+
+The Reactor templates don't reference the `Microsoft.WindowsAppSDK` metapackage.
+`Microsoft.UI.Reactor` brings in only the Windows App SDK packages it needs
+(`Microsoft.WindowsAppSDK.WinUI` and `Microsoft.WindowsAppSDK.Runtime`)
+transitively. This keeps the AI and ML components (for example
+`onnxruntime.dll` and `DirectML.dll`) out of the app, including trimmed and
+Native AOT publishes. To use another Windows App SDK component, add its package
+yourself, or reference the full `Microsoft.WindowsAppSDK` metapackage. The
+version you pick must match the `Microsoft.WindowsAppSDK.Runtime` version that
+Reactor brings in.
 
 ### Item Templates
 

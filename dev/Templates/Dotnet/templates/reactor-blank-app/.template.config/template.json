@@ -50,16 +50,9 @@
     "reactorVersion": {
       "type": "parameter",
       "datatype": "text",
-      "defaultValue": "0.1.0-preview.16",
+      "defaultValue": "0.1.0-preview.17",
       "replaces": "$ReactorVersion$",
       "description": "Microsoft.UI.Reactor (and Microsoft.UI.Reactor.Devtools) NuGet version to reference."
-    },
-    "windowsAppSdkVersion": {
-      "type": "parameter",
-      "datatype": "text",
-      "defaultValue": "*",
-      "replaces": "$WindowsAppSdkVersion$",
-      "description": "Microsoft.WindowsAppSDK NuGet version. Requires 2.2.0 or later; use * for the latest stable."
     },
     "windowsSdkBuildToolsVersion": {
       "type": "parameter",
