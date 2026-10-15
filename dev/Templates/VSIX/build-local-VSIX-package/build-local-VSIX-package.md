@@ -217,6 +217,14 @@ development** workload.
 The `WinAppSdk.CSharp.DotnetNewTemplates.csproj` targets `net8.0`. Install the
 [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
 
+The C# VSIX embeds the NuGet output from this project under `ProjectTemplates`
+and registers it through a build-generated `Templates.pkgdef` keyed to the VSIX
+version. Its templates are maintained only
+under `dev\Templates\Dotnet\templates`. The separate-packaging C# template is
+the one VSIX-only exception: it retains its `.vstemplate` and build project under
+`Source\ProjectTemplates\Desktop\CSharp\PackagedApp`. C++ templates retain the
+existing ZIP-based path.
+
 ### `VSSDK1300: Could not find a part of the path...`
 
 The VSSDK extracts template ZIPs into deeply nested paths and the .NET
