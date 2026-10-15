@@ -350,7 +350,7 @@ function Write-ResolvedPackageVersions {
 function Test-WinUiProjectTemplate {
     param(
         [string]$TemplateShortName,
-        [ValidateSet('App', 'Library', 'Test')]
+        [ValidateSet('App', 'FileBasedApp', 'Library', 'Test')]
         [string]$Kind,
         [string]$Platform,
         [string]$WorkingRoot
@@ -361,7 +361,9 @@ function Test-WinUiProjectTemplate {
     New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
     Add-Result -Template $TemplateShortName -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
-    $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName.csproj"
+    # A file-based app template scaffolds a single <name>.cs whose #: directives replace the .csproj.
+    $projectFileExtension = if ($Kind -eq 'FileBasedApp') { '.cs' } else { '.csproj' }
+    $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName$projectFileExtension"
 
     Write-ResolvedPackageVersions -ProjectFile $projectFile -ProjectPath $projectPath
 
@@ -381,6 +383,20 @@ function Test-WinUiProjectTemplate {
             else {
                 Write-Warning "Unable to locate executable for template '$TemplateShortName' at '$projectPath'."
             }
+        }
+        'FileBasedApp' {
+            # The scaffold must stay a single file: no .csproj, .gitignore, or assets.
+            $scaffolded = @(Get-ChildItem -Path $projectPath -Recurse -Force -File)
+            if ($scaffolded.Count -ne 1 -or $scaffolded[0].Name -ne "$projectName.cs") {
+                $scaffoldedNames = ($scaffolded | ForEach-Object { $_.Name }) -join ', '
+                throw "Template '$TemplateShortName' should scaffold only '$projectName.cs', but produced: $scaffoldedNames"
+            }
+
+            # Builds the default (packaged) configuration. The output goes to the SDK's
+            # file-based app cache (%TEMP%\dotnet\runfile), not $projectPath, so there is
+            # no executable to record for launching.
+            Invoke-DotnetCommand -Arguments @('build', $projectFile, '-p:Configuration=Debug', "-p:Platform=$Platform") -WorkingDirectory $projectPath -Description 'build file-based app template'
+            Add-Result -Template $TemplateShortName -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
         }
         'Library' {
             Invoke-DotnetCommand -Arguments @('build', $projectFile, '-c', 'Debug') -WorkingDirectory $projectPath -Description 'build library template'
@@ -670,7 +686,10 @@ try {
         @{ ShortName = 'reactor'; Kind = 'App' },
         @{ ShortName = 'reactor-mvu'; Kind = 'App' },
         @{ ShortName = 'reactor-navview'; Kind = 'App' },
-        @{ ShortName = 'reactor-tabview'; Kind = 'App' }
+        @{ ShortName = 'reactor-tabview'; Kind = 'App' },
+        # Reactor single-file app: a .NET file-based app, i.e. a single <name>.cs
+        # whose #: directives replace the .csproj, built with 'dotnet build <name>.cs'.
+        @{ ShortName = 'reactor-singlefile'; Kind = 'FileBasedApp' }
     )
 
     foreach ($template in $projectTemplates) {
