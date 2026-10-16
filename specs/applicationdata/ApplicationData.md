@@ -17,9 +17,12 @@
   - [4.2. Unpackaged app using package'd app's LocalPath](#42-unpackaged-app-using-packaged-apps-localpath)
   - [4.3. Packaged app using MachinePath](#43-packaged-app-using-machinepath)
   - [4.4. Unpackaged app using LocalPath](#44-unpackaged-app-using-localpath)
+  - [4.5. LocalSystem process using MachinePath](#45-localsystem-process-using-machinepath)
 - [5. Remarks](#5-remarks)
   - [5.1. Platform Support](#51-platform-support)
 - [6. API Details](#6-api-details)
+  - [6.1. WinRT](#61-winrt)
+  - [6.2. Win32](#62-win32)
 
 This feature provides application data APIs comparable to those in namespaces
 [Windows.Storage](https://learn.microsoft.com/uwp/api/windows.storage) and
@@ -100,6 +103,11 @@ Other users (even Administrators) have Read and eXecute rights but not Write. Pr
 LocalSystem (e.g. [<desktop6:Extension Category="windows.service">](https://learn.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-desktop6-extension))
 can use this location to manage per-machine data for a package family. This can be useful to share
 data with other drivers or other privileged processes.
+
+**WARNING:** The `ApplicationData` WinRT API is scoped to the calling user, but MSIX (currently)
+doesn't support registering packages for LocalSystem. Thus, processes running as LocalSystem can't
+use the WinRT API to retrieve a package's per-machine data path. In this case, use the
+`ApplicationData_GetMachineFolderForPackageFamily()` Win32 API.
 
 Processes with Write access can (if they choose) alter access rights on files or subdirectories in
 a per-machine data store. For example, a Service running as LocalSystem can create a subdirectory
@@ -246,6 +254,26 @@ void SaveData(string data)
 }
 ```
 
+## 4.5. LocalSystem process using MachinePath
+
+Fabrikam service running as LocalSystem creating a file in Contoso's Machine data store.
+
+```c
+HRESULT SaveData(DWORD dataLength, void* data)
+{
+    PCWSTR packageFamilyName{ L"Fabrikam.Contoso_1234567890abc" };
+    wil::unique_process_heap_string machinePath;
+    RETURN_IF_FAILED(ApplicationData_GetMachineFolderForPackageFamily(packageFamilyName, machinePath));
+
+    wil::unique_process_heap_string filename;
+    RETURN_IF_FAILED(wil::str_printf_nothrow(filename, L"%ls\\Fabrikam.dat", machinePath.get()));
+    wil::unique_hfile file{ ::CreateFileW(filename.get(), GENERIC_WRITE, FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
+    RETURN_LAST_ERROR_IF_NULL_MSG(filename, "%ls", filename.get());
+    DWORD bytesWritten{};
+    RETURN_IF_WIN32_BOOL_FALSE_MSG(::WriteFile(file.get(), data, dataLength, &bytesWritten, nullptr), "%ls", filename.get());
+}
+```
+
 # 5. Remarks
 
 ## 5.1. Platform Support
@@ -269,6 +297,8 @@ We don't provide equivalents to Windows.Storage.ApplicationData's...
 If you need this functionality use the OS APIs in `Windows.Storage.ApplicationData`.
 
 # 6. API Details
+
+## 6.1. WinRT
 
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.Storage
@@ -432,4 +462,25 @@ namespace Microsoft.Windows.Storage
         Windows.Storage.StorageFolder GetPublisherCacheFolder(String folderName);
     }
 }
+```
+
+## 6.2. Win32
+
+```c
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#if !defined(APPLICATIONDATA_H)
+#define APPLICATIONDATA_H
+
+/// Get the path for the specified package family's machine data store (if any).
+/// @param packageFamilyName the package family name.
+/// @param path absolute path to the package file's machine data store, or NULL if not supported. Allocated via HeapAlloc; use HeapFree to deallocate.
+/// @see Microsoft.Windows.Storage.ApplicationData.MachinePath
+/// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata
+STDAPI ApplicationData_GetMachineFolderForPackageFamily(
+    _In_ PCWSTR packageFamilyName,
+    _Outptr_result_maybenull_ PWSTR* path) noexcept;
+
+#endif // !defined(APPLICATIONDATA_H)
 ```
