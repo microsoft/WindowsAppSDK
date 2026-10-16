@@ -3,7 +3,7 @@
 
 namespace Microsoft.Windows.ApplicationModel.Resources
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract MrtCoreContract{};
 
     [contract(MrtCoreContract, 1)]
@@ -96,6 +96,13 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         String ValueAsString { get; };
         byte[] ValueAsBytes { get; };
         ResourceCandidateKind Kind { get; };
+
+        // Returns a read-only IMemoryBuffer that projects embedded resource bytes directly. Each
+        // reference independently retains the resource data in memory until it is closed or
+        // destroyed. Throws when Kind is not EmbeddedData. Prefer this over ValueAsBytes for
+        // optimal performance.
+        [contract(MrtCoreContract, 3)]
+        Windows.Foundation.IMemoryBuffer ValueAsMemoryBuffer();
 
         IMapView<String, String> QualifierValues { get; };
     }
