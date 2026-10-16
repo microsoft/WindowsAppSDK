@@ -320,8 +320,8 @@ function Write-ResolvedPackageVersions {
         [string]$ProjectPath
     )
 
-    # Templates reference WindowsAppSDK and the SDK build tools with Version="*",
-    # so each build silently picks whatever the feed serves. Log the resolved
+    # Templates pin WindowsAppSDK and the SDK build tools to whatever the feed
+    # serves as latest when scaffolded. Log the resolved
     # versions before building, so a failed build shows which ones it used.
     # Logging must never fail the run, hence Continue + try/finally.
     Write-Step "Resolving package versions for $(Split-Path -Path $ProjectFile -Leaf)"
@@ -457,6 +457,26 @@ function Assert-CsprojPackageVersion {
     if ($ref.Version -ne $ExpectedVersion) {
         throw "PackageReference '$PackageName' has Version='$($ref.Version)' but expected '$ExpectedVersion' in '$CsprojPath'"
     }
+}
+
+function Assert-CsprojPackageVersionPinned {
+    # Asserts the template's add-package post action replaced the '*' placeholder
+    # with a concrete version.
+    param(
+        [string]$CsprojPath,
+        [string]$PackageName
+    )
+
+    [xml]$csproj = Get-Content -Path $CsprojPath
+    $ref = $csproj.SelectNodes('//PackageReference') |
+        Where-Object { $_.Include -eq $PackageName }
+    if (-not $ref) {
+        throw "PackageReference '$PackageName' not found in '$CsprojPath'"
+    }
+    if ($ref.Version -notmatch '^\d+(\.\d+){1,3}(-[0-9A-Za-z.-]+)?$') {
+        throw "PackageReference '$PackageName' has Version='$($ref.Version)' but expected a concrete pinned version in '$CsprojPath'"
+    }
+    Write-Step "$PackageName pinned to $($ref.Version)"
 }
 
 function Get-LatestOfficialWasdkVersion {
@@ -703,13 +723,14 @@ try {
     # ─── Version parameter test scenarios ───
     Write-Step 'Running version parameter test scenarios...'
 
-    # Scenario 1: Default (no version passed) — verify Version="*"
+    # Scenario 1: Default (no version passed) — the '*' default makes the
+    # add-package post actions pin each package to the latest stable version.
     $defaultPath = Join-Path -Path $workingRoot -ChildPath 'VersionDefault'
     New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'VersionDefault' -OutputPath $defaultPath -WorkingDirectory $workingRoot
     $defaultCsproj = Join-Path -Path $defaultPath -ChildPath 'VersionDefault.csproj'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.WindowsAppSDK'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'default version content' -Status 'Succeeded' -Path $defaultPath
 
     # Scenario 2: Pinned WindowsAppSDK version only
@@ -717,8 +738,8 @@ try {
     Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPinned', '-o', $pinnedPath, '--wasdk-version', '1.7.250127002', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pinned WASDK version'
     $pinnedCsproj = Join-Path -Path $pinnedPath -ChildPath 'VersionPinned.csproj'
     Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
-    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Assert-CsprojPackageVersionPinned -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
+    Assert-CsprojPackageVersionPinned -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pinned version content' -Status 'Succeeded' -Path $pinnedPath
 
     # Scenario 3: All versions pinned
@@ -891,6 +912,9 @@ try {
     if (-not (Test-Path -Path $unreachableCsproj)) {
         throw "Template scaffold did not produce a .csproj at '$unreachableCsproj'"
     }
+    # The add-package post actions can't resolve a version offline, so the
+    # references keep the '*' placeholder for a later restore.
+    Assert-CsprojPackageVersion -CsprojPath $unreachableCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'unreachable source: scaffold produces files' -Status 'Succeeded' -Path $unreachablePath
 
     # Build should fail because no packages could be restored.
@@ -925,17 +949,17 @@ try {
 
     # Scenario 7b: Working NuGet source — restore resolves up-to-date packages
     # and the project builds successfully. Complements 7a by proving that when
-    # pointed at valid feeds the default Version="*" wildcard pulls the latest
-    # stable packages and produces a clean build.
+    # pointed at valid feeds the default pins the latest stable packages and
+    # produces a clean build.
     Write-Step 'Testing working NuGet source resolves packages and builds...'
     $workingSourcePath = Join-Path -Path $workingRoot -ChildPath 'WorkingSource'
     New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'WorkingSource' -OutputPath $workingSourcePath -WorkingDirectory $workingRoot
 
     $workingSourceCsproj = Join-Path -Path $workingSourcePath -ChildPath 'WorkingSource.csproj'
 
-    # Verify the csproj uses wildcard versions (the default)
-    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
+    # Verify the default pinned concrete versions
+    Assert-CsprojPackageVersionPinned -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK'
+    Assert-CsprojPackageVersionPinned -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
 
     # Explicit restore to confirm packages are fetched from the working feeds
     Invoke-DotnetCommand -Arguments @('restore', $workingSourceCsproj) -WorkingDirectory $workingSourcePath -Description 'restore with working NuGet source'
@@ -955,7 +979,7 @@ try {
     Write-Step "Resolved: $resolvedWasdk"
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'working source: restore resolves packages' -Status 'Succeeded' -Path $workingSourcePath
 
-    # This is the only scenario that builds the default Version="*" wildcard, so
+    # This is the only scenario that builds the default latest versions, so
     # it is what proves the latest published packages build cleanly (an early
     # warning for a bad WindowsAppSDK release). When the pipeline pins a specific
     # version to work around a broken latest, skip this build so the pinned run

@@ -1,0 +1,4 @@
+{
+  "name": "Pusta aplikacja WinUI (spakowana)",
+  "description": "Szablon projektu do tworzenia aplikacji WinUI wraz z pakietem MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store."
+}
