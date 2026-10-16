@@ -5,6 +5,7 @@
 #include "Helpers.h"
 #include "mrm/build/Base.h"
 #include "mrm/readers/MrmManagers.h"
+#include "mrm/readers/MrmReaders.h"
 
 #include "TestPri.h"
 #include "TestHSchema.h"
@@ -57,6 +58,10 @@ public:
     END_TEST_METHOD();
 
     BEGIN_TEST_METHOD(DisjointNoAppTests)
+        TEST_METHOD_PROPERTY(L"DataSource", L"Table:UnifiedView.UnitTests.xml#MultipleFileTests")
+    END_TEST_METHOD();
+
+    BEGIN_TEST_METHOD(DisjointFallbackContractTests)
         TEST_METHOD_PROPERTY(L"DataSource", L"Table:UnifiedView.UnitTests.xml#MultipleFileTests")
     END_TEST_METHOD();
 
@@ -669,6 +674,94 @@ void UnifiedResourceViewUnitTests::DisjointAppFirstTests()
             TestResourceMap::VerifyAllAgainstTestVars(pMap, &testDI, pView->GetUnifiedEnvironment(), pPfx);
         }
     }
+    // MethodCleanup() cleans up for us
+}
+
+// Locks in the contract that the package-graph fallback in
+// LoadResourceCandidate / MrmGetChildResourceMap relies on: a named resource map that
+// lives only in a dependency (referenced) PRI must be absent from the application PRI
+// alone, yet resolvable through the unified view once the dependency has been merged.
+void UnifiedResourceViewUnitTests::DisjointFallbackContractTests()
+{
+    String tmp;
+    PCWSTR pVarPrefix = L"";
+
+    if (!SetupTestMethodOutputFolder(L"DisjointFallbackContractTests"))
+    {
+        return;
+    }
+
+    TestStringArray fileNames;
+    AutoDeletePtr<CoreProfile> pProfile;
+    VERIFY_SUCCEEDED(CoreProfile::ChooseDefaultProfile(&pProfile));
+
+    if (FAILED(TestHPri::BuildMultiplePriFilesFromTestVars(pVarPrefix, this, pProfile, &fileNames)))
+    {
+        return;
+    }
+
+    // We need at least an application PRI and one dependency PRI to exercise the fallback.
+    if (fileNames.GetNumStrings() < 2)
+    {
+        Log::Comment(L"[ Skipping: fewer than two PRI files in this test variation ]");
+        return;
+    }
+
+    AutoDeletePtr<UnifiedResourceView> pView;
+    VERIFY_SUCCEEDED(UnifiedResourceView::CreateInstance(pProfile, &pView));
+    VERIFY(pView != NULL);
+
+    // Load file 0 as the application PRI and the rest as dependency (referenced) PRIs,
+    // mirroring how the package-graph fallback merges a matched dependency package's PRI
+    // on demand.
+    for (int f = 0; f < fileNames.GetNumStrings(); f++)
+    {
+        PCWSTR pFileName = fileNames.GetString(f);
+
+        String priFilePath;
+        if (GetOutputFilePath(tmp.Format(L"%s.pri", pFileName), priFilePath) == NULL)
+        {
+            Log::Error(tmp.Format(L"Unable to get output file path for \"%s.pri\"", pFileName));
+            return;
+        }
+
+        if (f == 0)
+        {
+            const ManagedResourceMap* pMap;
+            VERIFY_SUCCEEDED(pView->SetApplicationFile(priFilePath, GetTestOutputPath(), &pMap));
+            VERIFY(pMap != NULL);
+        }
+        else
+        {
+            const ManagedResourceMap* map;
+            VERIFY_SUCCEEDED(pView->GetOrAddReferencedFile(priFilePath, GetTestOutputPath(), &map, nullptr));
+        }
+    }
+
+    // The named map that lives in the first dependency PRI (file 1). Because the test
+    // files are disjoint, this map does not exist in the application PRI (file 0).
+    TestStringArray dependencyMapNames;
+    VERIFY_SUCCEEDED(TestHPri::GetPriFileMapNamesFromTestVars(pVarPrefix, fileNames.GetString(1), &dependencyMapNames));
+    VERIFY(dependencyMapNames.GetNumStrings() > 0);
+    PCWSTR pDependencyMapName = dependencyMapNames.GetString(0);
+
+    // 1) The dependency's named map is NOT resolvable from the application PRI alone.
+    //    This is the precondition (ERROR_NOT_FOUND) that triggers the fallback.
+    const PriFile* pAppPriFile = nullptr;
+    VERIFY_SUCCEEDED(pView->GetApplicationPriFile(&pAppPriFile));
+    VERIFY(pAppPriFile != nullptr);
+
+    const IResourceMapBase* pMapFromAppPri = nullptr;
+    HRESULT hrAppLookup = pAppPriFile->GetResourceMapById(pDependencyMapName, &pMapFromAppPri);
+    VERIFY_ARE_EQUAL(hrAppLookup, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+    VERIFY(pMapFromAppPri == nullptr);
+
+    // 2) ...but it IS resolvable through the unified view, i.e. the package-graph fallback
+    //    used by the flat resource-resolution APIs.
+    const IResourceMapBase* pMapFromView = nullptr;
+    VERIFY_SUCCEEDED(pView->GetResourceMapById(pDependencyMapName, &pMapFromView));
+    VERIFY(pMapFromView != nullptr);
+
     // MethodCleanup() cleans up for us
 }
 
