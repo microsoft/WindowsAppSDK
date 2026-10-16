@@ -31,7 +31,7 @@
     <None Include="README.md" Pack="true" PackagePath="README.md" />
     <None Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\gitignore.txt"
           Pack="true" PackagePath="content\%(RecursiveDir)%(Filename)%(Extension)" />
-    <!-- Shared .gitignore for every project template (item templates don't get one). -->
+    <!-- Shared .gitignore for csproj-based project templates (not item or single-file templates). -->
     <None Include="templates\gitignore.txt" Pack="true"
           PackagePath="content\blank-app\gitignore.txt;content\class-library\gitignore.txt;content\mvvm-app\gitignore.txt;content\navigation-app\gitignore.txt;content\reactor-blank-app\gitignore.txt;content\reactor-mvu-app\gitignore.txt;content\reactor-navigation-app\gitignore.txt;content\reactor-tabview-app\gitignore.txt;content\tabview-app\gitignore.txt;content\unit-test\gitignore.txt" />
   </ItemGroup>
