@@ -59,6 +59,7 @@ class PackagedTests : BaseTestSuite
     TEST_METHOD(VerifyToastExpiresOnReboot);
     TEST_METHOD(VerifyToastProgressDataSequence0Fail);
     TEST_METHOD(VerifyShowToast);
+    TEST_METHOD(VerifyShowToastTwiceFailsWithNotificationPosted);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup);

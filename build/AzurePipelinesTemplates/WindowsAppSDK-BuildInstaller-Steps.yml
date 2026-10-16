@@ -354,4 +354,3 @@ steps:
     arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
     workingDirectory: '$(Build.SourcesDirectory)'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
-

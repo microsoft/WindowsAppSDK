@@ -20,6 +20,11 @@
 // 63876312: Prevent AppInstance::GetInstances from registering an invalid process handle.
 #define WINAPPSDK_CHANGEID_63876312 63876312
 
+// 61688595: Route AppInstance::GetInstances failures through a noexcept HRESULT worker so a
+// failure no longer unwinds through the deep C++/WinRT projection rethrow path that exhausted
+// the stack via WIL's FormatMessage-based exception logging chain.
+#define WINAPPSDK_CHANGEID_61688595 61688595
+
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
@@ -304,7 +309,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_current.as<Microsoft::Windows::AppLifecycle::AppInstance>();
     }
 
-    IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstances()
+    IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstancesWorker()
     {
         // Force the singleton init.
         GetCurrent();
@@ -362,6 +367,30 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
         }
 
+        return instances;
+    }
+
+    HRESULT AppInstance::GetInstancesImpl(IVector<Microsoft::Windows::AppLifecycle::AppInstance>& instancesOut) noexcept try
+    {
+        instancesOut = GetInstancesWorker();
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstances()
+    {
+        if (!WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_61688595>())
+        {
+            // Pre-61688595 behavior: let the exception propagate straight out of the worker.
+            return GetInstancesWorker();
+        }
+
+        // Delegate to the noexcept GetInstancesImpl worker and rethrow any failure
+        // HRESULT cleanly via wil::ResultException. This avoids the deep WIL
+        // FormatMessage-based exception logging chain that caused stack overflow on
+        // the hot path (Bug 61688595).
+        IVector<Microsoft::Windows::AppLifecycle::AppInstance> instances{ nullptr };
+        THROW_IF_FAILED(GetInstancesImpl(instances));
         return instances;
     }
 
