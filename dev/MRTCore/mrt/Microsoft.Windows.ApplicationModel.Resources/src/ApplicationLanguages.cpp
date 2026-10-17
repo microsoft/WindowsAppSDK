@@ -12,73 +12,56 @@
 
 namespace winrt::Microsoft::Windows::Globalization::implementation
 {
-hstring ApplicationLanguages::m_language;
-wil::srwlock ApplicationLanguages::m_lock;
+    hstring ApplicationLanguages::m_language;
+    wil::srwlock ApplicationLanguages::m_lock;
 
-winrt::Windows::Foundation::Collections::IVectorView<hstring> ApplicationLanguages::Languages()
-{
-    return winrt::Windows::Globalization::ApplicationLanguages::Languages();
-}
 
-winrt::Windows::Foundation::Collections::IVectorView<hstring> ApplicationLanguages::ManifestLanguages()
-{
-    if (AppModel::Identity::IsPackagedProcess())
+    winrt::Windows::Foundation::Collections::IVectorView<hstring> ApplicationLanguages::Languages()
     {
-        return winrt::Windows::Globalization::ApplicationLanguages::ManifestLanguages();
+        return winrt::Windows::Globalization::ApplicationLanguages::Languages();
     }
-    else
-    {
-        return {};
-    }
-}
 
-hstring ApplicationLanguages::PrimaryLanguageOverride()
-{
-    if (AppModel::Identity::IsPackagedProcess())
+    winrt::Windows::Foundation::Collections::IVectorView<hstring> ApplicationLanguages::ManifestLanguages()
     {
-        try
+        if (AppModel::Identity::IsPackagedProcess())
         {
-            hstring const language = winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride();
-            auto criticalSection {m_lock.lock_exclusive()};
-            m_language = language;
-            return language;
+            return winrt::Windows::Globalization::ApplicationLanguages::ManifestLanguages();
         }
-        catch (...)
+        else
         {
-            auto hr {wil::ResultFromCaughtException()};
-            THROW_HR_MSG(hr, "Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride(get) failed for packaged process");
+            return {};
         }
     }
 
-    auto criticalSection {m_lock.lock_shared()};
-    return m_language;
-}
-
-void ApplicationLanguages::PrimaryLanguageOverride(hstring const& language)
-{
-    if (!language.empty())
+    hstring ApplicationLanguages::PrimaryLanguageOverride()
     {
-        bool isValidLanguageTag = IsWellFormedTag(language.c_str());
-        THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            // Windows persists the override for packaged apps, including across process restarts.
+            return winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride();
+        }
+
+        auto criticalSection{ m_lock.lock_shared() };
+        return m_language;
     }
 
-    if (AppModel::Identity::IsPackagedProcess())
+    void ApplicationLanguages::PrimaryLanguageOverride(hstring const& language)
     {
-        try
+        // An empty string clears the override and restores the system language preferences.
+        if (!language.empty())
+        {
+            bool isValidLanguageTag = IsWellFormedTag(language.c_str());
+            THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
+        }
+
+        if (AppModel::Identity::IsPackagedProcess())
         {
             winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride(language);
+            return;
         }
-        catch (...)
-        {
-            auto hr {wil::ResultFromCaughtException()};
-            THROW_HR_MSG(
-                hr,
-                "Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride(set) failed for packaged process. language=%ls",
-                language.c_str());
-        }
-    }
 
-    auto criticalSection {m_lock.lock_exclusive()};
-    m_language = language;
-}
+        // Unpackaged apps retain a process-local override only.
+        auto criticalSection{ m_lock.lock_exclusive() };
+        m_language = language;
+    }
 } // namespace winrt::Microsoft::Windows::Globalization::implementation
