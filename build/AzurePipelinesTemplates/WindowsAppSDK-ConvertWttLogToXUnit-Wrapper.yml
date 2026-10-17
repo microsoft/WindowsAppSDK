@@ -1,0 +1,18 @@
+# Wrapper for WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml that dispatches to either
+# @WinAppSDK (per-component pipelines) or @self (monobuild) at compile time.
+
+parameters:
+  - name: IsMonobuild
+    type: boolean
+    default: false
+  - name: InnerParams
+    type: object
+    default: {}
+
+steps:
+  - ${{ if parameters.IsMonobuild }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@self
+      parameters: ${{ parameters.InnerParams }}
+  - ${{ else }}:
+    - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-ConvertWttLogToXUnit-Steps.yml@WinAppSDK
+      parameters: ${{ parameters.InnerParams }}

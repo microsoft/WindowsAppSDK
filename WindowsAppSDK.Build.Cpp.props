@@ -40,9 +40,13 @@
       <!-- /Brepro Enables deterministic output from the compiler toolchain -->
       <!-- /PDBALTPATH Stops pdb's basepath from appearing in the Debug Directories of the image header -->
       <!-- /CETCOMPAT enables Control-flow Enforcement Technology (CET) Shadow Stack mitigation.
-      BinSkim asks for this. /CETCOMPAT does not support arm64 -->
-      <AdditionalOptions Condition="'$(Platform)' == 'arm64'">%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Platform)' != 'arm64'">%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb /CETCOMPAT</AdditionalOptions>
+      BinSkim asks for this. /CETCOMPAT does not support arm64, nor arm64ec: an arm64ec
+      binary is linked as an ARM64X image and the linker rejects the flag outright with
+      "LNK1246: '/CETCOMPAT' not compatible with 'ARM64X' target machine". The previous
+      '!= arm64' condition swept arm64ec into the /CETCOMPAT branch and broke every arm64ec
+      link (Detours, DynamicDependencyLifetimeManagerShadow, WindowsAppRuntime_UniversalBGTaskDLL). -->
+      <AdditionalOptions Condition="'$(Platform)' == 'arm64' or '$(Platform)' == 'arm64ec'">%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Platform)' != 'arm64' and '$(Platform)' != 'arm64ec'">%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb /CETCOMPAT</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 

@@ -77,3 +77,22 @@ else
 }
 ```
 Expect to print out all selected folders.
+
+### Keyboard focus is restored after the dialog closes
+Run from a WinUI 3 app with a button whose Click handler opens a picker. This applies to every pick
+method: `FileOpenPicker.PickSingleFileAsync` / `PickMultipleFilesAsync`, `FileSavePicker.PickSaveFileAsync`,
+and `FolderPicker.PickSingleFolderAsync` / `PickMultipleFoldersAsync`.
+
+Test code (C++), in the button's Click handler:
+```C++
+winrt::Microsoft::Windows::Storage::Pickers::FileOpenPicker picker{ AppWindow().Id() };
+co_await picker.PickSingleFileAsync();
+```
+
+1. Click the button. The file dialog opens.
+2. Pick a file and confirm. The dialog closes.
+3. Without touching the mouse, press Enter.
+
+    **Expected behavior - with the fix:** Enter re-invokes the button and the dialog reopens.
+
+    **Example of unexpected behavior - without the fix:** Enter does nothing.

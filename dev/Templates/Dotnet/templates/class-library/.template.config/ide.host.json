@@ -1,0 +1,33 @@
+{
+  "icon": "icon.png",
+  "requiredComponents": [
+    {
+      "id": "Microsoft.VisualStudio.Workload.ManagedDesktop",
+      "hostId": "vs",
+      "componentType": "setupComponent"
+    }
+  ],
+  "symbolInfo": [
+    {
+      "id": "dotnetVersion",
+      "name": {
+        "text": "Framework"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "windowsAppSdkVersion",
+      "name": {
+        "text": "Windows App SDK version (* = latest)"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "windowsSdkBuildToolsVersion",
+      "name": {
+        "text": "Windows SDK BuildTools version (* = latest)"
+      },
+      "isVisible": "true"
+    }
+  ]
+}

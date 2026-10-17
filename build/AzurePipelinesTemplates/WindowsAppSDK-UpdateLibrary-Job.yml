@@ -1,0 +1,157 @@
+# This template updates the Azure DevOps Variable Group (Library) for the Open (Foundation) repo
+# after a successful official build. It bumps PatchVersion and Revision variables.
+# This job should only run on official builds (not PR or Nightly).
+
+parameters:
+- name: jobName
+  displayName: "Job Name"
+  type: string
+  default: 'UpdateFoundationLibraryJob'
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'stable'
+- name: PrOrNightly
+  displayName: "PR or Nightly"
+  type: string
+  default: ''
+
+jobs:
+- job: ${{ parameters.jobName }}
+  variables:
+    ob_outputDirectory: '$(REPOROOT)\out'
+    ob_artifactBaseName: '${{parameters.jobName}}'
+  pool:
+    type: windows
+  displayName: "Update Foundation Variable Group"
+  steps:
+  - script: |
+      echo MajorVersion                         : $(MajorVersion)
+      echo MinorVersion                         : $(MinorVersion)
+      echo Revision                             : $(Revision)
+      echo FoundationMinorVersionResolved       : $(FoundationMinorVersionResolved)
+      echo FoundationPatchVersionResolved       : $(FoundationPatchVersionResolved)
+      echo FoundationLibraryName                : $(FoundationLibraryName)
+      echo NugetBuildTypePrefix                 : $(NugetBuildTypePrefix)
+    displayName: 'Variables'
+
+  # Create the next Variable Group if it does not already exist so that when we change the Major version,
+  # the next build will already have the variable group available.
+  - task: PowerShell@2
+    displayName: Create Next Variable Group if Necessary
+    env:
+      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+    inputs:
+      targetType: 'inline'
+      script: |
+        $NextMajorVersion = [int]$(MajorVersion) + 1
+        $NextLibraryName = "$NextMajorVersion-Foundation-Versions"
+
+        echo "Next Major Version will be $NextMajorVersion, so next Variable Group will be $NextLibraryName"
+        echo "Checking to see if the next Variable Group exists"
+        $groupExists = az pipelines variable-group list --query "[?name=='$NextLibraryName']" | ConvertFrom-Json
+        if ($groupExists.Count -eq 0)
+        {
+          echo "Creating Variable Group $NextLibraryName"
+          az pipelines variable-group create --name "$NextLibraryName" --description "Variable group for Windows App SDK Foundation Major Version $NextMajorVersion" --authorize --variables FoundationMinorVersion=0 FoundationPatchVersion=0 FoundationPreviewRevision=0 FoundationExperimentalRevision=0
+        }
+        else
+        {
+          echo "Variable Group $NextLibraryName already exists"
+        }
+
+  - task: PowerShell@2
+    condition: and(ne(variables.FoundationMinorVersionResolved, variables.MinorVersion), eq('${{ parameters.PrOrNightly }}', ''))
+    displayName: Update FoundationMinorVersion in Variable Group
+    env:
+      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "Updating Foundation Minor Version variable in Variable Group"
+        $group_id = $(az pipelines variable-group list -p $(System.TeamProject) --group-name $(FoundationLibraryName) --query '[0].id' -o json)
+        az pipelines variable-group variable update --group-id $group_id --name FoundationMinorVersion --value $(MinorVersion)
+
+  - task: PowerShell@2
+    condition: eq('${{ parameters.PrOrNightly }}', '')
+    displayName: Update PreviewRevision in Variable Group
+    env:
+      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "Determining if we need to update FoundationPreviewRevision variable in Variable Group"
+        $NextPreviewRevision = [int]$(FoundationPreviewRevisionResolved)
+        if ("${{ parameters.BuildType }}" -eq 'preview')
+        {
+          $NextPreviewRevision = $NextPreviewRevision + 1
+        }
+
+        if ($NextPreviewRevision -ne '$(FoundationPreviewRevision)')
+        {
+          echo "Updating FoundationPreviewRevision variable in Variable Group to $NextPreviewRevision"
+          $group_id = $(az pipelines variable-group list -p $(System.TeamProject) --group-name $(FoundationLibraryName) --query '[0].id' -o json)
+          az pipelines variable-group variable update --group-id $group_id --name FoundationPreviewRevision --value $NextPreviewRevision
+        }
+        else
+        {
+          echo "No update needed for FoundationPreviewRevision variable in Variable Group"
+        }
+
+  - task: PowerShell@2
+    condition: eq('${{ parameters.PrOrNightly }}', '')
+    displayName: Update ExperimentalRevision in Variable Group
+    env:
+      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "Determining if we need to update FoundationExperimentalRevision variable in Variable Group"
+        $NextExperimentalRevision = [int]$(FoundationExperimentalRevisionResolved)
+        if ("${{ parameters.BuildType }}" -eq "experimental")
+        {
+          $NextExperimentalRevision = $NextExperimentalRevision + 1
+        }
+
+        if ($NextExperimentalRevision -ne '$(FoundationExperimentalRevision)')
+        {
+          echo "Updating FoundationExperimentalRevision variable in Variable Group to $NextExperimentalRevision"
+          $group_id = $(az pipelines variable-group list -p $(System.TeamProject) --group-name $(FoundationLibraryName) --query '[0].id' -o json)
+          az pipelines variable-group variable update --group-id $group_id --name FoundationExperimentalRevision --value $NextExperimentalRevision
+        }
+        else
+        {
+          echo "No update needed for FoundationExperimentalRevision variable in Variable Group"
+        }
+
+  - task: PowerShell@2
+    condition: eq('${{ parameters.PrOrNightly }}', '')
+    displayName: Update FoundationPatchVersion in Variable Group
+    env:
+      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "Determining if we need to update FoundationPatchVersion variable in Variable Group"
+        $NextPatchVersion = "$(FoundationPatchVersionResolved)"
+
+        # Bump patch on stable official builds (when NugetBuildTypePrefix is empty, meaning not PR/Nightly)
+        if (("${{ parameters.BuildType }}" -eq "stable") -And ('$(NugetBuildTypePrefix)' -eq ''))
+        {
+          $NextPatchVersion = [int]$NextPatchVersion + 1
+        }
+        elseif ((($(FoundationMinorVersionResolved) -ne 0) -Or ($(FoundationPatchVersionResolved) -ne 0)) -And ('$(NugetBuildTypePrefix)' -eq ''))
+        {
+          $NextPatchVersion = [int]$NextPatchVersion + 1
+        }
+
+        if ($NextPatchVersion -ne '$(FoundationPatchVersion)')
+        {
+          echo "Updating FoundationPatchVersion variable in Variable Group to $NextPatchVersion"
+          $group_id = $(az pipelines variable-group list -p $(System.TeamProject) --group-name $(FoundationLibraryName) --query '[0].id' -o json)
+          az pipelines variable-group variable update --group-id $group_id --name FoundationPatchVersion --value $NextPatchVersion
+        }
+        else
+        {
+          echo "No update needed for FoundationPatchVersion variable in Variable Group"
+        }

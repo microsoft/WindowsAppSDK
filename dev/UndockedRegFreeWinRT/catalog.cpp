@@ -12,6 +12,7 @@
 #include <rometadata.h>
 
 #include <wrl.h>
+#include <cstdlib>
 
 #include <../DynamicDependency/API/MddWinRT.h>
 
@@ -154,11 +155,47 @@ HRESULT WinRTLoadComponentFromFilePath(PCWSTR manifestPath)
     }
 }
 
+// The base directory is communicated via the MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY process
+// environment variable, which is inherited by child processes spawned via CreateProcess. Its owner
+// also stamps its process id in MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID. Honor the base
+// directory only when that stamp matches the current process; otherwise it was inherited from a
+// parent and must not steer this process's SxS DLL redirection.
+// See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+static bool IsBaseDirectoryStampedByCurrentProcess()
+{
+    wchar_t stampedPidText[16]{};
+    const DWORD length{ ::GetEnvironmentVariableW(
+        L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", stampedPidText, ARRAYSIZE(stampedPidText)) };
+    if ((length == 0) || (length >= ARRAYSIZE(stampedPidText)))
+    {
+        // Not stamped (absent) or unexpectedly long: do not honor the base directory.
+        return false;
+    }
+
+    return static_cast<DWORD>(wcstoul(stampedPidText, nullptr, 10)) == ::GetCurrentProcessId();
+}
+
 HRESULT WinRTLoadComponentFromString(std::string_view xmlStringValue)
 {
     try
     {
         auto wideXmlString = ::Microsoft::Utf8::ToUtf16(xmlStringValue.data());
+
+        // MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY is a process environment variable and is
+        // inherited across CreateProcess. Honor it only when this process stamped it; otherwise strip
+        // the token so redirection falls back to the application directory (the non-PublishSingleFile
+        // behavior) rather than a directory inherited from a parent process.
+        // See https://github.com/microsoft/WindowsAppSDK/issues/5987.
+        if (!IsBaseDirectoryStampedByCurrentProcess())
+        {
+            const std::wstring baseDirectoryToken{ L"%MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY%" };
+            for (size_t pos{ wideXmlString.find(baseDirectoryToken) };
+                pos != std::wstring::npos;
+                pos = wideXmlString.find(baseDirectoryToken, pos))
+            {
+                wideXmlString.erase(pos, baseDirectoryToken.size());
+            }
+        }
 
         // Expand any env vars, such as %MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY% in asmv3:file.loadFrom
         auto expandedSize = ExpandEnvironmentStringsW(wideXmlString.data(), nullptr, 0);

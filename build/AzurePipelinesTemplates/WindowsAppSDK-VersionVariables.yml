@@ -1,0 +1,52 @@
+# This template loads version variables from a per-major-version Azure DevOps Library
+# for the Open (Foundation) repo. It mirrors the pattern from the Aggregator repo's
+# WindowsAppSDK-VersionVariables.yml but uses a separate "Foundation-Versions" library.
+#
+# Variables loaded from the library:
+#   - FoundationMinorVersion: The minor version for Foundation, tracked independently
+#   - FoundationPatchVersion: The patch version, incremented on each official build
+#   - FoundationPreviewRevision: The revision for preview official builds
+#   - FoundationExperimentalRevision: The revision for experimental official builds
+#
+# All builds (PR, Nightly, Official) use the Library-based version. Only official builds
+# update the Library values. PR/Nightly are distinguished by NugetBuildTypePrefix + Revision.
+
+parameters:
+- name: PrOrNightly
+  displayName: "PR or Nightly Identifier"
+  type: string
+  default: ''
+- name: BuildType
+  displayName: "Build Type"
+  type: string
+  default: 'experimental'
+
+variables:
+  - template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+  - name: FoundationLibraryName
+    value: ${{ format('{0}-Foundation-Versions', variables.MajorVersion)}}
+  - group: ${{ variables.FoundationLibraryName }}
+  - name: FoundationMinorVersionResolved
+    value: $[coalesce(variables['FoundationMinorVersion'], 0)]
+  - name: FoundationPatchVersionResolved
+    value: $[coalesce(variables['FoundationPatchVersion'], 0)]
+  - name: PRNightlyRevision
+    value: $[counter(format('{0}-{1}-{2}-{3}', variables.MajorVersion, variables.FoundationMinorVersionResolved, variables.FoundationPatchVersionResolved, variables.NugetBuildTypePrefix), 1)]
+  - name: FoundationPreviewRevisionResolved
+    value: $[coalesce(variables['FoundationPreviewRevision'], 0)]
+  - name: FoundationExperimentalRevisionResolved
+    value: $[coalesce(variables['FoundationExperimentalRevision'], 0)]
+  - ${{ if ne(parameters.PrOrNightly, '') }}:
+    - name: Revision
+      value: $[variables['PRNightlyRevision']]
+  - ${{ else }}:
+    - ${{ if eq(parameters.BuildType, 'experimental') }}:
+      - name: Revision
+        value: $[variables['FoundationExperimentalRevisionResolved']]
+    - ${{ else }}:
+      - ${{ if eq(parameters.BuildType, 'preview') }}:
+        - name: Revision
+          value: $[variables['FoundationPreviewRevisionResolved']]
+      - ${{ else }}:
+        - name: Revision
+          value: ""

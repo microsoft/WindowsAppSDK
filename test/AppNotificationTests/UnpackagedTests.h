@@ -57,6 +57,18 @@ class UnpackagedTests : BaseTestSuite
     TEST_METHOD(VerifyToastExpiresOnReboot);
     TEST_METHOD(VerifyToastProgressDataSequence0Fail);
     TEST_METHOD(VerifyShowToast);
+    BEGIN_TEST_METHOD(VerifyElevatedShowAndGetAll)
+        TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
+        TEST_METHOD_PROPERTY(L"IsolationLevel", L"Method")
+    END_TEST_METHOD()
+    BEGIN_TEST_METHOD(VerifyElevatedUpdate)
+        TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
+        TEST_METHOD_PROPERTY(L"IsolationLevel", L"Method")
+    END_TEST_METHOD()
+    BEGIN_TEST_METHOD(VerifyElevatedRemove)
+        TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
+        TEST_METHOD_PROPERTY(L"IsolationLevel", L"Method")
+    END_TEST_METHOD()
     TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup);
     TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup);

@@ -6,23 +6,23 @@
 
 <!-- TEMPLATE
     The purpose of this spec is to describe new APIs, in a way
-    that will transfer to docs.microsoft.com (DMC).
+    that will transfer to learn.microsoft.com (LMC).
 
     There are two audiences for the spec. The first are people that want to evaluate and
     give feedback on the API, as part of the submission process.
     When it's complete it will be incorporated into the public documentation at
-    http://docs.microsoft.com (DMC).
+    http://learn.microsoft.com (LMC).
     Hopefully we'll be able to copy it mostly verbatim. So the second audience is
     everyone that reads there to learn how and why to use this API.
     Some of this text also shows up in Visual Studio Intellisense.
 
     For example, much of the examples and descriptions in the `RadialGradientBrush` API spec
     (https://github.com/microsoft/microsoft-ui-xaml-specs/blob/master/active/RadialGradientBrush/RadialGradientBrush.md)
-    were carried over to the public API page on DMC
-    (https://docs.microsoft.com/windows/winui/api/microsoft.ui.xaml.media.radialgradientbrush?view=winui-2.5)
+    were carried over to the public API page on LMC
+    (https://learn.microsoft.com/windows/winui/api/microsoft.ui.xaml.media.radialgradientbrush?view=winui-2.5)
 
-    Once the API is on DMC, that becomes the official copy, and this spec becomes an archive.
-    For example if the description is updated, that only needs to happen on DMC and needn't
+    Once the API is on LMC, that becomes the official copy, and this spec becomes an archive.
+    For example if the description is updated, that only needs to happen on LMC and needn't
     be duplicated here.
 
     Examples:
@@ -48,6 +48,18 @@
 Title
 ===
 
+<!-- TEMPLATE
+    (Optional)
+    
+    For longer docs, consider adding section headers with Table of Contents.
+
+    You can use the VS Code extension [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one):
+    - Install the extension
+    - Open .md in VS Code
+    - `Ctrl+Shift+P` and select `Markdown All in One: Add/Update section numbers`
+    - `Ctrl+Shift+P` and select `Markdown All in One: Create Table of Contents`
+-->
+
 # Background
 
 <!-- TEMPLATE
@@ -56,7 +68,7 @@ Title
     the rest of the document.
 
     This section and the appendix are the only sections that likely
-    do not get copied to DMC; they're just an aid to reading this spec.
+    do not get copied to LMC; they're just an aid to reading this spec.
 
     For example this is a place to provide a brief explanation of some dependent
     area, just explanation enough to understand this new API, rather than telling
@@ -71,38 +83,49 @@ Title
     Composition and WPF APIs. This is interesting background both for the current reader
     and the future reader trying to understand why we designed it this way,
     but not the kind of information
-    that would land on DMC.
+    that would land on LMC.
 -->
 
 # Conceptual pages (How To)
 
-_(This is conceptual documentation that will go to docs.microsoft.com "how to" page)_
+_(This is conceptual documentation that will go to learn.microsoft.com "how to" page)_
 
 <!-- TEMPLATE
     (Optional)
 
-    All APIs have a page on DMC, some APIs or groups of APIs have an additional high level,
+    All APIs have a page on LMC, some APIs or groups of APIs have an additional high level,
     conceptual page (called a "how-to" page). This section can be used for that content.
 
     For example, there are several Xaml controls for different forms of text input,
     each with an API page, and then there's also a conceptual page that
     discusses them collectively
-    (https://docs.microsoft.com/windows/uwp/design/controls-and-patterns/text-controls).
+    (https://learn.microsoft.com/windows/uwp/design/controls-and-patterns/text-controls).
 
     Another way to use this section is as a draft of a blog post that introduces the new feature.
 
     Sometimes it's difficult to decide if text belongs on a how-to page or an API page.
     It's not important to make a final decision on that in this spec; we can always
-    adjust it when copying to DMC.
+    adjust it when copying to LMC.
+-->
+
+# Examples
+
+_(This is conceptual documentation that will go to learn.microsoft.com "how to" page)_
+
+<!-- TEMPLATE
+    (Optional)
+
+    Consider adding examples here if it would help clarify the conceptual pages and/or
+    tie together the API Pages.
 -->
 
 # API Pages
 
-_(Each of the following L2 sections correspond to a page that will be on docs.microsoft.com)_
+_(Each of the following L2 sections correspond to a page that will be on learn.microsoft.com)_
 
 <!-- TEMPLATE
 
-  Each of the L2 sections in this "API Pages" section corresponds to a page on DMC.
+  Each of the L2 sections in this "API Pages" section corresponds to a page on LMC.
 
   It's not necessary to have a section for every class member though:
   * If its purpose and usage is obvious from it's name/type, it's not necessary to
@@ -123,14 +146,14 @@ _(Each of the following L2 sections correspond to a page that will be on docs.mi
     ## ...
 
   Notes:
-  * The first line of each of these sections should become that first line on the DMC page,
+  * The first line of each of these sections should become that first line on the LMC page,
     which then becomes the description you see in Intellisense.
   * Each page can have description, examples, and remarks.
     Remarks are where the documentation calls out special considerations that the developer
     should be aware of.
   * It can be helpful at the top of an API page (or after the Intellisense text) to add the
     API signature in C#
-  * Add a "_Spec note: ..._" to add a note that's useful in this spec but shouldn't go to DMC.
+  * Add a "_Spec note: ..._" to add a note that's useful in this spec but shouldn't go to LMC.
   * Show _examples_, not _samples_; an example is a snippet, a sample is a full working app.
 
 -->

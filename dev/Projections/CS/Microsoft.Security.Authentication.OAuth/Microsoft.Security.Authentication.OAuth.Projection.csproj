@@ -52,7 +52,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.Security.Authentication.OAuth">
-      <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Security.Authentication.OAuth.winmd</HintPath>
+      <HintPath>$(WindowsAppSDKNativeWinMDPath)\Microsoft.Security.Authentication.OAuth.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

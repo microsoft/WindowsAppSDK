@@ -3,15 +3,19 @@
 
 #pragma once
 
-#include "M.W.S.ApplicationDataContainer.h"
+#include "Microsoft.Windows.Storage.ApplicationData.g.h"
 
-namespace Microsoft::Windows::Storage
+namespace winrt::Microsoft::Windows::Storage::implementation
 {
-    struct UnpackagedApplicationData
+    struct UnpackagedApplicationData : ApplicationDataT<UnpackagedApplicationData>
     {
         UnpackagedApplicationData() = default;
         UnpackagedApplicationData(winrt::hstring const& publisher, winrt::hstring const& product);
 
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetDefault();
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUser(winrt::Windows::System::User user);
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetForPackageFamily(winrt::hstring const& packageFamilyName);
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged(winrt::hstring const& publisher, winrt::hstring const& product);
         bool IsMachinePathSupported();
         winrt::hstring LocalCachePath();
         winrt::hstring LocalPath();

@@ -5,6 +5,9 @@
 #include <WexTestClass.h>
 #include "..\src\MRM.h"
 
+#include <string>
+#include <stdlib.h>
+
 using namespace WEX::Common;
 using namespace WEX::TestExecution;
 using namespace WEX::Logging;
@@ -389,6 +392,153 @@ public:
         MrmDestroyResourceManager(resourceManager);
     }
 
+    TEST_METHOD(ReadStringOrEmbeddedResourceAsViewReturnsView)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        // The view-aware variant should return a non-owning view directly into the memory-mapped PRI,
+        // whose bytes are identical to those returned by the copying variant.
+        MrmType copyType;
+        wchar_t* copyString;
+        MrmResourceData copyData {};
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResource(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &copyType, &copyString, &copyData), S_OK);
+        VERIFY_IS_TRUE(copyType == MrmType_Embedded);
+        VERIFY_IS_NOT_NULL(copyData.data);
+        VERIFY_ARE_EQUAL(copyData.size, 15002u);
+
+        MrmType viewType;
+        wchar_t* viewString;
+        MrmResourceData2 viewData {};
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceAsView(resourceManager, nullptr, nullptr, L"Files/Controls/AlbumBasicInfoControl.xbf", &viewType, &viewString, &viewData), S_OK);
+        VERIFY_IS_NULL(viewString);
+        VERIFY_IS_TRUE(viewType == MrmType_Embedded);
+        VERIFY_IS_TRUE(viewData.isView);
+        VERIFY_IS_NOT_NULL(viewData.data);
+        VERIFY_ARE_EQUAL(viewData.size, copyData.size);
+
+        // A view must not point at the freshly allocated copy - it references the mapped file.
+        VERIFY_ARE_NOT_EQUAL(viewData.data, copyData.data);
+        VERIFY_ARE_EQUAL(0, memcmp(viewData.data, copyData.data, viewData.size));
+
+        // Freeing a view is a no-op that clears the descriptor; freeing the copy releases the buffer.
+        MrmFreeResourceData(&viewData);
+        VERIFY_IS_NULL(viewData.data);
+        VERIFY_ARE_EQUAL(viewData.size, 0u);
+        VERIFY_IS_FALSE(viewData.isView);
+
+        MrmFreeResource(copyData.data);
+
+        MrmDestroyResourceManager(resourceManager);
+    }
+
+    TEST_METHOD(ReadStringOrEmbeddedResourceAsViewStringIsNotAView)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        // String resources are unaffected by the view-aware path: no blob, not a view.
+        MrmType resourceType;
+        wchar_t* resourceString;
+        MrmResourceData2 resourceData {};
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceAsView(resourceManager, nullptr, nullptr, L"resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceType, &resourceString, &resourceData), S_OK);
+
+        VERIFY_IS_NOT_NULL(resourceString);
+        VERIFY_IS_TRUE(resourceType == MrmType_String);
+        VERIFY_IS_FALSE(resourceData.isView);
+        VERIFY_IS_NULL(resourceData.data);
+        VERIFY_ARE_EQUAL(resourceData.size, 0u);
+        VerifyStringEqual(resourceString, L"Groove Music");
+
+        MrmFreeResource(resourceString);
+        MrmDestroyResourceManager(resourceManager);
+    }
+
+    TEST_METHOD(ReadStringOrEmbeddedResourceByIndexAsViewReturnsView)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        MrmMapHandle resourceMap;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, nullptr, L"Files", &resourceMap), S_OK);
+
+        UINT32 resourceCount = 0;
+        VERIFY_ARE_EQUAL(MrmGetResourceCount(resourceManager, resourceMap, &resourceCount), S_OK);
+        VERIFY_IS_TRUE(resourceCount > 0);
+
+        // Walk the map by index and, for the first embedded resource, verify the view-aware variant
+        // yields a view whose bytes match the copying variant.
+        bool verifiedEmbedded = false;
+        for (UINT32 index = 0; index < resourceCount && !verifiedEmbedded; index++)
+        {
+            MrmType viewType;
+            wchar_t* viewName = nullptr;
+            wchar_t* viewString = nullptr;
+            MrmResourceData2 viewData {};
+            VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceByIndexAsView(resourceManager, nullptr, resourceMap, index, &viewType, &viewName, &viewString, &viewData), S_OK);
+
+            if (viewType == MrmType_Embedded)
+            {
+                VERIFY_IS_TRUE(viewData.isView);
+                VERIFY_IS_NOT_NULL(viewData.data);
+                VERIFY_IS_TRUE(viewData.size > 0);
+
+                MrmType copyType;
+                wchar_t* copyName = nullptr;
+                wchar_t* copyString = nullptr;
+                MrmResourceData copyData {};
+                VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceByIndex(resourceManager, nullptr, resourceMap, index, &copyType, &copyName, &copyString, &copyData), S_OK);
+                VERIFY_IS_TRUE(copyType == MrmType_Embedded);
+                VERIFY_ARE_EQUAL(viewData.size, copyData.size);
+                VERIFY_ARE_EQUAL(0, memcmp(viewData.data, copyData.data, viewData.size));
+
+                MrmFreeResource(copyData.data);
+                MrmFreeResource(copyName);
+                verifiedEmbedded = true;
+            }
+
+            MrmFreeResourceData(&viewData);
+            MrmFreeResource(viewName);
+        }
+
+        VERIFY_IS_TRUE(verifiedEmbedded);
+
+        MrmDestroyResourceManager(resourceManager);
+    }
+
+    TEST_METHOD(MrmFreeResourceDataFreesOwnedBuffer)
+    {
+        // MrmFreeResourceData must release an owned (non-view) buffer and reset the descriptor
+        // without crashing. Build an owned descriptor from the matched allocator so the test is
+        // deterministic regardless of which resources happen to be stored as references.
+        MrmResourceData2 resourceData {};
+        resourceData.size = 64;
+        resourceData.data = MrmAllocateBuffer(resourceData.size);
+        resourceData.isView = FALSE;
+        VERIFY_IS_NOT_NULL(resourceData.data);
+
+        MrmFreeResourceData(&resourceData);
+        VERIFY_IS_NULL(resourceData.data);
+        VERIFY_ARE_EQUAL(resourceData.size, 0u);
+        VERIFY_IS_FALSE(resourceData.isView);
+
+        // Freeing a view descriptor must NOT free the borrowed memory, only clear the descriptor.
+        BYTE borrowed[8] = {};
+        MrmResourceData2 viewData {};
+        viewData.size = sizeof(borrowed);
+        viewData.data = borrowed;
+        viewData.isView = TRUE;
+
+        MrmFreeResourceData(&viewData);
+        VERIFY_IS_NULL(viewData.data);
+        VERIFY_ARE_EQUAL(viewData.size, 0u);
+        VERIFY_IS_FALSE(viewData.isView);
+
+        // Calling again on a cleared descriptor, and on nullptr, is safe.
+        MrmFreeResourceData(&resourceData);
+        MrmFreeResourceData(nullptr);
+    }
+
     TEST_METHOD(ReadStringOrEmbeddedResourceWithQualifierOverride)
     {
         MrmManagerHandle resourceManager;
@@ -685,8 +835,20 @@ public:
         MrmFreeResource(path);
 
         VERIFY_ARE_EQUAL(MrmGetFilePathFromName(L"something.pri", &path), S_OK);
-        // Even if the file doesn't exist, we will still return a path. This is for those don't use PRI for resource.
+        // Even if the file doesn't exist, we still return a best-effort path so apps without a PRI
+        // file can still create a ResourceManager. The path is under the module (exe) directory.
         VERIFY_IS_NOT_NULL(wcsstr(path, L"something.pri"));
+        {
+            wchar_t moduleFilePath[MAX_PATH];
+            VERIFY_ARE_NOT_EQUAL(0u, GetModuleFileNameW(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath)));
+            PWSTR lastSeparator = wcsrchr(moduleFilePath, L'\\');
+            VERIFY_IS_NOT_NULL(lastSeparator);
+            lastSeparator[1] = L'\0'; // Trim to "<moduleDir>\"
+            wchar_t expectedPath[MAX_PATH];
+            VERIFY_ARE_EQUAL(0, wcscpy_s(expectedPath, ARRAYSIZE(expectedPath), moduleFilePath));
+            VERIFY_ARE_EQUAL(0, wcscat_s(expectedPath, ARRAYSIZE(expectedPath), L"something.pri"));
+            VERIFY_ARE_EQUAL(CSTR_EQUAL, CompareStringOrdinal(path, -1, expectedPath, -1, TRUE));
+        }
         MrmFreeResource(path);
 
         VERIFY_ARE_EQUAL(MrmGetFilePathFromName(nullptr, &path), S_OK);
@@ -712,5 +874,224 @@ private:
     }
 
     wchar_t previousWorkingDirectory[MAX_PATH];
+};
+
+// Regression tests for https://github.com/microsoft/WindowsAppSDK/issues/5987.
+//
+// MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY is a process environment variable set by the Windows App
+// SDK auto-initializer (for PublishSingleFile SxS redirection). Because it is a process environment
+// variable it is inherited by child processes spawned via CreateProcess. To keep a child from loading
+// the parent's resources.pri, the auto-initializer also stamps MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID
+// with the owning process id, and MrmGetFilePathFromName honors the base directory only when that stamp
+// matches the current process.
+class EnvironmentVariableIsolationTests
+{
+public:
+    TEST_CLASS(EnvironmentVariableIsolationTests);
+
+    // In-process guard: the base directory is honored only when its PID stamp matches this process.
+    TEST_METHOD(GetFilePath_HonorsBaseDirectoryOnlyWhenStampedByCurrentProcess)
+    {
+        const std::wstring baseDir{ CreateTempDirWithResourcesPri() };
+        // AppContext.BaseDirectory (the real setter's value) ends with a directory separator, and
+        // MrmGetFilePathFromName's buffer sizing relies on that, so mimic it here.
+        const std::wstring baseDirWithSeparator{ baseDir + L"\\" };
+        const std::wstring moduleDir{ GetCurrentProcessModuleDirectory() };
+
+        VERIFY_WIN32_BOOL_SUCCEEDED(SetEnvironmentVariableW(
+            L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDirWithSeparator.c_str()));
+
+        wchar_t* path{};
+
+        // Stamped by the current process: the base directory is honored.
+        SetBaseDirectoryPid(GetCurrentProcessId());
+        VERIFY_ARE_EQUAL(S_OK, MrmGetFilePathFromName(nullptr, &path));
+        VERIFY_IS_TRUE(IsUnderDirectory(path, baseDirWithSeparator),
+            String().Format(L"Expected a path under the base directory, got '%s'.", path));
+        MrmFreeResource(path);
+        path = nullptr;
+
+        // Stamped by a foreign process (as when inherited across CreateProcess): the base directory is
+        // ignored and the module (exe) directory is used instead.
+        SetBaseDirectoryPid(GetCurrentProcessId() ^ 0x1);
+        VERIFY_ARE_EQUAL(S_OK, MrmGetFilePathFromName(nullptr, &path));
+        VERIFY_IS_FALSE(IsUnderDirectory(path, baseDirWithSeparator),
+            String().Format(L"Expected the inherited base directory to be ignored, got '%s'.", path));
+        VERIFY_IS_TRUE(IsUnderDirectory(path, moduleDir),
+            String().Format(L"Expected a path under the module directory, got '%s'.", path));
+        MrmFreeResource(path);
+        path = nullptr;
+
+        // No stamp at all: the base directory is ignored.
+        VERIFY_WIN32_BOOL_SUCCEEDED(SetEnvironmentVariableW(
+            L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", nullptr));
+        VERIFY_ARE_EQUAL(S_OK, MrmGetFilePathFromName(nullptr, &path));
+        VERIFY_IS_FALSE(IsUnderDirectory(path, baseDirWithSeparator),
+            String().Format(L"Expected an unstamped base directory to be ignored, got '%s'.", path));
+        MrmFreeResource(path);
+        path = nullptr;
+
+        SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", nullptr);
+        SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", nullptr);
+        RemoveTempDirectory(baseDir);
+    }
+
+    // End-to-end insulation: a real child process must ignore the inherited base directory. This
+    // reproduces the reported scenario where one Windows App SDK app launches another via CreateProcess.
+    TEST_METHOD(ChildProcessIsInsulatedFromInheritedBaseDirectory)
+    {
+        const std::wstring baseDir{ CreateTempDirWithResourcesPri() };
+        const std::wstring baseDirWithSeparator{ baseDir + L"\\" };
+
+        // Configure the environment exactly as the setter does for this (parent) process, then spawn a
+        // child that inherits it. The child's process id differs from this stamp, so it must not honor
+        // the base directory.
+        VERIFY_WIN32_BOOL_SUCCEEDED(SetEnvironmentVariableW(
+            L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDirWithSeparator.c_str()));
+        SetBaseDirectoryPid(GetCurrentProcessId());
+        VERIFY_WIN32_BOOL_SUCCEEDED(SetEnvironmentVariableW(L"MRM_TEST_CHILD_WORKER", L"1"));
+
+        const std::wstring commandLine{ BuildChildWorkerCommandLine() };
+        Log::Comment(String().Format(L"Spawning child: %s", commandLine.c_str()));
+
+        std::wstring mutableCommandLine{ commandLine };
+        STARTUPINFOW startupInfo{};
+        startupInfo.cb = sizeof(startupInfo);
+        PROCESS_INFORMATION processInfo{};
+        const BOOL created{ CreateProcessW(nullptr, mutableCommandLine.data(), nullptr, nullptr,
+            /*bInheritHandles*/ FALSE, /*dwCreationFlags*/ 0, /*lpEnvironment*/ nullptr,
+            /*lpCurrentDirectory*/ nullptr, &startupInfo, &processInfo) };
+
+        // Clear the environment before asserting so it never leaks into sibling tests.
+        SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", nullptr);
+        SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", nullptr);
+        SetEnvironmentVariableW(L"MRM_TEST_CHILD_WORKER", nullptr);
+
+        VERIFY_WIN32_BOOL_SUCCEEDED(created);
+        VERIFY_ARE_EQUAL(WAIT_OBJECT_0, WaitForSingleObject(processInfo.hProcess, 60 * 1000));
+
+        DWORD exitCode{ MAXDWORD };
+        VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(processInfo.hProcess, &exitCode));
+        CloseHandle(processInfo.hThread);
+        CloseHandle(processInfo.hProcess);
+        RemoveTempDirectory(baseDir);
+
+        // The child runs only ChildProcessInsulationWorker; a zero exit code means it passed (i.e. it
+        // ignored the inherited base directory and resolved resources under its own module directory).
+        VERIFY_ARE_EQUAL(0u, exitCode,
+            String().Format(L"Child insulation worker exit code: %u (0 == insulated).", exitCode));
+    }
+
+    // Runs only inside the child spawned by ChildProcessIsInsulatedFromInheritedBaseDirectory (gated on
+    // the MRM_TEST_CHILD_WORKER sentinel). It is skipped during a normal test pass.
+    TEST_METHOD(ChildProcessInsulationWorker)
+    {
+        wchar_t sentinel[8]{};
+        if ((GetEnvironmentVariableW(L"MRM_TEST_CHILD_WORKER", sentinel, ARRAYSIZE(sentinel)) == 0) ||
+            (wcscmp(sentinel, L"1") != 0))
+        {
+            Log::Comment(L"Skipping: this worker runs only when spawned by the parent insulation test.");
+            Log::Result(TestResults::Skipped);
+            return;
+        }
+
+        // This process inherited MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY (and its foreign PID stamp)
+        // from the parent. Confirm MRTCore does not resolve resources under that inherited directory.
+        wchar_t inheritedBaseDir[MAX_PATH]{};
+        GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY",
+            inheritedBaseDir, ARRAYSIZE(inheritedBaseDir));
+        const std::wstring moduleDir{ GetCurrentProcessModuleDirectory() };
+
+        wchar_t* path{};
+        VERIFY_ARE_EQUAL(S_OK, MrmGetFilePathFromName(nullptr, &path));
+        Log::Comment(String().Format(
+            L"Child resolved '%s' (inherited base directory '%s', module directory '%s').",
+            path, inheritedBaseDir, moduleDir.c_str()));
+
+        VERIFY_IS_TRUE(IsUnderDirectory(path, moduleDir),
+            String().Format(L"Child was not insulated: '%s' is not under its module directory.", path));
+        if (inheritedBaseDir[0] != L'\0')
+        {
+            VERIFY_IS_FALSE(IsUnderDirectory(path, inheritedBaseDir),
+                String().Format(L"Child was not insulated: '%s' is under the inherited base directory.", path));
+        }
+        MrmFreeResource(path);
+    }
+
+private:
+    static void SetBaseDirectoryPid(DWORD pid)
+    {
+        wchar_t pidText[16]{};
+        VERIFY_ARE_EQUAL(0, _ultow_s(pid, pidText, ARRAYSIZE(pidText), 10));
+        VERIFY_WIN32_BOOL_SUCCEEDED(SetEnvironmentVariableW(
+            L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY_PID", pidText));
+    }
+
+    static bool IsUnderDirectory(PCWSTR path, const std::wstring& directoryWithSeparator)
+    {
+        return (directoryWithSeparator.size() > 0) &&
+            (_wcsnicmp(path, directoryWithSeparator.c_str(), directoryWithSeparator.size()) == 0);
+    }
+
+    static std::wstring GetCurrentProcessModuleDirectory()
+    {
+        wchar_t modulePath[MAX_PATH]{};
+        VERIFY_ARE_NOT_EQUAL(0u, GetModuleFileNameW(nullptr, modulePath, ARRAYSIZE(modulePath)));
+        std::wstring directory{ modulePath };
+        directory.resize(directory.find_last_of(L'\\') + 1); // keep the trailing separator
+        return directory;
+    }
+
+    static std::wstring CreateTempDirWithResourcesPri()
+    {
+        wchar_t tempPath[MAX_PATH]{};
+        const DWORD tempLength{ GetTempPathW(ARRAYSIZE(tempPath), tempPath) };
+        VERIFY_IS_TRUE((tempLength > 0) && (tempLength < ARRAYSIZE(tempPath)));
+
+        const std::wstring directory{ std::wstring(tempPath) + L"MrmBaseDirTest_" +
+            std::to_wstring(GetCurrentProcessId()) + L"_" + std::to_wstring(GetTickCount64()) };
+        VERIFY_IS_TRUE(CreateDirectoryW(directory.c_str(), nullptr) ||
+            (GetLastError() == ERROR_ALREADY_EXISTS));
+
+        const std::wstring resourcesPri{ directory + L"\\resources.pri" };
+        const HANDLE file{ CreateFileW(resourcesPri.c_str(), GENERIC_WRITE, 0, nullptr,
+            CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
+        VERIFY_ARE_NOT_EQUAL(INVALID_HANDLE_VALUE, file);
+        CloseHandle(file);
+        return directory;
+    }
+
+    static void RemoveTempDirectory(const std::wstring& directory)
+    {
+        DeleteFileW((directory + L"\\resources.pri").c_str());
+        RemoveDirectoryW(directory.c_str());
+    }
+
+    static std::wstring BuildChildWorkerCommandLine()
+    {
+        // Prefer the TAEF console runner (te.exe) sitting next to whatever process is hosting this test
+        // (te.exe or TE.ProcessHost.exe); fall back to the current host if it isn't found.
+        wchar_t hostPath[MAX_PATH]{};
+        VERIFY_ARE_NOT_EQUAL(0u, GetModuleFileNameW(nullptr, hostPath, ARRAYSIZE(hostPath)));
+        const std::wstring hostDirectory{ GetCurrentProcessModuleDirectory() };
+        std::wstring runnerPath{ hostDirectory + L"te.exe" };
+        if (GetFileAttributesW(runnerPath.c_str()) == INVALID_FILE_ATTRIBUTES)
+        {
+            runnerPath = hostPath;
+        }
+
+        // Resolve this test binary's own path so the child loads the same DLL.
+        HMODULE selfModule{};
+        VERIFY_WIN32_BOOL_SUCCEEDED(GetModuleHandleExW(
+            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCWSTR>(&EnvironmentVariableIsolationTests::BuildChildWorkerCommandLine),
+            &selfModule));
+        wchar_t selfPath[MAX_PATH]{};
+        VERIFY_ARE_NOT_EQUAL(0u, GetModuleFileNameW(selfModule, selfPath, ARRAYSIZE(selfPath)));
+
+        // Run only the worker, in-process, so the child's module identity is the runner.
+        return L"\"" + runnerPath + L"\" \"" + std::wstring(selfPath) +
+            L"\" /inproc /name:*ChildProcessInsulationWorker";
+    }
 };
 } // namespace UnitTest

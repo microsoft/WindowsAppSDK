@@ -104,8 +104,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     bool AppNotificationManager::IsSupported()
     {
-        static bool isSupported = true;
-        return isSupported;
+        // Elevation alone does not determine notification-platform availability.
+        // Let registration and notification operations report platform failures.
+        return true;
     }
 
     void AppNotificationManager::Register()
@@ -421,19 +422,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
     CATCH_RETURN()
 
-        void AppNotificationManager::Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
+    HRESULT AppNotificationManager::ShowImpl(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification) noexcept try
     {
-        if (!IsSupported())
+        // This capability is recorded for telemetry only. A failed optional probe must
+        // not prevent an ordinary notification from reaching the notification platform.
+        bool isCallingPreviewSupported{};
+        try
         {
-            return;
+            isCallingPreviewSupported = winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported();
         }
-        bool isCallingPreviewSupported = false;  
-        try  
-        {  
-            isCallingPreviewSupported = winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported();  
-        }  
-        catch(...) {}  
-  
+        CATCH_LOG()
+
         auto logTelemetry{ AppNotificationTelemetry::Show::Start(
             g_telemetryHelper,
             m_appId,
@@ -442,21 +441,37 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             notification.Group(),
             isCallingPreviewSupported) };
 
-        THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
+        RETURN_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties = winrt::make_self<NotificationProperties>(notification);
 
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties = winrt::make_self<NotificationTransientProperties>(notification);
 
         DWORD notificationId = 0;
-        THROW_IF_FAILED(ToastNotifications_PostToast(m_appId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId));
+        RETURN_IF_FAILED(ToastNotifications_PostToast(m_appId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId));
 
-        THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
+        RETURN_HR_IF(E_UNEXPECTED, notificationId == 0);
 
         implementation::AppNotification* notificationImpl = get_self<implementation::AppNotification>(notification);
         notificationImpl->SetNotificationId(notificationId);
 
         logTelemetry.Stop();
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    void AppNotificationManager::Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
+    {
+        if (!IsSupported())
+        {
+            return;
+        }
+
+        // Delegate to the noexcept ShowImpl worker and rethrow any failure HRESULT
+        // cleanly via wil::ResultException. This avoids the deep WIL
+        // FormatMessage-based exception logging chain that caused stack overflow on
+        // the hot path (Bug 61688595).
+        THROW_IF_FAILED(ShowImpl(notification));
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag, hstring const group)

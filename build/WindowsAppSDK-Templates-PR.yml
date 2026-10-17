@@ -1,0 +1,101 @@
+# Templates PR validation pipeline
+#
+# The Azure DevOps definition has a PR trigger path filter for
+# dev/Templates/**, so every triggered run performs the full governed
+# build, smoke-test, and VSIX validation. Nothing is signed or published.
+
+trigger: none
+
+parameters:
+- name: WindowsAppSDKVersion
+  displayName: 'WindowsAppSDK version for template validation (* = latest stable)'
+  type: string
+  default: '*'
+
+# Shared variable templates:
+#   - Foundation-TestConfig: test matrices reused from the main pipeline.
+#   - Versions: MajorVersion / MinorVersion / PatchVersion (consumed by CommonVariables).
+#   - CommonVariables: WindowsContainerImage (required by 1ES OneBranch for
+#     "Initialize containers") and the family of ob_sdl_* knobs. The SDL knobs
+#     are inert here because we disable those scanners in globalSdl below.
+variables:
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-TSAVariables.yml@WindowsAppSDKConfig
+- template: AzurePipelinesTemplates\WindowsAppSDK-Versions.yml@WindowsAppSDKVersionConfig
+- template: WindowsAppSDK-CommonVariables.yml
+- name: WindowsContainerImage
+  value: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
+
+name: TemplatesPR-$(Date:yyyyMMdd)$(Rev:.r)
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+    - repository: WindowsAppSDKVersionConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+
+extends:
+  template: v2/Microsoft.NonOfficial.yml@templates
+  parameters:
+    featureFlags:
+      EnableCDPxPAT: false
+      WindowsHostVersion:
+        Version: 2022
+        Network: R1
+
+    platform:
+      name: 'windows_undocked'
+
+    cloudvault:
+      enabled: false
+
+    # The main Templates pipeline covers canonical SDL validation. This PR
+    # pipeline focuses on build and functional template validation.
+    globalSdl:
+      tsa:
+        enabled: false
+      isNativeCode: false
+      psscriptanalyzer:
+        enable: false
+      binskim:
+        enabled: false
+      prefast:
+        enabled: false
+      apiscan:
+        enabled: false
+
+    stages:
+      # Pack the dotnet new templates without signing or publishing. IsPRBuild
+      # stamps each package with a unique timestamp and PR number.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Stages.yml@self
+        parameters:
+          pool:
+            type: windows
+          publishToInternalFeed: false
+          SignOutput: false
+          IsPRBuild: true
+
+      # Scaffold and build every dotnet new template from the package above.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-DotnetNewTemplates-Test-Stage.yml@self
+        parameters:
+          pool:
+            type: windows
+          dependsOnStage: 'DotnetNewTemplates_Build'
+          WindowsAppSdkVersion: ${{ parameters.WindowsAppSDKVersion }}
+
+      # Run the production VSIX pack steps without signing or publishing.
+      - template: AzurePipelinesTemplates\WindowsAppSDK-VSIXTemplates-BuildValidation-Stage.yml@self
+        parameters:
+          pool:
+            type: windows
+          # Use pipeline ID 190463 for the monobuild package artifact.
+          nightlyPipelineId: '190463'

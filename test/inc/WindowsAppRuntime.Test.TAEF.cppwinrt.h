@@ -71,7 +71,7 @@ namespace WEX::TestExecution
             }
             else
             {
-                return CompareStringOrdinal(left .c_str(), -1, right.c_str(), -1, FALSE) - CSTR_EQUAL;
+                return CompareStringOrdinal(left.c_str(), -1, right.c_str(), -1, FALSE) - CSTR_EQUAL;
             }
         }
     };
