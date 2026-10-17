@@ -301,6 +301,54 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        public void ResourceManager_ValueAsMemoryBufferTest_Succeeds()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_Succeeds();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsMemoryBufferTest_NonEmbeddedResource_Throws()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_NonEmbeddedResource_Throws();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsMemoryBufferTest_OutlivesCandidate()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_OutlivesCandidate();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsMemoryBufferTest_CloseReleases()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsMemoryBufferTest_CloseReleases();
+        }
+
+        [TestMethod]
         public void ResourceManager_GetKindTest()
         {
             if (m_rs5)
@@ -406,6 +454,42 @@ namespace MrtCoreUnpackagedTests
             }
 
             CommonTestCode.ResourceManagerTest.GetSubtreeFullUriTest();
+        }
+
+        [TestMethod]
+        public void ApplicationLanguages_SetAndClearOverride()
+        {
+            if (m_rs5)
+            {
+                // Match the existing MRTCore unpackaged test OS requirements.
+                return;
+            }
+
+            CommonTestCode.ApplicationLanguagesTest.SetAndClearOverride();
+        }
+
+        [TestMethod]
+        public void ApplicationLanguages_InvalidTagPreservesOverride()
+        {
+            if (m_rs5)
+            {
+                // Match the existing MRTCore unpackaged test OS requirements.
+                return;
+            }
+
+            CommonTestCode.ApplicationLanguagesTest.InvalidTagPreservesOverride();
+        }
+
+        [TestMethod]
+        public void ApplicationLanguages_OverrideAffectsResourceLookup()
+        {
+            if (m_rs5)
+            {
+                // Match the existing MRTCore unpackaged test OS requirements.
+                return;
+            }
+
+            CommonTestCode.ApplicationLanguagesTest.OverrideAffectsResourceLookup();
         }
 
         [TestMethod]

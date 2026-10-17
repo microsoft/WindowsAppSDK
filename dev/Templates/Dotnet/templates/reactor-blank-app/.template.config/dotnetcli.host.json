@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "dotnetVersion": {
+      "longName": "dotnet-version",
+      "shortName": "tfm",
+      "description": "Base TFM for the project (Microsoft.UI.Reactor requires net10.0 or later)."
+    },
+    "reactorVersion": {
+      "longName": "reactor-version",
+      "shortName": "rv",
+      "description": "Pin to a specific Microsoft.UI.Reactor NuGet version."
+    },
+    "windowsAppSdkVersion": {
+      "longName": "wasdk-version",
+      "shortName": "wasdkv",
+      "description": "Pin to a specific Windows App SDK NuGet version."
+    },
+    "skipRestore": {
+      "longName": "no-restore",
+      "shortName": ""
+    }
+  }
+}

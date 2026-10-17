@@ -49,6 +49,10 @@
 .PARAMETER SkipRestore
     Skip NuGet restore (useful if you've already restored).
 
+.PARAMETER MsBuildVersion
+    Visual Studio version to target for MSBuild. Default: 17 (Visual Studio 2022).
+    Set to 18 for Visual Studio 2026.
+
 .EXAMPLE
     .\Build-VSIX-Local.ps1
     # Build the LocalDev VSIX (default). Then install with .\Install-LocalDev-VSIX.ps1
@@ -82,7 +86,10 @@ param(
 
     [string]$OptionalVSIXVersion = "",
 
-    [switch]$SkipRestore
+    [switch]$SkipRestore,
+
+    [ValidateSet(17, 18)]
+    [double]$MsBuildVersion = 17
 )
 
 Set-StrictMode -Version 2.0
@@ -122,9 +129,10 @@ function Find-MSBuild {
         exit 1
     }
 
-    $msbuildPath = & $vswherePath -latest -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe" 2>$null | Select-Object -First 1
+    $range = '[{0},{1})' -f $MsBuildVersion, ($MsBuildVersion + 1)
+    $msbuildPath = & $vswherePath -version $range -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe" 2>$null | Select-Object -First 1
     if (-not $msbuildPath -or -not (Test-Path $msbuildPath)) {
-        Write-Err "MSBuild.exe not found. Please install Visual Studio 2022+ with the '.NET desktop development' workload."
+        Write-Err "MSBuild.exe not found. Please install Visual Studio $MsBuildVersion with the '.NET desktop development' workload."
         exit 1
     }
 
@@ -420,6 +428,44 @@ function Invoke-MSBuildBuild {
     }
 }
 
+function Test-VsixContainsTemplates {
+    param(
+        [string]$Path
+    )
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($Path)
+    try {
+        $projectTemplates = @(
+            $archive.Entries | Where-Object {
+                $_.FullName.StartsWith("ProjectTemplates/", [System.StringComparison]::OrdinalIgnoreCase) -and
+                $_.FullName.EndsWith(".vstemplate", [System.StringComparison]::OrdinalIgnoreCase)
+            }
+        )
+        $itemTemplates = @(
+            $archive.Entries | Where-Object {
+                $_.FullName.StartsWith("ItemTemplates/", [System.StringComparison]::OrdinalIgnoreCase) -and
+                $_.FullName.EndsWith(".vstemplate", [System.StringComparison]::OrdinalIgnoreCase)
+            }
+        )
+
+        if ($projectTemplates.Count -eq 0 -or $itemTemplates.Count -eq 0) {
+            Write-Err "VSIX template validation failed: $Path"
+            Write-Err "  Project templates: $($projectTemplates.Count)"
+            Write-Err "  Item templates   : $($itemTemplates.Count)"
+            Write-Err "The selected Visual Studio/MSBuild toolset may not support packaging these templates."
+            return $false
+        }
+
+        Write-Step "Verified templates in $($archive.Entries.Count)-entry VSIX: $($projectTemplates.Count) project, $($itemTemplates.Count) item"
+        return $true
+    }
+    finally {
+        $archive.Dispose()
+    }
+}
+
 function Copy-VsixOutput {
     param(
         [string]$DeploymentType
@@ -446,6 +492,10 @@ function Copy-VsixOutput {
     foreach ($vsix in $vsixFiles) {
         if (-not $seen.ContainsKey($vsix.Name)) {
             $seen[$vsix.Name] = $vsix
+            if (-not (Test-VsixContainsTemplates -Path $vsix.FullName)) {
+                exit 1
+            }
+
             # Rename to include version: WindowsAppSDK.Cs.Extension.Dev17.Component.vsix
             #   -> WindowsAppSDK.Cs.Extension.Dev17.Component.99.2026.0416.1640.vsix
             $newName = $vsix.BaseName + ".$OptionalVSIXVersion.vsix"

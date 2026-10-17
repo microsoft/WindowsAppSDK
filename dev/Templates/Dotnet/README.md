@@ -34,6 +34,42 @@ Get below list via `dotnet new list winui`
 
 Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
+### Reactor Templates (Experimental)
+
+> [!IMPORTANT]
+> These templates are **experimental**.
+> [Microsoft.UI.Reactor](https://github.com/microsoft/microsoft-ui-reactor) is
+> prerelease software: its API may change in breaking ways between releases, and
+> these templates may change or be removed. They aren't recommended for
+> production apps yet.
+
+[Microsoft.UI.Reactor](https://github.com/microsoft/microsoft-ui-reactor) is a
+declarative, React-style way to build WinUI 3 apps in **pure C# — no XAML**.
+These templates scaffold a runnable, single-project MSIX-packaged Reactor app
+whose UI mirrors the matching WinUI 3 XAML templates.
+
+Get the list via `dotnet new list reactor`
+
+| Short Name         | Description                                                          |
+|--------------------|----------------------------------------------------------------------|
+| `reactor`          | Blank Reactor app (alias `reactor-blank`). Start here if unsure      |
+| `reactor-mvu`      | Reactor app using the Model-View-Update pattern with `UseReducer`    |
+| `reactor-navview`  | Reactor app with a `NavigationView` shell and multiple pages         |
+| `reactor-tabview`  | Reactor app with a `TabView` shell whose tabs live in the title bar  |
+| `reactor-singlefile` | Blank Reactor app as a single `.cs` [file-based app](https://learn.microsoft.com/dotnet/core/sdk/file-based-apps), no `.csproj` |
+
+Each also has a `winui-reactor*` alias (e.g. `winui-reactor`, `winui-reactor-mvu`)
+so they show up under `dotnet new list winui` alongside the other WinUI templates.
+
+Reactor apps are packaged (single-project MSIX) and reference the
+[`Microsoft.UI.Reactor`](https://www.nuget.org/packages/Microsoft.UI.Reactor)
+preview NuGet package. They require .NET 10 or later. Like the WinUI templates,
+they reference `Microsoft.Windows.SDK.BuildTools.WinApp` so `dotnet run` launches
+the app with full MSIX package identity. Pin a specific Reactor package version
+at scaffold time with `--reactor-version`, or the Windows App SDK version with
+`--wasdk-version`. `reactor-singlefile` is the one exception to the project
+layout: see [Quickstart a single-file Reactor app](#quickstart-a-single-file-reactor-app).
+
 ### Item Templates
 
 | Short Name                 | Description                                              |
@@ -63,6 +99,41 @@ dotnet run
 
 `dotnet run` registers a loose-layout MSIX, gives the app package identity,
 and launches it via AUMID activation — equivalent to F5 in Visual Studio.
+
+### Quickstart a new Reactor app
+
+```powershell
+dotnet new reactor -n MyReactorApp
+cd MyReactorApp
+dotnet run
+```
+
+Reactor apps are pure C# (no XAML) and packaged (single-project MSIX), so
+`dotnet run` registers a loose-layout package and launches the app with full
+MSIX package identity — equivalent to F5 in Visual Studio. See the
+[Reactor documentation](https://github.com/microsoft/microsoft-ui-reactor) to
+learn the component model, hooks, and layout system. Swap `reactor` for
+`reactor-mvu`, `reactor-navview`, or `reactor-tabview` to start from a richer
+shell.
+
+### Quickstart a single-file Reactor app
+
+```powershell
+dotnet new reactor-singlefile -n MyReactorApp
+cd MyReactorApp
+dotnet run MyReactorApp.cs
+```
+
+`reactor-singlefile` scaffolds a single `MyReactorApp.cs`: a .NET 10
+[file-based app](https://learn.microsoft.com/dotnet/core/sdk/file-based-apps)
+whose `#:package` and `#:property` directives take the place of a `.csproj`.
+It still runs packaged: `Microsoft.Windows.SDK.BuildTools.WinApp` (0.7.0 or
+later) makes `dotnet run MyReactorApp.cs` synthesize an appxmanifest from those
+directives, register the app, and launch it with package identity (Developer
+Mode required). `winapp run MyReactorApp.cs` does the same. To run it
+unpackaged instead, add `#:property WindowsPackageType=None` to the file. When
+the app outgrows one file, `dotnet project convert MyReactorApp.cs` turns it
+into a regular project.
 
 ### Add items to an existing project
 
@@ -105,6 +176,9 @@ generated `.csproj` to tweak how `dotnet run` launches the app:
 These properties are provided by the
 [`Microsoft.Windows.SDK.BuildTools.WinApp`](https://www.nuget.org/packages/Microsoft.Windows.SDK.BuildTools.WinApp)
 NuGet package, which is referenced automatically by the project templates.
+A single-file app (`reactor-singlefile`) has no `.csproj`: set them with
+`#:property` directives in the `.cs` file instead (for example
+`#:property WinAppRunNoLaunch=true`), or pass them to `dotnet run` with `-p:`.
 
 ## Prerequisites
 
