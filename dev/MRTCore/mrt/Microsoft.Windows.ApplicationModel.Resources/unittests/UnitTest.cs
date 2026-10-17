@@ -196,6 +196,9 @@ namespace ManagedTest
                 Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en-GB";
                 Verify.AreEqual("en-GB", Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
 
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = string.Empty;
+                Verify.AreEqual(string.Empty, Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+
                 // Later changes through the Windows API must also remain visible.
                 Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
                 Verify.AreEqual("fr-FR", Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
