@@ -457,6 +457,42 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        public void ApplicationLanguages_SetAndClearOverride()
+        {
+            if (m_rs5)
+            {
+                // Match the existing MRTCore unpackaged test OS requirements.
+                return;
+            }
+
+            CommonTestCode.ApplicationLanguagesTest.SetAndClearOverride();
+        }
+
+        [TestMethod]
+        public void ApplicationLanguages_InvalidTagPreservesOverride()
+        {
+            if (m_rs5)
+            {
+                // Match the existing MRTCore unpackaged test OS requirements.
+                return;
+            }
+
+            CommonTestCode.ApplicationLanguagesTest.InvalidTagPreservesOverride();
+        }
+
+        [TestMethod]
+        public void ApplicationLanguages_OverrideAffectsResourceLookup()
+        {
+            if (m_rs5)
+            {
+                // Match the existing MRTCore unpackaged test OS requirements.
+                return;
+            }
+
+            CommonTestCode.ApplicationLanguagesTest.OverrideAffectsResourceLookup();
+        }
+
+        [TestMethod]
         public void ResourceContext_LanguageContextTest()
         {
             if (m_rs5)
