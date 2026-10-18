@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #pragma once
-#include <Windows.h>
+#include <windows.h>
 #include <filesystem>
 #include <shellapi.h>
 #include <wil/cppwinrt.h>

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <unknwn.h>
 #include <appmodel.h>
