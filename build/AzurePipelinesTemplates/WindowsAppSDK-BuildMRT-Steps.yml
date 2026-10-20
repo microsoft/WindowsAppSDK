@@ -14,11 +14,15 @@ parameters:
 - name: IsMonobuild
   type: boolean
   default: false
+- name: WindowsAppSDKBinaryVersion
+  type: string
+  default: ''
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
   parameters:
     IsMonobuild: ${{ parameters.IsMonobuild }}
+    WindowsAppSDKBinaryVersion: ${{ parameters.WindowsAppSDKBinaryVersion }}
 
 - task: WinUndockNativeCompiler@1
   displayName: 'Setup native compiler version override'
@@ -113,4 +117,3 @@ steps:
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
-
