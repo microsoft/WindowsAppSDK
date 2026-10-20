@@ -95,6 +95,31 @@ namespace Test::AppLifecycle
             VERIFY_IS_NOT_NULL(launchArgs);
         }
 
+        TEST_METHOD(GetInstancesIncludesCurrentInstance)
+        {
+            // Bug 61688595: GetInstances() is now a thin boundary over the noexcept
+            // GetInstancesImpl worker (when the contained change is enabled) or a direct
+            // call into GetInstancesWorker (when it is disabled). Either way the public
+            // API must still enumerate the current instance.
+            auto current{ AppInstance::GetCurrent() };
+            VERIFY_IS_NOT_NULL(current);
+
+            auto instances{ AppInstance::GetInstances() };
+            VERIFY_IS_NOT_NULL(instances);
+            VERIFY_IS_TRUE(instances.Size() > 0);
+
+            bool foundCurrent{ false };
+            for (auto const& instance : instances)
+            {
+                if (instance.ProcessId() == ::GetCurrentProcessId())
+                {
+                    VERIFY_IS_TRUE(instance.IsCurrent());
+                    foundCurrent = true;
+                }
+            }
+            VERIFY_IS_TRUE(foundCurrent);
+        }
+
         TEST_METHOD(GetActivatedEventArgsForFile_Win32)
         {
             // Create a named event for communicating with test app.
