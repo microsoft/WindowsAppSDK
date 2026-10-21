@@ -131,6 +131,12 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         DispatcherQueueTimer_CaptureTickErrorContext = 64299104,
         InputPointerSource_SystemEngineDPIOffset = 64300276,
         WebView2_HandleMoveFocusInvalidArgument = 64312861,
+
+        // 2.6.5
+        WinUI_EnableShutdownRestart = 64354919,
+        ResourceCandidate_ValueAsMemoryBuffer = 64594238,
+        Xaml_OptimizeApplyStylesApplyTemplate = 64638252,
+        WinUI_FlyoutCheckForNullPresenter = 64730431,
     };
 
     /// Represents a version of the Windows App Runtime.
