@@ -135,7 +135,6 @@ extends:
         sourceSubdirectory: '.'
         dependsOnStage: 'DotnetNewTemplates_Build'
 
-    # NuGet.org publishing is handled by the separate non-OneBranch pipeline:
+    # NuGet.org publishing is handled by the separate 1ES-governed release pipeline:
     # WindowsAppSDK-DotnetNewTemplates-Publish.yml
-    # OneBranch agents block outbound internet, so a standalone pipeline with
-    # standard Azure-hosted agents is used for the NuGet.org push.
+    # Publishing uses a 1ES Hosted Pool outside this network-isolated build pipeline.
