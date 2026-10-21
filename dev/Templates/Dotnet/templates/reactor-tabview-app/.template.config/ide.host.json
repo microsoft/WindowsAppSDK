@@ -21,13 +21,6 @@
         "text": "Microsoft.UI.Reactor version"
       },
       "isVisible": "true"
-    },
-    {
-      "id": "windowsAppSdkVersion",
-      "name": {
-        "text": "Windows App SDK version"
-      },
-      "isVisible": "true"
     }
   ]
 }

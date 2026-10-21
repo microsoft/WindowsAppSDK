@@ -360,7 +360,10 @@ function Test-WinUiProjectTemplate {
 
     $projectName = '{0}_{1}_{2}' -f $TemplateShortName, $Platform, ([Guid]::NewGuid().ToString('N').Substring(0, 8))
     $projectPath = Join-Path -Path $WorkingRoot -ChildPath $projectName
-    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
+    # Reactor templates have no --wasdk-version option: Windows App SDK comes
+    # transitively from Microsoft.UI.Reactor (WinUI + Runtime), not the metapackage.
+    $wasdkVersion = if ($TemplateShortName -like 'reactor*') { $null } else { $script:windowsAppSdkVersion }
+    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $wasdkVersion
     Add-Result -Template $TemplateShortName -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
     # A file-based app template scaffolds a single <name>.cs whose #: directives replace the .csproj.
