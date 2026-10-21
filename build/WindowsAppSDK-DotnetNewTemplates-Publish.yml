@@ -8,16 +8,11 @@
 #   1. Run the OneBranch build pipeline (WindowsAppSDK-DotnetNewTemplates.yml) first.
 #   2. Note the build ID from that run.
 #   3. Run this pipeline, providing the build ID as a parameter.
-#      Set ValidationOnly to true to check the release without approval or publication.
 
 trigger: none
 pr: none
 
 parameters:
-- name: "ValidationOnly"
-  displayName: "Validate release without publishing to NuGet.org"
-  type: boolean
-  default: false
 - name: "BuildPipelineId"
   displayName: "Build pipeline definition ID (from WindowsAppSDK-DotnetNewTemplates pipeline)"
   type: number
@@ -49,39 +44,31 @@ extends:
       os: windows
 
     stages:
-    - ${{ if eq(parameters.ValidationOnly, false) }}:
-      - stage: DotnetNewTemplates_Approval
-        displayName: 'Approve NuGet.org publish'
-        jobs:
-        - job: WaitForPublishApproval
-          displayName: 'Manual Approval'
-          pool: server
-          timeoutInMinutes: 1441
-          steps:
-          - task: ManualValidation@0
-            displayName: 'Verify artifacts before NuGet.org publish'
-            timeoutInMinutes: 1440
-            inputs:
-              notifyUsers: ''
-              onTimeout: reject
-              instructions: |
-                Please verify the .nupkg in the ${{ parameters.ArtifactName }} folder before continuing the publish to NuGet.org:
-                $(System.CollectionUri)$(System.TeamProjectId)/_build/results?buildId=${{ parameters.BuildRunId }}&view=artifacts&pathAsName=false&type=publishedArtifacts
+    - stage: DotnetNewTemplates_Approval
+      displayName: 'Approve NuGet.org publish'
+      jobs:
+      - job: WaitForPublishApproval
+        displayName: 'Manual Approval'
+        pool: server
+        timeoutInMinutes: 1441
+        steps:
+        - task: ManualValidation@0
+          displayName: 'Verify artifacts before NuGet.org publish'
+          timeoutInMinutes: 1440
+          inputs:
+            notifyUsers: ''
+            onTimeout: reject
+            instructions: |
+              Please verify the .nupkg in the ${{ parameters.ArtifactName }} folder before continuing the publish to NuGet.org:
+              $(System.CollectionUri)$(System.TeamProjectId)/_build/results?buildId=${{ parameters.BuildRunId }}&view=artifacts&pathAsName=false&type=publishedArtifacts
 
     - stage: DotnetNewTemplates_Publish
-      ${{ if eq(parameters.ValidationOnly, true) }}:
-        displayName: 'Validate dotnet new template release (no publication)'
-        dependsOn: []
-      ${{ else }}:
-        displayName: 'Publish dotnet new templates to NuGet.org'
-        dependsOn:
-        - DotnetNewTemplates_Approval
+      displayName: 'Publish dotnet new templates to NuGet.org'
+      dependsOn:
+      - DotnetNewTemplates_Approval
       jobs:
       - job: PublishNuGetOrg
-        ${{ if eq(parameters.ValidationOnly, true) }}:
-          displayName: 'Validate dotnet new template pack (no publication)'
-        ${{ else }}:
-          displayName: 'Publish dotnet new template pack to NuGet.org'
+        displayName: 'Publish dotnet new template pack to NuGet.org'
         variables:
           dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
         templateContext:
@@ -116,15 +103,14 @@ extends:
               if (-not $packages) {
                 throw "No root-level .nupkg files were found in '$artifactPath'."
               }
-              Write-Host "Found the following release packages:"
+              Write-Host "Found the following packages ready for publish:"
               $packages | ForEach-Object { Write-Host " - $($_.FullName)" }
 
-        - ${{ if eq(parameters.ValidationOnly, false) }}:
-          - task: 1ES.PublishNuGet@1
-            displayName: 'Publish dotnet new templates to NuGet.org'
-            inputs:
-              packagesToPush: '$(dotnetTemplatesArtifactPath)\*.nupkg'
-              packageParentPath: '$(dotnetTemplatesArtifactPath)'
-              verbosityPush: 'Detailed'
-              nuGetFeedType: 'external'
-              publishFeedCredentials: 'NugetOrg'
+        - task: 1ES.PublishNuGet@1
+          displayName: 'Publish dotnet new templates to NuGet.org'
+          inputs:
+            packagesToPush: '$(dotnetTemplatesArtifactPath)\*.nupkg'
+            packageParentPath: '$(dotnetTemplatesArtifactPath)'
+            verbosityPush: 'Detailed'
+            nuGetFeedType: 'external'
+            publishFeedCredentials: 'NugetOrg'
