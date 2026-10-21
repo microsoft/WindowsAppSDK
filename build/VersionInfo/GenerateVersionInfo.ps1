@@ -35,6 +35,27 @@ $companyName = "Microsoft Corporation"
 $productName = "Windows App SDK"
 $copyright = "Copyright (c) Microsoft Corporation. All rights reserved."
 
+$binaryVersion = $env:WindowsAppSDKBinaryVersion
+$binaryVersionParts = $null
+if (-not [string]::IsNullOrWhiteSpace($binaryVersion))
+{
+    if ($binaryVersion -notmatch '^(\d+)\.(\d+)\.(\d+)\.(\d+)$')
+    {
+        throw "WindowsAppSDKBinaryVersion '$binaryVersion' is not a numeric four-part version."
+    }
+
+    $binaryVersionParts = @($Matches[1], $Matches[2], $Matches[3], $Matches[4])
+    foreach ($part in $binaryVersionParts)
+    {
+        if ([int]$part -gt 65535)
+        {
+            throw "WindowsAppSDKBinaryVersion '$binaryVersion' contains a part outside the VERSIONINFO range."
+        }
+    }
+}
+
+$assemblyFileVersion = if ($binaryVersionParts) { $binaryVersion } else { "$ProductMajor.$ProductMinor" }
+
 # Generating AssemblyInfo.cs override
 $assemblyInfoCs = @"
 using System.Reflection;
@@ -46,7 +67,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("$copyright")]
 
 [assembly: AssemblyVersion("$ProductMajor.$ProductMinor")]
-[assembly: AssemblyFileVersion("$ProductMajor.$ProductMinor")]
+[assembly: AssemblyFileVersion("$assemblyFileVersion")]
 
 [assembly: AssemblyMetadata("IsTrimmable", "True")]
 "@
@@ -55,6 +76,21 @@ Write-Verbose $assemblyInfoCs
 $assemblyInfoCsPath = "$scriptFullPath/AssemblyInfo.cs"
 Write-Verbose "Writing $assemblyInfoCsPath..."
 [System.IO.File]::WriteAllLines($assemblyInfoCsPath, $assemblyInfoCs, $utf8NoBomEncoding)
+
+$nativeVersionDefinitions = if ($binaryVersionParts)
+{
+@"
+#define WINDOWSAPPSDK_PRODUCT_VERSION           $($binaryVersionParts -join ', ')
+#define WINDOWSAPPSDK_PRODUCT_VERSION_STRING    "$binaryVersion"
+"@
+}
+else
+{
+@"
+#define WINDOWSAPPSDK_PRODUCT_VERSION           WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR
+#define WINDOWSAPPSDK_PRODUCT_VERSION_STRING    STR2(WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR)
+"@
+}
 
 # Generating AssemblyInfo.ver override
 $assemblyInfoVer = @"
@@ -73,8 +109,7 @@ $assemblyInfoVer = @"
 #define WINDOWSAPPSDK_RELEASE_MINOR     $ProductMinor
 #endif
 
-#define WINDOWSAPPSDK_PRODUCT_VERSION           WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR
-#define WINDOWSAPPSDK_PRODUCT_VERSION_STRING    STR2(WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR)
+$nativeVersionDefinitions
 #define WINDOWSAPPSDK_COMPANY_NAME              "$companyName"
 #define WINDOWSAPPSDK_LEGAL_COPYRIGHT           "$copyright"
 #define WINDOWSAPPSDK_PRODUCT_NAME              "$productName"
@@ -156,4 +191,3 @@ Write-Verbose $assemblyInfoH
 $assemblyInfoHPath = "$scriptFullPath/AssemblyInfo.h"
 Write-Verbose "Writing $assemblyInfoHPath..."
 [System.IO.File]::WriteAllLines($assemblyInfoHPath, $assemblyInfoH, $utf8NoBomEncoding)
-
