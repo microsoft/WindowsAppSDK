@@ -146,8 +146,10 @@ foreach (var t in Templates)
     // 3. dotnet-new template configuration.
     EmitTree(Path.Combine(configDir, ".template.config"), contentRoot + "/.template.config");
 
-    // 4. Shared .gitignore (one copy per template).
-    if (!string.IsNullOrEmpty(GitignoreSource) && File.Exists(GitignoreSource))
+    // 4. Shared .gitignore (one copy per template), unless the template opts out with
+    //    IncludeGitignore=false (e.g. a file-based app whose output is a single .cs file).
+    bool includeGitignore = !string.Equals(t.GetMetadata("IncludeGitignore"), "false", StringComparison.OrdinalIgnoreCase);
+    if (includeGitignore && !string.IsNullOrEmpty(GitignoreSource) && File.Exists(GitignoreSource))
     {
         Emit(GitignoreSource, contentRoot + "/gitignore.txt");
     }
@@ -161,7 +163,7 @@ ExpandedItems = output.ToArray();
 
   <Target Name="_ExpandProjectTemplatePackItems"
           BeforeTargets="_GetPackageFiles;GenerateNuspec">
-    <!-- Project templates: shared + dotnet-new-only. Each gets a copy of the shared .gitignore. -->
+    <!-- Project templates: shared + dotnet-new-only. Each gets a copy of the shared .gitignore unless it sets IncludeGitignore=false. -->
     <ExpandProjectTemplatePackItems Templates="@(ProjectTemplate);@(DotnetNewOnlyProjectTemplate)"
                                     GitignoreSource="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(_GitignoreSource)'))">
       <Output TaskParameter="ExpandedItems" ItemName="None" />
