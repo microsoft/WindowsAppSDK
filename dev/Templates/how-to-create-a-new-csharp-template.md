@@ -27,6 +27,9 @@ dev/Templates/Source/ProjectTemplates/Desktop/CSharp/<Name>/
     <Name>.ico                           (used by VSIX)
     <Name>.png                           (used by VSIX)
     <Name>.vstemplate                    (used by VSIX)
+    .vscode/launch.json                  (VS Code F5 debug; app templates only)
+    .vscode/extensions.json              (VS Code F5 debug; app templates only)
+    AGENTS.md                            (winapp CLI guidance for agents; app templates only)
     App.xaml / MainWindow.xaml / ...
 ```
 
@@ -284,6 +287,8 @@ dev/Templates/
 │   ├── ProjectTemplates/Desktop/CSharp/<TemplateName>/
 │   │   ├── <TemplateName>.csproj
 │   │   ├── <TemplateName>.{ico,png,vstemplate}
+│   │   ├── .vscode/{launch,extensions}.json    (app templates only)
+│   │   ├── AGENTS.md                       (app templates only)
 │   │   ├── Package-managed.appxmanifest    (if packaged)
 │   │   └── ...source files...
 │   ├── ProjectTemplates/Desktop/CppWinRT/<TemplateName>/   ← out of scope for this doc
