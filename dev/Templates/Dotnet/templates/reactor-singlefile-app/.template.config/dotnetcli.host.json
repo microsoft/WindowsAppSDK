@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "dotnetVersion": {
+      "longName": "dotnet-version",
+      "shortName": "tfm",
+      "description": "Base TFM for the app (file-based apps and Microsoft.UI.Reactor require net10.0 or later)."
+    },
+    "reactorVersion": {
+      "longName": "reactor-version",
+      "shortName": "rv",
+      "description": "Pin to a specific Microsoft.UI.Reactor NuGet version."
+    },
+    "skipRestore": {
+      "longName": "no-restore",
+      "shortName": ""
+    }
+  }
+}
