@@ -2,9 +2,6 @@ parameters:
 - name: IsMonobuild
   type: boolean
   default: false
-- name: WindowsAppSDKBinaryVersion
-  type: string
-  default: ''
 
 steps:
 - template: WindowsAppSDK-MaterializeTsaOptions-Wrapper.yml
@@ -81,7 +78,8 @@ steps:
 - task: PowerShell@2
   displayName: GenerateVersionInfo
   env:
-    WindowsAppSDKBinaryVersion: ${{ parameters.WindowsAppSDKBinaryVersion }}
+    ${{ if eq(parameters.IsMonobuild, true) }}:
+      WindowsAppSDKBinaryVersion: $(WindowsAppSDKBinaryVersion)
   inputs:
     filePath: '$(Build.SourcesDirectory)\build\VersionInfo\GenerateVersionInfo.ps1'
     arguments: >

@@ -11,9 +11,6 @@ parameters:
 - name: IsMonobuild
   type: boolean
   default: false
-- name: WindowsAppSDKBinaryVersion
-  type: string
-  default: ''
 
 steps:
 - task: NuGetAuthenticate@1
@@ -29,7 +26,6 @@ steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
   parameters:
     IsMonobuild: ${{ parameters.IsMonobuild }}
-    WindowsAppSDKBinaryVersion: ${{ parameters.WindowsAppSDKBinaryVersion }}
 
 - task: PowerShell@2
   name: BuildFoundation
