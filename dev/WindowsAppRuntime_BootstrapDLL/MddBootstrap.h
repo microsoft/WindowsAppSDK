@@ -88,6 +88,7 @@ STDAPI_(void) MddBootstrapShutdown() MDDBOOTSTRAP_NOEXCEPT;
 #if defined(__cplusplus)
 #if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 
+#include <cstdlib>
 #include <memory>
 #include <stdint.h>
 
