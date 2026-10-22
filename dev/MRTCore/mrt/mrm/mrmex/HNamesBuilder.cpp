@@ -24,6 +24,13 @@ HNamesNode::HNamesNode(_In_ ScopeInfo* pParent) : m_segment(pParent->GetGlobalNo
 HRESULT HNamesNode::Init(_In_ const HierarchicalNameSegment* name)
 {
     RETURN_HR_IF_NULL(E_INVALIDARG, m_pParentScope);
+    PCWSTR segment = name->GetName();
+    RETURN_HR_IF_MSG(
+        HRESULT_FROM_WIN32(ERROR_FILENAME_EXCED_RANGE),
+        (segment != nullptr) && (wcslen(segment) > DEFFILE_HNAMES_MAX_NAME_LENGTH),
+        "Resource name segment '%ls' exceeds the maximum length of %u UTF-16 code units.",
+        segment,
+        DEFFILE_HNAMES_MAX_NAME_LENGTH);
     RETURN_IF_FAILED(m_segment.SetCopy(name));
     return S_OK;
 }
@@ -1366,7 +1373,7 @@ HRESULT HierarchicalNamesBuilder::BuildNameNode(
     // Initialize the name node
     pNameNode->cchFullPath = static_cast<UINT16>(pNode->GetFullPathLength());
     pNameNode->initialChar = GetConfig()->GetSegmentInitialChar(pNode->GetName());
-    pNameNode->cchName = ((cchName < 256) ? static_cast<BYTE>(cchName) : 0);
+    pNameNode->cchName = static_cast<BYTE>(cchName);
     pNameNode->nameOffsetLow = (nameOffset & 0xffff);
     payload = pNode->GetIndex();
     if (m_flags & BuildLargeHNamesNode)

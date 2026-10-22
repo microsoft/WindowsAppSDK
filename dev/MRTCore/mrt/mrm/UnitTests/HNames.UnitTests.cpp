@@ -25,6 +25,8 @@ class HierarchicalNamesUnitTests : public WEX::TestClass<HierarchicalNamesUnitTe
     TEST_CLASS(HierarchicalNamesUnitTests);
 
     TEST_METHOD(New_ParamChecks);
+    TEST_METHOD(NameLengthBoundaryTests);
+    TEST_METHOD(NameTooLongTests);
 
     BEGIN_TEST_METHOD(SimpleBuilderReaderTests)
         TEST_METHOD_PROPERTY(L"DataSource", L"Table:HNames.UnitTests.xml#SimpleBuilderReaderTests")
@@ -542,6 +544,101 @@ void HierarchicalNamesUnitTests::New_ParamChecks(void)
     hr = HierarchicalNames::CreateInstance(gHierarchicalNamesExSectionType, buf, 0, &pPool);
     VERIFY_HRESULT_FAILURE(E_INVALIDARG, hr);
     delete pPool;
+}
+
+void HierarchicalNamesUnitTests::NameLengthBoundaryTests()
+{
+    const UINT32 encodings[] = {HierarchicalNamesBuilder::BuildUtf16Only, HierarchicalNamesBuilder::BuildAsciiOrUtf16};
+    const WCHAR characters[] = {L'a', L'\x4e00'};
+    const int lengths[] = {254, 255};
+
+    for (UINT32 encoding : encodings)
+    {
+        for (WCHAR character : characters)
+        {
+            for (int length : lengths)
+            {
+                WCHAR segment[256] = {};
+                for (int i = 0; i < length; i++)
+                {
+                    segment[i] = character;
+                }
+
+                AutoDeletePtr<HierarchicalNamesBuilder> builder;
+                VERIFY_SUCCEEDED(HierarchicalNamesBuilder::CreateInstance(encoding, &builder));
+
+                ScopeInfo* scope;
+                VERIFY_SUCCEEDED(builder->GetOrAddScope(segment, &scope));
+                String path;
+                path.Format(L"%s/%s", segment, segment);
+                ItemInfo* item;
+                VERIFY_SUCCEEDED(builder->GetOrAddItem(path, &item));
+                int expectedItemIndex = item->GetIndex();
+                int expectedScopeIndex = scope->GetIndex();
+
+                BuildHelper names;
+                VERIFY_SUCCEEDED(names.Build(builder));
+                AutoDeletePtr<HierarchicalNames> reader;
+                VERIFY_SUCCEEDED(
+                    HierarchicalNames::CreateInstance(builder->GetSectionType(), names.GetBuffer(), names.GetBufferSize(), &reader));
+
+                int itemIndex = -1;
+                int scopeIndex = -1;
+                VERIFY_IS_TRUE(reader->Contains(path, nullptr, &itemIndex));
+                VERIFY_ARE_EQUAL(expectedItemIndex, itemIndex);
+                VERIFY_IS_TRUE(reader->Contains(segment, &scopeIndex));
+                VERIFY_ARE_EQUAL(expectedScopeIndex, scopeIndex);
+
+                StringResult actualName;
+                VERIFY_IS_TRUE(reader->TryGetItemInfo(itemIndex, &actualName));
+                VERIFY_ARE_EQUAL(Def_Equal, DefString_Compare(path, actualName.GetRef()));
+                VERIFY_IS_TRUE(reader->TryGetScopeInfo(scopeIndex, &actualName));
+                VERIFY_ARE_EQUAL(Def_Equal, DefString_Compare(segment, actualName.GetRef()));
+            }
+        }
+    }
+}
+
+void HierarchicalNamesUnitTests::NameTooLongTests()
+{
+    const WCHAR characters[] = {L'a', L'\x4e00'};
+    const int lengths[] = {256, 1024};
+
+    for (WCHAR character : characters)
+    {
+        for (int length : lengths)
+        {
+            WCHAR segment[1025] = {};
+            for (int i = 0; i < length; i++)
+            {
+                segment[i] = character;
+            }
+
+            AutoDeletePtr<HierarchicalNamesBuilder> builder;
+            VERIFY_SUCCEEDED(HierarchicalNamesBuilder::CreateInstance(0, &builder));
+            ScopeInfo* scope;
+            VERIFY_SUCCEEDED(builder->GetOrAddScope(L"Parent", &scope));
+            int numScopes = builder->GetNumScopes();
+            int numItems = builder->GetNumItems();
+
+            String nestedPath;
+            nestedPath.Format(L"Parent/%s", segment);
+            String childPath;
+            childPath.Format(L"%s/Child", segment);
+            const PCWSTR paths[] = {segment, nestedPath, childPath};
+            for (PCWSTR path : paths)
+            {
+                ItemInfo* item = nullptr;
+                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_FILENAME_EXCED_RANGE), builder->GetOrAddItem(path, &item));
+                VERIFY_IS_NULL(item);
+                scope = nullptr;
+                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_FILENAME_EXCED_RANGE), builder->GetOrAddScope(path, &scope));
+                VERIFY_IS_NULL(scope);
+                VERIFY_ARE_EQUAL(numScopes, builder->GetNumScopes());
+                VERIFY_ARE_EQUAL(numItems, builder->GetNumItems());
+            }
+        }
+    }
 }
 
 static void SimpleBuilderReaderTestsInternal(_In_ UINT32 flags, _In_ const DEFFILE_SECTION_TYPEID& type)

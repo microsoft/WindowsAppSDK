@@ -26,7 +26,7 @@ extern "C"
      *   global nodes table.
      * - cchFullPath is the size in characters of the full path to this node
      * - initialChar is the first character of the name, uppercased
-     * - cchName is the length of the name for this node in characters, not including separators
+     * - cchName is the length of the name for this node in UTF-16 code units, not including separators (maximum 255)
      * - flagsAndNameOffsetHigh - combined field:
      *   - (flagsAndNameOffsetHigh & 0x0f) is the high four bits of the offset of the
      *     name of this node in the names table.
@@ -62,6 +62,8 @@ extern "C"
         UINT16 nameOffsetLow;
         UINT32 payload;
     } DEFFILE_HNAMES_NODE_LARGE, *PDEFFILE_HNAMES_NODE_LARGE;
+
+    __declspec(selectany) extern const UINT32 DEFFILE_HNAMES_MAX_NAME_LENGTH = 255;
 
     __declspec(selectany) extern const BYTE DEFFILE_HNAMES_FLAGS_NODE_IS_SCOPE = 0x10;
     __declspec(selectany) extern const BYTE DEFFILE_HNAMES_FLAGS_NAME_IS_ASCII = 0x20;

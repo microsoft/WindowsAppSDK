@@ -25,3 +25,19 @@ The source code consists of three parts:
   - [PRI builder](mrt/mrm/include/mrm/build)
 - [Flat-C API](mrt/Core/src/MRM.h) over the core runtime
 - [WinRT API](mrt/Microsoft.Windows.ApplicationModel.Resources) wrapping the flat-C API
+
+## Resource name limits
+
+PRI files store each resource name segment's length in one byte. Each segment
+must therefore contain at most 255 UTF-16 code units. This limit applies to both
+resource names and resource map (scope) names, for ASCII and Unicode resources.
+Names containing `/` or `\` are hierarchical paths; the limit applies separately
+to each segment, not to the combined path. For example, a 255-character scope
+and a 255-character resource name can form a valid 511-character path.
+
+The MRT Core PRI builder rejects an overlong segment with
+`HRESULT_FROM_WIN32(ERROR_FILENAME_EXCED_RANGE)` (`0x800700CE`) and logs a
+diagnostic identifying the segment and the 255-code-unit limit. Shorten the
+segment or split the name into multiple nonempty path segments. The `.resw`
+schema's `xsd:string` type and Visual Studio's resource editor do not enforce
+this PRI format limit.
