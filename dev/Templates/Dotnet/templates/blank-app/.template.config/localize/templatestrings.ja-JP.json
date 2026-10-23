@@ -1,0 +1,4 @@
+{
+  "name": "WinUI の空のアプリ (パッケージ化)",
+  "description": "サイドローディングまたは Microsoft Store を介した配布のための MSIX パッケージを利用した WinUI アプリを作成するためのプロジェクト テンプレート。"
+}

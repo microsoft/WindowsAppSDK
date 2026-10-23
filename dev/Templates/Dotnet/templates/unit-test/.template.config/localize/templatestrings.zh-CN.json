@@ -1,0 +1,4 @@
+{
+  "name": "WinUI 单元测试应用",
+  "description": "用于使用 MSTest 为 WinUI 创建 C# 单元测试应用的项目。"
+}

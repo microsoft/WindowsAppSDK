@@ -160,6 +160,19 @@ Supported choices: `net8.0`, `net9.0`, `net10.0`. If you omit
 your installed .NET SDK. You can also edit `<TargetFramework>` in the
 generated `.csproj` afterward.
 
+### NuGet Package Versions
+
+By default, project templates reference the latest stable version of each NuGet
+package. At creation time, they run `dotnet add package` to write that version
+into the generated `.csproj`. To pin a package instead, pass its version
+option, for example `--wasdk-version`, `--build-tools-version`, or
+`--winapp-version` (see `dotnet new <template> --help`). If the package feed
+can't be reached, the reference keeps `Version="*"` and resolves to the latest
+version at the next restore. Visual Studio hides these options and always uses
+the latest stable versions. Because Visual Studio only adds package references
+that aren't already in the project, the template omits them there and lets the
+post action add them; if the feed can't be reached, add them manually.
+
 ### Customizing `dotnet run` behavior
 
 Set any of these MSBuild properties inside a `<PropertyGroup>` in the
@@ -198,10 +211,13 @@ A single-file app (`reactor-singlefile`) has no `.csproj`: set them with
 
 This template pack is built from the
 [WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK) repository under
-`dev/Templates/Dotnet/`. The templates share the same XAML, code-behind,
-and project files as the Visual Studio templates under
-`dev/Templates/Source/ProjectTemplates/` and
-`dev/Templates/Source/ItemTemplates/`, so there is only one copy to maintain.
+`dev\Templates\Dotnet\`. Each directory under `templates` contains both
+the sources and `.template.config` metadata. The C# VSIX embeds this same
+NuGet pack and registers it with Visual Studio's template engine; there is no
+separate Visual Studio build for these templates. Experimental Reactor templates
+remain CLI-only. The two-project `.csproj` + `.wapproj` template is a VSIX-only
+exception that retains its existing `.vstemplate` implementation; it is not part
+of this NuGet pack.
 
 ### Local Testing
 
