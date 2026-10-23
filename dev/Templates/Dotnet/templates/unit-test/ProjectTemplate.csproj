@@ -74,22 +74,24 @@
     Set <EnableWinAppRunSupport>false</EnableWinAppRunSupport> in a
     <PropertyGroup> above to opt out.
   -->
+  <!--#if (windowsSdkBuildToolsVersion != "*" || windowsAppSdkVersion != "*" || windowsSdkBuildToolsWinAppVersion != "*" || mstestVersion != "*" || HostIdentifier == "dotnetcli") -->
   <ItemGroup>
-    <!--#if (windowsSdkBuildToolsVersion != "*") -->
+    <!--#if (windowsSdkBuildToolsVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSdkBuildToolsVersion$" />
     <!--#endif -->
-    <!--#if (windowsAppSdkVersion != "*") -->
+    <!--#if (windowsAppSdkVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSdkVersion$" />
     <!--#endif -->
     <!--#if (!unpackaged) -->
-    <!--#if (windowsSdkBuildToolsWinAppVersion != "*") -->
+    <!--#if (windowsSdkBuildToolsWinAppVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$WindowsSdkBuildToolsWinAppVersion$" />
     <!--#endif -->
     <!--#endif -->
-    <!--#if (mstestVersion != "*") -->
+    <!--#if (mstestVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="MSTest" Version="$MSTestVersion$" />
     <!--#endif -->
   </ItemGroup>
+  <!--#endif -->
 
 <!--#if (!unpackaged) -->
   <!-- 
