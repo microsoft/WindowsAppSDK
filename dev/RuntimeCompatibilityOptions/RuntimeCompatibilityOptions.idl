@@ -136,6 +136,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         WinUI_EnableShutdownRestart = 64354919,
         ResourceCandidate_ValueAsMemoryBuffer = 64594238,
         Xaml_OptimizeApplyStylesApplyTemplate = 64638252,
+        LiftedInput_CloseSystemInputSite = 64661352,
         WinUI_FlyoutCheckForNullPresenter = 64730431,
     };
 

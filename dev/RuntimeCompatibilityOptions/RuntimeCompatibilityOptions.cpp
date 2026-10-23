@@ -224,6 +224,7 @@ namespace
         64354919, // WinUI_EnableShutdownRestart
         64594238, // ResourceCandidate_ValueAsMemoryBuffer
         64638252, // Xaml_OptimizeApplyStylesApplyTemplate
+        64661352, // LiftedInput_CloseSystemInputSite
         64730431, // WinUI_FlyoutCheckForNullPresenter
     };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
