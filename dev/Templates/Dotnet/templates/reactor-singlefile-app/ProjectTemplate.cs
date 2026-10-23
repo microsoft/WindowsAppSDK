@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
 #:package Microsoft.UI.Reactor@$ReactorVersion$
 #:package Microsoft.WindowsAppSDK@$WindowsAppSdkVersion$
 #:package Microsoft.Windows.SDK.BuildTools.WinApp@$WindowsSdkBuildToolsWinAppVersion$
