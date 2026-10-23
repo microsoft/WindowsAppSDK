@@ -9,8 +9,6 @@
 #include <activation.h>
 #include <VersionHelpers.h>
 
-#include <IsWindowsVersion.h>
-
 #include "urfw.h"
 
 #include "catalog.h"
@@ -405,27 +403,17 @@ HRESULT ExtRoLoadCatalog()
     return S_OK;
 }
 
-static bool UrfwUseOSImplementation() noexcept
-{
-    // Delegate to the OS' implementation on >= Windows 11 24H1
-    return WindowsVersion::IsWindows11_24H1OrGreater();
-}
-
 bool UrfwNeedsDetours() noexcept
 {
-    // Detour to our own implementation if Windows doesn't provide a sufficient implementation
-    return !UrfwUseOSImplementation();
+    // pureUrfw: always detour. Hybrid deploy requires URFW to intercept
+    // RoGetActivationFactory before combase so that pinned-component classes
+    // resolve via the SxS manifest's loadFrom (pointing to the app's bin dir)
+    // rather than via the package graph (which points to the framework package).
+    return true;
 }
 
 HRESULT UrfwInitialize() noexcept
 {
-    // Delegate to the OS' implementation if we can
-    if (UrfwUseOSImplementation())
-    {
-        return S_OK;
-    }
-
-    // OS Reg-Free WinRT isn't available so let's do it ourselves...
     DetourAttach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
     DetourAttach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
     DetourAttach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);
