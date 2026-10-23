@@ -1,19 +1,35 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>$DotNetVersion$-windows10.0.26100.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetFramework>$DotNetVersion$-windows$WindowsTargetVersion$</TargetFramework>
+    <TargetPlatformMinVersion>$targetplatformminversion$</TargetPlatformMinVersion>
     <RootNamespace>$safeprojectname$</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant())</RuntimeIdentifier>
-    <PublishProfile Condition="Exists('Properties\PublishProfiles\win-$(Platform).pubxml')">win-$(Platform).pubxml</PublishProfile>
+    <Platform Condition="('$(Platform)' == '' or '$(Platform)' == 'AnyCPU') and '$(RuntimeIdentifier)' != ''">$([System.String]::Copy('$(RuntimeIdentifier)').Replace('win-', ''))</Platform>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</Platform>
+    <PlatformTarget>$(Platform)</PlatformTarget>
+    <_WinUITestRuntimeIdentifier>win-$([System.String]::Copy('$(Platform)').ToLowerInvariant())</_WinUITestRuntimeIdentifier>
+    <RuntimeIdentifier>$(_WinUITestRuntimeIdentifier)</RuntimeIdentifier>
+    <PublishProfile>Properties\PublishProfiles\win-$([System.String]::Copy('$(Platform)').ToLowerInvariant()).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <WinUIDSKReferences>false</WinUIDSKReferences>
+<!--#if (unpackaged) -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <EnableMsixTooling>false</EnableMsixTooling>
+<!--#else -->
     <EnableMsixTooling>true</EnableMsixTooling>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+<!--#endif -->
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateProgramFile>false</GenerateProgramFile>
+    <IsTestProject>true</IsTestProject>
+<!--#if (TestRunner == "Microsoft.Testing.Platform") -->
+    <EnableMSTestRunner>true</EnableMSTestRunner>
+    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
+    <GenerateTestingPlatformApplicationHelper>true</GenerateTestingPlatformApplicationHelper>
+<!--#endif -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +38,7 @@
     <ProjectCapability Include="TestContainer" />
   </ItemGroup>
 
+<!--#if (!unpackaged) -->
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -32,11 +49,13 @@
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
+<!--#endif -->
 
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
+<!--#if (!unpackaged) -->
   <!-- 
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -45,6 +64,7 @@
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix"/>
   </ItemGroup>
+<!--#endif -->
 
   <!--
     Microsoft.Windows.SDK.BuildTools.WinApp adds first-class support for
@@ -54,7 +74,7 @@
     Set <EnableWinAppRunSupport>false</EnableWinAppRunSupport> in a
     <PropertyGroup> above to opt out.
   -->
-  <!--#if (windowsSdkBuildToolsVersion != "*" || windowsAppSdkVersion != "*" || windowsSdkBuildToolsWinAppVersion != "*" || mstestVersion != "*" || microsoftNetTestSdkVersion != "*" || HostIdentifier == "dotnetcli") -->
+  <!--#if (windowsSdkBuildToolsVersion != "*" || windowsAppSdkVersion != "*" || windowsSdkBuildToolsWinAppVersion != "*" || mstestVersion != "*" || HostIdentifier == "dotnetcli") -->
   <ItemGroup>
     <!--#if (windowsSdkBuildToolsVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSdkBuildToolsVersion$" />
@@ -62,20 +82,18 @@
     <!--#if (windowsAppSdkVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSdkVersion$" />
     <!--#endif -->
+    <!--#if (!unpackaged) -->
     <!--#if (windowsSdkBuildToolsWinAppVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$WindowsSdkBuildToolsWinAppVersion$" />
     <!--#endif -->
-    <!--#if (mstestVersion != "*" || HostIdentifier == "dotnetcli") -->
-    <PackageReference Include="MSTest.TestAdapter" Version="$MSTestVersion$" />
-    <PackageReference Include="MSTest.TestFramework" Version="$MSTestVersion$" />
     <!--#endif -->
-    <!--#if (microsoftNetTestSdkVersion != "*" || HostIdentifier == "dotnetcli") -->
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$MicrosoftNetTestSdkVersion$" />
-    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="$MicrosoftNetTestSdkVersion$" />
+    <!--#if (mstestVersion != "*" || HostIdentifier == "dotnetcli") -->
+    <PackageReference Include="MSTest" Version="$MSTestVersion$" />
     <!--#endif -->
   </ItemGroup>
   <!--#endif -->
 
+<!--#if (!unpackaged) -->
   <!-- 
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
     Explorer "Package and Publish" context menu entry to be enabled for this project even if 
@@ -84,6 +102,7 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+<!--#endif -->
 
   <!-- Publish Properties -->
   <PropertyGroup>
@@ -91,4 +110,10 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed>False</PublishTrimmed>
   </PropertyGroup>
+  <Target Name="ValidateTestArchitecture" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(Platform)' != 'x86' and '$(Platform)' != 'X86' and '$(Platform)' != 'x64' and '$(Platform)' != 'X64' and '$(Platform)' != 'ARM64' and '$(Platform)' != 'Arm64' and '$(Platform)' != 'arm64'"
+           Text="Choose an explicit supported Platform: x86, x64, or ARM64." />
+    <Error Condition="'$(RuntimeIdentifier)' != '$(_WinUITestRuntimeIdentifier)'"
+           Text="RuntimeIdentifier must match Platform: win-x86/x86, win-x64/x64, or win-arm64/ARM64." />
+  </Target>
 </Project>

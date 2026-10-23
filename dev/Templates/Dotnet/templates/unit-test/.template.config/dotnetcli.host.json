@@ -41,10 +41,25 @@
       "shortName": "mv",
       "description": "Pin to a specific MSTest NuGet version. Leave empty for latest."
     },
-    "microsoftNetTestSdkVersion": {
-      "longName": "test-sdk-version",
-      "shortName": "tsv",
-      "description": "Pin to a specific Microsoft.NET.Test.Sdk NuGet version. Leave empty for latest."
+    "TestRunner": {
+      "longName": "test-runner",
+      "shortName": "",
+      "description": "Select the test runner/platform."
+    },
+    "Fixture": {
+      "longName": "fixture",
+      "shortName": "",
+      "description": "Select the fixture kinds to include."
+    },
+    "Packaging": {
+      "longName": "packaging",
+      "shortName": "",
+      "description": "Choose a packaged MSIX test app or an unpackaged desktop test app."
+    },
+    "skipRestore": {
+      "longName": "no-restore",
+      "shortName": "",
+      "description": "Skip the automatic restore."
     }
   }
 }
