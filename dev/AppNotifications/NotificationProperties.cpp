@@ -50,9 +50,10 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
         m_toastProgressData = winrt::make_self<NotificationProgressData>(toastNotification.Progress());
     }
 
-    if (winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported())
+    // Ordinary notifications do not depend on calling-preview support.
+    if (auto config = toastNotification.ConferencingConfig())
     {
-        if (auto config = toastNotification.ConferencingConfig())
+        if (winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported())
         {
             m_toastConferencingConfig = winrt::make_self<NotificationConferencingConfig>(config);
         }
