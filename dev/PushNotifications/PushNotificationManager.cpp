@@ -188,10 +188,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // All packaged processes are triggered through COM via Long Running Process or the Background Infra OS component
         if (AppModel::Identity::IsPackagedProcess())
         {
-            THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
-            auto lock{ m_lock.lock_shared() };
-            THROW_HR_IF(E_UNEXPECTED, !m_backgroundTaskArgs);
-            eventArgs = m_backgroundTaskArgs;
+            // m_waitHandleForArgs is only created by Register(). If the app was activated by a
+            // PushNotification without calling Register(), the event is not initialized and there is
+            // nothing to wait for, so return the (null) args rather than fail-fasting on an
+            // uninitialized event handle. https://github.com/microsoft/WindowsAppSDK/issues/2961
+            if (m_waitHandleForArgs.get())
+            {
+                THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
+                auto lock{ m_lock.lock_shared() };
+                THROW_HR_IF(E_UNEXPECTED, !m_backgroundTaskArgs);
+                eventArgs = m_backgroundTaskArgs;
+            }
         }
         else // The process was launched via ShellExecute and we need to parse the uri (Only unpackaged)
         {
