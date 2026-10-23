@@ -22,7 +22,7 @@ $copyrightHeaderText = (
 )
 
 $include = ('*.cs', '*.cpp', '*.h', '*.idl', '*.xaml')
-$exclude = [RegEx]'\\dev\\Detours\\|\\BuildOutput\\|\\obj\\|\\localpackages\\|\\packages\\|\\Packages\\|\\specs\\|\\temp\\|\\Debug\\|\\Release\\|\\ItemTemplates\\|\\ProjectTemplates\\|\\templates\\|\\WindowsAppSDKAggregator\\'
+$exclude = [RegEx]'\\dev\\Detours\\|\\BuildOutput\\|\\obj\\|\\localpackages\\|\\packages\\|\\Packages\\|\\specs\\|\\temp\\|\\Debug\\|\\Release\\|\\ItemTemplates\\|\\ProjectTemplates\\|\\Dotnet\\templates\\|\\WindowsAppSDKAggregator\\'
 $files = dir $PSScriptRoot\..\* -recurse -include $include | Where FullName -notmatch $exclude
 
 $errorCount = 0
