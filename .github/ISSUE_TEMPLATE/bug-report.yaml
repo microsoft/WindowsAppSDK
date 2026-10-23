@@ -48,24 +48,17 @@ body:
         - "Unpackaged"
   - type: dropdown
     attributes:
-      label: Windows version
-      description: Which Windows versions did you see the issue on?
-      multiple: true
+      label: Windows edition
+      description: Which Windows edition are you using?
+      multiple: false
       options:
-        - "Insider Build (xxxxx)"
-        - "Windows 11 version 24H2 LTSC (26100, June Update)"
-        - "Windows 11 version 24H2 (26100, June 2025 Update)"
-        - "Windows 11 version 23H2 (22631, June 2025 Update)"
-        - "Windows 11 version 22H2 (22621, 2022 Update)"
-        - "Windows 11 version 21H2 (22000)"
-        - "Windows 10 version 22H2 (19045, 2022 Update)"
-        - "Windows 10 version 21H2 (19044, November 2021 Update)"
-        - "Windows 10 version 21H1 (19043, May 2021 Update)"
-        - "Windows 10 version 20H2 (19042, October 2020 Update)"
-        - "Windows 10 version 2004 (19041, May 2020 Update)"
-        - "Windows 10 version 1909 (18363, November 2019 Update)"
-        - "Windows 10 version 1903 (18362, May 2019 Update)"
-        - "Windows 10 version 1809 (17763, October 2018 Update)"
+        - "Windows"
+        - "Windows Server"
+  - type: input
+    attributes:
+      label: Windows version and build
+      description: "Run winver and paste the version and OS build it reports (e.g., 24H2, OS Build 26100.2314)."
+      placeholder: "e.g., 24H2 (OS Build 26100.2314)"
   - type: dropdown
     attributes:
       label: IDE
