@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": [ "Windows", "WinUI", "Desktop", "Reactor", "SingleFile", "Experimental" ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "identity": "Microsoft.WindowsAppSDK.Reactor.CSharp.SingleFileApp",
+  "groupIdentity": "Microsoft.WindowsAppSDK.Reactor.CSharp.SingleFileApp",
+  "name": "Reactor Single-File App (Experimental)",
+  "shortName": [ "reactor-singlefile", "winui-reactor-singlefile" ],
+  "sourceName": "ProjectTemplate",
+  "defaultName": "ReactorApp",
+  "description": "Experimental. Creates a blank Microsoft.UI.Reactor (WinUI 3) desktop app as a single-file .NET 10 file-based app: one .cs file whose #:package and #:property directives replace the .csproj. Pure C#, no XAML. Run it with 'dotnet run <name>.cs'. Microsoft.UI.Reactor is prerelease and its API may change.",
+  "preferNameDirectory": true,
+  "constraints": {
+    "windows-only": {
+      "type": "os",
+      "args": "Windows"
+    },
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": [ "[10.0,)" ]
+    }
+  },
+  "symbols": {
+    "projectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$projectname$"
+    },
+    "dotnetVersion": {
+      "type": "parameter",
+      "datatype": "choice",
+      "description": "Base target framework moniker (TFM). File-based apps and Microsoft.UI.Reactor require .NET 10 or later.",
+      "choices": [
+        { "choice": "net10.0", "description": "Target .NET 10" }
+      ],
+      "defaultValue": "net10.0",
+      "replaces": "$DotNetVersion$"
+    },
+    "reactorVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "0.1.0-preview.16",
+      "replaces": "$ReactorVersion$",
+      "description": "Microsoft.UI.Reactor NuGet version to reference."
+    },
+    "windowsAppSdkVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "*",
+      "replaces": "$WindowsAppSdkVersion$",
+      "description": "Microsoft.WindowsAppSDK NuGet version. Requires 2.2.0 or later; use * for the latest stable."
+    },
+    "windowsSdkBuildToolsWinAppVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "*",
+      "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
+      "description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Requires 0.7.0 or later (file-based app support); use * for the latest stable."
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "If specified, skips the automatic restore of the app on create."
+    }
+  },
+  "primaryOutputs": [
+    { "path": "ProjectTemplate.cs" }
+  ],
+  "forms": {
+    "identity": {
+      "identifier": "identity"
+    }
+  },
+  "postActions": [
+    {
+      "id": "restore",
+      "condition": "(!skipRestore)",
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "description": "Restore NuGet packages required by this app.",
+      "manualInstructions": [ { "text": "Run 'dotnet restore <name>.cs'" } ]
+    }
+  ]
+}
