@@ -25,6 +25,10 @@
     }
   },
   "symbols": {
+    "HostIdentifier": {
+      "type": "bind",
+      "binding": "host:HostIdentifier"
+    },
     "safeProjectName": {
       "type": "derived",
       "valueSource": "name",
@@ -110,6 +114,30 @@
     }
   },
   "postActions": [
+    {
+      "condition": "(windowsSdkBuildToolsVersion == \"*\")",
+      "description": "Pin Microsoft.Windows.SDK.BuildTools to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(windowsAppSdkVersion == \"*\")",
+      "description": "Pin Microsoft.WindowsAppSDK to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.WindowsAppSDK",
+        "projectFileExtensions": ".csproj"
+      }
+    },
     {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true,
