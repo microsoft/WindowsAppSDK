@@ -1,4 +1,5 @@
 {
+  "unsupportedHosts": [ { "id": "vs" } ],
   "icon": "icon.png",
   "requiredComponents": [
     {
@@ -27,7 +28,7 @@
       "name": {
         "text": "Windows App SDK version"
       },
-      "isVisible": "true"
+      "isVisible": "false"
     }
   ]
 }
