@@ -35,6 +35,11 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Windows.Globalization">
+      <HintPath>$(BaseOutputPath)Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.Globalization.winmd</HintPath>
+      <Implementation>Microsoft.Windows.ApplicationModel.Resources.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
