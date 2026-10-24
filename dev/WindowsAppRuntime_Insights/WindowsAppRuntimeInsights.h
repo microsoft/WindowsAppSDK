@@ -12,6 +12,8 @@
 #endif
 
 #include <wil/resource.h>
+#include <wil/stl.h>
+#include <wil/win32_helpers.h>
 #include <string>
 #include <appmodel.h>
     namespace Microsoft::WindowsAppRuntime::Insights
@@ -31,6 +33,12 @@
         static std::string WindowsAppRuntimeVersion()
         {
             const uint32_t c_versionResourceId{ 10000 };
+            // Bootstrap starts its initialize activity before it loads the runtime.
+            // Leave an unavailable value uncached so a later activity can resolve it.
+            if (!::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll"))
+            {
+                return {};
+            }
             static std::string version{ LoadStringFromResource(c_versionResourceId) };
             return version;
         }
@@ -38,6 +46,10 @@
         static std::string WindowsAppRuntimeChannel()
         {
             const uint32_t c_channelResourceId{ 10001 };
+            if (!::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll"))
+            {
+                return {};
+            }
             static std::string channel{ LoadStringFromResource(c_channelResourceId) };
             return channel;
         }
@@ -108,8 +120,27 @@
         static wil::unique_hmodule LoadResourceModule()
         {
             const PCWSTR c_resourceDllName{ L"Microsoft.WindowsAppRuntime.Insights.Resource.dll" };
-            wil::unique_hmodule resourceDllHandle(::LoadLibraryW(c_resourceDllName));
-            LOG_LAST_ERROR_IF_NULL_MSG(resourceDllHandle, "Unable to load resource dll. %ls", c_resourceDllName);
+            HMODULE module{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
+            if (!module)
+            {
+                return {};
+            }
+
+            auto resourceDllPath{ wil::GetModuleFileNameW<std::wstring>(module) };
+            const auto filenameOffset{ resourceDllPath.find_last_of(L"\\\\/") };
+            if (filenameOffset == std::wstring::npos)
+            {
+                LOG_HR_MSG(E_UNEXPECTED, "Unable to determine resource dll path");
+                return {};
+            }
+            resourceDllPath.resize(filenameOffset + 1);
+            resourceDllPath += c_resourceDllName;
+
+            wil::unique_hmodule resourceDllHandle(::LoadLibraryExW(
+                resourceDllPath.c_str(),
+                nullptr,
+                LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE));
+            LOG_LAST_ERROR_IF_NULL_MSG(resourceDllHandle, "Unable to load resource dll. %ls", resourceDllPath.c_str());
             return resourceDllHandle;
         }
     };
