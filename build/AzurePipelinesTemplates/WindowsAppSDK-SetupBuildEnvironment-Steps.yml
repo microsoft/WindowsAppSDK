@@ -77,6 +77,9 @@ steps:
 
 - task: PowerShell@2
   displayName: GenerateVersionInfo
+  env:
+    ${{ if eq(parameters.IsMonobuild, true) }}:
+      WindowsAppSDKBinaryVersion: $(WindowsAppSDKBinaryVersion)
   inputs:
     filePath: '$(Build.SourcesDirectory)\build\VersionInfo\GenerateVersionInfo.ps1'
     arguments: >
