@@ -58,6 +58,8 @@ namespace
         WinAppSDK_2_4_1 = WinAppSDKReleaseVersionFromValues(2, 4, 1),
         WinAppSDK_2_5_0 = WinAppSDKReleaseVersionFromValues(2, 5, 0),
         WinAppSDK_2_5_2 = WinAppSDKReleaseVersionFromValues(2, 5, 2),
+        WinAppSDK_2_6_0 = WinAppSDKReleaseVersionFromValues(2, 6, 0),
+        WinAppSDK_2_6_5 = WinAppSDKReleaseVersionFromValues(2, 6, 5),
         WinAppSDK_Latest = 999999999,
         WinAppSDK_Security = 0,
     };
@@ -201,6 +203,30 @@ namespace
         63991279, // WinUI_ResourceGraphExpiredDependencyPruning
         64006293, // WinUI_OrphanedObjectGCCollection
     };
+    constexpr UINT32 s_changes_2_6_0[] = {
+        61688595, // AppNotification_AppInstance_FixStackOverflowCrash
+        62800606, // Package_GetPackageFilePath
+        63805144, // CCoreServices_InputServicesTeardownOrder
+        63876312, // AppLifecycle_GetInstancesProcessHandleFix
+        63993469, // DispatcherQueue_CaptureCallbackErrorContext
+        64039911, // ContentIsland_InitializationFailureCleanup
+        64173443, // SwitcherSystemBackdropBrushSupport
+        64176041, // SwitcherColdWrappingWUCToMUC
+        64184211, // LanguageModel_RemoveLimitedAccessFeatureRequirement
+        64191138, // VersionInfo_MissingInsightsResourceDll
+        64236972, // AIFabric_Tip_APIClassName_ReasonName
+        64290699, // ItemsView_InvalidBringIntoViewAnchor
+        64299104, // DispatcherQueueTimer_CaptureTickErrorContext
+        64300276, // InputPointerSource_SystemEngineDPIOffset
+        64312861, // WebView2_HandleMoveFocusInvalidArgument
+    };
+    constexpr UINT32 s_changes_2_6_5[] = {
+        64354919, // WinUI_EnableShutdownRestart
+        64594238, // ResourceCandidate_ValueAsMemoryBuffer
+        64638252, // Xaml_OptimizeApplyStylesApplyTemplate
+        64661352, // LiftedInput_CloseSystemInputSite
+        64730431, // WinUI_FlyoutCheckForNullPresenter
+    };
     constexpr CatalogGroup s_catalogGroupsProd[] = {
         MakeGroup(s_changes_2_1_0, WinAppSDKReleaseVersion::WinAppSDK_2_1_0),
         MakeGroup(s_changes_2_1_5, WinAppSDKReleaseVersion::WinAppSDK_2_1_5),
@@ -209,6 +235,8 @@ namespace
         MakeGroup(s_changes_2_4_1, WinAppSDKReleaseVersion::WinAppSDK_2_4_1),
         MakeGroup(s_changes_2_5_0, WinAppSDKReleaseVersion::WinAppSDK_2_5_0),
         MakeGroup(s_changes_2_5_2, WinAppSDKReleaseVersion::WinAppSDK_2_5_2),
+        MakeGroup(s_changes_2_6_0, WinAppSDKReleaseVersion::WinAppSDK_2_6_0),
+        MakeGroup(s_changes_2_6_5, WinAppSDKReleaseVersion::WinAppSDK_2_6_5),
     };
     constexpr size_t s_catalogGroupsProdCount{ std::size(s_catalogGroupsProd) };
 
