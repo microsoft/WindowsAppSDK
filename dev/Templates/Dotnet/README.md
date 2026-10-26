@@ -150,14 +150,13 @@ Generated projects target `net{N}.0-windows10.0.26100.0`, where `{N}` is
 selected at scaffold time via `--dotnet-version`:
 
 ```shell
-dotnet new winui --dotnet-version net8.0  -n MyApp
-dotnet new winui --dotnet-version net9.0  -n MyApp
 dotnet new winui --dotnet-version net10.0 -n MyApp
+dotnet new winui --dotnet-version net11.0 -n MyApp
 ```
 
-Supported choices: `net8.0`, `net9.0`, `net10.0`. If you omit
-`--dotnet-version`, most templates default to `net10.0`; `winui-mvvm` matches
-your installed .NET SDK. You can also edit `<TargetFramework>` in the
+Supported choices: `net10.0`, `net11.0`. If you omit
+`--dotnet-version`, templates default to `net10.0`.
+You can also edit `<TargetFramework>` in the
 generated `.csproj` afterward.
 
 ### NuGet Package Versions
@@ -195,7 +194,7 @@ A single-file app (`reactor-singlefile`) has no `.csproj`: set them with
 
 ## Prerequisites
 
-- [.NET SDK](https://dotnet.microsoft.com/download) — `net8.0`, `net9.0`, or `net10.0`
+- [.NET SDK](https://dotnet.microsoft.com/download) — `net10.0` or `net11.0`
 - Windows 10 version 1809 (build 17763) or later
 - **Developer Mode enabled** — required for `dotnet run` to register the loose-layout package.
   Settings → System → For developers → Developer Mode → On.
