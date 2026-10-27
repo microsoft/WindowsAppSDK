@@ -1,0 +1,4 @@
+{
+  "name": "WinUI 단위 테스트 앱",
+  "description": "MSTest를 사용하여 WinUI용 C# 단위 테스트 앱을 만드는 프로젝트입니다."
+}

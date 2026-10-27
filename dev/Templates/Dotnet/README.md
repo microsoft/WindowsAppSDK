@@ -56,6 +56,7 @@ Get the list via `dotnet new list reactor`
 | `reactor-mvu`      | Reactor app using the Model-View-Update pattern with `UseReducer`    |
 | `reactor-navview`  | Reactor app with a `NavigationView` shell and multiple pages         |
 | `reactor-tabview`  | Reactor app with a `TabView` shell whose tabs live in the title bar  |
+| `reactor-singlefile` | Blank Reactor app as a single `.cs` [file-based app](https://learn.microsoft.com/dotnet/core/sdk/file-based-apps), no `.csproj` |
 
 Each also has a `winui-reactor*` alias (e.g. `winui-reactor`, `winui-reactor-mvu`)
 so they show up under `dotnet new list winui` alongside the other WinUI templates.
@@ -66,7 +67,8 @@ preview NuGet package. They require .NET 10 or later. Like the WinUI templates,
 they reference `Microsoft.Windows.SDK.BuildTools.WinApp` so `dotnet run` launches
 the app with full MSIX package identity. Pin a specific Reactor package version
 at scaffold time with `--reactor-version`, or the Windows App SDK version with
-`--wasdk-version`.
+`--wasdk-version`. `reactor-singlefile` is the one exception to the project
+layout: see [Quickstart a single-file Reactor app](#quickstart-a-single-file-reactor-app).
 
 ### Item Templates
 
@@ -114,6 +116,25 @@ learn the component model, hooks, and layout system. Swap `reactor` for
 `reactor-mvu`, `reactor-navview`, or `reactor-tabview` to start from a richer
 shell.
 
+### Quickstart a single-file Reactor app
+
+```powershell
+dotnet new reactor-singlefile -n MyReactorApp
+cd MyReactorApp
+dotnet run MyReactorApp.cs
+```
+
+`reactor-singlefile` scaffolds a single `MyReactorApp.cs`: a .NET 10
+[file-based app](https://learn.microsoft.com/dotnet/core/sdk/file-based-apps)
+whose `#:package` and `#:property` directives take the place of a `.csproj`.
+It still runs packaged: `Microsoft.Windows.SDK.BuildTools.WinApp` (0.7.0 or
+later) makes `dotnet run MyReactorApp.cs` synthesize an appxmanifest from those
+directives, register the app, and launch it with package identity (Developer
+Mode required). `winapp run MyReactorApp.cs` does the same. To run it
+unpackaged instead, add `#:property WindowsPackageType=None` to the file. When
+the app outgrows one file, `dotnet project convert MyReactorApp.cs` turns it
+into a regular project.
+
 ### Add items to an existing project
 
 ```powershell
@@ -129,15 +150,27 @@ Generated projects target `net{N}.0-windows10.0.26100.0`, where `{N}` is
 selected at scaffold time via `--dotnet-version`:
 
 ```shell
-dotnet new winui --dotnet-version net8.0  -n MyApp
-dotnet new winui --dotnet-version net9.0  -n MyApp
 dotnet new winui --dotnet-version net10.0 -n MyApp
+dotnet new winui --dotnet-version net11.0 -n MyApp
 ```
 
-Supported choices: `net8.0`, `net9.0`, `net10.0`. If you omit
-`--dotnet-version`, most templates default to `net10.0`; `winui-mvvm` matches
-your installed .NET SDK. You can also edit `<TargetFramework>` in the
+Supported choices: `net10.0`, `net11.0`. If you omit
+`--dotnet-version`, templates default to `net10.0`.
+You can also edit `<TargetFramework>` in the
 generated `.csproj` afterward.
+
+### NuGet Package Versions
+
+By default, project templates reference the latest stable version of each NuGet
+package. At creation time, they run `dotnet add package` to write that version
+into the generated `.csproj`. To pin a package instead, pass its version
+option, for example `--wasdk-version`, `--build-tools-version`, or
+`--winapp-version` (see `dotnet new <template> --help`). If the package feed
+can't be reached, the reference keeps `Version="*"` and resolves to the latest
+version at the next restore. Visual Studio hides these options and always uses
+the latest stable versions. Because Visual Studio only adds package references
+that aren't already in the project, the template omits them there and lets the
+post action add them; if the feed can't be reached, add them manually.
 
 ### Customizing `dotnet run` behavior
 
@@ -155,10 +188,13 @@ generated `.csproj` to tweak how `dotnet run` launches the app:
 These properties are provided by the
 [`Microsoft.Windows.SDK.BuildTools.WinApp`](https://www.nuget.org/packages/Microsoft.Windows.SDK.BuildTools.WinApp)
 NuGet package, which is referenced automatically by the project templates.
+A single-file app (`reactor-singlefile`) has no `.csproj`: set them with
+`#:property` directives in the `.cs` file instead (for example
+`#:property WinAppRunNoLaunch=true`), or pass them to `dotnet run` with `-p:`.
 
 ## Prerequisites
 
-- [.NET SDK](https://dotnet.microsoft.com/download) — `net8.0`, `net9.0`, or `net10.0`
+- [.NET SDK](https://dotnet.microsoft.com/download) — `net10.0` or `net11.0`
 - Windows 10 version 1809 (build 17763) or later
 - **Developer Mode enabled** — required for `dotnet run` to register the loose-layout package.
   Settings → System → For developers → Developer Mode → On.
@@ -174,10 +210,13 @@ NuGet package, which is referenced automatically by the project templates.
 
 This template pack is built from the
 [WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK) repository under
-`dev/Templates/Dotnet/`. The templates share the same XAML, code-behind,
-and project files as the Visual Studio templates under
-`dev/Templates/Source/ProjectTemplates/` and
-`dev/Templates/Source/ItemTemplates/`, so there is only one copy to maintain.
+`dev\Templates\Dotnet\`. Each directory under `templates` contains both
+the sources and `.template.config` metadata. The C# VSIX embeds this same
+NuGet pack and registers it with Visual Studio's template engine; there is no
+separate Visual Studio build for these templates. Experimental Reactor templates
+remain CLI-only. The two-project `.csproj` + `.wapproj` template is a VSIX-only
+exception that retains its existing `.vstemplate` implementation; it is not part
+of this NuGet pack.
 
 ### Local Testing
 

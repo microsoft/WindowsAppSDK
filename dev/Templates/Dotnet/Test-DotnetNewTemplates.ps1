@@ -1,15 +1,17 @@
 ﻿# Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-<#+
+<#
 .SYNOPSIS
 Validates the WinUI 3 dotnet new template pack end-to-end.
 
 .DESCRIPTION
 Builds (or consumes) the template NuGet package, reinstalls it locally, and
 scaffolds every WinUI 3 project and item template. Each generated project is
-built, and app templates are optionally launched via dotnet run using the
-recommended WinAppSDK self-contained properties.
+built; app templates build with -p:WindowsPackageType=None, so the packaged
+(single-project MSIX) path is not exercised. When launching is enabled, app
+templates are started directly from the built executable rather than via
+dotnet run, so they run without MSIX package identity.
 
 .PARAMETER PackagePath
 Path to an existing Microsoft.WindowsAppSDK.WinUI.CSharp.Templates .nupkg. When
@@ -320,8 +322,8 @@ function Write-ResolvedPackageVersions {
         [string]$ProjectPath
     )
 
-    # Templates reference WindowsAppSDK and the SDK build tools with Version="*",
-    # so each build silently picks whatever the feed serves. Log the resolved
+    # Templates pin WindowsAppSDK and the SDK build tools to whatever the feed
+    # serves as latest when scaffolded. Log the resolved
     # versions before building, so a failed build shows which ones it used.
     # Logging must never fail the run, hence Continue + try/finally.
     Write-Step "Resolving package versions for $(Split-Path -Path $ProjectFile -Leaf)"
@@ -350,7 +352,7 @@ function Write-ResolvedPackageVersions {
 function Test-WinUiProjectTemplate {
     param(
         [string]$TemplateShortName,
-        [ValidateSet('App', 'Library', 'Test')]
+        [ValidateSet('App', 'FileBasedApp', 'Library', 'Test')]
         [string]$Kind,
         [string]$Platform,
         [string]$WorkingRoot
@@ -361,7 +363,9 @@ function Test-WinUiProjectTemplate {
     New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
     Add-Result -Template $TemplateShortName -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
-    $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName.csproj"
+    # A file-based app template scaffolds a single <name>.cs whose #: directives replace the .csproj.
+    $projectFileExtension = if ($Kind -eq 'FileBasedApp') { '.cs' } else { '.csproj' }
+    $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName$projectFileExtension"
 
     Write-ResolvedPackageVersions -ProjectFile $projectFile -ProjectPath $projectPath
 
@@ -381,6 +385,20 @@ function Test-WinUiProjectTemplate {
             else {
                 Write-Warning "Unable to locate executable for template '$TemplateShortName' at '$projectPath'."
             }
+        }
+        'FileBasedApp' {
+            # The scaffold must stay a single file: no .csproj, .gitignore, or assets.
+            $scaffolded = @(Get-ChildItem -Path $projectPath -Recurse -Force -File)
+            if ($scaffolded.Count -ne 1 -or $scaffolded[0].Name -ne "$projectName.cs") {
+                $scaffoldedNames = ($scaffolded | ForEach-Object { $_.Name }) -join ', '
+                throw "Template '$TemplateShortName' should scaffold only '$projectName.cs', but produced: $scaffoldedNames"
+            }
+
+            # Builds the default (packaged) configuration. The output goes to the SDK's
+            # file-based app cache (%TEMP%\dotnet\runfile), not $projectPath, so there is
+            # no executable to record for launching.
+            Invoke-DotnetCommand -Arguments @('build', $projectFile, '-p:Configuration=Debug', "-p:Platform=$Platform") -WorkingDirectory $projectPath -Description 'build file-based app template'
+            Add-Result -Template $TemplateShortName -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
         }
         'Library' {
             Invoke-DotnetCommand -Arguments @('build', $projectFile, '-c', 'Debug') -WorkingDirectory $projectPath -Description 'build library template'
@@ -441,6 +459,26 @@ function Assert-CsprojPackageVersion {
     if ($ref.Version -ne $ExpectedVersion) {
         throw "PackageReference '$PackageName' has Version='$($ref.Version)' but expected '$ExpectedVersion' in '$CsprojPath'"
     }
+}
+
+function Assert-CsprojPackageVersionPinned {
+    # Asserts the template's add-package post action replaced the '*' placeholder
+    # with a concrete version.
+    param(
+        [string]$CsprojPath,
+        [string]$PackageName
+    )
+
+    [xml]$csproj = Get-Content -Path $CsprojPath
+    $ref = $csproj.SelectNodes('//PackageReference') |
+        Where-Object { $_.Include -eq $PackageName }
+    if (-not $ref) {
+        throw "PackageReference '$PackageName' not found in '$CsprojPath'"
+    }
+    if ($ref.Version -notmatch '^\d+(\.\d+){1,3}(-[0-9A-Za-z.-]+)?$') {
+        throw "PackageReference '$PackageName' has Version='$($ref.Version)' but expected a concrete pinned version in '$CsprojPath'"
+    }
+    Write-Step "$PackageName pinned to $($ref.Version)"
 }
 
 function Get-LatestOfficialWasdkVersion {
@@ -664,13 +702,17 @@ try {
         # `dotnet test`. Validate it as an App so we still confirm the
         # template builds cleanly.
         @{ ShortName = 'winui-unittest'; Kind = 'App' },
-        # Reactor (Microsoft.UI.Reactor) app templates: pure C#, unpackaged,
-        # dotnet-new-only. They build with the same App path below
-        # (-p:WindowsPackageType=None), and their .csproj already sets it.
+        # Reactor (Microsoft.UI.Reactor) app templates: pure C#, dotnet-new-only.
+        # Like the other app templates they are packaged (single-project MSIX),
+        # and they build through the same App path below, which passes
+        # -p:WindowsPackageType=None; the .csproj itself does not set it.
         @{ ShortName = 'reactor'; Kind = 'App' },
         @{ ShortName = 'reactor-mvu'; Kind = 'App' },
         @{ ShortName = 'reactor-navview'; Kind = 'App' },
-        @{ ShortName = 'reactor-tabview'; Kind = 'App' }
+        @{ ShortName = 'reactor-tabview'; Kind = 'App' },
+        # Reactor single-file app: a .NET file-based app, i.e. a single <name>.cs
+        # whose #: directives replace the .csproj, built with 'dotnet build <name>.cs'.
+        @{ ShortName = 'reactor-singlefile'; Kind = 'FileBasedApp' }
     )
 
     foreach ($template in $projectTemplates) {
@@ -684,13 +726,14 @@ try {
     # ─── Version parameter test scenarios ───
     Write-Step 'Running version parameter test scenarios...'
 
-    # Scenario 1: Default (no version passed) — verify Version="*"
+    # Scenario 1: Default (no version passed) — the '*' default makes the
+    # add-package post actions pin each package to the latest stable version.
     $defaultPath = Join-Path -Path $workingRoot -ChildPath 'VersionDefault'
     New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'VersionDefault' -OutputPath $defaultPath -WorkingDirectory $workingRoot
     $defaultCsproj = Join-Path -Path $defaultPath -ChildPath 'VersionDefault.csproj'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.WindowsAppSDK'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'default version content' -Status 'Succeeded' -Path $defaultPath
 
     # Scenario 2: Pinned WindowsAppSDK version only
@@ -698,8 +741,8 @@ try {
     Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPinned', '-o', $pinnedPath, '--wasdk-version', '1.7.250127002', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pinned WASDK version'
     $pinnedCsproj = Join-Path -Path $pinnedPath -ChildPath 'VersionPinned.csproj'
     Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
-    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Assert-CsprojPackageVersionPinned -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
+    Assert-CsprojPackageVersionPinned -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pinned version content' -Status 'Succeeded' -Path $pinnedPath
 
     # Scenario 3: All versions pinned
@@ -872,6 +915,9 @@ try {
     if (-not (Test-Path -Path $unreachableCsproj)) {
         throw "Template scaffold did not produce a .csproj at '$unreachableCsproj'"
     }
+    # The add-package post actions can't resolve a version offline, so the
+    # references keep the '*' placeholder for a later restore.
+    Assert-CsprojPackageVersion -CsprojPath $unreachableCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'unreachable source: scaffold produces files' -Status 'Succeeded' -Path $unreachablePath
 
     # Build should fail because no packages could be restored.
@@ -906,17 +952,17 @@ try {
 
     # Scenario 7b: Working NuGet source — restore resolves up-to-date packages
     # and the project builds successfully. Complements 7a by proving that when
-    # pointed at valid feeds the default Version="*" wildcard pulls the latest
-    # stable packages and produces a clean build.
+    # pointed at valid feeds the default pins the latest stable packages and
+    # produces a clean build.
     Write-Step 'Testing working NuGet source resolves packages and builds...'
     $workingSourcePath = Join-Path -Path $workingRoot -ChildPath 'WorkingSource'
     New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'WorkingSource' -OutputPath $workingSourcePath -WorkingDirectory $workingRoot
 
     $workingSourceCsproj = Join-Path -Path $workingSourcePath -ChildPath 'WorkingSource.csproj'
 
-    # Verify the csproj uses wildcard versions (the default)
-    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
+    # Verify the default pinned concrete versions
+    Assert-CsprojPackageVersionPinned -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK'
+    Assert-CsprojPackageVersionPinned -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
 
     # Explicit restore to confirm packages are fetched from the working feeds
     Invoke-DotnetCommand -Arguments @('restore', $workingSourceCsproj) -WorkingDirectory $workingSourcePath -Description 'restore with working NuGet source'
@@ -936,7 +982,7 @@ try {
     Write-Step "Resolved: $resolvedWasdk"
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'working source: restore resolves packages' -Status 'Succeeded' -Path $workingSourcePath
 
-    # This is the only scenario that builds the default Version="*" wildcard, so
+    # This is the only scenario that builds the default latest versions, so
     # it is what proves the latest published packages build cleanly (an early
     # warning for a bad WindowsAppSDK release). When the pipeline pins a specific
     # version to work around a broken latest, skip this build so the pinned run
