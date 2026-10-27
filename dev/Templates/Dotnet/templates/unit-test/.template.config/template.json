@@ -25,6 +25,10 @@
     }
   },
   "symbols": {
+    "HostIdentifier": {
+      "type": "bind",
+      "binding": "host:HostIdentifier"
+    },
     "safeProjectName": {
       "type": "derived",
       "valueSource": "name",
@@ -61,9 +65,8 @@
       "datatype": "choice",
       "description": "Base target framework moniker (TFM) for the WinUI project. Defaults to the installed SDK version.",
       "choices": [
-        { "choice": "net8.0", "description": "Target .NET 8 (LTS)" },
-        { "choice": "net9.0", "description": "Target .NET 9" },
-        { "choice": "net10.0", "description": "Target .NET 10" }
+        { "choice": "net10.0", "description": "Target .NET 10" },
+        { "choice": "net11.0", "description": "Target .NET 11" }
       ],
       "defaultValue": "net10.0"
     },
@@ -204,6 +207,90 @@
     }
   },
   "postActions": [
+    {
+      "condition": "(windowsSdkBuildToolsVersion == \"*\")",
+      "description": "Pin Microsoft.Windows.SDK.BuildTools to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(windowsAppSdkVersion == \"*\")",
+      "description": "Pin Microsoft.WindowsAppSDK to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.WindowsAppSDK",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\")",
+      "description": "Pin Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools.WinApp",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(mstestVersion == \"*\")",
+      "description": "Pin MSTest.TestAdapter to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package MSTest.TestAdapter'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "MSTest.TestAdapter",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(mstestVersion == \"*\")",
+      "description": "Pin MSTest.TestFramework to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package MSTest.TestFramework'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "MSTest.TestFramework",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(microsoftNetTestSdkVersion == \"*\")",
+      "description": "Pin Microsoft.NET.Test.Sdk to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.NET.Test.Sdk'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.NET.Test.Sdk",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(microsoftNetTestSdkVersion == \"*\")",
+      "description": "Pin Microsoft.TestPlatform.TestHost to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.TestPlatform.TestHost'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.TestPlatform.TestHost",
+        "projectFileExtensions": ".csproj"
+      }
+    },
     {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true,

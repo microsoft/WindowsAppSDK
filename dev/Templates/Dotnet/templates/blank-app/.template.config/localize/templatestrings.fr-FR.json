@@ -1,0 +1,4 @@
+{
+  "name": "Application WinUI vierge (Empaquetée)",
+  "description": "Modèle de projet pour la création d’une application WinUI ainsi qu’un package MSIX pour le chargement indépendant ou la distribution via le Microsoft Store."
+}

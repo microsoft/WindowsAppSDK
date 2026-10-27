@@ -25,6 +25,10 @@
     }
   },
   "symbols": {
+    "HostIdentifier": {
+      "type": "bind",
+      "binding": "host:HostIdentifier"
+    },
     "safeProjectName": {
       "type": "derived",
       "valueSource": "name",
@@ -42,7 +46,8 @@
       "datatype": "choice",
       "description": "Base target framework moniker (TFM). Microsoft.UI.Reactor requires .NET 10 or later.",
       "choices": [
-        { "choice": "net10.0", "description": "Target .NET 10" }
+        { "choice": "net10.0", "description": "Target .NET 10" },
+        { "choice": "net11.0", "description": "Target .NET 11" }
       ],
       "defaultValue": "net10.0",
       "replaces": "$DotNetVersion$"
@@ -133,6 +138,42 @@
     }
   },
   "postActions": [
+    {
+      "condition": "(!skipRestore && windowsSdkBuildToolsVersion == \"*\")",
+      "description": "Pin Microsoft.Windows.SDK.BuildTools to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(!skipRestore && windowsAppSdkVersion == \"*\")",
+      "description": "Pin Microsoft.WindowsAppSDK to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.WindowsAppSDK",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(!skipRestore && windowsSdkBuildToolsWinAppVersion == \"*\")",
+      "description": "Pin Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools.WinApp",
+        "projectFileExtensions": ".csproj"
+      }
+    },
     {
       "id": "restore",
       "condition": "(!skipRestore)",
