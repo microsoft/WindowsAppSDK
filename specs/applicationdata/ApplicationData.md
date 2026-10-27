@@ -263,12 +263,16 @@ HRESULT SaveData(DWORD dataLength, void* data)
 {
     PCWSTR packageFamilyName{ L"Fabrikam.Contoso_1234567890abc" };
     wil::unique_process_heap_string machinePath;
-    RETURN_IF_FAILED(ApplicationData_GetMachineFolderForPackageFamily(packageFamilyName, machinePath));
+    RETURN_IF_FAILED(ApplicationData_GetMachineFolderForPackageFamily(packageFamilyName, wil::out_param(machinePath)));
+    if (!machinePath)
+    {
+        RETURN_WIN32_ERROR_MSG(ERROR_RESOURCE_NOT_PRESENT, "%ls", packageFamilyName);
+    }
 
     wil::unique_process_heap_string filename;
     RETURN_IF_FAILED(wil::str_printf_nothrow(filename, L"%ls\\Fabrikam.dat", machinePath.get()));
     wil::unique_hfile file{ ::CreateFileW(filename.get(), GENERIC_WRITE, FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
-    RETURN_LAST_ERROR_IF_NULL_MSG(filename, "%ls", filename.get());
+    RETURN_LAST_ERROR_IF_MSG(!filename, "%ls", filename.get());
     DWORD bytesWritten{};
     RETURN_IF_WIN32_BOOL_FALSE_MSG(::WriteFile(file.get(), data, dataLength, &bytesWritten, nullptr), "%ls", filename.get());
 }
