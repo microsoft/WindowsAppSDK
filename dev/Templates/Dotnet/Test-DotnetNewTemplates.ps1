@@ -411,6 +411,121 @@ function Test-WinUiProjectTemplate {
     }
 }
 
+function Test-PackagingParameters {
+    param([string]$TemplatesRoot)
+
+    foreach ($config in Get-ChildItem -LiteralPath $TemplatesRoot -Recurse -Force -Filter template.json) {
+        $template = Get-Content -LiteralPath $config.FullName -Raw | ConvertFrom-Json
+        if ($template.symbols.PSObject.Properties.Name -notcontains 'Packaging' -or
+            @($template.shortName) -contains 'winui-unittest') {
+            continue
+        }
+        if ($template.symbols.Packaging.defaultValue -ne 'Packaged') {
+            throw "Packaging must default to Packaged in '$($config.FullName)'."
+        }
+        if ($template.symbols.PSObject.Properties.Name -notcontains 'publisherDn') {
+            continue
+        }
+        $parameters = @($template.symbols.PSObject.Properties |
+            Where-Object { $_.Value.type -eq 'parameter' } |
+            ForEach-Object { $_.Name })
+        if (($parameters[-3..-1] -join ',') -ne 'Packaging,publisherDn,publisherDisplay') {
+            throw "Packaging and publisher parameters must be last in '$($config.FullName)'."
+        }
+        foreach ($publisher in @('publisherDn', 'publisherDisplay')) {
+            if ($template.symbols.$publisher.isEnabled -ne '(Packaging == "Packaged")') {
+                throw "Publisher fields must be disabled when unpackaged in '$($config.FullName)'."
+            }
+        }
+        $idePath = Join-Path -Path $config.DirectoryName -ChildPath 'ide.host.json'
+        $ide = Get-Content -LiteralPath $idePath -Raw | ConvertFrom-Json
+        if (($ide.symbolInfo[-3..-1].id -join ',') -ne 'Packaging,publisherDn,publisherDisplay') {
+            throw "Packaging and publisher fields must be last in '$idePath'."
+        }
+    }
+}
+
+function Test-PackagingOptions {
+    param(
+        [string]$TemplateShortName,
+        [string]$Kind,
+        [string]$WorkingRoot
+    )
+
+    foreach ($packaging in @('Default', 'Packaged', 'Unpackaged')) {
+        $projectName = 'Packaging_{0}_{1}' -f $TemplateShortName.Replace('-', '_'), $packaging
+        $projectPath = Join-Path -Path $WorkingRoot -ChildPath $projectName
+        $createArgs = @('new', $TemplateShortName, '-n', $projectName, '-o', $projectPath, '--no-update-check')
+        if ($TemplateShortName.StartsWith('reactor')) {
+            $createArgs += '--no-restore'
+        }
+        if ($packaging -ne 'Default') {
+            $createArgs += @('--packaging', $packaging)
+        }
+        Invoke-DotnetCommand -Arguments $createArgs -WorkingDirectory $WorkingRoot -Description "create $TemplateShortName ($packaging)"
+        $unpackaged = $packaging -eq 'Unpackaged'
+
+        if ($Kind -eq 'FileBasedApp') {
+            $files = @(Get-ChildItem -LiteralPath $projectPath -Recurse -Force -File)
+            if ($files.Count -ne 1 -or $files[0].Name -ne "$projectName.cs") {
+                throw "Template '$TemplateShortName' must remain a single-file app ($packaging)."
+            }
+            $source = Get-Content -LiteralPath $files[0].FullName -Raw
+            if ($source.Contains('#:property WindowsPackageType=None') -ne $unpackaged) {
+                throw "Incorrect WindowsPackageType for '$TemplateShortName' ($packaging)."
+            }
+        }
+        else {
+            $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName.csproj"
+            [xml]$project = Get-Content -LiteralPath $projectFile -Raw
+            $packageType = $project.SelectSingleNode('/Project/PropertyGroup/WindowsPackageType')
+            $msixTooling = $project.SelectSingleNode('/Project/PropertyGroup/EnableMsixTooling')
+            $winappReference = $project.SelectSingleNode('//PackageReference[@Include="Microsoft.Windows.SDK.BuildTools.WinApp"]')
+            $msixCapability = $project.SelectSingleNode('//ProjectCapability[@Include="Msix"]')
+            $packageMenu = $project.SelectSingleNode('//HasPackageAndPublishMenu')
+            $manifestPath = Join-Path -Path $projectPath -ChildPath 'Package.appxmanifest'
+            $assetsPath = Join-Path -Path $projectPath -ChildPath 'Assets'
+            $iconPath = Join-Path -Path $assetsPath -ChildPath 'AppIcon.ico'
+            $applicationIcon = $project.SelectSingleNode('/Project/PropertyGroup/ApplicationIcon')
+            $iconContent = $project.SelectSingleNode('//Content[@Include="Assets\AppIcon.ico"]')
+            if (-not (Test-Path -LiteralPath $iconPath) -or -not $applicationIcon -or
+                $applicationIcon.InnerText -ne 'Assets\AppIcon.ico' -or -not $iconContent) {
+                throw "Application icon missing in '$TemplateShortName' ($packaging)."
+            }
+            $launchSettings = Get-Content -LiteralPath (Join-Path -Path $projectPath -ChildPath 'Properties\launchSettings.json') -Raw | ConvertFrom-Json
+            $commands = @($launchSettings.profiles.PSObject.Properties | ForEach-Object { $_.Value.commandName })
+
+            if ($unpackaged) {
+                if (-not $packageType -or $packageType.InnerText -ne 'None' -or
+                    -not $msixTooling -or $msixTooling.InnerText -ne 'false' -or
+                    $winappReference -or $msixCapability -or $packageMenu -or
+                    (Test-Path -LiteralPath $manifestPath) -or
+                    $commands -contains 'MsixPackage' -or $commands -notcontains 'Project') {
+                    throw "Packaged content or settings remain in '$TemplateShortName' (Unpackaged)."
+                }
+                $assets = @(Get-ChildItem -LiteralPath $assetsPath -Recurse -File)
+                if ($assets.Count -ne 1 -or $assets[0].Name -ne 'AppIcon.ico') {
+                    throw "MSIX-only assets remain in '$TemplateShortName' (Unpackaged)."
+                }
+                $sources = Get-ChildItem -LiteralPath $projectPath -Recurse -File |
+                    Where-Object { $_.Extension -in @('.cs', '.xaml', '.csproj') }
+                foreach ($sourceFile in $sources) {
+                    if ((Get-Content -LiteralPath $sourceFile.FullName -Raw) -match 'Assets[\\/](?!AppIcon\.ico)') {
+                        throw "Reference to excluded assets in '$($sourceFile.FullName)'."
+                    }
+                }
+            }
+            elseif ($packageType -or -not $msixTooling -or $msixTooling.InnerText -ne 'true' -or
+                -not $winappReference -or -not $msixCapability -or -not $packageMenu -or
+                -not (Test-Path -LiteralPath $manifestPath) -or -not (Test-Path -LiteralPath $assetsPath) -or
+                $commands.Count -ne 1 -or $commands[0] -ne 'MsixPackage') {
+                throw "Packaged content or settings missing in '$TemplateShortName' ($packaging)."
+            }
+        }
+        Add-Result -Template $TemplateShortName -Platform 'N/A' -Step "packaging: $packaging" -Status 'Succeeded' -Path $projectPath
+    }
+}
+
 function Test-ItemTemplates {
     param(
         [string]$WorkingRoot,
@@ -690,6 +805,8 @@ try {
     Remove-TemplatePackIfPresent -RepoRoot $repoRoot
     Install-TemplatePack -RepoRoot $repoRoot -PackageToInstall $packageToInstall
 
+    Test-PackagingParameters -TemplatesRoot (Join-Path -Path $PSScriptRoot -ChildPath 'templates')
+
     $projectTemplates = @(
         @{ ShortName = 'winui'; Kind = 'App' },
         @{ ShortName = 'winui-navview'; Kind = 'App' },
@@ -716,6 +833,9 @@ try {
     )
 
     foreach ($template in $projectTemplates) {
+        if ($template.Kind -in @('App', 'FileBasedApp') -and $template.ShortName -ne 'winui-unittest') {
+            Test-PackagingOptions -TemplateShortName $template.ShortName -Kind $template.Kind -WorkingRoot $workingRoot
+        }
         foreach ($platform in $Platforms) {
             Test-WinUiProjectTemplate -TemplateShortName $template.ShortName -Kind $template.Kind -Platform $platform -WorkingRoot $workingRoot
         }

@@ -12,7 +12,7 @@
   "shortName": ["winui-navview", "winui3-navview"],
   "sourceName": "ProjectTemplate",
   "defaultName": "WinUINavApp",
-  "description": "Creates a WinUI 3 NavigationView starter app with MSIX packaging.",
+  "description": "Creates a WinUI 3 NavigationView starter app with optional MSIX packaging.",
   "preferNameDirectory": true,
   "symbols": {
     "HostIdentifier": {
@@ -106,18 +106,6 @@
       ],
       "description": "Minimum supported Windows version."
     },
-    "publisherDn": {
-      "type": "parameter",
-      "datatype": "text",
-      "replaces": "$XmlEscapedPublisherDistinguishedName$",
-      "defaultValue": "CN=AppPublisher"
-    },
-    "publisherDisplay": {
-      "type": "parameter",
-      "datatype": "text",
-      "replaces": "$XmlEscapedPublisher$",
-      "defaultValue": "AppPublisher"
-    },
     "guid9": {
       "type": "generated",
       "generator": "guid",
@@ -146,6 +134,43 @@
       "defaultValue": "*",
       "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
       "description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Use * for the latest stable."
+    },
+    "unpackaged": {
+      "type": "computed",
+      "value": "(Packaging == \"Unpackaged\")"
+    },
+    "Packaging": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "Packaged",
+      "displayName": "Packaging",
+      "description": "Choose a packaged MSIX app or an unpackaged desktop app.",
+      "choices": [
+        {
+          "choice": "Packaged",
+          "description": "Packaged app with MSIX identity and package assets.",
+          "displayName": "Packaged"
+        },
+        {
+          "choice": "Unpackaged",
+          "description": "Unpackaged app without an MSIX manifest or package assets.",
+          "displayName": "Unpackaged"
+        }
+      ]
+    },
+    "publisherDn": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisherDistinguishedName$",
+      "defaultValue": "CN=AppPublisher",
+      "isEnabled": "(Packaging == \"Packaged\")"
+    },
+    "publisherDisplay": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisher$",
+      "defaultValue": "AppPublisher",
+      "isEnabled": "(Packaging == \"Packaged\")"
     }
   },
   "sources": [
@@ -161,6 +186,18 @@
               "before": "$targetentrypoint$",
               "after": "{{safeProjectName}}.App"
             }
+          ]
+        },
+        {
+          "condition": "unpackaged",
+          "exclude": [
+            "Package.appxmanifest",
+            "Assets/SplashScreen.*.png",
+            "Assets/LockScreenLogo.*.png",
+            "Assets/Square150x150Logo.*.png",
+            "Assets/Square44x44Logo.*.png",
+            "Assets/StoreLogo.png",
+            "Assets/Wide310x150Logo.*.png"
           ]
         }
       ],
@@ -206,7 +243,7 @@
       }
     },
     {
-      "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\")",
+      "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\" && !unpackaged)",
       "description": "Pin Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,

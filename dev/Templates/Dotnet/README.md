@@ -45,7 +45,7 @@ Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
 [Microsoft.UI.Reactor](https://github.com/microsoft/microsoft-ui-reactor) is a
 declarative, React-style way to build WinUI 3 apps in **pure C# — no XAML**.
-These templates scaffold a runnable, single-project MSIX-packaged Reactor app
+These templates scaffold a runnable Reactor app with optional MSIX packaging
 whose UI mirrors the matching WinUI 3 XAML templates.
 
 Get the list via `dotnet new list reactor`
@@ -61,7 +61,7 @@ Get the list via `dotnet new list reactor`
 Each also has a `winui-reactor*` alias (e.g. `winui-reactor`, `winui-reactor-mvu`)
 so they show up under `dotnet new list winui` alongside the other WinUI templates.
 
-Reactor apps are packaged (single-project MSIX) and reference the
+Reactor apps are packaged (single-project MSIX) by default and reference the
 [`Microsoft.UI.Reactor`](https://www.nuget.org/packages/Microsoft.UI.Reactor)
 preview NuGet package. They require .NET 10 or later. Like the WinUI templates,
 they reference `Microsoft.Windows.SDK.BuildTools.WinApp` so `dotnet run` launches
@@ -158,6 +158,28 @@ Supported choices: `net10.0`, `net11.0`. If you omit
 `--dotnet-version`, templates default to `net10.0`.
 You can also edit `<TargetFramework>` in the
 generated `.csproj` afterward.
+
+### Choosing Packaging
+
+The WinUI app templates (`winui`, `winui-navview`, `winui-mvvm`, and
+`winui-tabview`) and Reactor app templates support `--packaging`:
+
+```shell
+dotnet new winui --packaging Packaged -n MyApp
+dotnet new winui --packaging Unpackaged -n MyDesktopApp
+```
+
+`Packaged` is the default. `Unpackaged` sets `WindowsPackageType=None` and,
+for project-based apps, omits the MSIX manifest, MSIX-only assets, MSIX tooling,
+and `Microsoft.Windows.SDK.BuildTools.WinApp`. Only the matching launch
+profile is generated; unpackaged Reactor projects also keep their devtools
+profile. The publisher fields are enabled only for packaged projects.
+Packaging and the two publisher fields are the last three options in Visual
+Studio.
+
+`reactor-singlefile` also supports `--packaging`, but has no manifest or
+publisher fields. It keeps `Microsoft.Windows.SDK.BuildTools.WinApp` for
+file-based app support in either mode.
 
 ### NuGet Package Versions
 
