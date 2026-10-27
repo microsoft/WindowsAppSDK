@@ -806,6 +806,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Package.Test.Main.msix", "test\Package\data\Main\Package.Test.Main.msix.vcxproj", "{472B8D93-9200-48B7-BFB6-9D9B85AA4025}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Windows.ApplicationModel.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel\Microsoft.Windows.ApplicationModel.Projection.csproj", "{56E24293-44ED-EE4B-5A0D-EAB8B3CF950D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
