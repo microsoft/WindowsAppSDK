@@ -55,9 +55,8 @@
       "datatype": "choice",
       "description": "Base target framework moniker (TFM) for the WinUI project. Defaults to the installed SDK version.",
       "choices": [
-        { "choice": "net8.0", "description": "Target .NET 8" },
-        { "choice": "net9.0", "description": "Target .NET 9" },
-        { "choice": "net10.0", "description": "Target .NET 10" }
+        { "choice": "net10.0", "description": "Target .NET 10" },
+        { "choice": "net11.0", "description": "Target .NET 11" }
       ],
       "defaultValue": "net10.0"
     },
