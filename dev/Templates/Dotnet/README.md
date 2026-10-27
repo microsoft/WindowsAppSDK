@@ -162,7 +162,7 @@ generated `.csproj` afterward.
 ### Choosing Packaging
 
 The WinUI app templates (`winui`, `winui-navview`, `winui-mvvm`, and
-`winui-tabview`) and Reactor app templates support `--packaging`:
+`winui-tabview`) and project-based Reactor app templates support `--packaging`:
 
 ```shell
 dotnet new winui --packaging Packaged -n MyApp
@@ -177,9 +177,9 @@ profile. The publisher fields are enabled only for packaged projects.
 Packaging and the two publisher fields are the last three options in Visual
 Studio.
 
-`reactor-singlefile` also supports `--packaging`, but has no manifest or
-publisher fields. It keeps `Microsoft.Windows.SDK.BuildTools.WinApp` for
-file-based app support in either mode.
+`reactor-singlefile` does not expose `--packaging`. To run it unpackaged, add
+`#:property WindowsPackageType=None` to the generated file. It keeps
+`Microsoft.Windows.SDK.BuildTools.WinApp` for file-based app support.
 
 ### NuGet Package Versions
 

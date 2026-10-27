@@ -471,7 +471,7 @@ function Test-PackagingOptions {
                 throw "Template '$TemplateShortName' must remain a single-file app ($packaging)."
             }
             $source = Get-Content -LiteralPath $files[0].FullName -Raw
-            if ($source.Contains('#:property WindowsPackageType=None') -ne $unpackaged) {
+            if (($source -match '(?m)^#:property WindowsPackageType=None\s*$') -ne $unpackaged) {
                 throw "Incorrect WindowsPackageType for '$TemplateShortName' ($packaging)."
             }
         }
@@ -833,7 +833,7 @@ try {
     )
 
     foreach ($template in $projectTemplates) {
-        if ($template.Kind -in @('App', 'FileBasedApp') -and $template.ShortName -ne 'winui-unittest') {
+        if ($template.Kind -eq 'App' -and $template.ShortName -ne 'winui-unittest') {
             Test-PackagingOptions -TemplateShortName $template.ShortName -Kind $template.Kind -WorkingRoot $workingRoot
         }
         foreach ($platform in $Platforms) {
