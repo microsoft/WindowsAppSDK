@@ -64,9 +64,8 @@ public partial class UnitTest1
 
     // Use the UITestMethod attribute for tests that need to run on the UI thread.
     [UITestMethod]
-    public async Task TestMethod2()
+    public void TestMethod2()
     {
-        await Task.Yield();
         var grid = new Grid();
         Assert.IsTrue(grid.DispatcherQueue.HasThreadAccess);
         Assert.AreEqual(0, grid.MinWidth);

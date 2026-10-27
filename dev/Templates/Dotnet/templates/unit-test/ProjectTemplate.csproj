@@ -27,8 +27,8 @@
     <IsTestProject>true</IsTestProject>
 <!--#if (TestRunner == "Microsoft.Testing.Platform") -->
     <EnableMSTestRunner>true</EnableMSTestRunner>
-    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
-    <GenerateTestingPlatformApplicationHelper>true</GenerateTestingPlatformApplicationHelper>
+    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint> <!-- Use WinUI's generated entry point instead -->
+    <GenerateTestingPlatformApplicationHelper>true</GenerateTestingPlatformApplicationHelper> <!-- generates MicrosoftTestingPlatformApplication.RunAsync(...) -->
 <!--#endif -->
   </PropertyGroup>
 
