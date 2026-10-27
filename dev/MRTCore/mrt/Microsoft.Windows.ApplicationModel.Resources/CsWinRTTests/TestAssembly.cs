@@ -10,7 +10,7 @@ namespace MrtCoreCsWinRTTests
     internal class TestAssembly
     {
         [AssemblyInitialize]
-        [TestProperty("CoreClrProfile", "net6")]
+        [TestProperty("CoreClrProfile", "net10")]
         public static void AssemblyInitialize(TestContext testContext)
         {
         }

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.17763.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <Platforms>x64;x86;arm64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -8,7 +8,10 @@
     <IsTestProject>true</IsTestProject>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
     <RuntimeIdentifier>win-$(Platform.ToLowerInvariant())</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'AnyCPU'">win-x86</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'ARM64EC'">win-arm64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
+    <RuntimeFrameworkVersion>$(CsWinRTDependencyDotNetCoreRuntimePackageVersion)</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,7 +49,7 @@
     <ItemGroup>
       <CoreClrProfileFile Include="@(RuntimePackAsset)" Condition="'%(RuntimePackAsset.AssetType)' == 'runtime' Or '%(RuntimePackAsset.AssetType)' == 'native'" />
     </ItemGroup>
-    <Copy SkipUnchangedFiles="true" SourceFiles="@(CoreClrProfileFile)" DestinationFolder="$(OutDir)\net6" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(CoreClrProfileFile)" DestinationFolder="$(OutDir)\net10" />
   </Target>
 
 </Project>
