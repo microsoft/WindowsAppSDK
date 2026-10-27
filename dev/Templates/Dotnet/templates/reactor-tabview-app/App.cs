@@ -44,8 +44,10 @@ class App : Component
             }
 
             // RightInset is in physical pixels; convert to DIPs so the caption
-            // buttons don't overlap tabs on high-DPI displays.
-            drag.MinWidth = win.AppWindow.TitleBar.RightInset / (dpi / 96.0);
+            // buttons don't overlap tabs on high-DPI displays. RightInset can be
+            // transiently negative while a minimized window is restored, and
+            // MinWidth rejects negative values.
+            drag.MinWidth = Math.Max(0, win.AppWindow.TitleBar.RightInset) / (dpi / 96.0);
         }, dpi, winW, winH);
 
         void AddTab()
