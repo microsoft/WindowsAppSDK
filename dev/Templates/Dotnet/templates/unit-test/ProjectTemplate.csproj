@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>$DotNetVersion$-windows$WindowsTargetVersion$</TargetFramework>
+    <TargetFramework>$DotNetVersion$-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>$targetplatformminversion$</TargetPlatformMinVersion>
     <RootNamespace>$safeprojectname$</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -110,10 +110,4 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed>False</PublishTrimmed>
   </PropertyGroup>
-  <Target Name="ValidateTestArchitecture" BeforeTargets="PrepareForBuild">
-    <Error Condition="'$(Platform)' != 'x86' and '$(Platform)' != 'X86' and '$(Platform)' != 'x64' and '$(Platform)' != 'X64' and '$(Platform)' != 'ARM64' and '$(Platform)' != 'Arm64' and '$(Platform)' != 'arm64'"
-           Text="Choose an explicit supported Platform: x86, x64, or ARM64." />
-    <Error Condition="'$(RuntimeIdentifier)' != '$(_WinUITestRuntimeIdentifier)'"
-           Text="RuntimeIdentifier must match Platform: win-x86/x86, win-x64/x64, or win-arm64/ARM64." />
-  </Target>
 </Project>

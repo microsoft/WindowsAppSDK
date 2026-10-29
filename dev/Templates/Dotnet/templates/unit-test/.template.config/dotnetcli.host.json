@@ -59,7 +59,7 @@
     "skipRestore": {
       "longName": "no-restore",
       "shortName": "",
-      "description": "Skip the automatic restore."
+      "description": "Skip the final automatic restore. Package-add post-actions still restore packages when resolving latest versions or adding packaged Microsoft.Testing.Platform support."
     }
   }
 }

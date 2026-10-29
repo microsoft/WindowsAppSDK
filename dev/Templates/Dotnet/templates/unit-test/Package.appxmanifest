@@ -26,8 +26,8 @@
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="$targetplatformminversion$" MaxVersionTested="$WindowsTargetVersion$" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="$targetplatformminversion$" MaxVersionTested="$WindowsTargetVersion$" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="$targetplatformminversion$" MaxVersionTested="10.0.26100.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="$targetplatformminversion$" MaxVersionTested="10.0.26100.0" />
   </Dependencies>
 
   <Resources>

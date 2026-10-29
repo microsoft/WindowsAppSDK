@@ -21,7 +21,7 @@
     },
     "sdk-version": {
       "type": "sdk-version",
-      "args": [ "[8.0,)" ]
+      "args": [ "[10.0,)" ]
     }
   },
   "symbols": {
@@ -104,14 +104,6 @@
         {
           "choice": "10.0.26100.0",
           "description": "10.0.26100.0"
-        },
-        {
-          "choice": "10.0.26200.0",
-          "description": "10.0.26200.0"
-        },
-        {
-          "choice": "10.0.28000.0",
-          "description": "10.0.28000.0"
         }
       ],
       "description": "Minimum supported Windows version."
@@ -252,29 +244,7 @@
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "Skip the automatic restore."
-    },
-    "windowsTargetVersion": {
-      "type": "generated",
-      "generator": "switch",
-      "datatype": "string",
-      "replaces": "$WindowsTargetVersion$",
-      "parameters": {
-        "cases": [
-          {
-            "condition": "(targetPlatformMinVersion == \"10.0.26200.0\")",
-            "value": "10.0.26200.0"
-          },
-          {
-            "condition": "(targetPlatformMinVersion == \"10.0.28000.0\")",
-            "value": "10.0.28000.0"
-          },
-          {
-            "condition": "true",
-            "value": "10.0.26100.0"
-          }
-        ]
-      }
+      "description": "Skip the final automatic restore. Package-add post-actions still restore packages when resolving latest versions or adding packaged Microsoft.Testing.Platform support."
     }
   },
   "sources": [
@@ -355,17 +325,6 @@
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools.WinApp",
-        "projectFileExtensions": ".csproj"
-      }
-    },
-    {
-      "description": "Add Microsoft.Windows.SDK.BuildTools.WinUIAnalyzer at the latest stable version.",
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinUIAnalyzer'" } ],
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.Windows.SDK.BuildTools.WinUIAnalyzer",
         "projectFileExtensions": ".csproj"
       }
     },
