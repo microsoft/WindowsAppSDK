@@ -67,7 +67,7 @@
     <MicrosoftBuildTasksGitVersion>1.1.1</MicrosoftBuildTasksGitVersion>
     <MicrosoftSourceLinkCommonVersion>1.1.1</MicrosoftSourceLinkCommonVersion>
     <MicrosoftSourceLinkGitHubVersion>1.1.1</MicrosoftSourceLinkGitHubVersion>
-    <MicrosoftTaefVersion>10.95.240918004</MicrosoftTaefVersion>
+    <MicrosoftTaefVersion>10.98.250414002</MicrosoftTaefVersion>
     <MicrosoftWebWebView2Version>1.0.2903.40</MicrosoftWebWebView2Version>
     <MicrosoftTelemetryInboxNativeVersion>10.0.19041.1-191206-1406.vb-release.x86fre</MicrosoftTelemetryInboxNativeVersion>
     <MicrosoftWindowsAppSDKProtobufVersion>3.21.12</MicrosoftWindowsAppSDKProtobufVersion>
