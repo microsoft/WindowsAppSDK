@@ -21,7 +21,7 @@
     },
     "sdk-version": {
       "type": "sdk-version",
-      "args": [ "[8.0,)" ]
+      "args": [ "[10.0,)" ]
     }
   },
   "symbols": {
@@ -104,31 +104,9 @@
         {
           "choice": "10.0.26100.0",
           "description": "10.0.26100.0"
-        },
-        {
-          "choice": "10.0.26200.0",
-          "description": "10.0.26200.0"
-        },
-        {
-          "choice": "10.0.28000.0",
-          "description": "10.0.28000.0"
         }
       ],
       "description": "Minimum supported Windows version."
-    },
-    "publisherDn": {
-      "type": "parameter",
-      "datatype": "text",
-      "replaces": "$XmlEscapedPublisherDistinguishedName$",
-      "defaultValue": "CN=AppPublisher",
-      "description": "Publisher distinguished name used inside Package.appxmanifest."
-    },
-    "publisherDisplay": {
-      "type": "parameter",
-      "datatype": "text",
-      "replaces": "$XmlEscapedPublisher$",
-      "defaultValue": "AppPublisher",
-      "description": "Publisher display name shown in the manifest and Settings page."
     },
     "guid9": {
       "type": "generated",
@@ -166,12 +144,107 @@
       "replaces": "$MSTestVersion$",
       "description": "MSTest NuGet version. Use * for the latest stable."
     },
-    "microsoftNetTestSdkVersion": {
+    "TestRunner": {
+      "type": "parameter",
+      "datatype": "choice",
+      "enableQuotelessLiterals": true,
+      "displayName": "Test runner",
+      "defaultValue": "VSTest",
+      "description": "Select the test runner/platform.",
+      "choices": [
+        {
+          "choice": "Microsoft.Testing.Platform",
+          "description": "Microsoft.Testing.Platform"
+        },
+        {
+          "choice": "VSTest",
+          "description": "VSTest"
+        }
+      ]
+    },
+    "Fixture": {
+      "type": "parameter",
+      "datatype": "choice",
+      "allowMultipleValues": true,
+      "displayName": "Fixture",
+      "enableQuotelessLiterals": true,
+      "defaultValue": "None",
+      "description": "Select the fixture kinds to include.",
+      "choices": [
+        {
+          "choice": "None",
+          "description": "No fixture methods"
+        },
+        {
+          "choice": "AssemblyInitialize",
+          "description": "AssemblyInitialize fixture method"
+        },
+        {
+          "choice": "AssemblyCleanup",
+          "description": "AssemblyCleanup fixture method"
+        },
+        {
+          "choice": "ClassInitialize",
+          "description": "ClassInitialize fixture method"
+        },
+        {
+          "choice": "ClassCleanup",
+          "description": "ClassCleanup fixture method"
+        },
+        {
+          "choice": "TestInitialize",
+          "description": "TestInitialize fixture method"
+        },
+        {
+          "choice": "TestCleanup",
+          "description": "TestCleanup fixture method"
+        }
+      ]
+    },
+    "Packaging": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "Packaged",
+      "displayName": "Packaging",
+      "description": "Choose a packaged MSIX test app or an unpackaged desktop test app.",
+      "choices": [
+        {
+          "choice": "Packaged",
+          "description": "Packaged app with MSIX identity and package assets.",
+          "displayName": "Packaged"
+        },
+        {
+          "choice": "Unpackaged",
+          "description": "Unpackaged app without an MSIX manifest or package assets.",
+          "displayName": "Unpackaged"
+        }
+      ]
+    },
+    "publisherDn": {
       "type": "parameter",
       "datatype": "text",
-      "defaultValue": "*",
-      "replaces": "$MicrosoftNetTestSdkVersion$",
-      "description": "Microsoft.NET.Test.Sdk NuGet version. Use * for the latest stable."
+      "replaces": "$XmlEscapedPublisherDistinguishedName$",
+      "defaultValue": "CN=AppPublisher",
+      "description": "Publisher distinguished name used inside Package.appxmanifest.",
+      "isEnabled": "(Packaging == \"Packaged\")"
+    },
+    "publisherDisplay": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisher$",
+      "defaultValue": "AppPublisher",
+      "description": "Publisher display name shown in the manifest and Settings page.",
+      "isEnabled": "(Packaging == \"Packaged\")"
+    },
+    "unpackaged": {
+      "type": "computed",
+      "value": "(Packaging == \"Unpackaged\")"
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Skip the final automatic restore. Package-add post-actions still restore packages when resolving latest versions or adding packaged Microsoft.Testing.Platform support."
     }
   },
   "sources": [
@@ -188,6 +261,14 @@
               "after": "{{safeProjectName}}.App"
             }
           ]
+        },
+        {
+          "condition": "(TestRunner != \"VSTest\" || !unpackaged)",
+          "exclude": ["VSTestApplication.cs"]
+        },
+        {
+          "condition": "unpackaged",
+          "exclude": ["Package.appxmanifest", "Assets/**"]
         }
       ],
       "rename": {
@@ -196,7 +277,11 @@
     }
   ],
   "primaryOutputs": [
-    { "path": "ProjectTemplate.csproj" }
+    { "path": "ProjectTemplate.csproj" },
+    {
+      "condition": "(HostIdentifier != \"dotnetcli\" && HostIdentifier != \"dotnetcli-preview\")",
+      "path": "UnitTests.cs"
+    }
   ],
   "forms": {
     "safe_name": {
@@ -232,7 +317,7 @@
       }
     },
     {
-      "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\")",
+      "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\" && !unpackaged)",
       "description": "Pin Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
@@ -245,57 +330,62 @@
     },
     {
       "condition": "(mstestVersion == \"*\")",
-      "description": "Pin MSTest.TestAdapter to the latest stable version.",
+      "description": "Pin MSTest to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package MSTest.TestAdapter'" } ],
+      "manualInstructions": [ { "text": "Run 'dotnet add package MSTest'" } ],
       "args": {
         "referenceType": "package",
-        "reference": "MSTest.TestAdapter",
+        "reference": "MSTest",
         "projectFileExtensions": ".csproj"
       }
     },
     {
-      "condition": "(mstestVersion == \"*\")",
-      "description": "Pin MSTest.TestFramework to the latest stable version.",
+      "condition": "(TestRunner == \"Microsoft.Testing.Platform\" && !unpackaged)",
+      "description": "Add Microsoft.Testing.Extensions.PackagedApp.MSBuild at the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package MSTest.TestFramework'" } ],
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Testing.Extensions.PackagedApp.MSBuild'" } ],
       "args": {
         "referenceType": "package",
-        "reference": "MSTest.TestFramework",
+        "reference": "Microsoft.Testing.Extensions.PackagedApp.MSBuild",
         "projectFileExtensions": ".csproj"
       }
     },
     {
-      "condition": "(microsoftNetTestSdkVersion == \"*\")",
-      "description": "Pin Microsoft.NET.Test.Sdk to the latest stable version.",
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.NET.Test.Sdk'" } ],
+      "condition": "(TestRunner == \"Microsoft.Testing.Platform\")",
+      "description": "Create or update global.json to select Microsoft.Testing.Platform.",
+      "manualInstructions": [{ "text": "Create or update global.json with test.runner set to Microsoft.Testing.Platform." }],
+      "actionId": "695A3659-EB40-4FF5-A6A6-C9C4E629FCB0",
+      "id": "addJsonProperty",
       "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.NET.Test.Sdk",
-        "projectFileExtensions": ".csproj"
-      }
-    },
-    {
-      "condition": "(microsoftNetTestSdkVersion == \"*\")",
-      "description": "Pin Microsoft.TestPlatform.TestHost to the latest stable version.",
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.TestPlatform.TestHost'" } ],
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.TestPlatform.TestHost",
-        "projectFileExtensions": ".csproj"
-      }
+        "allowFileCreation": true,
+        "allowPathCreation": true,
+        "jsonFileName": "global.json",
+        "parentPropertyPath": "test",
+        "newJsonPropertyName": "runner",
+        "newJsonPropertyValue": "Microsoft.Testing.Platform",
+        "detectRepositoryRoot": true,
+        "includeAllDirectoriesInSearch": false,
+        "includeAllParentDirectoriesInSearch": true
+      },
+      "continueOnError": false
     },
     {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
-      "continueOnError": true,
+      "continueOnError": false,
       "description": "Restore NuGet packages required by this project.",
-      "manualInstructions": [{ "text": "Run 'dotnet restore'" }]
+      "manualInstructions": [{ "text": "Run 'dotnet restore'" }],
+      "condition": "(!skipRestore)"
+    },
+    {
+      "condition": "(HostIdentifier != \"dotnetcli\" && HostIdentifier != \"dotnetcli-preview\")",
+      "description": "Open UnitTests.cs in the editor.",
+      "manualInstructions": [],
+      "actionId": "84C0DA21-51C8-4541-9940-6CA19AF04EE6",
+      "id": "openInEditor",
+      "args": { "files": "1" },
+      "continueOnError": true
     }
   ]
 }
