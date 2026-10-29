@@ -21,7 +21,7 @@
     },
     "sdk-version": {
       "type": "sdk-version",
-      "args": [ "[8.0,)" ]
+      "args": [ "[10.0,)" ]
     }
   },
   "symbols": {
