@@ -14,6 +14,12 @@
   "defaultName": "WinUINavApp",
   "description": "Creates a WinUI 3 NavigationView starter app with MSIX packaging.",
   "preferNameDirectory": true,
+  "constraints": {
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": [ "[10.0,)" ]
+    }
+  },
   "symbols": {
     "HostIdentifier": {
       "type": "bind",
